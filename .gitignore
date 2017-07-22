@@ -20,3 +20,6 @@
 /gradlew.bat
 /gradle
 
+# OSx specific
+*.DS_Store
+

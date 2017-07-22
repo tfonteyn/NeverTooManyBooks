@@ -1020,6 +1020,8 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- End: Added/Updated in 5.2.2 -->
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
+    <string name="menu_mark_as_read">Mark as read</string>
+    <string name="menu_mark_as_unread">Mark as unread</string>
     <string name="generic_task_info" translatable="false">Task ID %1$d, Queued at %2$s</string>
     <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
     <string name="title_reorder">a|A|an|An|the|The</string>
@@ -1031,6 +1033,8 @@ and you can edit the book via the options menu using the menu button or overflow
         <item>Dark</item>
         <item>Light</item>
     </string-array>
-    <!-- End: Added/Updated in [Next Version] -->
+
+
+
 
 </resources>
