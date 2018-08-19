@@ -17,16 +17,16 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 public class ExportThread extends ManagedTask {
 	// Changed the paths to non-static variable because if this code is called 
 	// while a phone sync is in progress, they will not be set correctly
-	private String mFilePath = StorageUtils.getSharedStorage().getAbsolutePath();
-	private String mExportFileName = mFilePath + "/export.csv";
-	private String mTempFileName = mFilePath + "/export.tmp";
+	private final String mFilePath = StorageUtils.getSharedStorage().getAbsolutePath();
+	private final String mExportFileName = mFilePath + "/export.csv";
+	private final String mTempFileName = mFilePath + "/export.tmp";
 	private static String UTF8 = "utf8";
 	private static int BUFFER_SIZE = 8192;
 	private CatalogueDBAdapter mDbHelper;
 
 	public ExportThread(TaskManager ctx) {
 		super(ctx);
-		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.context);
+		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
 		mDbHelper.open();
 	}
 
@@ -35,7 +35,7 @@ public class ExportThread extends ManagedTask {
 		cleanup();
 	}
 	
-	private Exporter.ExportListener mOnExportListener = new Exporter.ExportListener() {
+	private final Exporter.ExportListener mOnExportListener = new Exporter.ExportListener() {
 
 		@Override
 		public void onProgress(String message, int position) {
@@ -291,7 +291,17 @@ public class ExportThread extends ManagedTask {
 				temp.renameTo(export);
 		}
 	}
-	
+	/**
+	 * Double quote all "'s and remove all newlines
+	 *
+	 * @param cell The cell the format
+	 * @return The formatted cell
+	 */
+	private String formatCell(long cell) {
+		String newcell = cell + "";
+		return formatCell(newcell);
+	}
+
 	/**
 	 * Double quote all "'s and remove all newlines
 	 * 
@@ -300,7 +310,7 @@ public class ExportThread extends ManagedTask {
 	 */
 	private String formatCell(String cell) {
 		try {
-			if (cell.equals("null") || cell.trim().length() == 0) {
+			if (cell.equals("null") || cell.trim().isEmpty()) {
 				return "";
 			}
 			StringBuilder bld = new StringBuilder();
@@ -334,16 +344,6 @@ public class ExportThread extends ManagedTask {
 		} catch (NullPointerException e) {
 			return "";
 		}
-	}
-	
-	/**
-	 * @see formatCell(String cell)
-	 * @param cell The cell the format
-	 * @return The formatted cell
-	 */
-	private String formatCell(long cell) {
-		String newcell = cell + "";
-		return formatCell(newcell);
 	}
 
 	/**

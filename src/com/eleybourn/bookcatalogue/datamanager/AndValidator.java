@@ -19,8 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.datamanager;
 
-import java.util.Iterator;
-
 /**
  * 'Meta' Validator to evaluate a list of validators; ALL validators must be true.
  * 
@@ -38,9 +36,7 @@ public class AndValidator extends MetaValidator implements DataValidator {
 
 	@Override
 	public void validate(DataManager data, Datum datum, boolean crossValidating) {
-		Iterator<DataValidator> i = this.iterator();
-		while (i.hasNext()) {
-			DataValidator v = i.next();
+		for (DataValidator v : this) {
 			// Only set the Bundle for the last in the list
 			v.validate(data, datum, crossValidating);
 		}

@@ -18,11 +18,11 @@ import com.eleybourn.bookcatalogue.utils.Logger;
  */
 public class BackupLister extends FileLister {
 	/** Pattern to match an archive file spec */
-	private static Pattern mBackupFilePattern = Pattern.compile(".bcbk$", Pattern.CASE_INSENSITIVE);
+	private static final Pattern mBackupFilePattern = Pattern.compile(".bcbk$", Pattern.CASE_INSENSITIVE);
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param root
 	 */
 	public BackupLister(File root) {
@@ -32,7 +32,7 @@ public class BackupLister extends FileLister {
 	/**
 	 * Construct a file filter to select only directories and backup files.
 	 */
-	private FileFilter mFilter = new FileFilter() {
+	private final FileFilter mFilter = new FileFilter() {
 		@Override
 		public boolean accept(File f) {
 			return (f.isDirectory() && f.canWrite()) || (f.isFile() && mBackupFilePattern.matcher(f.getName()).find());
@@ -50,7 +50,7 @@ public class BackupLister extends FileLister {
 	 * Process an array of Files into an ArrayList of BackupFileDetails
 	 */
 	protected ArrayList<FileDetails> processList(File[] files) {
-		ArrayList<FileDetails> dirs = new ArrayList<FileDetails>();
+		ArrayList<FileDetails> dirs = new ArrayList<>();
 
 		if (files != null) {
 			for (File f : files) {
@@ -65,7 +65,7 @@ public class BackupLister extends FileLister {
 					} catch (IOException e) {
 						Logger.logError(e);
 						if (reader != null)
-							try { reader.close(); } catch (IOException e1) { }
+							try { reader.close(); } catch (IOException ignore) {}
 					}
 				}
 			}

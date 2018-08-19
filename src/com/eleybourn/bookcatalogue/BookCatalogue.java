@@ -6,7 +6,7 @@ import android.os.Bundle;
 import com.eleybourn.bookcatalogue.compat.BookCatalogueActivity;
 
 /**
- * This is a placeholder class to deal with the suprising number of old shortcuts that 
+ * This is a placeholder class to deal with the surprising number of old shortcuts that
  * have not been updated from version 3.x.
  * 
  * The old 'BookCatalogue' activity is now called 'BookCatalogueClassic.
@@ -21,6 +21,7 @@ import com.eleybourn.bookcatalogue.compat.BookCatalogueActivity;
 public class BookCatalogue extends BookCatalogueActivity {
 
 	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		Intent i = new Intent(this, StartupActivity.class);
 		startActivity(i);
 		finish();

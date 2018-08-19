@@ -15,7 +15,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-@SuppressWarnings("WeakerAccess")
 public class AmazonManager {
 	/**
 	 * 
@@ -42,7 +41,7 @@ public class AmazonManager {
 		//} 
 		
 		String path = "https://bc.theagiledirector.com/getRest_v3.php";
-		if (mIsbn.equals("")) {
+		if (mIsbn.isEmpty()) {
 			path += "?author=" + mAuthor + "&title=" + mTitle;
 		} else {
 			path += "?isbn=" + mIsbn;

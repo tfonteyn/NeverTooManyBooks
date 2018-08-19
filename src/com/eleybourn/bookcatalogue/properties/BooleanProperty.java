@@ -109,7 +109,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
 	}
 
 	private void handleClick(View v) {
-		Holder h = (Holder)ViewTagger.getTag(v, R.id.TAG_PROPERTY);
+		Holder h = ViewTagger.getTag(v, R.id.TAG_PROPERTY);
 		Boolean b = h.p.get();
 		// Cycle through three values: 'null', 'true', 'false'. If the value is 'global' omit 'null'.
 		if (b == null) {
@@ -128,9 +128,6 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
 
 	/**
 	 * Set the checkbox and text fields based on passed value.
-	 * 
-	 * @param h
-	 * @param b
 	 */
 	private void setViewValues(Holder h, Boolean b) {
 		if (b != null) {

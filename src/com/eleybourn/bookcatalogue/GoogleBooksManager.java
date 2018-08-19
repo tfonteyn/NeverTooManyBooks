@@ -1,16 +1,11 @@
 package com.eleybourn.bookcatalogue;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.xml.sax.SAXException;
-
-import android.net.ParseException;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.utils.Logger;
@@ -44,7 +39,7 @@ public class GoogleBooksManager {
 		title = title.replace(" ", "%20");
 
 		String path = "http://books.google.com/books/feeds/volumes";
-		if (mIsbn.equals("")) {
+		if (mIsbn.isEmpty()) {
 			path += "?q=" + "intitle%3A"+title+"%2Binauthor%3A"+author+"";
 		} else {
 			path += "?q=ISBN%3C" + mIsbn + "%3E";
@@ -59,7 +54,7 @@ public class GoogleBooksManager {
 		try {
 			url = new URL(path);
 			parser = factory.newSAXParser();
-			int count = 0;
+			int count;
 			// We can't Toast anything from here; it no longer runs in UI thread. So let the caller deal 
 			// with any exceptions.
 			parser.parse(Utils.getInputStream(url), handler);
@@ -71,14 +66,6 @@ public class GoogleBooksManager {
 				parser.parse(Utils.getInputStream(url), entryHandler);
 			}
 			return;
-		} catch (MalformedURLException e) {
-			Logger.logError(e);
-		} catch (ParserConfigurationException e) {
-			Logger.logError(e);
-		} catch (ParseException e) {
-			Logger.logError(e);
-		} catch (SAXException e) {
-			Logger.logError(e);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}

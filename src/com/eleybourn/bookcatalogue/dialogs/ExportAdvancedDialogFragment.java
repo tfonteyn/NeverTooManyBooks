@@ -5,6 +5,7 @@ import java.io.File;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,13 +15,12 @@ import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.Exporter;
-import com.eleybourn.bookcatalogue.compat.BookCatalogueDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.ExportSettings;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.OnExportTypeSelectionDialogResultListener;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-public class ExportAdvancedDialogFragment extends BookCatalogueDialogFragment {
+public class ExportAdvancedDialogFragment extends DialogFragment {
 	private int mDialogId;
 	private File mFile;
 
@@ -29,7 +29,7 @@ public class ExportAdvancedDialogFragment extends BookCatalogueDialogFragment {
 //	 * 
 //	 * @author pjw
 //	 */
-//	public static interface OnExportAdvancedDialogResultListener {
+//	public interface OnExportAdvancedDialogResultListener {
 //		public void onExportAdvancedDialogResult(int dialogId, ExportAdvancedDialogFragment dialog, int rowId, File file);
 //	}
 
@@ -37,8 +37,7 @@ public class ExportAdvancedDialogFragment extends BookCatalogueDialogFragment {
 	 * Constructor
 	 * 
 	 * @param dialogId	ID passed by caller. Can be 0, will be passed back in event
-	 * @param titleId	Title to display
-	 *
+	 * @param file      the file
 	 * @return			Created fragment
 	 */
 	public static ExportAdvancedDialogFragment newInstance(int dialogId, File file) {

@@ -18,7 +18,7 @@
             android:digits="0123456789Xx"
             android:hint="@string/isbn"
             android:inputType="number"
-            android:padding="10dp"
+            android:padding="@dimen/padding_border_double"
             android:textAppearance="?android:attr/textAppearanceLarge" />
     </LinearLayout>
 

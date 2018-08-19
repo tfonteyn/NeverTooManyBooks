@@ -49,13 +49,12 @@ import com.eleybourn.bookcatalogue.compat.BookCatalogueListActivity;
  */
 public abstract class BindableItemListActivity extends BookCatalogueListActivity implements BindableItemBinder {
 	/** The resource ID for the base view */
-	private int mBaseViewId;
+	private final int mBaseViewId;
 
 	/**
 	 * Constructor; this will be called by the subclass to set the resource IDs.
 	 * 
 	 * @param baseViewId	Resource id of base view
-	 * @param rowViewId		Resource id of row view
 	 */
 	public BindableItemListActivity(int baseViewId) {
 		mBaseViewId = baseViewId;
@@ -122,8 +121,9 @@ public abstract class BindableItemListActivity extends BookCatalogueListActivity
 		m_listAdapter.notifyDataSetChanged();
 	}
 
-	public void onListItemClick(AdapterView<?> parent, View v, int position, long id) {};
-	public boolean onListItemLongClick(AdapterView<?> parent, View v, int position, long id) { return false; };
+	public void onListItemClick(AdapterView<?> parent, View v, int position, long id) {}
+
+    public boolean onListItemLongClick(AdapterView<?> parent, View v, int position, long id) { return false; }
 
 	//public abstract void bindListItem(View view, Context context, TasksCursor cursor) ;
 

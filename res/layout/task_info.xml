@@ -63,8 +63,7 @@
                 android:layout_weight="2"
                 android:hint="Retry 0 of 17, next at July 20, 2012 17:45:32 GMT"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#ffff30"
-                android:textStyle="bold" />
+                style="@style/error_message"/>
 
             <Button
                 android:id="@+id/retry"
@@ -79,11 +78,10 @@
             android:id="@+id/error"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+
             android:hint="Last error: foo bar, not sure what really happened"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="#ffff30"
-            android:textStyle="bold" />
+            style="@style/error_message" />
 
         <LinearLayout
             android:id="@+id/boring_stuff"

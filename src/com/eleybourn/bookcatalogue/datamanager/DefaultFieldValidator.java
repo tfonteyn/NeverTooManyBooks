@@ -28,7 +28,7 @@ import com.eleybourn.bookcatalogue.R;
  *
  */
 public class DefaultFieldValidator implements DataValidator {
-	protected String mDefault;
+	private final String mDefault;
 	/**
 	 * Allow for no default value.
 	 */
@@ -55,7 +55,7 @@ public class DefaultFieldValidator implements DataValidator {
 			return;
 
 		try {
-			if (value.toString().trim().equals("")) {
+			if (value.toString().trim().isEmpty()) {
 				data.putString(datum, mDefault);
 			}
 			return;

@@ -21,16 +21,15 @@ package com.eleybourn.bookcatalogue.dialogs;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.os.Bundle;
-
-import com.eleybourn.bookcatalogue.compat.BookCatalogueDialogFragment;
 
 /**
  * Fragment wrapper for the PartialDatePicker dialog
  * 
  * @author pjw
  */
-public class PartialDatePickerFragment extends BookCatalogueDialogFragment {
+public class PartialDatePickerFragment extends DialogFragment {
 	/** Currently displayed year; null if empty/invalid */
 	private Integer mYear;
 	/** Currently displayed month; null if empty/invalid */
@@ -44,12 +43,12 @@ public class PartialDatePickerFragment extends BookCatalogueDialogFragment {
 
 	/**
 	 * Listener interface to receive notifications when dialog is closed by any means.
-	 * 
+	 *
 	 * @author pjw
 	 */
-	public static interface OnPartialDatePickerListener {
-		public void onPartialDatePickerSet(int dialogId, PartialDatePickerFragment dialog, Integer year, Integer month, Integer day);
-		public void onPartialDatePickerCancel(int dialogId, PartialDatePickerFragment dialog);
+	public interface OnPartialDatePickerListener {
+		void onPartialDatePickerSet(int dialogId, PartialDatePickerFragment dialog, Integer year, Integer month, Integer day);
+		void onPartialDatePickerCancel(int dialogId, PartialDatePickerFragment dialog);
 	}
 
 	/**
@@ -58,8 +57,7 @@ public class PartialDatePickerFragment extends BookCatalogueDialogFragment {
 	 * @return		new instance
 	 */
 	public static PartialDatePickerFragment newInstance() {
-    	PartialDatePickerFragment frag = new PartialDatePickerFragment();
-        return frag;
+        return new PartialDatePickerFragment();
     }
 
 	/**
@@ -71,7 +69,7 @@ public class PartialDatePickerFragment extends BookCatalogueDialogFragment {
 
 		if (! (a instanceof OnPartialDatePickerListener))
 			throw new RuntimeException("Activity " + a.getClass().getSimpleName() + " must implement OnPartialDatePickerListener");
-		
+
 	}
 
 	/**
@@ -94,17 +92,16 @@ public class PartialDatePickerFragment extends BookCatalogueDialogFragment {
         // Create the dialog and listen (locally) for its events
         PartialDatePicker editor = new PartialDatePicker(getActivity());
         editor.setDate(mYear, mMonth, mDay);
-        editor.setOnDateSetListener(mDialogListener);		
+        editor.setOnDateSetListener(mDialogListener);
         if (mTitleId != 0)
 	        editor.setTitle(mTitleId);
         return editor;
     }
 
-	/** Accessor */
 	public void setDialogId(int id) {
 		mDialogId = id;
 	}
-	/** Accessor */
+
 	public int getDialogId() {
 		return mDialogId;
 	}
@@ -154,13 +151,13 @@ public class PartialDatePickerFragment extends BookCatalogueDialogFragment {
 			mDay = d.getDay();
 		}		
 	}
-	
+
 	/**
 	 *  The callback received when the user "sets" the date in the dialog.
-	 *  
+	 *
 	 *  The event is passed on the the calling activity
 	 */
-	private PartialDatePicker.OnDateSetListener mDialogListener = new PartialDatePicker.OnDateSetListener() {
+	private final PartialDatePicker.OnDateSetListener mDialogListener = new PartialDatePicker.OnDateSetListener() {
 		public void onDateSet(PartialDatePicker dialog, Integer year, Integer month, Integer day) {
 			((OnPartialDatePickerListener)getActivity()).onPartialDatePickerSet(mDialogId, PartialDatePickerFragment.this, year, month, day);
 		}

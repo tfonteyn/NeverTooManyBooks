@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -31,13 +32,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.compat.BookCatalogueFragment;
 import com.eleybourn.bookcatalogue.filechooser.FileLister.FileListerListener;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter.ViewProvider;
@@ -47,15 +46,14 @@ import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter.ViewProvider;
  * 
  * @author pjw
  *
- * @param <T>		Class for file details, used in showing list.
  */
-public class FileChooserFragment extends BookCatalogueFragment implements FileListerListener {
+public class FileChooserFragment extends Fragment implements FileListerListener {
 	private File mRootPath;
 	protected static final String ARG_ROOT_PATH = "rootPath";
 	protected static final String ARG_FILE_NAME = "fileName";
 	protected static final String ARG_LIST = "list";
 	// Create an empty one in case we are rotated before generated.
-	protected ArrayList<FileDetails> mList = new ArrayList<FileDetails>();
+	protected ArrayList<FileDetails> mList = new ArrayList<>();
 
 	/**
 	 * Interface that the containing Activity must implement. Called when user changes path.
@@ -63,7 +61,7 @@ public class FileChooserFragment extends BookCatalogueFragment implements FileLi
 	 * @author pjw
 	 */
 	public interface PathChangedListener {
-		public void onPathChanged(File root);
+		void onPathChanged(File root);
 	}
 
 	/** Create a new chooser fragment */
@@ -90,8 +88,8 @@ public class FileChooserFragment extends BookCatalogueFragment implements FileLi
 	public interface FileDetails extends ViewProvider, Parcelable {
 		/** Get the underlying File object */
 		File getFile();
-		/** Called to fill in the defails of this object in the View provided by the ViewProvider implementation */
-		public void onSetupView(Context context, int position, View target);
+		/** Called to fill in the details of this object in the View provided by the ViewProvider implementation */
+		void onSetupView(Context context, int position, View target);
 	}
 
 	/**
@@ -100,8 +98,8 @@ public class FileChooserFragment extends BookCatalogueFragment implements FileLi
 	@Override
 	public void onAttach(Activity a) {
 		super.onAttach(a);
-
-		checkInstance(a, PathChangedListener.class);
+		if (! (PathChangedListener.class.isInstance(a)) )
+			throw new RuntimeException("Class " + a.getClass().getSimpleName() + " must implement " + PathChangedListener.class.getSimpleName());
 	}
 
 	@Override
@@ -115,7 +113,7 @@ public class FileChooserFragment extends BookCatalogueFragment implements FileLi
 
 		// Handle the 'up' item; go to the next directory up
 		final View root = getView();
-		((ImageView) root.findViewById(R.id.up)).setOnClickListener(new OnClickListener() {
+		root.findViewById(R.id.up).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				handleUp();
@@ -174,19 +172,8 @@ public class FileChooserFragment extends BookCatalogueFragment implements FileLi
 	 * @author pjw
 	 */
 	public class DirectoryAdapter extends SimpleListAdapter<FileDetails> {
-		boolean series = false;
 
-		/**
-		 * 
-		 * Pass the parameters directly to the overridden function
-		 * 
-		 * @param context
-		 * @param layout
-		 * @param cursor
-		 * @param from
-		 * @param to
-		 */
-		public DirectoryAdapter(Context context, int rowViewId, ArrayList<FileDetails> items) {
+		DirectoryAdapter(Context context, int rowViewId, ArrayList<FileDetails> items) {
 			super(context, rowViewId, items);
 		}
 
@@ -206,18 +193,13 @@ public class FileChooserFragment extends BookCatalogueFragment implements FileLi
 					et.setText(fileDetails.getFile().getName());
 				}
 			}
-		};
-
-		@Override
-		protected void onListChanged() {
-			// Just ignore it. They never change.
-		};
+		}
 	}
 
 	/** 
 	 * Accessor
 	 * 
-	 * @return
+	 * @return File
 	 */
 	public File getSelectedFile() {
 		EditText et = (EditText) getView().findViewById(R.id.file_name);
@@ -228,7 +210,7 @@ public class FileChooserFragment extends BookCatalogueFragment implements FileLi
 	 * Display the list
 	 * 
 	 * @param root		Root directory
-	 * @param dirs		List of FileDetials
+	 * @param list		List of FileDetails
 	 */
 	@Override
 	public void onGotFileList(File root, ArrayList<FileDetails> list) {

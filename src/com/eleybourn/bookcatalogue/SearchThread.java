@@ -29,9 +29,9 @@ import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 abstract public class SearchThread extends ManagedTask {
-	protected String mAuthor;
-	protected String mTitle;
-	protected String mIsbn;
+	protected final String mAuthor;
+	protected final String mTitle;
+	protected final String mIsbn;
 	protected static boolean mFetchThumbnail;
 
 	// Accumulated book info.
@@ -40,9 +40,8 @@ abstract public class SearchThread extends ManagedTask {
 	/**
 	 * Constructor. Will search according to passed parameters. If an ISBN
 	 * is provided that will be used to the exclusion of all others.
-	 * 
-	 * @param ctx			Context
-	 * @param taskHandler	TaskHandler implementation
+	 *
+	 * @param manager   	TaskHandler implementation
 	 * @param author		Author to search for
 	 * @param title			Title to search for
 	 * @param isbn			ISBN to search for.
@@ -77,12 +76,12 @@ abstract public class SearchThread extends ManagedTask {
 			if (mBookData.containsKey(CatalogueDBAdapter.KEY_TITLE)) {
 				String thisTitle = mBookData.getString(CatalogueDBAdapter.KEY_TITLE);
 				SeriesDetails details = Series.findSeries(thisTitle);
-				if (details != null && details.name.length() > 0) {
+				if (details != null && !details.name.isEmpty()) {
 					ArrayList<Series> sl;
 					if (mBookData.containsKey(CatalogueDBAdapter.KEY_SERIES_DETAILS)) {
 						sl = Utils.getSeriesUtils().decodeList(mBookData.getString(CatalogueDBAdapter.KEY_SERIES_DETAILS), '|', false);
 					} else {
-						sl = new ArrayList<Series>();
+						sl = new ArrayList<>();
 					}
 					sl.add(new Series(details.name, details.position));
 					mBookData.putString(CatalogueDBAdapter.KEY_SERIES_DETAILS, Utils.getSeriesUtils().encodeList(sl, '|'));
@@ -91,13 +90,13 @@ abstract public class SearchThread extends ManagedTask {
 			}
 		} catch (Exception e) {
 			Logger.logError(e);
-		};		
-	}
+		}
+    }
 	
 	protected void showException(int id, Exception e) {
 		String s;
-		try {s = e.getMessage(); } catch (Exception e2) {s = "Unknown Exception";};
-		String msg = String.format(getString(R.string.search_exception), getString(id), s);
+		try {s = e.getMessage(); } catch (Exception e2) {s = "Unknown Exception";}
+        String msg = String.format(getString(R.string.search_exception), getString(id), s);
 		doToast(msg);		
 	}
 	

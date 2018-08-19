@@ -45,7 +45,6 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 
 import android.os.Bundle;
@@ -98,8 +97,10 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 
 	/** Transient global data for current work in search results. */
 	private Bundle mBook;
+
 	/** Local storage for series book appears in */
 	private ArrayList<Series> mSeries = null;
+
 	/** Local storage for series book appears in */
 	private ArrayList<Author> mAuthors = null;
 	
@@ -108,16 +109,20 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 	
 	/** Current author being processed */
 	private String mCurrAuthorName = null;
-	/** Current author being processed */
+
+	// Current author being processed
 	//private long mCurrAuthorId = 0;
 
 	/** Current series being processed */
 	private String mCurrSeriesName = null;
+
 	/** Current series being processed */
 	private Integer mCurrSeriesPosition = null;
-	/** Current series being processed */
+
+	// Current series being processed
 	//private int mCurrSeriesId = 0;
-	/** Flag to indicate if request should be signed. Signed requests via ISB cause server errors
+
+    /** Flag to indicate if request should be signed. Signed requests via ISB cause server errors
 	 *  and unsigned requests do not return review (not a big problem for searches)
 	 */
 	private final boolean mSignRequest;
@@ -135,18 +140,9 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 	 * @param request			HttpGet request to use
 	 * @param fetchThumbnail 	Indicates if thumbnail file should be retrieved
 	 * 
-	 * @return	the Bundl of data.
-	 * 
-	 * @throws IOException 
-	 * @throws BookNotFoundException 
-	 * @throws NotAuthorizedException 
-	 * @throws OAuthCommunicationException 
-	 * @throws OAuthExpectationFailedException 
-	 * @throws OAuthMessageSignerException 
-	 * @throws ClientProtocolException 
-	 * @throws NetworkException 
+	 * @return	the Bundle of data.
 	 */
-	public Bundle sendRequest(HttpGet request, boolean fetchThumbnail) throws ClientProtocolException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
+    Bundle sendRequest(HttpGet request, boolean fetchThumbnail) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
     
 		mBook = new Bundle();
 
@@ -191,13 +187,13 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             }
         }
 
-        /** Build the pub date based on the components */
+        /* Build the pub date based on the components */
         GoodreadsManager.buildDate(mBook, PUBLICATION_YEAR, PUBLICATION_MONTH, PUBLICATION_DAY, CatalogueDBAdapter.KEY_DATE_PUBLISHED);
 
         if (mBook.containsKey(IS_EBOOK) && mBook.getBoolean(IS_EBOOK))
         	mBook.putString(CatalogueDBAdapter.KEY_FORMAT, "Ebook");
 
-        /**
+        /*
          * Cleanup the title by removing series name, if present
          */
         if (mBook.containsKey(CatalogueDBAdapter.KEY_TITLE)) {
@@ -205,7 +201,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 			Series.SeriesDetails details = Series.findSeries(thisTitle);
 			if (details != null && details.name.length() > 0) {
 				if (mSeries == null)
-					mSeries = new ArrayList<Series>();
+					mSeries = new ArrayList<>();
 				mSeries.add(new Series(details.name, details.position));
 				// Tempting to replace title with ORIG_TITLE, but that does bad things to translations (it used the original language)
 				mBook.putString(CatalogueDBAdapter.KEY_TITLE, thisTitle.substring(0, details.startChar-1));		        	
@@ -478,64 +474,85 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 			</GoodreadsResponse>
 		 */
 		
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "id").setEndAction(mHandleLong, BOOK_ID);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "title").setEndAction(mHandleText, CatalogueDBAdapter.KEY_TITLE);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "isbn").setEndAction(mHandleText, CatalogueDBAdapter.KEY_ISBN);			
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "isbn13").setEndAction(mHandleText, ISBN13);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "image_url").setEndAction(mHandleText, IMAGE);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "small_image_url").setEndAction(mHandleText, SMALL_IMAGE);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "publication_year").setEndAction(mHandleLong, PUBLICATION_YEAR);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "publication_month").setEndAction(mHandleLong,PUBLICATION_MONTH);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "publication_day").setEndAction(mHandleLong, PUBLICATION_DAY);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "publisher").setEndAction(mHandleText, CatalogueDBAdapter.KEY_PUBLISHER);
-
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "is_ebook").setEndAction(mHandleBoolean, IS_EBOOK);
-
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "description").setEndAction(mHandleText, CatalogueDBAdapter.KEY_DESCRIPTION);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "id").setEndAction(mHandleLong, WORK_ID);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "original_publication_day").setEndAction(mHandleLong, ORIG_PUBLICATION_DAY);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "original_publication_month").setEndAction(mHandleLong, ORIG_PUBLICATION_MONTH);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "original_publication_year").setEndAction(mHandleLong, ORIG_PUBLICATION_YEAR);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "original_title").setEndAction(mHandleText, ORIG_TITLE);
-
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "average_rating").setEndAction(mHandleFloat, RATING);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "num_pages").setEndAction(mHandleLong, CatalogueDBAdapter.KEY_PAGES);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "format").setEndAction(mHandleText, CatalogueDBAdapter.KEY_FORMAT);
-
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "url").setEndAction(mHandleText, BOOK_URL);
-
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "id")
+           		.setEndAction(mHandleLong, BOOK_ID);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "title")
+                .setEndAction(mHandleText, CatalogueDBAdapter.KEY_TITLE);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "isbn")
+                .setEndAction(mHandleText, CatalogueDBAdapter.KEY_ISBN);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "isbn13")
+                .setEndAction(mHandleText, ISBN13);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "image_url")
+                .setEndAction(mHandleText, IMAGE);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "small_image_url")
+                .setEndAction(mHandleText, SMALL_IMAGE);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "publication_year")
+                .setEndAction(mHandleLong, PUBLICATION_YEAR);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "publication_month")
+                .setEndAction(mHandleLong,PUBLICATION_MONTH);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "publication_day")
+                .setEndAction(mHandleLong, PUBLICATION_DAY);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "publisher")
+                .setEndAction(mHandleText, CatalogueDBAdapter.KEY_PUBLISHER);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "is_ebook")
+                .setEndAction(mHandleBoolean, IS_EBOOK);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "description")
+                .setEndAction(mHandleText, CatalogueDBAdapter.KEY_DESCRIPTION);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "id")
+                .setEndAction(mHandleLong, WORK_ID);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "original_publication_day")
+                .setEndAction(mHandleLong, ORIG_PUBLICATION_DAY);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "original_publication_month")
+                .setEndAction(mHandleLong, ORIG_PUBLICATION_MONTH);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "original_publication_year")
+                .setEndAction(mHandleLong, ORIG_PUBLICATION_YEAR);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "original_title")
+                .setEndAction(mHandleText, ORIG_TITLE);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "average_rating")
+                .setEndAction(mHandleFloat, RATING);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "num_pages")
+                .setEndAction(mHandleLong, CatalogueDBAdapter.KEY_PAGES);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "format")
+                .setEndAction(mHandleText, CatalogueDBAdapter.KEY_FORMAT);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "url")
+				.setEndAction(mHandleText, BOOK_URL);
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "authors", "author")
-			.setStartAction(mHandleAuthorStart)
-			.setEndAction(mHandleAuthorEnd);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "authors", "author", "id").setEndAction(mHandleAuthorId);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "authors", "author", "name").setEndAction(mHandleAuthorName);
-
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "my_review", "id").setEndAction(mHandleLong, REVIEW_ID);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "my_review", "shelves").setStartAction(mHandleShelvesStart);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "my_review", "shelves", "shelf").setStartAction(mHandleShelf);
-		
+				.setStartAction(mHandleAuthorStart)
+				.setEndAction(mHandleAuthorEnd);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "authors", "author", "id")
+                .setEndAction(mHandleAuthorId);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "authors", "author", "name")
+                .setEndAction(mHandleAuthorName);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "my_review", "id")
+                .setEndAction(mHandleLong, REVIEW_ID);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "my_review", "shelves")
+                .setStartAction(mHandleShelvesStart);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "my_review", "shelves", "shelf")
+                .setStartAction(mHandleShelf);
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "series_works", "series_work")
-			.setStartAction(mHandleSeriesStart)
-			.setEndAction(mHandleSeriesEnd);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "series_works", "series_work", "user_position").setEndAction(mHandleSeriesPosition);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "series_works", "series_work", "series", "id").setEndAction(mHandleSeriesId);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "series_works", "series_work", "series", "title").setEndAction(mHandleSeriesName);
-	
-	
+				.setStartAction(mHandleSeriesStart)
+				.setEndAction(mHandleSeriesEnd);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "series_works", "series_work", "user_position")
+                .setEndAction(mHandleSeriesPosition);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "series_works", "series_work", "series", "id")
+                .setEndAction(mHandleSeriesId);
+		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "series_works", "series_work", "series", "title")
+                .setEndAction(mHandleSeriesName);
 	}
 
-	private XmlHandler mHandleSeriesStart = new XmlHandler(){
+	private final XmlHandler mHandleSeriesStart = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
 			//mCurrSeries = new Series();
 		}
 	};
-	private XmlHandler mHandleSeriesEnd = new XmlHandler(){
+
+	private final XmlHandler mHandleSeriesEnd = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
 			if (mCurrSeriesName != null && mCurrSeriesName.length() > 0) {
 				if (mSeries == null)
-					mSeries = new ArrayList<Series>();
+					mSeries = new ArrayList<>();
 				if (mCurrSeriesPosition == null) {
 					mSeries.add(new Series(mCurrSeriesName, ""));
 				} else {
@@ -547,7 +564,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 		}
 	};
 
-	private XmlHandler mHandleSeriesPosition = new XmlHandler(){
+	private final XmlHandler mHandleSeriesPosition = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
 			try {
@@ -557,75 +574,79 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 			}
 		}
 	};
-	private XmlHandler mHandleSeriesName = new XmlHandler(){
+
+	private final XmlHandler mHandleSeriesName = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
 			mCurrSeriesName = context.body.trim();
 		}
 	};
-	private XmlHandler mHandleSeriesId = new XmlHandler(){
+
+	private final XmlHandler mHandleSeriesId = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
+			/*
 			try {
-				//mCurrSeriesId = Integer.parseInt(context.body.trim());
-			} catch (Exception e) {
-				// Ignore
+				mCurrSeriesId = Integer.parseInt(context.body.trim());
+			} catch (Exception ignore) {
 			}
+			*/
 		}
 	};
-
 	
-	private XmlHandler mHandleAuthorStart = new XmlHandler(){
+	private final XmlHandler mHandleAuthorStart = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
 			//mCurrAuthor = new Author();
 		}
 	};
-	private XmlHandler mHandleAuthorEnd = new XmlHandler(){
+
+	private final XmlHandler mHandleAuthorEnd = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
 			if (mCurrAuthorName != null && mCurrAuthorName.length() > 0) {
 				if (mAuthors == null)
-					mAuthors = new ArrayList<Author>();
+					mAuthors = new ArrayList<>();
 				mAuthors.add(new Author(mCurrAuthorName));
 				mCurrAuthorName = null;		
 			}
 		}
 	};
-	private XmlHandler mHandleAuthorId = new XmlHandler(){
+
+	private final XmlHandler mHandleAuthorId = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
+			/*
 			try {
-				//mCurrAuthorId = Long.parseLong(context.body.trim());
-			} catch (Exception e) {
-				// Ignore
+				mCurrAuthorId = Long.parseLong(context.body.trim());
+			} catch (Exception ignore) {
 			}
+			*/
 		}
 	};
-	private XmlHandler mHandleAuthorName = new XmlHandler(){
+	private final XmlHandler mHandleAuthorName = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
 			mCurrAuthorName = context.body.trim();
 		}
 	};
-	
 
 	/**
 	 * Create a new shelves collection when the "shelves" tag is encountered.
 	 */
-	private XmlHandler mHandleShelvesStart = new XmlHandler(){
+	private final XmlHandler mHandleShelvesStart = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
-			mShelves = new ArrayList<String>();
+			mShelves = new ArrayList<>();
 		}
 	};
 	/**
 	 * Add a shelf to the array
 	 */
-	private XmlHandler mHandleShelf = new XmlHandler(){
+	private final XmlHandler mHandleShelf = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
-			String name = null;
+			String name;
 			try {
 				name = context.attributes.getValue("name");
 				mShelves.add(name);
@@ -636,7 +657,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 	};
 
 	
-	private XmlHandler mHandleText = new XmlHandler() {
+	private final XmlHandler mHandleText = new XmlHandler() {
 
 		@Override
 		public void process(ElementContext context) {
@@ -645,7 +666,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 		}
 	};
 
-	private XmlHandler mHandleLong = new XmlHandler() {
+	private final XmlHandler mHandleLong = new XmlHandler() {
 
 		@Override
 		public void process(ElementContext context) {
@@ -659,7 +680,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 		}
 	};
 	
-	private XmlHandler mHandleFloat = new XmlHandler() {
+	private final XmlHandler mHandleFloat = new XmlHandler() {
 
 		@Override
 		public void process(ElementContext context) {
@@ -673,7 +694,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 		}
 	};
 
-	private XmlHandler mHandleBoolean = new XmlHandler() {
+	private final XmlHandler mHandleBoolean = new XmlHandler() {
 
 		@Override
 		public void process(ElementContext context) {
@@ -681,7 +702,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 			try {
 				String s = context.body.trim();
 				boolean b;
-				if (s.length() == 0) {
+				if (s.isEmpty()) {
 					b = false;
 				} else if (s.equalsIgnoreCase("false")) {
 					b = false;
@@ -696,8 +717,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 					b = (l != 0);
 				}
 				mBook.putBoolean(name, b);
-			} catch (Exception e) {
-				// Ignore but dont add
+			} catch (Exception ignore) {
 			}
 		}
 	};

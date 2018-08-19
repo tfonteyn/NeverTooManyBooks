@@ -57,13 +57,17 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             mItems = items;
     }
 
-	protected void onListChanged() {};
-	protected void onRowClick(T object, int position, View v) {};
-	protected void onRowDelete(T object, int position, View v) {};
-	protected void onRowDown(T object, int position, View v) {};
-	protected void onRowUp(T object, int position, View v) {};
+	protected void onListChanged() {}
 
-	/**
+    protected void onRowClick(T object, int position, View v) {}
+
+    protected void onRowDelete(T object, int position, View v) {}
+
+    protected void onRowDown(T object, int position, View v) {}
+
+    protected void onRowUp(T object, int position, View v) {}
+
+    /**
 	 * Call to set up the row view.
 	 * 
 	 * @param target	The target row view object
@@ -152,7 +156,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 	 * Interface to allow underlying objects to determine their vewi ID.
 	 */
 	public interface ViewProvider {
-		public int getViewId();
+		int getViewId();
 	}
 
 	@Override
@@ -173,7 +177,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         }
         
         // Save this views position
-        ViewTagger.setTag(v, R.id.TAG_POSITION, Integer.valueOf(position));
+        ViewTagger.setTag(v, R.id.TAG_POSITION, position);
 
         {
         	// Giving the whole row an onClickListener seems to interfere

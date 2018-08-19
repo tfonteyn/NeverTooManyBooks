@@ -32,7 +32,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -119,7 +118,7 @@ public class StandardDialogs {
 					SharedPreferences prefs = context.getSharedPreferences("bookCatalogue", android.content.Context.MODE_PRIVATE);
 					SharedPreferences.Editor ed = prefs.edit();
 					ed.putBoolean(prefName, true);
-					ed.commit();
+					ed.apply();
 					dlg.dismiss();
 				}
 			});			
@@ -147,8 +146,9 @@ public class StandardDialogs {
 
 		alertDialog.setTitle(R.string.delete_series);
 		alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
-		//alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-		alertDialog.setButton2(context.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+		alertDialog.setButton(DialogInterface.BUTTON_POSITIVE,
+				context.getResources().getString(R.string.ok),
+				new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				dbHelper.deleteSeries(series);
 				alertDialog.dismiss();
@@ -156,8 +156,9 @@ public class StandardDialogs {
 			}
 		});
 
-		//alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-		alertDialog.setButton(context.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+		alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+				context.getResources().getString(R.string.cancel),
+				new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				alertDialog.dismiss();
 			}
@@ -177,7 +178,7 @@ public class StandardDialogs {
 				return R.string.unable_to_find_book;
 
 			title = cur.getString(cur.getColumnIndex(CatalogueDBAdapter.KEY_TITLE));
-			if (title == null || title.length() == 0)
+			if (title == null || title.isEmpty())
 				title = "<Unknown>";
 			
 		} finally {
@@ -186,16 +187,16 @@ public class StandardDialogs {
 		}
 
 		// Format the list of authors nicely
-		String authors;
+		StringBuilder authors = new StringBuilder();
 		if (authorList.size() == 0)
-			authors = "<Unknown>";
+			authors.append("<Unknown>");
 		else {
-			authors = authorList.get(0).getDisplayName();
+			authors.append(authorList.get(0).getDisplayName());
 			for (int i = 1; i < authorList.size() - 1; i++) {
-				authors += ", " + authorList.get(i).getDisplayName();
+				authors.append(", ").append(authorList.get(i).getDisplayName());
 			}
 			if (authorList.size() > 1)
-				authors += " " + context.getResources().getString(R.string.list_and) + " " + authorList.get(authorList.size() -1).getDisplayName();
+				authors.append(" ").append(context.getResources().getString(R.string.list_and)).append(" ").append(authorList.get(authorList.size() - 1).getDisplayName());
 		}
 
 		// Get the title		
@@ -206,8 +207,9 @@ public class StandardDialogs {
 
 		alertDialog.setTitle(R.string.menu_delete);
 		alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
-		//alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-		alertDialog.setButton2(context.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+		alertDialog.setButton(DialogInterface.BUTTON_POSITIVE,
+				context.getResources().getString(R.string.ok),
+				new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				dbHelper.deleteBook(id);
 				alertDialog.dismiss();
@@ -215,8 +217,9 @@ public class StandardDialogs {
 			}
 		});
 
-		//alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-		alertDialog.setButton(context.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+		alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+				context.getResources().getString(R.string.cancel),
+				new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				alertDialog.dismiss();
 			}
@@ -231,7 +234,7 @@ public class StandardDialogs {
 	 * Display a dialog warning the user that goodreads authentication is required; gives them
 	 * the options: 'request now', 'more info' or 'cancel'.
 	 */
-	public static int goodreadsAuthAlert(final FragmentActivity context) {
+	public static void goodreadsAuthAlert(final Activity context) {
 		// Get the title		
 		final AlertDialog alertDialog = new AlertDialog.Builder(context).setTitle(R.string.authorize_access).setMessage(R.string.goodreads_action_cannot_blah_blah).create();
 
@@ -258,21 +261,20 @@ public class StandardDialogs {
 		}); 
 
 		alertDialog.show();
-		return 0;
-		
+
 	}
 
 	/**
 	 * Interface for item that displays in a custom dialog list
 	 */
-	public static interface SimpleDialogItem {
+	public interface SimpleDialogItem {
 		View getView(LayoutInflater inflater);
 		RadioButton getSelector(View v);
 	}
 	/**
 	 * Interface to listen for item selection in a custom dialog list
 	 */
-	public static interface SimpleDialogOnClickListener {
+	public interface SimpleDialogOnClickListener {
 		void onClick(SimpleDialogItem item);
 	}
 
@@ -286,7 +288,7 @@ public class StandardDialogs {
 
 		// Build the base dialog
 		final AlertDialog.Builder builder = new AlertDialog.Builder(inflater.getContext()).setView(root);
-		if (message != null && !message.equals("")) {
+		if (message != null && !message.isEmpty()) {
 			msg.setText(message);
 		} else {
 			msg.setVisibility(View.GONE);
@@ -298,7 +300,7 @@ public class StandardDialogs {
 		OnClickListener listener = new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				SimpleDialogItem item = (SimpleDialogItem)ViewTagger.getTag(v, R.id.TAG_DIALOG_ITEM);
+				SimpleDialogItem item = ViewTagger.getTag(v, R.id.TAG_DIALOG_ITEM);
 				// For a consistent UI, make sure the selector is checked as well. NOT mandatory from
 				// a functional point of view, just consistent
 				if (! (v instanceof RadioButton) ) {
@@ -347,7 +349,7 @@ public class StandardDialogs {
 	 * Wrapper class to present a list of files for selection
 	 */
 	public static void selectFileDialog(LayoutInflater inflater, String title, ArrayList<File> files, final SimpleDialogOnClickListener handler) {
-		ArrayList<SimpleDialogItem> items = new ArrayList<SimpleDialogItem>();
+		ArrayList<SimpleDialogItem> items = new ArrayList<>();
 		for(File file: files) {
 			items.add(new SimpleDialogFileItem(file));
 		}
@@ -358,8 +360,8 @@ public class StandardDialogs {
 	 * Wrapper class to present a list of arbitrary objects for selection; it uses
 	 * the toString() method to display a simple list.
 	 */
-	public static <T extends Object> void selectStringDialog(LayoutInflater inflater, String title, ArrayList<T> objects, String current, final SimpleDialogOnClickListener handler) {
-		ArrayList<SimpleDialogItem> items = new ArrayList<SimpleDialogItem>();
+	public static <T> void selectStringDialog(LayoutInflater inflater, String title, ArrayList<T> objects, String current, final SimpleDialogOnClickListener handler) {
+		ArrayList<SimpleDialogItem> items = new ArrayList<>();
 		SimpleDialogItem selectedItem = null;
 		for(T o: objects) {
 			SimpleDialogObjectItem item = new SimpleDialogObjectItem(o);

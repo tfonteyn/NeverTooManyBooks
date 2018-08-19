@@ -128,7 +128,7 @@ public class BookUtils {
 		String series = thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_SERIES_FORMATTED));
 		File image = CatalogueDBAdapter.fetchThumbnailByUuid(dbHelper.getBookUuid(rowId));
 
-		if (series.length() > 0) {
+		if (!series.isEmpty()) {
 			series = " (" + series.replace("#", "%23") + ")";
 		}
 		//remove trailing 0's
@@ -142,7 +142,7 @@ public class BookUtils {
 			}
 		}
 		
-		if (ratingString.length() > 0){
+		if (!ratingString.isEmpty()){
 			ratingString = "(" + ratingString + ")";
 		}
 

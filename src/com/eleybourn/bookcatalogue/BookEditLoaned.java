@@ -53,7 +53,7 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
 	 * @return an ArrayList of names
 	 */
 	protected ArrayList<String> getFriends() {
-		ArrayList<String> friend_list = new ArrayList<String>();
+		ArrayList<String> friend_list = new ArrayList<>();
 		Uri baseUri = null;
 		String display_name = null;
 		try {
@@ -74,13 +74,13 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
 			String name = contactsCursor.getString(contactsCursor.getColumnIndex(display_name));
 			friend_list.add(name);
 		}
+		contactsCursor.close();
 		return friend_list;
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final View root = inflater.inflate(R.layout.edit_book_loan_base, container, false);
-		return root;
+		return inflater.inflate(R.layout.edit_book_loan_base, container, false);
 	}
 	
 	/**
@@ -101,7 +101,7 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
 				loaned(user);
 			}
 			// Setup the background
-			Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+			Utils.initBackground(this);
 		} finally {
 			Tracker.exitOnCreate(this);			
 		}
@@ -124,7 +124,7 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
 
 		AutoCompleteTextView mUserText = (AutoCompleteTextView) sv.findViewById(R.id.loan_to_who);
 		try {
-			ArrayAdapter<String> series_adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, getFriends());
+			ArrayAdapter<String> series_adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, getFriends());
 			mUserText.setAdapter(series_adapter);
 		} catch (Exception e) {
 			Logger.logError(e);
@@ -189,6 +189,4 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
 		// TODO Auto-generated method stub
 		
 	}
-	
-
 }

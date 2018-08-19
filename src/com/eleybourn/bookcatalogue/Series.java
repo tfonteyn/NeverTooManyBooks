@@ -40,7 +40,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 	public String 	name;
 	public String	num;
 
-	private java.util.regex.Pattern mPattern = java.util.regex.Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
+	private final Pattern mPattern = Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
 
 	public Series(String name) {
 		java.util.regex.Matcher m = mPattern.matcher(name);
@@ -69,7 +69,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 	}
 
 	public String getDisplayName() {
-		if (num != null && num.length() > 0)
+		if (num != null && !num.isEmpty())
 			return name + " (" + num + ")";
 		else
 			return name;
@@ -148,7 +148,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 
 	/** Pattern used to recognize series numbers embedded in names */
 	private static Pattern mSeriesPat = null;
-	private static final String mSeriesNumberPrefixes = "(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)";
+	private static final String mSeriesNumberPrefixes = BookCatalogueApp.getResourceString(R.string.series_number_prefixes);
 
 	/**
 	 * Try to extract a series from a book title.
@@ -222,5 +222,4 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 			return position;
 		}
 	}
-
 }

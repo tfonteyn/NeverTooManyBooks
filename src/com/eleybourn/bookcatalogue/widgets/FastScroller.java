@@ -92,7 +92,7 @@ import com.eleybourn.bookcatalogue.R;
 public class FastScroller {
    
     // Minimum number of pages to justify showing a fast scroll thumb
-    private static int MIN_PAGES = 4;
+    private static final int MIN_PAGES = 4;
     // Scroll thumb not showing
     private static final int STATE_NONE = 0;
     // ENHANCE: Not implemented yet - fade-in transition
@@ -157,11 +157,11 @@ public class FastScroller {
         try {
 	        final float scale = context.getResources().getDisplayMetrics().scaledDensity;
         	mLargeTextScaledSize = (int) (mLargeTextSpSize * scale);
-        	overlaySize = (int) (3 * mLargeTextScaledSize);
+        	overlaySize = 3 * mLargeTextScaledSize;
         } catch (Exception e) {
         	// Not a critical value; just try to get it close.
         	mLargeTextScaledSize = mLargeTextSpSize;
-        	overlaySize = (int) (3 * mLargeTextScaledSize);
+        	overlaySize = 3 * mLargeTextScaledSize;
         }
         mOverlaySize = overlaySize;
         init(context);
@@ -308,7 +308,7 @@ public class FastScroller {
             	else
             		line1 = mSectionTextV2[0];
             	// Check if line 2 is present 
-            	if (mSectionTextV2.length > 1 && mSectionTextV2[1] != null && !mSectionTextV2[1].equals("")) {
+            	if (mSectionTextV2.length > 1 && mSectionTextV2[1] != null && !mSectionTextV2[1].isEmpty()) {
             		has2Lines = true;
             		line2 = mSectionTextV2[1];
             	} else {
@@ -449,7 +449,7 @@ public class FastScroller {
 
 		int index = (int) (position * count);
 		if (mList instanceof ListView) { // This INCLUDES ExpandableListView
-			((ListView) mList).setSelectionFromTop(index + mListOffset, 0);
+			mList.setSelectionFromTop(index + mListOffset, 0);
 		} else {
 			mList.setSelection(index + mListOffset);
 		}
@@ -469,8 +469,8 @@ public class FastScroller {
 		}
 
 		if ( (mSectionTextV2 != null ) || (mSectionTextV1 != null && mSectionTextV1.length() > 0)) {
-			mDrawOverlay = true; //(mSectionText.length() != 1 || mSectionText.charAt(0) != ' ')
-							; //&& sectionIndex < sections.length;
+			mDrawOverlay = true;    //(mSectionText.length() != 1 || mSectionText.charAt(0) != ' ')
+                                    //&& sectionIndex < sections.length;
 		} else {
 			mDrawOverlay = false;
 		}
@@ -498,48 +498,52 @@ public class FastScroller {
         if (mState == STATE_NONE) {
             return false;
         }
-        if (me.getAction() == MotionEvent.ACTION_DOWN) {
-            if (me.getX() > mList.getWidth() - mThumbW
-                    && me.getY() >= mThumbY 
-                    && me.getY() <= mThumbY + mThumbH) {
-                
-                setState(STATE_DRAGGING);
-                if (mListAdapter == null && mList != null) {
-                    getSections();
-                }
+        switch (me.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if (me.getX() > mList.getWidth() - mThumbW
+                        && me.getY() >= mThumbY
+                        && me.getY() <= mThumbY + mThumbH) {
 
-                cancelFling();
-                return true;
-            }
-        } else if (me.getAction() == MotionEvent.ACTION_UP) {
-            if (mState == STATE_DRAGGING) {
-                setState(STATE_VISIBLE);
-                final Handler handler = mHandler;
-                handler.removeCallbacks(mScrollFade);
-                handler.postDelayed(mScrollFade, 1000);
-                return true;
-            }
-        } else if (me.getAction() == MotionEvent.ACTION_MOVE) {
-            if (mState == STATE_DRAGGING) {
-                final int viewHeight = mList.getHeight();
-                // Jitter
-                int newThumbY = (int) me.getY() - mThumbH + 10;
-                if (newThumbY < 0) {
-                    newThumbY = 0;
-                } else if (newThumbY + mThumbH > viewHeight) {
-                    newThumbY = viewHeight - mThumbH;
-                }
-                // ENHANCE would be nice to use ViewConfiguration.get(context).getScaledTouchSlop()???
-                if (Math.abs(mThumbY - newThumbY) < 2) { 
+                    setState(STATE_DRAGGING);
+                    if (mListAdapter == null) {
+                        getSections();
+                    }
+
+                    cancelFling();
                     return true;
                 }
-                mThumbY = newThumbY;
-                // If the previous scrollTo is still pending
-                if (mScrollCompleted) {
-                    scrollTo((float) mThumbY / (viewHeight - mThumbH));
+                break;
+            case MotionEvent.ACTION_UP:
+                if (mState == STATE_DRAGGING) {
+                    setState(STATE_VISIBLE);
+                    final Handler handler = mHandler;
+                    handler.removeCallbacks(mScrollFade);
+                    handler.postDelayed(mScrollFade, 1000);
+                    return true;
                 }
-                return true;
-            }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (mState == STATE_DRAGGING) {
+                    final int viewHeight = mList.getHeight();
+                    // Jitter
+                    int newThumbY = (int) me.getY() - mThumbH + 10;
+                    if (newThumbY < 0) {
+                        newThumbY = 0;
+                    } else if (newThumbY + mThumbH > viewHeight) {
+                        newThumbY = viewHeight - mThumbH;
+                    }
+                    // ENHANCE would be nice to use ViewConfiguration.get(context).getScaledTouchSlop()???
+                    if (Math.abs(mThumbY - newThumbY) < 2) {
+                        return true;
+                    }
+                    mThumbY = newThumbY;
+                    // If the previous scrollTo is still pending
+                    if (mScrollCompleted) {
+                        scrollTo((float) mThumbY / (viewHeight - mThumbH));
+                    }
+                    return true;
+                }
+                break;
         }
         return false;
     }

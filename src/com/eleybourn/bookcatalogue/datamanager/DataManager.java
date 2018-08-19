@@ -25,10 +25,9 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
-import android.annotation.TargetApi;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
-import android.os.Build;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -41,11 +40,11 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  */
 public class DataManager {
 	// Generic validators; if field-specific defaults are needed, create a new one.
-	protected static DataValidator integerValidator = new IntegerValidator("0");
-	protected static DataValidator nonBlankValidator = new NonBlankValidator();
-	protected static DataValidator blankOrIntegerValidator = new OrValidator(new BlankValidator(),
+	protected static final DataValidator integerValidator = new IntegerValidator("0");
+	protected static final DataValidator nonBlankValidator = new NonBlankValidator();
+	protected static final DataValidator blankOrIntegerValidator = new OrValidator(new BlankValidator(),
 			new IntegerValidator("0"));
-	protected static DataValidator blankOrFloatValidator = new OrValidator(new BlankValidator(),
+	protected static final DataValidator blankOrFloatValidator = new OrValidator(new BlankValidator(),
 			new FloatValidator("0.00"));
 	// FieldValidator blankOrDateValidator = new Fields.OrValidator(new Fields.BlankValidator(),
 	// new Fields.DateValidator());
@@ -56,9 +55,9 @@ public class DataManager {
 	private final DatumHash mData = new DatumHash();
 	
 	/** The last validator exception caught by this object */
-	private ArrayList<ValidatorException> mValidationExceptions = new ArrayList<ValidatorException>();
+	private final ArrayList<ValidatorException> mValidationExceptions = new ArrayList<>();
 	/** A list of cross-validators to apply if all fields pass simple validation. */
-	private ArrayList<DataCrossValidator> mCrossValidators = new ArrayList<DataCrossValidator>();
+	private final ArrayList<DataCrossValidator> mCrossValidators = new ArrayList<>();
 
 	/**
 	 * Erase everything in this instance
@@ -103,7 +102,7 @@ public class DataManager {
 	 * 
 	 * @return				the DataManager, for chaining
 	 */
-	public DataManager addValidator(String key, DataValidator validator) {
+	protected DataManager addValidator(String key, DataValidator validator) {
 		mData.get(key).setValidator(validator);
 		return this;
 	}
@@ -116,7 +115,7 @@ public class DataManager {
 	 * 
 	 * @return				the DataManager, for chaining
 	 */
-	public DataManager addAccessor(String key, DataAccessor accessor) {
+	protected DataManager addAccessor(String key, DataAccessor accessor) {
 		mData.get(key).setAccessor(accessor);
 		return this;
 	}
@@ -131,8 +130,9 @@ public class DataManager {
 	public Object get(String key) {
 		return get(mData.get(key));
 	}
+
 	/**
-	 * Get the data object specified by the passed {@link #Datum}
+	 * Get the data object specified by the passed Datum
 	 * 
 	 * @param datum	Datum
 	 * 
@@ -237,12 +237,9 @@ public class DataManager {
 
 	/**
 	 * Store all passed values in our collection.
-	 * We do the labourious method here to allow Accessors to do their thing.
-	 * 
-	 * @param src
-	 * @return
+	 * We do the laborious method here to allow Accessors to do their thing.
 	 */
-	public DataManager putAll(Bundle src) {
+	protected DataManager putAll(Bundle src) {
 		for(String key: src.keySet()) {
 			Object o = src.get(key);
 			if (o instanceof String) {
@@ -271,41 +268,9 @@ public class DataManager {
 
 	/**
 	 * Store the contents of the passed cursor
-	 * 
-	 * @param cursor
 	 */
-	public void putAll(Cursor cursor) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			putAll_Api11(cursor);
-		} else {
-			putAllLegacy(cursor);
-		}
-	}
+	protected void putAll(Cursor cursor) {
 
-	/**
-	 * Store the contents of the passed cursor
-	 * For API before 11, just store as strings
-	 * 
-	 * @param cursor
-	 */
-	public void putAllLegacy(Cursor cursor) {
-		cursor.moveToFirst();
-
-		for(int i = 0; i < cursor.getColumnCount(); i++) {
-			final String name = cursor.getColumnName(i);
-			final String value = cursor.getString(i);
-			putString(name, value);
-		}
-	}
-
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	/**
-	 * Store the contents of the passed cursor
-	 * For API after 11, store the correct type
-	 * 
-	 * @param cursor
-	 */
-	private void putAll_Api11(Cursor cursor) {
 		cursor.moveToFirst();
 
 		for(int i = 0; i < cursor.getColumnCount(); i++) {
@@ -338,7 +303,7 @@ public class DataManager {
 	 * 
 	 * @return		The data
 	 */
-	public Object getSerializable(String key) {
+	protected Object getSerializable(String key) {
 		return mData.get(key).getSerializable(this, mBundle);
 	}
 
@@ -352,7 +317,7 @@ public class DataManager {
 	 * @return		The data manager for chaining
 	 */
 	public DataManager putSerializable(String key, Serializable value) {
-		mData.get(key).putSerializable(this, mBundle, value);
+		mData.get(key).putSerializable(mBundle, value);
 		return this;
 	}
 
@@ -360,8 +325,6 @@ public class DataManager {
 	 * Loop through and apply validators, generating a Bundle collection as a by-product.
 	 * The Bundle collection is then used in cross-validation as a second pass, and finally
 	 * passed to each defined cross-validator.
-	 * 
-	 * @param values The Bundle collection to fill
 	 * 
 	 * @return boolean True if all validation passed.
 	 */
@@ -379,12 +342,10 @@ public class DataManager {
 			isOk = false;
 
 		// Finally run the local cross-validation
-		Iterator<DataCrossValidator> i = mCrossValidators.iterator();
-		while (i.hasNext()) {
-			DataCrossValidator v = i.next();
+		for (DataCrossValidator v : mCrossValidators) {
 			try {
 				v.validate(this);
-			} catch(ValidatorException e) {
+			} catch (ValidatorException e) {
 				mValidationExceptions.add(e);
 				isOk = false;
 			}
@@ -395,7 +356,6 @@ public class DataManager {
 	/**
 	 * Internal utility routine to perform one loop validating all fields.
 	 * 
-	 * @param values 			The Bundle to fill in/use.
 	 * @param crossValidating 	Flag indicating if this is a cross validation pass.
 	 */
 	private boolean doValidate(boolean crossValidating) {
@@ -417,7 +377,7 @@ public class DataManager {
 
 	/**
 	 * Check if the underlying data contains the specified key.
-	 * 
+	 *
 	 * @param key
 	 * @return
 	 */
@@ -432,10 +392,10 @@ public class DataManager {
 
 	/** 
 	 * Remove the specified key from this collection
-	 * 
+	 *
 	 * @param key		Key of data to remove.
-	 * 
-	 * @return
+	 *
+	 * @return  the old datum
 	 */
 	public Datum remove(String key) {
 		Datum datum = mData.remove(key);
@@ -444,8 +404,7 @@ public class DataManager {
 	}
 
 	/**
-	 * Get the current set of data
-	 * @return
+	 * @return the current set of data
 	 */
 	public Set<String> keySet() {
 		return mData.keySet();
@@ -456,27 +415,25 @@ public class DataManager {
 	 * 
 	 * @return res The resource manager to use when looking up strings.
 	 */
-	public String getValidationExceptionMessage(android.content.res.Resources res) {
+	public String getValidationExceptionMessage(Resources res) {
 		if (mValidationExceptions.size() == 0)
 			return "No error";
 		else {
-			String message = "";
+			StringBuilder message = new StringBuilder();
 			Iterator<ValidatorException> i = mValidationExceptions.iterator();
 			int cnt = 1;
 			if (i.hasNext())
-				message = "(" + cnt + ") " + i.next().getFormattedMessage(res);
+				message.append("(").append(cnt).append(") ").append(i.next().getFormattedMessage(res));
 			while (i.hasNext()) {
 				cnt ++;
-				message += " (" + cnt + ") " + i.next().getFormattedMessage(res) + "\n";
+				message.append(" (").append(cnt).append(") ").append(i.next().getFormattedMessage(res)).append("\n");
 			}
-			return message;
+			return message.toString();
 		}
 	}
 
 	/**
 	 * Format the passed bundle in a way that is convenient for display
-	 * 
-	 * @param b		Bundle to format
 	 * 
 	 * @return		Formatted string
 	 */
@@ -486,13 +443,13 @@ public class DataManager {
 	
 	/**
 	 * Append a string to a list value in this collection
-	 *  
+	 *
 	 * @param key
 	 * @param value
 	 */
 	public void appendOrAdd(String key, String value) {
 		String s = Utils.encodeListItem(value, '|');
-		if (!containsKey(key) || getString(key).length() == 0) {
+		if (!containsKey(key) || getString(key).isEmpty()) {
 			putString(key, s);
 		} else {
 			String curr = getString(key);

@@ -54,7 +54,7 @@ public class EditAuthorDialog {
 				EditText familyView = (EditText) dialog.findViewById(R.id.family_name);
 				EditText givenView = (EditText) dialog.findViewById(R.id.given_names);
 				String newFamily = familyView.getText().toString().trim();
-				if (newFamily == null || newFamily.length() == 0) {
+				if (newFamily.isEmpty()) {
 					Toast.makeText(mContext, R.string.author_is_blank, Toast.LENGTH_LONG).show();
 					return;
 				}

@@ -52,7 +52,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 
 	public static class InvalidIsbnException extends RuntimeException {
 		private static final long serialVersionUID = 2652418388349622089L;
-	};
+	}
 
 	//public enum ConditionCode {
 	//	BRAND_NEW, LIKE_NEW, VERY_GOOD, GOOD, ACCEPTABLE, POOR
@@ -169,7 +169,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 
 		HttpPost post = new HttpPost(GOODREADS_API_ROOT + "/owned_books.xml");
 
-        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        List<NameValuePair> parameters = new ArrayList<>();
         parameters.add(new BasicNameValuePair("owned_book[book_id]", Long.toString(id)));
         
         post.setEntity(new UrlEncodedFormEntity(parameters));	        	
@@ -186,7 +186,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 	public void create(String isbn, String shelf) 
 			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException, 
 					NotAuthorizedException, NetworkException, BookNotFoundException {
-		ArrayList<String> shelves = new ArrayList<String>();
+		ArrayList<String> shelves = new ArrayList<>();
 		shelves.add(shelf);
 		this.create(isbn, shelves);
 	}

@@ -22,7 +22,7 @@ public class SearchLibraryThingThread extends SearchThread {
 			String isbn = mIsbn;
 			if (isbn.length() > 0) {
 				this.doProgress(getString(R.string.searching_library_thing), 0);
-				LibraryThingManager ltm = new LibraryThingManager(BookCatalogueApp.context);
+				LibraryThingManager ltm = new LibraryThingManager(BookCatalogueApp.getAppContext());
 				if (ltm.isAvailable()) {
 					try {
 						ltm.searchByIsbn(isbn, mFetchThumbnail, mBookData);

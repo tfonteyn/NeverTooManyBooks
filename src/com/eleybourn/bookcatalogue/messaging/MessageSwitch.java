@@ -53,14 +53,14 @@ public class MessageSwitch<T,U> {
 	/** ID counter for unique sender IDs; set > 0 to allow for possible future static senders **/
 	private static Long mSenderIdCounter = 1024L;
 	/** List of message sources */
-	private Hashtable<Long,MessageSender<U>> mSenders = new Hashtable<Long,MessageSender<U>>();
+	private final Hashtable<Long,MessageSender<U>> mSenders = new Hashtable<>();
 	/** List of all messages in the message queue, both messages and replies */
-	private LinkedBlockingQueue<RoutingSlip> mMessageQueue = new LinkedBlockingQueue<RoutingSlip>();
+	private final LinkedBlockingQueue<RoutingSlip> mMessageQueue = new LinkedBlockingQueue<>();
 	/** List of message listener queues */
-	private Hashtable<Long, MessageListeners> mListeners = new Hashtable<Long, MessageListeners>();
+	private final Hashtable<Long, MessageListeners> mListeners = new Hashtable<>();
 
 	/** Handler object for posting to main thread and for testing if running on UI thread */
-	private static Handler mHandler = new Handler();
+	private static final Handler mHandler = new Handler();
 
 	/** Interface that must be implemented by any message that will be sent via send() */
 	public interface Message<T> {
@@ -72,7 +72,7 @@ public class MessageSwitch<T,U> {
 		 * @return		true if message should not be delievered to any other listeners or stored for delievery as 'last message'
 		 * 				should only return true if the message has been handled and would break the app if delivered more than once.
 		 */
-		public boolean deliver(T listener);
+        boolean deliver(T listener);
 	}
 
 	/** Register a new sender and it's controller object; return the unique ID for this sender */
@@ -122,9 +122,7 @@ public class MessageSwitch<T,U> {
 
 	/**
 	 * Remove the specified listener from the specified queue
-	 * 
-	 * @param senderId
-	 * @param l
+	 *
 	 */
 	public void removeListener(Long senderId, T l) {
 		synchronized(mListeners) {
@@ -188,9 +186,9 @@ public class MessageSwitch<T,U> {
 	 * @param <U>	Arbitrary class that will be responsible for the message
 	 */
 	private interface MessageSender<U> {
-		public long getId();
-		public void close();
-		public U getController();
+		long getId();
+		void close();
+		U getController();
 	}
 
 	/**
@@ -202,7 +200,7 @@ public class MessageSwitch<T,U> {
 		/** Last message sent */
 		private MessageRoutingSlip mLastMessage = null;
 		/** Weak refs to all listeners */
-		private ArrayList<WeakReference<T>> mList = new ArrayList<WeakReference<T>>();
+		private final ArrayList<WeakReference<T>> mList = new ArrayList<>();
 
 		/** Accessor */
 		public void setLastMessage(MessageRoutingSlip m) {
@@ -210,14 +208,14 @@ public class MessageSwitch<T,U> {
 		}
 
 		/** Accessor */
-		public MessageRoutingSlip getLastMessage() {
+		MessageRoutingSlip getLastMessage() {
 			return mLastMessage;
 		}
 
 		/** Add a listener to this queue */
 		public void add(T listener) {
 			synchronized(mList) {
-				mList.add(new WeakReference<T>(listener));
+				mList.add(new WeakReference<>(listener));
 			}
 		}
 
@@ -229,7 +227,7 @@ public class MessageSwitch<T,U> {
 		public void remove(T listener) {
 			synchronized(mList) {
 				// List of refs to be removed
-				ArrayList<WeakReference<T>> toRemove = new ArrayList<WeakReference<T>>();
+				ArrayList<WeakReference<T>> toRemove = new ArrayList<>();
 				// Scan the list for matches or dead refs
 				for(WeakReference<T> w: mList) {
 					T l = w.get();
@@ -252,7 +250,7 @@ public class MessageSwitch<T,U> {
 		 */
 		@Override
 		public Iterator<T> iterator() {
-			ArrayList<T> list = new ArrayList<T>();
+			ArrayList<T> list = new ArrayList<>();
 			ArrayList<WeakReference<T>> toRemove = null;
 			synchronized(mList) {
 				for(WeakReference<T> w: mList) {
@@ -261,7 +259,7 @@ public class MessageSwitch<T,U> {
 						list.add(l);
 					} else {
 						if (toRemove == null)
-							toRemove = new ArrayList<WeakReference<T>>();
+							toRemove = new ArrayList<>();
 						toRemove.add(w);
 					}
 				}
@@ -280,8 +278,6 @@ public class MessageSwitch<T,U> {
 
 	/**
 	 * Remove a sender and it's queue
-	 * 
-	 * @param s
 	 */
 	private void removeSender(MessageSender<U> s) {
 		synchronized(mSenders) {
@@ -296,7 +292,7 @@ public class MessageSwitch<T,U> {
 	 *
 	 */
 	private interface RoutingSlip {
-		public void deliver();
+		void deliver();
 	}
 
 	/**
@@ -306,12 +302,12 @@ public class MessageSwitch<T,U> {
 	 */
 	private class MessageRoutingSlip implements RoutingSlip {
 		/** Destination queue (sender ID) */
-		long destination;
+        final long destination;
 		/** Message to deliver */
-		Message<T> message;
+        final Message<T> message;
 
 		/** Constructor */
-		public MessageRoutingSlip(long destination, Message<T> message) {
+		MessageRoutingSlip(long destination, Message<T> message) {
 			this.destination = destination;
 			this.message = message;
 		}
@@ -324,7 +320,7 @@ public class MessageSwitch<T,U> {
 			// Iterator for iterating queue
 			Iterator<T> i = null;
 
-			MessageListeners queue = null;
+			MessageListeners queue;
 			// Get the queue and find the iterator
 			synchronized(mListeners) {
 				// Queue for given ID
@@ -384,7 +380,7 @@ public class MessageSwitch<T,U> {
 		private final U mController;
 
 		/** Constructor */
-		public MessageSenderImpl(U controller) {
+		MessageSenderImpl(U controller) {
 			mController = controller;
 		}
 
@@ -430,7 +426,7 @@ public class MessageSwitch<T,U> {
 	 * Process the queued messages
 	 */
 	private void processMessages() {
-		RoutingSlip m = null;
+		RoutingSlip m;
 		do {
 			synchronized(mMessageQueue) {
 				m = mMessageQueue.poll();

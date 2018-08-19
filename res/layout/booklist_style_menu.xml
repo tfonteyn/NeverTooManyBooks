@@ -20,8 +20,9 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dp"
-            android:background="@drawable/main_menu_header_divider"
-            android:paddingBottom="10dp" />
+            android:paddingBottom="@dimen/padding_border_double"
+            style="@style/main_menu_header_divider"
+            />
     </LinearLayout>
 
 </ScrollView>

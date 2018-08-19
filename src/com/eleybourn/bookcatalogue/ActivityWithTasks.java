@@ -72,8 +72,8 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
 		// Restore mTaskManagerId if present 
 		if (savedInstanceState != null) {
 			mTaskManagerId = savedInstanceState.getLong("TaskManagerId");
-		};
-	}
+		}
+    }
 
 	/**
 	 * Trivial internal class to implement our base progress object
@@ -100,9 +100,9 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
 			this.setIndeterminate(true);
 			this.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		}
-	};
+	}
 
-	/**
+    /**
 	 * ProgressDialog for Determinate states.
 	 * 
 	 * @author pjw
@@ -114,11 +114,10 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
 			this.setIndeterminate(false);
 			this.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		}
-	};
+	}
 
-	/**
-	 * Utility routine to get the task manager for his activity
-	 * @return
+    /**
+	 * Utility routine to get the task manager for this activity
 	 */
 	protected TaskManager getTaskManager() {
 		if (mTaskManager == null) {
@@ -178,15 +177,13 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
 
 	/**
 	 * Method to allow subclasses easy access to terminating tasks
-	 * 
-	 * @param task
 	 */
 	public void onTaskEnded(ManagedTask task) {	}
 
 	/**
 	 * Object to handle all TaskManager events
 	 */
-	private TaskManagerListener mTaskListener = new TaskManagerListener() {
+	private final TaskManagerListener mTaskListener = new TaskManagerListener() {
 
 		@Override
 		public void onTaskEnded(TaskManager manager, ManagedTask task) {
@@ -207,7 +204,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
 			mProgressMessage = message;
 
 			// If empty, close any dialog
-			if ((mProgressMessage == null || mProgressMessage.trim().length() == 0) && mProgressMax == mProgressCount) {
+			if ((mProgressMessage == null || mProgressMessage.trim().isEmpty()) && mProgressMax == mProgressCount) {
 				if (mProgressDialog != null) {
 					mProgressDialog.dismiss();
 					mProgressDialog = null;
@@ -291,7 +288,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
 	/**
 	 * Handler for the user cancelling the progress dialog.
 	 */
-	private OnCancelListener mCancelHandler = new OnCancelListener() {
+	private final OnCancelListener mCancelHandler = new OnCancelListener() {
 		public void onCancel(DialogInterface i) {
 			cancelAndUpdateProgress();
 		}
@@ -300,7 +297,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
 	/**
 	 * Wait for the 'Back' key and cancel all tasks on keyUp.
 	 */
-	private OnKeyListener mDialogKeyListener = new OnKeyListener() {
+	private final OnKeyListener mDialogKeyListener = new OnKeyListener() {
 		@Override
 		public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
 			if (event.getAction() == KeyEvent.ACTION_UP) {
@@ -327,10 +324,10 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
 		}
 	}
 
-	@Override
 	/**
 	 * Save the TaskManager ID for later retrieval
 	 */
+	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 

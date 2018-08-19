@@ -29,7 +29,6 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
@@ -53,7 +52,7 @@ public class ReviewUpdateHandler extends ApiHandler {
 	}
 
 	public void update(long reviewId, boolean isRead, String readAt, String review, int rating) 
-			throws ClientProtocolException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException, 
+			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
 					NotAuthorizedException, BookNotFoundException, NetworkException
 	{
 		HttpPost post = new HttpPost(GOODREADS_API_ROOT + "/review/" + reviewId + ".xml");
@@ -71,7 +70,7 @@ public class ReviewUpdateHandler extends ApiHandler {
 
 		// Set the 'read' or 'to-read' shelf based on status.
 		// Note a lot of point...it does not update goodreads!
-        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        List<NameValuePair> parameters = new ArrayList<>();
         if (isRead)
         	parameters.add(new BasicNameValuePair("shelf", "read"));
         else
@@ -82,7 +81,7 @@ public class ReviewUpdateHandler extends ApiHandler {
         if (review != null)
 	        parameters.add(new BasicNameValuePair("review[review]", review));
 
-        if (readAt != null && !readAt.equals(""))
+        if (readAt != null && !readAt.isEmpty())
 	        parameters.add(new BasicNameValuePair("review[read_at]", readAt));
         
         if (rating >= 0)

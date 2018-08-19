@@ -21,7 +21,9 @@
 package com.eleybourn.bookcatalogue.database;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map.Entry;
@@ -41,10 +43,10 @@ public class DbUtils {
 	 * @author Philip Warner
 	 */
 	public static class DomainDefinition {
-		public String name;
-		public String type;
-		public String extra;
-		public String constraint;
+		public final String name;
+		public final String type;
+		public final String extra;
+		public final String constraint;
 		public DomainDefinition(String name, String type, String extra, String constraint) {
 			this.name = name;
 			this.type = type;
@@ -142,7 +144,7 @@ public class DbUtils {
 		 * @return			Join object (for chaining)
 		 */
 		public JoinContext start() {
-			sql.append( currentTable.getName() + " " + currentTable.getAlias() );
+			sql.append(currentTable.getName()).append(" ").append(currentTable.getAlias());
 			return this;
 		}
 		/**
@@ -172,34 +174,32 @@ public class DbUtils {
 	 * @author Philip Warner
 	 */
 	public static class TableDefinition {
-		public enum TableTypes { Standard, Temporary, FTS3, FTS4 };
+		public enum TableTypes { Standard, Temporary, FTS3, FTS4 }
 
-		/** Table name */
+        /** Table name */
 		private String mName;
 		/** Table alias */
 		private String mAlias;
 		/** List of domains in this table */
-		private ArrayList<DomainDefinition> mDomains = new ArrayList<DomainDefinition>();
+		private ArrayList<DomainDefinition> mDomains;
 		/** Used for checking if a domain has already been added */ 
-		private HashSet<DomainDefinition> mDomainCheck = new HashSet<DomainDefinition>();
+		private final HashSet<DomainDefinition> mDomainCheck = new HashSet<>();
 		/** Used for checking if a domain NAME has already been added */
-		private Hashtable<String, DomainDefinition> mDomainNameCheck = new Hashtable<String, DomainDefinition>();
+		private final Hashtable<String, DomainDefinition> mDomainNameCheck = new Hashtable<>();
 
 		/** List of domains forming primary key */
-		private ArrayList<DomainDefinition> mPrimaryKey = new ArrayList<DomainDefinition>();
+		private final ArrayList<DomainDefinition> mPrimaryKey = new ArrayList<>();
 		/** List of parent tables (tables referred to by foreign keys on this table) */
-		private Hashtable<TableDefinition, FkReference> mParents = new Hashtable<TableDefinition, FkReference>();
+		private final Hashtable<TableDefinition, FkReference> mParents = new Hashtable<>();
 		/** List of child tables (tables referring to by foreign keys to this table) */
-		private Hashtable<TableDefinition, FkReference> mChildren = new Hashtable<TableDefinition, FkReference>();
+		private final Hashtable<TableDefinition, FkReference> mChildren = new Hashtable<>();
 		/** List of index definitions for this table */
-		Hashtable<String, IndexDefinition> mIndexes = new Hashtable<String, IndexDefinition>();
+        final Hashtable<String, IndexDefinition> mIndexes = new Hashtable<>();
 		/** Flag indicating table is temporary */
 		private TableTypes mType = TableTypes.Standard;
 
 		/**
-		 * Accessor. Return list of domains.
-		 * 
-		 * @return
+		 * @return list of domains.
 		 */
 		public ArrayList<DomainDefinition> getDomains() {
 			return mDomains;
@@ -216,7 +216,7 @@ public class DbUtils {
 			mIndexes.clear();
 
 			// Need to make local copies to avoid 'collection modified' errors
-			ArrayList<TableDefinition> tmpParents = new ArrayList<TableDefinition>(); 
+			ArrayList<TableDefinition> tmpParents = new ArrayList<>();
 			for(Entry<TableDefinition, FkReference> fkEntry : mParents.entrySet()) {
 				FkReference fk = fkEntry.getValue();
 				tmpParents.add(fk.parent);
@@ -226,7 +226,7 @@ public class DbUtils {
 			}
 
 			// Need to make local copies to avoid 'collection modified' errors
-			ArrayList<TableDefinition> tmpChildren = new ArrayList<TableDefinition>(); 
+			ArrayList<TableDefinition> tmpChildren = new ArrayList<>();
 			for(Entry<TableDefinition, FkReference> fkEntry : mChildren.entrySet()) {
 				FkReference fk = fkEntry.getValue();
 				tmpChildren.add(fk.child);
@@ -262,9 +262,7 @@ public class DbUtils {
 		}
 
 		/**
-		 * Accessor. Get indexes on this table.
-		 * 
-		 * @return
+		 * @return indexes on this table.
 		 */
 		public Collection<IndexDefinition> getIndexes() {
 			return mIndexes.values();
@@ -277,11 +275,11 @@ public class DbUtils {
 		 */
 		private class FkReference {
 			/** Owner of primary key in FK reference */
-			TableDefinition parent;
+            final TableDefinition parent;
 			/** Table owning FK */
-			TableDefinition child;
+            final TableDefinition child;
 			/** Domains in the FK that reference the parent PK */
-			ArrayList<DomainDefinition> domains;
+            final ArrayList<DomainDefinition> domains;
 
 			/**
 			 * Constructor.
@@ -291,9 +289,8 @@ public class DbUtils {
 			 * @param domains	Domains in child table that reference PK in parent
 			 */
 			FkReference(TableDefinition parent, TableDefinition child, DomainDefinition...domains) {
-				this.domains = new ArrayList<DomainDefinition>();
-				for(DomainDefinition d: domains)
-					this.domains.add(d);			
+				this.domains = new ArrayList<>();
+				this.domains.addAll(Arrays.asList(domains));
 				this.parent = parent;				
 				this.child = child;
 			}
@@ -305,9 +302,8 @@ public class DbUtils {
 			 * @param domains	Domains in child table that reference PK in parent
 			 */
 			FkReference(TableDefinition parent, TableDefinition child, ArrayList<DomainDefinition> domains) {
-				this.domains = new ArrayList<DomainDefinition>();
-				for(DomainDefinition d: domains)
-					this.domains.add(d);			
+				this.domains = new ArrayList<>();
+				this.domains.addAll(domains);
 				this.parent = parent;				
 				this.child = child;
 			}
@@ -317,7 +313,7 @@ public class DbUtils {
 			 * 
 			 * @return	SQL fragment
 			 */
-			public String getPredicate() {
+			String getPredicate() {
 				ArrayList<DomainDefinition> pk = parent.getPrimaryKey();
 				StringBuilder sql = new StringBuilder();
 				for(int i = 0; i < pk.size(); i++) {
@@ -344,22 +340,22 @@ public class DbUtils {
 		public TableDefinition(String name, DomainDefinition... domains) {
 			this.mName = name;
 			this.mAlias = name;
-			this.mDomains = new ArrayList<DomainDefinition>();
-			for(DomainDefinition d: domains)
-				this.mDomains.add(d);
+			this.mDomains = new ArrayList<>();
+			this.mDomains.addAll(Arrays.asList(domains));
 		}
 
 		/**
 		 * Constructor (empty table)
 		 */
-		public TableDefinition() {
+		TableDefinition() {
 			this.mName = "";
-			this.mDomains = new ArrayList<DomainDefinition>();
+			this.mDomains = new ArrayList<>();
 		}
 
 		/**
 		 * Accessor. Get the table name.
-		 * @return
+		 *
+		 * @return	table name.
 		 */
 		public String getName() {
 			return mName;
@@ -371,7 +367,7 @@ public class DbUtils {
 		 * @return		Alias
 		 */
 		public String getAlias() {
-			if (mAlias == null || mAlias.equals("")) 
+			if (mAlias == null || mAlias.isEmpty())
 				return getName();
 			else
 				return mAlias;
@@ -457,8 +453,7 @@ public class DbUtils {
 		 */
 		public TableDefinition setPrimaryKey(DomainDefinition...domains) {
 			mPrimaryKey.clear();
-			for(DomainDefinition d: domains)
-				mPrimaryKey.add(d);			
+			Collections.addAll(mPrimaryKey, domains);
 			return this;
 		}
 
@@ -469,10 +464,9 @@ public class DbUtils {
 		 * 
 		 * @return	TableDefinition (for chaining)
 		 */
-		public TableDefinition setPrimaryKey(ArrayList<DomainDefinition> domains) {
+		TableDefinition setPrimaryKey(ArrayList<DomainDefinition> domains) {
 			mPrimaryKey.clear();
-			for(DomainDefinition d: domains)
-				mPrimaryKey.add(d);			
+			mPrimaryKey.addAll(domains);
 			return this;
 		}
 
@@ -621,7 +615,7 @@ public class DbUtils {
 
 		/**
 		 * Static method to drop the passed table, if it exists.
-		 * 
+		 *
 		 * @param db
 		 * @param name
 		 */
@@ -631,7 +625,7 @@ public class DbUtils {
 
 		/**
 		 * Drop this table from the passed DB.
-		 * 
+		 *
 		 * @param db
 		 * @return
 		 */
@@ -778,10 +772,10 @@ public class DbUtils {
 		}
 
 		/**
-		 * Setter. Set flag indicating table is a TEMPORARY table.
-		 * 
-		 * @param flag		Flag
-		 * 
+		 * Setter. Set type indicating table is a TEMPORARY table.
+		 *
+		 * @param type		type
+		 *
 		 * @return	TableDefinition (for chaining)
 		 */
 		public TableDefinition setType(TableTypes type) {
@@ -936,13 +930,13 @@ public class DbUtils {
 	 */
 	public static class IndexDefinition {
 		/** Full name of index */
-		private String mName;
+		private final String mName;
 		/** Table to which index applies */
-		private TableDefinition mTable;
+		private final TableDefinition mTable;
 		/** Domains in index */
-		private DomainDefinition[] mDomains;
+		private final DomainDefinition[] mDomains;
 		/** Flag indicating index is unique */
-		private boolean mIsUnique;
+		private final boolean mIsUnique;
 
 		/**
 		 * Constructor.
@@ -959,21 +953,19 @@ public class DbUtils {
 			this.mDomains = domains;
 		}
 		/**
-		 * Accessor. Get UNIQUE flag.
-		 * 
-		 * @return
+		 * @return UNIQUE flag.
 		 */
 		public boolean getUnique() {
 			return mIsUnique;
 		}
+
 		/**
-		 * Accessor. Get list of domains in index.
-		 *
-		 * @return
+		 * @return list of domains in index.
 		 */
 		public DomainDefinition[] getDomains() {
 			return mDomains;
 		}
+
 		/**
 		 * Drop the index, if it exists.
 		 * 
@@ -1007,7 +999,7 @@ public class DbUtils {
 				sql.append(" Unique");
 			sql.append(" Index ");
 			sql.append(mName);
-			sql.append(" on " + mTable.getName() + "(\n");
+			sql.append(" on ").append(mTable.getName()).append("(\n");
 			boolean first = true;
 			for(DomainDefinition d : mDomains) {
 				if (first) {
@@ -1026,9 +1018,8 @@ public class DbUtils {
 	/**
 	 * Given arrays of table and index definitions, create the database.
 	 * 
-	 * @param db		Blank database
-	 * @param tables	Table list
-	 * @param indexes	Index list
+	 * @param db				Blank database
+	 * @param tables			Table list
 	 */
 	public static void createTables(SynchronizedDb db, TableDefinition[] tables, boolean withConstraints) {
 		for (TableDefinition t : tables) {

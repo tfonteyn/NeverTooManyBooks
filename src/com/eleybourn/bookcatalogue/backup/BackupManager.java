@@ -96,10 +96,10 @@ public class BackupManager {
 
 		FragmentTask task = new FragmentTaskAbstract() {
 			private boolean mBackupOk = false;
-			private String mBackupDate = Utils.toSqlDateTime(new Date());
+			private final String mBackupDate = Utils.toSqlDateTime(new Date());
 
 			@Override
-			public void run(final SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) throws IOException {
+			public void run(final SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
 				BackupWriter wrt = null;
 
 				try {
@@ -199,10 +199,9 @@ public class BackupManager {
 		FragmentTask task = new FragmentTaskAbstract() {
 			@Override
 			public void run(final SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
-				File file = inputFile; //new File(StorageUtils.getSharedStoragePath() + "/bookCatalogue.bcbk");
 				try {
-					System.out.println("Starting " + file.getAbsolutePath());
-					BackupReader rdr = BackupManager.readBackup(file);
+					System.out.println("Starting " + inputFile.getAbsolutePath());
+					BackupReader rdr = BackupManager.readBackup(inputFile);
 					rdr.restore(new BackupReaderListener() {
 						@Override
 						public void setMax(int max) {
@@ -222,7 +221,7 @@ public class BackupManager {
 					Logger.logError(e);
 					throw new RuntimeException("Error during restore", e);
 				}
-				System.out.println("Finished " + file.getAbsolutePath() + ", size = " + file.length());
+				System.out.println("Finished " + inputFile.getAbsolutePath() + ", size = " + inputFile.length());
 			}
 		};
 		SimpleTaskQueueProgressFragment frag = SimpleTaskQueueProgressFragment.runTaskWithProgress(context,

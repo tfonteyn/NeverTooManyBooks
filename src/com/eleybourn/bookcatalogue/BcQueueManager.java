@@ -40,7 +40,7 @@ import android.widget.AdapterView;
 public class BcQueueManager extends QueueManager {
 
 	public BcQueueManager() {
-		super(BookCatalogueApp.context);
+		super(BookCatalogueApp.getAppContext());
 		initializeQueue(QUEUE_MAIN);
 		initializeQueue(QUEUE_SMALL_JOBS);
 	}
@@ -100,7 +100,7 @@ public class BcQueueManager extends QueueManager {
 	public class BcLegacyEvent extends LegacyEvent {
 		private static final long serialVersionUID = 1992740024689009867L;
 
-		public BcLegacyEvent(byte[] original) {
+		BcLegacyEvent(byte[] original) {
 			super(original, "Legacy Event");
 		}
 
@@ -129,7 +129,7 @@ public class BcQueueManager extends QueueManager {
 	public class BcLegacyTask extends LegacyTask {
 		private static final long serialVersionUID = 164669981603757736L;
 
-		public BcLegacyTask(byte[] original, String description) {
+		BcLegacyTask(byte[] original, String description) {
 			super(original, description);
 		}
 
@@ -163,11 +163,11 @@ public class BcQueueManager extends QueueManager {
 	 */
 	@Override
 	public LegacyTask newLegacyTask(byte[] original) {
-		return new BcLegacyTask(original, BookCatalogueApp.context.getResources().getString(R.string.legacy_task));
+		return new BcLegacyTask(original, BookCatalogueApp.getAppContext().getResources().getString(R.string.legacy_task));
 	}
 
 	@Override
 	public Context getApplicationContext() {
-		return BookCatalogueApp.context;
+		return BookCatalogueApp.getAppContext();
 	}
 }

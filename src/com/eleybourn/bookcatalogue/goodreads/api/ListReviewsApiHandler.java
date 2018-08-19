@@ -59,7 +59,6 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 
 import android.os.Bundle;
@@ -141,20 +140,13 @@ public class ListReviewsApiHandler extends ApiHandler {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param page
+	 * @param perPage
 	 * @return
-	 * @throws ClientProtocolException
-	 * @throws OAuthMessageSignerException
-	 * @throws OAuthExpectationFailedException
-	 * @throws OAuthCommunicationException
-	 * @throws NotAuthorizedException
-	 * @throws BookNotFoundException
-	 * @throws IOException
-	 * @throws NetworkException 
 	 */
-	public Bundle run(int page, int perPage) 
-			throws ClientProtocolException, OAuthMessageSignerException, OAuthExpectationFailedException, 
+	public Bundle run(int page, int perPage)
+			throws OAuthMessageSignerException, OAuthExpectationFailedException,
 					OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException 
 	{
 		long t0 = System.currentTimeMillis();
@@ -340,7 +332,7 @@ public class ListReviewsApiHandler extends ApiHandler {
 	/**
 	 * Setup filters to process the XML parts we care about.
 	 */
-	protected void buildFilters() {
+	private void buildFilters() {
 		/*
 		 * Process the stuff we care about
 		 */
@@ -445,7 +437,7 @@ public class ListReviewsApiHandler extends ApiHandler {
 		.done();
 	}
 
-	void date2Sql(Bundle b, String key) {
+	private void date2Sql(Bundle b, String key) {
         if (b.containsKey(key)) {
         	String date = b.getString(key);
         	try {
@@ -462,7 +454,7 @@ public class ListReviewsApiHandler extends ApiHandler {
 	 * keep it if it is a valid date, and we store it in SQL format using 
 	 * UTC TZ so comparisons work.
 	 */
-	XmlListener mUpdatedListener = new XmlListener() {
+    private final XmlListener mUpdatedListener = new XmlListener() {
 		@Override
 		public void onStart(BuilderContext bc, ElementContext c) {
 		}
@@ -478,7 +470,7 @@ public class ListReviewsApiHandler extends ApiHandler {
 	 * keep it if it is a valid date, and we store it in SQL format using 
 	 * UTC TZ so comparisons work.
 	 */
-	XmlListener mAddedListener = new XmlListener() {
+    private final XmlListener mAddedListener = new XmlListener() {
 		@Override
 		public void onStart(BuilderContext bc, ElementContext c) {
 		}

@@ -41,21 +41,20 @@ public class GetImageTask implements SimpleTask {
 	 */
 	private byte[] mBytes = null;
 	/** Related work */
-	private GoodreadsWork mWork;
+	private final GoodreadsWork mWork;
 
 	/**
 	 * Constructor. Save the stuff we need.
 	 * 
 	 * @param url		URL to retrieve.
 	 */
-	public GetImageTask(String url, GoodreadsWork work) {
+	GetImageTask(String url, GoodreadsWork work) {
 		mUrl = url;
 		mWork = work;
 	}
 
 	/**
-	 * Return the resulting image byte[]
-	 * @return
+	 * @return the resulting image byte[]
 	 */
 	public byte[] getBytes() {
 		return mBytes;

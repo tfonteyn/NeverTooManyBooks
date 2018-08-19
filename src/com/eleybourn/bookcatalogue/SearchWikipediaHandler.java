@@ -32,11 +32,11 @@ public class SearchWikipediaHandler extends DefaultHandler {
 	//private StringBuilder builder;
 	public String id = "";
 	public int count = 0;
-	public String[] link = {"", ""};
+	public final String[] link = {"", ""};
 	private boolean entry = false;
 	
-	public static String UL = "ul";
-	public static String LINK = "A";
+	public static final String UL = "ul";
+	public static final String LINK = "A";
 	
 	public String[] getLinks(){
 		return link;
@@ -50,7 +50,7 @@ public class SearchWikipediaHandler extends DefaultHandler {
 	public void endElement(String uri, String localName, String name) throws SAXException {
 		super.endElement(uri, localName, name);
 		// don't do anything if we are in the table of contents
-		if (localName.equalsIgnoreCase(UL) && entry == true){
+		if (localName.equalsIgnoreCase(UL) && entry){
 			entry = false;
 		}
 	}
@@ -64,10 +64,10 @@ public class SearchWikipediaHandler extends DefaultHandler {
 				entry = true;
 			}
 		}
-		if (entry == true) {
+		if (entry) {
 			if (localName.equalsIgnoreCase(LINK)){
 				String href = attributes.getValue("href");
-				if (href.contains("/wiki") == false) {
+				if (!href.contains("/wiki")) {
 					//only use /wiki/... urls
 					return;
 				}

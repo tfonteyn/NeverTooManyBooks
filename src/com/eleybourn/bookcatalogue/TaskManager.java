@@ -84,8 +84,9 @@ public class TaskManager {
 			listener.onTaskEnded(mManager, mTask);
 			return false;
 		}
-	};
-	public static class OnProgressMessage implements Message<TaskManagerListener> {
+	}
+
+    public static class OnProgressMessage implements Message<TaskManagerListener> {
 		private int mCount;
 		private int mMax;
 		private String mMessage;
@@ -101,7 +102,8 @@ public class TaskManager {
 			listener.onProgress(mCount, mMax, mMessage);
 			return false;
 		}
-	};
+	}
+
 	public static class OnToastMessage implements Message<TaskManagerListener> {
 		private String mMessage;
 		
@@ -114,7 +116,8 @@ public class TaskManager {
 			listener.onToast(mMessage);
 			return false;
 		}
-	};
+	}
+
 	public static class OnFinshedMessage implements Message<TaskManagerListener> {
 
 		@Override
@@ -122,7 +125,7 @@ public class TaskManager {
 			listener.onFinished();
 			return false;
 		}
-	};
+	}
 
 	/* ====================================================================================================
 	 *  OnTaskManagerListener handling
@@ -133,9 +136,9 @@ public class TaskManager {
 	 *
 	 *  This object handles all underlying OnTaskEndedListener messages for every instance of this class.
 	 */
-	private static final MessageSwitch<TaskManagerListener, TaskManagerController> mMessageSwitch = new MessageSwitch<TaskManagerListener, TaskManagerController>();
+	private static final MessageSwitch<TaskManagerListener, TaskManagerController> mMessageSwitch = new MessageSwitch<>();
 
-	public static final MessageSwitch<TaskManagerListener, TaskManagerController> getMessageSwitch() {
+	public static MessageSwitch<TaskManagerListener, TaskManagerController> getMessageSwitch() {
 		return mMessageSwitch;
 	}
 
@@ -154,7 +157,7 @@ public class TaskManager {
 
 	
 	
-	// Current progress message to display, even if no tasks running. Setting to blank 
+	// Current progress message to display, even if no tasks running. Setting to blank
 	// will remove the ProgressDialog
 	String mBaseMessage = "";
 	// Last task-related message displayed (used when rebuilding progress)
@@ -171,7 +174,7 @@ public class TaskManager {
 	private boolean mIsClosing = false;
 
 	// List of tasks being managed by this object
-	ArrayList<TaskInfo> mTasks = new ArrayList<TaskInfo> ();
+	ArrayList<TaskInfo> mTasks = new ArrayList<> ();
 
 	// Task info for each ManagedTask object
 	private class TaskInfo {
@@ -235,7 +238,7 @@ public class TaskManager {
 
 	/**
 	 * Called when the onTaskFinished message is received by the listener object.
-	 * 
+	 *
 	 * @param task
 	 */
 	private void onTaskFinished(ManagedTask task) {
@@ -273,7 +276,7 @@ public class TaskManager {
 		return mTasks.size();
 	}
 
-	/**
+	/*
 	 * Return the associated activity object.
 	 * 
 	 * @return	The context
@@ -300,7 +303,7 @@ public class TaskManager {
 	 * Update the base progress message. Used (generally) by the ActivityWuthTasks to 
 	 * display some text above the task info. Set to blank to ensure ProgressDialog will
 	 * be removed.
-	 * 
+	 *
 	 * @param message
 	 */
 	public void doProgress(String message) {
@@ -339,24 +342,24 @@ public class TaskManager {
 			synchronized(mTasks) {
 				// Append each task message
 				if (mTasks.size() > 0) {
-					if (mProgressMessage.length() > 0)
+					if (!mProgressMessage.isEmpty())
 						mProgressMessage += "\n";
 					if (mTasks.size() == 1) {
 						String oneMsg = mTasks.get(0).progressMessage;
-						if (oneMsg != null && oneMsg.trim().length() > 0)
-							mProgressMessage += oneMsg;						
+						if (oneMsg != null && !oneMsg.trim().isEmpty())
+							mProgressMessage += oneMsg;
 					} else {
-						String taskMsgs = "";
+						StringBuilder taskMsgs = new StringBuilder();
 						boolean got = false;
 						// Don't append blank messages; allows tasks to hide.
 						for(int i = 0; i < mTasks.size(); i++) {
 							String oneMsg = mTasks.get(i).progressMessage;
-							if (oneMsg != null && oneMsg.trim().length() > 0) {
+							if (oneMsg != null && !oneMsg.trim().isEmpty()) {
 								if (got)
-									taskMsgs += "\n";
+									taskMsgs.append("\n");
 								else
 									got = true;
-								taskMsgs += " - " + oneMsg;									
+								taskMsgs.append(" - ").append(oneMsg);
 							}
 						}
 						if (taskMsgs.length() > 0)
@@ -412,7 +415,7 @@ public class TaskManager {
 
 	/**
 	 * Set the maximum value for progress for the passed task.
-	 * 
+	 *
 	 * @param task
 	 * @param max
 	 */
@@ -427,9 +430,9 @@ public class TaskManager {
 
 	/**
 	 * Set the count value for progress for the passed task.
-	 * 
+	 *
 	 * @param task
-	 * @param max
+	 * @param count
 	 */
 	public void setCount(ManagedTask task, int count) {
 		TaskInfo t = getTaskInfo(task);

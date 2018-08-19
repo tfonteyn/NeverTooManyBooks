@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import java.io.File;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -59,7 +60,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 			setTitle(R.string.library_thing);
 			setContentView(R.layout.administration_librarything);
 			setupAdmin();
-			Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+			Utils.initBackground(this);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -71,7 +72,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);		
+		Utils.initBackground(this);
 	}
 
 	public void setupAdmin() {
@@ -98,7 +99,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 		});
 
 		EditText devkeyView = (EditText) findViewById(R.id.devkey);
-		SharedPreferences prefs = getSharedPreferences("bookCatalogue", android.content.Context.MODE_PRIVATE);
+		SharedPreferences prefs = getSharedPreferences("bookCatalogue", Context.MODE_PRIVATE);
 		devkeyView.setText(prefs.getString(LibraryThingManager.LT_DEVKEY_PREF_NAME, ""));
 		
 		/* Save Button */
@@ -108,12 +109,12 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 			public void onClick(View v) {
 				EditText devkeyView = (EditText) findViewById(R.id.devkey);
 				String devkey = devkeyView.getText().toString();
-				SharedPreferences prefs = getSharedPreferences("bookCatalogue", android.content.Context.MODE_PRIVATE);
+				SharedPreferences prefs = getSharedPreferences("bookCatalogue", Context.MODE_PRIVATE);
 				SharedPreferences.Editor ed = prefs.edit();
 				ed.putString(LibraryThingManager.LT_DEVKEY_PREF_NAME, devkey);
-				ed.commit();
+				ed.apply();
 				
-				if (devkey.length() > 0) {
+				if (!devkey.isEmpty()) {
 					FragmentTask task = new FragmentTask() {
 						/**
 						 * Validate the key by getting a known cover
@@ -162,7 +163,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 					if (key.toLowerCase().startsWith(LibraryThingManager.LT_HIDE_ALERT_PREF_NAME.toLowerCase())) 
 						ed.remove(key);
 				}
-				ed.commit();
+				ed.apply();
 				return;
 			}
 		});

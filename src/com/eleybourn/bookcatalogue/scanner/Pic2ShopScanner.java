@@ -23,13 +23,8 @@ public class Pic2ShopScanner implements Scanner {
 	 * @return true if present
 	 */
 	public static boolean isIntentAvailable() {
-		if (com.eleybourn.bookcatalogue.scanner.pic2shop.Utils.isFreeScannerAppInstalled(BookCatalogueApp.context)) {
-			return true;
-		} else if (com.eleybourn.bookcatalogue.scanner.pic2shop.Utils.isProScannerAppInstalled(BookCatalogueApp.context)) {
-			return true;
-		} else {
-			return false;
-		}
+		return com.eleybourn.bookcatalogue.scanner.pic2shop.Utils.isFreeScannerAppInstalled(BookCatalogueApp.getAppContext())
+				|| com.eleybourn.bookcatalogue.scanner.pic2shop.Utils.isProScannerAppInstalled(BookCatalogueApp.getAppContext());
 	}
 
 	private Handler mHandler = new Handler();
@@ -41,7 +36,7 @@ public class Pic2ShopScanner implements Scanner {
 	 */
 	@Override
 	public void startActivityForResult(final Activity a, final int requestCode) {
-		Intent i = null;
+		Intent i;
 		if (com.eleybourn.bookcatalogue.scanner.pic2shop.Utils.isFreeScannerAppInstalled(a)) {
 			i = new Intent(Scan.ACTION);
 			//i.putExtra(Scan.Pro.FORMATS, BARCODE_FORMAT);		

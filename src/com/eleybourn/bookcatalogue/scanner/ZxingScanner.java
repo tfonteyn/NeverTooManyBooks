@@ -26,7 +26,7 @@ public class ZxingScanner implements Scanner {
 	 * 
 	 * @param mustBeZxingPackage	Set to true if the Zxing scanner app MUST be used
 	 */
-	public ZxingScanner(boolean mustBeZxingPackage) {
+	ZxingScanner(boolean mustBeZxingPackage) {
 		mMustBeZxing = mustBeZxingPackage;
 	}
 	
@@ -35,7 +35,7 @@ public class ZxingScanner implements Scanner {
 	 * @return true if present
 	 */
 	public static boolean isIntentAvailable(boolean mustBeZxing) {
-		return isIntentAvailable(BookCatalogueApp.context, ACTION, mustBeZxing ? PACKAGE : null);
+		return isIntentAvailable(BookCatalogueApp.getAppContext(), ACTION, mustBeZxing ? PACKAGE : null);
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class ZxingScanner implements Scanner {
 	 */
 	private static boolean isIntentAvailable(Context ctx, String action, String packageName) {
 		Intent test = new Intent(ACTION);
-		if (packageName != null && !packageName.equals("")) {
+		if (packageName != null && !packageName.isEmpty()) {
 			test.setPackage(packageName);
 		}
 		return ctx.getPackageManager().resolveActivity(test, 0) != null;

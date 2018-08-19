@@ -27,7 +27,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.io.StreamCorruptedException;
 
 /**
  * Collection of methods to wrap common serialization routines.
@@ -70,7 +69,7 @@ public class SerializationUtils {
 	 */
 	public static class DeserializationException extends Exception {
 		private static final long serialVersionUID = -2040548134317746620L;
-		public Exception inner;
+		final Exception inner;
 		DeserializationException(Exception e) {
 			super();
 			inner = e;
@@ -79,10 +78,6 @@ public class SerializationUtils {
 
 	/**
 	 * Deserialize the passed byte array
-	 * 
-	 * @param blob
-	 * @return
-	 * @throws DeserializationException
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T deserializeObject(byte[] blob) throws DeserializationException {
@@ -90,23 +85,13 @@ public class SerializationUtils {
 			ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(blob));
 			Object o = in.readObject();
 		    return (T)o;
-		} catch (ClassCastException e) {
-			throw new DeserializationException(e);
-		} catch (StreamCorruptedException e) {
-			throw new DeserializationException(e);
-		} catch (IOException e) {
-			throw new DeserializationException(e);
-		} catch (ClassNotFoundException e) {
+		} catch (ClassCastException | ClassNotFoundException | IOException e) {
 			throw new DeserializationException(e);
 		}
 	}
 
 	/**
 	 * Serialize then de-serialize to create a deep clone.
-	 * 
-	 * @param o
-	 * @return
-	 * @throws DeserializationException
 	 */
 	public static <T extends Serializable> T cloneObject(T o) throws DeserializationException {
 		return deserializeObject(serializeObject(o));

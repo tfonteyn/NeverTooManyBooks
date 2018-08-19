@@ -99,7 +99,6 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 
 		} catch (Exception e) {
 			Logger.logError(e);
-		} finally {
 		}
 
 		// Populate bookshelves and hide the field if bookshelves are not set.
@@ -137,7 +136,7 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 	protected void populateSeriesListField() {
 		ArrayList<Series> series = mEditManager.getBookData().getSeriesList();
 
-		int size = 0;
+		int size;
 		try {
 			size = series.size();
 		} catch (NullPointerException e) {
@@ -160,7 +159,7 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 			if (seriesCount > 0) {
 				StringBuilder builder = new StringBuilder();
 				for (int i = 0; i < seriesCount; i++) {
-					builder.append("    " + series.get(i).getDisplayName());
+					builder.append("    ").append(series.get(i).getDisplayName());
 					if (i != seriesCount - 1) {
 						builder.append("<br/>");
 					}
@@ -175,7 +174,7 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 
 	/**
 	 * Add other fields of book to details fields. We need this method to automatically
-	 * populate some fields during populating. See {@link #populateFieldsFromDb(Long)}.
+	 * populate some fields during populating.
 	 * Note that it should be performed before populating.
 	 */
 	private void addFields() {
@@ -198,14 +197,14 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 	private void formatFormatSection(BookData book){
 		Field field = mFields.getField(R.id.pages);
 		String value = book.getString(CatalogueDBAdapter.KEY_PAGES);
-		boolean isExist = value != null && !value.equals("");
+		boolean isExist = value != null && !value.isEmpty();
 		if (isExist) { //If 'pages' field is set format it
 			field.setValue(getString(R.string.book_details_readonly_pages, value));
 		}
 		// Format 'format' field
 		field = mFields.getField(R.id.format);
 		value = book.getString(CatalogueDBAdapter.KEY_FORMAT);
-		if(isExist && value != null && !value.equals("")){
+		if(isExist && value != null && !value.isEmpty()){
 			/* Surround 'format' field with braces if 'pages' field is set 
 			 * and 'format' field is not empty */
 			field.setValue(getString(R.string.brackets, value));
@@ -218,9 +217,9 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 	 */
 	private void formatPublishingSection(BookData book){
 		String date = book.getString(CatalogueDBAdapter.KEY_DATE_PUBLISHED);
-		boolean hasDate = date != null && !date.equals("");
+		boolean hasDate = date != null && !date.isEmpty();
 		String pub = book.getString(CatalogueDBAdapter.KEY_PUBLISHER);
-		boolean hasPub = pub != null && !pub.equals("");
+		boolean hasPub = pub != null && !pub.isEmpty();
 		String value;
 
 		if (hasDate) {

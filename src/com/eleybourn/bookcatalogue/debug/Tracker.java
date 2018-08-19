@@ -21,7 +21,7 @@ package com.eleybourn.bookcatalogue.debug;
 
 import java.util.Date;
 
-import org.acra.ErrorReporter;
+import org.acra.ACRA;
 
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -33,10 +33,10 @@ public class Tracker {
 		Running
 	}
 	private static class Event {
-		public String activityClass;
-		public String action;
-		public States state;
-		public Date date;
+		final String activityClass;
+		public final String action;
+		public final States state;
+		public final Date date;
 		public Event(Object a, String action, States state) {
 			activityClass = a.getClass().getSimpleName();
 			this.action = action;
@@ -50,7 +50,7 @@ public class Tracker {
 	}
 	
 	private final static int K_MAX_EVENTS = 100;
-	private static Event[] mEventBuffer = new Event[K_MAX_EVENTS];
+	private static final Event[] mEventBuffer = new Event[K_MAX_EVENTS];
 	private static int mNextEventBufferPos = 0;
 
 	public static void enterOnActivityCreated(Object a) {
@@ -113,7 +113,7 @@ public class Tracker {
 	public static void handleEvent(Object o, String name, States type) {
 		Event e = new Event(o, name, type);
 		mEventBuffer[mNextEventBufferPos] = e;
-		ErrorReporter.getInstance().putCustomData("History-" + mNextEventBufferPos, e.getInfo());
+		ACRA.getErrorReporter().putCustomData("History-" + mNextEventBufferPos, e.getInfo());
 		mNextEventBufferPos = (mNextEventBufferPos + 1) % K_MAX_EVENTS;
 	}
 	

@@ -28,13 +28,13 @@ public class BackupFileDetails implements FileDetails {
 	// must also be modified.
 	
 	/** File for this item */
-	private File mFile;
+	private final File mFile;
 	/** The BackupInfo we use when displaying the object */
 	private BackupInfo mInfo;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param file
 	 */
 	public BackupFileDetails(File file) {
@@ -43,7 +43,7 @@ public class BackupFileDetails implements FileDetails {
 
 	/**
 	 * Accessor
-	 * 
+	 *
 	 * @param info
 	 */
 	public void setInfo(BackupInfo info) {
@@ -89,7 +89,7 @@ public class BackupFileDetails implements FileDetails {
 			date.setVisibility(View.VISIBLE);
 			if (mInfo != null) {
 				details.setVisibility(View.VISIBLE);
-				Resources res = BookCatalogueApp.context.getResources();
+				Resources res = BookCatalogueApp.getAppContext().getResources();
 				String books = res.getQuantityString(R.plurals.n_books, mInfo.getBookCount(), mInfo.getBookCount());
 				String s;
 				if (mInfo.hasCoverCount()) {
@@ -108,7 +108,7 @@ public class BackupFileDetails implements FileDetails {
 	}
 
 	/**
-	 * PARCELLABLE INTERFACE.
+	 * PARCELABLE INTERFACE.
 	 * 
 	 * Default to 0. Not really used.
 	 */
@@ -118,7 +118,7 @@ public class BackupFileDetails implements FileDetails {
 	}
 
 	/**
-	 * PARCELLABLE INTERFACE.
+	 * PARCELABLE INTERFACE.
 	 * 
 	 * Save all fields that must be persisted.
 	 */
@@ -134,7 +134,7 @@ public class BackupFileDetails implements FileDetails {
 	}
 
 	/**
-	 * PARCELLABLE INTERFACE.
+	 * PARCELABLE INTERFACE.
 	 * 
 	 * Constructor, using a Parcel as source.
 	 */
@@ -149,7 +149,7 @@ public class BackupFileDetails implements FileDetails {
 	}
 
 	/**
-	 * PARCELLABLE INTERFACE.
+	 * PARCELABLE INTERFACE.
 	 * 
 	 * Need a CREATOR
 	 */

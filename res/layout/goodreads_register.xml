@@ -3,13 +3,14 @@
     android:id="@+id/root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/bc_background_gradient_dim" >
-
+>
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingLeft="5sp" >
+        android:paddingStart="@dimen/padding_border"
+        android:paddingEnd="@dimen/padding_border"
+        >
 
         <!-- BLURB 1 -->
 
@@ -24,13 +25,9 @@
 
         <TextView
             android:id="@+id/goodreads_url"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
             android:gravity="center"
-            android:paddingBottom="10dp"
             android:text="@string/goodreads_url"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/link_blue" />
+            style="@style/link_url" />
 
         <!-- BLURB 2 -->
 

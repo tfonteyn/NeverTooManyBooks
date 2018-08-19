@@ -55,10 +55,10 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  * @author Philip Warner
  */
 public class StartupActivity extends Activity {
-	private static String TAG = "StartupActivity";
+	private static final String TAG = "StartupActivity";
 	/** Flag to indicate FTS rebuild is required at startup */
-	private static String PREF_FTS_REBUILD_REQUIRED = TAG + ".FtsRebuildRequired";
-	private static String PREF_AUTHOR_SERIES_FIXUP_REQUIRED = TAG + ".FAuthorSeriesFixupRequired";
+	private static final String PREF_FTS_REBUILD_REQUIRED = TAG + ".FtsRebuildRequired";
+	private static final String PREF_AUTHOR_SERIES_FIXUP_REQUIRED = TAG + ".FAuthorSeriesFixupRequired";
 	
 	private static final String STATE_OPENED = "state_opened";
 	/** Number of times the app has been started */
@@ -90,7 +90,7 @@ public class StartupActivity extends Activity {
 	/** Flag indicating Amazon hint could be shown */
 	private static boolean mShowAmazonHint = false;
 
-	/** Database connection */
+	// Database connection
 	//CatalogueDBAdapter mDb = null;
 
 	/** Handler to post runnables to UI thread */
@@ -131,7 +131,7 @@ public class StartupActivity extends Activity {
 
 		// If it's a real application startup...cleanup old stuff
 		if (mWasReallyStartup) {
-			mStartupActivity = new WeakReference<StartupActivity>(this);
+			mStartupActivity = new WeakReference<>(this);
 
 			updateProgress("Starting");
 
@@ -169,15 +169,16 @@ public class StartupActivity extends Activity {
 
 	/**
 	 * Update the progress dialog, if it has not been dismissed.
-	 * 
-	 * @param message
+	 *
+	 * @param stringId
 	 */
 	public void updateProgress(final int stringId) {
 		updateProgress(getString(stringId));
 	}
+
 	/**
 	 * Update the progress dialog, if it has not been dismissed.
-	 * 
+	 *
 	 * @param message
 	 */
 	public void updateProgress(final String message) {
@@ -226,7 +227,7 @@ public class StartupActivity extends Activity {
 
 	/**
 	 * Get (or create) the task queue.
-	 * 
+	 *
 	 * @return
 	 */
 	private SimpleTaskQueue getQueue() {
@@ -255,7 +256,7 @@ public class StartupActivity extends Activity {
 		}
 
 		// Display upgrade message if necessary, otherwise go on to stage 3
-		if (mUpgradeMessageShown || UpgradeMessageManager.getUpgradeMessage().equals("")) {
+		if (mUpgradeMessageShown || UpgradeMessageManager.getUpgradeMessage().isEmpty()) {
 			stage3Startup();
 		} else {
 			upgradePopup(UpgradeMessageManager.getUpgradeMessage());
@@ -311,12 +312,12 @@ public class StartupActivity extends Activity {
 			AlertDialog alertDialog = new AlertDialog.Builder(this).setMessage(R.string.backup_request).create();
 			alertDialog.setTitle(R.string.backup_title);
 			alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
-			alertDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
+			alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					dialog.dismiss();
 				}
 			}); 
-			alertDialog.setButton2("OK", new DialogInterface.OnClickListener() {
+			alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,  "OK", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					mExportRequired = true;
 					dialog.dismiss();
@@ -368,7 +369,7 @@ public class StartupActivity extends Activity {
 		AlertDialog alertDialog = new AlertDialog.Builder(this).setMessage(Html.fromHtml(message)).create();
 		alertDialog.setTitle(R.string.upgrade_title);
 		alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
-		alertDialog.setButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+		alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.ok), new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				UpgradeMessageManager.setMessageAcknowledged();
 				stage3Startup();

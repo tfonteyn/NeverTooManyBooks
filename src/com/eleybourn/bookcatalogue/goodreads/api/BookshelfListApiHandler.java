@@ -26,7 +26,6 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 
 import android.os.Bundle;
@@ -81,20 +80,12 @@ public class BookshelfListApiHandler extends ApiHandler {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param page
 	 * @return
-	 * @throws ClientProtocolException
-	 * @throws OAuthMessageSignerException
-	 * @throws OAuthExpectationFailedException
-	 * @throws OAuthCommunicationException
-	 * @throws NotAuthorizedException
-	 * @throws BookNotFoundException
-	 * @throws IOException
-	 * @throws NetworkException 
 	 */
-	public Bundle run(int page) 
-			throws ClientProtocolException, OAuthMessageSignerException, OAuthExpectationFailedException, 
+	public Bundle run(int page)
+			throws OAuthMessageSignerException, OAuthExpectationFailedException,
 					OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException 
 	{
 		long t0 = System.currentTimeMillis();
@@ -218,7 +209,7 @@ public class BookshelfListApiHandler extends ApiHandler {
 	/**
 	 * Setup filters to process the XML parts we care about.
 	 */
-	protected void buildFilters() {
+	private void buildFilters() {
 		/*
 		 * Process the stuff we care about
 		 */

@@ -57,16 +57,15 @@ public class CropCropImage extends CropMonitoredActivity {
 	// private static final String TAG = "CropImage";
 
 	// These are various options can be specified in the intent.
-	private Bitmap.CompressFormat mOutputFormat = Bitmap.CompressFormat.JPEG; // only
-																				// used
-																				// with
-																				// mSaveUri
+	private final Bitmap.CompressFormat mOutputFormat =
+			Bitmap.CompressFormat.JPEG; // only used with mSaveUri
+
 	private Uri mSaveUri = null;
 	private int mAspectX, mAspectY;
 	private boolean mCircleCrop = false;
 	private final Handler mHandler = new Handler();
 
-	// These options specifiy the output image size and whether we should
+	// These options specify the output image size and whether we should
 	// scale the output to fit it (or just crop it).
 	private int mOutputX, mOutputY;
 	private boolean mScale;
@@ -165,11 +164,11 @@ public class CropCropImage extends CropMonitoredActivity {
 
 	private Bitmap getBitmap(String path) {
 		Uri uri = getImageUri(path);
-		InputStream in = null;
+		InputStream in;
 		try {
 			in = mContentResolver.openInputStream(uri);
 			return BitmapFactory.decodeStream(in);
-		} catch (FileNotFoundException e) {
+		} catch (FileNotFoundException ignored) {
 		}
 		return null;
 	}
@@ -185,9 +184,9 @@ public class CropCropImage extends CropMonitoredActivity {
 				new Runnable() {
 					public void run() {
 						final CountDownLatch latch = new CountDownLatch(1);
-						final Bitmap b = (mImage != null) ? mImage
-								.fullSizeBitmap(CropIImage.UNCONSTRAINED,
-										1024 * 1024) : mBitmap;
+						final Bitmap b = (mImage != null) ?
+								mImage.fullSizeBitmap(CropIImage.UNCONSTRAINED, 1024 * 1024)
+								: mBitmap;
 						mHandler.post(new Runnable() {
 							public void run() {
 								if (b != mBitmap && b != null) {
@@ -339,8 +338,8 @@ public class CropCropImage extends CropMonitoredActivity {
 			Bundle extras = new Bundle();
 			setResult(RESULT_OK,
 					new Intent(mSaveUri.toString()).putExtras(extras));
-		} else {
-			/*
+		}
+		/* else {
 			 * Bundle extras = new Bundle(); extras.putString("rect",
 			 * mCrop.getCropRect().toString());
 			 * 
@@ -371,8 +370,9 @@ public class CropCropImage extends CropMonitoredActivity {
 			 * (Exception ex) { // basically ignore this or put up // some ui
 			 * saying we failed Log.e(TAG, "store image fail, continue anyway",
 			 * ex); }
-			 */
+
 		}
+		*/
 		croppedImage.recycle();
 		finish();
 	}
@@ -392,10 +392,10 @@ public class CropCropImage extends CropMonitoredActivity {
 			mBitmap.recycle();
 	}
 
-	Runnable mRunFaceDetection = new Runnable() {
+	final Runnable mRunFaceDetection = new Runnable() {
 		float mScale = 1F;
 		Matrix mImageMatrix;
-		FaceDetector.Face[] mFaces = new FaceDetector.Face[3];
+		final FaceDetector.Face[] mFaces = new FaceDetector.Face[3];
 		int mNumFaces;
 
 		// For each face, we create a HightlightView for it.
@@ -494,9 +494,8 @@ public class CropCropImage extends CropMonitoredActivity {
 			}
 			Matrix matrix = new Matrix();
 			matrix.setScale(mScale, mScale);
-			Bitmap faceBitmap = Bitmap.createBitmap(mBitmap, 0, 0,
+			return Bitmap.createBitmap(mBitmap, 0, 0,
 					mBitmap.getWidth(), mBitmap.getHeight(), matrix, true);
-			return faceBitmap;
 		}
 
 		public void run() {
@@ -551,8 +550,7 @@ public class CropCropImage extends CropMonitoredActivity {
 		String noStorageText = null;
 
 		if (remaining == NO_STORAGE_ERROR) {
-			String state = Environment.getExternalStorageState();
-			if (state == Environment.MEDIA_CHECKING) {
+			if (Environment.MEDIA_CHECKING.equals(Environment.getExternalStorageState())) {
 				noStorageText = "Preparing card";
 			} else {
 				noStorageText = "No storage card";
@@ -575,8 +573,7 @@ public class CropCropImage extends CropMonitoredActivity {
 			String storageDirectory = Environment.getExternalStorageDirectory()
 					.toString();
 			StatFs stat = new StatFs(storageDirectory);
-			float remaining = ((float) stat.getAvailableBlocks() * (float) stat
-					.getBlockSize()) / 400000F;
+			long remaining = (stat.getAvailableBlocksLong() * stat.getBlockSizeLong()) / 400000L;
 			return (int) remaining;
 			// }
 		} catch (Exception ex) {

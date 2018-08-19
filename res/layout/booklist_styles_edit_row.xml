@@ -10,7 +10,8 @@
          NOTE: The outer layout is used because this item appears in a TouchListView which uses the outer element padding, and
 				we want to set our own padding.
 				
-				With careful analysis, we could probably put padding on the right elements. But this is clearer and easier.
+				With careful analysis, we could probably put padding on the right elements. But this is clearer and easier.
+
     -->
 
     <RelativeLayout
@@ -28,33 +29,35 @@
             android:layout_width="45dp"
             android:layout_height="25dp"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_centerVertical="true"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp" />
+            android:paddingLeft="@dimen/padding_border_double"
+            android:paddingRight="@dimen/padding_border_double"
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/grabber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:layout_centerVertical="true"
-            android:background="#C0303030"
-            android:src="@drawable/grabber" />
+            android:src="@drawable/ic_grabber"
+            tools:ignore="ContentDescription" />
 
         <View
             android:id="@+id/top_divider"
             android:layout_width="fill_parent"
             android:layout_height="1dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            android:background="@drawable/main_menu_header_divider" />
+            style="@style/main_menu_header_divider"
+            />
 
         <RelativeLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
@@ -64,8 +67,8 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentTop="true"
             android:layout_below="@+id/top_divider"
-            android:layout_toLeftOf="@+id/grabber"
-            android:layout_toRightOf="@id/preferred"
+            android:layout_toStartOf="@+id/grabber"
+            android:layout_toEndOf="@id/preferred"
             android:orientation="vertical"
             android:padding="2dp" >
 
@@ -73,10 +76,10 @@
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:ellipsize="marquee"
-                android:gravity="left"
+                android:gravity="start"
                 android:singleLine="false"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -86,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/name"
                 android:ellipsize="marquee"
-                android:gravity="left"
+                android:gravity="start"
                 android:singleLine="false"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -96,8 +99,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/groups"
                 android:ellipsize="marquee"
-                android:gravity="left"
-                android:paddingRight="5sp"
+                android:gravity="start"
+                android:paddingStart="5sp"
+                android:paddingEnd="5sp"
                 android:singleLine="true"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </RelativeLayout>
@@ -106,10 +110,11 @@
             android:layout_width="fill_parent"
             android:layout_height="1dp"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
             android:layout_below="@id/row_details"
-            android:background="@drawable/main_menu_header_divider" />
+            style="@style/main_menu_header_divider"
+            />
     </RelativeLayout>
 
 </LinearLayout>

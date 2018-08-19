@@ -36,11 +36,11 @@ public class SqlStatementManager {
 	
 	public SqlStatementManager(SynchronizedDb db) {
 		mDb = db;
-		mStatements = new Hashtable<String, SynchronizedStatement>();
+		mStatements = new Hashtable<>();
 	}
 	public SqlStatementManager() {
 		mDb = null;
-		mStatements = new Hashtable<String, SynchronizedStatement>();
+		mStatements = new Hashtable<>();
 	}
 	
 	public SynchronizedStatement add(final SynchronizedDb db, final String name, final String sql) {
@@ -66,13 +66,13 @@ public class SqlStatementManager {
 
 	public SynchronizedStatement add(String name, String sql) {
 		if (mDb == null)
-			throw new RuntimeException("Databse not set when SqlStatementManager created");
+			throw new RuntimeException("Database not set when SqlStatementManager created");
 		return add(mDb, name, sql);
 	}
 	
 	public SynchronizedStatement addOrGet(String name, String sql) {
 		if (mDb == null)
-			throw new RuntimeException("Databse not set when SqlStatementManager created");
+			throw new RuntimeException("Database not set when SqlStatementManager created");
 		return addOrGet(mDb, name, sql);
 	}
 	
@@ -81,9 +81,8 @@ public class SqlStatementManager {
 			for(SynchronizedStatement s : mStatements.values()) {
 				try {
 					s.close();
-				} catch (Exception e)
-				{};
-			}
+				} catch (Exception ignored)	{}
+            }
 			mStatements.clear();
 		}
 	}

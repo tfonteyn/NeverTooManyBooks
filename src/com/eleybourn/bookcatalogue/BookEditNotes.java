@@ -52,7 +52,7 @@ public class BookEditNotes extends BookEditFragmentAbstract implements OnPartial
 	 * @return The list
 	 */
 	protected ArrayList<String> getLocations() {
-		ArrayList<String> location_list = new ArrayList<String>();
+		ArrayList<String> location_list = new ArrayList<>();
 		Cursor location_cur = mDbHelper.fetchAllLocations();
 		try {
 			while (location_cur.moveToNext()) {
@@ -73,9 +73,7 @@ public class BookEditNotes extends BookEditFragmentAbstract implements OnPartial
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final View root = inflater.inflate(R.layout.edit_book_notes, container, false);
-
-		return root;
+		return inflater.inflate(R.layout.edit_book_notes, container, false);
 	}
 
 	@Override
@@ -98,7 +96,7 @@ public class BookEditNotes extends BookEditFragmentAbstract implements OnPartial
 			mFields.add(R.id.read, CatalogueDBAdapter.KEY_READ, null);
 			mFields.add(R.id.notes, CatalogueDBAdapter.KEY_NOTES, null);
 
-			ArrayAdapter<String> location_adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, getLocations());
+			ArrayAdapter<String> location_adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, getLocations());
 			mFields.add(R.id.location, CatalogueDBAdapter.KEY_LOCATION, null);
 			mFields.setAdapter(R.id.location, location_adapter);
 
@@ -122,10 +120,10 @@ public class BookEditNotes extends BookEditFragmentAbstract implements OnPartial
 			mFields.addCrossValidator(new Fields.FieldCrossValidator() {
 				public void validate(Fields fields, Bundle values) {
 					String start = values.getString(CatalogueDBAdapter.KEY_READ_START);
-					if (start == null || start.equals(""))
+					if (start == null || start.isEmpty())
 						return;
 					String end = values.getString(CatalogueDBAdapter.KEY_READ_END);
-					if (end == null || end.equals(""))
+					if (end == null || end.isEmpty())
 						return;
 					if (start.compareToIgnoreCase(end) > 0)
 						throw new ValidatorException(R.string.vldt_read_start_after_end,new Object[]{});
@@ -163,7 +161,7 @@ public class BookEditNotes extends BookEditFragmentAbstract implements OnPartial
 		try {
 			String dateString;
 			Object o = mFields.getField(R.id.read_start).getValue();
-			if (o == null || o.toString().equals("")) {
+			if (o == null || o.toString().isEmpty()) {
 				dateString = Utils.toSqlDateTime(new Date());
 			} else {
 				dateString = o.toString();
@@ -185,7 +183,7 @@ public class BookEditNotes extends BookEditFragmentAbstract implements OnPartial
 		try {
 			String dateString;
 			Object o = mFields.getField(R.id.read_end).getValue();
-			if (o == null || o.toString().equals("")) {
+			if (o == null || o.toString().isEmpty()) {
 				dateString = Utils.toSqlDateTime(new Date());
 			} else {
 				dateString = o.toString();

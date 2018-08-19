@@ -4,7 +4,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/padding_border" >
+    android:paddingStart="@dimen/padding_border"
+    android:paddingEnd="@dimen/padding_border">
 
     <RelativeLayout
         android:id="@+id/path_details"
@@ -17,7 +18,7 @@
             android:id="@+id/up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:contentDescription="@string/up_folder"
             android:src="@drawable/ic_closed_folder_back"
@@ -27,7 +28,7 @@
             android:id="@+id/create"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
             android:contentDescription="@string/up_folder"
@@ -41,8 +42,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/create"
-            android:layout_toRightOf="@+id/up"
+            android:layout_toStartOf="@+id/create"
+            android:layout_toEndOf="@+id/up"
             android:layout_alignWithParentIfMissing="true"
             android:gravity="center_vertical"
             android:text="/foo/bar/gum"
@@ -56,7 +57,8 @@
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:layout_below="@+id/path_details"
-        android:background="@drawable/main_menu_header_divider" />
+        style="@style/main_menu_header_divider"
+        />
 
     <EditText
         android:id="@+id/file_name"
@@ -65,16 +67,18 @@
         android:layout_alignParentBottom="true"
         android:text="fred.bcbk"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:ignore="HardcodedText"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp" />
+        tools:ignore="HardcodedText,LabelFor"
+        android:paddingTop="@dimen/padding_border_double"
+        android:paddingBottom="@dimen/padding_border_double"
+        android:inputType="text"/>
 
     <View
         android:id="@+id/footer_divider"
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:layout_above="@+id/file_name"
-        android:background="@drawable/main_menu_header_divider" />
+        style="@style/main_menu_header_divider"
+        />
     
     <com.eleybourn.bookcatalogue.widgets.FastScrollListView
         android:id="@+id/android:list"
@@ -82,7 +86,8 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/footer_divider"
         android:layout_below="@+id/header_divider"
-        android:paddingLeft="8dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

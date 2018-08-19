@@ -4,33 +4,32 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.webkit.WebView;
 
 import com.amazon.device.associates.AssociatesAPI;
 import com.amazon.device.associates.LinkService;
-import com.amazon.device.associates.NotInitializedException;
 import com.amazon.device.associates.OpenSearchPageRequest;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.utils.Logger;
 
 /**
  * Wrappers for Amazon API
  * 
- * NOTE: The project must include a class, AmazonAppKey in this folder, which contains a
- * single static String, KEY, containing the app key granted by Amazon. For testing purposes
- * this KEY can be junk.
+ * NOTE: The project manifest must contain the app key granted by Amazon.
+ * For testing purposes this KEY can be junk.
  * 
  * @author pjw
  *
  */
 public class AmazonUtils {
 
-	public static final String AMAZON_LINK_EXTRAS = "&tag=bookcatalogue-20&linkCode=da5";
-	public static final String AMAZON_BOOKS_BASE = "http://www.amazon.com/gp/search?index=books";
+	private static final String AMAZON_LINK_EXTRAS = "&tag=bookcatalogue-20&linkCode=da5";
+	private static final String AMAZON_BOOKS_BASE = "http://www.amazon.com/gp/search?index=books";
+	private static final String AMAZON_KEY = "bookcatalogue.amazon.appkey";
 
-	public static void openLink(Activity context, String author, String series) throws Exception {
+	public static void openLink(Activity context, String author, String series) {
 		// Build the URL and args
 		String url = AMAZON_BOOKS_BASE;
 		
@@ -39,7 +38,7 @@ public class AmazonUtils {
 
 		String extra = AmazonUtils.buildSearchArgs(author, series);
 
-		if (extra != null && !extra.trim().equals("")) {
+		if (extra != null && !extra.trim().isEmpty()) {
 			url += extra;
 		}
 
@@ -50,7 +49,7 @@ public class AmazonUtils {
 		// Try to setup the API calls; if not possible, just open directly and return
 		try {
 			// Init Amazon API
-			AssociatesAPI.initialize(new AssociatesAPI.Config(AmazonAppKey.KEY, context));				
+			AssociatesAPI.initialize(new AssociatesAPI.Config(BookCatalogueApp.getManifestString(AMAZON_KEY), context));
 			linkService = AssociatesAPI.getLinkService();
 			try {
 				linkService.overrideLinkInvocation(wv, url);
@@ -70,7 +69,7 @@ public class AmazonUtils {
 		//String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
 		String extra = "";
 		// http://www.amazon.com/gp/search?index=books&field-author=steven+a.+mckay&field-keywords=the+forest+lord
-		if (author != null && !author.trim().equals("")) {
+		if (author != null && !author.trim().isEmpty()) {
 			author.replaceAll("\\.,+"," ");
 			author.replaceAll(" *","+");
 			try {
@@ -80,7 +79,7 @@ public class AmazonUtils {
 				return null;
 			}
 		}
-		if (series != null && !series.trim().equals("")) {
+		if (series != null && !series.trim().isEmpty()) {
 			series.replaceAll("\\.,+"," ");
 			series.replaceAll(" *","+");
 			try {
@@ -91,7 +90,7 @@ public class AmazonUtils {
 			}
 		}
 		return extra;
-		//if (extra != null && !extra.trim().equals("")) {
+		//if (extra != null && !extra.trim().isEmpty()) {
 		//	Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + extra));
 		//	context.startActivity(loadweb); 			
 		//}			

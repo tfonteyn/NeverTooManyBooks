@@ -1,45 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/bc_background_gradient_dim"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/padding_border" >
+    android:paddingStart="@dimen/padding_border"
+    android:paddingEnd="@dimen/padding_border">
 
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bc_vertical_gradient"
         android:orientation="vertical" >
 
         <Spinner
             android:id="@+id/bookshelf_name"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#00000000"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@+id/bookshelf_down"
             android:paddingBottom="2dp" />
-
-        <ImageView
-            android:id="@+id/bookshelf_down"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_alignParentRight="true"
-            android:paddingLeft="@dimen/padding_border"
-            android:src="@drawable/expander_ic_maximized" />
-
-        <!--
-			android:layout_toRightOf="@+id/bookshelf_name"
-			android:layout_toLeftOf="@+id/bookshelf_down"        -->
 
         <TextView
             android:id="@+id/search_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_below="@id/bookshelf_name"
-            android:paddingLeft="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border"
+            android:paddingEnd="@dimen/padding_border"
             android:visibility="gone"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -47,9 +38,10 @@
             android:id="@+id/bookshelf_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_below="@+id/search_text"
-            android:paddingLeft="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border"
+            android:paddingEnd="@dimen/padding_border"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
@@ -57,7 +49,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/bookshelf_count"
-            android:paddingLeft="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border"
+            android:paddingEnd="@dimen/padding_border"
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -66,7 +59,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/level_1_text"
-            android:paddingLeft="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border"
+            android:paddingEnd="@dimen/padding_border"
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </RelativeLayout>
@@ -76,27 +70,22 @@
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:layout_below="@id/header"
-        android:background="@drawable/main_menu_header_divider"
         android:paddingBottom="2dp"
-        android:paddingTop="2dp" />
+        android:paddingTop="2dp"
+        style="@style/main_menu_header_divider"
+        />
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/header_divider" >
-
-        <!-- android:cacheColorHint="#00000000" - but only if using a nice BG -->
-        <!--
-              Name space added below in response to 
-					http://stackoverflow.com/questions/1691569        -->
+        android:layout_below="@id/header_divider"
+        android:orientation="vertical">
 
         <com.eleybourn.bookcatalogue.widgets.FastScrollListView
             android:id="@+id/android:list"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:background="#FF202020"
-            android:cacheColorHint="#FF202020"
             android:textSize="16sp" />
 
         <TextView

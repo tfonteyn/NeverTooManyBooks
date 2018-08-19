@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/bc_background_gradient_dim"
     android:orientation="vertical"
     android:padding="0dp" >
 
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:padding="0dp" >
+        android:padding="0dp"
+        tools:ignore="UselessParent">
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingLeft="@dimen/padding_border" >
+            android:paddingStart="@dimen/padding_border"
+            android:paddingEnd="@dimen/padding_border">
 
             <TextView
                 android:layout_width="fill_parent"
@@ -27,7 +29,8 @@
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/padding_border" >
+                android:paddingStart="@dimen/padding_border"
+                android:paddingEnd="@dimen/padding_border" >
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -40,75 +43,60 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:paddingBottom="@dimen/padding_border"
-                    android:paddingLeft="@dimen/padding_border"
+                    android:paddingStart="@dimen/padding_border"
+                    android:paddingEnd="@dimen/padding_border"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
 
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/padding_border"
+                android:paddingStart="@dimen/padding_border"
+                android:paddingEnd="@dimen/padding_border"
                 android:text="@string/webpage_label"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/webpage"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/padding_border"
-                android:paddingLeft="15dp"
                 android:text="@string/webpage"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/link_blue" />
+                style="@style/link_url" />
 
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/padding_border"
+                android:paddingStart="@dimen/padding_border"
+                android:paddingEnd="@dimen/padding_border"
                 android:text="@string/sourcecode_label"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/sourcecode"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/padding_border"
-                android:paddingLeft="15dp"
                 android:text="@string/sourcecode"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/link_blue" />
+                style="@style/link_url" />
 
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/padding_border"
+                android:paddingStart="@dimen/padding_border"
+                android:paddingEnd="@dimen/padding_border"
                 android:text="@string/contact_label"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/contact1"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/padding_border"
-                android:paddingLeft="15dp"
                 android:text="@string/contact1"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/link_blue" />
+                style="@style/link_url" />
 
             <TextView
                 android:id="@+id/contact2"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/padding_border"
-                android:paddingLeft="15dp"
                 android:text="@string/contact2"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/link_blue" />
+                style="@style/link_url" />
 
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/padding_border"
+                android:paddingStart="@dimen/padding_border"
+                android:paddingEnd="@dimen/padding_border"
                 android:text="@string/special_thanks_label"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -117,14 +105,16 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/padding_border"
-                android:paddingLeft="15dp"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
                 android:text="@string/translators_blurb"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/padding_border"
+                android:paddingStart="@dimen/padding_border"
+                android:paddingEnd="@dimen/padding_border"
                 android:text="@string/amazon"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -133,7 +123,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/padding_border"
-                android:paddingLeft="15dp"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
                 android:text="@string/hint_amazon_links_blurb"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </LinearLayout>

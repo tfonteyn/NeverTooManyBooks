@@ -88,7 +88,7 @@ public class ImportAllTask extends GenericTask {
 	/**
 	 * Constructor
 	 */
-	public ImportAllTask(boolean isSync) {
+	ImportAllTask(boolean isSync) {
 		super(BookCatalogueApp.getResourceString(R.string.import_all_from_goodreads));
 		mPosition = 0;
 		mIsSync = isSync;
@@ -131,7 +131,7 @@ public class ImportAllTask extends GenericTask {
 
 	/**
 	 * Repeatedly request review pages until we are done.
-	 * 
+	 *
 	 * @param qMgr
 	 * @param db
 	 *
@@ -219,7 +219,7 @@ public class ImportAllTask extends GenericTask {
 
 	/**
 	 * Process one review (book).
-	 * 
+	 *
 	 * @param db
 	 * @param review
 	 */
@@ -273,7 +273,7 @@ public class ImportAllTask extends GenericTask {
 	 */
 	private String translateBookshelf(CatalogueDBAdapter db, String grShelfName) {
 		if (mBookshelfLookup == null) {
-			mBookshelfLookup = new Hashtable<String, String>();
+			mBookshelfLookup = new Hashtable<>();
 			Cursor c = db.fetchAllBookshelves();
 			try {
 				int bsCol = c.getColumnIndex(CatalogueDBAdapter.KEY_BOOKSHELF);
@@ -300,15 +300,14 @@ public class ImportAllTask extends GenericTask {
 	 * @return
 	 */
 	private ArrayList<String> extractIsbns(Bundle review) {
-		ArrayList<String> isbns = new ArrayList<String>();
-		String isbn;
+		ArrayList<String> isbns = new ArrayList<>();
 
-		isbn = review.getString(ListReviewsFieldNames.ISBN13).trim();
-		if (isbn != null && !isbn.equals(""))
+		String isbn = review.getString(ListReviewsFieldNames.ISBN13).trim();
+		if (!isbn.isEmpty())
 			isbns.add(isbn);
 
 		isbn = review.getString(CatalogueDBAdapter.KEY_ISBN).trim();
-		if (isbn != null && !isbn.equals(""))
+		if (!isbn.isEmpty())
 			isbns.add(isbn);
 
 		return isbns;
@@ -316,7 +315,7 @@ public class ImportAllTask extends GenericTask {
 
 	/**
 	 * Update the book using the GR data
-	 * 
+	 *
 	 * @param db
 	 * @param rv
 	 * @param review
@@ -342,7 +341,7 @@ public class ImportAllTask extends GenericTask {
 
 	/**
 	 * Create a new book
-	 * 
+	 *
 	 * @param db
 	 * @param review
 	 */
@@ -361,7 +360,7 @@ public class ImportAllTask extends GenericTask {
 	/**
 	 * Build a book bundle based on the goodreads 'review' data. Some data is just copied
 	 * while other data is processed (eg. dates) and other are combined (authors & series).
-	 * 
+	 *
 	 * @param db
 	 * @param rv
 	 * @param review
@@ -407,9 +406,9 @@ public class ImportAllTask extends GenericTask {
 			}
 		}
 
-        /** Build the pub date based on the components */
+        /* Build the pub date based on the components */
         String pubDate = GoodreadsManager.buildDate(review, ListReviewsFieldNames.PUB_YEAR, ListReviewsFieldNames.PUB_MONTH, ListReviewsFieldNames.PUB_DAY, null);
-        if (pubDate != null && !pubDate.equals(""))
+        if (pubDate != null && !pubDate.isEmpty())
         	book.putString(CatalogueDBAdapter.KEY_DATE_PUBLISHED, pubDate);
         
         ArrayList<Bundle> grAuthors = review.getParcelableArrayList(ListReviewsFieldNames.AUTHORS);
@@ -417,7 +416,7 @@ public class ImportAllTask extends GenericTask {
 
         if (rv == null) {
         	// It's a new book. Start a clean list.
-        	authors = new ArrayList<Author>();
+        	authors = new ArrayList<>();
         } else {
         	// it's an update. Get current authors.
         	authors = db.getBookAuthorList(rv.getId());
@@ -425,7 +424,7 @@ public class ImportAllTask extends GenericTask {
 
         for (Bundle grAuthor: grAuthors) {
         	String name = grAuthor.getString(ListReviewsFieldNames.DB_AUTHOR_NAME);
-        	if (name != null && !name.trim().equals("")) {
+        	if (name != null && !name.trim().isEmpty()) {
         		authors.add(new Author(name));
         	}
         }
@@ -451,7 +450,7 @@ public class ImportAllTask extends GenericTask {
         	}
         }
 
-        /**
+        /*
          * Cleanup the title by removing series name, if present
          */
         if (book.containsKey(CatalogueDBAdapter.KEY_TITLE)) {
@@ -460,7 +459,7 @@ public class ImportAllTask extends GenericTask {
 			if (details != null && details.name.length() > 0) {
 				ArrayList<Series> allSeries;
 				if (rv == null)
-					allSeries = new ArrayList<Series>();
+					allSeries = new ArrayList<>();
 				else
 					allSeries = db.getBookSeriesList(rv.getId());
 
@@ -475,19 +474,19 @@ public class ImportAllTask extends GenericTask {
         // Process any bookshelves
         if (review.containsKey(ListReviewsFieldNames.SHELVES)) {
         	ArrayList<Bundle> shelves = review.getParcelableArrayList(ListReviewsFieldNames.SHELVES);
-        	String shelfNames = null;
+        	StringBuilder shelfNames = null;
         	for(Bundle sb: shelves) {
         		String shelf = translateBookshelf(db, sb.getString(ListReviewsFieldNames.SHELF));
-        		if (shelf != null && !shelf.equals("")) {
+        		if (shelf != null && !shelf.isEmpty()) {
         			shelf = Utils.encodeListItem(shelf, BookEditFields.BOOKSHELF_SEPERATOR);
         			if (shelfNames == null)
-		        		shelfNames = shelf;
+		        		shelfNames = new StringBuilder(shelf);
         			else
-        				shelfNames += BookEditFields.BOOKSHELF_SEPERATOR + shelf;
+        				shelfNames.append(BookEditFields.BOOKSHELF_SEPERATOR).append(shelf);
         		}
         	}
         	if (shelfNames != null && shelfNames.length() > 0)
-        		book.setBookshelfList(shelfNames);
+        		book.setBookshelfList(shelfNames.toString());
         }
         
         // We need to set BOTH of these fields, otherwise the add/update method will set the
@@ -503,12 +502,12 @@ public class ImportAllTask extends GenericTask {
 	 * Utility to copy a non-blank and valid date string to the book bundle; will
 	 * attempt to translate as appropriate and will not add the date if it cannot
 	 * be parsed.
-	 * 
+	 *
 	 * @param source
 	 * @param sourceField
 	 * @param dest
 	 * @param destField
-	 * 
+	 *
 	 * @Return reformatted sql date, or null if not able to parse
 	 */
 	private String addDateIfValid(Bundle source, String sourceField, BookData dest, String destField) {
@@ -516,7 +515,7 @@ public class ImportAllTask extends GenericTask {
 			return null;
 
 		String val = source.getString(sourceField);
-		if (val == null || val.equals(""))
+		if (val == null || val.isEmpty())
 			return null;
 
 		Date d = Utils.parseDate(val);
@@ -527,30 +526,26 @@ public class ImportAllTask extends GenericTask {
 		dest.putString(destField, val);
 		return val;
 	}
+
 	/**
 	 * Utility to copy a non-blank string to the book bundle.
-	 * 
+	 *
 	 * @param source
 	 * @param sourceField
 	 * @param dest
 	 * @param destField
 	 */
-	private String addStringIfNonBlank(Bundle source, String sourceField, BookData dest, String destField) {
+	private void addStringIfNonBlank(Bundle source, String sourceField, BookData dest, String destField) {
 		if (source.containsKey(sourceField)) {
 			String val = source.getString(sourceField);
-			if (val != null && !val.equals("")) {
+			if (val != null && !val.isEmpty()) {
 				dest.putString(destField, val);
-				return val;
-			} else {
-				return null;
 			}
-		} else {
-			return null;
 		}
 	}
 	/**
 	 * Utility to copy a Long value to the book bundle.
-	 * 
+	 *
 	 * @param source
 	 * @param sourceField
 	 * @param dest
@@ -564,7 +559,7 @@ public class ImportAllTask extends GenericTask {
 	}
 	/**
 	 * Utility to copy a Double value to the book bundle.
-	 * 
+	 *
 	 * @param source
 	 * @param sourceField
 	 * @param dest

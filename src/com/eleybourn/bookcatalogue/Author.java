@@ -42,8 +42,6 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
 
 	/**
 	 * Constructor that will attempt to parse a single string into an author name.
-	 * 
-	 * @param name
 	 */
 	public Author(String name) {
 		id = 0;
@@ -79,7 +77,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
 	 * @return	formatted name
 	 */
 	public String getDisplayName() {
-		if (givenNames != null && givenNames.length() > 0)
+		if (givenNames != null && !givenNames.isEmpty())
 			return givenNames + " " + familyName;
 		else
 			return familyName;
@@ -91,7 +89,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
 	 * @return	formatted name
 	 */
 	public String getSortName() {
-		if (givenNames != null && givenNames.length() > 0)
+		if (givenNames != null && !givenNames.isEmpty())
 			return familyName + ", " + givenNames;
 		else
 			return familyName;
@@ -149,8 +147,6 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
 
     /**
      * Constructor using a Parcel.
-     * 
-     * @param in
      */
     private Author(Parcel in) {
     	familyName = in.readString();

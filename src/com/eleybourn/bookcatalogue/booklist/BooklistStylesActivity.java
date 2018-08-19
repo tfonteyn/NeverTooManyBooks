@@ -79,7 +79,7 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 			if (savedInstanceState == null)
 				HintManager.displayHint(this, R.string.hint_booklist_styles_editor, null);
 
-			Utils.initBackground(R.drawable.bc_background_gradient_dim, this, R.id.list_wrapper, false);
+			Utils.initBackground(this);
 
 		} catch (Exception e) {
 			Logger.logError(e);
@@ -92,7 +92,7 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, R.id.list_wrapper, false);		
+		Utils.initBackground(this);
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 	 */
 	@Override
 	protected ArrayList<BooklistStyle> getList() {
-		ArrayList<BooklistStyle> styles = new ArrayList<BooklistStyle>();
+		ArrayList<BooklistStyle> styles = new ArrayList<>();
 		// get the preferred styles first
 		for(BooklistStyle s: BooklistStyles.getAllStyles(mDb)) {
 			styles.add(s);
@@ -131,7 +131,7 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 	@Override
 	protected void onSetupView(View target, BooklistStyle style) {
 		Holder h;
-		h = (Holder)ViewTagger.getTag(target, R.id.TAG_HOLDER);
+		h = ViewTagger.getTag(target, R.id.TAG_HOLDER);
 		if (h == null) {
 			// No holder found, create one
 
@@ -151,7 +151,7 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 			h.preferred.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Holder h = (Holder)ViewTagger.getTag(v, R.id.TAG_HOLDER);
+					Holder h = ViewTagger.getTag(v, R.id.TAG_HOLDER);
 					boolean newPref = !h.style.isPreferred();
 					h.style.setPreferred(newPref);
 					if (newPref) {
@@ -189,9 +189,9 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 	 */
 	private class ContextItem implements CharSequence {
 		/** String for this item */
-		private String mString;
+		private final String mString;
 		/** ID of this item */
-		private int mId;
+		private final int mId;
 		/**
 		 * Constructor
 		 * 
@@ -234,7 +234,7 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 	@Override
 	protected void onRowClick(View target, final int position, final BooklistStyle style) {
 		// Build the array of menu items based on the style we are editing
-		final ArrayList<ContextItem> items = new ArrayList<ContextItem>();
+		final ArrayList<ContextItem> items = new ArrayList<>();
 		if (style.isUserDefined()) {
 			items.add(new ContextItem(R.string.delete_style, R.id.MENU_DELETE_STYLE));
 			items.add(new ContextItem(R.string.edit_style, R.id.MENU_EDIT_STYLE));
@@ -302,9 +302,9 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 	protected void onListChanged() {
 		// Save the order whenever the list is modified.
 		BooklistStyles.SaveMenuOrder(mList);
-	};
+	}
 
-	/** Handle the results from a called activity */
+    /** Handle the results from a called activity */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);

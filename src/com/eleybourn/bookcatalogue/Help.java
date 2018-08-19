@@ -91,7 +91,7 @@ public class Help extends BookCatalogueActivity {
 			
 			setupCleanupButton();
 			
-			Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+			Utils.initBackground(this);
 
 		} catch (Exception e) {
 			Logger.logError(e);
@@ -133,7 +133,7 @@ public class Help extends BookCatalogueActivity {
 	protected void onResume() {
 		super.onResume();
 		setupCleanupButton();		
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);		
+		Utils.initBackground(this);
 	}
 
 	/**

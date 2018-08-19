@@ -20,8 +20,8 @@
 
 package com.eleybourn.bookcatalogue.goodreads;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
 import net.philipwarner.taskqueue.ContextDialogItem;
@@ -29,6 +29,7 @@ import net.philipwarner.taskqueue.QueueManager;
 import net.philipwarner.taskqueue.RunnableTask;
 import net.philipwarner.taskqueue.Task;
 import net.philipwarner.taskqueue.TasksCursor;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,7 +52,7 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 public abstract class GenericTask extends RunnableTask {
 	private static final long serialVersionUID = -5985866222873741455L;
 
-	public GenericTask(String description) {
+	GenericTask(String description) {
 		super(description);
 	}
 
@@ -103,7 +104,7 @@ public abstract class GenericTask extends RunnableTask {
 	 */
 	@Override
 	public boolean bindView(View view, Context context, BindableItemSQLiteCursor bindableCursor, Object appInfo) {
-		TaskHolder holder = (TaskHolder)ViewTagger.getTag(view, R.id.TAG_TASK_HOLDER);
+		TaskHolder holder = ViewTagger.getTag(view, R.id.TAG_TASK_HOLDER);
 		TasksCursor cursor = (TasksCursor)bindableCursor;
 
 		// Update task info binding
@@ -112,7 +113,7 @@ public abstract class GenericTask extends RunnableTask {
 
 		holder.description.setText(this.getDescription());
 		String statusCode = cursor.getStatusCode();
-		String statusText = "";
+		String statusText;
 		if (statusCode.equalsIgnoreCase("S")) {
 			statusText = context.getString(R.string.completed);
 			holder.retry_info.setVisibility(View.GONE);
@@ -124,8 +125,11 @@ public abstract class GenericTask extends RunnableTask {
 		} else if (statusCode.equalsIgnoreCase("Q")) {
 			statusText = context.getString(R.string.queued);
 			holder.retry_info.setVisibility(View.VISIBLE);
-			holder.retry_info.setText(context.getString(R.string.retry_x_of_y_next_at_z, 
-							this.getRetries(), this.getRetryLimit(), cursor.getRetryDate().toLocaleString()));
+			holder.retry_info.setText(
+					context.getString(R.string.retry_x_of_y_next_at_z,
+					this.getRetries(),
+					this.getRetryLimit(),
+					DateFormat.getDateTimeInstance().format(cursor.getRetryDate())));
 
 			holder.retry.setVisibility(View.GONE);
 		} else {
@@ -145,8 +149,9 @@ public abstract class GenericTask extends RunnableTask {
 			holder.error.setVisibility(View.GONE);
 		}
 		//"Job ID 123, Queued at 20 Jul 2012 17:50:23 GMT"
-		Date qd = cursor.getQueuedDate();
-		holder.job_info.setText("Task ID " + this.getId() + ", Queued at " + qd.toLocaleString());
+		holder.job_info.setText(BookCatalogueApp.getResourceString(R.string.generic_task_info,
+                this.getId(),
+                DateFormat.getDateTimeInstance().format(cursor.getQueuedDate())));
 		//view.requestLayout();
 		return true;
 	}

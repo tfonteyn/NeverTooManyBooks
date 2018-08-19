@@ -1,9 +1,10 @@
 package com.eleybourn.bookcatalogue.goodreads;
 
 import net.philipwarner.taskqueue.QueueManager;
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -154,7 +155,7 @@ public class GoodreadsUtils {
 	/**
 	 * Start a background task that exports all books to goodreads.
 	 */
-	private static void sendToGoodreads(final FragmentActivity context, final boolean updatesOnly) {
+	private static void sendToGoodreads(final Activity context, final boolean updatesOnly) {
 		FragmentTask task = new FragmentTaskAbstract() {
 			@Override
 			public void run(SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
@@ -207,46 +208,56 @@ public class GoodreadsUtils {
 
 			@Override
 			public void onFinish(final SimpleTaskQueueProgressFragment fragment, Exception exception) {
-				if (getState() == 0) {
-					final FragmentActivity context = fragment.getActivity();
-					if (context != null) {
-						// Get the title		
-						final AlertDialog alertDialog = new AlertDialog.Builder(context).setTitle(R.string.send_books_to_goodreads).setMessage(R.string.send_books_to_goodreads_blurb).create();
-		
-						alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
-						alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(R.string.send_updated), new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int which) {
-								alertDialog.dismiss();
-								GoodreadsUtils.sendToGoodreads(context, true);
-							}
-						});
-						
-						alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getResources().getString(R.string.send_all), new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int which) {
-								alertDialog.dismiss();
-								GoodreadsUtils.sendToGoodreads(context, false);
-							}
-						});
-		
-						alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int which) {
-								alertDialog.dismiss();
-							}
-						}); 
-		
-						alertDialog.show();						
-					}
-				} else if (getState() == -1) {
-					fragment.post(new Runnable() {
+				switch (getState()) {
+					case 0:
+						final Activity context = fragment.getActivity();
+						if (context != null) {
+							// Get the title
+							final AlertDialog alertDialog = new AlertDialog.Builder(context).setTitle(R.string.send_books_to_goodreads).setMessage(R.string.send_books_to_goodreads_blurb).create();
 
-						@Override
-						public void run() {
-							StandardDialogs.goodreadsAuthAlert(fragment.getActivity());
+							alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
+							alertDialog.setButton(DialogInterface.BUTTON_POSITIVE,
+									context.getResources().getString(R.string.send_updated),
+									new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int which) {
+									alertDialog.dismiss();
+									GoodreadsUtils.sendToGoodreads(context, true);
+								}
+							});
+
+							alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL,
+									context.getResources().getString(R.string.send_all),
+									new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int which) {
+									alertDialog.dismiss();
+									GoodreadsUtils.sendToGoodreads(context, false);
+								}
+							});
+
+							alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+									context.getResources().getString(R.string.cancel),
+									new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int which) {
+									alertDialog.dismiss();
+								}
+							});
+
+							alertDialog.show();
 						}
-					});
-					return;
-				} else {
-					fragment.showToast(getState());
+						break;
+
+					case -1:
+						fragment.post(new Runnable() {
+							@Override
+							public void run() {
+								StandardDialogs.goodreadsAuthAlert(fragment.getActivity());
+							}
+						});
+						return;
+
+					default:
+						fragment.showToast(getState());
+						break;
 				}
 			}
 		};

@@ -73,16 +73,16 @@ public class DbSync {
 		/** Condition fired when a reader releases a lock */
 		private final Condition mReleased = mLock.newCondition();
 		/** Collection of threads that have shared locks */
-		private final Hashtable<Thread,Integer> mSharedOwners = new Hashtable<Thread,Integer>();
+		private final Hashtable<Thread,Integer> mSharedOwners = new Hashtable<>();
 		/** Lock used to pass back to consumers of shared locks */
 		private final SharedLock mSharedLock = new SharedLock();
 		/** Lock used to pass back to consumers of exclusive locks */
 		private final ExclusiveLock mExclusiveLock = new ExclusiveLock();
 
 		/** Enum of lock types supported */
-		public enum LockTypes { shared, exclusive };
+		public enum LockTypes { shared, exclusive }
 
-		/**
+        /**
 		 * Interface common to all lock types.
 		 * 
 		 * @author Philip Warner
@@ -142,8 +142,6 @@ public class DbSync {
 
 		/**
 		 * Add a new SharedLock to the collection and return it.
-		 * 
-		 * @return
 		 */
 		public SyncLock getSharedLock() {
 			final Thread t = Thread.currentThread();
@@ -202,8 +200,6 @@ public class DbSync {
 		 * - see if there are any other locks
 		 * - if not, return with the lock still held -- this prevents more EX or SH locks.
 		 * - if there are other SH locks, wait for one to be release and loop.
-		 * 
-		 * @return
 		 */
 		public SyncLock getExclusiveLock() {
 			final Thread t = Thread.currentThread();
@@ -230,22 +226,22 @@ public class DbSync {
 						mReleased.await();
 					} catch (Exception e) {
 						// Probably happens because thread was interrupted. Just die.
-						try { mLock.unlock(); } catch(Exception e2) {};
-						throw new RuntimeException("Unable to get exclusive lock", e);
+						try { mLock.unlock(); } catch(Exception ignored) {}
+                        throw new RuntimeException("Unable to get exclusive lock", e);
 					}
 				}				
 			} finally {
 				//long t1 = System.currentTimeMillis();
 				//if (mLock.isHeldByCurrentThread())
-				//	System.out.println(t.getName() + " waited " + (t1 - t0) + "ms for EXCLUSIVE access");					
+				//	System.out.println(t.getName() + " waited " + (t1 - t0) + "ms for EXCLUSIVE access");
 				//else
-				//	System.out.println(t.getName() + " waited " + (t1 - t0) + "ms AND FAILED TO GET EXCLUSIVE access");				
+				//	System.out.println(t.getName() + " waited " + (t1 - t0) + "ms AND FAILED TO GET EXCLUSIVE access");
 			}
 		}
 		/**
 		 * Release the lock previously taken
 		 */
-		public void releaseExclusiveLock() {
+		void releaseExclusiveLock() {
 			//final Thread t = Thread.currentThread();
 			//System.out.println(t.getName() + " releasing EXCLUSIVE lock");
 			if (!mLock.isHeldByCurrentThread())
@@ -303,7 +299,7 @@ public class DbSync {
 				int wait = 10; // 10ms
 				//int retriesLeft = 5; // up to 320ms
 				int retriesLeft = 10; // 2^10 * 10ms = 10.24sec (actually 2x that due to total wait time)
-				SQLiteDatabase db = null;
+				SQLiteDatabase db;
 				do {
 					SyncLock l = mSync.getExclusiveLock();
 					try {
@@ -376,7 +372,7 @@ public class DbSync {
 			public SynchronizedCursor newCursor(SQLiteDatabase db,
 					SQLiteCursorDriver masterQuery, String editTable,
 					SQLiteQuery query) {
-				return new SynchronizedCursor(db, masterQuery, editTable, query, mSync);
+				return new SynchronizedCursor(masterQuery, editTable, query, mSync);
 			}
 		}
 
@@ -385,7 +381,7 @@ public class DbSync {
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
-		 * 
+		 *
 		 * @param sql
 		 * @param selectionArgs
 		 * @return
@@ -396,7 +392,7 @@ public class DbSync {
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
-		 * 
+		 *
 		 * @param sql
 		 * @return
 		 */
@@ -406,7 +402,7 @@ public class DbSync {
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
-		 * 
+		 *
 		 * @param factory
 		 * @param sql
 		 * @param selectionArgs
@@ -428,9 +424,8 @@ public class DbSync {
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
-		 * 
+		 *
 		 * @param sql
-		 * @param selectionArgs
 		 * @return
 		 */
 		public void execSQL(String sql) {
@@ -450,7 +445,7 @@ public class DbSync {
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
-		 * 
+		 *
 		 * @param table
 		 * @param columns
 		 * @param selection
@@ -476,9 +471,11 @@ public class DbSync {
 		/**
 		 * Locking-aware wrapper for underlying database method; actually
 		 * calls insertOrThrow since this method also throws exceptions
-		 * 
-		 * @param sql
-		 * @param selectionArgs
+		 *
+		 * @param table
+		 * @param nullColumnHack
+		 * @param values
+		 *
 		 * @return
 		 */
 		public long insert(String table, String nullColumnHack, ContentValues values) {
@@ -499,7 +496,7 @@ public class DbSync {
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
-		 * 
+		 *
 		 * @param table
 		 * @param values
 		 * @param whereClause
@@ -524,9 +521,11 @@ public class DbSync {
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
-		 * 
-		 * @param sql
-		 * @param selectionArgs
+		 *
+		 * @param table
+		 * @param whereClause
+		 * @param whereArgs
+		 *
 		 * @return
 		 */
 		public int delete(String table, String whereClause, String[] whereArgs) {
@@ -547,7 +546,7 @@ public class DbSync {
 
 		/**
 		 * Wrapper for underlying database method. It is recommended that custom cursors subclass SynchronizedCursor.
-		 * 
+		 *
 		 * @param cursorFactory
 		 * @param sql
 		 * @param selectionArgs
@@ -568,7 +567,7 @@ public class DbSync {
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
-		 * 
+		 *
 		 * @param sql
 		 * @return
 		 */
@@ -589,9 +588,7 @@ public class DbSync {
 		}
 
 		/**
-		 * Return the underlying SQLiteDatabase object.
-		 * 
-		 * @return
+		 * @return the underlying SQLiteDatabase object.
 		 */
 		public SQLiteDatabase getUnderlyingDatabase() {
 			return mDb;
@@ -599,8 +596,6 @@ public class DbSync {
 
 		/**
 		 * Wrapper.
-		 * 
-		 * @return
 		 */
 		public boolean inTransaction() {
 			return mDb.inTransaction();
@@ -676,9 +671,7 @@ public class DbSync {
 		}
 
 		/**
-		 * Return the underlying synchronizer object.
-		 * 
-		 * @return
+		 * @return the underlying synchronizer object.
 		 */
 		public Synchronizer getSynchronizer() {
 			return mSync;
@@ -710,13 +703,7 @@ public class DbSync {
 					//}					
 				}
 				return refs;
-			} catch (NoSuchFieldException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
+			} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -744,10 +731,7 @@ public class DbSync {
 		private SynchronizedStatement (final SynchronizedDb db, final String sql) {
 			mSync = db.getSynchronizer();
 			mSql = sql;
-			if (sql.trim().toLowerCase().startsWith("select"))
-				mIsReadOnly = true;
-			else
-				mIsReadOnly = false;
+            mIsReadOnly = sql.trim().toLowerCase().startsWith("select");
 			mStatement = db.getUnderlyingDatabase().compileStatement(sql);
 		}
 		
@@ -866,9 +850,9 @@ public class DbSync {
 	public static class SynchronizedCursor extends SQLiteCursor {
 		private final Synchronizer mSync;
 
-		public SynchronizedCursor(SQLiteDatabase db, SQLiteCursorDriver driver,
-				String editTable, SQLiteQuery query, Synchronizer sync) {
-			super(db, driver, editTable, query);
+		public SynchronizedCursor(SQLiteCursorDriver driver,
+								  String editTable, SQLiteQuery query, Synchronizer sync) {
+			super(driver, editTable, query);
 			mSync = sync;
 		}
 

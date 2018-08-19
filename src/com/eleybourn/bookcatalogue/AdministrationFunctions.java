@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -79,7 +78,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 			Bundle extras = getIntent().getExtras();
 			if (extras != null && extras.containsKey(DOAUTO)) {
 				try {
-					if (extras.getString(DOAUTO).equals("export")) {
+					if ("export".equals(extras.getString(DOAUTO))) {
 						finish_after = true;
 						mExportOnStartup = true;
 					} else {
@@ -90,7 +89,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 				}				
 			}
 			setupAdmin();
-			Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+			Utils.initBackground(this);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -448,19 +447,16 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
 	/**
 	 * Import all data from the passed CSV file spec
-	 * 
-	 * return void
-	 * @throws IOException 
 	 */
 	private void importData(String filespec) {
 		ImportThread thread;
-		try {
+//		try {
 			thread = new ImportThread(getTaskManager(), filespec);
-		} catch (IOException e) {
-			Logger.logError(e);
-			Toast.makeText(this, getString(R.string.problem_starting_import_arg, e.getMessage()), Toast.LENGTH_LONG).show();
-			return;
-		}
+//		} catch (IOException e) {
+//			Logger.logError(e);
+//			Toast.makeText(this, getString(R.string.problem_starting_import_arg, e.getMessage()), Toast.LENGTH_LONG).show();
+//			return;
+//		}
 		thread.start();
 	}
 	
@@ -487,7 +483,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+		Utils.initBackground(this);
 		if (mExportOnStartup)
 			exportData();
 	}
@@ -513,7 +509,9 @@ public class AdministrationFunctions extends ActivityWithTasks {
 		AlertDialog alertDialog = new AlertDialog.Builder(AdministrationFunctions.this).create();
 		alertDialog.setTitle(R.string.email_export);
 		alertDialog.setIcon(android.R.drawable.ic_menu_send);
-		alertDialog.setButton2(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+		alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
+				getResources().getString(R.string.ok),
+				new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				// setup the mail message
 				final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
@@ -523,7 +521,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 				emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
 				//emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, context.getString(R.string.debug_body));
 				//has to be an ArrayList
-				ArrayList<Uri> uris = new ArrayList<Uri>();
+				ArrayList<Uri> uris = new ArrayList<>();
 				// Find all files of interest to send
 				try {
 					File fileIn = new File(StorageUtils.getSharedStoragePath() + "/" + "export.csv");
@@ -540,7 +538,9 @@ public class AdministrationFunctions extends ActivityWithTasks {
 				dialog.dismiss();
 			}
 		}); 
-		alertDialog.setButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+		alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
+				getResources().getString(R.string.cancel),
+				new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				//do nothing
 				dialog.dismiss();

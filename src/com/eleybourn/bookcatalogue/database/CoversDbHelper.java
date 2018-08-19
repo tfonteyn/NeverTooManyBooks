@@ -64,7 +64,7 @@ public class CoversDbHelper {
 	private static final Synchronizer mSynchronizer = new Synchronizer();
 
 	/** List of statements we create so we can close them when object is closed. */
-	private SqlStatementManager mStatements = new SqlStatementManager();
+	private final SqlStatementManager mStatements = new SqlStatementManager();
 
 	/** DB location */
 	private static final String COVERS_DATABASE_NAME = StorageUtils.getSharedStoragePath() + "/covers.db";
@@ -74,7 +74,7 @@ public class CoversDbHelper {
 	// Domain and table definitions
 	
 	/** Static Factory object to create the custom cursor */
-	public static final CursorFactory mTrackedCursorFactory = new CursorFactory() {
+	private static final CursorFactory mTrackedCursorFactory = new CursorFactory() {
 			@Override
 			public Cursor newCursor(
 					SQLiteDatabase db,
@@ -82,13 +82,13 @@ public class CoversDbHelper {
 					String editTable,
 					SQLiteQuery query) 
 			{
-				return new TrackedCursor(db, masterQuery, editTable, query, mSynchronizer);
+				return new TrackedCursor(masterQuery, editTable, query, mSynchronizer);
 			}
 	};
 
 	private static class CoversHelper extends GenericOpenHelper {
 
-		public CoversHelper(String dbFilePath, CursorFactory factory, int version) {
+		CoversHelper(String dbFilePath, CursorFactory factory, int version) {
 			super(dbFilePath, factory, version);
 		}
 
@@ -108,23 +108,23 @@ public class CoversDbHelper {
 		}
 
 	}
-	public static final DomainDefinition DOM_ID = new DomainDefinition( "_id", "integer",  "primary key autoincrement", "");
-	public static final DomainDefinition DOM_DATE = new DomainDefinition( "date", "datetime", "default current_timestamp", "not null");
-	public static final DomainDefinition DOM_TYPE = new DomainDefinition( "type", "text", "", "not null");	// T = Thumbnail; C = cover?
-	public static final DomainDefinition DOM_IMAGE = new DomainDefinition( "image", "blob", "",  "not null");
-	public static final DomainDefinition DOM_WIDTH = new DomainDefinition( "width", "integer", "", "not null");
-	public static final DomainDefinition DOM_HEIGHT = new DomainDefinition( "height", "integer", "",  "not null");
-	public static final DomainDefinition DOM_SIZE = new DomainDefinition( "size", "integer", "",  "not null");
-	public static final DomainDefinition DOM_FILENAME = new DomainDefinition( "filename", "text", "", "");
-	public static final TableDefinition TBL_IMAGE = new TableDefinition("image", DOM_ID, DOM_TYPE, DOM_IMAGE, DOM_DATE, DOM_WIDTH, DOM_HEIGHT, DOM_SIZE, DOM_FILENAME );
+	private static final DomainDefinition DOM_ID = new DomainDefinition( "_id", "integer",  "primary key autoincrement", "");
+	private static final DomainDefinition DOM_DATE = new DomainDefinition( "date", "datetime", "default current_timestamp", "not null");
+	private static final DomainDefinition DOM_TYPE = new DomainDefinition( "type", "text", "", "not null");	// T = Thumbnail; C = cover?
+	private static final DomainDefinition DOM_IMAGE = new DomainDefinition( "image", "blob", "",  "not null");
+	private static final DomainDefinition DOM_WIDTH = new DomainDefinition( "width", "integer", "", "not null");
+	private static final DomainDefinition DOM_HEIGHT = new DomainDefinition( "height", "integer", "",  "not null");
+	private static final DomainDefinition DOM_SIZE = new DomainDefinition( "size", "integer", "",  "not null");
+	private static final DomainDefinition DOM_FILENAME = new DomainDefinition( "filename", "text", "", "");
+	private static final TableDefinition TBL_IMAGE = new TableDefinition("image", DOM_ID, DOM_TYPE, DOM_IMAGE, DOM_DATE, DOM_WIDTH, DOM_HEIGHT, DOM_SIZE, DOM_FILENAME );
 	static {
 		TBL_IMAGE
 			.addIndex("id", true, DOM_ID)
 			.addIndex("file", true, DOM_FILENAME)
 			.addIndex("file_date", true, DOM_FILENAME, DOM_DATE);
-	};
+	}
 
-	public static final TableDefinition TABLES[] = new TableDefinition[] {TBL_IMAGE};
+    public static final TableDefinition TABLES[] = new TableDefinition[] {TBL_IMAGE};
 
 	/**
 	 * Constructor. Fill in required fields. This is NOT based on SQLiteOpenHelper so does not need a context.
@@ -165,9 +165,10 @@ public class CoversDbHelper {
 	private SynchronizedDb getDb() {
 		return mSharedDb;
 	}
+
 	/**
 	 * Delete the named 'file'
-	 * 
+	 *
 	 * @param filename
 	 */
 	public void deleteFile(final String filename) {
@@ -184,7 +185,7 @@ public class CoversDbHelper {
 	
 	/**
 	 * Delete the cached covers associated with the passed hash
-	 * 
+	 *
 	 * @param filename
 	 */
 	private SynchronizedStatement mDeleteBookCoversStmt = null;
@@ -211,7 +212,7 @@ public class CoversDbHelper {
 	 * Get the named 'file'
 	 * 
 	 * @param filename
-	 * 
+	 *
 	 * @return	byte[] of image data
 	 */
 	public final byte[] getFile(final String filename, final Date lastModified) {
@@ -230,10 +231,10 @@ public class CoversDbHelper {
 
 	/**
 	 * Get the named 'file'
-	 * 
+	 *
 	 * @param filename
-	 * 
-	 * @return	byet[] of image data
+	 *
+	 * @return	byte[] of image data
 	 */
 	public boolean isEntryValid(String filename, Date lastModified) {
 		SynchronizedDb db = this.getDb();
@@ -247,7 +248,7 @@ public class CoversDbHelper {
 	}
 	/**
 	 * Save the passed bitmap to a 'file'
-	 * 
+	 *
 	 * @param filename
 	 * @param bm
 	 */
@@ -261,7 +262,7 @@ public class CoversDbHelper {
 
 	/**
 	 * Save the passed encoded image data to a 'file'
-	 * 
+	 *
 	 * @param filename
 	 * @param bm
 	 */
@@ -286,7 +287,7 @@ public class CoversDbHelper {
 		cv.put(DOM_SIZE.name, bytes.length);
 
 		mExistsStmt.bindString(1, filename);
-		long rows = 0;
+		long rows;
 		
 		SyncLock txLock = db.beginTransaction(true);
 		try {
@@ -319,7 +320,7 @@ public class CoversDbHelper {
 
 	/**
 	 * Erase all cached images relating to the passed book UUID.
-	 * 
+	 *
 	 * @param uuid
 	 */
 	public int eraseCachedBookCover(String uuid) {

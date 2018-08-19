@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -8,13 +9,14 @@
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        tools:ignore="UselessParent">
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="10dp" >
+            android:padding="@dimen/padding_border_double" >
 
             <CheckBox
                 android:id="@+id/read"
@@ -40,7 +42,7 @@
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="0.5dp"
-                android:background="@drawable/grey_list_divider" />
+                />
 
             <RelativeLayout
                 android:id="@+id/row_notes"
@@ -53,7 +55,7 @@
                     android:id="@+id/notes_heading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:text="@string/edit_book_notes"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -62,11 +64,12 @@
                     android:id="@+id/notes"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentRight="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_below="@+id/notes_heading"
                     android:inputType="textCapSentences|textMultiLine"
-                    android:singleLine="false" />
+                    android:singleLine="false"
+                    tools:ignore="LabelFor" />
 
             </RelativeLayout>
 
@@ -80,7 +83,7 @@
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="0.5dp"
-                android:background="@drawable/grey_list_divider" />
+                />
 
             <RelativeLayout
                 android:id="@+id/row_read_start"
@@ -92,7 +95,7 @@
                     android:id="@+id/read_start_heading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:text="@string/read_start"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -102,15 +105,15 @@
                     style="@style/dataEntryButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentRight="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_below="@+id/read_start_heading" />
             </RelativeLayout>
 
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="0.5dp"
-                android:background="@drawable/grey_list_divider" />
+                />
 
             <RelativeLayout
                 android:id="@+id/row_read_end"
@@ -122,7 +125,7 @@
                     android:id="@+id/read_end_heading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:text="@string/read_end"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -132,15 +135,15 @@
                     style="@style/dataEntryButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentRight="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_below="@+id/read_end_heading" />
             </RelativeLayout>
 
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="0.5dp"
-                android:background="@drawable/grey_list_divider" />
+                />
 
             <RelativeLayout
                 android:id="@+id/row_location"
@@ -153,7 +156,7 @@
                     android:id="@+id/location_heading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:text="@string/location_of_book"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -162,11 +165,12 @@
                     android:id="@+id/location"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentRight="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_below="@+id/location_heading"
                     android:completionThreshold="2"
-                    android:inputType="textCapSentences" />
+                    android:inputType="textCapSentences"
+                    tools:ignore="LabelFor" />
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>

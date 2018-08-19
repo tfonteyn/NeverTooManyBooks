@@ -54,10 +54,9 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 	public static final String SEARCH_CRITERIA = "criteria";
 
 	private CatalogueDBAdapter mDbHelper;
-	private ArrayList<GoodreadsWork> mList = new ArrayList<GoodreadsWork>();
-	private ArrayAdapter<GoodreadsWork> mAdapter = null;
-	private String mCriteria;
-	private SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("gr-covers");
+	private ArrayList<GoodreadsWork> mList = new ArrayList<>();
+    private String mCriteria;
+	private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("gr-covers");
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -80,14 +79,14 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 		}
 
 		// If we have criteria, do a search. Otherwise complain and finish.
-		if (!mCriteria.equals("")) {
+		if (!mCriteria.isEmpty()) {
 			doSearch();
 		} else {
 			Toast.makeText(this, getString(R.string.please_enter_search_criteria), Toast.LENGTH_LONG).show();
 			finish();
 			return;
 		}
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);		
+		Utils.initBackground(this);
 	}
 
 	/**
@@ -96,7 +95,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);		
+		Utils.initBackground(this);
 	}
 
 	/**
@@ -108,7 +107,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 		SearchBooksApiHandler searcher = new SearchBooksApiHandler(grMgr);
 
 		// Run the search
-		ArrayList<GoodreadsWork> works = null;
+		ArrayList<GoodreadsWork> works;
 		try {
 			works = searcher.search(mCriteria);
 		} catch (Exception e) {
@@ -126,7 +125,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 		}
 
 		mList = works;
-		mAdapter = new ResultsAdapter();
+        ArrayAdapter<GoodreadsWork> mAdapter = new ResultsAdapter();
 		setListAdapter(mAdapter);
 	}
 
@@ -163,9 +162,9 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 	 */
 	private class ResultsAdapter extends ArrayAdapter<GoodreadsWork> {
 		/** Used in building views when needed */
-		LayoutInflater mInflater;
+        final LayoutInflater mInflater;
 
-		public ResultsAdapter() {
+		ResultsAdapter() {
 			super(GoodreadsSearchResults.this, 0, mList);
 			// Save Inflater for later use
 			mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);

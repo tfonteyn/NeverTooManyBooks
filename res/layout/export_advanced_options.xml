@@ -31,7 +31,7 @@
                 android:id="@+id/books_check"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:checked="true"
                 android:text=""
@@ -43,8 +43,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@id/books_check"
                 android:layout_alignBottom="@id/books_check"
-                android:layout_alignParentRight="true"
-                android:layout_toRightOf="@id/books_check"
+                android:layout_alignParentEnd="true"
+                android:layout_toEndOf="@id/books_check"
                 android:text="@string/book_details"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -52,8 +52,8 @@
                 android:id="@+id/book_details_blurb"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@id/book_details"
-                android:layout_alignRight="@id/book_details"
+                android:layout_alignStart="@id/book_details"
+                android:layout_alignEnd="@id/book_details"
                 android:layout_below="@+id/book_details"
                 android:text="@string/book_details_blurb"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -70,7 +70,7 @@
                 android:id="@+id/covers_check"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:checked="true"
                 android:text=""
@@ -82,8 +82,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@id/covers_check"
                 android:layout_alignBottom="@id/covers_check"
-                android:layout_alignParentRight="true"
-                android:layout_toRightOf="@id/covers_check"
+                android:layout_alignParentEnd="true"
+                android:layout_toEndOf="@id/covers_check"
                 android:text="@string/cover_images"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -91,8 +91,8 @@
                 android:id="@+id/cover_images_blurb"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/cover_images"
-                android:layout_alignRight="@+id/cover_images"
+                android:layout_alignStart="@+id/cover_images"
+                android:layout_alignEnd="@+id/cover_images"
                 android:layout_below="@+id/cover_images"
                 android:text="@string/cover_images_blurb"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -110,7 +110,7 @@
                 android:id="@+id/preferences_check"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:checked="true"
                 android:text=""
@@ -123,8 +123,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@id/preferences_check"
                 android:layout_alignBottom="@id/preferences_check"
-                android:layout_alignParentRight="true"
-                android:layout_toRightOf="@id/preferences_check"
+                android:layout_alignParentEnd="true"
+                android:layout_toEndOf="@id/preferences_check"
                 android:text="@string/preferences"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -132,8 +132,8 @@
                 android:id="@+id/preferences_blurb"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@id/preferences"
-                android:layout_alignRight="@id/preferences"
+                android:layout_alignStart="@id/preferences"
+                android:layout_alignEnd="@id/preferences"
                 android:layout_below="@id/preferences"
                 android:text="@string/preferences_blurb"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -186,39 +186,44 @@
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text="&#8230;" />
+                android:layout_alignParentEnd="true"
+                android:text="&#8230;"
+                tools:ignore="HardcodedText" />
             
             <EditText
                 android:id="@+id/txtDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_toLeftOf="@id/date_button"
+                android:layout_alignParentStart="true"
+                android:layout_toStartOf="@id/date_button"
                 android:layout_alignBaseline="@id/date_button"
                 android:ems="10"
-                android:inputType="date" />
+                android:inputType="date"
+                tools:ignore="LabelFor" />
 
         </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="12dp" >
+            android:paddingTop="12dp"
+            style="?android:attr/buttonBarStyle">
 
             <Button
                 android:id="@+id/cancel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/cancel" />
+                android:text="@string/cancel"
+                style="?android:attr/buttonBarButtonStyle" />
 
             <Button
                 android:id="@+id/ok"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/ok" />
+                android:text="@string/ok"
+                style="?android:attr/buttonBarButtonStyle" />
 
         </LinearLayout>
 

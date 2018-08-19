@@ -46,7 +46,7 @@ public class SendOneBookTask extends GenericTask {
 	private static final long serialVersionUID = 8585857100291691934L;
 
 	/** ID of book to send */
-	private long m_bookId = 0;
+	private final long m_bookId;
 
 	/**
 	 * Constructor. Save book ID.
@@ -74,13 +74,12 @@ public class SendOneBookTask extends GenericTask {
 
 	/**
 	 * Perform the main task
-	 * 
+	 *
 	 * @param qmanager
 	 * @param context
 	 * @return
-	 * @throws NotAuthorizedException
 	 */
-	public boolean sendBook(QueueManager qmanager, Context context) throws NotAuthorizedException {
+	private boolean sendBook(QueueManager qmanager, Context context) throws NotAuthorizedException {
 		
 		// ENHANCE: Work out a way of checking if GR site is up
 		//if (!Utils.hostIsAvailable(context, "www.goodreads.com"))
@@ -166,7 +165,7 @@ public class SendOneBookTask extends GenericTask {
 				}
 			try {
 				dbHelper.close();				
-			} catch(Exception e)
+			} catch(Exception ignored)
 			{}
 		}
 		return true;

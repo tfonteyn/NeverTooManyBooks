@@ -5,7 +5,11 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 
 /**
- * This subclass of TextView is designed to get aaround a bug in Android 4.1 and 4.1.1, documented here:
+ * Fixed in API 17, removed in the layout files
+ *
+ * TODO: remove this class when tested in Android 5+
+ *
+ * This subclass of TextView is designed to get around a bug in Android 4.1 and 4.1.1, documented here:
  * 
  *     http://code.google.com/p/android/issues/detail?id=34872
  * and here

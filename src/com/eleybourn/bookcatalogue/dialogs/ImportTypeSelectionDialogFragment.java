@@ -6,6 +6,7 @@ import java.io.IOException;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,10 +17,9 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.BackupReader;
-import com.eleybourn.bookcatalogue.compat.BookCatalogueDialogFragment;
 import com.eleybourn.bookcatalogue.utils.Logger;
 
-public class ImportTypeSelectionDialogFragment extends BookCatalogueDialogFragment {
+public class ImportTypeSelectionDialogFragment extends DialogFragment {
 	private int mDialogId;
 	private File mFile;
 	private boolean mArchiveHasValidDates;
@@ -29,15 +29,15 @@ public class ImportTypeSelectionDialogFragment extends BookCatalogueDialogFragme
 	 * 
 	 * @author pjw
 	 */
-	public static interface OnImportTypeSelectionDialogResultListener {
-		public void onImportTypeSelectionDialogResult(int dialogId, ImportTypeSelectionDialogFragment dialog, int rowId, File file);
+	public interface OnImportTypeSelectionDialogResultListener {
+		void onImportTypeSelectionDialogResult(int dialogId, ImportTypeSelectionDialogFragment dialog, int rowId, File file);
 	}
 
 	/**
 	 * Constructor
 	 * 
 	 * @param dialogId	ID passed by caller. Can be 0, will be passed back in event
-	 * @param titleId	Title to display
+	 * @param file      the file
 	 *
 	 * @return			Created fragment
 	 */
@@ -62,7 +62,7 @@ public class ImportTypeSelectionDialogFragment extends BookCatalogueDialogFragme
 		
 	}
 
-	private OnClickListener mRowClickListener = new OnClickListener() {
+	private final OnClickListener mRowClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			handleClick(v);
@@ -70,9 +70,8 @@ public class ImportTypeSelectionDialogFragment extends BookCatalogueDialogFragme
 
 	/**
 	 * Utility routine to set the OnClickListener for a given view item.
-	 * 
+	 * @param root      root view
 	 * @param id		Sub-View ID
-	 * @param l			Listener
 	 */
 	private void setOnClickListener(View root, int id) {
 		View v = root.findViewById(id);

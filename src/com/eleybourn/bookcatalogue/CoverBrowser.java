@@ -63,13 +63,13 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
  */
 public class CoverBrowser {
 	// used in setting images sizes
-	private android.util.DisplayMetrics mMetrics;
+	private final android.util.DisplayMetrics mMetrics;
 	// Task queue for images
 	private SimpleTaskQueue mImageFetcher = null;
 	// Handler when an image is finally selected.
-	private OnImageSelectedListener mOnImageSelectedListener;
+	private final OnImageSelectedListener mOnImageSelectedListener;
 	// ISBN of book to lookup
-	private String mIsbn;
+	private final String mIsbn;
 	// Calling context
 	private Context mContext;
 	// Libary Thing
@@ -151,13 +151,10 @@ public class CoverBrowser {
 	 * @author Philip Warner
 	 */
 	private class GetEditionsTask implements SimpleTask {
-		String isbn;
+		final String isbn;
 
 		/**
 		 * Constructor
-		 * 
-		 * @param position	Position on requested cover.
-		 * @param v			View to update
 		 */
 		GetEditionsTask(String isbn){
 			this.isbn = isbn;
@@ -170,7 +167,7 @@ public class CoverBrowser {
 			// as the alternate user-contributed images from LibraryThing. The latter are often the best 
 			// source but at present could only be obtained by HTML scraping.
 			try {
-				mEditions = LibraryThingManager.searchEditions(isbn);			
+				mEditions = LibraryThingManager.searchEditions(isbn);
 			} catch (Exception e) {
 				mEditions = null;
 			}
@@ -194,9 +191,9 @@ public class CoverBrowser {
 	 */
 	@SuppressWarnings("unused")
 	private class GetThumbnailTask implements SimpleTask {
-		ImageView 	v;
-		int position;
-		String isbn;
+		final ImageView v;
+		final int position;
+		final String isbn;
 		String fileSpec;
 
 		/**
@@ -239,11 +236,11 @@ public class CoverBrowser {
 	@SuppressWarnings("unused")
 	private class GetFullImageTask implements SimpleTask {
 		// Switcher to use
-		private ImageSwitcher 	switcher;
+		private final ImageSwitcher switcher;
 		// Position of edition
-		private int position;
+		private final int position;
 		// ISBN
-		private String isbn;
+		private final String isbn;
 		// Resulting file spec
 		private String fileSpec;
 
@@ -282,7 +279,8 @@ public class CoverBrowser {
 			File file = new File(fileSpec);
 			TextView msgVw = (TextView)mDialog.findViewById(R.id.switcherStatus);
 			if (file.exists() && file.length() > 100) {
-				Drawable d = new BitmapDrawable(Utils.fetchFileIntoImageView(file, null, mPreviewSize*4, mPreviewSize*4, true ));
+				Drawable d = new BitmapDrawable(mContext.getResources(),
+						Utils.fetchFileIntoImageView(file, null, mPreviewSize*4, mPreviewSize*4, true ));
 				switcher.setImageDrawable(d);
 				ViewTagger.setTag(switcher, file.getAbsolutePath());    			
 				msgVw.setVisibility(View.GONE);
@@ -306,7 +304,7 @@ public class CoverBrowser {
 			return;
 		}
 
-		if (mIsbn == null || mIsbn.trim().length() == 0) {
+		if (mIsbn == null || mIsbn.trim().isEmpty()) {
 			Toast.makeText(mContext, R.string.no_isbn_no_editions, Toast.LENGTH_LONG).show();
 			shutdown();
 			return;
@@ -412,8 +410,8 @@ public class CoverBrowser {
 	 * @author Philip Warner
 	 */
 	private class FileManager {
-		private Bundle mFiles = new Bundle();
-    	LibraryThingManager mLibraryThing = new LibraryThingManager(mContext);
+		private final Bundle mFiles = new Bundle();
+    	final LibraryThingManager mLibraryThing = new LibraryThingManager(mContext);
 
     	private boolean isGood(File f) {
     		boolean ok = true;
@@ -451,6 +449,7 @@ public class CoverBrowser {
 		 * 
 		 * @param isbn	ISBN of file
 		 * @param size	Size of image required.
+		 *
 		 * @return
 		 */
 		public String download(String isbn, ImageSizes size) {
@@ -542,12 +541,12 @@ public class CoverBrowser {
 	 * @author Philip Warner
 	 */
 	public class CoverImageAdapter extends BaseAdapter {
-		private int mGalleryItemBackground;
+		private final int mGalleryItemBackground;
 		
 		/**
 		 * Constructor
 		 */
-		public CoverImageAdapter() {
+		CoverImageAdapter() {
 			// Setup the background
 			TypedArray a = mContext.obtainStyledAttributes(R.styleable.CoverGallery);
 			mGalleryItemBackground = a.getResourceId(

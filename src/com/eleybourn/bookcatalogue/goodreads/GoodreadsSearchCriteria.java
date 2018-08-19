@@ -112,7 +112,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
 				doSearch();
 			}});
 		
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);		
+		Utils.initBackground(this);
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);		
+		Utils.initBackground(this);
 	}
 
 	/**
@@ -155,7 +155,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
 	 * Set the OnClickListener for the passed view
 	 */
 	private void setClickListener(int id, OnClickListener listener) {
-		((View)this.findViewById(id)).setOnClickListener(listener);
+		this.findViewById(id).setOnClickListener(listener);
 	}
 
 
@@ -165,7 +165,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
 	private void doSearch() {
 		String criteria = getViewText(R.id.search_text).trim();
 
-		if (criteria.equals("")) {
+		if (criteria.isEmpty()) {
 			Toast.makeText(this, getString(R.string.please_enter_search_criteria), Toast.LENGTH_LONG).show();
 			return;
 		}

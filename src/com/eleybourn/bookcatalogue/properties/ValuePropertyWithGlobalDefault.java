@@ -27,7 +27,7 @@ package com.eleybourn.bookcatalogue.properties;
  *
  * @param <T>
  */
-public abstract class ValuePropertyWithGlobalDefault<T extends Object> extends Property {
+public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
 	/** Underlying value */
 	private T mValue;
 	/** Key in preferences for default value */
@@ -81,7 +81,6 @@ public abstract class ValuePropertyWithGlobalDefault<T extends Object> extends P
 
 	/**
 	 * Accessor for underlying (or global) value
-	 * @return
 	 */
 	public T get() {
 		if (mIsGlobal)
@@ -91,7 +90,6 @@ public abstract class ValuePropertyWithGlobalDefault<T extends Object> extends P
 	}
 	/**
 	 * Accessor for underlying (or global) value
-	 * @return
 	 */
 	public ValuePropertyWithGlobalDefault<T> set(T value) {
 		mValue = value;
@@ -102,7 +100,6 @@ public abstract class ValuePropertyWithGlobalDefault<T extends Object> extends P
 
 	/**
 	 * Accessor for for fully resolved/defaulted value
-	 * @return
 	 */
 	public T getResolvedValue() {
 		if (mIsGlobal)
@@ -116,52 +113,34 @@ public abstract class ValuePropertyWithGlobalDefault<T extends Object> extends P
 			return mValue;
 	}
 	
-	/**
-	 * Accessor
-	 */
 	public boolean isGlobal() {
 		return mIsGlobal;
 	}
 
-	/**
-	 * Accessor
-	 */
 	public ValuePropertyWithGlobalDefault<T> setGlobal(boolean isGlobal) {
 		if (isGlobal && !hasGlobalDefault())
 			throw new RuntimeException("Can not set a parameter to global if preference value has not been specified");
 		mIsGlobal = isGlobal;
 		return this;
 	}
-	/**
-	 * Accessor
-	 */
+
 	public String toString() {
 		return mValue.toString();
 	}
 
-	/**
-	 * Accessor
-	 */
 	public ValuePropertyWithGlobalDefault<T> setDefaultValue(T value) {
 		mDefaultValue = value;
 		return this;
 	}
-	/**
-	 * Accessor
-	 */
+
 	public T getDefaultValue() {
 		return mDefaultValue;
 	}
 
-	/**
-	 * Accessor
-	 */
-	public String getPreferenceKey() {
+	String getPreferenceKey() {
 		return mDefaultPrefKey;
 	}
-	/**
-	 * Accessor
-	 */
+
 	public ValuePropertyWithGlobalDefault<T> setPreferenceKey(String key) {
 		mDefaultPrefKey = key;
 		return this;
@@ -171,25 +150,20 @@ public abstract class ValuePropertyWithGlobalDefault<T extends Object> extends P
 	 * Utility to check if a global default is available
 	 */
 	public boolean hasGlobalDefault() {
-		return (mDefaultPrefKey != null && !mDefaultPrefKey.equals(""));
+		return (mDefaultPrefKey != null && !mDefaultPrefKey.isEmpty());
 	}
 
 	/**
 	 * Utility to check if the current value IS the default value
-	 * @param value
-	 * @return
 	 */
 	public boolean isDefault(T value) {
 		if (hasGlobalDefault() && !isGlobal())
 			return (value == null);
 
 		// We have a default value, and no global prefs
-		if (value == null && mDefaultValue == null) {
-			return true;
-		} else if (value != null && mDefaultValue != null && value.equals(mDefaultValue)) {
-			return true;
-		} else {
-			return false;
-		}
+		return value == null
+				&& mDefaultValue == null || value != null
+				&& mDefaultValue != null
+				&& value.equals(mDefaultValue);
 	}
 }

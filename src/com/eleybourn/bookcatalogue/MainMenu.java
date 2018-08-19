@@ -101,7 +101,7 @@ public class MainMenu extends BookCatalogueActivity {
 			HintManager.displayHint(this, R.string.hint_startup_screen, null);
 		}
 
-		Utils.initBackground(R.drawable.bc_background_gradient, this, true);
+		Utils.initBackground(this, true);
 	}
 
 	/**
@@ -123,9 +123,7 @@ public class MainMenu extends BookCatalogueActivity {
 			grItem.setVisibility(View.GONE);
 		}
 
-		Utils.initBackground(R.drawable.bc_background_gradient, this, true);	
-
-		/**
+		/*
 		 * RELEASE: DEBUG ONLY; used when tracking a bug in android 2.1, but kept because
 		 * there are still non-fatal anomalies.
 		 */
@@ -135,9 +133,9 @@ public class MainMenu extends BookCatalogueActivity {
 	/**
 	 * Add Book Menu Handler
 	 */
-	private OnClickListener mAddBookHandler = new OnClickListener() {
+	private final OnClickListener mAddBookHandler = new OnClickListener() {
 		@Override public void onClick(View v) {
-			ArrayList<AlertDialogItem> items = new ArrayList<AlertDialogItem>();
+			ArrayList<AlertDialogItem> items = new ArrayList<>();
 			items.add( new AlertDialogItem(getString(R.string.scan_barcode_isbn), mCreateBookScan) );
 			items.add( new AlertDialogItem(getString(R.string.enter_isbn), mCreateBookIsbn) );
 			items.add( new AlertDialogItem(getString(R.string.search_internet), mCreateBookName) );
@@ -149,7 +147,7 @@ public class MainMenu extends BookCatalogueActivity {
 	/**
 	 * Loan Book Menu Handler
 	 */
-	private OnClickListener mLoanBookHandler = new OnClickListener() {
+	private final OnClickListener mLoanBookHandler = new OnClickListener() {
 		@Override public void onClick(View v) {
 			//Intent i = new Intent(this, BookCatalogue.class);
 			//i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -160,7 +158,7 @@ public class MainMenu extends BookCatalogueActivity {
 	/**
 	 * Search Menu Handler
 	 */
-	private OnClickListener mSearchHandler = new OnClickListener() {
+	private final OnClickListener mSearchHandler = new OnClickListener() {
 		@Override public void onClick(View v) {
 			Intent i = new Intent(MainMenu.this, SearchCatalogue.class);
 			//i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -171,7 +169,7 @@ public class MainMenu extends BookCatalogueActivity {
 	/**
 	 * Admin Menu Handler
 	 */
-	private OnClickListener mAdminHandler = new OnClickListener() {
+	private final OnClickListener mAdminHandler = new OnClickListener() {
 		@Override public void onClick(View v) {
 			Intent i = new Intent(MainMenu.this, AdministrationFunctions.class);
 			startActivity(i);			
@@ -181,7 +179,7 @@ public class MainMenu extends BookCatalogueActivity {
 	/**
 	 * Browse Handler
 	 */
-	private OnClickListener mBrowseHandler = new OnClickListener() {
+	private final OnClickListener mBrowseHandler = new OnClickListener() {
 		@Override public void onClick(View v) {
 			Intent i = new Intent(MainMenu.this, BooksOnBookshelf.class);
 			startActivity(i);
@@ -191,7 +189,7 @@ public class MainMenu extends BookCatalogueActivity {
 	/**
 	 * Goodreads Menu Handler
 	 */
-	private OnClickListener mGoodreadsHandler = new OnClickListener() {
+	private final OnClickListener mGoodreadsHandler = new OnClickListener() {
 		@Override public void onClick(View v) {
 			GoodreadsUtils.showGoodreadsOptions(MainMenu.this);
 		}
@@ -200,7 +198,7 @@ public class MainMenu extends BookCatalogueActivity {
 	/**
 	 * About Menu Handler
 	 */
-	private OnClickListener mAboutHandler = new OnClickListener() {
+	private final OnClickListener mAboutHandler = new OnClickListener() {
 		@Override public void onClick(View v) {
 			Intent i = new Intent(MainMenu.this, AdministrationAbout.class);
 			startActivity(i);
@@ -210,7 +208,7 @@ public class MainMenu extends BookCatalogueActivity {
 	/**
 	 * Help Menu Handler
 	 */
-	private OnClickListener mHelpHandler = new OnClickListener() {
+	private final OnClickListener mHelpHandler = new OnClickListener() {
 		@Override public void onClick(View v) {
 			Intent i = new Intent(MainMenu.this, Help.class);
 			startActivity(i);			
@@ -220,7 +218,7 @@ public class MainMenu extends BookCatalogueActivity {
 	/**
 	 * Donate Menu Handler
 	 */
-	private OnClickListener mDonateHandler = new OnClickListener() {
+	private final OnClickListener mDonateHandler = new OnClickListener() {
 		@Override public void onClick(View v) {
 			Intent i = new Intent(MainMenu.this, AdministrationDonate.class);
 			startActivity(i);
@@ -242,7 +240,7 @@ public class MainMenu extends BookCatalogueActivity {
 	/**
 	 * 'My Books' menu item.
 	 */
-	private OnClickListener mMyBooksHandler = new OnClickListener() {
+	private final OnClickListener mMyBooksHandler = new OnClickListener() {
 		@Override public void onClick(View v) { doMyBooks(); }
 	};
 	/**
@@ -257,7 +255,7 @@ public class MainMenu extends BookCatalogueActivity {
 	/**
 	 * Add Book Sub-Menu: Load the BookEdit Activity
 	 */
-	private Runnable mCreateBookManually = new Runnable() {
+	private final Runnable mCreateBookManually = new Runnable() {
 		@Override
 		public void run() {
 			Intent i = new Intent(MainMenu.this, BookEdit.class);
@@ -268,7 +266,7 @@ public class MainMenu extends BookCatalogueActivity {
 	/**
 	 * Add Book Sub-Menu: Load the Search by ISBN Activity
 	 */
-	private Runnable mCreateBookIsbn = new Runnable() {
+	private final Runnable mCreateBookIsbn = new Runnable() {
 		@Override
 		public void run() {
 			Intent i = new Intent(MainMenu.this, BookISBNSearch.class);
@@ -280,7 +278,7 @@ public class MainMenu extends BookCatalogueActivity {
 	/**
 	 * Add Book Sub-Menu: Load the Search by ISBN Activity
 	 */
-	private Runnable mCreateBookName = new Runnable() {
+	private final Runnable mCreateBookName = new Runnable() {
 		@Override
 		public void run() {
 			Intent i = new Intent(MainMenu.this, BookISBNSearch.class);
@@ -292,7 +290,7 @@ public class MainMenu extends BookCatalogueActivity {
 	/**
 	 * Add Book Sub-Menu: Load the Search by ISBN Activity to begin scanning.
 	 */
-	private Runnable mCreateBookScan = new Runnable() {
+	private final Runnable mCreateBookScan = new Runnable() {
 		@Override
 		public void run() {
 			Intent i = new Intent(MainMenu.this, BookISBNSearch.class);

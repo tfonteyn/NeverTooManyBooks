@@ -6,7 +6,7 @@
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingLeft">@dimen/padding_prefs_item</item>
+        <item name="android:paddingStart">@dimen/padding_prefs_item</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
@@ -15,7 +15,7 @@
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">@dimen/padding_border</item>
-        <item name="android:paddingLeft">@dimen/padding_border</item>
+        <item name="android:paddingStart">@dimen/padding_border</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
@@ -24,12 +24,19 @@
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingLeft">@dimen/padding_border</item>
+        <item name="android:paddingStart">@dimen/padding_border</item>
         <item name="android:paddingTop">20dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
-    <!-- Style for key of isbn search keybouard -->
+    <!-- the name is taken from the original xml drawable, should be renamed (or removed) -->
+    <style name="main_menu_header_divider">
+        <!--
+        <item name="android:background">@drawable/main_menu_header_divider</item>
+        -->
+    </style>
+
+    <!-- Style for key of isbn search keyboard -->
     <style name="isbn_search_key">
         <item name="android:layout_width">@dimen/isbn_key_size</item>
         <item name="android:layout_height">@dimen/isbn_key_size</item>
@@ -49,7 +56,7 @@
         <item name="android:textIsSelectable">true</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingLeft">@dimen/padding_book_details_info</item>
+        <item name="android:paddingStart">@dimen/padding_book_details_info</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
     <style name="fileDetailsTextStyle" parent="bookDetailsTextStyle">
@@ -83,14 +90,14 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_alignParentStart">true</item>
     </style>
 
     <style name="editorFieldTextStyleBase">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_alignParentStart">true</item>
         <item name="android:hint">@string/notset</item>
     </style>
 
@@ -105,6 +112,43 @@
     </style>
 
     <style name="languageTextEntry" parent="@style/localeBasedTextEntry">
+    </style>
+
+    <style name="bookshelf_spinner">
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    </style>
+
+    <style name="propertyValue">
+        <!-- <item name="android:background">#40000000</item> -->
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">@dimen/padding_border</item>
+        <item name="android:paddingEnd">@dimen/padding_border_double</item>
+        <item name="android:gravity">top</item>
+    </style>
+
+    <style name="error_message">
+        <item name="android:textColor">@color/error_msg</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="link_url">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingBottom">@dimen/padding_border</item>
+        <item name="android:paddingStart">15dp</item>
+        <item name="android:paddingEnd">15dp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textColor">@color/link_blue</item>
+    </style>
+
+    <style name="link_donate">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingBottom">20dp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:textColor">@color/link_donate</item>
     </style>
 
 </resources>

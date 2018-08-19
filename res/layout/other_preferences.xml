@@ -2,15 +2,15 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@drawable/bc_background_gradient_dim" >
+    android:layout_height="fill_parent">
 
     <LinearLayout
         android:id="@+id/dynamic_properties"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingLeft="@dimen/padding_border" >
+        android:paddingStart="@dimen/padding_border"
+        android:paddingEnd="@dimen/padding_border">
     </LinearLayout>
 
 </ScrollView>

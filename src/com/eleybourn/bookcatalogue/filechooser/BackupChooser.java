@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.filechooser;
 import java.io.File;
 import java.util.Date;
 
+import android.app.DialogFragment;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -30,7 +31,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.backup.Importer;
-import com.eleybourn.bookcatalogue.compat.BookCatalogueDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.ExportSettings;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.OnExportTypeSelectionDialogResultListener;
@@ -77,8 +77,6 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 
 	/**
 	 * Setup the default file name: blank for 'open', date-based for save
-	 * 
-	 * @return
 	 */
 	private String getDefaultFileName() {
     	if (isSaveDialog()) {
@@ -124,7 +122,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 	@Override
 	public void onOpen(File file) {
 		ImportTypeSelectionDialogFragment frag = ImportTypeSelectionDialogFragment.newInstance(DIALOG_OPEN_IMPORT_TYPE, file);
-		frag.show(getSupportFragmentManager(), null);
+		frag.show(getFragmentManager(), null);
 	}
 
 	/**
@@ -133,7 +131,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 	@Override
 	public void onSave(File file) {
 		ExportTypeSelectionDialogFragment frag = ExportTypeSelectionDialogFragment.newInstance(DIALOG_OPEN_IMPORT_TYPE, file);
-		frag.show(getSupportFragmentManager(), null);
+		frag.show(getFragmentManager(), null);
 	}
 
 	@Override
@@ -146,7 +144,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 						+ "\n\n" + getString(R.string.if_the_problem_persists);
 
 				MessageDialogFragment frag = MessageDialogFragment.newInstance(0, R.string.backup_to_archive, msg, R.string.ok, 0, 0);
-				frag.show(getSupportFragmentManager(), null);
+				frag.show(getFragmentManager(), null);
 				// Just return; user may want to try again
 				return;
 			}
@@ -157,7 +155,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 			// Show a helpful message
 			String msg = getString(R.string.archive_complete_details, mBackupFile.getParent(), mBackupFile.getName(), Utils.formatFileSize(mBackupFile.length()));
 			MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_SAVE, R.string.backup_to_archive, msg, R.string.ok, 0, 0);
-			frag.show(getSupportFragmentManager(), null);
+			frag.show(getFragmentManager(), null);
 
 		} else if (taskId == TASK_ID_OPEN) {
 			if (!success) {
@@ -166,7 +164,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 						+ "\n\n" + getString(R.string.if_the_problem_persists);
 
 				MessageDialogFragment frag = MessageDialogFragment.newInstance(0, R.string.import_from_archive, msg, R.string.ok, 0, 0);
-				frag.show(getSupportFragmentManager(), null);
+				frag.show(getFragmentManager(), null);
 				// Just return; user may want to try again
 				return;
 			}
@@ -176,7 +174,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 			}
 
 			MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_OPEN, R.string.import_from_archive, R.string.import_complete, R.string.ok, 0, 0);
-			frag.show(getSupportFragmentManager(), null);
+			frag.show(getFragmentManager(), null);
 
 		}
 	}
@@ -216,28 +214,30 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 	}
 
 	@Override
-	public void onExportTypeSelectionDialogResult(int dialogId, BookCatalogueDialogFragment dialog, ExportSettings settings) {
-		if (settings.options == Exporter.EXPORT_ALL) {
-			mBackupFile = BackupManager.backupCatalogue(this, settings.file, TASK_ID_SAVE, Exporter.EXPORT_ALL, null);			
-		} else if (settings.options == 0) {
-			return;
-		} else {
-			if (settings.dateFrom == null) {
-				String lastBackup = BookCatalogueApp.getAppPreferences().getString(BookCataloguePreferences.PREF_LAST_BACKUP_DATE, null);
-				if (lastBackup != null && !lastBackup.equals("")) {
-					try {
-						settings.dateFrom = Utils.parseDate(lastBackup);
-					} catch (Exception e) {
-						// Just ignore; backup everything
-						Logger.logError(e);
+	public void onExportTypeSelectionDialogResult(int dialogId, DialogFragment dialog, ExportSettings settings) {
+		switch (settings.options) {
+			case Exporter.EXPORT_ALL:
+				mBackupFile = BackupManager.backupCatalogue(this, settings.file, TASK_ID_SAVE, Exporter.EXPORT_ALL, null);
+				break;
+			case Exporter.EXPORT_NOTHING:
+				return;
+			default:
+				if (settings.dateFrom == null) {
+					String lastBackup = BookCatalogueApp.getAppPreferences().getString(BookCataloguePreferences.PREF_LAST_BACKUP_DATE, null);
+					if (lastBackup != null && !lastBackup.isEmpty()) {
+						try {
+							settings.dateFrom = Utils.parseDate(lastBackup);
+						} catch (Exception e) {
+							// Just ignore; backup everything
+							Logger.logError(e);
+							settings.dateFrom = null;
+						}
+					} else {
 						settings.dateFrom = null;
 					}
-				} else {
-					settings.dateFrom = null;
-				}				
-			}
-			mBackupFile = BackupManager.backupCatalogue(this, settings.file, TASK_ID_SAVE, settings.options, settings.dateFrom);
-			
+				}
+				mBackupFile = BackupManager.backupCatalogue(this, settings.file, TASK_ID_SAVE, settings.options, settings.dateFrom);
+				break;
 		}
 	}
 

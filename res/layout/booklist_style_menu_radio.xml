@@ -4,5 +4,6 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:checked="false"
-    android:paddingRight="10dp"
+    android:paddingStart="@dimen/padding_border_double"
+    android:paddingEnd="@dimen/padding_border_double"
     android:singleLine="false" />

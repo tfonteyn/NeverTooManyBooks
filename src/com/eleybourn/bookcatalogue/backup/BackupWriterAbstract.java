@@ -43,13 +43,13 @@ import com.eleybourn.bookcatalogue.utils.Logger;
  * @author pjw
  */
 public abstract class BackupWriterAbstract implements BackupWriter {
-	private CatalogueDBAdapter mDbHelper;
+	private final CatalogueDBAdapter mDbHelper;
 
 	/**
 	 * Constructor
 	 */
-	public BackupWriterAbstract() {
-		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.context);
+	protected BackupWriterAbstract() {
+		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
 		mDbHelper.open();
 	}
 
@@ -110,13 +110,9 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 
 	/**
 	 * Generate a bundle containing the INFO block, and send it to the archive
-	 * 
-	 * @param writer
-	 * 
-	 * @throws IOException
 	 */
 	private void writeInfo(BackupWriterListener listener, int bookCount, int coverCount) throws IOException {
-		BackupInfo info = BackupInfo.createInfo(getContainer(), mDbHelper, BookCatalogueApp.context, bookCount, coverCount);
+		BackupInfo info = BackupInfo.createInfo(getContainer(), BookCatalogueApp.getAppContext(), bookCount, coverCount);
 		putInfo(info);
 		listener.step(null, 1);
 	}
@@ -129,12 +125,8 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 	 * temp file or a stream were appropriate. Sadly, tar archives need to know size before
 	 * the header can be written.
 	 * 
-	 * It IS convenient to do it here because we can caputre the progress, but we could also
+	 * It IS convenient to do it here because we can capture the progress, but we could also
 	 * have writer.putBooks(exporter, listener) as the method.
-	 * 
-	 * @param writer
-	 * 
-	 * @throws IOException
 	 */
 	private File generateBooks(final BackupWriterListener listener, final int backupFlags, final Date since, final int numCovers) throws IOException {
 		// This is an estimate only; we actually don't know how many covers
@@ -158,7 +150,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 				// Save the book count for later
 				listener.setTotalBooks(max);
 				// Update the progress bar to a more reasonable value
-				listener.setMax((int) (numCovers + max + 1));
+				listener.setMax(numCovers + max + 1);
 			}
 		};
 
@@ -182,8 +174,6 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 
 	/**
 	 * @param exportFile 	the file containing the exported books in CSV format
-	 * 
-	 * @throws IOException
 	 */
 	private void writeBooks(File exportFile) throws IOException {
 		try {
@@ -255,10 +245,6 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 
 	/**
 	 * Write each cover file corresponding to a book to the archive
-	 * 
-	 * @param writer
-	 * 
-	 * @throws IOException
 	 */
 	private int writeCovers(final BackupWriterListener listener, final int backupFlags, final Date since, boolean dryRun) throws IOException {
 		long sinceTime = 0;
@@ -319,10 +305,6 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 
 	/**
 	 * Get the preferences and save them
-	 * 
-	 * @param listener
-	 * 
-	 * @throws IOException
 	 */
 	private void writePreferences(final BackupWriterListener listener) throws IOException {
 		SharedPreferences prefs = BookCataloguePreferences.getSharedPreferences();
@@ -332,10 +314,6 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 
 	/**
 	 * Save all USER styles
-	 * 
-	 * @param listener
-	 * 
-	 * @throws IOException
 	 */
 	private void writeStyles(final BackupWriterListener listener) throws IOException {
 		BooklistStyles styles = BooklistStyles.getAllStyles(mDbHelper);

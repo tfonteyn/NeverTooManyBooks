@@ -55,19 +55,19 @@ import com.eleybourn.bookcatalogue.database.CoversDbHelper;
  */
 public class SimpleTaskQueue {
 	// Execution queue
-	private BlockingStack<SimpleTaskWrapper> mQueue = new BlockingStack<SimpleTaskWrapper>();
+	private final BlockingStack<SimpleTaskWrapper> mQueue = new BlockingStack<>();
 	// Results queue
-	private LinkedBlockingQueue<SimpleTaskWrapper> mResultQueue = new LinkedBlockingQueue<SimpleTaskWrapper>();
+	private final LinkedBlockingQueue<SimpleTaskWrapper> mResultQueue = new LinkedBlockingQueue<>();
 	// Flag indicating this object should terminate.
 	private boolean mTerminate = false;
 	// Handler for sending tasks to the UI thread.
-	private Handler mHandler = new Handler();
+	private final Handler mHandler = new Handler();
 	// Name for this queue
 	private final String mName;
 	// Threads associate with this queue
-	private ArrayList<SimpleTaskQueueThread> mThreads = new ArrayList<SimpleTaskQueueThread>();
+	private final ArrayList<SimpleTaskQueueThread> mThreads = new ArrayList<>();
 	/** Max number of threads to create */
-	private int mMaxTasks;
+	private final int mMaxTasks;
 	/** Number of currently queued, executing (or starting/finishing) tasks */
 	private int mManagedTaskCount = 0;
 
@@ -113,36 +113,18 @@ public class SimpleTaskQueue {
 		void onTaskFinish(SimpleTask task, Exception e);
 	}
 
-	/**
-	 * Accessor.
-	 * 
-	 * @param listener
-	 */
 	public void setTaskStartListener(OnTaskStartListener listener) {
 		mTaskStartListener = listener;
 	}
-	/**
-	 * Accessor.
-	 * 
-	 * @param listener
-	 */
+
 	public OnTaskStartListener getTaskStartListener() {
 		return mTaskStartListener;
 	}
 
-	/**
-	 * Accessor.
-	 * 
-	 * @param listener
-	 */
 	public void setTaskFinishListener(OnTaskFinishListener listener) {
 		mTaskFinishListener = listener;
 	}
-	/**
-	 * Accessor.
-	 * 
-	 * @param listener
-	 */
+
 	public OnTaskFinishListener getTaskFinishListener() {
 		return mTaskFinishListener;
 	}
@@ -164,11 +146,11 @@ public class SimpleTaskQueue {
 	private static class SimpleTaskWrapper implements SimpleTaskContext {
 		private static Long mCounter = 0L;
 		private final SimpleTaskQueue mOwner;
-		public SimpleTask task;
+		public final SimpleTask task;
 		public Exception exception;
-		public boolean finishRequested = true;
-		public long id;
-		public SimpleTaskQueueThread activeThread = null;
+		boolean finishRequested = true;
+		public final long id;
+		SimpleTaskQueueThread activeThread = null;
 		SimpleTaskWrapper(SimpleTaskQueue owner, SimpleTask task) {
 			mOwner = owner;
 			this.task = task;
@@ -242,15 +224,13 @@ public class SimpleTaskQueue {
 		synchronized(this) {
 			mTerminate = true;
 			for(Thread t : mThreads) {
-				try { t.interrupt(); } catch (Exception e) {};
-			}
+				try { t.interrupt(); } catch (Exception ignored) {}
+            }
 		}
 	}
 
 	/**
 	 * Check to see if any tasks are active -- either queued, or with ending results.
-	 * 
-	 * @return
 	 */
 	public boolean hasActiveTasks() {
 		synchronized(this) {
@@ -332,7 +312,7 @@ public class SimpleTaskQueue {
 	/**
 	 * Method to ensure results queue is processed.
 	 */
-	private Runnable mDoProcessResults = new Runnable() {
+	private final Runnable mDoProcessResults = new Runnable() {
 		@Override
 		public void run() {
 			synchronized(mDoProcessResults) {
@@ -344,8 +324,6 @@ public class SimpleTaskQueue {
 
 	/**
 	 * Run the task then queue the results.
-	 * 
-	 * @param task
 	 */
 	private void handleRequest(final SimpleTaskQueueThread thread, final SimpleTaskWrapper taskWrapper) {
 		final SimpleTask task = taskWrapper.task;
@@ -388,7 +366,7 @@ public class SimpleTaskQueue {
 			if (taskWrapper.finishRequested || mTaskFinishListener != null) {
 				try {
 					mResultQueue.put(taskWrapper);	
-				} catch (InterruptedException e) {
+				} catch (InterruptedException ignored) {
 				}
 				// Queue Runnable in the UI thread.
 				synchronized(mDoProcessResults) {
@@ -447,18 +425,13 @@ public class SimpleTaskQueue {
 		}
 	}
 
-	public static interface SimpleTaskContext {
-		public CatalogueDBAdapter getDb();
-		/** 'Covers' database helper */
-		public CoversDbHelper getCoversDb();
-		/** Utils object */
-		public Utils getUtils();
-		/** Accessor */
-		public void setRequiresFinish(boolean requiresFinish);
-		/** Accessor */
-		public boolean getRequiresFinish();
-		/** Accessor */
-		public boolean isTerminating();
+	public interface SimpleTaskContext {
+		CatalogueDBAdapter getDb();
+        CoversDbHelper getCoversDb();
+        Utils getUtils();
+        void setRequiresFinish(boolean requiresFinish);
+        boolean getRequiresFinish();
+        boolean isTerminating();
 	}
 
 	/**
@@ -507,21 +480,21 @@ public class SimpleTaskQueue {
 				try {
 					if (mDb != null)
 						mDb.close();					
-				} catch (Exception e) {}
+				} catch (Exception ignored) {}
 				try {
 					if (mCoversDb != null)
 						mCoversDb.close();					
-				} catch (Exception e) {}
+				} catch (Exception ignored) {}
 				try {
 					if (mUtils != null)
 						mUtils.close();					
-				} catch (Exception e) {}
+				} catch (Exception ignored) {}
 			}
 		}
 
 		public CatalogueDBAdapter getDb() {
 			if (mDb == null) {
-				mDb = new CatalogueDBAdapter(BookCatalogueApp.context);
+				mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
 				mDb.open();
 			}
 			return mDb;

@@ -63,7 +63,7 @@ public class BackupUtils {
 		/** Get the object for the specified key */
 		Object get(T key);
 		/** Process the passed tring to store int the collection */
-		public void putItem(Bundle bundle, String key, String type, String value) throws IOException;
+        void putItem(Bundle bundle, String key, String type, String value) throws IOException;
 	}
 
 	/**
@@ -73,8 +73,8 @@ public class BackupUtils {
 	 *
 	 */
 	private static class BundleAccessor implements CollectionAccessor<String> {
-		Bundle mBundle;
-		public BundleAccessor(Bundle b) {
+		final Bundle mBundle;
+		BundleAccessor(Bundle b) {
 			mBundle = b;
 		}
 		@Override
@@ -87,21 +87,29 @@ public class BackupUtils {
 		}	
 		@Override
 		public void putItem(Bundle bundle, String key, String type, String value) throws IOException {
-			if (type.equals(BackupUtils.TYPE_INTEGER)) {
-				mBundle.putInt(key, Integer.parseInt(value));
-			} else if (type.equals(BackupUtils.TYPE_LONG)) {
-				mBundle.putLong(key, Long.parseLong(value));
-			} else if (type.equals(BackupUtils.TYPE_FLOAT)) {
-				mBundle.putFloat(key, Float.parseFloat(value));
-			} else if (type.equals(BackupUtils.TYPE_DOUBLE)) {
-				mBundle.putDouble(key, Double.parseDouble(value));
-			} else if (type.equals(BackupUtils.TYPE_STRING)) {
-				mBundle.putString(key, value);
-			} else if (type.equals(BackupUtils.TYPE_BOOLEAN)) {
-				mBundle.putBoolean(key, Boolean.parseBoolean(value));
-			} else if (type.equals(BackupUtils.TYPE_SERIALIZABLE)) {
-				Serializable s = Base64.decode(value);
-				mBundle.putSerializable(key, s);
+			switch (type) {
+				case BackupUtils.TYPE_INTEGER:
+					mBundle.putInt(key, Integer.parseInt(value));
+					break;
+				case BackupUtils.TYPE_LONG:
+					mBundle.putLong(key, Long.parseLong(value));
+					break;
+				case BackupUtils.TYPE_FLOAT:
+					mBundle.putFloat(key, Float.parseFloat(value));
+					break;
+				case BackupUtils.TYPE_DOUBLE:
+					mBundle.putDouble(key, Double.parseDouble(value));
+					break;
+				case BackupUtils.TYPE_STRING:
+					mBundle.putString(key, value);
+					break;
+				case BackupUtils.TYPE_BOOLEAN:
+					mBundle.putBoolean(key, Boolean.parseBoolean(value));
+					break;
+				case BackupUtils.TYPE_SERIALIZABLE:
+					Serializable s = Base64.decode(value);
+					mBundle.putSerializable(key, s);
+					break;
 			}
 		}
 	}
@@ -113,21 +121,21 @@ public class BackupUtils {
 	 *
 	 */
 	private static class PreferencesAccessor implements CollectionAccessor<String> {
-		SharedPreferences mPrefs;
-		Map<String,?> mMap;
+		final SharedPreferences mPrefs;
+		final Map<String,?> mMap;
 		Editor mEditor;
 
-		public PreferencesAccessor(SharedPreferences p) {
+		PreferencesAccessor(SharedPreferences p) {
 			mPrefs = p;
 			mMap = p.getAll();
 		}
 		
-		public void beginEdit() {
+		void beginEdit() {
 			mEditor = mPrefs.edit();
 			mEditor.clear();
 		}
 
-		public void endEdit() {
+		void endEdit() {
 			mEditor.commit();
 			mEditor = null;
 		}
@@ -141,29 +149,31 @@ public class BackupUtils {
 			return mMap.get(key);
 		}
 		@Override
-		public void putItem(Bundle bundle, String key, String type, String value) throws IOException {
-			if (type.equals(BackupUtils.TYPE_INTEGER)) {
-				mEditor.putInt(key, Integer.parseInt(value));
-			} else if (type.equals(BackupUtils.TYPE_LONG)) {
-				mEditor.putLong(key, Long.parseLong(value));
-			} else if (type.equals(BackupUtils.TYPE_FLOAT)) {
-				mEditor.putFloat(key, Float.parseFloat(value));
-			} else if (type.equals(BackupUtils.TYPE_STRING)) {
-				mEditor.putString(key, value);
-			} else if (type.equals(BackupUtils.TYPE_BOOLEAN)) {
-				mEditor.putBoolean(key, Boolean.parseBoolean(value));
-			} else {
-				throw new RuntimeException("Unable write data of type '" + type + "' to preferences");
+		public void putItem(Bundle bundle, String key, String type, String value) {
+			switch (type) {
+				case BackupUtils.TYPE_INTEGER:
+					mEditor.putInt(key, Integer.parseInt(value));
+					break;
+				case BackupUtils.TYPE_LONG:
+					mEditor.putLong(key, Long.parseLong(value));
+					break;
+				case BackupUtils.TYPE_FLOAT:
+					mEditor.putFloat(key, Float.parseFloat(value));
+					break;
+				case BackupUtils.TYPE_STRING:
+					mEditor.putString(key, value);
+					break;
+				case BackupUtils.TYPE_BOOLEAN:
+					mEditor.putBoolean(key, Boolean.parseBoolean(value));
+					break;
+				default:
+					throw new RuntimeException("Unable write data of type '" + type + "' to preferences");
 			}
 		}
 	}
 
 	/**
 	 * Write preferences to an XML stream.
-	 * 
-	 * @param out
-	 * @param prefs
-	 * @throws IOException
 	 */
 	public static void preferencesToXml(BufferedWriter out, SharedPreferences prefs) throws IOException {
 		PreferencesAccessor a = new PreferencesAccessor(prefs);
@@ -172,10 +182,6 @@ public class BackupUtils {
 	
 	/**
 	 * Read preferences from an XML stream.
-	 * 
-	 * @param in
-	 * @param prefs
-	 * @throws IOException
 	 */
 	public static void preferencesFromXml(BufferedReader in, SharedPreferences prefs) throws IOException {
 		PreferencesAccessor a = new PreferencesAccessor(prefs);
@@ -186,10 +192,6 @@ public class BackupUtils {
 
 	/**
 	 * Write Bundle to an XML stream.
-	 * 
-	 * @param out
-	 * @param bundle
-	 * @throws IOException
 	 */
 	public static void bundleToXml(BufferedWriter out, Bundle bundle) throws IOException {
 		BundleAccessor a = new BundleAccessor(bundle);
@@ -198,10 +200,6 @@ public class BackupUtils {
 
 	/**
 	 * Read Bundle from an XML stream.
-	 * 
-	 * @param in
-	 * @return		Bundle
-	 * @throws IOException
 	 */
 	public static Bundle bundleFromXml(BufferedReader in) throws IOException {
 		final Bundle bundle = new Bundle();
@@ -212,10 +210,6 @@ public class BackupUtils {
 
 	/**
 	 * Internal routine to send the passed CollectionAccessor data to an XML file.
-	 * 
-	 * @param out
-	 * @param col
-	 * @throws IOException
 	 */
 	private static void collectionToXml(BufferedWriter out, CollectionAccessor<String> col) throws IOException {
 		out.append("<collection>\n");
@@ -247,7 +241,7 @@ public class BackupUtils {
 			} else {
 				throw new RuntimeException("Unable write data of type '" + o.getClass().getSimpleName() + "' to XML");
 			}
-			out.append("<item name=\"" + key + "\" type=\"" + type + "\">" + value + "</item>\n");
+			out.append("<item name=\"").append(key).append("\" type=\"").append(type).append("\">").append(value).append("</item>\n");
 		}
 		out.append("</collection>\n");		
 	}
@@ -264,14 +258,10 @@ public class BackupUtils {
 
 	/**
 	 * Internal routine to update the passed CollectionAccessor from an XML file.
-	 * 
-	 * @param in
-	 * @param accessor
-	 * @throws IOException
 	 */
 	private static void collectionFromXml(BufferedReader in, final CollectionAccessor<String> accessor) throws IOException {
 		final Bundle bundle = new Bundle();
-		XmlFilter rootFilter = null;
+		XmlFilter rootFilter;
 		rootFilter = new XmlFilter("");
 		final ItemInfo info = new ItemInfo();
 
@@ -321,6 +311,4 @@ public class BackupUtils {
 	public static final String TYPE_BOOLEAN = "Bool";
 	public static final String TYPE_STRING = "Str";
 	public static final String TYPE_SERIALIZABLE = "Serial";
-
-
 }

@@ -35,7 +35,7 @@ public class FlattenedBooklist {
 	 * @param db	Database connection
 	 * @param table	Table definition
 	 */
-	public FlattenedBooklist(SynchronizedDb db, TableDefinition table) {
+	FlattenedBooklist(SynchronizedDb db, TableDefinition table) {
 		init(db, table.clone());
 	}
 
@@ -64,20 +64,10 @@ public class FlattenedBooklist {
 		mStatements = new SqlStatementManager(mDb);
 	}
 
-	/**
-	 * Accessor
-	 * 
-	 * @return
-	 */
 	public TableDefinition getTable() {
 		return mTable;
 	}
 	
-	/**
-	 * Accessor
-	 * 
-	 * @return
-	 */
 	public Long getBookId() {
 		return mBookId;
 	}
@@ -99,8 +89,6 @@ public class FlattenedBooklist {
 
 	/**
 	 * Passed a statement update the 'current' row details based on the columns returned
-	 * @param stmt
-	 * @return
 	 */
 	private boolean updateDetailsFromStatement(SynchronizedStatement stmt) {
 		// Get a pair of ID's separated by a '/'
@@ -125,8 +113,6 @@ public class FlattenedBooklist {
 	 * Check that the referenced table exists. This is important for resumed activities
 	 * where th underlying database connection may have closed and the table been deleted
 	 * as a result.
-	 * 
-	 * @return
 	 */
 	public boolean exists() {
 		return mTable.exists(mDb);
@@ -136,6 +122,7 @@ public class FlattenedBooklist {
 	 * Name for the 'next' statement
 	 */
 	private static final String NEXT_STMT_NAME = "next";
+
 	/**
 	 * Move to the next book row
 	 * 
@@ -242,7 +229,6 @@ public class FlattenedBooklist {
 
 	/**
 	 * Get the underlying row position (row ID)
-	 * @return
 	 */
 	public long getPosition() {
 		return mPosition;

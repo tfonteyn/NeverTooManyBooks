@@ -22,7 +22,6 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -44,14 +43,14 @@ abstract class CropImageViewTouchBase extends ImageView {
 	//
 	// This matrix is recomputed when we go from the thumbnail image to
 	// the full size image.
-	protected Matrix mBaseMatrix = new Matrix();
+	protected final Matrix mBaseMatrix = new Matrix();
 
 	// This is the supplementary transformation which reflects what
 	// the user has done in terms of zooming and panning.
 	//
 	// This matrix remains the same when we go from the thumbnail image
 	// to the full size image.
-	protected Matrix mSuppMatrix = new Matrix();
+	protected final Matrix mSuppMatrix = new Matrix();
 
 	// This is the final matrix which is computed as the concatentation
 	// of the base matrix and the supplementary matrix.
@@ -91,7 +90,7 @@ abstract class CropImageViewTouchBase extends ImageView {
 	// ImageViewTouchBase will pass a Bitmap to the Recycler if it has finished
 	// its use of that Bitmap.
 	public interface Recycler {
-		public void recycle(Bitmap b);
+		void recycle(Bitmap b);
 	}
 
 	public void setRecycler(Recycler r) {
@@ -132,7 +131,7 @@ abstract class CropImageViewTouchBase extends ImageView {
 		return super.onKeyDown(keyCode, event);
 	}
 
-	protected Handler mHandler = new Handler();
+	protected final Handler mHandler = new Handler();
 
 	protected int mLastXTouchPos;
 	protected int mLastYTouchPos;
@@ -271,9 +270,7 @@ abstract class CropImageViewTouchBase extends ImageView {
 	 */
 	@SuppressLint("NewApi")
 	private void forceSoftwareRenderer() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-		}		
 	}
 
 	protected float getValue(Matrix matrix, int whichValue) {
@@ -337,8 +334,7 @@ abstract class CropImageViewTouchBase extends ImageView {
 
 		float fw = (float) mBitmapDisplayed.getWidth() / (float) mThisWidth;
 		float fh = (float) mBitmapDisplayed.getHeight() / (float) mThisHeight;
-		float max = Math.max(fw, fh) * 4;
-		return max;
+		return Math.max(fw, fh) * 4;
 	}
 
 	protected void zoomTo(float scale, float centerX, float centerY) {

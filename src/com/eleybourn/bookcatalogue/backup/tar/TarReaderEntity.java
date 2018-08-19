@@ -19,7 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.backup.tar;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
@@ -33,9 +32,9 @@ import com.eleybourn.bookcatalogue.backup.ReaderEntityAbstract;
  * @author pjw
  */
 public class TarReaderEntity extends ReaderEntityAbstract {
-	protected TarBackupReader mReader;
-	protected TarArchiveEntry mEntry;
-	private BackupEntityType mType;
+	private final TarBackupReader mReader;
+	private final TarArchiveEntry mEntry;
+	private final BackupEntityType mType;
 
 	/**
 	 * Constructor
@@ -44,39 +43,27 @@ public class TarReaderEntity extends ReaderEntityAbstract {
 	 * @param entry		Corresponding archive entry
 	 * @param type		Type of item
 	 */
-	protected TarReaderEntity(TarBackupReader reader, TarArchiveEntry entry, BackupEntityType type) {
+	TarReaderEntity(TarBackupReader reader, TarArchiveEntry entry, BackupEntityType type) {
 		mReader = reader;
 		mEntry = entry;
 		mType = type;
 	}
 
-	/**
-	 * Accessor
-	 */
 	@Override
 	public BackupEntityType getType() {
 		return mType;
 	}
 
-	/**
-	 * Accessor
-	 */
 	@Override
-	public InputStream getStream() throws IOException {
+	public InputStream getStream() {
 		return mReader.getInput();
 	}
 
-	/**
-	 * Accessor
-	 */
 	@Override
 	public String getName() {
 		return mEntry.getName();
 	}
 	
-	/**
-	 * Accessor
-	 */
 	@Override
 	public Date getDateModified() {
 		return mEntry.getLastModifiedDate();

@@ -26,7 +26,6 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 
 import android.os.Bundle;
@@ -51,19 +50,13 @@ public class ShowBookByIdApiHandler extends ShowBookApiHandler {
 
 	/**
 	 * Perform a search and handle the results.
-	 * 
-	 * @param query
+	 *
+	 * @param workId
+	 * @param fetchThumbnail
+	 *
 	 * @return	the array of GoodreadsWork objects.
-	 * @throws IOException 
-	 * @throws BookNotFoundException 
-	 * @throws NotAuthorizedException 
-	 * @throws OAuthCommunicationException 
-	 * @throws OAuthExpectationFailedException 
-	 * @throws OAuthMessageSignerException 
-	 * @throws ClientProtocolException 
-	 * @throws NetworkException 
 	 */
-	public Bundle get(long workId, boolean fetchThumbnail) throws ClientProtocolException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
+	public Bundle get(long workId, boolean fetchThumbnail) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 		// Setup API call
 		final String urlBase = GOODREADS_API_ROOT + "/book/show/%1$s.xml?key=%2$s";
 		final String url = String.format(urlBase, workId, mManager.getDeveloperKey());

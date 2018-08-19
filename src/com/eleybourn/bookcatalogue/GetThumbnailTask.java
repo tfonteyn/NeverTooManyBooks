@@ -72,7 +72,7 @@ public class GetThumbnailTask implements SimpleTask {
 	}
 
 	/** Reference to the view we are using */
-	WeakReference<ImageView> mView = null;
+	final WeakReference<ImageView> mView;
 	/** ID of book whose cover we are getting */
 	private final String mBookHash;
 	/** Resulting bitmap object */
@@ -82,9 +82,9 @@ public class GetThumbnailTask implements SimpleTask {
 	/** Flag indicating image was found in the cache */
 	private boolean mWasInCache = false;
 	/** The width of the thumbnail retrieved (based on preferences) */
-	private int mWidth;
+	private final int mWidth;
 	/** The height of the thumbnail retrieved (based on preferences) */
-	private int mHeight;
+	private final int mHeight;
 	/** Indicated we want the queue manager to call the finished() method. */
 	private boolean  mWantFinished = true;
 	
@@ -96,12 +96,11 @@ public class GetThumbnailTask implements SimpleTask {
 	 * 
 	 * Used internally and from Utils.fetchFileIntoImageView to ensure that nothing 
 	 * overwrites the view.
-	 * 
-	 * @param queue
+	 *
 	 * @param v
 	 */
 	public static void clearOldTaskFromView(final ImageView v) {
-		final GetThumbnailTask oldTask = (GetThumbnailTask)ViewTagger.getTag(v, R.id.TAG_GET_THUMBNAIL_TASK);
+		final GetThumbnailTask oldTask = ViewTagger.getTag(v, R.id.TAG_GET_THUMBNAIL_TASK);
 		if (oldTask != null) {
 			ViewTagger.setTag(v, R.id.TAG_GET_THUMBNAIL_TASK, null);
 			mQueue.remove(oldTask);
@@ -110,17 +109,17 @@ public class GetThumbnailTask implements SimpleTask {
 
 	/**
 	 * Constructor. Clean the view and save the details of what we want.
-	 * 
-	 * @param queue
-	 * @param bookId
+	 *
+	 * @param hash
 	 * @param v
-	 * @param width
-	 * @param height
+	 * @param maxWidth
+	 * @param maxHeight
+	 * @param cacheWasChecked
 	 */
-	public GetThumbnailTask( final String hash, final ImageView v, int maxWidth, int maxHeight, boolean cacheWasChecked ) {
+	private GetThumbnailTask(final String hash, final ImageView v, int maxWidth, int maxHeight, boolean cacheWasChecked) {
 		clearOldTaskFromView(v);
 
-		mView = new WeakReference<ImageView>(v);
+		mView = new WeakReference<>(v);
 		mBookHash = hash;
 		mCacheWasChecked = cacheWasChecked;
 		mWidth = maxWidth;

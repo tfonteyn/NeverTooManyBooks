@@ -28,12 +28,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.SharedPreferences.Editor;
-import android.text.Html;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
-import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -83,8 +78,8 @@ public class HintManager {
 		.add("hint_amazon_links_blurb", R.string.hint_amazon_links_blurb)
 		;
 
-	public static interface HintOwner {
-		public int getHint();
+	public interface HintOwner {
+		int getHint();
 	}
 	
 	/** Reset all hints to that they will be displayed again */
@@ -122,7 +117,7 @@ public class HintManager {
 		final Button ok = (Button)dialog.findViewById(R.id.confirm);
 
 		// Setup the views
-		String hintText = BookCatalogueApp.context.getResources().getString(stringId, args);
+		String hintText = BookCatalogueApp.getAppContext().getResources().getString(stringId, args);
 		msg.setText(Utils.linkifyHtml(hintText, Linkify.ALL));
 		// Automatically start a browser (or whatever)
 		msg.setMovementMethod(LinkMovementMethod.getInstance());
@@ -165,9 +160,9 @@ public class HintManager {
 	 */
 	private static class Hints {
 		/** USed to lookup hint based on string ID */
-		private Hashtable<Integer, Hint> mHintsById = new Hashtable<Integer, Hint>();
-		/** Used to prevent two hints having the same preference name */
-		private Hashtable<String, Hint> mHintsByKey = new Hashtable<String, Hint>();
+		private final Hashtable<Integer, Hint> mHintsById = new Hashtable<>();
+		/* Used to prevent two hints having the same preference name */
+		//private final Hashtable<String, Hint> mHintsByKey = new Hashtable<>();
 
 		/**
 		 * Add a hint to the collection
@@ -178,18 +173,16 @@ public class HintManager {
 		 * @return				Hints, for chaining
 		 */
 		public Hints add(String key, int stringId) {
-			Hint h = new Hint(key, stringId);
+			Hint h = new Hint(key);
 			mHintsById.put(stringId, h);
-			mHintsByKey.put(key.trim().toLowerCase(), h);
+			//mHintsByKey.put(key.trim().toLowerCase(), h);
 			return this;
 		}
 
 		/**
 		 * Return the hint based on string ID
-		 * @param stringId
-		 * @return
 		 */
-		public Hint getHint(int stringId) {
+		Hint getHint(int stringId) {
 			Hint h = mHintsById.get(stringId);
 			if (h == null)
 				throw new RuntimeException("Hint not found for ID " + stringId);
@@ -198,10 +191,8 @@ public class HintManager {
 
 		/**
 		 * Get an enumeration of all hints.
-		 * 
-		 * @return
 		 */
-		public Enumeration<Hint> getHints() {
+		Enumeration<Hint> getHints() {
 			return mHintsById.elements();
 		}
 
@@ -215,21 +206,17 @@ public class HintManager {
 	private static class Hint {
 		/** Preferences key suffix specific to this hint */
 		public final String key;
-		/** String to display for this hint */
-		//public final int stringId;
 
 		/** Indicates that this hint was displayed already in this instance of the app */
-		public boolean mHasBeenDisplayed = false;
+		boolean mHasBeenDisplayed = false;
 
 		/**
 		 * Constructor
 		 * 
 		 * @param key			Preferences key suffix specific to this hint
-		 * @param stringId		String to display for this hint
 		 */
-		private Hint(String key, int stringId) {
+		private Hint(String key) {
 			this.key = key;
-			//this.stringId = stringId;
 		}
 		
 		/**
@@ -237,7 +224,7 @@ public class HintManager {
 		 *
 		 * @return		Fully qualified preference name
 		 */
-		public String getFullPrefName() {
+		String getFullPrefName() {
 			return PREF_HINT + key;
 		}
 
@@ -256,21 +243,19 @@ public class HintManager {
 
 		/**
 		 * Check if this hint should be shown
-		 * 
-		 * @return
 		 */
-		public boolean shouldBeShown() {
+		boolean shouldBeShown() {
 			if (hasBeenDisplayed())
 				return false;
 			BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
 			return prefs.getBoolean(getFullPrefName(), true);
 		}
 
-		public boolean hasBeenDisplayed() {
+		boolean hasBeenDisplayed() {
 			return mHasBeenDisplayed;
 		}
 		
-		public void setHasBeenDisplayed(boolean hasBeenDisplayed) {
+		void setHasBeenDisplayed(boolean hasBeenDisplayed) {
 			mHasBeenDisplayed = hasBeenDisplayed;
 		}
 	}

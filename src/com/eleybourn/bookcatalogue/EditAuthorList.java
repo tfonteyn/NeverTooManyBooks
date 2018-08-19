@@ -64,13 +64,13 @@ public class EditAuthorList extends EditObjectList<Author> {
 				at.setText(object.getSortName());
 			}
 		}
-	};
-	
-	protected void onCreate(Bundle savedInstanceState) {
+	}
+
+    protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		try {
 			// Setup autocomplete for author name
-			ArrayAdapter<String> author_adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, mDbHelper.getAllAuthors());
+			ArrayAdapter<String> author_adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, mDbHelper.getAllAuthors());
 			((AutoCompleteTextView)this.findViewById(R.id.author)).setAdapter(author_adapter);
 		} catch (Exception e) {
 			Logger.logError(e);
@@ -79,14 +79,12 @@ public class EditAuthorList extends EditObjectList<Author> {
 
 	/**
 	 * Do the work of the onClickListener for the 'Add' button.
-	 *
-	 * @param v
 	 */
 	protected void onAdd(View v) {
 		// Get the text
 		AutoCompleteTextView t = ((AutoCompleteTextView)EditAuthorList.this.findViewById(R.id.author));
 		String s = t.getText().toString().trim();
-		if (s.length() > 0) {
+		if (!s.isEmpty()) {
 			// Get an author and try to find in DB.
 			Author a = new Author(t.getText().toString());
 			a.id = mDbHelper.lookupAuthorId(a);
@@ -136,7 +134,7 @@ public class EditAuthorList extends EditObjectList<Author> {
 				EditText familyView = (EditText) dialog.findViewById(R.id.family_name);
 				EditText givenView = (EditText) dialog.findViewById(R.id.given_names);
 				String newFamily = familyView.getText().toString().trim();
-				if (newFamily == null || newFamily.length() == 0) {
+				if (newFamily.isEmpty()) {
 					Toast.makeText(EditAuthorList.this, R.string.author_is_blank, Toast.LENGTH_LONG).show();
 					return;
 				}
@@ -221,7 +219,7 @@ public class EditAuthorList extends EditObjectList<Author> {
 		final AutoCompleteTextView t = ((AutoCompleteTextView)EditAuthorList.this.findViewById(R.id.author));
 		Resources res = this.getResources();
 		String s = t.getText().toString().trim();
-		if (s.length() > 0) {
+		if (!s.isEmpty()) {
 			final AlertDialog alertDialog = new AlertDialog.Builder(this).setMessage(res.getText(R.string.unsaved_edits)).create();
 			
 			alertDialog.setTitle(res.getText(R.string.unsaved_edits_title));
@@ -244,5 +242,5 @@ public class EditAuthorList extends EditObjectList<Author> {
 		} else {
 			return true;
 		}
-	};
+	}
 }

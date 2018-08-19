@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.booklist;
 
 import android.database.sqlite.SQLiteCursorDriver;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQuery;
 
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
@@ -53,15 +52,14 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
 	/**
 	 * Constructor
 	 * 
-	 * @param db			Underlying DB. Part of standard cursor constructor.
 	 * @param driver		Part of standard cursor constructor.
 	 * @param editTable		Part of standard cursor constructor.
 	 * @param query			Part of standard cursor constructor.
 	 * @param builder		BooklistBuilder used to make the query on which this cursor is based.
 	 * @param sync			Synchronizer object
 	 */
-	public BooklistCursor(SQLiteDatabase db, SQLiteCursorDriver driver, String editTable, SQLiteQuery query, BooklistBuilder builder, Synchronizer sync) {
-		super(db, driver, editTable, query, sync);
+	BooklistCursor(SQLiteCursorDriver driver, String editTable, SQLiteQuery query, BooklistBuilder builder, Synchronizer sync) {
+		super(driver, editTable, query, sync);
 		// Allocate ID
 		synchronized(mBooklistCursorIdCounter) {
 			mId = ++mBooklistCursorIdCounter;
@@ -81,8 +79,6 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
 
 	/**
 	 * Get the ID for this cursor.
-	 * 
-	 * @return
 	 */
 	public long getId() {
 		return mId;
@@ -90,8 +86,6 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
 
 	/**
 	 * Get the builder used to make this cursor.
-	 * 
-	 * @return
 	 */
 	public BooklistBuilder getBuilder() {
 		return mBuilder;
@@ -99,8 +93,6 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
 
 	/**
 	 * Get a RowView for this cursor. Constructs one if necessary.
-	 * 
-	 * @return
 	 */
 	public BooklistRowView getRowView() {
 		if (mRowView == null)
@@ -110,12 +102,12 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
 
 	/**
 	 * Get the number of levels in the book list.
-	 * 
+	 *
 	 * @return
 	 */
 	public int numLevels() {
 		return mBuilder.numLevels();
-	}	
+	}
 
 	@Override
 	public void close() {

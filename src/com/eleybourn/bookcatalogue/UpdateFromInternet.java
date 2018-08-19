@@ -54,7 +54,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
 	static public class FieldUsages extends LinkedHashMap<String,FieldUsage>  {
 		private static final long serialVersionUID = 1L;
 
-		static public enum Usages { COPY_IF_BLANK, ADD_EXTRA, OVERWRITE };
+		public enum Usages { COPY_IF_BLANK, ADD_EXTRA, OVERWRITE }
 
 		public FieldUsage put(FieldUsage usage) {
 			this.put(usage.fieldName, usage);
@@ -105,7 +105,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
 	 * @param usage		Usage to apply.
 	 */
 	private void addIfVisible(String field, String visField, int stringId, Usages usage, boolean canAppend) {
-		if (visField == null || visField.trim().length() == 0)
+		if (visField == null || visField.trim().isEmpty())
 			visField = field;
 		if (mPrefs.getBoolean(FieldVisibility.prefix + visField, true))
 			mFieldUsages.put(new FieldUsage(field, stringId, usage, canAppend));		
@@ -146,7 +146,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
 				@Override
 				public void onClick(View v) {
 					CheckBox thiscb = (CheckBox) v;
-					if (thiscb.isChecked() == false && thiscb.getText().toString().contains(getResources().getString(R.string.usage_copy_if_blank))) {
+					if (!thiscb.isChecked() && thiscb.getText().toString().contains(getResources().getString(R.string.usage_copy_if_blank))) {
 						FieldUsage usage = (FieldUsage) ViewTagger.getTag(thiscb);
 						if (usage.canAppend) {
 							String extra = getResources().getString(R.string.usage_add_extra);
@@ -231,20 +231,20 @@ public class UpdateFromInternet extends ActivityWithTasks {
 					AlertDialog alertDialog = new AlertDialog.Builder(UpdateFromInternet.this).setMessage(R.string.overwrite_thumbnail).create();
 					alertDialog.setTitle(R.string.update_fields);
 					alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
-					alertDialog.setButton(UpdateFromInternet.this.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+					alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternet.this.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							mFieldUsages.get(CatalogueDBAdapter.KEY_THUMBNAIL).usage = Usages.OVERWRITE;
 							startUpdate();
 							return;
 						}
 					}); 
-					alertDialog.setButton2(UpdateFromInternet.this.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+					alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, UpdateFromInternet.this.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							//do nothing
 							return;
 						}
 					});
-					alertDialog.setButton3(UpdateFromInternet.this.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+					alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, UpdateFromInternet.this.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							mFieldUsages.get(CatalogueDBAdapter.KEY_THUMBNAIL).usage = Usages.COPY_IF_BLANK;
 							startUpdate();

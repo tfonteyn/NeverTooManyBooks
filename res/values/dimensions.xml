@@ -2,6 +2,7 @@
 <resources>
 	<!-- Common for all dimensions -->
     <dimen name="padding_border">5dp</dimen>
+    <dimen name="padding_border_double">10dp</dimen>
     
     <dimen name="padding_book_details_info">10dp</dimen>
     <dimen name="padding_prefs_item">20dp</dimen>

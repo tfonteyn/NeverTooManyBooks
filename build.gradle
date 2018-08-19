@@ -2,16 +2,17 @@ apply plugin: 'com.android.application'
 
 if(project.hasProperty("BookCatalogue.signing")
         && new File(project.property("BookCatalogue.signing")).exists()) {
-    apply from: project.property("MyProject.signing");
+    apply from: project.property("MyProject.signing")
 }
 
 buildscript {
     repositories {
         jcenter()
         mavenCentral()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.1.4'
     }
 }
 
@@ -22,15 +23,12 @@ allprojects {
 }
 
 dependencies {
-    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
-    compile 'com.android.support:support-v4:21.0.0+'
     // Compile all libraries from 'libs' folder
-    compile fileTree(include: '*.jar', dir: 'libs')
+    implementation fileTree(include: '*.jar', dir: 'libs')
 }
 
 android {
     compileSdkVersion 21
-    buildToolsVersion '25.0.0'
     lintOptions {
         disable 'MissingTranslation'
     }

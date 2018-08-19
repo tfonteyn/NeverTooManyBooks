@@ -14,7 +14,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingLeft="@dimen/padding_border" >
+            android:paddingStart="@dimen/padding_border"
+            android:paddingEnd="@dimen/padding_border">
 
             <TextView
                 android:id="@+id/select_fields"
@@ -38,21 +39,24 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="-50dip"
         android:gravity="bottom"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        style="?android:attr/buttonBarStyle">
 
         <Button
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="@string/cancel" />
+            android:text="@string/cancel"
+            style="?android:attr/buttonBarButtonStyle"/>
 
         <Button
             android:id="@+id/confirm"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="@string/confirm_update" />
+            android:text="@string/confirm_update"
+            style="?android:attr/buttonBarButtonStyle"/>
     </LinearLayout>
 
 </LinearLayout>

@@ -41,14 +41,14 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  * @author pjw
  */
 public abstract class BackupReaderAbstract implements BackupReader {
-	private CatalogueDBAdapter mDbHelper;
+	private final CatalogueDBAdapter mDbHelper;
 	private final File mSharedStorage = StorageUtils.getSharedStorage();
 
 	/**
 	 * Constructor
 	 */
-	public BackupReaderAbstract() {
-		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.context);
+	protected BackupReaderAbstract() {
+		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
 		mDbHelper.open();
 	}
 
@@ -63,7 +63,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
 		// This is an estimate only; we actually don't know how many covers
 		// there are in the backup.
 		BackupInfo info = getInfo();
-		int maxSteps = (int) (info.getBookCount());
+		int maxSteps = info.getBookCount();
 		if (info.hasCoverCount())
 			maxSteps += info.getCoverCount();
 		else 
@@ -105,9 +105,11 @@ public abstract class BackupReaderAbstract implements BackupReader {
 
 	/**
 	 * Restore the books from the export file.
-	 * 
+	 *
 	 * @param listener
 	 * @param entity
+	 * @param importFlags
+	 *
 	 * @throws IOException
 	 */
 	private void restoreBooks(final BackupReaderListener listener, ReaderEntity entity, int importFlags) throws IOException {
@@ -141,10 +143,10 @@ public abstract class BackupReaderAbstract implements BackupReader {
 
 	/**
 	 * Restore a cover file.
-	 * 
+	 *
 	 * @param listener
 	 * @param cover
-
+     * @param flags
 	 * @throws IOException
 	 */
 	private void restoreCover(BackupReaderListener listener, ReaderEntity cover, int flags) throws IOException {
@@ -165,9 +167,10 @@ public abstract class BackupReaderAbstract implements BackupReader {
 
 	/**
 	 * Restore the app preferences
-	 * 
+	 *
 	 * @param listener
 	 * @param entity
+	 *
 	 * @throws IOException
 	 */
 	private void restorePreferences(BackupReaderListener listener, ReaderEntity entity) throws IOException {
@@ -178,7 +181,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
 
 	/**
 	 * Restore a booklist style
-	 * 
+	 *
 	 * @param listener
 	 * @param entity
 	 * @throws IOException

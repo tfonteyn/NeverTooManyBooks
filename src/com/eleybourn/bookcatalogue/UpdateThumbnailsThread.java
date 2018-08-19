@@ -68,27 +68,26 @@ public class UpdateThumbnailsThread extends ManagedTask {
 	// DB connection
 	protected CatalogueDBAdapter mDbHelper;
 
-	private SearchManager.SearchListener mSearchListener = new SearchManager.SearchListener() {
-
-		@Override
-		public boolean onSearchFinished(Bundle bookData, boolean cancelled) {
-			return handleSearchFinished(bookData, cancelled);
-		}};
-	
-	/**
+    /**
 	 * Constructor.
 	 * 
 	 * @param manager			Object to manage background tasks
 	 * @param requestedFields	fields to update
-	 * @param lookupHandler		Interface object to handle events in this thread.
 	 */
 	public UpdateThumbnailsThread(TaskManager manager, FieldUsages requestedFields, TaskListener listener) {
 		super(manager);
-		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.context);
+		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
 		mDbHelper.open();
 		
 		mRequestedFields = requestedFields;
-		mSearchManager = new SearchManager(mManager, mSearchListener);
+        SearchManager.SearchListener mSearchListener = new SearchManager.SearchListener() {
+
+            @Override
+            public boolean onSearchFinished(Bundle bookData, boolean cancelled) {
+                return handleSearchFinished(bookData, cancelled);
+            }
+        };
+        mSearchManager = new SearchManager(mManager, mSearchListener);
 		mManager.doProgress(BookCatalogueApp.getResourceString(R.string.starting_search));
 		getMessageSwitch().addListener(getSenderId(), listener, false);
 	}
@@ -148,27 +147,32 @@ public class UpdateThumbnailsThread extends ManagedTask {
 						case COPY_IF_BLANK:
 							// Handle special cases
 							// - If it's a thumbnail, then see if it's missing or empty. 
-							if (usage.fieldName.equals(CatalogueDBAdapter.KEY_THUMBNAIL)) {
-								File file = CatalogueDBAdapter.fetchThumbnailByUuid(mCurrUuid);
-								if (!file.exists() || file.length() == 0)
-									mCurrFieldUsages.put(usage);
-							} else if (usage.fieldName.equals(CatalogueDBAdapter.KEY_AUTHOR_ARRAY)) {
-								// We should never have a book with no authors, but lets be paranoid
-								if (mOrigData.containsKey(usage.fieldName)) {
-									ArrayList<Author> origAuthors = Utils.getAuthorsFromBundle(mOrigData);
-									if (origAuthors == null || origAuthors.size() == 0)
+							switch (usage.fieldName) {
+								case CatalogueDBAdapter.KEY_THUMBNAIL:
+									File file = CatalogueDBAdapter.fetchThumbnailByUuid(mCurrUuid);
+									if (!file.exists() || file.length() == 0)
 										mCurrFieldUsages.put(usage);
-								}
-							} else if (usage.fieldName.equals(CatalogueDBAdapter.KEY_SERIES_ARRAY)) {
-								if (mOrigData.containsKey(usage.fieldName)) {
-									ArrayList<Series> origSeries = Utils.getSeriesFromBundle(mOrigData);
-									if (origSeries == null || origSeries.size() == 0)
+									break;
+								case CatalogueDBAdapter.KEY_AUTHOR_ARRAY:
+									// We should never have a book with no authors, but lets be paranoid
+									if (mOrigData.containsKey(usage.fieldName)) {
+										ArrayList<Author> origAuthors = Utils.getAuthorsFromBundle(mOrigData);
+										if (origAuthors == null || origAuthors.size() == 0)
+											mCurrFieldUsages.put(usage);
+									}
+									break;
+								case CatalogueDBAdapter.KEY_SERIES_ARRAY:
+									if (mOrigData.containsKey(usage.fieldName)) {
+										ArrayList<Series> origSeries = Utils.getSeriesFromBundle(mOrigData);
+										if (origSeries == null || origSeries.size() == 0)
+											mCurrFieldUsages.put(usage);
+									}
+									break;
+								default:
+									// If the original was blank, add to list
+									if (!mOrigData.containsKey(usage.fieldName) || mOrigData.getString(usage.fieldName) == null || mOrigData.getString(usage.fieldName).isEmpty())
 										mCurrFieldUsages.put(usage);
-								}
-							} else {
-								// If the original was blank, add to list
-								if (!mOrigData.containsKey(usage.fieldName) || mOrigData.getString(usage.fieldName) == null || mOrigData.getString(usage.fieldName).length() == 0 )
-									mCurrFieldUsages.put(usage);
+									break;
 							}
 							break;
 						}
@@ -191,11 +195,11 @@ public class UpdateThumbnailsThread extends ManagedTask {
 				// Use this to flag if we actually need a search.
 				boolean wantSearch = false;
 				// Update the progress appropriately
-				if (mCurrFieldUsages.size() == 0 || isbn.equals("") && (author.equals("") || title.equals(""))) {
+				if (mCurrFieldUsages.size() == 0 || isbn.isEmpty() && (author.isEmpty() || title.isEmpty())) {
 					mManager.doProgress(String.format(getString(R.string.skip_title), title));
 				} else {
 					wantSearch = true;
-					if (title.length() > 0)
+					if (!title.isEmpty())
 						mManager.doProgress(title);
 					else
 						mManager.doProgress(isbn);
@@ -275,13 +279,13 @@ public class UpdateThumbnailsThread extends ManagedTask {
 	/**
 	 * Passed the old & new data, construct the update data and perform the update.
 	 * 
-	 * @param rowId		Book ID
-	 * @param newData	Data gathered from internet
-	 * @param origData	Original data
+	 * @param bookId			Book ID
+	 * @param newData			Data gathered from internet
+	 * @param origData			Original data
 	 */
 	private void processSearchResults(long bookId, String bookUuid, FieldUsages requestedFields, Bundle newData, Bundle origData) {
 		// First, filter the data to remove keys we don't care about
-		ArrayList<String> toRemove = new ArrayList<String>();
+		ArrayList<String> toRemove = new ArrayList<>();
 		for(String key : newData.keySet()) {
 			if (!requestedFields.containsKey(key) || !requestedFields.get(key).selected)
 				toRemove.add(key);
@@ -316,33 +320,41 @@ public class UpdateThumbnailsThread extends ManagedTask {
 						break;
 					case COPY_IF_BLANK:
 						// Handle special cases
-						if (usage.fieldName.equals(CatalogueDBAdapter.KEY_AUTHOR_ARRAY)) {
-							if (origData.containsKey(usage.fieldName)) {
-								ArrayList<Author> origAuthors = Utils.getAuthorsFromBundle(origData);
-								if (origAuthors != null && origAuthors.size() > 0)
-									newData.remove(usage.fieldName);								
-							}
-						} else if (usage.fieldName.equals(CatalogueDBAdapter.KEY_SERIES_ARRAY)) {
-							if (origData.containsKey(usage.fieldName)) {
-								ArrayList<Series> origSeries = Utils.getSeriesFromBundle(origData);
-								if (origSeries != null && origSeries.size() > 0)
-									newData.remove(usage.fieldName);								
-							}
-						} else {
-							// If the original was non-blank, erase from list
-							if (origData.containsKey(usage.fieldName) && origData.getString(usage.fieldName) != null && origData.getString(usage.fieldName).length() > 0 )
-								newData.remove(usage.fieldName);
+						switch (usage.fieldName) {
+							case CatalogueDBAdapter.KEY_AUTHOR_ARRAY:
+								if (origData.containsKey(usage.fieldName)) {
+									ArrayList<Author> origAuthors = Utils.getAuthorsFromBundle(origData);
+									if (origAuthors != null && origAuthors.size() > 0)
+										newData.remove(usage.fieldName);
+								}
+								break;
+							case CatalogueDBAdapter.KEY_SERIES_ARRAY:
+								if (origData.containsKey(usage.fieldName)) {
+									ArrayList<Series> origSeries = Utils.getSeriesFromBundle(origData);
+									if (origSeries != null && origSeries.size() > 0)
+										newData.remove(usage.fieldName);
+								}
+								break;
+							default:
+								// If the original was non-blank, erase from list
+								if (origData.containsKey(usage.fieldName) && origData.getString(usage.fieldName) != null && !origData.getString(usage.fieldName).isEmpty()) {
+									newData.remove(usage.fieldName);
+								}
+								break;
 						}
 						break;
 					case ADD_EXTRA:
 						// Handle arrays
-						if (usage.fieldName.equals(CatalogueDBAdapter.KEY_AUTHOR_ARRAY)) {
-							UpdateThumbnailsThread.<Author>combineArrays(usage.fieldName, origData, newData);
-						} else if (usage.fieldName.equals(CatalogueDBAdapter.KEY_SERIES_ARRAY)) {
-							UpdateThumbnailsThread.<Series>combineArrays(usage.fieldName, origData, newData);
-						} else {
-							// No idea how to handle this for non-arrays
-							throw new RuntimeException("Illegal usage '" + usage.usage + "' specified for field '" + usage.fieldName + "'");
+						switch (usage.fieldName) {
+							case CatalogueDBAdapter.KEY_AUTHOR_ARRAY:
+								UpdateThumbnailsThread.<Author>combineArrays(usage.fieldName, origData, newData);
+								break;
+							case CatalogueDBAdapter.KEY_SERIES_ARRAY:
+								UpdateThumbnailsThread.<Series>combineArrays(usage.fieldName, origData, newData);
+								break;
+							default:
+								// No idea how to handle this for non-arrays
+								throw new RuntimeException("Illegal usage '" + usage.usage + "' specified for field '" + usage.fieldName + "'");
 						}
 						break;
 					}
@@ -352,7 +364,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
 		}
 
 		// Update
-		if (newData.size() > 0) {
+		if (!newData.isEmpty()) {
 			mDbHelper.updateBook(bookId, new BookData(newData), 0);
 		}
 		
@@ -368,14 +380,14 @@ public class UpdateThumbnailsThread extends ManagedTask {
 		}
 		// Otherwise an empty list
 		if (origList == null)
-			origList = new ArrayList<T>();
+			origList = new ArrayList<>();
 
 		// Get from the new data
 		if (newData.containsKey(key)) {
 			newList = Utils.getListFromBundle(newData, key);			
 		}
 		if (newList == null)
-			newList = new ArrayList<T>();
+			newList = new ArrayList<>();
 		origList.addAll(newList);
 		// Save combined version to the new data
 		newData.putSerializable(key, origList);

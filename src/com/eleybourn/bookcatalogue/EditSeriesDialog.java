@@ -39,7 +39,7 @@ public class EditSeriesDialog {
 	EditSeriesDialog(Context context, CatalogueDBAdapter dbHelper, final Runnable onChanged) {
 		mDbHelper = dbHelper;
 		mContext = context;
-		mSeriesAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_dropdown_item_1line, mDbHelper.fetchAllSeriesArray());
+		mSeriesAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDbHelper.fetchAllSeriesArray());
 		mOnChanged = onChanged;
 	}
 
@@ -62,7 +62,7 @@ public class EditSeriesDialog {
 			public void onClick(View v) {
 				AutoCompleteTextView seriesView = (AutoCompleteTextView) dialog.findViewById(R.id.series);
 				String newName = seriesView.getText().toString().trim();
-				if (newName == null || newName.length() == 0) {
+				if (newName == null || newName.isEmpty()) {
 					Toast.makeText(mContext, R.string.series_is_blank, Toast.LENGTH_LONG).show();
 					return;
 				}

@@ -48,7 +48,7 @@ public class GoodreadsWork {
 	public Double rating;
 	public Long authorId;
 	public String authorName;
-	public byte[] imageBytes = null;
+	private byte[] imageBytes = null;
 	private GetImageTask mTask;
 	//private static Integer mIdCounter = 0;
 	private WeakReference<ImageView> mImageView = null;
@@ -67,7 +67,7 @@ public class GoodreadsWork {
 		if (v != null) {
 			synchronized(v) {
 				// Make sure our view is still associated with us
-				if (((GoodreadsWork)ViewTagger.getTag(v, R.id.TAG_GOODREADS_WORK)).equals(this)) {
+				if (ViewTagger.getTag(v, R.id.TAG_GOODREADS_WORK).equals(this)) {
 					v.setImageBitmap( Utils.getBitmapFromBytes(imageBytes) );
 					//System.out.println("Work(" + mId + ") set image on view " + v.toString() + " to " +  ((GetImageTask)task).getDescription());
 				}
@@ -87,7 +87,7 @@ public class GoodreadsWork {
 				// Image not retrieved yet, so clear any existing image
 				v.setImageBitmap(null);
 				// Save the view so we know where the image is going to be displayed
-				mImageView = new WeakReference<ImageView>(v);
+				mImageView = new WeakReference<>(v);
 				// If we don't have a task already, start one.
 				if (mTask == null) {
 					// No task running, so Queue the task to get the image
@@ -111,12 +111,10 @@ public class GoodreadsWork {
 	}
 
 	/**
-	 * Return the 'best' (largest image) URL we have.
-	 *
-	 * @return
+	 * @return the 'best' (largest image) URL we have.
 	 */
 	private String getBestUrl() {
-		if (imageUrl != null && !imageUrl.equals(""))
+		if (imageUrl != null && !imageUrl.isEmpty())
 			return imageUrl;
 		else
 			return smallImageUrl;		

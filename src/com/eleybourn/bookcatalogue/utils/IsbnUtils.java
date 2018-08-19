@@ -19,17 +19,15 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
-import java.util.Arrays;
-
 public class IsbnUtils {
 
 	private static class IsbnInfo {
-		public int[] digits;
+		final int[] digits;
 		public int size;
-		public boolean foundX;
-		public boolean isValid;
+		boolean foundX;
+		public final boolean isValid;
 		
-		public IsbnInfo(String isbn) {
+		IsbnInfo(String isbn) {
 			foundX = false;
 			digits = new int[13];
 			size = 0;
@@ -65,21 +63,23 @@ public class IsbnUtils {
 				digits[size] = val;
 				size++;
 			}
-			if (size == 10) {
-				isValid = isValidIsbn10(digits);
-			} else if (size == 13) {
-				isValid = isValidIsbn13(digits);
-			} else {
-				isValid = false;
-			}						
+			switch (size) {
+				case 10:
+					isValid = isValidIsbn10(digits);
+					break;
+				case 13:
+					isValid = isValidIsbn13(digits);
+					break;
+				default:
+					isValid = false;
+					break;
+			}
 		}
 		
 		public boolean equals(IsbnInfo cmp) {
 			// If either is an invalid ISBN, require they match exactly
 			if (!this.isValid || !cmp.isValid) {
-				if (this.size != cmp.size)
-					return false;
-				return  digitsMatch(this.size, this.digits, 0, cmp.digits, 0);
+				return this.size == cmp.size && digitsMatch(this.size, this.digits, 0, cmp.digits, 0);
 			}
 
 			// We know the lengths are either 10 or 13 when we get here. So ... compare
@@ -162,9 +162,6 @@ public class IsbnUtils {
 	}
 	/**
 	 * Validate an ISBN
-	 * 
-	 * @param isbn
-	 * @return
 	 */
 	public static boolean isValid(String isbn) {
 		try {
@@ -178,9 +175,6 @@ public class IsbnUtils {
 	/**
 	 * Validate an ISBN10.
 	 * See http://en.wikipedia.org/wiki/International_Standard_Book_Number
-	 * 
-	 * @param digits
-	 * @return
 	 */
 	private static int getIsbn10Check(int[] digits) {
 		int mult = 10;
@@ -195,9 +189,6 @@ public class IsbnUtils {
 	/**
 	 * Validate an ISBN10.
 	 * See http://en.wikipedia.org/wiki/International_Standard_Book_Number
-	 * 
-	 * @param digits
-	 * @return
 	 */
 	private static boolean isValidIsbn10(int[] digits) {
 		return (getIsbn10Check(digits) == 0);
@@ -206,9 +197,6 @@ public class IsbnUtils {
 	/**
 	 * Validate an ISBN10.
 	 * See http://en.wikipedia.org/wiki/International_Standard_Book_Number
-	 * 
-	 * @param digits
-	 * @return
 	 */
 	private static int getIsbn13Check(int[] digits) {
 		int check = 0;
@@ -224,16 +212,12 @@ public class IsbnUtils {
 	/**
 	 * Validate an ISBN10.
 	 * See http://en.wikipedia.org/wiki/International_Standard_Book_Number
-	 * 
-	 * @param digits
-	 * @return
 	 */
 	private static boolean isValidIsbn13(int[] digits) {
 		// Start with 978 or 979
-		if (digits[0] != 9 || digits[1] != 7 || (digits[2] != 8 && digits[2] != 9))
-			return false;
+		return digits[0] == 9 && digits[1] == 7 && (digits[2] == 8 || digits[2] == 9)
+				&& (getIsbn13Check(digits) == 0);
 
-	    return (getIsbn13Check(digits) == 0);
 	}
 
 	public static boolean matches(String isbn1, String isbn2) {
@@ -249,10 +233,8 @@ public class IsbnUtils {
 			return false;
 
 		IsbnInfo info2 = new IsbnInfo(isbn2);
-		if (!info2.isValid)
-			return false;
+		return info2.isValid && info1.equals(info2);
 
-		return info1.equals(info2);
 	}
 
 	public static String isbn2isbn(String isbn) {

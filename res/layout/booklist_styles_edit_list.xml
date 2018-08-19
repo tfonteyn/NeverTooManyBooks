@@ -3,9 +3,9 @@
     android:id="@+id/list_wrapper"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/bc_background_gradient_dim"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/padding_border" >
+    android:paddingStart="@dimen/padding_border"
+    android:paddingEnd="@dimen/padding_border">
 
     <LinearLayout
         android:id="@+id/top_buttons"
@@ -22,15 +22,8 @@
         android:layout_alignParentBottom="true"
         android:gravity="bottom"
         android:orientation="horizontal"
-        android:padding="5dp" >
-
-        <Button
-            android:id="@+id/confirm"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:text="@string/save"
-            android:visibility="gone"
-            android:width="150sp" />
+        android:padding="5dp"
+        style="?android:attr/buttonBarStyle">
 
         <Button
             android:id="@+id/cancel"
@@ -38,7 +31,18 @@
             android:layout_height="fill_parent"
             android:text="@string/cancel"
             android:visibility="gone"
-            android:width="150sp" />
+            android:width="150sp"
+            style="?android:attr/buttonBarButtonStyle"/>
+
+        <Button
+            android:id="@+id/confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:text="@string/save"
+            android:visibility="gone"
+            android:width="150sp"
+            style="?android:attr/buttonBarButtonStyle"/>
+
     </LinearLayout>
 
     <LinearLayout
@@ -55,7 +59,6 @@
             android:id="@+id/android:list"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:cacheColorHint="#00000000"
             android:fadingEdge="none"
             android:textSize="16sp"
             tlv:grabber="@+id/grabber"

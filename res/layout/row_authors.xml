@@ -5,7 +5,7 @@
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:gravity="center_vertical"
     android:orientation="vertical"
-    android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft" >
+    android:paddingStart="?android:attr/expandableListPreferredItemPaddingLeft" >
 
     <TextView
         android:id="@+id/row_family"
@@ -17,7 +17,7 @@
         android:id="@+id/row_given"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/row_family"
+        android:layout_toEndOf="@+id/row_family"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>

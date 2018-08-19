@@ -44,7 +44,7 @@ import java.util.Locale;
 public class OtherPreferences extends PreferencesBase {
 
 	/** Camera image rotation property values */
-	private static ItemEntries<Integer> mRotationListItems = new ItemEntries<Integer>()
+	private static final ItemEntries<Integer> mRotationListItems = new ItemEntries<Integer>()
 			.add(null, R.string.use_default_setting)
 			.add(0, R.string.no)
 			.add(90, R.string.menu_rotate_thumb_cw)
@@ -52,7 +52,7 @@ public class OtherPreferences extends PreferencesBase {
 			.add(180, R.string.menu_rotate_thumb_180);
 
 	/** List of supported locales */
-	private static ItemEntries<String> mInterfaceLanguageListItems = getLanguageListItems();
+	private static final ItemEntries<String> mInterfaceLanguageListItems = getLanguageListItems();
 
     /** Booklist Compatibility mode property values */
 	public static final int BOOKLIST_GENERATE_OLD_STYLE = 1;
@@ -60,7 +60,7 @@ public class OtherPreferences extends PreferencesBase {
 	public static final int BOOKLIST_GENERATE_NESTED_TRIGGER = 3;
 	public static final int BOOKLIST_GENERATE_AUTOMATIC = 4;
 	/** Booklist Compatibility mode property values */
-	private static ItemEntries<Integer> mListGenerationOptionsListItems = new ItemEntries<Integer>()
+	private static final ItemEntries<Integer> mListGenerationOptionsListItems = new ItemEntries<Integer>()
 			.add(null, R.string.use_default_setting)
 			.add(BOOKLIST_GENERATE_OLD_STYLE, R.string.force_compatibility_mode)
 			.add(BOOKLIST_GENERATE_FLAT_TRIGGER, R.string.force_enhanced_compatibility_mode)
@@ -69,7 +69,7 @@ public class OtherPreferences extends PreferencesBase {
 			;
 
 	/** Preferred Scanner property values */
-	private static ItemEntries<Integer> mScannerListItems = new ItemEntries<Integer>()
+	private static final ItemEntries<Integer> mScannerListItems = new ItemEntries<Integer>()
 			.add(null, R.string.use_default_setting)
 			.add(ScannerManager.SCANNER_ZXING_COMPATIBLE, R.string.zxing_compatible_scanner)
 			.add(ScannerManager.SCANNER_ZXING, R.string.zxing_scanner)
@@ -177,7 +177,7 @@ public class OtherPreferences extends PreferencesBase {
 
 	/**
 	 * Get the value of Book list compatibility mode setting
-	 * 
+	 *
 	 * @return
 	 */
 	public static int getBooklistCompatibleMode() {
@@ -192,7 +192,7 @@ public class OtherPreferences extends PreferencesBase {
 		updateLanguageListItems();
 
 		setTitle(R.string.other_preferences);
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+		Utils.initBackground(this);
 	}
 
 	@Override
@@ -210,7 +210,7 @@ public class OtherPreferences extends PreferencesBase {
 		super.onResume();
 		// Listen for locale changes (this activity CAN change it)
 		BookCatalogueApp.registerOnLocaleChangedListener(mLocaleListener);
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+		Utils.initBackground(this);
 	}
 
 	/**
@@ -233,15 +233,14 @@ public class OtherPreferences extends PreferencesBase {
 	 * @return  List of preference items
 	 */
 	private static ItemEntries<String> getLanguageListItems() {
-		ItemEntries<String> items = new ItemEntries<String>();
+		ItemEntries<String> items = new ItemEntries<>();
 
 		Locale l = BookCatalogueApp.getSystemLocal();
 		items.add("", R.string.preferred_language_x, BookCatalogueApp.getResourceString(R.string.system_locale), l.getDisplayLanguage());
 
 		for(String loc: BookCatalogueApp.getSupportedLocales()) {
-			String val = loc;
 			l = BookCatalogueApp.localeFromName(loc);
-			items.add(val, R.string.preferred_language_x, l.getDisplayLanguage(l), l.getDisplayLanguage());
+			items.add(loc, R.string.preferred_language_x, l.getDisplayLanguage(l), l.getDisplayLanguage());
 		}
 		return items;
 	}
@@ -249,7 +248,7 @@ public class OtherPreferences extends PreferencesBase {
 	/**
 	 * Listener for Locale changes; update list and maybe reload
 	 */
-	private BookCatalogueApp.OnLocaleChangedListener mLocaleListener = new BookCatalogueApp.OnLocaleChangedListener() {
+	private final BookCatalogueApp.OnLocaleChangedListener mLocaleListener = new BookCatalogueApp.OnLocaleChangedListener() {
 		@Override
 		public void onLocaleChanged() {
 			updateLanguageListItems();
@@ -265,7 +264,7 @@ public class OtherPreferences extends PreferencesBase {
 			String loc = item.getValue();
 			String name;
 			String lang;
-			if (loc.equals("")) {
+			if (loc.isEmpty()) {
 				name = getString(R.string.system_locale);
 				lang = BookCatalogueApp.getSystemLocal().getDisplayLanguage();
 			} else {

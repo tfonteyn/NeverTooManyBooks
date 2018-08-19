@@ -46,14 +46,14 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  * @author pjw
  */
 public class CsvImporter {
-	private static String UTF8 = "utf8";
-	private static int BUFFER_SIZE = 32768;
+	private static final String UTF8 = "utf8";
+	private static final int BUFFER_SIZE = 32768;
 
 	public boolean importBooks(InputStream exportStream, Importer.CoverFinder coverFinder, Importer.OnImporterListener listener, int importFlags) throws IOException {
-		ArrayList<String> importedString = new ArrayList<String>();
+		ArrayList<String> importedString = new ArrayList<>();
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(exportStream, UTF8),BUFFER_SIZE);
-		String line = "";
+		String line;
 		while ((line = in.readLine()) != null) {
 			importedString.add(line);
 		}
@@ -86,13 +86,8 @@ public class CsvImporter {
 		// Version 1->3.3 export with family_name and author_id. Version 3.4+ do not; latest versions
 		// make an attempt at escaping characters etc to preserve formatting.
 		boolean fullEscaping;
-		if (values.containsKey(CatalogueDBAdapter.KEY_AUTHOR_ID) && values.containsKey(CatalogueDBAdapter.KEY_FAMILY_NAME)) {
-			// Old export, or one using old formats
-			fullEscaping = false;
-		} else {
-			// More recent data format
-			fullEscaping = true;
-		}
+        fullEscaping = !values.containsKey(CatalogueDBAdapter.KEY_AUTHOR_ID)
+				|| !values.containsKey(CatalogueDBAdapter.KEY_FAMILY_NAME);
 
 		// Make sure required fields are present.
 		// ENHANCE: Rationalize import to allow updates using 1 or 2 columns. For now we require complete data.
@@ -117,7 +112,7 @@ public class CsvImporter {
 
 		
 		CatalogueDBAdapter db;
-		db = new CatalogueDBAdapter(BookCatalogueApp.context);
+		db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
 		db.open();
 
 		int row = 1; // Start after headings.
@@ -153,7 +148,7 @@ public class CsvImporter {
 				// Validate ID
 				String idStr = values.getString(CatalogueDBAdapter.KEY_ROWID.toLowerCase());
 				Long idLong;
-				if (idStr == null || idStr == "") {
+				if (idStr == null || idStr.isEmpty()) {
 					hasNumericId = false;
 					idLong = 0L;
 				} else {
@@ -173,7 +168,7 @@ public class CsvImporter {
 				boolean hasUuid;
 				final String uuidColumnName = DatabaseDefinitions.DOM_BOOK_UUID.name.toLowerCase();
 				String uuidVal = values.getString(uuidColumnName);
-				if (uuidVal != null && !uuidVal.equals("")) {
+				if (uuidVal != null && !uuidVal.isEmpty()) {
 					hasUuid = true;
 				} else {
 					// Remove any blank UUID column, just in case
@@ -190,7 +185,7 @@ public class CsvImporter {
 					// Get the list of authors from whatever source is available.
 					String authorDetails;
 					authorDetails = values.getString(CatalogueDBAdapter.KEY_AUTHOR_DETAILS);
-					if (authorDetails == null || authorDetails.length() == 0) {
+					if (authorDetails == null || authorDetails.isEmpty()) {
 						// Need to build it from other fields.
 						if (values.containsKey(CatalogueDBAdapter.KEY_FAMILY_NAME)) {
 							// Build from family/given
@@ -198,7 +193,7 @@ public class CsvImporter {
 							String given = "";
 							if (values.containsKey(CatalogueDBAdapter.KEY_GIVEN_NAMES))
 								given = values.getString(CatalogueDBAdapter.KEY_GIVEN_NAMES);
-							if (given != null && given.length() > 0)
+							if (given != null && !given.isEmpty())
 								authorDetails += ", " + given;
 						} else if (values.containsKey(CatalogueDBAdapter.KEY_AUTHOR_NAME)) {
 							authorDetails = values.getString(CatalogueDBAdapter.KEY_AUTHOR_NAME);
@@ -210,7 +205,7 @@ public class CsvImporter {
 					// A pre-existing bug sometimes results in blank author-details due to bad underlying data
 					// (it seems a 'book' record gets written without an 'author' record; should not happen)
 					// so we allow blank author_details and full in a regionalized version of "Author, Unknown"
-					if (authorDetails == null || authorDetails.length() == 0) {
+					if (authorDetails == null || authorDetails.isEmpty()) {
 						authorDetails = BookCatalogueApp.getResourceString(R.string.author) + ", " + BookCatalogueApp.getResourceString(R.string.unknown);
 						//String s = BookCatalogueApp.getResourceString(R.string.column_is_blank);
 						//throw new ImportException(String.format(s, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, row));
@@ -226,11 +221,11 @@ public class CsvImporter {
 				{
 					String seriesDetails;
 					seriesDetails = values.getString(CatalogueDBAdapter.KEY_SERIES_DETAILS);
-					if (seriesDetails == null || seriesDetails.length() == 0) {
+					if (seriesDetails == null || seriesDetails.isEmpty()) {
 						// Try to build from SERIES_NAME and SERIES_NUM. It may all be blank
 						if (values.containsKey(CatalogueDBAdapter.KEY_SERIES_NAME)) {
 							seriesDetails = values.getString(CatalogueDBAdapter.KEY_SERIES_NAME);
-							if (seriesDetails != null && seriesDetails.length() != 0) {
+							if (seriesDetails != null && !seriesDetails.isEmpty()) {
 								String seriesNum = values.getString(CatalogueDBAdapter.KEY_SERIES_NUM);
 								if (seriesNum == null)
 									seriesNum = "";
@@ -267,7 +262,7 @@ public class CsvImporter {
 						// Save the original ID from the file for use in checing for images
 						Long idFromFile = idLong;
 						// newId will get the ID allocated if a book is created
-						Long newId = 0L;
+						Long newId;
 
 						// Let the UUID trump the ID; we may be importing someone else's list with bogus IDs
 						if (hasUuid) {
@@ -293,7 +288,7 @@ public class CsvImporter {
 								Date bookDate;
 								Date importDate;
 								String bookDateStr = db.getBookUpdateDate(idLong);
-								if (bookDateStr == null || bookDateStr.equals("")) {
+								if (bookDateStr == null || bookDateStr.isEmpty()) {
 									bookDate = null; // Local record has never been updated
 								} else {
 									try {
@@ -303,7 +298,7 @@ public class CsvImporter {
 									}
 								}
 								String importDateStr = values.getString(DatabaseDefinitions.DOM_LAST_UPDATE_DATE.name);
-								if (importDateStr == null || importDateStr.equals("")) {
+								if (importDateStr == null || importDateStr.isEmpty()) {
 									importDate = null; // Imported record has never been updated
 								} else {
 									try {
@@ -312,13 +307,8 @@ public class CsvImporter {
 										importDate = null; // Treat as if never updated
 									}
 								}
-								if (importDate == null) {
-									doUpdate = false;
-								} else if (bookDate == null) {
-									doUpdate = true;
-								} else {
-									doUpdate = importDate.compareTo(bookDate) > 0;
-								}
+								doUpdate = importDate != null
+										&& (bookDate == null || importDate.compareTo(bookDate) > 0);
 							}
 							if (doUpdate) {
 								db.updateBook(idLong, values, CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES|CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);								
@@ -443,11 +433,11 @@ public class CsvImporter {
 		boolean inEsc = false;		// Found an escape char
 		char c;						// 'Current' char
 		char next					// 'Next' char 
-				= (row.length() > 0) ? row.charAt(0) : '\0';
+				= (!row.isEmpty()) ? row.charAt(0) : '\0';
 		int endPos					// Last position in row 
 				= row.length() - 1;
 		ArrayList<String> fields	// Array of fields found in row
-				= new ArrayList<String>();
+				= new ArrayList<>();
 
 		StringBuilder bld			// Temp. storage for current field
 				= new StringBuilder();
@@ -522,9 +512,9 @@ public class CsvImporter {
 				}
 			}
 			pos++;
-		};
+		}
 
-		// Add the remaining chunk
+        // Add the remaining chunk
 		fields.add(bld.toString());
 
 		// Return the result as a String[].
@@ -564,8 +554,8 @@ public class CsvImporter {
 
 	// Require a column
 	private void requireColumnOr(BookData values, String... names) {
-		for(int i = 0; i < names.length; i++)
-			if (values.containsKey(names[i]))
+		for (String name : names)
+			if (values.containsKey(name))
 				return;
 		
 		String s = BookCatalogueApp.getResourceString(R.string.file_must_contain_any_column);
@@ -573,7 +563,7 @@ public class CsvImporter {
 	}
 
 	private void requireNonblank(BookData values, int row, String name) {
-		if (values.getString(name).length() != 0)
+		if (!values.getString(name).isEmpty())
 			return;
 		String s = BookCatalogueApp.getResourceString(R.string.column_is_blank);
 		throw new ImportException(String.format(s, name, row));
@@ -581,8 +571,8 @@ public class CsvImporter {
 
 	@SuppressWarnings("unused")
 	private void requireAnyNonblank(BookData values, int row, String... names) {
-		for(int i = 0; i < names.length; i++)
-			if (values.containsKey(names[i]) && values.getString(names[i]).length() != 0)
+		for (String name : names)
+			if (values.containsKey(name) && !values.getString(name).isEmpty())
 				return;
 
 		String s = BookCatalogueApp.getResourceString(R.string.columns_are_blank);

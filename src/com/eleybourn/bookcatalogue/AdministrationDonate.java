@@ -50,7 +50,7 @@ public class AdministrationDonate extends BookCatalogueActivity {
 			setTitle(R.string.app_name);
 			setContentView(R.layout.administration_donate);
 			setupAdmin();
-			Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+			Utils.initBackground(this);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -62,7 +62,7 @@ public class AdministrationDonate extends BookCatalogueActivity {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);		
+		Utils.initBackground(this);
 	}
 
 	/**

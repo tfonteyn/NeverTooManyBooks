@@ -53,7 +53,7 @@ public class FieldVisibility extends BookCatalogueActivity {
 			setTitle(R.string.menu_manage_fields);
 			setContentView(R.layout.field_visibility);
 			setupFields();
-			Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+			Utils.initBackground(this);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -65,7 +65,7 @@ public class FieldVisibility extends BookCatalogueActivity {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);		
+		Utils.initBackground(this);
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class FieldVisibility extends BookCatalogueActivity {
 					SharedPreferences.Editor ed = mPrefs.edit();
 					boolean field_visibility = mPrefs.getBoolean(prefs_name, true);
 					ed.putBoolean(prefs_name, !field_visibility);
-					ed.commit();
+					ed.apply();
 					return;
 				}};
 
@@ -118,7 +118,7 @@ public class FieldVisibility extends BookCatalogueActivity {
 			boolean field_visibility = mPrefs.getBoolean(prefs_name, true);
 			CheckBox cb = new CheckBox(this);
 			cb.setChecked(field_visibility);
-			if (compulsory[i] == true) {
+			if (compulsory[i]) {
 				cb.setEnabled(false);
 			} else {
 				cb.setOnClickListener(listener);
@@ -130,7 +130,7 @@ public class FieldVisibility extends BookCatalogueActivity {
 			cb.setTextAppearance(this, android.R.style.TextAppearance_Large);
 			cb.setText(fieldRs[i]);
 			//cb.setPadding(0, 5, 0, 0);
-			if (compulsory[i] == true) {
+			if (compulsory[i]) {
 				cb.setTextColor(Color.GRAY);
 			//} else {
 				//cb.setOnClickListener(listener);

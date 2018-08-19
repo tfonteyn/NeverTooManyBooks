@@ -33,7 +33,7 @@ public interface BackupReader {
 	 * 
 	 * @author pjw
 	 */
-	public interface BackupReaderListener {
+    interface BackupReaderListener {
 		/** Set the end point for the progress */
 		void setMax(int max);
 		/** Advance progress by 'delta' */
@@ -49,8 +49,6 @@ public interface BackupReader {
 	 * See BackupReaderAbstract for a default implementation.
 	 * 
 	 * @param listener		Listener to receive progress information.
-	 * 
-	 * @throws IOException
 	 */
 	void restore(BackupReaderListener listener, int importFlags) throws IOException;
 	
@@ -60,30 +58,22 @@ public interface BackupReader {
 	 * Currently, backup files are read sequentially.
 	 * 
 	 * @return	The next entity, or null if at end
-	 * 
-	 * @throws IOException
 	 */
-	public ReaderEntity nextEntity() throws IOException;
+    ReaderEntity nextEntity() throws IOException;
 	
 	/**
 	 * Close the reader
-	 * 
-	 * @throws IOException
 	 */
-	public void close() throws IOException;
+    void close() throws IOException;
 	
 	/**
-	 * Get the associated BackupContainer
-	 * 
-	 * @return
+	 * @return the associated BackupContainer
 	 */
 	BackupContainer getContainer();
 	
 	/**
-	 * Get the INFO object read from the backup
-	 * 
-	 * @return
-	 */	
-	public BackupInfo getInfo();
+	 * @return the INFO object read from the backup
+	 */
+    BackupInfo getInfo();
 
 }

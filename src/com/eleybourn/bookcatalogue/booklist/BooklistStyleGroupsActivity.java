@@ -49,11 +49,11 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 	public static final String KEY_STYLE = "StyleEditor.Style";
 	public static final String KEY_SAVE_TO_DATABASE = "StyleEditor.SaveToDb";
 	private static final String KEY_GROUPS = "StyleEditor.Groups";
-	
+
 	/** Indicated this activity was called without an existing style */
 	private boolean mIsNew;
 
-	/** Copy of the style we are editing */
+    /** Copy of the style we are editing */
 	private BooklistStyle mStyle;
 	/** Copy of flag passed by calling activity to indicate changes made here should be saved on exit */
 	private boolean mSaveToDb = true;
@@ -77,7 +77,7 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 	public static class GroupWrapper implements Serializable {
 		private static final long serialVersionUID = 3108094089675884238L;
 		/** The actual group */
-		BooklistGroup group;
+        final BooklistGroup group;
 		/** Whether this groups is present in the style */
 		boolean present;
 		/** Constructor */
@@ -102,7 +102,7 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 				mStyle = new BooklistStyle("");
 
 			// Build an array list with the groups from the style, and record that they are present in mGroups.
-			ArrayList<GroupWrapper> groups = new ArrayList<GroupWrapper>();
+			ArrayList<GroupWrapper> groups = new ArrayList<>();
 			for(BooklistGroup g: mStyle) {
 				groups.add(new GroupWrapper(g, true));
 			}
@@ -158,7 +158,7 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 	protected void onSetupView(View target, GroupWrapper wrapper) {
 		// Get a Holder
 		Holder h;
-		h = (Holder)ViewTagger.getTag(target, R.id.TAG_HOLDER);
+		h = ViewTagger.getTag(target, R.id.TAG_HOLDER);
 		if (h == null) {
 			// New view, so build the Holder
 			h = new Holder();
@@ -174,7 +174,7 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 			h.present.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Holder h = (Holder)ViewTagger.getTag(v, R.id.TAG_HOLDER);
+					Holder h = ViewTagger.getTag(v, R.id.TAG_HOLDER);
 					h.wrapper.present = !h.wrapper.present;
 					if (h.wrapper.present) {
 						h.present.setImageResource(R.drawable.btn_check_clipped);
@@ -207,7 +207,6 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 
 	/**
 	 * Get/create the database connection as necessary.
-	 * @return
 	 */
 	private CatalogueDBAdapter getDb() {
 		if (mDb == null)
@@ -251,6 +250,6 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 	 */
 	@Override
 	protected void onRowClick(View target, int position, GroupWrapper object) {
-	};
+	}
 
 }

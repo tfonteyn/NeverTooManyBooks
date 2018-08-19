@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 
 import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
@@ -43,7 +44,6 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.goodreads.SendOneBookTask;
 import com.eleybourn.bookcatalogue.utils.HintManager.HintOwner;
-import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 /**
@@ -68,7 +68,7 @@ public class BookEvents {
 	public static class BookEvent extends Event {
 		private static final long serialVersionUID = 74746691665235897L;
 
-		protected long m_bookId;
+		protected final long m_bookId;
 
 		/**
 		 * Constructor
@@ -76,7 +76,7 @@ public class BookEvents {
 		 * @param bookId		ID of related book.
 		 * @param description	Description of this event.
 		 */
-		public BookEvent(long bookId, String description) {
+		BookEvent(long bookId, String description) {
 			super(description);
 			m_bookId = bookId;
 		}
@@ -88,7 +88,7 @@ public class BookEvents {
 		 * @param description	Description of this event.
 		 * @param e				Exception related to this event.
 		 */
-		public BookEvent(long bookId, String description, Exception e) {
+		BookEvent(long bookId, String description, Exception e) {
 			super(description, e);
 			m_bookId = bookId;
 		}
@@ -150,7 +150,7 @@ public class BookEvents {
 		@Override
 		public boolean bindView(View view, Context context, BindableItemSQLiteCursor bindableCursor, Object appInfo) {
 			final EventsCursor cursor = (EventsCursor)bindableCursor;
-			BookEventHolder holder = (BookEventHolder)ViewTagger.getTag(view, R.id.TAG_BOOK_EVENT_HOLDER);
+			BookEventHolder holder = ViewTagger.getTag(view, R.id.TAG_BOOK_EVENT_HOLDER);
 			CatalogueDBAdapter db = (CatalogueDBAdapter)appInfo;
 
 			// Update event info binding; the Views in the holder are unchanged, but when it is reused
@@ -176,8 +176,7 @@ public class BookEvents {
 			}
 			holder.title.setText(title);
 
-			
-			holder.author.setText(Utils.format(context, R.string.by, author));
+			holder.author.setText(String.format(context.getString(R.string.by), author));
 
 			Exception e = this.getException();
 			if (e == null) {
@@ -186,7 +185,8 @@ public class BookEvents {
 				holder.error.setText(e.getMessage());
 			}
 
-			String date = "(" + Utils.format(context, R.string.occurred_at, cursor.getEventDate().toLocaleString()) + ")";
+			String date =  String.format("(" + context.getString(R.string.occurred_at) + ")",
+                    DateFormat.getDateTimeInstance().format(cursor.getEventDate()));
 			holder.date.setText(date);
 
 			holder.retry.setVisibility(View.GONE);
@@ -195,7 +195,7 @@ public class BookEvents {
 			holder.checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					BookEventHolder holder = (BookEventHolder)ViewTagger.getTag(buttonView, R.id.TAG_BOOK_EVENT_HOLDER);
+					BookEventHolder holder = ViewTagger.getTag(buttonView, R.id.TAG_BOOK_EVENT_HOLDER);
 					cursor.setIsSelected(holder.rowId,isChecked);
 				}});
 
@@ -214,7 +214,7 @@ public class BookEvents {
 				@Override
 				public void run() {
 					try {
-						GrSendBookEvent event = (GrSendBookEvent) ViewTagger.getTag(v, R.id.TAG_EVENT);
+						GrSendBookEvent event = ViewTagger.getTag(v, R.id.TAG_EVENT);
 						editBook(ctx, event.getBookId());
 					} catch (Exception e) {
 						// not a book event?
@@ -238,9 +238,9 @@ public class BookEvents {
 				}}));
 		}
 
-	};
+	}
 
-	/**
+    /**
 	 * Subclass of BookEvent that is the base class for all Event objects resulting from 
 	 * sending books to goodreads.
 	 * 
@@ -249,11 +249,11 @@ public class BookEvents {
 	public static class GrSendBookEvent extends BookEvent {
 		private static final long serialVersionUID = 1L;
 
-		public GrSendBookEvent(long bookId, String message) {
+		GrSendBookEvent(long bookId, String message) {
 			super(bookId, message);
 		}
 
-		public GrSendBookEvent(long bookId, String message, Exception e) {
+		GrSendBookEvent(long bookId, String message, Exception e) {
 			super(bookId, message, e);
 		}
 
@@ -277,14 +277,14 @@ public class BookEvents {
 			super.bindView(view, context, cursor, appInfo);
 
 			// get book details
-			final BookEventHolder holder = (BookEventHolder)ViewTagger.getTag(view, R.id.TAG_BOOK_EVENT_HOLDER);
+			final BookEventHolder holder = ViewTagger.getTag(view, R.id.TAG_BOOK_EVENT_HOLDER);
 			final CatalogueDBAdapter db = (CatalogueDBAdapter)appInfo;
 			final BooksCursor booksCursor = db.getBookForGoodreadsCursor(m_bookId);
 			final BooksRowView book = booksCursor.getRowView();
 			try {
 				// Hide parts of view based on current book details.
 				if (booksCursor.moveToFirst()) {
-					if (book.getIsbn().equals("")) {
+					if (book.getIsbn().isEmpty()) {
 						holder.retry.setVisibility(View.GONE);
 					} else {
 						holder.retry.setVisibility(View.VISIBLE);
@@ -315,12 +315,12 @@ public class BookEvents {
 			try {
 				final BooksRowView book = booksCursor.getRowView();
 				if (booksCursor.moveToFirst()) {
-					if (! (book.getIsbn().equals(""))) {
+					if (!book.getIsbn().isEmpty()) {
 						items.add(new ContextDialogItem(ctx.getString(R.string.retry_task), new Runnable() {
 							@Override
 							public void run() {
 								try {
-									GrSendBookEvent event = (GrSendBookEvent) ViewTagger.getTag(v, R.id.TAG_EVENT);
+									GrSendBookEvent event = ViewTagger.getTag(v, R.id.TAG_EVENT);
 									event.retry();
 									QueueManager.getQueueManager().deleteEvent(id);
 								} catch (Exception e) {
@@ -333,15 +333,15 @@ public class BookEvents {
 				booksCursor.close();
 			}
 		}
-	};
+	}
 
-	/**
+    /**
 	 * Method to retry sending a book to goodreads.
 	 */
 	private static OnClickListener m_retryButtonListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			BookEvent.BookEventHolder holder = (BookEvent.BookEventHolder)ViewTagger.getTag(v, R.id.TAG_BOOK_EVENT_HOLDER);
+			BookEvent.BookEventHolder holder = ViewTagger.getTag(v, R.id.TAG_BOOK_EVENT_HOLDER);
 			((GrSendBookEvent)holder.event).retry();
 		}
 	};
@@ -368,9 +368,9 @@ public class BookEvents {
 		public GrGeneralBookEvent(long bookId, Exception e, String message) {
 			super(bookId, message, e);
 		}
-	};
+	}
 
-	/**
+    /**
 	 * Exception indicating the book's ISBN could not be found at GoodReads
 	 * 
 	 * @author Philip Warner
@@ -388,9 +388,9 @@ public class BookEvents {
 			return R.string.explain_goodreads_no_match;
 		}		
 
-	};
+	}
 
-	/**
+    /**
 	 * Exception indicating the book's ISBN was blank
 	 * 
 	 * @author Philip Warner

@@ -41,8 +41,8 @@ import android.view.View;
  */
 public class ViewTagger {
 	/** Stores the basic tag referred to without an ID */
-	public Object mBareTag = null;
-	public SparseArray<Object> mTags = null;
+	private Object mBareTag = null;
+	private SparseArray<Object> mTags = null;
 
 	/**
 	 * Internal static method to get (and optionally create) a ViewTagger object
@@ -76,7 +76,6 @@ public class ViewTagger {
 	 * Static method to get the bare tag from the view.
 	 * 
 	 * @param v		View from which to retrieve tag
-	 * @return
 	 */
 	public static Object getTag(View v) {
 		ViewTagger tagger = getTagger(v, false);
@@ -139,7 +138,7 @@ public class ViewTagger {
 	public void set(int key, Object value) {
 		synchronized(this) {
 			if (mTags == null)
-				mTags = new SparseArray<Object>();
+				mTags = new SparseArray<>();
 			mTags.put(key, value);
 		}
 	}

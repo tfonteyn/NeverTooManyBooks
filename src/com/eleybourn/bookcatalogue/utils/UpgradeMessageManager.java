@@ -68,16 +68,15 @@ public class UpgradeMessageManager {
 	
 	//* Internal: prep for fragments by separating message delivery from activities
 	//* Internal: one database connection for all activities and threads
-	;
 
-	/**
+    /**
 	 * Class to store one version-specific message
 	 * 
 	 * @author pjw
 	 */
 	private static class UpgradeMessage {
-		int version;
-		int messageId;
+		final int version;
+		final int messageId;
 		UpgradeMessage(int version, int messageId) {
 			this.version = version;
 			this.messageId = messageId;
@@ -127,7 +126,7 @@ public class UpgradeMessageManager {
 
 			// Up until version 98, messages were handled via the CatalogueDBAdapter object, so create one
 			// and see if there is a message.
-			CatalogueDBAdapter tmpDb = new CatalogueDBAdapter(BookCatalogueApp.context);
+			CatalogueDBAdapter tmpDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
 			try {
 				// On new installs, there is no upgrade message
 				if (tmpDb.isNewInstall()) {
@@ -138,8 +137,11 @@ public class UpgradeMessageManager {
 				// It's not a new install, so we use the 'old' message format and set the version to the
 				// last installed version that used the old method.
 				lastVersion = 98;
-				if (!CatalogueDBAdapter.message.equals(""))
-					message.append("<p>" + CatalogueDBAdapter.message + "</p>");
+				if (!CatalogueDBAdapter.message.isEmpty()) {
+					message.append("<p>")
+					    .append(CatalogueDBAdapter.message)
+					    .append("</p>");
+				}
 			} finally {
 				tmpDb.close();				
 			}
@@ -162,8 +164,9 @@ public class UpgradeMessageManager {
 	public static void setMessageAcknowledged() {
 		BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
 		try {
-			Context c = BookCatalogueApp.context;
+			Context c = BookCatalogueApp.getAppContext();
 			int currVersion = c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionCode;
+
 			prefs.setInt(PREF_LAST_MESSAGE, currVersion);
 		} catch (NameNotFoundException e) {
 			Logger.logError(e, "Failed to get package version code");

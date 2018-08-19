@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@color/background_grey"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/padding_border" >
+    android:paddingStart="@dimen/padding_border"
+    android:paddingEnd="@dimen/padding_border" >
 
     <AutoCompleteTextView
         android:id="@+id/name"
@@ -13,28 +13,32 @@
         android:completionThreshold="2"
         android:hint="@string/format"
         android:inputType="textCapSentences"
-        android:paddingLeft="@dimen/padding_border" />
+        android:paddingStart="@dimen/padding_border"
+        android:paddingEnd="@dimen/padding_border"/>
 
     <LinearLayout
         android:id="@+id/bottom_buttons"
         android:layout_width="fill_parent"
         android:layout_height="60sp"
         android:layout_below="@+id/name"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        style="?android:attr/buttonBarStyle">
 
         <Button
             android:id="@+id/cancel"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/cancel" />
+            android:text="@string/cancel"
+            style="?android:attr/buttonBarButtonStyle"/>
 
         <Button
             android:id="@+id/confirm"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/save" />
+            android:text="@string/save"
+            style="?android:attr/buttonBarButtonStyle"/>
     </LinearLayout>
 
 </RelativeLayout>

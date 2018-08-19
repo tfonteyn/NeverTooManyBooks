@@ -35,24 +35,24 @@ import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.XmlHandler;
  */
 public class SimpleXmlFilter {
 	private final XmlFilter mRootFilter;
-	private final ArrayList<BuilderContext> mContexts = new ArrayList<BuilderContext>();
-	private final ArrayList<String> mTags = new ArrayList<String>();
+	private final ArrayList<BuilderContext> mContexts = new ArrayList<>();
+	private final ArrayList<String> mTags = new ArrayList<>();
 	private final DataStore mRootData = new DataStore();
 
 	public interface XmlListener {
-		public void onStart(SimpleXmlFilter.BuilderContext bc, ElementContext c);
-		public void onFinish(SimpleXmlFilter.BuilderContext bc, ElementContext c);
+		void onStart(SimpleXmlFilter.BuilderContext bc, ElementContext c);
+		void onFinish(SimpleXmlFilter.BuilderContext bc, ElementContext c);
 	}
 
-	public static interface DataStoreProvider {
-		public void addArrayItem(Bundle b);		
-		public Bundle getData();
+	public interface DataStoreProvider {
+		void addArrayItem(Bundle b);
+		Bundle getData();
 	}
 
 	public class DataStore implements DataStoreProvider {
 		private final Bundle mData;
 
-		public DataStore() {
+		DataStore() {
 			mData = new Bundle();
 		}
 
@@ -103,7 +103,7 @@ public class SimpleXmlFilter {
 				parent.addArrayItem(b);
 		}
 		public void initArray() {
-			mArrayItems = new ArrayList<Bundle>();
+			mArrayItems = new ArrayList<>();
 		}
 		public void saveArray() {
 			getData().putParcelableArrayList(mArrayName, mArrayItems);
@@ -151,8 +151,8 @@ public class SimpleXmlFilter {
 	}
 
 	private abstract class AttrFilter {
-		public String name;
-		public String key;
+		public final String name;
+		public final String key;
 		public abstract void put(BuilderContext context, String value);
 		AttrFilter(String key, String name) {
 			this.name = name;
@@ -204,7 +204,7 @@ public class SimpleXmlFilter {
 	private ArrayList<AttrFilter> getAttrFilters() {
 		BuilderContext c = mContexts.get(mContexts.size()-1);
 		if (c.attrs == null) {
-			c.attrs = new ArrayList<AttrFilter>();
+			c.attrs = new ArrayList<>();
 		}
 		return c.attrs;
 	}
@@ -234,7 +234,7 @@ public class SimpleXmlFilter {
 		return this;
 	}
 
-	private static XmlHandler mHandleStart = new XmlHandler() {
+	private static final XmlHandler mHandleStart = new XmlHandler() {
 		@Override
 		public void process(ElementContext context) {
 			BuilderContext bc = (BuilderContext)context.userArg;
@@ -266,7 +266,7 @@ public class SimpleXmlFilter {
 
 		}
 	};
-	private static XmlHandler mHandleFinish = new XmlHandler() {
+	private static final XmlHandler mHandleFinish = new XmlHandler() {
 		@Override
 		public void process(ElementContext context) {
 			BuilderContext bc = (BuilderContext)context.userArg;
@@ -353,7 +353,7 @@ public class SimpleXmlFilter {
 		return this;
 	}
 
-	private static XmlHandler mTextHandler = new XmlHandler() {
+	private static final XmlHandler mTextHandler = new XmlHandler() {
 		@Override
 		public void process(ElementContext context) {
 			final BuilderContext c = (BuilderContext)context.userArg;
@@ -361,7 +361,7 @@ public class SimpleXmlFilter {
 		}
 	};
 
-	private static XmlHandler mLongHandler = new XmlHandler() {
+	private static final XmlHandler mLongHandler = new XmlHandler() {
 
 		@Override
 		public void process(ElementContext context) {
@@ -376,7 +376,7 @@ public class SimpleXmlFilter {
 		}
 	};
 	
-	private static XmlHandler mDoubleHandler = new XmlHandler() {
+	private static final XmlHandler mDoubleHandler = new XmlHandler() {
 
 		@Override
 		public void process(ElementContext context) {
@@ -391,7 +391,7 @@ public class SimpleXmlFilter {
 		}
 	};
 
-	private static XmlHandler mBooleanHandler = new XmlHandler() {
+	private static final XmlHandler mBooleanHandler = new XmlHandler() {
 
 		@Override
 		public void process(ElementContext context) {
@@ -446,7 +446,7 @@ public class SimpleXmlFilter {
 
 	private static boolean textToBoolean(final String s) {
 		boolean b;
-		if (s.length() == 0) {
+		if (s.isEmpty()) {
 			b = false;
 		} else if (s.equalsIgnoreCase("false")) {
 			b = false;

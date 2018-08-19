@@ -20,7 +20,7 @@ import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.Fragmen
  */
 public abstract class FileLister implements FragmentTask {
 	protected ArrayList<FileDetails> dirs;
-	protected File mRoot;
+	protected final File mRoot;
 
 	/**
 	 * Interface for the creating activity to allow the resulting list to be returned.
@@ -28,12 +28,12 @@ public abstract class FileLister implements FragmentTask {
 	 * @author pjw
 	 */
 	public interface FileListerListener {
-		public void onGotFileList(File root, ArrayList<FileDetails> list);
+		void onGotFileList(File root, ArrayList<FileDetails> list);
 	}
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param root
 	 */
 	public FileLister(File root) {
@@ -73,6 +73,6 @@ public abstract class FileLister implements FragmentTask {
 		}
 	}
 
-	private FileDetailsComparator mComparator = new FileDetailsComparator();
+	private final FileDetailsComparator mComparator = new FileDetailsComparator();
 
 }

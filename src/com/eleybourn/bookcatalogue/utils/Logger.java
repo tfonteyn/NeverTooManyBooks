@@ -51,7 +51,7 @@ public class Logger {
 		PrintWriter pw = new PrintWriter(sw);
 		e.printStackTrace(pw);
 		
-		String error = "An Exception Occured @ " + now + "\n" + 
+		String error = "An Exception Occurred @ " + now + "\n" +
 			"In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ") \n" + 
 			msg + "\n" + 
 			sw.toString();
@@ -63,7 +63,7 @@ public class Logger {
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
 			out.write(error);
 			out.close();
-		} catch (Exception e1) {
+		} catch (Exception ignored) {
 			// do nothing - we can't log an error in the error logger. (and we don't want to FC the app)
 		}
 	}
@@ -79,13 +79,13 @@ public class Logger {
 					File backup = new File(StorageUtils.getErrorLog() + ".bak");
 					orig.renameTo(backup);					
 				}
-			} catch (Exception e) {
+			} catch (Exception ignored) {
 				// Ignore backup failure...
 			}
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
 			out.write("");
 			out.close();
-		} catch (Exception e1) {
+		} catch (Exception ignored) {
 			// do nothing - we can't log an error in the error logger. (and we don't want to FC the app)
 		}
 	}

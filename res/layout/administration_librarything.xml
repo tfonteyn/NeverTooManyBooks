@@ -2,14 +2,14 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@drawable/bc_background_gradient_dim" >
+    android:layout_height="fill_parent">
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingLeft="@dimen/padding_border" >
+        android:paddingStart="@dimen/padding_border"
+        android:paddingEnd="@dimen/padding_border" >
 
         <TextView
             android:layout_width="fill_parent"
@@ -19,25 +19,15 @@
 
         <TextView
             android:id="@+id/register_url"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
             android:gravity="center"
-            android:paddingBottom="10dp"
-            android:paddingTop="20dp"
             android:text="@string/lt_register_text"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/link_blue" />
+            style="@style/link_url" />
 
         <TextView
             android:id="@+id/devkey_url"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
             android:gravity="center"
-            android:paddingBottom="20dp"
-            android:paddingTop="10dp"
             android:text="@string/lt_devkey_text"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/link_blue" />
+            style="@style/link_url" />
 
         <TextView
             android:layout_width="fill_parent"
@@ -50,7 +40,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:hint="@string/developer_key"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:inputType="text"/>
 
         <Button
             android:id="@+id/confirm"

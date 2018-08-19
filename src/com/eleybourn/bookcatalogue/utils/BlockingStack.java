@@ -28,16 +28,16 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Based loosely on LinkedBlockingQueue. Ideally we would use BlockingDeque but that is only
  * available in Android 2.3.
- * 
+ *
  * A much-simplified blocking stack that satisfies the need of this application. Should be 
- * replaceable with BlockingDeque when we set the min. version requirement to 2.3!
+ * TODO: replaceable with BlockingDeque when we set the min. version requirement to 2.3!
  * 
  * @author Philip Warner
  * @param <T>
  */
 public class BlockingStack<T> {
 	// Underlying stack object
-	private Stack<T> mStack;
+	private final Stack<T> mStack;
 	// Lock help by pop and by push when an item was added to an empty stack.
 	private final ReentrantLock mPopLock = new ReentrantLock();
 	// Signal for available items
@@ -46,8 +46,8 @@ public class BlockingStack<T> {
 	// Lock held by push(). Probably not needed since we sync on mStack...
 	private final ReentrantLock mPushLock = new ReentrantLock();
 
-	public BlockingStack() {
-		mStack = new Stack<T>();
+	BlockingStack() {
+		mStack = new Stack<>();
 	}
 
 	/**
@@ -71,14 +71,11 @@ public class BlockingStack<T> {
 	 * collection will not reflect reality for very long, but is safe to
 	 * iterate etc.
 	 * 
-	 * @return
 	 */
 	public Stack<T> getElements() {
-		Stack<T> copy = new Stack<T>();
+		Stack<T> copy = new Stack<>();
 		synchronized(mStack) {
-			for(T o : mStack) {
-				copy.add(o);
-			}
+			copy.addAll(mStack);
 		}
 		return copy;
 	}
@@ -86,8 +83,6 @@ public class BlockingStack<T> {
 	 * Add an object to the stack and signal
 	 * 
 	 * @param object		Object to add
-	 * 
-	 * @throws InterruptedException
 	 */
 	public void push(T object) throws InterruptedException {
 		final ReentrantLock pushLock = this.mPushLock;
@@ -125,9 +120,6 @@ public class BlockingStack<T> {
 
 	/**
 	 * Remove an object from the stack, wait if none.
-	 * 
-	 * @return
-	 * @throws InterruptedException
 	 */
 	public T pop(long waitMilliseconds) throws InterruptedException {
 		final ReentrantLock popLock = mPopLock;
@@ -150,9 +142,8 @@ public class BlockingStack<T> {
 				}
 				// Try getting an object
 				o = poll();
-			};
-
-		} finally {
+			}
+        } finally {
 			popLock.unlock();
 		}
 		return o;
@@ -160,10 +151,6 @@ public class BlockingStack<T> {
 
 	/**
 	 * Return an object if available, otherwise null.
-	 * 
-	 * @return	Object
-	 * 
-	 * @throws InterruptedException
 	 */
 	public T poll() throws InterruptedException {
 		final ReentrantLock popLock = mPopLock;

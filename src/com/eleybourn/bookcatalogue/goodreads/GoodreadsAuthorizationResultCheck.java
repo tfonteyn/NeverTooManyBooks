@@ -43,7 +43,7 @@ import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuth
 public class GoodreadsAuthorizationResultCheck extends GenericTask {
 	private static final long serialVersionUID = -5502292652351148420L;
 
-	public GoodreadsAuthorizationResultCheck() {
+	GoodreadsAuthorizationResultCheck() {
 		super(BookCatalogueApp.getResourceString(R.string.goodreads_auth_check));
 	}
 

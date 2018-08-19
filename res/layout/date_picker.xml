@@ -11,8 +11,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:orientation="vertical"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp" >
+        android:paddingLeft="@dimen/padding_border_double"
+        android:paddingRight="@dimen/padding_border_double" >
 
         <LinearLayout
             android:id="@+id/dateSelector"
@@ -31,7 +31,7 @@
                     android:id="@+id/yearLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:text="@string/year"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -41,8 +41,8 @@
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/year"
-                    android:layout_alignRight="@+id/year"
+                    android:layout_alignStart="@+id/year"
+                    android:layout_alignEnd="@+id/year"
                     android:layout_below="@+id/yearLabel"
                     android:text="+" 
                     tools:ignore="HardcodedText" />
@@ -56,15 +56,15 @@
                     android:minEms="3"
                     android:text="2000"
                     android:textAppearance="?android:attr/textAppearanceMedium" 
-                    tools:ignore="HardcodedText" />
+                    tools:ignore="HardcodedText,LabelFor" />
 
                 <Button
                     android:id="@+id/minus"
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/year"
-                    android:layout_alignRight="@+id/year"
+                    android:layout_alignStart="@+id/year"
+                    android:layout_alignEnd="@+id/year"
                     android:layout_below="@+id/year"
                     android:layout_marginTop="-2dip"
                     android:text="-" 
@@ -81,7 +81,7 @@
                     android:id="@+id/monthLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:text="@string/month"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -91,8 +91,8 @@
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/month"
-                    android:layout_alignRight="@+id/month"
+                    android:layout_alignStart="@+id/month"
+                    android:layout_alignEnd="@+id/month"
                     android:layout_below="@+id/monthLabel"
                     android:text="+" 
                     tools:ignore="HardcodedText" />
@@ -109,8 +109,8 @@
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/month"
-                    android:layout_alignRight="@+id/month"
+                    android:layout_alignStart="@+id/month"
+                    android:layout_alignEnd="@+id/month"
                     android:layout_below="@+id/month"
                     android:layout_marginTop="-2dip"
                     android:text="-" 
@@ -127,7 +127,7 @@
                     android:id="@+id/dayLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:text="@string/day"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -137,8 +137,8 @@
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/day"
-                    android:layout_alignRight="@+id/day"
+                    android:layout_alignStart="@+id/day"
+                    android:layout_alignEnd="@+id/day"
                     android:layout_below="@+id/dayLabel"
                     android:text="+" 
                     tools:ignore="HardcodedText"/>
@@ -155,8 +155,8 @@
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/day"
-                    android:layout_alignRight="@+id/day"
+                    android:layout_alignStart="@+id/day"
+                    android:layout_alignEnd="@+id/day"
                     android:layout_below="@+id/day"
                     android:layout_marginTop="-2dip"
                     android:text="-" 
@@ -170,7 +170,7 @@
             android:layout_height="wrap_content"
             android:gravity="bottom"
             android:orientation="horizontal"
-            android:paddingTop="10dp" >
+            android:paddingTop="@dimen/padding_border_double" >
 
             <Button
                 android:id="@+id/cancel"

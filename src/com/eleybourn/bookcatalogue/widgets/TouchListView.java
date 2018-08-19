@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.widgets;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -63,7 +64,7 @@ public class TouchListView extends ListView {
 	private int mItemHeightNormal=-1;
 	//private int mItemHeightExpanded=-1;
 	private int grabberId=-1;
-	private int dragndropBackgroundColor=0x00000000; 
+	private int dragndropBackgroundColor = Color.TRANSPARENT;
 	private boolean mWasFirstExpansion = false;	// Set to true at start of a new drag operation
 
 	private Integer mSavedHeight = null;
@@ -78,15 +79,12 @@ public class TouchListView extends ListView {
 		mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 		
 		if (attrs!=null) {
-			TypedArray a=getContext()
-										.obtainStyledAttributes(attrs,
-																							R.styleable.TouchListView,
-																							0, 0);
+			TypedArray a=getContext().obtainStyledAttributes(attrs, R.styleable.TouchListView,0, 0);
 		
 			mItemHeightNormal=a.getDimensionPixelSize(R.styleable.TouchListView_normal_height, 0);
 			//mItemHeightExpanded=a.getDimensionPixelSize(R.styleable.TouchListView_expanded_height, mItemHeightNormal);
 			grabberId=a.getResourceId(R.styleable.TouchListView_grabber, -1);
-			dragndropBackgroundColor=a.getColor(R.styleable.TouchListView_dragndrop_background, 0x00000000);
+			dragndropBackgroundColor=a.getColor(R.styleable.TouchListView_dragndrop_background, Color.TRANSPARENT);
 			mRemoveMode=a.getInt(R.styleable.TouchListView_remove_mode, -1);
 			
 			a.recycle();
@@ -154,7 +152,7 @@ public class TouchListView extends ListView {
 											break;
 									}
 									
-									View item = (View) getChildAt(itemnum - getFirstVisiblePosition());
+									View item = getChildAt(itemnum - getFirstVisiblePosition());
 									
 									if (isDraggableRow(item)) {
 										mDragPoint = y - item.getTop();
@@ -350,9 +348,7 @@ public class TouchListView extends ListView {
 							if (i == 0 || (i == 1 && mFirstDragPos == 0)) {
 								// Position prior to first item; so pad top
 								vv.setPadding(vv.getPaddingLeft(), mDragView.getHeight(), vv.getPaddingRight(), 0);
-							} else {
-								// No other rows need special handling
-							}
+							} // else  no other rows need special handling
 						} else if (i == childnum) {
 							// The user is hovering over the current row, so pad the bottom
 							vv.setPadding(vv.getPaddingLeft(), 0, vv.getPaddingRight(), mDragView.getHeight());
@@ -451,7 +447,7 @@ public class TouchListView extends ListView {
 			stopDragging();
 
 			mWindowParams = new WindowManager.LayoutParams();
-			mWindowParams.gravity = Gravity.TOP|Gravity.LEFT;
+			mWindowParams.gravity = Gravity.TOP|Gravity.START;
 			mWindowParams.x = x;
 			mWindowParams.y = y - mDragPoint + mCoordOffset;
 
@@ -470,7 +466,7 @@ public class TouchListView extends ListView {
 			v.setImageBitmap(bm);
 			mDragBitmap = bm;
 
-			mWindowManager = (WindowManager)getContext().getSystemService("window");
+		mWindowManager = (WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
 			mWindowManager.addView(v, mWindowParams);
 			mDragView = v;
 	}
@@ -497,7 +493,7 @@ public class TouchListView extends ListView {
 	
 	private void stopDragging() {
 			if (mDragView != null) {
-					WindowManager wm = (WindowManager)getContext().getSystemService("window");
+					WindowManager wm = (WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
 					wm.removeView(mDragView);
 					mDragView.setImageDrawable(null);
 					mDragView = null;

@@ -42,7 +42,7 @@ public class TarBackupReader extends BackupReaderAbstract {
 	/** The data stream for the archive */
 	private TarArchiveInputStream mInput;
 	/** Used to allow 'peeking' at the input stream */
-	private ReaderEntity mPushedEntity = null;
+	private ReaderEntity mPushedEntity;
 	/** The INFO data read from the start of the archive */
 	private BackupInfo mInfo;
 
@@ -50,10 +50,10 @@ public class TarBackupReader extends BackupReaderAbstract {
 	 * Constructor
 	 * 
 	 * @param container		Parent 
-	 * 
+	 *
 	 * @throws IOException
 	 */
-	public TarBackupReader(TarBackupContainer container) throws IOException {
+	TarBackupReader(TarBackupContainer container) throws IOException {
 		mContainer = container;
 
 		// Open the file and create the archive stream
@@ -129,16 +129,11 @@ public class TarBackupReader extends BackupReaderAbstract {
 
 	/**
 	 * Accessor used by TarEntityReader to get access to the stream data
-	 * 
-	 * @return
 	 */
 	protected TarArchiveInputStream getInput() {
 		return mInput;
 	}
 
-	/**
-	 * Accessor
-	 */
 	@Override
 	public BackupInfo getInfo() {
 		return mInfo;

@@ -31,26 +31,20 @@ public interface BackupContainer {
 	 * Get a BackupReader for the referenced archive.
 	 * 
 	 * @return a new reader
-	 * 
-	 * @throws IOException
 	 */
-	public BackupReader newReader() throws IOException;
+    BackupReader newReader() throws IOException;
 
 	/**
 	 * Get a BackupWriter for the referenced archive.
 	 * 
 	 * @return a new writer
-	 * 
-	 * @throws IOException
 	 */
-	public BackupWriter newWriter() throws IOException;
+    BackupWriter newWriter() throws IOException;
 
 	/**
-	 * Get the version of the underlying archiver
-	 * 
-	 * @return
+	 * @return the version of the underlying archiver
 	 */
-	public int getVersion();
+    int getVersion();
 
 	/**
 	 * Checks if the current archive looks valid. Does not need to be
@@ -58,5 +52,5 @@ public interface BackupContainer {
 	 * 
 	 * @return True if valid
 	 */
-	public boolean isValid();
+    boolean isValid();
 }

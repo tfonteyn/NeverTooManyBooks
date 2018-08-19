@@ -147,6 +147,7 @@ package com.eleybourn.bookcatalogue.utils;
  * @author rob@iharder.net
  * @version 2.3.7
  */
+@SuppressWarnings("CaughtExceptionImmediatelyRethrown")
 public class Base64
 {
     

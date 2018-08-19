@@ -61,26 +61,19 @@ public class TarBackupContainer implements BackupContainer {
 	public static final String PREFERENCES = "preferences";
 
 	/** Backup file spec */
-	public File mFile;
+	private final File mFile;
 	/** UNICODE stream type for read/write text files */
-	public static String UTF8 = "utf8";
+	public static final String UTF8 = "utf8";
 	/** Buffer size for buffered streams */
-	public static int BUFFER_SIZE = 32768;
+	public static final int BUFFER_SIZE = 32768;
 
 	/**
 	 * Constructor
-	 * 
-	 * @param file
 	 */
 	public TarBackupContainer(File file) {
 		mFile = file;
 	}
 
-	/**
-	 * Accessor
-	 * 
-	 * @return
-	 */
 	public File getFile() {
 		return mFile;
 	}

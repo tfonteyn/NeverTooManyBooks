@@ -35,16 +35,16 @@ import com.eleybourn.bookcatalogue.R;
 class CropHighlightView {
 	@SuppressWarnings("unused")
 	private static final String TAG = "HighlightView";
-	View mContext; // The View displaying the image.
+	private final View mContext; // The View displaying the image.
 
-	public static final int GROW_NONE = (1 << 0);
+	public static final int GROW_NONE = 1;
 	public static final int GROW_LEFT_EDGE = (1 << 1);
 	public static final int GROW_RIGHT_EDGE = (1 << 2);
 	public static final int GROW_TOP_EDGE = (1 << 3);
 	public static final int GROW_BOTTOM_EDGE = (1 << 4);
 	public static final int MOVE = (1 << 5);
 
-	public CropHighlightView(View ctx) {
+	CropHighlightView(View ctx) {
 		mContext = ctx;
 	}
 
@@ -59,7 +59,7 @@ class CropHighlightView {
 	}
 
 	boolean mIsFocused;
-	boolean mHidden;
+	private boolean mHidden;
 
 	public boolean hasFocus() {
 		return mIsFocused;
@@ -178,8 +178,7 @@ class CropHighlightView {
 		if (mCircle) {
 			float distX = x - r.centerX();
 			float distY = y - r.centerY();
-			int distanceFromCenter = (int) android.util.FloatMath.sqrt(distX
-					* distX + distY * distY);
+			int distanceFromCenter = (int) Math.sqrt(distX * distX + distY * distY);
 			int radius = mDrawRect.width() / 2;
 			int delta = distanceFromCenter - radius;
 			if (Math.abs(delta) <= hysteresis) {
@@ -235,26 +234,29 @@ class CropHighlightView {
 	// The "edge" parameter specifies which edges the user is dragging.
 	void handleMotion(int edge, float dx, float dy) {
 		Rect r = computeLayout();
-		if (edge == GROW_NONE) {
-			return;
-		} else if (edge == MOVE) {
-			// Convert to image space before sending to moveBy().
-			moveBy(dx * (mCropRect.width() / r.width()),
-					dy * (mCropRect.height() / r.height()));
-		} else {
-			if (((GROW_LEFT_EDGE | GROW_RIGHT_EDGE) & edge) == 0) {
-				dx = 0;
-			}
+		switch (edge) {
+			case GROW_NONE:
+				return;
+			case MOVE:
+				// Convert to image space before sending to moveBy().
+				moveBy(dx * (mCropRect.width() / r.width()),
+						dy * (mCropRect.height() / r.height()));
+				break;
+			default:
+				if (((GROW_LEFT_EDGE | GROW_RIGHT_EDGE) & edge) == 0) {
+					dx = 0;
+				}
 
-			if (((GROW_TOP_EDGE | GROW_BOTTOM_EDGE) & edge) == 0) {
-				dy = 0;
-			}
+				if (((GROW_TOP_EDGE | GROW_BOTTOM_EDGE) & edge) == 0) {
+					dy = 0;
+				}
 
-			// Convert to image space before sending to growBy().
-			float xDelta = dx * (mCropRect.width() / r.width());
-			float yDelta = dy * (mCropRect.height() / r.height());
-			growBy((((edge & GROW_LEFT_EDGE) != 0) ? -1 : 1) * xDelta,
-					(((edge & GROW_TOP_EDGE) != 0) ? -1 : 1) * yDelta);
+				// Convert to image space before sending to growBy().
+				float xDelta = dx * (mCropRect.width() / r.width());
+				float yDelta = dy * (mCropRect.height() / r.height());
+				growBy((((edge & GROW_LEFT_EDGE) != 0) ? -1 : 1) * xDelta,
+						(((edge & GROW_TOP_EDGE) != 0) ? -1 : 1) * yDelta);
+				break;
 		}
 	}
 
@@ -292,15 +294,13 @@ class CropHighlightView {
 		// the cropping rectangle.
 		RectF r = new RectF(mCropRect);
 		if (dx > 0F && r.width() + 2 * dx > mImageRect.width()) {
-			float adjustment = (mImageRect.width() - r.width()) / 2F;
-			dx = adjustment;
+			dx = (mImageRect.width() - r.width()) / 2F; // adjustment
 			if (mMaintainAspectRatio) {
 				dy = dx / mInitialAspectRatio;
 			}
 		}
 		if (dy > 0F && r.height() + 2 * dy > mImageRect.height()) {
-			float adjustment = (mImageRect.height() - r.height()) / 2F;
-			dy = adjustment;
+			dy = (mImageRect.height() - r.height()) / 2F; // adjustment
 			if (mMaintainAspectRatio) {
 				dx = dy * mInitialAspectRatio;
 			}

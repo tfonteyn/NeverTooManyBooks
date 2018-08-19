@@ -49,11 +49,11 @@ public abstract class Property {
 	/**
 	 * Unique 'name' of this property.
 	 */
-	protected final String mUniqueId;
+	private final String mUniqueId;
 	/** PropertyGroup in which this property should reside. Display-purposes only */
-	protected transient PropertyGroup mGroup;
+	private transient PropertyGroup mGroup;
 	/** Resource ID for name of this property */
-	protected transient int mNameResourceId;
+	private transient int mNameResourceId;
 	//private transient String mName = null;
 	/** Property weight (for sorting). Most will remain set at 0. */
 	private int mWeight = 0;
@@ -67,23 +67,19 @@ public abstract class Property {
 	 */
 	public static class ValidationException extends RuntimeException {
 		private static final long serialVersionUID = -1086124703257379812L;
-		public ValidationException(String message) {
+		ValidationException(String message) {
 			super(message);
 		}
 	}
 	/**
 	 * Increment and return the view counter
-	 * 
-	 * @return
 	 */
-	public static int nextViewId() {
+	static int nextViewId() {
 		return ++mViewIdCounter;
 	}
 
 	/**
-	 * Get the string name of this property
-	 * 
-	 * @return
+	 * @return the string name of this property
 	 */
 	public String getName() {
 //		if (mName == null)
@@ -91,18 +87,11 @@ public abstract class Property {
 		return BookCatalogueApp.getResourceString(mNameResourceId);
 	}
 
-	/**
-	 * Accessor
-	 * 
-	 * @param weight
-	 */
 	public Property setWeight(int weight) {
 		mWeight = weight;
 		return this;
 	}
-	/**
-	 * Accessor
-	 */
+
 	public int getWeight() {
 		return mWeight;
 	}
@@ -115,7 +104,7 @@ public abstract class Property {
 	 * @author Philip Warner
 	 */
 	public interface BooleanValue {
-		public Boolean get();
+		Boolean get();
 	}
 	/**
 	 * Interface used to help setting one property based on another property value.
@@ -125,7 +114,7 @@ public abstract class Property {
 	 * @author Philip Warner
 	 */
 	public interface StringValue {
-		public String get();
+		String get();
 	}
 	/**
 	 * Interface used to help setting one property based on another property value.
@@ -135,7 +124,7 @@ public abstract class Property {
 	 * @author Philip Warner
 	 */
 	public interface IntegerValue {
-		public Integer get();
+		Integer get();
 	}
 
 	/** 
@@ -151,63 +140,36 @@ public abstract class Property {
 		mNameResourceId = nameResourceId;
 	}
 
-	/**
-	 * Accessor
-	 * 
-	 * @return
-	 */
 	public String getUniqueName() {
 		return mUniqueId;
 	}
-	/**
-	 * Accessor
-	 * 
-	 * @return
-	 */
+
 	public PropertyGroup getGroup() {
 		return mGroup;
 	}
-	/**
-	 * Accessor
-	 * 
-	 * @return
-	 */
+
 	public Property setGroup(PropertyGroup group) {
 		mGroup = group;
 		return this;
 	}
 
-	/**
-	 * Accessor
-	 * 
-	 * @return
-	 */
 	public int getNameResourceId() {
 		return mNameResourceId;
 	}
-	/**
-	 * Accessor
-	 */
+
 	public Property setNameResourceId(int id) {
 		mNameResourceId = id;
 		return this;
 	}
 
-	/**
-	 * Accessor
-	 */
-	public boolean hasHint() {
+	boolean hasHint() {
 		return mHint != 0;
 	}
-	/**
-	 * Accessor
-	 */
+
 	public int getHint() {
 		return mHint;
 	}
-	/**
-	 * Accessor
-	 */
+
 	public Property setHint(int hint) {
 		mHint = hint;
 		return this;

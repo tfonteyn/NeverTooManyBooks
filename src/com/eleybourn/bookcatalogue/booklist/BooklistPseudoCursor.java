@@ -97,7 +97,7 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
 	 */
 	BooklistPseudoCursor(BooklistBuilder builder) {
 		mBuilder = builder;
-		mCursors = new Hashtable<Integer, BooklistCursor>();
+		mCursors = new Hashtable<>();
 		mMruList = new int[MRU_LIST_SIZE];
 		for(int i = 0; i < MRU_LIST_SIZE; i++)
 			mMruList[i] = -1;
@@ -107,8 +107,6 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
 
 	/**
 	 * Get the builder used to make this cursor.
-	 * 
-	 * @return
 	 */
 	public BooklistBuilder getBuilder() {
 		return mBuilder;
@@ -116,8 +114,6 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
 
 	/**
 	 * Get a RowView for this cursor. Constructs one if necessary.
-	 * 
-	 * @return
 	 */
 	public BooklistRowView getRowView() {
 		if (mRowView == null)
@@ -157,7 +153,7 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
 				mMruList[mMruListPos] = cursorId;
 
 				// Remove any stale cursors
-				purgeOldCursors(cursorId);
+				purgeOldCursors();
 			} else {
 				// Bring to top of MRU list, if present. It may not be in the MRU list if it was
 				// preserved because it was in the window
@@ -216,12 +212,10 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
 
 	/**
 	 * Remove any old cursors that can be purged.
-	 * 
-	 * @param currentId		Current cursor ID
 	 */
-	private void purgeOldCursors(final Integer currentId) {
+	private void purgeOldCursors() {
 		// List of cursors to purge
-		ArrayList<Integer> toPurge = new ArrayList<Integer>();
+		ArrayList<Integer> toPurge = new ArrayList<>();
 		// Scan the hash
 		for(Entry<Integer, BooklistCursor> cursorEntry: mCursors.entrySet()) {
 			// If it is more than 3 'pages' from the current position, it's a candidate
@@ -242,9 +236,6 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
 
 	/**
 	 * Check if the passed cursor ID is in the MRU list
-	 * 
-	 * @param id
-	 * @return
 	 */
 	private boolean checkMru(Integer id) {
 		for(int i: mMruList) {
@@ -345,8 +336,6 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
 
 	/**
 	 * Get the number of levels in the book list.
-	 * 
-	 * @return
 	 */
 	public int numLevels() {
 		return mBuilder.numLevels();

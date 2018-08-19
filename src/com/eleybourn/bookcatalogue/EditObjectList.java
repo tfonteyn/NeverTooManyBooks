@@ -71,13 +71,13 @@ import com.eleybourn.bookcatalogue.widgets.TouchListView;
  * For this code to work, the  main view must contain:
  * - a TouchListView with id = @+id/android:list
  * - the TouchListView must have the following attributes:
- * 		tlv:grabber="@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/grabber")
+ * 		tlv:ic_grabber="@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
  *		tlv:remove_mode="none"
  *		tlv:normal_height="64dip" ---- or some simlar value
  * 
  * Each row view must have:
  * - an ID of @+id/row
- * - an ImageView with an ID of "@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/grabber")
+ * - an ImageView with an ID of "@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
  * - (OPTIONAL) a subview with an ID of "@+id/row_details"; when clicked, this will result 
  *   in the onRowClick event.
  * 
@@ -99,11 +99,11 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	protected String mBookTitleLabel;
 
 	// The key to use in the Bundle to get the array
-	private String mKey;
+	private final String mKey;
 	// The resource ID for the base view
-	private int mBaseViewId;
+	private final int mBaseViewId;
 	// The resource ID for the row view
-	private int mRowViewId;
+	private final int mRowViewId;
 
 	// Row ID... mainly used (if list is from a book) to know if book is new.
 	protected Long mRowId = null;
@@ -139,13 +139,13 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	 * 
 	 * Can be overridden to perform other checks.
 	 * 
-	 * @param i		A newly created Intent to store output if necessary.
+	 * @param intent	A newly created Intent to store output if necessary.
 	 * 
 	 * @return		True if activity should exit, false to abort exit.
 	 */
-	protected boolean onSave(Intent intent) { return true; };
- 
-	/**
+	protected boolean onSave(Intent intent) { return true; }
+
+    /**
 	 * Called when user presses 'Cancel' button if present. Primary task is
 	 * return a boolean indicating it is OK to continue.
 	 * 
@@ -153,19 +153,19 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	 * 
 	 * @return		True if activity should exit, false to abort exit.
 	 */
-	protected boolean onCancel() { return true;};
+	protected boolean onCancel() { return true;}
 
-	/**
+    /**
 	 * Called when the list had been modified in some way.
 	 */
-	protected void onListChanged() { };
+	protected void onListChanged() { }
 
-	/**
+    /**
 	 * Called to get the list if it was not in the intent.
 	 */
-	protected ArrayList<T> getList() { return null; };
+	protected ArrayList<T> getList() { return null; }
 
-	/**
+    /**
 	 * Constructor
 	 * 
 	 * @param baseViewId	Resource id of base view
@@ -276,7 +276,9 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
             onListChanged();
 
             int first2 = lv.getFirstVisiblePosition();
-            System.out.println(from + " -> " + to + ", first " + firstPos + "(" + first2 + ")");
+            if (BuildConfig.DEBUG) {
+				System.out.println(from + " -> " + to + ", first " + firstPos + "(" + first2 + ")");
+			}
             final int newFirst = (to > from && from < firstPos) ? (firstPos - 1) : firstPos;
 
             View firstView = lv.getChildAt(0);
@@ -339,16 +341,15 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 		if (v == null)
 			return;
 		try {
-			if (s != null && s.length() > 0) {
+			if (s != null && !s.isEmpty()) {
 				((TextView)v).setText(s);
 				return;			
 			}
 		} catch (Exception e) {
 			Logger.logError(e);
-		};		
-		// If we get here, something went wrong.
-		if (v != null)
-			v.setVisibility(View.GONE);		
+		}
+        // If we get here, something went wrong.
+		v.setVisibility(View.GONE);
 	}
 	
 	protected void setTextOrHideView(int id, String s) {
@@ -358,7 +359,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	/**
 	 * Handle 'Save'
 	 */
-	private OnClickListener mSaveListener = new OnClickListener() {
+	private final OnClickListener mSaveListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			Intent i = new Intent();
@@ -373,7 +374,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	/**
 	 * Handle 'Cancel'
 	 */
-	private OnClickListener mCancelListener = new OnClickListener() {
+	private final OnClickListener mCancelListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			if (onCancel())
@@ -384,7 +385,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	/**
 	 * Handle 'Add'
 	 */
-	private OnClickListener mAddListener = new OnClickListener() {
+	private final OnClickListener mAddListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			onAdd(v);
@@ -418,7 +419,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	/**
 	 * Handle deletion of a row
 	 */
-	private OnClickListener mRowDeleteListener = new OnClickListener() {
+	private final OnClickListener mRowDeleteListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
@@ -435,7 +436,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	/**
 	 * Handle moving a row UP
 	 */
-	private OnClickListener mRowUpListener = new OnClickListener() {
+	private final OnClickListener mRowUpListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
@@ -454,7 +455,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	/**
 	 * Handle moving a row DOWN
 	 */
-	private OnClickListener mRowDownListener = new OnClickListener() {
+	private final OnClickListener mRowDownListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
@@ -473,7 +474,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	/**
 	 * Handle moving a row DOWN
 	 */
-	private OnClickListener mRowClickListener = new OnClickListener() {
+	private final OnClickListener mRowClickListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
@@ -498,7 +499,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 		private boolean mHasDown = false;
 		private boolean mHasDelete = false;
 
-        public ListAdapter(Context context, int textViewResourceId, ArrayList<T> items) {
+        ListAdapter(Context context, int textViewResourceId, ArrayList<T> items) {
                 super(context, textViewResourceId, items);
         }
 
@@ -512,7 +513,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
             }
             
             // Save this views position
-            ViewTagger.setTag(v, R.id.TAG_POSITION, Integer.valueOf(position));
+            ViewTagger.setTag(v, R.id.TAG_POSITION, position);
 
             {
             	// Giving the whole row ad onClickListener seems to interfere

@@ -21,16 +21,15 @@ package com.eleybourn.bookcatalogue.dialogs;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.os.Bundle;
-
-import com.eleybourn.bookcatalogue.compat.BookCatalogueDialogFragment;
 
 /**
  * Fragment wrapper for the PartialDatePicker dialog
  * 
  * @author pjw
  */
-public class TextFieldEditorFragment extends BookCatalogueDialogFragment {
+public class TextFieldEditorFragment extends DialogFragment {
 	private int mDialogId;
 
 	/**
@@ -38,9 +37,9 @@ public class TextFieldEditorFragment extends BookCatalogueDialogFragment {
 	 * 
 	 * @author pjw
 	 */
-	public static interface OnTextFieldEditorListener {
-		public void onTextFieldEditorSave(int dialogId, TextFieldEditorFragment dialog, String newText);
-		public void onTextFieldEditorCancel(int dialogId, TextFieldEditorFragment dialog);
+	public interface OnTextFieldEditorListener {
+		void onTextFieldEditorSave(int dialogId, TextFieldEditorFragment dialog, String newText);
+		void onTextFieldEditorCancel(int dialogId, TextFieldEditorFragment dialog);
 	}
 
 	/**
@@ -93,7 +92,7 @@ public class TextFieldEditorFragment extends BookCatalogueDialogFragment {
 	/**
 	 * Object to handle changes to a description field.
 	 */
-	private TextFieldEditor.OnEditListener mEditListener = new TextFieldEditor.OnEditListener(){
+	private final TextFieldEditor.OnEditListener mEditListener = new TextFieldEditor.OnEditListener(){
 		@Override
 		public void onSaved(TextFieldEditor dialog, String newText) {
 			((OnTextFieldEditorListener)getActivity()).onTextFieldEditorSave(mDialogId, TextFieldEditorFragment.this, newText);

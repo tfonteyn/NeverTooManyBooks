@@ -85,7 +85,7 @@ public class BooklistGroup implements Serializable {
 		public static final int ROW_KIND_MAX = 23; 				// **** NOTE **** ALWAYS update after adding a row kind...				
 	}
 
-	private static final UniqueMap<Integer, String> mRowKindNames = new UniqueMap<Integer, String>();
+	private static final UniqueMap<Integer, String> mRowKindNames = new UniqueMap<>();
 	static {
 		mRowKindNames.add(ROW_KIND_AUTHOR, BookCatalogueApp.getResourceString(R.string.author));
 		mRowKindNames.add(ROW_KIND_SERIES, BookCatalogueApp.getResourceString(R.string.series));
@@ -143,13 +143,13 @@ public class BooklistGroup implements Serializable {
 			return null;
 		}
 
-		@Override
 		/**
 		 * Just calls add(...)
 		 * 
 		 * @param key		Key for new value
 		 * @param value		Data for new value
 		 */
+		@Override
 		public V put(K key, V value) {
 			return add(key, value);
 		}
@@ -169,8 +169,6 @@ public class BooklistGroup implements Serializable {
 
 	/**
 	 * Return a list of all defined row kinds.
-	 *
-	 * @return
 	 */
 	public static int[] getRowKinds() {
 		int[] kinds = new int[mRowKindNames.size()];
@@ -183,11 +181,9 @@ public class BooklistGroup implements Serializable {
 
 	/**
 	 * Return a list of BooklistGroups, one for each defined row kind
-	 * 
-	 * @return
 	 */
 	public static ArrayList<BooklistGroup> getAllGroups() {
-		ArrayList<BooklistGroup> list = new ArrayList<BooklistGroup>();
+		ArrayList<BooklistGroup> list = new ArrayList<>();
 
 		for(Entry<Integer, String> e : mRowKindNames.entrySet()) {
 			final int kind = e.getKey();
@@ -201,8 +197,6 @@ public class BooklistGroup implements Serializable {
 	 * Create a new BooklistGroup of the specified kind, creating any more specific subclasses as necessary.
 	 * 
 	 * @param kind		Kind of group to create
-	 * 
-	 * @return
 	 */
 	public static BooklistGroup newGroup(int kind) {
 		BooklistGroup g;
@@ -229,10 +223,10 @@ public class BooklistGroup implements Serializable {
 	public static class BooklistSeriesGroup extends BooklistGroup /* implements Parcelable */ {
 		private static final long serialVersionUID = 9023218506278704155L;
 		/** Show book under each series it appears in? */
-		public transient BooleanListProperty mAllSeries;
+		transient BooleanListProperty mAllSeries;
 
 		/** mAllSeries Parameter values and descriptions */
-		private static ItemEntries<Boolean> mAllSeriesItems = new ItemEntries<Boolean>();
+		private static final ItemEntries<Boolean> mAllSeriesItems = new ItemEntries<>();
 		static {
 			String kind = BookCatalogueApp.getResourceString(R.string.series);
 			mAllSeriesItems.add(null, R.string.use_default_setting);
@@ -292,8 +286,8 @@ public class BooklistGroup implements Serializable {
 		private static final long serialVersionUID = -1984868877792780113L;
 
 		/** Support for 'Show Given Name' property */
-		public transient BooleanListProperty mGivenName;
-		private static ItemEntries<Boolean> mGivenNameFirstItems = new ItemEntries<Boolean>();
+		transient BooleanListProperty mGivenName;
+		private static final ItemEntries<Boolean> mGivenNameFirstItems = new ItemEntries<>();
 		static {
 			mGivenNameFirstItems.add(null, R.string.use_default_setting);
 			mGivenNameFirstItems.add(false, R.string.family_name_first_eg);
@@ -301,8 +295,8 @@ public class BooklistGroup implements Serializable {
 		}
 
 		/** Support for 'Show All Authors of Book' property */
-		public transient BooleanListProperty mAllAuthors;		
-		private static ItemEntries<Boolean> mAllAuthorsItems = new ItemEntries<Boolean>();
+		transient BooleanListProperty mAllAuthors;
+		private static final ItemEntries<Boolean> mAllAuthorsItems = new ItemEntries<>();
 		static {
 			String kind = BookCatalogueApp.getResourceString(R.string.author);
 			mAllAuthorsItems.add(null, R.string.use_default_setting);
@@ -349,37 +343,18 @@ public class BooklistGroup implements Serializable {
 			mGivenName.set((Boolean)null);
 		}
 
-		/**
-		 * Accessor
-		 * 
-		 * @return
-		 */
 		public boolean getAllAuthors() {
 			return mAllAuthors.getResolvedValue();
 		}
 
-		/**
-		 * Accessor
-		 * 
-		 * @return
-		 */
 		public void setAllAuthors(Boolean allAuthors) {
 			mAllAuthors.set(allAuthors);
 		}
 
-		/**
-		 * Accessor
-		 * 
-		 * @return
-		 */
 		public boolean getGivenName() {
 			return mGivenName.getResolvedValue();
 		}
-		/**
-		 * Accessor
-		 * 
-		 * @return
-		 */
+
 		public void setGivenName(Boolean giveName) {
 			mGivenName.set(giveName);
 		}

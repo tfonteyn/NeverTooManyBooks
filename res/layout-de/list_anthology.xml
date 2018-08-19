@@ -4,7 +4,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/padding_border" >
+    android:paddingStart="@dimen/padding_border"
+    android:paddingEnd="@dimen/padding_border"  >
 
     <TextView
         android:id="@+id/anthology_title"
@@ -19,8 +20,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/anthology_title"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp"
+        android:paddingBottom="@dimen/padding_border_double"
+        android:paddingTop="@dimen/padding_border_double"
         android:text="@string/same_author"
         android:textSize="16sp" />
 
@@ -29,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:text="@string/anthology_add" />
 
     <EditText
@@ -37,8 +38,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@id/row_add"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@id/row_add"
         android:hint="@string/title"
         android:inputType="textCapSentences" />
 
@@ -47,16 +48,18 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/add_title"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:hint="@string/author"
         android:inputType="textCapSentences"
-        android:paddingLeft="10dp" />
+        android:paddingStart="@dimen/padding_border_double"
+        android:paddingEnd="@dimen/padding_border_double"/>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_above="@id/add_author"
-        android:layout_below="@id/same_author" >
+        android:layout_below="@id/same_author"
+        android:orientation="vertical">
 
         <ListView
             android:id="@+id/android:list"

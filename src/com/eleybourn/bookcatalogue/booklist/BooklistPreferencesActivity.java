@@ -66,8 +66,8 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 	public static final int BOOKLISTS_STATE_PRESERVED = 3;
 
 	/** Booklist state preservation property */
-	private static ItemEntries<Integer> mBooklistStateListItems = new ItemEntries<Integer>();
-	private static IntegerListProperty mBooklistStateProperty = new IntegerListProperty(
+	private static final ItemEntries<Integer> mBooklistStateListItems = new ItemEntries<>();
+	private static final IntegerListProperty mBooklistStateProperty = new IntegerListProperty(
 			mBooklistStateListItems, 
 			PREF_BOOKLISTS_STATE, 
 			PropertyGroup.GRP_GENERAL, 
@@ -81,8 +81,8 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 	}
 
 	/** Flat Backgrounds property definition */
-	private static ItemEntries<Boolean> mFlatBackgroundListItems = new ItemEntries<Boolean>();
-	private static BooleanListProperty mFlatBackgroundProperty = new BooleanListProperty(
+	private static final ItemEntries<Boolean> mFlatBackgroundListItems = new ItemEntries<>();
+	private static final BooleanListProperty mFlatBackgroundProperty = new BooleanListProperty(
 				mFlatBackgroundListItems, 
 				PREF_FLAT_BACKGROUND, 
 				PropertyGroup.GRP_GENERAL, 
@@ -95,8 +95,8 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 	}
 
 	/** Enable Thumbnail Cache property definition */
-	private static ItemEntries<Boolean> mCacheThumbnailsListItems = new ItemEntries<Boolean>();
-	private static BooleanListProperty mCacheThumbnailsProperty = new BooleanListProperty(
+	private static final ItemEntries<Boolean> mCacheThumbnailsListItems = new ItemEntries<>();
+	private static final BooleanListProperty mCacheThumbnailsProperty = new BooleanListProperty(
 				mCacheThumbnailsListItems, 
 				PREF_CACHE_THUMBNAILS, 
 				PropertyGroup.GRP_THUMBNAILS, 
@@ -110,8 +110,8 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 	}
 
 	/** Enable Background Thumbnail fetch property definition */
-	private static ItemEntries<Boolean> mBackgroundThumbnailsListItems = new ItemEntries<Boolean>();
-	private static BooleanListProperty mBackgroundThumbnailsProperty = new BooleanListProperty(
+	private static final ItemEntries<Boolean> mBackgroundThumbnailsListItems = new ItemEntries<>();
+	private static final BooleanListProperty mBackgroundThumbnailsProperty = new BooleanListProperty(
 				mBackgroundThumbnailsListItems, 
 				PREF_BACKGROUND_THUMBNAILS, 
 				PropertyGroup.GRP_THUMBNAILS, 
@@ -134,7 +134,7 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 			setTitle(R.string.booklist_preferences);
 			if (savedInstanceState == null)
 				HintManager.displayHint(this, R.string.hint_booklist_global_properties, null);
-			Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+			Utils.initBackground(this);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -142,7 +142,6 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 
 	/**
 	 * Get the current preferred rebuild state for the list
-	 * @return
 	 */
 	public static int getRebuildState() {
 		return mBooklistStateProperty.get();
@@ -161,7 +160,7 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 	 */
 	@Override
 	public void setupViews(BookCataloguePreferences prefs, Properties globalProps) {
-		/**
+		/*
 		 * This activity predominantly shows 'Property' objects; we build that collection here.
 		 */
 		
@@ -183,7 +182,7 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 				}
 			}
 		}
-		// Add the locally constructed porperties
+		// Add the locally constructed properties
 		globalProps.add(mFlatBackgroundProperty);
 		globalProps.add(mBooklistStateProperty);
 		globalProps.add(mCacheThumbnailsProperty);
@@ -215,33 +214,18 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);		
+		Utils.initBackground(this);
 	}
 
-	/**
-	 * Convenience Accessor.
-	 * 
-	 * @return
-	 */
-	public static final boolean isBackgroundFlat() {
+	public static boolean isBackgroundFlat() {
 		return mFlatBackgroundProperty.getResolvedValue();
 	}
 
-	/**
-	 * Convenience Accessor.
-	 * 
-	 * @return
-	 */
-	public static final boolean isThumbnailCacheEnabled() {
+	public static boolean isThumbnailCacheEnabled() {
 		return mCacheThumbnailsProperty.getResolvedValue();
 	}
 
-	/**
-	 * Convenience Accessor.
-	 * 
-	 * @return
-	 */
-	public static final boolean isBackgroundThumbnailsEnabled() {
+	public static boolean isBackgroundThumbnailsEnabled() {
 		return mBackgroundThumbnailsProperty.getResolvedValue();
 	}
 }

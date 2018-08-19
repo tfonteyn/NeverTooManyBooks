@@ -26,6 +26,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import android.os.Bundle;
 
+import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -186,27 +187,27 @@ public class SearchAmazonHandler extends DefaultHandler {
 	
 	/* The XML element names */
 	public static String ID = "id";
-	public static String TOTALRESULTS = "TotalResults";
-	public static String ENTRY = "Item";
-	public static String AUTHOR = "Author";
-	public static String TITLE = "Title";
-	public static String ISBN = "EAN";
-	public static String EISBN = "EISBN";
-	public static String ISBNOLD = "ISBN";
-	public static String DATE_PUBLISHED = "PublicationDate";
-	public static String PUBLISHER = "Publisher";
-	public static String PAGES = "NumberOfPages";
-	public static String THUMBNAIL = "URL";
-	public static String SMALLIMAGE = "SmallImage";
-	public static String MEDIUMIMAGE = "MediumImage";
-	public static String LARGEIMAGE = "LargeImage";
-	public static String DESCRIPTION = "Content";
-	public static String BINDING = "Binding";
-	public static String LANGUAGE = "Language";
-	public static String NAME = "Name";
-	public static String LIST_PRICE = "ListPrice";
-	public static String CURRENCY_CODE = "CurrencyCode";
-	public static String AMOUNT = "Amount";
+	public static final String TOTALRESULTS = "TotalResults";
+	public static final String ENTRY = "Item";
+	public static final String AUTHOR = "Author";
+	public static final String TITLE = "Title";
+	public static final String ISBN = "EAN";
+	public static final String EISBN = "EISBN";
+	public static final String ISBNOLD = "ISBN";
+	public static final String DATE_PUBLISHED = "PublicationDate";
+	public static final String PUBLISHER = "Publisher";
+	public static final String PAGES = "NumberOfPages";
+	public static final String THUMBNAIL = "URL";
+	public static final String SMALLIMAGE = "SmallImage";
+	public static final String MEDIUMIMAGE = "MediumImage";
+	public static final String LARGEIMAGE = "LargeImage";
+	public static final String DESCRIPTION = "Content";
+	public static final String BINDING = "Binding";
+	public static final String LANGUAGE = "Language";
+	public static final String NAME = "Name";
+	public static final String LIST_PRICE = "ListPrice";
+	public static final String CURRENCY_CODE = "CurrencyCode";
+	public static final String AMOUNT = "Amount";
 
 	SearchAmazonHandler(Bundle bookData, boolean fetchThumbnail) {
 		mBookData = bookData;
@@ -232,7 +233,7 @@ public class SearchAmazonHandler extends DefaultHandler {
 	 * @param key	Key for data to add
 	 */
 	private void addIfNotPresent(String key) {
-		if (!mBookData.containsKey(key) || mBookData.getString(key).length() == 0) {
+		if (!mBookData.containsKey(key) || mBookData.getString(key).isEmpty()) {
 			mBookData.putString(key, mBuilder.toString());
 		}		
 	}
@@ -243,7 +244,7 @@ public class SearchAmazonHandler extends DefaultHandler {
 	 * @param key	Key for data to add
 	 */
 	private void addIfNotPresent(String key, String value) {
-		if (!mBookData.containsKey(key) || mBookData.getString(key).length() == 0) {
+		if (!mBookData.containsKey(key) || mBookData.getString(key).isEmpty()) {
 			mBookData.putString(key, value);
 		}		
 	}
@@ -255,7 +256,7 @@ public class SearchAmazonHandler extends DefaultHandler {
 	 * @param value	Value to compare to; if present but equal to this, it will be overwritten
 	 */
 	private void addIfNotPresentOrEqual(String key, String value) {
-		if (!mBookData.containsKey(key) || mBookData.getString(key).length() == 0 || mBookData.getString(key).equals(value)) {
+		if (!mBookData.containsKey(key) || mBookData.getString(key).isEmpty() || mBookData.getString(key).equals(value)) {
 			mBookData.putString(key, mBuilder.toString());
 		}		
 	}
@@ -286,7 +287,7 @@ public class SearchAmazonHandler extends DefaultHandler {
 			if (localName.equalsIgnoreCase(TOTALRESULTS)){
 				count = Integer.parseInt(mBuilder.toString());
 			} else if (localName.equalsIgnoreCase(THUMBNAIL)){
-				if (image == true) {
+				if (image) {
 					mThumbnailUrl = mBuilder.toString();
 					image = false;
 				}
@@ -296,7 +297,7 @@ public class SearchAmazonHandler extends DefaultHandler {
 			} else if (localName.equalsIgnoreCase(LANGUAGE)){
 				mInLanguage = false;
 			} else if (localName.equalsIgnoreCase(LIST_PRICE)){
-				if (mCurrencyCode.equalsIgnoreCase("usd") && !mCurrencyAmount.equals("")) {
+				if (mCurrencyCode.equalsIgnoreCase("usd") && !mCurrencyAmount.isEmpty()) {
 					try {
 						Float price = Float.parseFloat(mCurrencyAmount) / 100;
 						addIfNotPresent(CatalogueDBAdapter.KEY_LIST_PRICE, String.format("%.2f", price));
@@ -307,7 +308,7 @@ public class SearchAmazonHandler extends DefaultHandler {
 				mCurrencyCode = "";
 				mCurrencyAmount = "";
 				mInListPrice = false;
-			} else if (entry == true) {
+			} else if (entry) {
 				if (localName.equalsIgnoreCase(AUTHOR)){
 					Utils.appendOrAdd(mBookData, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, mBuilder.toString());
 				} else if (localName.equalsIgnoreCase(TITLE)){
@@ -341,8 +342,10 @@ public class SearchAmazonHandler extends DefaultHandler {
 				} else if (mInListPrice && localName.equalsIgnoreCase(CURRENCY_CODE)){
 					mCurrencyCode = mBuilder.toString();
 				} else {
-					// Debug Only; see what we are missing.
-					//System.out.println(localName + "->'" + mBuilder.toString() + "'");
+					if (BuildConfig.DEBUG) {
+						// Debug Only; see what we are missing.
+						System.out.println(localName + "->'" + mBuilder.toString() + "'");
+					}
 				}
 			}
 			mBuilder.setLength(0);			
@@ -372,7 +375,7 @@ public class SearchAmazonHandler extends DefaultHandler {
 	@Override
 	public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, name, attributes);
-		if (done == false && localName.equalsIgnoreCase(ENTRY)){
+		if (!done && localName.equalsIgnoreCase(ENTRY)){
 			entry = true;
 		} else if (localName.equalsIgnoreCase(SMALLIMAGE)) {
 			if (mThumbnailSize < 1) {

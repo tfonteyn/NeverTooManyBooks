@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/bc_background_gradient_dim"
     android:gravity="top"
     android:orientation="vertical" >
 
@@ -40,7 +40,8 @@
                     android:layout_weight="1"
                     android:inputType="textMultiLine"
                     android:singleLine="false"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    tools:ignore="LabelFor" />
             </LinearLayout>
 
             <LinearLayout
@@ -61,7 +62,8 @@
                     android:layout_weight="1"
                     android:inputType="textMultiLine"
                     android:singleLine="false"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    tools:ignore="LabelFor" />
             </LinearLayout>
 
             <LinearLayout
@@ -82,14 +84,16 @@
                     android:layout_weight="1"
                     android:inputType="textMultiLine"
                     android:singleLine="false"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    tools:ignore="LabelFor" />
             </LinearLayout>
 
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="2dp"
-                android:background="@drawable/main_menu_header_divider"
-                android:paddingBottom="2dp" />
+                android:paddingBottom="2dp"
+                style="@style/main_menu_header_divider"
+                />
         </LinearLayout>
 
         <TextView
@@ -102,8 +106,9 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="2dp"
-            android:background="@drawable/main_menu_header_divider"
-            android:paddingBottom="2dp" />
+            android:paddingBottom="2dp"
+            style="@style/main_menu_header_divider"
+            />
     </LinearLayout>
 
     <LinearLayout
@@ -118,8 +123,9 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="2dp"
-            android:background="@drawable/main_menu_header_divider"
-            android:paddingBottom="2dp" />
+            android:paddingBottom="2dp"
+            style="@style/main_menu_header_divider"
+            />
 
         <Button
             android:id="@+id/search"

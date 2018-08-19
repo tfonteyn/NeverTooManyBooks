@@ -39,8 +39,8 @@ import com.eleybourn.bookcatalogue.properties.Property.ValidationException;
  * @author Philip Warner
  */
 public class Properties implements Iterable<Property> {
-	private ArrayList<Property> mList = new ArrayList<Property>();
-	private Hashtable<String,Property> mHash = new Hashtable<String,Property>();
+	private final ArrayList<Property> mList = new ArrayList<>();
+	private final Hashtable<String,Property> mHash = new Hashtable<>();
 
 	/**
 	 * Sort the properties based on their group weight, group name, weight and name.
@@ -51,8 +51,6 @@ public class Properties implements Iterable<Property> {
 
 	/**
 	 * Add a property to this collection
-	 * 
-	 * @param p
 	 */
 	public Properties add(Property p) {
 		mList.add(p);
@@ -61,10 +59,7 @@ public class Properties implements Iterable<Property> {
 	}
 
 	/** 
-	 * Get the named property from this collection.
-	 * 
-	 * @param name
-	 * @return
+	 * @return	the named property from this collection.
 	 */
 	public Property get(String name) {
 		return mHash.get(name);
@@ -73,9 +68,6 @@ public class Properties implements Iterable<Property> {
 	/**
 	 * Passed a parent ViewGroup, build the property editors for all properties
 	 * inside the parent.
-	 * 
-	 * @param inflater
-	 * @param parent
 	 */
 	public void buildView(LayoutInflater inflater, ViewGroup parent) {
 		// Sort them correctly
@@ -90,7 +82,7 @@ public class Properties implements Iterable<Property> {
 				View v = inflater.inflate(R.layout.property_group, null);
 				TextView text = (TextView) v.findViewById(R.id.name);
 				if (text != null)
-					text.setText(currGroup.nameId);
+					text.setText(currGroup.getNameId());
 				parent.addView(v);
 			}
 			// Just add the property editor
@@ -100,9 +92,6 @@ public class Properties implements Iterable<Property> {
 		}
 	}
 
-	/**
-	 * Iterator
-	 */
 	@Override
 	public Iterator<Property> iterator() {
 		return mList.iterator();

@@ -125,9 +125,9 @@ public class SearchGoogleBooksHandler extends DefaultHandler {
 	private boolean entry = false;
 	private boolean done = false;
 	
-	public static String ID = "id";
-	public static String TOTALRESULTS = "totalResults";
-	public static String ENTRY = "entry";
+	public static final String ID = "id";
+	public static final String TOTALRESULTS = "totalResults";
+	public static final String ENTRY = "entry";
 	
 	/**
 	 * Return the id of the first book found
@@ -163,7 +163,7 @@ public class SearchGoogleBooksHandler extends DefaultHandler {
 			entry = false;
 			done = true;
 		}
-		if (entry == true && id == "") {
+		if (entry && id.isEmpty()) {
 			if (localName.equalsIgnoreCase(ID)){
 				id = builder.toString();
 			}
@@ -180,7 +180,7 @@ public class SearchGoogleBooksHandler extends DefaultHandler {
 	@Override
 	public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, name, attributes);
-		if (done == false && localName.equalsIgnoreCase(ENTRY)){
+		if (!done && localName.equalsIgnoreCase(ENTRY)){
 			entry = true;
 		}
 	}

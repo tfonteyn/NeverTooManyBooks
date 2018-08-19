@@ -74,7 +74,7 @@ public class BooklistRowView {
 	 * @param c			Underlying Cursor
 	 * @param builder	Underlying Builder
 	 */
-	public BooklistRowView(BooklistCursor c, BooklistBuilder builder) {
+	BooklistRowView(BooklistCursor c, BooklistBuilder builder) {
 		// Allocate ID
 		synchronized(mBooklistRowViewIdCounter) {
 			mId = ++mBooklistRowViewIdCounter;
@@ -98,7 +98,7 @@ public class BooklistRowView {
 	 * @param c			Underlying Cursor
 	 * @param builder	Underlying Builder
 	 */
-	public BooklistRowView(BooklistPseudoCursor c, BooklistBuilder builder) {
+	BooklistRowView(BooklistPseudoCursor c, BooklistBuilder builder) {
 		// Allocate ID
 		synchronized(mBooklistRowViewIdCounter) {
 			mId = ++mBooklistRowViewIdCounter;
@@ -133,7 +133,7 @@ public class BooklistRowView {
 			maxSize = 60;
 		}
 
-		DisplayMetrics metrics = BookCatalogueApp.context.getResources().getDisplayMetrics();
+		DisplayMetrics metrics = BookCatalogueApp.getAppContext().getResources().getDisplayMetrics();
 		maxSize = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, maxSize, metrics));		
 		return maxSize;
 	}
@@ -152,36 +152,20 @@ public class BooklistRowView {
 		return mBuilder.getStyle();
 	}
 
-	/**
-	 * Accessor
-	 * 
-	 * @return
-	 */
 	public long getId() {
 		return mId;
 	}
 
-	/**
-	 * Accessor
-	 * 
-	 * @return
-	 */
 	public int getMaxThumbnailHeight() {
 		return mMaxThumbnailHeight;			
 	}
-	/**
-	 * Accessor
-	 * 
-	 * @return
-	 */
+
 	public int getMaxThumbnailWidth() {
 		return mMaxThumbnailWidth;
 	}
 
 	/**
 	 * Checks if list displays series numbers anywhere.
-	 * 
-	 * @return
 	 */
 	public boolean hasSeries() {
 		return hasColumn(CatalogueDBAdapter.KEY_SERIES_NUM);			
@@ -189,18 +173,13 @@ public class BooklistRowView {
 
 	/**
 	 * Query underlying cursor for column index.
-	 * 
-	 * @param columnName
-	 * @return
 	 */
 	public int getColumnIndex(String columnName) {
 		return mCursor.getColumnIndex(columnName);
 	}
+
 	/**
 	 * Get string from underlying cursor given a column index.
-	 * 
-	 * @param columnIndex
-	 * @return
 	 */
 	public String getString(int columnIndex) {
 		return mCursor.getString(columnIndex);
@@ -257,8 +236,7 @@ public class BooklistRowView {
 					// Create static formatter if necessary
 					s = Utils.getMonthName(i);
 				}				
-			} catch (Exception e) {
-			}
+			} catch (Exception ignored) {}
 			break;
 
 		case RowKinds.ROW_KIND_RATING:
@@ -266,11 +244,10 @@ public class BooklistRowView {
 				int i = Integer.parseInt(s);
 				// If valid, get the name
 				if (i >= 0 && i <= 5) {
-					Resources r = BookCatalogueApp.context.getResources();
+					Resources r = BookCatalogueApp.getAppContext().getResources();
 					s = r.getQuantityString(R.plurals.n_stars, i, i);
 				}				
-			} catch (Exception e) {
-			}
+			} catch (Exception ignored) {}
 			break;
 			
 		default:
@@ -281,9 +258,6 @@ public class BooklistRowView {
 
 	/**
 	 * Check if a given column is present in underlying cursor.
-	 * 
-	 * @param name
-	 * @return
 	 */
 	public boolean hasColumn(String name) {
 		return mCursor.getColumnIndex(name) >= 0;

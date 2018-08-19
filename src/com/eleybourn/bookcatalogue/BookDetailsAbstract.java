@@ -14,12 +14,10 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.ContextMenu;
@@ -86,7 +84,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	/**
 	 * Handler to process a cover selected from the CoverBrowser.
 	 */
-	private OnImageSelectedListener mOnImageSelectedListener = new OnImageSelectedListener() {
+	private final OnImageSelectedListener mOnImageSelectedListener = new OnImageSelectedListener() {
 		@Override
 		public void onImageSelected(String fileSpec) {
 			if (mCoverBrowser != null && fileSpec != null) {
@@ -107,7 +105,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	/**
 	 * Listener for creating context menu for book thumbnail.
 	 */
-	private OnCreateContextMenuListener mCreateBookThumbContextMenuListener = new OnCreateContextMenuListener() {
+	private final OnCreateContextMenuListener mCreateBookThumbContextMenuListener = new OnCreateContextMenuListener() {
 		@Override
 		public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 			MenuItem delete = menu.add(0, CONTEXT_ID_DELETE, 0, R.string.menu_delete_thumb);
@@ -156,7 +154,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 						m.postRotate(BookCatalogueApp.getAppPreferences().getInt(BookCataloguePreferences.PREF_AUTOROTATE_CAMERA_IMAGES, 90));
 						x = Bitmap.createBitmap(x, 0, 0, x.getWidth(), x.getHeight(), m, true);
 						// Create a file to copy the thumbnail into
-						FileOutputStream f = null;
+						FileOutputStream f;
 						try {
 							f = new FileOutputStream(cameraFile.getAbsoluteFile());
 						} catch (FileNotFoundException e) {
@@ -178,58 +176,21 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 					Uri selectedImageUri = intent.getData();
 
 					if (selectedImageUri != null) {
-						// Use the original BC code for anything that has a 'content' scheme and if pre-KitKat
-						// TODO: When KitKat is at 80% penetration(!!!), remove this side of the 'if' statement.
-						if (Build.VERSION.SDK_INT < 19 && selectedImageUri.getScheme().equalsIgnoreCase("content")) {
-							String[] projection = { MediaStore.Images.Media.DATA };
-							Cursor cursor = this.getActivity().getContentResolver().query(selectedImageUri, projection, null, null, null);
-							try {
-								int column_index = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-								if (column_index < 0 || !cursor.moveToFirst()) {
-									Logger.logError(new RuntimeException("Add from gallery failed (col = " + column_index +"), name = " + MediaStore.Images.Media.DATA));
-									// This should not happen, but tell the user and log something
-									String s = getResources().getString(R.string.no_image_found) + ". " + getResources().getString(R.string.if_the_problem_persists);
-									Toast.makeText(getActivity(), s, Toast.LENGTH_LONG).show();
-								} else {
-									String selectedImagePath = cursor.getString(column_index);
-									
-									File thumb = new File(selectedImagePath);
-									File real = getCoverFile(mEditManager.getBookData().getRowId());
-									try {
-										copyFile(thumb, real);
-									} catch (IOException e) {
-										Logger.logError(e, "copyImage failed in add from gallery");
-										String s = getResources().getString(R.string.could_not_copy_image) + ". " + getResources().getString(R.string.if_the_problem_persists);
-										Toast.makeText(getActivity(), s, Toast.LENGTH_LONG).show();
-									}
-									// Update the ImageView with the new image
-									setCoverImage();					
-								}								
-							} finally {
-								try {
-									if (cursor != null && !cursor.isClosed())
-										cursor.close();									
-								} catch (Exception e) {
-									
-								}
-							}
+						boolean imageOk = false;
+						// If no 'content' scheme, then use the content resolver.
+						try {
+							InputStream in = getActivity().getContentResolver().openInputStream(selectedImageUri);
+							imageOk = Utils.saveInputToFile(in, getCoverFile(mEditManager.getBookData().getRowId()));
+						} catch (FileNotFoundException e) {
+							Logger.logError(e, "Unable to copy content to file");
+						}
+						if (imageOk) {
+							// Update the ImageView with the new image
+							setCoverImage();
 						} else {
-							boolean imageOk = false;
-							// If no 'content' scheme, then use the content resolver.
-							try {
-								InputStream in = getActivity().getContentResolver().openInputStream(selectedImageUri);
-								imageOk = Utils.saveInputToFile(in, getCoverFile(mEditManager.getBookData().getRowId()));
-							} catch (FileNotFoundException e) {
-								Logger.logError(e, "Unable to copy content to file");
-							}
-							if (imageOk) {
-								// Update the ImageView with the new image
-								setCoverImage();									
-							} else {
-								String s = getResources().getString(R.string.could_not_copy_image) + ". " + getResources().getString(R.string.if_the_problem_persists);
-								Toast.makeText(getActivity(), s, Toast.LENGTH_LONG).show();								
-							}								
-						}						
+							String s = getResources().getString(R.string.could_not_copy_image) + ". " + getResources().getString(R.string.if_the_problem_persists);
+							Toast.makeText(getActivity(), s, Toast.LENGTH_LONG).show();
+						}
 					} else {
 						/* Deal with the case where the chooser returns a null intent. This seems to happen 
 						 * when the filename is not properly understood by the choose (eg. an apostrophe in 
@@ -297,9 +258,9 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 				showZoomedThumb(mEditManager.getBookData().getRowId());
 			}
 		});
-		
-		//Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
-		
+
+		//Utils.initBackground(this);
+
 	}
 	
 	@Override
@@ -321,7 +282,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 		super.onResume();
 		
 		// Fix background
-		//Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);		
+		//Utils.initBackground(this);
 		Tracker.exitOnResume(this);
 	}
 	
@@ -369,7 +330,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 				// Increment the temp counter and cleanup the temp directory
 				mTempImageCounter++;
 				cleanupTempImages();
-				Intent pintent = null;
+				Intent pintent;
 				// Get a photo
 				pintent = new Intent("android.media.action.IMAGE_CAPTURE");
 //				We don't do this because we have no reliable way to rotate a large image
@@ -392,7 +353,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 				return true;
 			case CONTEXT_ID_SHOW_ALT_COVERS:
 				String isbn = mFields.getField(R.id.isbn).getValue().toString();
-				if (isbn == null || isbn.trim().length() == 0) {
+				if (isbn == null || isbn.trim().isEmpty()) {
 					Toast.makeText(getActivity(), getResources().getString(R.string.editions_require_isbn), Toast.LENGTH_LONG).show();
 				} else {
 					mCoverBrowser = new CoverBrowser(getActivity(), mMetrics, isbn, mOnImageSelectedListener);
@@ -512,7 +473,6 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	
 	/**
 	 * Delete the provided thumbnail from the sdcard
-	 * @param id The id of the book (and thumbnail) to delete
 	 */
 	private void deleteThumbnail() {
 		try {
@@ -566,12 +526,11 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	 * If there is no data shows "Set author" text defined in resources.
 	 * <p>
 	 * Be sure that you get {@link #mAuthorList}. See {@link #populateFieldsFromDb(Long)}
-	 * for example. 
+	 * for example.
 	 */
 	protected void populateAuthorListField() {
-
 		String newText = mEditManager.getBookData().getAuthorTextShort();
-		if (newText == null || newText.equals("")) {
+		if (newText == null || newText.isEmpty()) {
 			newText = getResources().getString(R.string.set_authors);
 		}
 		mFields.getField(R.id.author).setValue(newText);	
@@ -582,11 +541,11 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	 * If there is no data shows "Set series..." text defined in resources.
 	 * <p>
 	 * Be sure that you get {@link #mSeriesList}. See {@link #populateFieldsFromDb(Long)}
-	 * for example. 
+	 * for example.
 	 */
 	protected void populateSeriesListField() {
 		String newText;
-		int size = 0;
+		int size;
 		ArrayList<Series> list = mEditManager.getBookData().getSeriesList();
 		try {
 			size = list.size();
@@ -609,8 +568,8 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	}
 	
 	/**
-	 * Rotate the thumbnail a specified amount
-	 * @param id
+	 * Rotate the thumbnail
+	 * @param angle by a specified amount
 	 */
 	private void rotateThumbnail(long angle) {
 		boolean retry = true;
@@ -630,7 +589,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 				}
 
 				/* Create a file to copy the thumbnail into */
-				FileOutputStream f = null;
+				FileOutputStream f;
 				try {
 					f = new FileOutputStream(thumbFile.getAbsoluteFile());
 				} catch (FileNotFoundException e) {
@@ -740,8 +699,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	 * data from database. To set authors and series fields use {@link #populateAuthorListField()}
 	 * and {@link #populateSeriesListField()} methods.<br>
 	 * Also sets {@link #mAuthorList} and {@link #mSeriesList} values with data from database.
-	 * Data defined by its _id in db. 
-	 * @param rowId database row id of the selected book.
+	 * Data defined by its _id in db.
 	 */
 	protected void populateFieldsFromBook(BookData book) {
 		// From the database (edit)
@@ -761,8 +719,6 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	/**
 	 * Inflates all fields with data from cursor and populates UI fields with it.
 	 * Also set thumbnail of the book. 
-	 * @param rowId database row _id of the book
-	 * @param bookCursor cursor with information of the book
 	 */
 	protected void populateBookDetailsFields(BookData book){		
 		//Set anthology field
@@ -814,7 +770,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 					}
 				});
 				
-				LayoutParams lp = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+				LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 				dialog.addContentView(cover, lp);
 			}
 		}
@@ -822,11 +778,11 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	}
 	
 	/**
-	 * Gets all bookshelves for the book from database and populate corresponding 
-	 * filed with them.
-	 * @param fields Fields containing book information
-	 * @param rowId Database row _id of the book
-	 * @return true if populated, false otherwise
+	 * Gets all bookshelves for the book from database and populate corresponding filed with them.
+	 *
+	 * @param fields    Fields containing book information
+	 * @param book      the book
+	 * @return          true if populated, false otherwise
 	 */
 	protected boolean populateBookshelvesField(Fields fields, BookData book){
 		boolean result = false;
@@ -834,8 +790,8 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 			// Display the selected bookshelves
 			Field bookshelfTextFe = fields.getField(R.id.bookshelf);
 			String text = book.getBookshelfText();
-			bookshelfTextFe.setValue(book.getBookshelfText());
-			if (!text.equals("")) {
+			bookshelfTextFe.setValue(text);
+			if (!text.isEmpty()) {
 				result = true; // One or more bookshelves have been set
 			}
 		} catch (Exception e) {

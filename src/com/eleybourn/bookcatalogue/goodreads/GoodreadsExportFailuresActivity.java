@@ -109,13 +109,13 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 		if (savedInstanceState == null)
 			HintManager.displayHint(this, R.string.hint_background_task_events, null);
 
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+		Utils.initBackground(this);
 	}
 
 	/**
 	 * Listener to handle Event add/change/delete.
 	 */
-	private OnEventChangeListener m_OnEventChangeListener = new  OnEventChangeListener() {
+	private final OnEventChangeListener m_OnEventChangeListener = new  OnEventChangeListener() {
 		@Override
 		public void onEventChange(Event event, EventActions action) {
 			GoodreadsExportFailuresActivity.this.refreshData();
@@ -136,7 +136,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	protected void onResume() {
 		super.onResume();
 		refreshData();
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);		
+		Utils.initBackground(this);
 	} 
 
 	/**
@@ -145,7 +145,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	@Override
 	public void onListItemClick(final AdapterView<?> parent, final View v, final int position, final long id) {
 		// get the event object
-		final Event event = (Event) ViewTagger.getTag(v, R.id.TAG_EVENT);
+		final Event event = ViewTagger.getTag(v, R.id.TAG_EVENT);
 
 		// If it owns a hint, display it
 		if (event instanceof HintOwner) {
@@ -160,11 +160,11 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 			// Just display context menu
 			doContextMenu(parent, v, position, id);
 		}
-	};
+	}
 
-	private void doContextMenu(final AdapterView<?> parent, final View v, final int position, final long id) {
-		final Event event = (Event) ViewTagger.getTag(v, R.id.TAG_EVENT);
-		final ArrayList<ContextDialogItem> items = new ArrayList<ContextDialogItem>();
+    private void doContextMenu(final AdapterView<?> parent, final View v, final int position, final long id) {
+		final Event event = ViewTagger.getTag(v, R.id.TAG_EVENT);
+		final ArrayList<ContextDialogItem> items = new ArrayList<>();
 
 		event.addContextMenuItems(this, parent, v, position, id, items, m_db);
 
@@ -236,9 +236,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	}
 	
 	/** 
-	 * Get the unique ID associated with this activity. Used in activity results.
-	 * 
-	 * @return
+	 * @return the unique ID associated with this activity. Used in activity results.
 	 */
 	public static int getActivityId() {
 		return UniqueId.ACTIVITY_GOODREADS_EXPORT_FAILURES;

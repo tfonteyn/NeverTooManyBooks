@@ -27,14 +27,14 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.eleybourn.bookcatalogue.compat.BookCatalogueListActivity;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -45,36 +45,36 @@ public class Bookshelf extends BookCatalogueListActivity {
 	private static final int ACTIVITY_CREATE=0;
 	private static final int ACTIVITY_EDIT=1;
 	private CatalogueDBAdapter mDbHelper;
-	private static final int INSERT_ID = Menu.FIRST + 0;
+	private static final int INSERT_ID = Menu.FIRST;
 	private static final int DELETE_ID = Menu.FIRST + 1;
 
 	/* Side-step a bug in HONEYCOMB. It seems that startManagingCursor() in honeycomb causes
 	 * child-list cursors for ExpanadableList objects to be closed prematurely. So we seem to have
 	 * to roll our own...see http://osdir.com/ml/Android-Developers/2011-03/msg02605.html.
 	 */
-	private ArrayList<Cursor> mManagedCursors = new ArrayList<Cursor>();
-	@Override    
+	private ArrayList<Cursor> mManagedCursors = new ArrayList<>();
+	@Override
 	public void startManagingCursor(Cursor c)
-	{     
+	{
 		synchronized(mManagedCursors) {
 			if (!mManagedCursors.contains(c))
-				mManagedCursors.add(c);     
-		}    
+				mManagedCursors.add(c);
+		}
 	}
 
-	@Override    
+	@Override
 	public void stopManagingCursor(Cursor c)
 	{
 		synchronized(mManagedCursors) {
 			try {
-				mManagedCursors.remove(c);				
+				mManagedCursors.remove(c);
 			} catch (Exception e) {
 				// Don;t really care if it's called more than once.
 			}
 		}
 	}
 
-	private void destroyManagedCursors() 
+	private void destroyManagedCursors()
 	{
 		synchronized(mManagedCursors) {
 			for (Cursor c : mManagedCursors) {
@@ -83,7 +83,7 @@ public class Bookshelf extends BookCatalogueListActivity {
 				} catch (Exception e) {
 					// Don;t really care if it's called more than once or fails.
 				}
-			}     
+			}
 			mManagedCursors.clear();
 		}
 	}
@@ -98,7 +98,7 @@ public class Bookshelf extends BookCatalogueListActivity {
 		mDbHelper.open();
 		fillBookshelves();
 		registerForContextMenu(getListView());
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+		Utils.initBackground(this);
 	}
 	
 	/**
@@ -107,7 +107,7 @@ public class Bookshelf extends BookCatalogueListActivity {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);		
+		Utils.initBackground(this);
 	}
 
 	private void fillBookshelves() {
@@ -117,7 +117,7 @@ public class Bookshelf extends BookCatalogueListActivity {
 		// Get all of the rows from the database and create the item list
 		Cursor BookshelfCursor = mDbHelper.fetchAllBookshelves();
 		startManagingCursor(BookshelfCursor);
-		
+
 		// Create an array to specify the fields we want to display in the list
 		String[] from = new String[]{CatalogueDBAdapter.KEY_BOOKSHELF, CatalogueDBAdapter.KEY_ROWID};
 		
@@ -130,7 +130,7 @@ public class Bookshelf extends BookCatalogueListActivity {
 	}
 	
 	@Override
-	public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, INSERT_ID, 0, R.string.menu_insert_bs)
 			.setIcon(R.drawable.ic_action_bookshelf_add)

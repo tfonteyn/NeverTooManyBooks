@@ -66,7 +66,7 @@ abstract public class ManagedTask extends Thread {
 	 * 
 	 * @return		Result
 	 */
-	String getString(int id) {
+	public String getString(int id) {
 		return BookCatalogueApp.getResourceString(id);
 	}
 
@@ -74,8 +74,7 @@ abstract public class ManagedTask extends Thread {
 	 * Constructor.
 	 * 
 	 * @param manager			Associated task manager
-	 * @param taskHandler		Object to inform of life0cycle events
-	 * 
+	 *
 	 */
 	public ManagedTask(TaskManager manager) {
 		// Must be non-null
@@ -115,9 +114,7 @@ abstract public class ManagedTask extends Thread {
 
 		try {
 			onRun();			
-		} catch (InterruptedException e) {
-			mCancelFlg = true;
-		} catch (ClosedByInterruptException e) {
+		} catch (InterruptedException | ClosedByInterruptException e) {
 			mCancelFlg = true;
 		} catch (Exception e) {
 			Logger.logError(e);
@@ -186,7 +183,7 @@ abstract public class ManagedTask extends Thread {
 	/**
 	 * Controller instance for this specific task
 	 */
-	private TaskController mController = new TaskController() {
+	private final TaskController mController = new TaskController() {
 		@Override
 		public void requestAbort() {
 			ManagedTask.this.cancelTask();
@@ -202,10 +199,10 @@ abstract public class ManagedTask extends Thread {
 	 *
 	 *  This object handles all underlying OnTaskEndedListener messages for every instance of this class.
 	 */
-	protected static class TaskSwitch extends MessageSwitch<TaskListener, TaskController> {};
+	protected static class TaskSwitch extends MessageSwitch<TaskListener, TaskController> {}
 
-	private static final TaskSwitch mMessageSwitch = new TaskSwitch();
-	protected static final TaskSwitch getMessageSwitch() { return mMessageSwitch; }
+    private static final TaskSwitch mMessageSwitch = new TaskSwitch();
+	protected static TaskSwitch getMessageSwitch() { return mMessageSwitch; }
 
 	private final long mMessageSenderId = mMessageSwitch.createSender(mController);
 	public long getSenderId() { return mMessageSenderId; }

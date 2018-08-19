@@ -33,11 +33,11 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  */
 public class Datum {
 	/** True if data should be visible */
-	private boolean mIsVisible = true;
+	private boolean mIsVisible;
 	/** Validator for this Datum */
-	private DataValidator mValidator = null;
+	private DataValidator mValidator;
 	/** Accessor for this Datum (eg. the datum might be a bit in a mask field, or a composite read-only value */
-	private DataAccessor mAccessor = null;
+	private DataAccessor mAccessor;
 	/** Key of this datum */
 	private final String mKey;
 
@@ -54,7 +54,6 @@ public class Datum {
 		mIsVisible = visible;
 	}
 	
-	/** Accessor */
 	public String getKey() {
 		return mKey;
 	}
@@ -69,14 +68,14 @@ public class Datum {
 		return this;
 	}
 
-	/** Accessor */
 	public DataValidator getValidator() {
 		return mValidator;
 	}
-	/** Accessor */
+
 	public boolean hasValidator() {
 		return mValidator != null;
 	}
+
 	/**
 	 *  Accessor. Protected against being set twice.
 	 */
@@ -349,13 +348,12 @@ public class Datum {
 	 * We currently do not use a Datum for special access.
 	 * TODO: Consider how to use an accessor
 	 * 
-	 * @param data		Parent DataManager
 	 * @param bundle	Raw data Bundle
 	 * @param value		The serializable object
 	 * 
 	 * @return		The data manager for chaining
 	 */
-	public Datum putSerializable(DataManager data, Bundle bundle, Serializable value) {
+	public Datum putSerializable(Bundle bundle, Serializable value) {
 		if (mAccessor == null) {
 			bundle.putSerializable(mKey, value);			
 		} else {
@@ -371,7 +369,7 @@ public class Datum {
 	 * 
 	 * @return		Resulting value
 	 */
-	public static String objectToString(Object o) {
+	private static String objectToString(Object o) {
 		if (o == null)
 			return "";
 		try {
@@ -395,7 +393,7 @@ public class Datum {
 			return (Long) o;
 		} catch (ClassCastException e) {
 			final String s = o.toString();
-			if (s.equals(""))
+			if (s.isEmpty())
 				return 0;
 			else
 				try {
@@ -417,14 +415,14 @@ public class Datum {
 	 * 
 	 * @return		Resulting value
 	 */
-	public static double objectToDouble(Object o) {
+	private static double objectToDouble(Object o) {
 		if (o == null)
 			return 0;
 		try {
 			return (Double) o;
 		} catch (ClassCastException e) {
 			final String s = o.toString();
-			if (s.equals(""))
+			if (s.isEmpty())
 				return 0;
 			else
 				return Double.parseDouble(s);

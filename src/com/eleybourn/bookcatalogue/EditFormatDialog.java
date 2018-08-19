@@ -39,7 +39,7 @@ public class EditFormatDialog {
 	EditFormatDialog(Context context, CatalogueDBAdapter dbHelper, final Runnable onChanged) {
 		mDbHelper = dbHelper;
 		mContext = context;
-		mAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_dropdown_item_1line, mDbHelper.getFormats());
+		mAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDbHelper.getFormats());
 		mOnChanged = onChanged;
 	}
 
@@ -62,7 +62,7 @@ public class EditFormatDialog {
 			public void onClick(View v) {
 				AutoCompleteTextView nameView = (AutoCompleteTextView) dialog.findViewById(R.id.name);
 				String newName = nameView.getText().toString().trim();
-				if (newName == null || newName.length() == 0) {
+				if (newName.isEmpty()) {
 					Toast.makeText(mContext, R.string.name_can_not_be_blank, Toast.LENGTH_LONG).show();
 					return;
 				}

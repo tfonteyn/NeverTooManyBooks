@@ -96,7 +96,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
 
 		// Make the title
 		String title;
-		if (mStyle.getDisplayName().equals(""))
+		if (mStyle.getDisplayName().isEmpty())
 			title = getString(R.string.new_style);
 		else if (mStyle.getRowId() == 0)
 			title = getString(R.string.clone_style_colon_name, mStyle.getDisplayName());
@@ -109,7 +109,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
 		if (savedInstanceState == null)
 			HintManager.displayHint(this, R.string.hint_booklist_style_properties, null);
 
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+		Utils.initBackground(this);
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);		
+		Utils.initBackground(this);
 	}
 
 	/**
@@ -144,7 +144,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
 		/**
 		 * Constructor
 		 */
-		public GroupsProperty() {
+		GroupsProperty() {
 			super("StyleGroups", PropertyGroup.GRP_GENERAL, R.string.groupings);
 		}
 
@@ -242,8 +242,6 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
 
 	/**
 	 * Get/create database as required.
-	 * 
-	 * @return
 	 */
 	private CatalogueDBAdapter getDb() {
 		if (mDb == null)

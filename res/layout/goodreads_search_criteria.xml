@@ -3,7 +3,6 @@
     android:id="@+id/root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/bc_background_gradient"
     android:gravity="top"
     android:orientation="vertical" >
 
@@ -88,8 +87,9 @@
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="2dp"
-                android:background="@drawable/main_menu_header_divider"
-                android:paddingBottom="2dp" />
+                android:paddingBottom="2dp"
+                style="@style/main_menu_header_divider"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -128,8 +128,9 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="2dp"
-            android:background="@drawable/main_menu_header_divider"
-            android:paddingBottom="2dp" />
+            android:paddingBottom="2dp"
+            style="@style/main_menu_header_divider"
+            />
     </LinearLayout>
 
     <LinearLayout
@@ -144,8 +145,9 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="2dp"
-            android:background="@drawable/main_menu_header_divider"
-            android:paddingBottom="2dp" />
+            android:paddingBottom="2dp"
+            style="@style/main_menu_header_divider"
+            />
 
         <TextView
             android:id="@+id/works_found"

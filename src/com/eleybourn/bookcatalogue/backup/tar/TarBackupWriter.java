@@ -57,7 +57,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
 	 * @param container		Parent
 	 * @throws IOException
 	 */
-	public TarBackupWriter(TarBackupContainer container) throws IOException {
+	TarBackupWriter(TarBackupContainer container) throws IOException {
 		mContainer = container;
 		// Open the archive for writing
 		FileOutputStream out = new FileOutputStream(container.getFile());
@@ -142,7 +142,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
 	 * Utility routine to send the contents of a stream to the current archive entry
 	 * 
 	 * @param in			Stream to be saved
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	private void streamToArchive(InputStream in) throws IOException {
@@ -172,7 +172,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
 	 * 
 	 * @param name		name of "file" in archive
 	 * @param bytes		bytes to write
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	private void bytesToArchive(String name, byte[] bytes) throws IOException {

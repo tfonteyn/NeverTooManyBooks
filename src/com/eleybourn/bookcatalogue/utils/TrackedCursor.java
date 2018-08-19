@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import android.database.sqlite.SQLiteCursorDriver;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQuery;
 
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedCursor;
@@ -51,7 +50,7 @@ public class TrackedCursor extends SynchronizedCursor  {
 	/* =========== */
 
 	/** Used as a collection of known cursors */
-	private static HashSet<WeakReference<TrackedCursor>> mCursors = new HashSet<WeakReference<TrackedCursor>>();
+	private static final HashSet<WeakReference<TrackedCursor>> mCursors = new HashSet<>();
 	/** Global counter for unique cursor IDs */
 	private static Long mIdCounter = 0L;
 
@@ -68,18 +67,18 @@ public class TrackedCursor extends SynchronizedCursor  {
 	private boolean mIsClosedFlg = false;
 
 	/** Debug counter */
-	public static Integer mInstanceCount = 0;
+	private static Integer mInstanceCount = 0;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param db
 	 * @param driver
 	 * @param editTable
 	 * @param query
+	 * @param sync
 	 */
-	public TrackedCursor(SQLiteDatabase db, SQLiteCursorDriver driver, String editTable, SQLiteQuery query, Synchronizer sync) {
-		super(db, driver, editTable, query, sync);
+	public TrackedCursor(SQLiteCursorDriver driver, String editTable, SQLiteQuery query, Synchronizer sync) {
+		super(driver, editTable, query, sync);
 
 		if (DEBUG_TRACKED_CURSOR) {
 			synchronized(mInstanceCount) {
@@ -97,7 +96,7 @@ public class TrackedCursor extends SynchronizedCursor  {
 			}
 			// Save this cursor in the collection
 			synchronized(mCursors) {
-				mWeakRef = new WeakReference<TrackedCursor>(this);
+				mWeakRef = new WeakReference<>(this);
 				mCursors.add(mWeakRef);
 			}			
 		} else {
@@ -149,14 +148,12 @@ public class TrackedCursor extends SynchronizedCursor  {
 	}
 	/**
 	 * Get the stack trace recorded when cursor created
-	 * @return
 	 */
 	public StackTraceElement[] getStackTrace() {
 		return mStackTrace;
 	}
 	/**
 	 * Get the ID of this cursor
-	 * @return
 	 */
 	final public long getCursorId() {
 		return mId;
@@ -166,8 +163,6 @@ public class TrackedCursor extends SynchronizedCursor  {
 	 * Get the total number of cursors that have not called close(). This is subtly
 	 * different from the list of open cursors because non-referenced cursors may 
 	 * have been deleted and the finalizer not called.
-	 * 
-	 * @return
 	 */
 	public static long getCursorCountApproximate() {
 		long count = 0;
@@ -185,14 +180,12 @@ public class TrackedCursor extends SynchronizedCursor  {
 	 * and removes from collection if not. 
 	 * 
 	 * Note: This is not a *cheap* operation.
-	 * 
-	 * @return
 	 */
 	public static long getCursorCount() {
 		long count = 0;
 
 		if (DEBUG_TRACKED_CURSOR) {			
-			ArrayList<WeakReference<TrackedCursor>> list = new ArrayList<WeakReference<TrackedCursor>>();
+			ArrayList<WeakReference<TrackedCursor>> list = new ArrayList<>();
 			synchronized(mCursors) {
 				for(WeakReference<TrackedCursor> r : mCursors) {
 					TrackedCursor c = r.get();
@@ -226,11 +219,9 @@ public class TrackedCursor extends SynchronizedCursor  {
 
 	/**
 	 * Get a collection of open cursors at the current time.
-	 *
-	 * @return
 	 */
 	public static ArrayList<TrackedCursor> getCursors() {
-		ArrayList<TrackedCursor> list = new ArrayList<TrackedCursor>();
+		ArrayList<TrackedCursor> list = new ArrayList<>();
 		if (DEBUG_TRACKED_CURSOR) {
 			synchronized(mCursors) {
 				for(WeakReference<TrackedCursor> r : mCursors) {

@@ -40,7 +40,7 @@ public interface BackupWriter {
 	 * 
 	 * @author pjw
 	 */
-	public interface BackupWriterListener {
+    interface BackupWriterListener {
 		/** Set the end point for the progress */
 		void setMax(int max);
 		/** Advance progress by 'delta' */
@@ -58,23 +58,20 @@ public interface BackupWriter {
 	 * all entities in the backup and restore them based on the entity type.
 	 * 
 	 * See BackupWriterAbstract for a default implementation.
-	 * 
-	 * @param listener
-	 * @throws IOException
 	 */
 	void backup(BackupWriterListener listener, final int backupFlags, final Date since) throws IOException;
 	/** Get the containing archive */
 	BackupContainer getContainer();
 	/** Write an info block to the archive */
-	public void putInfo(BackupInfo info) throws IOException;
+    void putInfo(BackupInfo info) throws IOException;
 	/** Write an export file to the archive */
-	public void putBooks(File books) throws IOException;
+    void putBooks(File books) throws IOException;
 	/** Store a cover file */
-	public void putCoverFile(File source) throws IOException;
+    void putCoverFile(File source) throws IOException;
 	/** Store a Booklist Style */
-	public void putBooklistStyle(BooklistStyle style) throws IOException;
+    void putBooklistStyle(BooklistStyle style) throws IOException;
 	/** Store a SharedPreferences */
-	public void putPreferences(SharedPreferences prefs) throws IOException;
+    void putPreferences(SharedPreferences prefs) throws IOException;
 	/** Close the writer */
-	public void close() throws IOException;
+    void close() throws IOException;
 }

@@ -44,21 +44,17 @@ import java.util.Iterator;
  *
  * @param <T>		Base type of list items
  */
-public abstract class ListProperty<T extends Object> extends ValuePropertyWithGlobalDefault<T> {
+public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> {
 	/** List of valid values */
-	protected ItemEntries<T> mList = null;
+	protected ItemEntries<T> mList;
 
 	/** Accessor */
-	public ItemEntries<T> getListItems() { return mList; };
-	/** Accessor */
-	public void setListItems(ItemEntries<T> list) { mList= list; };
-
-	public ListProperty(ItemEntries<T> list, String uniqueId, PropertyGroup group, int nameResourceId, T value, String defaultPref, T defaultValue) {
-		super(uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
-		mList = list;
+	public ItemEntries<T> getListItems() {
+		return mList;
 	}
-	public ListProperty(ItemEntries<T> list, String uniqueId, PropertyGroup group, int nameResourceId, T value, T defaultValue) {
-		super(uniqueId, group, nameResourceId, value, null, defaultValue);
+
+    public ListProperty(ItemEntries<T> list, String uniqueId, PropertyGroup group, int nameResourceId, T value, String defaultPref, T defaultValue) {
+		super(uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
 		mList = list;
 	}
 
@@ -120,15 +116,15 @@ public abstract class ListProperty<T extends Object> extends ValuePropertyWithGl
 	 *
 	 * @param <T>		Type of underlying list item
 	 */
-	public static class ItemEntry<T extends Object> {
+	public static class ItemEntry<T> {
 		/** Actual value */
-		T value;
+		final T value;
 		/** Test description of the meaning of that value */
 		int textId;
         Object[] textArgs;
 
 		/** Constructor. Instantiates string. */
-		public ItemEntry(T value, int resourceId, Object... args) {
+		ItemEntry(T value, int resourceId, Object... args) {
 			this.value = value;
 			this.textId = resourceId; //BookCatalogueApp.getResourceString(resourceId);
             this.textArgs = args;
@@ -169,19 +165,20 @@ public abstract class ListProperty<T extends Object> extends ValuePropertyWithGl
 	 * @param <T>		Underlying list item data type.
 	 */
 	public static class ItemEntries<T> implements Iterable<ItemEntry<T>> {
-		ArrayList<ItemEntry<T>> mList = new ArrayList<ItemEntry<T>>();
+		final ArrayList<ItemEntry<T>> mList = new ArrayList<>();
 
 		/**
 		 * Utility to make adding items easier.
 		 * 
 		 * @param value		Underlying value
 		 * @param stringId	String ID of description
-		 * @return
+		 * @return this for chaining
 		 */
 		public ItemEntries<T> add(T value, int stringId, Object... args) {
-			mList.add(new ItemEntry<T>(value, stringId, args));
+			mList.add(new ItemEntry<>(value, stringId, args));
 			return this;
 		}
+
 //		/**
 //		 * Utility to make adding items easier.
 //		 *
@@ -193,7 +190,7 @@ public abstract class ListProperty<T extends Object> extends ValuePropertyWithGl
 //			mList.add(new ItemEntry<T>(value, string));
 //			return this;
 //		}
-		/** Iterator access */
+
 		@Override
 		public Iterator<ItemEntry<T>> iterator() {
 			return mList.iterator();
@@ -207,10 +204,10 @@ public abstract class ListProperty<T extends Object> extends ValuePropertyWithGl
 	 *
 	 * @param <T>
 	 */
-	private static class Holder<T extends Object> {
-		ItemEntry<T> item;
-		View baseView;
-		public Holder(ItemEntry<T> item, View baseView) {
+	private static class Holder<T> {
+		final ItemEntry<T> item;
+		final View baseView;
+		Holder(ItemEntry<T> item, View baseView) {
 			this.item = item;
 			this.baseView = baseView;
 		}
@@ -218,9 +215,6 @@ public abstract class ListProperty<T extends Object> extends ValuePropertyWithGl
 
 	/**
 	 * Set the 'value' field in the passed view to match the passed item.
-	 * 
-	 * @param baseView
-	 * @param item
 	 */
 	private void setValueInView(View baseView, ItemEntry<T> item) {
 		TextView text = (TextView) baseView.findViewById(R.id.value);
@@ -240,12 +234,11 @@ public abstract class ListProperty<T extends Object> extends ValuePropertyWithGl
 	/**
 	 * Called to display a list of values for this property.
 	 * 
-	 * @param base		Specific view that was clicked
-	 * @param inflater	LayoutInflater
-	 * @param items		All list items
-	 * @return
+	 * @param base        Specific view that was clicked
+	 * @param inflater    LayoutInflater
+	 * @param items       All list items
 	 */
-	private boolean displayList(final View base, final LayoutInflater inflater, ItemEntries<T> items) {
+	private void displayList(final View base, final LayoutInflater inflater, ItemEntries<T> items) {
 
 		// Get the view and the radio group
 		View root = inflater.inflate(R.layout.property_value_list_list, null);
@@ -288,16 +281,14 @@ public abstract class ListProperty<T extends Object> extends ValuePropertyWithGl
 				sel.setOnClickListener(l);
 				v.setOnClickListener(l);
 				// Set the tacks used by the listeners
-				ViewTagger.setTag(v, R.id.TAG_HOLDER, new Holder<T>(e, base));
-				ViewTagger.setTag(sel, R.id.TAG_HOLDER, new Holder<T>(e, base));
+				ViewTagger.setTag(v, R.id.TAG_HOLDER, new Holder<>(e, base));
+				ViewTagger.setTag(sel, R.id.TAG_HOLDER, new Holder<>(e, base));
 				// Add it to the group
 				grp.addView(v);		
 			}
 		}
 
-		// Display dialog
 		dialog.show();
-		return true;
 	}
 }
 

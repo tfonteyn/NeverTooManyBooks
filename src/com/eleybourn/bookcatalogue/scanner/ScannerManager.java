@@ -26,16 +26,16 @@ public class ScannerManager {
 	 */
 	private interface ScannerFactory {
 		/** Create a new scanner of the related type */
-		public Scanner newInstance();
+		Scanner newInstance();
 		/** Check if this scanner is available */
-		public boolean isIntentAvaiable();
+		boolean isIntentAvaiable();
 	}
 
 	/**
 	 * Collection of ScannerFactory objects
 	 */
-	private static final Hashtable<Integer,ScannerFactory> myScannerFactories = new Hashtable<Integer,ScannerFactory>();
-	/**
+	private static final Hashtable<Integer,ScannerFactory> myScannerFactories = new Hashtable<>();
+	/*
 	 * Build the collection
 	 */
 	static {

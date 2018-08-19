@@ -20,17 +20,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="left"
+        android:gravity="start"
         android:orientation="vertical"
         android:paddingBottom="@dimen/padding_border"
-        android:paddingLeft="@dimen/padding_border"
-        android:paddingTop="@dimen/padding_border" >
+        android:paddingTop="@dimen/padding_border"
+        android:paddingStart="@dimen/padding_border"
+        android:paddingEnd="@dimen/padding_border" >
 
         <TextView
             android:id="@+id/series_num_long"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="5dp"
+            android:paddingStart="@dimen/padding_border"
+            android:paddingEnd="@dimen/padding_border"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <LinearLayout
@@ -48,7 +50,8 @@
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/padding_border"
+                android:paddingStart="@dimen/padding_border"
+                android:paddingEnd="@dimen/padding_border"
                 android:singleLine="false"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
         </LinearLayout>
@@ -57,7 +60,8 @@
             android:id="@+id/author"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border"
+            android:paddingEnd="@dimen/padding_border"
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -65,7 +69,8 @@
             android:id="@+id/shelves"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border"
+            android:paddingEnd="@dimen/padding_border"
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -73,7 +78,8 @@
             android:id="@+id/location"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border"
+            android:paddingEnd="@dimen/padding_border"
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -81,7 +87,8 @@
             android:id="@+id/publisher"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border"
+            android:paddingEnd="@dimen/padding_border"
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
@@ -92,10 +99,10 @@
         android:layout_height="wrap_content"
         android:layout_weight="0"
         android:contentDescription="@string/_empty_"
-        android:gravity="right"
-        android:paddingLeft="8dp"
+        android:gravity="end"
+        android:paddingStart="8dp"
         android:paddingTop="4dp"
-        android:paddingRight="4dp"
+        android:paddingEnd="4dp"
         android:src="@drawable/btn_check_buttonless_off"
         android:visibility="gone" />
 

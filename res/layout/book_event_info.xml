@@ -41,8 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#ffff30"
-            android:textStyle="bold" />
+            style="@style/error_message" />
 
         <TextView
             android:id="@+id/date"
@@ -60,6 +59,6 @@
         android:layout_gravity="top"
         android:focusable="false"
         android:text="@string/retry"
-        android:textSize="10dp" />
+        android:textSize="10sp" />
 
 </LinearLayout>

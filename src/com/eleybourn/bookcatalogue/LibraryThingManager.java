@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -56,7 +55,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  */
 public class LibraryThingManager {
 	/** App context (for prefs) */
-	Context mAppContext;
+	private final Context mAppContext;
 
 	/** Name of preference that contains the dev key for the user */
 	public static final String LT_DEVKEY_PREF_NAME = "lt_devkey";
@@ -67,30 +66,30 @@ public class LibraryThingManager {
 
 	// Words in XML
 	public static String ID = "id";
-	public static String AUTHOR = "author";
-	public static String RESPONSE = "response";
-	public static String FIELD = "field";
-	public static String ISBN = "isbn";
-	public static String ITEM = "item";
-	public static String FACT = "fact";
-	public static String CANONICAL_TITLE = "canonicaltitle";
-	public static String SERIES = "series";
-	public static String PLACES = "placesmentioned";
-	public static String CHARACTERS = "characternames";
+	public static final String AUTHOR = "author";
+	public static final String RESPONSE = "response";
+	public static final String FIELD = "field";
+	public static final String ISBN = "isbn";
+	public static final String ITEM = "item";
+	public static final String FACT = "fact";
+	public static final String CANONICAL_TITLE = "canonicaltitle";
+	public static final String SERIES = "series";
+	public static final String PLACES = "placesmentioned";
+	public static final String CHARACTERS = "characternames";
 
-	public static String COVER_URL_LARGE = "http://covers.librarything.com/devkey/%1$s/large/isbn/%2$s";
-	public static String COVER_URL_MEDIUM = "http://covers.librarything.com/devkey/%1$s/medium/isbn/%2$s";
-	public static String COVER_URL_SMALL = "http://covers.librarything.com/devkey/%1$s/small/isbn/%2$s";
-	public static String DETAIL_URL = "http://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&isbn=%2$s";
-	public static String EDITIONS_URL = "http://www.librarything.com/api/thingISBN/%s";
+	private static final String COVER_URL_LARGE = "http://covers.librarything.com/devkey/%1$s/large/isbn/%2$s";
+	private static final String COVER_URL_MEDIUM = "http://covers.librarything.com/devkey/%1$s/medium/isbn/%2$s";
+	private static final String COVER_URL_SMALL = "http://covers.librarything.com/devkey/%1$s/small/isbn/%2$s";
+	private static final String DETAIL_URL = "http://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&isbn=%2$s";
+	private static final String EDITIONS_URL = "http://www.librarything.com/api/thingISBN/%s";
 
 	// Field types we are interested in.
-	private enum FieldTypes{ NONE, AUTHOR, TITLE, SERIES, PLACES, CHARACTERS, OTHER };
+	private enum FieldTypes{ NONE, AUTHOR, TITLE, SERIES, PLACES, CHARACTERS, OTHER }
 
-	// Sizes of thumbnails
-	public enum ImageSizes { SMALL, MEDIUM, LARGE };
+    // Sizes of thumbnails
+	public enum ImageSizes { SMALL, MEDIUM, LARGE }
 
-	public LibraryThingManager(Context context) {
+    public LibraryThingManager(Context context) {
 		mAppContext = context.getApplicationContext();
 	}
 
@@ -122,7 +121,7 @@ public class LibraryThingManager {
 		if (wait > 0) {
 			try {
 			Thread.sleep(wait);
-			} catch (InterruptedException e) {
+			} catch (InterruptedException ignored) {
 			}
 		}
 	}
@@ -422,13 +421,13 @@ public class LibraryThingManager {
 	 */
 	public void searchByIsbn(String isbn, boolean fetchThumbnail, Bundle bookData) {
 		String devKey = getDevKey();
-		if (devKey.equals(""))
+		if (devKey.isEmpty())
 			throw new RuntimeException("Developer Key not available");
 
 		// Base path for an ISBN search
 		String path = String.format(DETAIL_URL, devKey, isbn);
 
-		if (isbn.equals(""))
+		if (isbn.isEmpty())
 			throw new IllegalArgumentException();
 
 		URL url;
@@ -445,22 +444,10 @@ public class LibraryThingManager {
 			waitUntilRequestAllowed();
 			parser.parse(Utils.getInputStream(url), entryHandler);
 			// Dont bother catching general exceptions, they will be caught by the caller.
-		} catch (MalformedURLException e) {
+		} catch (ParserConfigurationException | SAXException | java.io.IOException e) {
 			String s = "unknown";
-			try { s = e.getMessage(); } catch (Exception e2) {};
-			Logger.logError(e, s);
-		} catch (ParserConfigurationException e) {
-			String s = "unknown";
-			try { s = e.getMessage(); } catch (Exception e2) {};
-			Logger.logError(e, s);
-		} catch (SAXException e) {
-			String s = e.getMessage(); // "unknown";
-			try { s = e.getMessage(); } catch (Exception e2) {};
-			Logger.logError(e, s);
-		} catch (java.io.IOException e) {
-			String s = "unknown";
-			try { s = e.getMessage(); } catch (Exception e2) {};
-			Logger.logError(e, s);
+			try { s = e.getMessage(); } catch (Exception ignored) {}
+            Logger.logError(e, s);
 		}
 
 		if (fetchThumbnail)
@@ -496,7 +483,7 @@ public class LibraryThingManager {
 		 * @param key	Key for data to add
 		 */
 		private void addIfNotPresent(String key) {
-			if (!mBookData.containsKey(key) || mBookData.getString(key).length() == 0) {
+			if (!mBookData.containsKey(key) || mBookData.getString(key).isEmpty()) {
 				mBookData.putString(key, mBuilder.toString());
 			}		
 		}
@@ -593,11 +580,10 @@ public class LibraryThingManager {
 	/**
 	 * Get the cover image using the ISBN
 	 * 
-	 * @param isbn
 	 */
 	public String getCoverImageUrl(String isbn, ImageSizes size) {
 		String devKey = getDevKey();
-		if (devKey.equals(""))
+		if (devKey.isEmpty())
 			throw new RuntimeException("Developer Key not available");
 
 		String path = COVER_URL_SMALL;
@@ -614,14 +600,11 @@ public class LibraryThingManager {
 			break;
 		}
 		// Get the 'large' version
-		String url = String.format(path, devKey, isbn);
-		return url;
+		return String.format(path, devKey, isbn);
 	}
 	/**
 	 * Get the cover image using the ISBN
-	 * 
-	 * @param isbn
-	 */
+	 **/
 	public String getCoverImage(String isbn, Bundle bookData, ImageSizes size) {
 		String url = getCoverImageUrl(isbn, size);
 		//Log.e("BC", url + " " + isbn + " " + size.toString());
@@ -638,17 +621,15 @@ public class LibraryThingManager {
 	
 	/**
 	 * Search for edition data.
-	 *
-	 * @param bookData
-	 * 
+	 **
 	 */
 	public static ArrayList<String> searchEditions(String isbn) {
 		// Base path for an ISBN search
 		String path = String.format(EDITIONS_URL, isbn);
-		if (isbn.equals(""))
+		if (isbn.isEmpty())
 			throw new RuntimeException("Can not get editions without an ISBN");
 
-		ArrayList<String> editions = new ArrayList<String>();
+		ArrayList<String> editions = new ArrayList<>();
 
 		// Setup the parser
 		SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -681,7 +662,7 @@ public class LibraryThingManager {
 	 */
 	static private class SearchLibraryThingEditionHandler extends DefaultHandler  {
 		private StringBuilder mBuilder = new StringBuilder();
-		private ArrayList<String> mEditions = new ArrayList<String>();
+		private ArrayList<String> mEditions = new ArrayList<>();
 
 		SearchLibraryThingEditionHandler(ArrayList<String> editions) {
 			mEditions = editions;

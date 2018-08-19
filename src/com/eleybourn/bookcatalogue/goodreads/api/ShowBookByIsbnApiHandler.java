@@ -26,7 +26,6 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 
 import android.os.Bundle;
@@ -56,19 +55,13 @@ public class ShowBookByIsbnApiHandler extends ShowBookApiHandler {
 
 	/**
 	 * Perform a search and handle the results.
-	 * 
-	 * @param query
+	 *
+	 * @param isbn
+	 * @param fetchThumbnail
+	 *
 	 * @return	the array of GoodreadsWork objects.
-	 * @throws IOException 
-	 * @throws BookNotFoundException 
-	 * @throws NotAuthorizedException 
-	 * @throws OAuthCommunicationException 
-	 * @throws OAuthExpectationFailedException 
-	 * @throws OAuthMessageSignerException 
-	 * @throws ClientProtocolException 
-	 * @throws NetworkException 
 	 */
-	public Bundle get(String isbn, boolean fetchThumbnail) throws ClientProtocolException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
+	public Bundle get(String isbn, boolean fetchThumbnail) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 		if (isbn == null)
 			throw new RuntimeException("Null ISBN specified in search");
 		isbn = isbn.trim();

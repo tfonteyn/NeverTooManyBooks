@@ -5,17 +5,19 @@
     android:gravity="top"
     android:orientation="vertical" >
 
-    <com.eleybourn.bookcatalogue.widgets.CapitalizedTextView
+    <!-- com.eleybourn.bookcatalogue.widgets.CapitalizedTextView -->
+    <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
+        android:paddingTop="@dimen/padding_border_double"
         android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textAllCaps="true"
         android:textStyle="bold" />
 
     <View
         android:layout_width="fill_parent"
         android:layout_height="1dp"
-        android:background="@drawable/property_divider" />
+        />
 
 </LinearLayout>

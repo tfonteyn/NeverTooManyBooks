@@ -32,10 +32,10 @@ import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
  *
  */
 public abstract class ApiHandler {
-	GoodreadsManager mManager;
+	final GoodreadsManager mManager;
 
 	/** XmlFilter root object. Used in extracting data file XML results. */
-	protected XmlFilter mRootFilter = new XmlFilter("");
+	final XmlFilter mRootFilter = new XmlFilter("");
 
 	public ApiHandler(GoodreadsManager manager) {
 		mManager = manager;

@@ -19,12 +19,9 @@ public class ImportThread extends ManagedTask {
 	public static String UTF8 = "utf8";
 	public static int BUFFER_SIZE = 8192;
 
-	private final File mFile;
-	private String mFileSpec;
-	private boolean mFileIsForeign;
-	private final String mSharedStoragePath;
-	private CatalogueDBAdapter mDbHelper;
-	private LocalCoverFinder mCoverFinder;
+    private final String mFileSpec;
+    private CatalogueDBAdapter mDbHelper;
+	private final LocalCoverFinder mCoverFinder;
 	
 	public static class ImportException extends RuntimeException {
 		private static final long serialVersionUID = 1660687786319003483L;
@@ -32,23 +29,21 @@ public class ImportThread extends ManagedTask {
 		public ImportException(String s) {
 			super(s);
 		}
-	};
+	}
 
-	//private int mImportUpdated;
+    //private int mImportUpdated;
 	//private int mImportCreated;
 
-	public ImportThread(TaskManager manager, String fileSpec) throws IOException {
+	public ImportThread(TaskManager manager, String fileSpec) {
 		super(manager);
-		mFile = new File(fileSpec);
+        File mFile = new File(fileSpec);
 		// Changed getCanonicalPath to getAbsolutePath based on this bug in Android 2.1:
 		//     http://code.google.com/p/android/issues/detail?id=4961
 		mFileSpec = mFile.getAbsolutePath();
-		mSharedStoragePath = StorageUtils.getSharedStorage().getAbsolutePath();
+        String mSharedStoragePath = StorageUtils.getSharedStorage().getAbsolutePath();
 
-		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.context);
+		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
 		mDbHelper.open();
-
-		mFileIsForeign = !(mFileSpec.startsWith(mSharedStoragePath));
 
 		mCoverFinder = new LocalCoverFinder(mFile.getParent(), mSharedStoragePath);
 		//getMessageSwitch().addListener(getSenderId(), taskHandler, false);
@@ -84,7 +79,7 @@ public class ImportThread extends ManagedTask {
 //		return importedString;
 //	}
 	
-	private Importer.OnImporterListener mImportListener = new Importer.OnImporterListener() {
+	private final Importer.OnImporterListener mImportListener = new Importer.OnImporterListener() {
 
 		@Override
 		public void onProgress(String message, int position) {

@@ -72,7 +72,7 @@ public class EditSeriesList extends EditObjectList<Series> {
 		super.onCreate(savedInstanceState);
 		try {
 			
-			mSeriesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, mDbHelper.fetchAllSeriesArray());
+			mSeriesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, mDbHelper.fetchAllSeriesArray());
 			((AutoCompleteTextView)this.findViewById(R.id.series)).setAdapter(mSeriesAdapter);
 			
 		} catch (Exception e) {
@@ -84,7 +84,7 @@ public class EditSeriesList extends EditObjectList<Series> {
 	protected void onAdd(View v) {
 		AutoCompleteTextView t = ((AutoCompleteTextView)EditSeriesList.this.findViewById(R.id.series));
 		String s = t.getText().toString().trim();
-		if (s.length() > 0) {
+		if (!s.isEmpty()) {
 			EditText et = ((EditText)EditSeriesList.this.findViewById(R.id.series_num));
 			String n = et.getText().toString();
 			if (n == null)
@@ -141,7 +141,7 @@ public class EditSeriesList extends EditObjectList<Series> {
 				AutoCompleteTextView seriesView = (AutoCompleteTextView) dialog.findViewById(R.id.series);
 				EditText numView = (EditText) dialog.findViewById(R.id.series_num);
 				String newName = seriesView.getText().toString().trim();
-				if (newName == null || newName.length() == 0) {
+				if (newName == null || newName.isEmpty()) {
 					Toast.makeText(EditSeriesList.this, R.string.series_is_blank, Toast.LENGTH_LONG).show();
 					return;
 				}
@@ -237,7 +237,7 @@ public class EditSeriesList extends EditObjectList<Series> {
 		final AutoCompleteTextView t = ((AutoCompleteTextView)EditSeriesList.this.findViewById(R.id.series));
 		Resources res = this.getResources();
 		String s = t.getText().toString().trim();
-		if (s.length() > 0) {
+		if (!s.isEmpty()) {
 			final AlertDialog alertDialog = new AlertDialog.Builder(this).setMessage(res.getText(R.string.unsaved_edits)).create();
 			
 			alertDialog.setTitle(res.getText(R.string.unsaved_edits_title));
@@ -260,5 +260,5 @@ public class EditSeriesList extends EditObjectList<Series> {
 		} else {
 			return true;
 		}
-	};
+	}
 }

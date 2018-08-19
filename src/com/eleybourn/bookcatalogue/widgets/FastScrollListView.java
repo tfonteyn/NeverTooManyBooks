@@ -57,7 +57,7 @@ public class FastScrollListView extends ListView {
 		mOnScrollListener = listener;
 	}
 
-	private OnScrollListener mOnScrollDispatcher = new OnScrollListener(){
+	private final OnScrollListener mOnScrollDispatcher = new OnScrollListener(){
 		@Override
 		public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 			if (mScroller != null)
@@ -70,8 +70,8 @@ public class FastScrollListView extends ListView {
 		public void onScrollStateChanged(AbsListView view, int scrollState) {
 			if (mOnScrollListener != null)
 				mOnScrollListener.onScrollStateChanged(view, scrollState);
-		};
-	};
+		}
+    };
 
 	{
 		super.setOnScrollListener(mOnScrollDispatcher);
@@ -79,8 +79,6 @@ public class FastScrollListView extends ListView {
 
 	/**
 	 * Called to create and start a new FastScroller if none already exists.
-	 * 
-	 * @param scroller
 	 */
 	private void initScroller() {
 		if (mScroller != null)
@@ -94,10 +92,8 @@ public class FastScrollListView extends ListView {
 	 */
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
-		if (mScroller != null && mScroller.onInterceptTouchEvent(ev))
-			return true;
+		return mScroller != null && mScroller.onInterceptTouchEvent(ev) || super.onInterceptTouchEvent(ev);
 
-		return super.onInterceptTouchEvent(ev);
 	}
 	/**
 	 * Pass to scroller if defined, otherwise perform default actions.
@@ -113,10 +109,8 @@ public class FastScrollListView extends ListView {
 	 */
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
-		if (mScroller != null && mScroller.onTouchEvent(ev))
-			return true;
+		return mScroller != null && mScroller.onTouchEvent(ev) || super.onTouchEvent(ev);
 
-		return super.onTouchEvent(ev);
 	}
 
 	/**

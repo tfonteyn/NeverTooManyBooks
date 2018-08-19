@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -33,6 +32,9 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -42,9 +44,6 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.BookshelfDialogFragment;
@@ -68,9 +67,9 @@ public class BookEditFields extends BookDetailsAbstract
 	 * Class to implement a clickable span of text and call a listener when text is clicked.
 	 */
 	static class InternalSpan extends ClickableSpan {  
-	    OnClickListener mListener;  
+	    final OnClickListener mListener;
 	    
-	    public InternalSpan(OnClickListener listener) {  
+	    InternalSpan(OnClickListener listener) {
 	        mListener = listener;  
 	    }  
 	  
@@ -82,10 +81,7 @@ public class BookEditFields extends BookDetailsAbstract
 
 	public static final int ACTIVITY_EDIT_AUTHORS = 1000;
 	public static final int ACTIVITY_EDIT_SERIES = 1001;
-	
-	private static final int DATE_DIALOG_ID = 1;
-	private static final int DESCRIPTION_DIALOG_ID = 3;
-	
+
 	/**
 	 * Display the edit fields page
 	 */
@@ -137,11 +133,11 @@ public class BookEditFields extends BookDetailsAbstract
 				}
 			});
 			
-			ArrayAdapter<String> publisher_adapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getPublishers());
+			ArrayAdapter<String> publisher_adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getPublishers());
 			mFields.setAdapter(R.id.publisher, publisher_adapter);
-			ArrayAdapter<String> genre_adapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getGenres());
+			ArrayAdapter<String> genre_adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getGenres());
 			mFields.setAdapter(R.id.genre, genre_adapter);
-			ArrayAdapter<String> language_adapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getLanguages());
+			ArrayAdapter<String> language_adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getLanguages());
 			mFields.setAdapter(R.id.language, language_adapter);
 			
 			mFields.setListener(R.id.date_published, new View.OnClickListener() {
@@ -153,7 +149,7 @@ public class BookEditFields extends BookDetailsAbstract
 			final Field formatField = mFields.getField(R.id.format);
 			// Get the formats to use in the AutoComplete stuff
 			AutoCompleteTextView formatText = (AutoCompleteTextView) formatField.getView();
-			formatText.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getFormats()));
+			formatText.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getFormats()));
 			// Get the drop-down button for the formats list and setup dialog
 			ImageView formatButton = (ImageView) getView().findViewById(R.id.format_button);
 			formatButton.setOnClickListener(new OnClickListener() {
@@ -183,17 +179,13 @@ public class BookEditFields extends BookDetailsAbstract
 			Field bookshelfButtonFe = mFields.getField(R.id.bookshelf);
 			bookshelfButtonFe.getView().setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
-					Field f = mFields.getField(R.id.bookshelf);
-
 					BookshelfDialogFragment frag = BookshelfDialogFragment.newInstance(
 							R.id.bookshelf,
 							mEditManager.getBookData().getRowId(), 
 							mEditManager.getBookData().getBookshelfText(), 
 							mEditManager.getBookData().getBookshelfList()
 						);
-					
 					frag.show(getFragmentManager(),"bookshelves_dialog");
-					
 				}
 			});
 			
@@ -219,17 +211,17 @@ public class BookEditFields extends BookDetailsAbstract
 				mEditManager.setDirty(false);
 			}
 
-		} catch (IndexOutOfBoundsException e) {
-			Logger.logError(e);
-		} catch (SQLException e) {
+		} catch (IndexOutOfBoundsException | SQLException e) {
 			Logger.logError(e);
 		} finally {
 			Tracker.exitOnActivityCreated(this);			
 		}
-		
-		double tn = System.currentTimeMillis();
-		System.out.println("BEF oAC(super): " + (t2 - t1));
-		System.out.println("BEF oAC: " + (tn - t0));
+
+		if (BuildConfig.DEBUG) {
+			double tn = System.currentTimeMillis();
+			System.out.println("BEF oAC(super): " + (t2 - t1));
+			System.out.println("BEF oAC: " + (tn - t0));
+		}
 
 	}
 
@@ -270,13 +262,11 @@ public class BookEditFields extends BookDetailsAbstract
 					if (extras.containsKey("book")) {
 						throw new RuntimeException("[book] array passed in Intent");
 					} else {
-						Bundle values = (Bundle)extras.getParcelable("bookData");
-						Iterator<Fields.Field> i = mFields.iterator();
-						while(i.hasNext()) {
-							Fields.Field f = i.next();
-							if (!f.column.equals("") && values.containsKey(f.column)) {
+						Bundle values = extras.getParcelable("bookData");
+						for (Field f : mFields) {
+							if (!f.column.isEmpty() && values.containsKey(f.column)) {
 								try {
-									f.setValue(values.getString(f.column));								
+									f.setValue(values.getString(f.column));
 								} catch (Exception e) {
 									String msg = "Populate field " + f.column + " failed: " + e.getMessage();
 									Logger.logError(e, msg);
@@ -308,9 +298,9 @@ public class BookEditFields extends BookDetailsAbstract
 	private void initDefaultShelf() {
 		final BookData book = mEditManager.getBookData();
 		final String list = book.getBookshelfList();
-		if (list == null || list.equals("")) {
+		if (list == null || list.isEmpty()) {
 			String currShelf = BookCatalogueApp.getAppPreferences().getString(BooksOnBookshelf.PREF_BOOKSHELF, "");
-			if (currShelf.equals("")) {
+			if (currShelf.isEmpty()) {
 				currShelf = mDbHelper.getBookshelfName(1);
 			}
 			String encoded_shelf = Utils.encodeListItem(currShelf, BOOKSHELF_SEPERATOR);
@@ -338,7 +328,7 @@ public class BookEditFields extends BookDetailsAbstract
 		double t0 = System.currentTimeMillis();
 		// get the view
 		final TextView tv = (TextView)getView().findViewById(R.id.descriptionLabel);
-		// Build the prefic text ('Description ')
+		// Build the prefix text ('Description ')
 		String baseText = getString(R.string.description) + " ";
 		// Create the span ('Description (edit...)').
 		SpannableString f = new SpannableString(baseText + "(" + getString(R.string.edit_lc_ellipsis) + ")");
@@ -357,7 +347,7 @@ public class BookEditFields extends BookDetailsAbstract
 		tv.setMovementMethod(LinkMovementMethod.getInstance());
 		// Prevent focus...not precisely sure why, but sample code does this
 		tv.setFocusable(false);
-		// Set the colout to prevent flicker on click
+		// Set the colour to prevent flicker on click
 		tv.setTextColor(this.getResources().getColor(android.R.color.primary_text_dark_nodisable));
 		System.out.println("BEF bDesc: " + (System.currentTimeMillis() - t0));
 	}
@@ -367,8 +357,8 @@ public class BookEditFields extends BookDetailsAbstract
 		if (cs instanceof Spannable) {
 			final Spannable s = (Spannable)cs;
 			InternalSpan[] spans = s.getSpans(0, tv.getText().length(), InternalSpan.class);
-			for (int i = 0; i < spans.length; i++) {
-			    s.removeSpan(spans[i]);
+			for (InternalSpan span : spans) {
+				s.removeSpan(span);
 			}
 		}		
 	}

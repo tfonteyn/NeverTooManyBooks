@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -31,7 +30,7 @@
                 android:id="@+id/all_books_radio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:clickable="false"
                 android:focusable="false"
@@ -44,8 +43,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@id/all_books_radio"
                 android:layout_alignBottom="@id/all_books_radio"
-                android:layout_alignParentRight="true"
-                android:layout_toRightOf="@id/all_books_radio"
+                android:layout_alignParentEnd="true"
+                android:layout_toEndOf="@id/all_books_radio"
                 android:text="@string/all_books"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -53,8 +52,8 @@
                 android:id="@+id/all_books_blurb"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@id/all_books"
-                android:layout_alignRight="@id/all_books"
+                android:layout_alignStart="@id/all_books"
+                android:layout_alignEnd="@id/all_books"
                 android:layout_below="@+id/all_books"
                 android:text="@string/export_all_blurb"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -71,7 +70,7 @@
                 android:id="@+id/advanced_radio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:clickable="false"
                 android:focusable="false"
@@ -84,8 +83,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@id/advanced_radio"
                 android:layout_alignBottom="@id/advanced_radio"
-                android:layout_alignParentRight="true"
-                android:layout_toRightOf="@id/advanced_radio"
+                android:layout_alignParentEnd="true"
+                android:layout_toEndOf="@id/advanced_radio"
                 android:text="@string/advanced_options"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -93,8 +92,8 @@
                 android:id="@+id/export_advanced_blurb"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/advanced_options"
-                android:layout_alignRight="@+id/advanced_options"
+                android:layout_alignStart="@+id/advanced_options"
+                android:layout_alignEnd="@+id/advanced_options"
                 android:layout_below="@+id/advanced_options"
                 android:text="@string/export_advanced_blurb"
                 android:textAppearance="?android:attr/textAppearanceSmall" />

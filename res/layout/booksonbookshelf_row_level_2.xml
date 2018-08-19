@@ -12,14 +12,16 @@
         android:id="@+id/row_info"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/padding_border"
+        android:paddingStart="@dimen/padding_border"
+        android:paddingEnd="@dimen/padding_border"
         android:orientation="horizontal" >
 
         <ImageView
             android:layout_width="10dp"
             android:layout_height="10dp"
             android:layout_gravity="center"
-            android:src="@drawable/btn_circle_normal" />
+            android:src="@drawable/btn_circle_normal"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/name"
@@ -27,7 +29,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:paddingLeft="2dp"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
             android:text="Some text"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textStyle="bold" 
@@ -37,14 +40,15 @@
             android:layout_width="10dp"
             android:layout_height="10dp"
             android:layout_gravity="center"
-            android:paddingLeft="2dp"
-            android:src="@drawable/btn_circle_normal" />
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:src="@drawable/btn_circle_normal"
+            tools:ignore="ContentDescription" />
     </LinearLayout>
 
     <View
         android:layout_width="fill_parent"
         android:layout_height="1dp"
-        android:background="@drawable/fading_grey_list_divider"
         android:paddingBottom="2dp"
         android:paddingTop="2dp" />
 

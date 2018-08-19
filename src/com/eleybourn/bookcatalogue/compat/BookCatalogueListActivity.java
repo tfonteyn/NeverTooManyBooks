@@ -1,10 +1,9 @@
 package com.eleybourn.bookcatalogue.compat;
 
+import android.app.ActionBar;
+import android.app.ListActivity;
 import android.os.Bundle;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockListActivity;
-import com.actionbarsherlock.view.MenuItem;
+import android.view.MenuItem;
 
 /**
  * Class introduced to reduce the future pain when we remove sherlock (once we no longer 
@@ -18,12 +17,12 @@ import com.actionbarsherlock.view.MenuItem;
  *
  * @author pjw
  */
-public class BookCatalogueListActivity extends SherlockListActivity {
+public class BookCatalogueListActivity extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActionBar bar = getSupportActionBar();
+        ActionBar bar = getActionBar();
         if (bar != null) {
         	bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO | ActionBar.DISPLAY_SHOW_TITLE);
     		bar.setDisplayHomeAsUpEnabled(! (this.isTaskRoot() || getIntent().getBooleanExtra("willBeTaskRoot", false) ) );

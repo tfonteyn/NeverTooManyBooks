@@ -61,7 +61,7 @@ public class ThumbnailCacheWriterTask implements SimpleTask {
 
 	/**
 	 * Check if there is an active task in the queue.
-	 * 
+	 *
 	 * @return
 	 */
 	public static boolean hasActiveTasks() {

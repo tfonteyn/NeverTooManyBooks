@@ -84,7 +84,7 @@ public class TaskListActivity extends BindableItemListActivity {
 			if (savedInstanceState == null)
 				HintManager.displayHint(this, R.string.hint_background_tasks, null);
 
-			Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+			Utils.initBackground(this);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -107,7 +107,7 @@ public class TaskListActivity extends BindableItemListActivity {
 	protected void onResume() {
 		super.onResume();
 		refreshData();
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);		
+		Utils.initBackground(this);
 	} 
 
 	/**
@@ -115,8 +115,8 @@ public class TaskListActivity extends BindableItemListActivity {
 	 */
 	@Override
 	public void onListItemClick(AdapterView<?> parent, final View v, final int position, final long id) {
-		Task task = (Task) ViewTagger.getTag(v, R.id.TAG_TASK);
-		ArrayList<ContextDialogItem> items = new ArrayList<ContextDialogItem>();
+		Task task = ViewTagger.getTag(v, R.id.TAG_TASK);
+		ArrayList<ContextDialogItem> items = new ArrayList<>();
 
 		items.add(new ContextDialogItem(getString(R.string.show_events_ellipsis), new Runnable(){
 			@Override
@@ -129,7 +129,7 @@ public class TaskListActivity extends BindableItemListActivity {
 		if (items.size() > 0) {
 			showContextDialogue(this.getString(R.string.select_an_action), items);
 		}
-	};
+	}
 
 	private void doShowTaskEvents(long taskId) {
 		GoodreadsExportFailuresActivity.start(this, taskId);

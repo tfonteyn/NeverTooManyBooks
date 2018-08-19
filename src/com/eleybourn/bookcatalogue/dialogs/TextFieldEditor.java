@@ -25,7 +25,6 @@ import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 
 import com.eleybourn.bookcatalogue.R;
@@ -39,10 +38,8 @@ import com.eleybourn.bookcatalogue.R;
  * @author pjw
  */
 public class TextFieldEditor extends AlertDialog {
-	/** Current text */
-	private String mText;
-	/** View which displays the text */
-	private EditText mTextView;
+    /** View which displays the text */
+	private final EditText mTextView;
 	// Listener for dialog exit/save/cancel */
 	private OnEditListener mListener;
 
@@ -51,9 +48,9 @@ public class TextFieldEditor extends AlertDialog {
 	 * 
 	 * @author pjw
 	 */
-	protected static interface OnEditListener {
-		public void onSaved(TextFieldEditor dialog, String newText);
-		public void onCancel(TextFieldEditor dialog);
+	protected interface OnEditListener {
+		void onSaved(TextFieldEditor dialog, String newText);
+		void onCancel(TextFieldEditor dialog);
 	}
 
 	/**
@@ -75,7 +72,7 @@ public class TextFieldEditor extends AlertDialog {
 		mTextView = (EditText)root.findViewById(R.id.text);
 
 		// Handle OK
-		((Button)root.findViewById(R.id.ok)).setOnClickListener(new View.OnClickListener() {
+		root.findViewById(R.id.ok).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				mListener.onSaved(TextFieldEditor.this, mTextView.getText().toString());
@@ -83,7 +80,7 @@ public class TextFieldEditor extends AlertDialog {
 		);
 
 		// Handle Cancel
-		((Button)root.findViewById(R.id.cancel)).setOnClickListener(new View.OnClickListener() {
+		root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				mListener.onCancel(TextFieldEditor.this);				
@@ -109,8 +106,7 @@ public class TextFieldEditor extends AlertDialog {
 
 	/** Set the current text */
 	public void setText(String text) {
-		mText = text;
-		mTextView.setText(mText);
+		mTextView.setText(text);
 	}
 
 }

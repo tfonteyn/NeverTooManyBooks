@@ -10,14 +10,15 @@
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        tools:ignore="UselessParent">
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:focusableInTouchMode="true"
             android:orientation="vertical"
-            android:padding="10dp" >
+            android:padding="@dimen/padding_border_double" >
 
             <ImageView
                 android:id="@+id/row_img"
@@ -27,7 +28,8 @@
                 android:layout_weight="1"
                 android:background="@color/background_thumb"
                 android:gravity="center"
-                android:padding="@dimen/padding_border" />
+                android:padding="@dimen/padding_border"
+                tools:ignore="ContentDescription" />
 
             <RelativeLayout
                 android:layout_width="fill_parent"
@@ -42,8 +44,10 @@
                 <Button
                     android:id="@+id/author"
                     style="@style/dataEntryButtonStyle"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentRight="true"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_below="@+id/heading"
                     android:nextFocusDown="@+id/title" />
             </RelativeLayout>
@@ -63,7 +67,8 @@
                     style="@style/editorFieldTextStyle"
                     android:layout_below="@+id/heading"
                     android:inputType="textCapSentences"
-                    android:nextFocusDown="@+id/isbn" />
+                    android:nextFocusDown="@+id/isbn"
+                    tools:ignore="LabelFor" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -82,10 +87,11 @@
                 <EditText
                     android:id="@+id/isbn"
                     style="@style/editorFieldTextStyle"
-                    android:layout_alignParentLeft="false"
-                    android:layout_toRightOf="@+id/heading"
+                    android:layout_alignParentStart="false"
+                    android:layout_toEndOf="@+id/heading"
                     android:inputType="text"
-                    android:nextFocusDown="@+id/series" />
+                    android:nextFocusDown="@+id/series"
+                    tools:ignore="LabelFor" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -102,8 +108,10 @@
                 <Button
                     android:id="@+id/series"
                     style="@style/dataEntryButtonStyle"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentRight="true"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_below="@+id/heading"
                     android:nextFocusDown="@+id/publisher" />
             </RelativeLayout>
@@ -125,7 +133,8 @@
                     android:layout_below="@+id/heading"
                     android:completionThreshold="2"
                     android:inputType="textCapSentences"
-                    android:nextFocusDown="@+id/date_published" />
+                    android:nextFocusDown="@+id/date_published"
+                    tools:ignore="LabelFor" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -142,8 +151,10 @@
                 <Button
                     android:id="@+id/date_published"
                     style="@style/dataEntryButtonStyle"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentRight="true"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_below="@+id/date_published_heading"
                     android:nextFocusDown="@+id/bookshelf" />
             </RelativeLayout>
@@ -161,8 +172,10 @@
                 <Button
                     android:id="@+id/bookshelf"
                     style="@style/dataEntryButtonStyle"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentRight="true"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_below="@+id/heading"
                     android:nextFocusDown="@+id/pages" />
             </RelativeLayout>
@@ -183,7 +196,8 @@
                     style="@style/editorFieldTextStyle"
                     android:layout_below="@+id/pages_heading"
                     android:inputType="number"
-                    android:nextFocusDown="@+id/list_price" />
+                    android:nextFocusDown="@+id/list_price"
+                    tools:ignore="LabelFor" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -202,7 +216,8 @@
                     style="@style/editorFieldTextStyle"
                     android:layout_below="@+id/list_price_heading"
                     android:inputType="numberDecimal"
-                    android:nextFocusDown="@+id/format" />
+                    android:nextFocusDown="@+id/format"
+                    tools:ignore="LabelFor" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -221,20 +236,23 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_alignBottom="@+id/format"
-                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
                     android:focusable="true"
-                    android:paddingLeft="@dimen/padding_border"
-                    android:src="@drawable/expander_ic_maximized" />
+                    android:paddingStart="@dimen/padding_border"
+                    android:paddingEnd="@dimen/padding_border"
+                    android:src="@drawable/expander_ic_maximized"
+                    tools:ignore="ContentDescription" />
 
                 <AutoCompleteTextView
                     android:id="@+id/format"
                     style="@style/editorFieldTextStyle"
                     android:layout_below="@+id/heading"
                     android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@id/format_button"
+                    android:layout_toStartOf="@id/format_button"
                     android:completionThreshold="2"
                     android:nextFocusDown="@+id/genre"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    tools:ignore="LabelFor" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -254,7 +272,8 @@
                     android:layout_below="@+id/heading"
                     android:completionThreshold="2"
                     android:inputType="textCapSentences"
-                    android:nextFocusDown="@+id/language" />
+                    android:nextFocusDown="@+id/language"
+                    tools:ignore="LabelFor" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -275,7 +294,8 @@
                     android:completionThreshold="2"
                     android:inputType="textCapSentences"
                     android:nextFocusDown="@+id/anthology"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    tools:ignore="LabelFor" />
             </RelativeLayout>
 
             <CheckBox
@@ -299,11 +319,13 @@
                 android:id="@+id/header_divider"
                 android:layout_width="fill_parent"
                 android:layout_height="1dp"
-                android:background="@drawable/main_menu_header_divider"
                 android:paddingBottom="2dp"
-                android:paddingTop="2dp" />
+                android:paddingTop="2dp"
+                style="@style/main_menu_header_divider"
+                />
 
-            <com.eleybourn.bookcatalogue.widgets.SafeSpannedTextView
+            <!-- com.eleybourn.bookcatalogue.widgets.SafeSpannedTextView -->
+            <TextView
                 android:id="@+id/description"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

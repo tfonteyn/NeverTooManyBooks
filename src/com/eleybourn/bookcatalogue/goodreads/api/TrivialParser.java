@@ -32,7 +32,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class TrivialParser extends DefaultHandler {
 
-	private StringBuilder m_Builder = new StringBuilder();
+	private final StringBuilder m_Builder = new StringBuilder();
 
 	public TrivialParser() {
 	}
@@ -55,12 +55,12 @@ public class TrivialParser extends DefaultHandler {
 		//	m_Builder.append(" ");
 
 		m_Builder.append("<");
-		if (uri != null && !uri.equals(""))
-			m_Builder.append(uri + ":");
-		if (localName != null && !localName.equals(""))
+		if (uri != null && !uri.isEmpty())
+			m_Builder.append(uri).append(":");
+		if (localName != null && !localName.isEmpty())
 			m_Builder.append(localName);
 
-		//if (name != null && !name.equals("")) {
+		//if (name != null && !name.isEmpty()) {
 		//	m_Builder.append(" ");
 		//	m_Builder.append(name);
 		//}
@@ -68,7 +68,7 @@ public class TrivialParser extends DefaultHandler {
 			for(int i = 0; i < attributes.getLength(); i++) {
 				m_Builder.append(" ");
 				String attrName = attributes.getQName(i);
-				if (attrName == null || attrName.equals(""))
+				if (attrName == null || attrName.isEmpty())
 					attrName = attributes.getLocalName(i);
 				m_Builder.append(attrName);
 				m_Builder.append("='");
@@ -87,11 +87,11 @@ public class TrivialParser extends DefaultHandler {
 		//	m_Builder.append(" ");
 
 		m_Builder.append("</");
-		if (uri != null && !uri.equals(""))
-			m_Builder.append(uri + ":");
-		if (localName != null && !localName.equals(""))
+		if (uri != null && !uri.isEmpty())
+			m_Builder.append(uri).append(":");
+		if (localName != null && !localName.isEmpty())
 			m_Builder.append(localName);
-		else if (name != null && !name.equals("")) {
+		else if (name != null && !name.isEmpty()) {
 			m_Builder.append(name);
 		}
 		m_Builder.append(">");

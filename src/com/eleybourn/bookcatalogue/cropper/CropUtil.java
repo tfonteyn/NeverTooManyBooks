@@ -147,7 +147,7 @@ public class CropUtil {
 
 	/**
 	 * Creates a centered bitmap of the desired size. Recycles the input.
-	 * 
+	 *
 	 * @param source
 	 */
 	public static Bitmap extractMiniThumb(Bitmap source, int width, int height) {
@@ -176,30 +176,25 @@ public class CropUtil {
 		return miniThumbnail;
 	}
 
-	/**
-	 * Creates a byte[] for a given bitmap of the desired size. Recycles the
-	 * input bitmap.
-	 */
-
-	/**
-	 * Create a video thumbnail for a video. May return null if the video is
-	 * corrupt.
-	 * 
-	 * @param filePath
-	 */
-	public static Bitmap createVideoThumbnail(String filePath) {
-		Bitmap bitmap = null;
-		/*
-		 * MediaMetadataRetriever retriever = new MediaMetadataRetriever(); try
-		 * { retriever.setMode(MediaMetadataRetriever.MODE_CAPTURE_FRAME_ONLY);
-		 * retriever.setDataSource(filePath); bitmap = retriever.captureFrame();
-		 * } catch (IllegalArgumentException ex) { // Assume this is a corrupt
-		 * video file } catch (RuntimeException ex) { // Assume this is a
-		 * corrupt video file. } finally { try { retriever.release(); } catch
-		 * (RuntimeException ex) { // Ignore failures while cleaning up. } }
-		 */
-		return bitmap;
-	}
+//	/**
+//	 * Create a video thumbnail for a video. May return null if the video is
+//	 * corrupt.
+//	 *
+//	 * @param filePath
+//	 */
+//	public static Bitmap createVideoThumbnail(String filePath) {
+//		Bitmap bitmap = null;
+//		/*
+//		 * MediaMetadataRetriever retriever = new MediaMetadataRetriever(); try
+//		 * { retriever.setMode(MediaMetadataRetriever.MODE_CAPTURE_FRAME_ONLY);
+//		 * retriever.setDataSource(filePath); bitmap = retriever.captureFrame();
+//		 * } catch (IllegalArgumentException ex) { // Assume this is a corrupt
+//		 * video file } catch (RuntimeException ex) { // Assume this is a
+//		 * corrupt video file. } finally { try { retriever.release(); } catch
+//		 * (RuntimeException ex) { // Ignore failures while cleaning up. } }
+//		 */
+//		return bitmap;
+//	}
 
 	public static <T> int indexOf(T[] array, T s) {
 		for (int i = 0; i < array.length; i++) {
@@ -232,8 +227,6 @@ public class CropUtil {
 
 	/**
 	 * Make a bitmap from a given Uri.
-	 * 
-	 * @param uri
 	 */
 	// private static ParcelFileDescriptor makeInputStream(Uri uri,
 	// ContentResolver cr) {
@@ -271,11 +264,6 @@ public class CropUtil {
 		}
 	}
 
-	public static boolean equals(String a, String b) {
-		// return true if both string are null or the content equals
-		return a == b || a.equals(b);
-	}
-
 	private static class BackgroundJob extends
 			CropMonitoredActivity.LifeCycleAdapter implements Runnable {
 
@@ -291,8 +279,8 @@ public class CropUtil {
 			}
 		};
 
-		public BackgroundJob(CropMonitoredActivity activity, Runnable job,
-				ProgressDialog dialog, Handler handler) {
+		BackgroundJob(CropMonitoredActivity activity, Runnable job,
+					  ProgressDialog dialog, Handler handler) {
 			mActivity = activity;
 			mDialog = dialog;
 			mJob = job;
@@ -336,10 +324,8 @@ public class CropUtil {
 		new Thread(new BackgroundJob(activity, job, dialog, handler)).start();
 	}
 
-	// Returns Options that set the puregeable flag for Bitmap decode.
+	// Returns Options that set the purgeable flag for Bitmap decode.
 	public static BitmapFactory.Options createNativeAllocOptions() {
-		BitmapFactory.Options options = new BitmapFactory.Options();
-		// options.inNativeAlloc = true;
-		return options;
+		return new BitmapFactory.Options();
 	}
 }

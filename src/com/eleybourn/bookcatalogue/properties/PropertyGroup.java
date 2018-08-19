@@ -89,11 +89,11 @@ public class PropertyGroup {
 		}
 		/**
 		 * Construct and add a group based on parameters 
-		 * 
+		 *
 		 * @param id
 		 * @param nameId
 		 * @param weight
-		 * 
+		 *
 		 * @return
 		 */
 		public PropertyGroup addGroup(int id, int nameId, int weight) {
@@ -106,9 +106,9 @@ public class PropertyGroup {
 	/** ID of this group */
 	private final int id;
 	/** String resource ID for group name */
-	final int nameId;
+	private final int nameId;
 	/** Weight of this group, for sorting */
-	final Integer weight;
+	private final Integer weight;
 	/** Name of this group (from resource ID) */
 	private String mName = null;
 
@@ -118,6 +118,10 @@ public class PropertyGroup {
 		this.nameId = nameId;
 		this.weight = weight;
 		mGroups.addGroup(this);
+	}
+
+	public int getNameId() {
+		return nameId;
 	}
 	/** Realize and return the group name */
 	public String getName() {

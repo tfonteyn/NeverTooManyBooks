@@ -22,16 +22,16 @@ package com.eleybourn.bookcatalogue;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.eleybourn.bookcatalogue.Fields.AfterFieldChangeListener;
 import com.eleybourn.bookcatalogue.Fields.Field;
-import com.eleybourn.bookcatalogue.compat.BookCatalogueFragment;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
@@ -43,7 +43,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  * 
  * @author pjw
  */
-public abstract class BookEditFragmentAbstract extends BookCatalogueFragment implements DataEditor {
+public abstract class BookEditFragmentAbstract extends Fragment implements DataEditor {
 	protected Fields mFields;
 	
 	private static final int DELETE_ID = 1;
@@ -59,15 +59,15 @@ public abstract class BookEditFragmentAbstract extends BookCatalogueFragment imp
 	 */
 	public interface BookEditManager {
 		//public Fields getFields();
-		public void setShowAnthology(boolean showAnthology);
-		public void setDirty(boolean isDirty);
-		public boolean isDirty();
-		public BookData getBookData();
-		public void setRowId(Long id);
-		public ArrayList<String> getFormats();
-		public ArrayList<String> getGenres();
-		public ArrayList<String> getLanguages();
-		public ArrayList<String> getPublishers();
+        void setShowAnthology(boolean showAnthology);
+		void setDirty(boolean isDirty);
+		boolean isDirty();
+		BookData getBookData();
+		void setRowId(Long id);
+		ArrayList<String> getFormats();
+		ArrayList<String> getGenres();
+		ArrayList<String> getLanguages();
+		ArrayList<String> getPublishers();
 	}
 
 	/** A link to the BookEditManager for this fragment (the activity) */
@@ -125,8 +125,7 @@ public abstract class BookEditFragmentAbstract extends BookCatalogueFragment imp
 			menu.add(0, EDIT_OPTIONS_ID, 0, R.string.edit_book)
 				.setIcon(android.R.drawable.ic_menu_edit)
 				.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-				;
-		}
+        }
 
 		boolean hasAuthor = mEditManager.getBookData().getAuthorList().size() > 0;
 		if (hasAuthor) {
@@ -242,8 +241,6 @@ public abstract class BookEditFragmentAbstract extends BookCatalogueFragment imp
 
 	/**
 	 * Default implementation of code to save existing data to the BookData object
-	 * 
-	 * @param book
 	 */
 	protected void onSaveBookDetails(BookData book) {
 		mFields.getAll(book);
@@ -298,7 +295,7 @@ public abstract class BookEditFragmentAbstract extends BookCatalogueFragment imp
 	/**
 	 * Show or Hide text field if it has not any useful data.
 	 * Don't show a field if it is already hidden (assumed by user preference)
-	 * @param hideIfEmpty TODO
+	 * @param hideIfEmpty hide if empty
 	 * @param resId layout resource id of the field
 	 * @param relatedFields list of fields whose visibility will also be set based on the first field
 	 *
@@ -319,7 +316,7 @@ public abstract class BookEditFragmentAbstract extends BookCatalogueFragment imp
 						visibility = v.getVisibility();
 					} else {
 						final String value = mFields.getField(resId).getValue().toString();
-						final boolean isExist = value != null && !value.equals("");
+						final boolean isExist = value != null && !value.isEmpty();
 						visibility = isExist ? View.VISIBLE : View.GONE;
 						v.setVisibility(visibility);										
 					}

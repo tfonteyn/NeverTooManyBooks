@@ -10,17 +10,19 @@
         android:id="@+id/row_detail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        tools:ignore="UselessParent">
 
         <ImageView
             android:id="@+id/icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_gravity="center_vertical"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:src="@drawable/ic_archive" />
+            android:src="@drawable/ic_archive"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/name"
@@ -29,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="@dimen/padding_border"
-            android:layout_toRightOf="@+id/icon"
+            android:layout_toEndOf="@+id/icon"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:text="fred.txt"
@@ -42,10 +44,11 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/name"
             android:layout_marginTop="@dimen/padding_border"
-            android:layout_toRightOf="@+id/icon"
+            android:layout_toEndOf="@+id/icon"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:paddingLeft="@dimen/padding_book_details_info"
+            android:paddingStart="@dimen/padding_book_details_info"
+            android:paddingEnd="@dimen/padding_book_details_info"
             android:text="1023 books"
             tools:ignore="HardcodedText" />
 
@@ -56,10 +59,11 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/details"
             android:layout_marginTop="@dimen/padding_border"
-            android:layout_toRightOf="@+id/icon"
+            android:layout_toEndOf="@+id/icon"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:paddingLeft="@dimen/padding_book_details_info"
+            android:paddingStart="@dimen/padding_book_details_info"
+            android:paddingEnd="@dimen/padding_book_details_info"
             android:text="1 Jan, 2011 17:54:32"
             tools:ignore="HardcodedText" />
     </RelativeLayout>

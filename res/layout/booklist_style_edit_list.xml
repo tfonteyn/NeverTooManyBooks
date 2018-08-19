@@ -3,7 +3,6 @@
     android:id="@+id/list_wrapper"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/background_grey"
     android:orientation="vertical" >
 
     <LinearLayout
@@ -19,15 +18,17 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:padding="@dimen/padding_border" >
+        android:padding="@dimen/padding_border"
+        style="?android:attr/buttonBarStyle">
 
         <Button
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|left"
+            android:layout_gravity="center_vertical|start"
             android:layout_weight="1"
-            android:text="@string/cancel" />
+            android:text="@string/cancel"
+            style="?android:attr/buttonBarButtonStyle" />
         <!--
     	    style="?android:attr/buttonStyleSmall"
 		    android:textAppearance="?android:attr/textAppearanceSmall"
@@ -37,12 +38,14 @@
             android:id="@+id/confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|right"
+            android:layout_gravity="center_vertical|end"
             android:layout_weight="1"
-            android:text="@string/save" />
+            android:text="@string/save"
+            style="?android:attr/buttonBarButtonStyle"/>
         <!--
     	    style="?android:attr/buttonStyleSmall"
-		    android:textAppearance="?android:attr/textAppearanceSmall"         -->
+		    android:textAppearance="?android:attr/textAppearanceSmall" 
+        -->
 
     </LinearLayout>
 
@@ -54,7 +57,8 @@
         android:layout_below="@+id/top_buttons"
         android:gravity="top"
         android:orientation="vertical"
-        android:paddingLeft="@dimen/padding_border" >
+        android:paddingStart="@dimen/padding_border"
+        android:paddingEnd="@dimen/padding_border">
 
         <com.eleybourn.bookcatalogue.widgets.TouchListView
             xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"

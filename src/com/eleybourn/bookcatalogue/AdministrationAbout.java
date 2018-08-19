@@ -58,7 +58,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
  			setTitle(R.string.app_name);
 			setContentView(R.layout.administration_about);
 			setupAdmin();
-			Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+			Utils.initBackground(this);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -70,7 +70,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);		
+		Utils.initBackground(this);
 	}
 	/**
 	 * This function builds the Admin page in 4 sections. 

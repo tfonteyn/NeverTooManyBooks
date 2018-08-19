@@ -3,14 +3,14 @@ package com.eleybourn.bookcatalogue.dialogs;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.compat.BookCatalogueDialogFragment;
 import com.eleybourn.bookcatalogue.utils.Logger;
 
-public class MessageDialogFragment extends BookCatalogueDialogFragment {
+public class MessageDialogFragment extends DialogFragment {
 	private int mDialogId;
 
 	/**
@@ -18,8 +18,8 @@ public class MessageDialogFragment extends BookCatalogueDialogFragment {
 	 * 
 	 * @author pjw
 	 */
-	public static interface OnMessageDialogResultListener {
-		public void onMessageDialogResult(int dialogId, MessageDialogFragment dialog, int button);
+	public interface OnMessageDialogResultListener {
+		void onMessageDialogResult(int dialogId, MessageDialogFragment dialog, int button);
 	}
 
 	/**
@@ -84,21 +84,27 @@ public class MessageDialogFragment extends BookCatalogueDialogFragment {
 		alertDialog.setTitle(title);
 		alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
 		
-		alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(btnPos), new DialogInterface.OnClickListener() {
+		alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
+				getString(btnPos),
+				new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				handleButton(AlertDialog.BUTTON_POSITIVE);
 			}
 		}); 
 		
 		if (btnNeg != 0) {
-			alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(btnNeg), new DialogInterface.OnClickListener() {
+			alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
+					getString(btnNeg),
+					new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					handleButton(AlertDialog.BUTTON_NEGATIVE);
 				}
 			}); 			
 		}
 		if (btnNeut != 0) {
-			alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(btnNeut), new DialogInterface.OnClickListener() {
+			alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,
+					getString(btnNeut),
+					new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					handleButton(AlertDialog.BUTTON_NEUTRAL);
 				}

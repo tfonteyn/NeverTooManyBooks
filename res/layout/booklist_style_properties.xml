@@ -3,7 +3,6 @@
     android:id="@+id/root"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bc_background_gradient_dim"
     android:orientation="vertical"
     android:padding="@dimen/padding_border" >
 
@@ -23,30 +22,35 @@
         android:layout_alignParentBottom="true"
         android:gravity="bottom"
         android:orientation="horizontal"
-        android:padding="@dimen/padding_border" >
+        android:padding="@dimen/padding_border"
+        style="?android:attr/buttonBarStyle">
 
         <Button
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|left"
+            android:layout_gravity="center_vertical|start"
             android:layout_weight="10"
-            android:text="@string/cancel" />
+            android:text="@string/cancel"
+            style="?android:attr/buttonBarButtonStyle"/>
         <!--
     	    style="?android:attr/buttonStyleSmall"
-		    android:textAppearance="?android:attr/textAppearanceSmall" 
+		    android:textAppearance="?android:attr/textAppearanceSmall" 
+
         -->
 
         <Button
             android:id="@+id/confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|right"
+            android:layout_gravity="center_vertical|end"
             android:layout_weight="10"
-            android:text="@string/save" />
+            android:text="@string/save"
+            style="?android:attr/buttonBarButtonStyle" />
         <!--
     	    style="?android:attr/buttonStyleSmall"
-		    android:textAppearance="?android:attr/textAppearanceSmall" 
+		    android:textAppearance="?android:attr/textAppearanceSmall" 
+
         -->
 
     </LinearLayout>
@@ -64,7 +68,8 @@
         <!--
              NOTE: This view (id=body) will be EMPTIED by the activity that uses this layout
 			 DON'T ADD ANYTHING TO IT
-			 It is OK to add stuff to the ScrollView, or anywhere else in this layout.
+			 It is OK to add stuff to the ScrollView, or anywhere else in this layout.
+
         -->
 
         <LinearLayout

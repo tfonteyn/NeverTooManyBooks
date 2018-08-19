@@ -20,15 +20,11 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.SAXException;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -37,6 +33,8 @@ import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -51,8 +49,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter.AnthologyTitleExistsException;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -117,7 +113,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 			}
 		});
 		
-		ArrayAdapter<String> author_adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, mDbHelper.getAllAuthors());
+		ArrayAdapter<String> author_adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, mDbHelper.getAllAuthors());
 		mAuthorText = (AutoCompleteTextView) getView().findViewById(R.id.add_author);
 		mAuthorText.setAdapter(author_adapter);
 		if (mSame.isChecked()) {
@@ -158,9 +154,9 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 		});
 		
 		fillAnthology();
-		
+
 		// Setup the background
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+		Utils.initBackground(this);
 	}
 	
 	public void fillAnthology(int scroll_to_id) {
@@ -203,14 +199,8 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 		/**
 		 * 
 		 * Pass the parameters directly to the overridden function
-		 * 
-		 * @param context
-		 * @param layout
-		 * @param cursor
-		 * @param from
-		 * @param to
 		 */
-		public AnthologyTitleListAdapter(Context context, int rowViewId, ArrayList<AnthologyTitle> items) {
+		AnthologyTitleListAdapter(Context context, int rowViewId, ArrayList<AnthologyTitle> items) {
 			super(context, rowViewId, items);
 		}
 
@@ -228,13 +218,13 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 			mTitleText.setText(anthology.getTitle());
 			mAuthorText.setText(anthology.getAuthor().getDisplayName());
 			mAdd.setText(R.string.anthology_save);
-		};
-		
+		}
+
 		@Override
 		protected void onListChanged() {
 			mEditManager.setDirty(true);
-		};
-	}
+		}
+    }
 	
 	/**
 	 * Scroll to the current group
@@ -280,11 +270,11 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 				return;
 			}
 			String[] links = handler.getLinks();
-			for (int i = 0; i < links.length; i++) {
-				if (links[i].equals("") || success == true) {
+			for (String link : links) {
+				if (link.isEmpty() || success) {
 					break;
 				}
-				url = new URL(basepath + links[i]);
+				url = new URL(basepath + link);
 				parser = factory.newSAXParser();
 				try {
 					parser.parse(Utils.getInputStream(url), entryHandler);
@@ -299,19 +289,10 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 					Toast.makeText(getActivity(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();
 				}
 			}
-			if (success == false) {
+			if (!success) {
 				Toast.makeText(getActivity(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();
 				return;
 			}
-		} catch (MalformedURLException e) {
-			Toast.makeText(getActivity(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();
-			Logger.logError(e);
-		} catch (ParserConfigurationException e) {
-			Toast.makeText(getActivity(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();
-			Logger.logError(e);
-		} catch (SAXException e) {
-			Toast.makeText(getActivity(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();
-			Logger.logError(e);
 		} catch (Exception e) {
 			Toast.makeText(getActivity(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();
 			Logger.logError(e);
@@ -321,9 +302,9 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 	}
 	
 	private void showAnthologyConfirm(final ArrayList<String> titles) {
-		String anthology_title = "";
+		StringBuilder anthology_title = new StringBuilder();
 		for (int j=0; j < titles.size(); j++) {
-			anthology_title += "* " + titles.get(j) + "\n";
+			anthology_title.append("* ").append(titles.get(j)).append("\n");
 		}
 		
 		AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setMessage(anthology_title).create();

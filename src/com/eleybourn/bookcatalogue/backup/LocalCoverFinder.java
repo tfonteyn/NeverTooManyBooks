@@ -38,23 +38,21 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 public class LocalCoverFinder implements Importer.CoverFinder {
 	/** The root path to search for files */
 	private final String mSrc;
-	private final String mDst;
-	private final boolean mIsForeign;
+    private final boolean mIsForeign;
 	private final String mSharedStoragePath;
-	private CatalogueDBAdapter mDbHelper;
+	private final CatalogueDBAdapter mDbHelper;
 
 	public LocalCoverFinder(String srcPath, String dstPath) {
 		mSrc = srcPath;
-		mDst = dstPath;
-		mIsForeign = !mSrc.equals(mDst);
+		mIsForeign = !mSrc.equals(dstPath);
 		mSharedStoragePath = StorageUtils.getSharedStorage().getAbsolutePath();
 
-		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.context);
+		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
 		mDbHelper.open();
 	}
 	
 	public void copyOrRenameCoverFile(String srcUuid, long srcId, long dstId) throws IOException {
-		if (srcUuid != null && !srcUuid.equals("")) {
+		if (srcUuid != null && !srcUuid.isEmpty()) {
 			// Only copy UUID files if they are foreign...since they already exists, otherwise.
 			if (mIsForeign)
 				copyCoverImageIfMissing(srcUuid);							
@@ -116,7 +114,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 	/**
 	 * Copy a specified source file into the default cover location for a new file.
 	 * DO NO OVERWRITE EXISTING FILES.
-	 * 
+	 *
 	 * @param orig
 	 * @param newUuid
 	 * @throws IOException
@@ -140,7 +138,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 			out = new FileOutputStream(newFile);
 			// Get a buffer
 			byte[] buffer = new byte[8192];
-			int nRead = 0;
+			int nRead;
 			// Copy
 			while( (nRead = in.read(buffer)) > 0){
 			    out.write(buffer, 0, nRead);
@@ -155,23 +153,22 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 			try {
 				if (in != null)
 					in.close();
-			} catch (Exception e) {};
-			try {
+			} catch (Exception ignored) {}
+            try {
 				if (out != null)
 					out.close();
-			} catch (Exception e) {};
-		}
+			} catch (Exception ignored) {}
+        }
 	}
 
 	/**
 	 * Rename/move a specified source file into the default cover location for a new file.
 	 * DO NO OVERWRITE EXISTING FILES.
-	 * 
+	 *
 	 * @param orig
 	 * @param newUuid
-	 * @throws IOException
 	 */
-	private void renameFileToCoverImageIfMissing(File orig, String newUuid) throws IOException {
+	private void renameFileToCoverImageIfMissing(File orig, String newUuid) {
 		// Nothing to copy?
 		if (orig == null || !orig.exists() || orig.length() == 0)
 			return;
@@ -188,11 +185,10 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 	 * Copy the ID-based cover from its current location to the correct location in shared 
 	 * storage, if it exists.
 	 * 
-	 * @param externalId		The file ID in external media
-	 * @param newId				The new file ID
-	 * @throws IOException 
+	 * @param externalId	The file ID in external media
+	 * @param newId			The new file ID
 	 */
-	private void renameCoverImageIfMissing(long externalId, long newId) throws IOException {
+	private void renameCoverImageIfMissing(long externalId, long newId) {
 		File orig = findExternalCover(Long.toString(externalId));
 		// Nothing to copy?
 		if (orig == null || !orig.exists() || orig.length() == 0)
@@ -209,7 +205,6 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 	 * 
 	 * @param externalId		The file ID in external media
 	 * @param newId				The new file ID
-	 * @throws IOException 
 	 */
 	private void copyCoverImageIfMissing(long externalId, long newId) throws IOException {
 		File orig = findExternalCover(Long.toString(externalId));
@@ -225,9 +220,8 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 	/**
 	 * Copy the UUID-based cover from its current location to the correct location in shared 
 	 * storage, if it exists.
-	 * 
+	 *
 	 * @param uuid
-	 * @throws IOException 
 	 */
 	private void copyCoverImageIfMissing(String uuid) throws IOException {
 		File orig = findExternalCover(uuid);
@@ -237,5 +231,4 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 
 		copyFileToCoverImageIfMissing(orig, uuid);
 	}
-
 }

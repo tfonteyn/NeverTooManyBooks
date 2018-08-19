@@ -42,13 +42,13 @@ import com.eleybourn.bookcatalogue.utils.TrackedCursor;
 public class BooksCursor extends TrackedCursor {
 
 	/** Hashmap of selected book IDs */
-	private Hashtable<Long,Boolean> m_selections = new Hashtable<Long,Boolean>();
+	private final Hashtable<Long,Boolean> m_selections = new Hashtable<>();
 
 	/**
 	 * Constructor
 	 */
 	public BooksCursor(SQLiteDatabase db, SQLiteCursorDriver driver, String editTable, SQLiteQuery query, Synchronizer sync) {
-		super(db, driver, editTable, query, sync);
+		super(driver, editTable, query, sync);
 	}
 
 

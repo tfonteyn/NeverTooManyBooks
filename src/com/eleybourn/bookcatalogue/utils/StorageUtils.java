@@ -42,8 +42,8 @@ import com.eleybourn.bookcatalogue.scanner.pic2shop.Scan;
  * @author Philip Warner
  */
 public class StorageUtils {
-	private static String UTF8 = "utf8";
-	private static int BUFFER_SIZE = 8192;
+	private static final String UTF8 = "utf8";
+	private static final int BUFFER_SIZE = 8192;
 
 	private static final String LOCATION = "bookCatalogue";
 	private static final String DATABASE_NAME = "book_catalogue";
@@ -51,50 +51,26 @@ public class StorageUtils {
 	private static final String EXTERNAL_FILE_PATH = Environment.getExternalStorageDirectory() + "/" + LOCATION;
 	private static final String ERRORLOG_FILE = EXTERNAL_FILE_PATH + "/error.log";
 
-	/**
-	 * Accessor
-	 * 
-	 * @return
-	 */
 	public static String getErrorLog() {
 		return ERRORLOG_FILE;
 	}
 
-	/**
-	 * Accessor
-	 * 
-	 * @return
-	 */
 	public static String getDatabaseName() {
 		return DATABASE_NAME;
 	}
 
-	/**
-	 * Accessor
-	 * 
-	 * @return
-	 */
-	public static final File getSharedStorage() {
+	public static File getSharedStorage() {
 		File dir = new File(StorageUtils.EXTERNAL_FILE_PATH);
 		dir.mkdir();
 		return dir;
 	}
 
-	/**
-	 * Accessor
-	 * 
-	 * @return
-	 */
-	public static final String getSharedStoragePath() {
+	public static String getSharedStoragePath() {
 		File dir = new File(StorageUtils.EXTERNAL_FILE_PATH);
 		dir.mkdir();
 		return dir.getAbsolutePath();
 	}
 
-	/**
-	 * Backup database file
-	 * @throws Exception 
-	 */
 	public static void backupDbFile(SQLiteDatabase db, String suffix) {
 		try {
 			final String fileName = LOCATION + suffix;
@@ -144,13 +120,13 @@ public class StorageUtils {
 	 * @author Philip Warner
 	 */
 	public static class FileDateComparator implements Comparator<File> {
-		/** Ascending is >= 0, Descenting is < 0. */
-		private int mDirection;
+		/** Ascending is >= 0, Descending is < 0. */
+		private final int mDirection;
 		/**
 		 * Constructor
 		 */
-		public FileDateComparator(int direction) {
-			mDirection = direction < 0? -1 : 1;
+		FileDateComparator(int direction) {
+			mDirection = direction < 0 ? -1 : 1;
 		}
 		/**
 		 * Compare based on modified date
@@ -171,13 +147,11 @@ public class StorageUtils {
 	/**
 	 * Scan all mount points for '/bookCatalogue' directory and collect a list
 	 * of all CSV files.
-	 * 
-	 * @return
 	 */
 	public static ArrayList<File> findExportFiles() {
 		//StringBuilder info = new StringBuilder();
 
-		ArrayList<File> files = new ArrayList<File>();
+		ArrayList<File> files = new ArrayList<>();
 		Pattern mountPointPat = Pattern.compile("^\\s*[^\\s]+\\s+([^\\s]+)");
 		BufferedReader in = null;
 		// Make a filter for files ending in .csv
@@ -190,20 +164,20 @@ public class StorageUtils {
 			}
 		}; 
 
-		ArrayList<File> dirs = new ArrayList<File>();
+		ArrayList<File> dirs = new ArrayList<>();
 
 		//info.append("Getting mounted file systems\n");
 		// Scan all mounted file systems
 		try {
 			in = new BufferedReader(new InputStreamReader(new FileInputStream("/proc/mounts")),1024);
-			String line = "";
+			String line;
 			while ((line = in.readLine()) != null) {
 				//info.append("   checking " + line + "\n");
 				Matcher m = mountPointPat.matcher(line);
 				// Get the mount point
 				if (m.find()) {
 					// See if it has a bookCatalogue directory
-					File dir = new File(m.group(1).toString() + "/bookCatalogue");
+					File dir = new File(m.group(1) + "/bookCatalogue");
 					//info.append("       matched " + dir.getAbsolutePath() + "\n");
 					dirs.add(dir);
 				} else {
@@ -216,7 +190,7 @@ public class StorageUtils {
 			if (in != null)
 				try {
 					in.close();					
-				} catch (Exception e) {};
+				} catch (Exception ignored) {}
 		}
 
 		// Sometimes (Android 6?) the /proc/mount search seems to fail, so we revert to environment vars
@@ -243,7 +217,7 @@ public class StorageUtils {
 			Logger.logError(e, "Failed to get external storage from environment variables");
 		}
 
-		HashSet<String> paths = new HashSet<String>();
+		HashSet<String> paths = new HashSet<>();
 
 		//info.append("Looking for files in directories\n");
 		for(File dir: dirs) {
@@ -299,16 +273,13 @@ public class StorageUtils {
 		}		
 	}
 
-	private static String[] mPurgeableFilePrefixes = new String[]{StorageUtils.LOCATION + "DbUpgrade", StorageUtils.LOCATION + "DbExport", "error.log", "tmp"};
-	private static String[] mDebugFilePrefixes = new String[]{StorageUtils.LOCATION + "DbUpgrade", StorageUtils.LOCATION + "DbExport", "error.log", "export.csv"};
+	private static final String[] mPurgeableFilePrefixes = new String[]{StorageUtils.LOCATION + "DbUpgrade", StorageUtils.LOCATION + "DbExport", "error.log", "tmp"};
+	private static final String[] mDebugFilePrefixes = new String[]{StorageUtils.LOCATION + "DbUpgrade", StorageUtils.LOCATION + "DbExport", "error.log", "export.csv"};
 
 	/**
 	 * Collect and send com.eleybourn.bookcatalogue.debug info to a support email address. 
 	 * 
-	 * THIS SHOULD NOT BE A PUBLICALLY AVAILABLE MAINING LIST OR FORUM!
-	 * 
-	 * @param context
-	 * @param dbHelper
+	 * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MALNING LIST OR FORUM!
 	 */
 	public static void sendDebugInfo(Context context, CatalogueDBAdapter dbHelper) {
 		// Create a temp DB copy.
@@ -322,69 +293,67 @@ public class StorageUtils {
 		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, context.getString(R.string.debug_email).split(";"));
 		String subject = "[" + context.getString(R.string.app_name) + "] " + context.getString(R.string.debug_subject);
 		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
-		String message = "";
+		StringBuilder message = new StringBuilder();
 
         try {
         	// Get app info
             PackageManager manager = context.getPackageManager(); 
 			PackageInfo appInfo = manager.getPackageInfo( context.getPackageName(), 0);
-			message += "App: " + appInfo.packageName + "\n";
-			message += "Version: " + appInfo.versionName + " (" + appInfo.versionCode + ")\n";
+			message.append("App: ").append(appInfo.packageName).append("\n")
+				.append("Version: ").append(appInfo.versionName).append(" (").append(appInfo.versionCode).append(")\n");
 		} catch (Exception e1) {
 			// Not much we can do inside error logger...
 		}
         
         
-        message += "SDK: " + Build.VERSION.SDK + " (" + Build.VERSION.SDK_INT + " " + Build.TAGS + ")\n";
-        message += "Phone Model: " + Build.MODEL + "\n";
-        message += "Phone Manufacturer: " + Build.MANUFACTURER + "\n";
-        message += "Phone Device: " + Build.DEVICE + "\n";
-        message += "Phone Product: " + Build.PRODUCT + "\n";
-        message += "Phone Brand: " + Build.BRAND + "\n";
-        message += "Phone ID: " + Build.ID + "\n";
-
-        message += "Signed-By: " + Utils.signedBy(context) + "\n";
-
-		message += "\nHistory:\n" + Tracker.getEventsInfo() + "\n";
+        message.append("SDK: ").append(Build.VERSION.RELEASE).append(" (").append(Build.VERSION.SDK_INT).append(" ").append(Build.TAGS).append(")\n")
+			.append("Phone Model: ").append(Build.MODEL).append("\n")
+			.append("Phone Manufacturer: ").append(Build.MANUFACTURER).append("\n")
+			.append("Phone Device: ").append(Build.DEVICE).append("\n")
+			.append("Phone Product: ").append(Build.PRODUCT).append("\n")
+			.append("Phone Brand: ").append(Build.BRAND).append("\n")
+			.append("Phone ID: ").append(Build.ID).append("\n")
+			.append("Signed-By: ").append(Utils.signedBy(context)).append("\n")
+			.append("\nHistory:\n").append(Tracker.getEventsInfo()).append("\n");
 
 		// Scanners installed
 		try {
-	        message += "Pref. Scanner: " + BookCatalogueApp.getAppPreferences().getInt( ScannerManager.PREF_PREFERRED_SCANNER, -1) + "\n";
+	        message.append("Pref. Scanner: ").append(BookCatalogueApp.getAppPreferences().getInt(ScannerManager.PREF_PREFERRED_SCANNER, -1)).append("\n");
 	        String[] scanners = new String[] { ZxingScanner.ACTION, Scan.ACTION, Scan.Pro.ACTION};
 	        for(String scanner:  scanners) {
-	            message += "Scanner [" + scanner + "]:\n";
+	            message.append("Scanner [").append(scanner).append("]:\n");
 	            final Intent mainIntent = new Intent(scanner, null);
 	            final List<ResolveInfo> resolved = context.getPackageManager().queryIntentActivities( mainIntent, 0);
 	            if (resolved.size() > 0) {
 		            for(ResolveInfo r: resolved) {
-		            	message += "    ";
+		            	message.append("    ");
 		            	// Could be activity or service...
 		            	if (r.activityInfo != null) {
-		            		message += r.activityInfo.packageName;
+		            		message.append(r.activityInfo.packageName);
 		            	} else if (r.serviceInfo != null) {
-		            		message += r.serviceInfo.packageName;
+		            		message.append(r.serviceInfo.packageName);
 		            	} else {
-		            		message += "UNKNOWN";
+		            		message.append("UNKNOWN");
 		            	}
-		                message += " (priority " + r.priority + ", preference " + r.preferredOrder + ", match " + r.match + ", default=" + r.isDefault + ")\n";
+		                message.append(" (priority ").append(r.priority).append(", preference ").append(r.preferredOrder).append(", match ").append(r.match).append(", default=").append(r.isDefault).append(")\n");
 		            }
 	            } else {
-            		message += "    No packages found\n";
+            		message.append("    No packages found\n");
 	            }
 	        }			
 		} catch (Exception e) {
 			// Don't lose the other debug info if scanner data dies for some reason
-	        message += "Scanner failure: " + e.getMessage() + "\n";
+	        message.append("Scanner failure: ").append(e.getMessage()).append("\n");
 		}
-		message += "\n";
+		message.append("\n");
 
-        message += "Details:\n\n" + context.getString(R.string.debug_body).toUpperCase() + "\n\n";
+        message.append("Details:\n\n").append(context.getString(R.string.debug_body).toUpperCase()).append("\n\n");
 
-		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
+		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, message.toString());
 		//has to be an ArrayList
-		ArrayList<Uri> uris = new ArrayList<Uri>();
+		ArrayList<Uri> uris = new ArrayList<>();
 		//convert from paths to Android friendly Parcelable Uri's
-		ArrayList<String> files = new ArrayList<String>();
+		ArrayList<String> files = new ArrayList<>();
 		
 		// Find all files of interest to send
 		File dir = new File(StorageUtils.EXTERNAL_FILE_PATH);
@@ -438,7 +407,7 @@ public class StorageUtils {
 		        	try {
 		        		File file = new File(StorageUtils.EXTERNAL_FILE_PATH + "/" + name);
 			        	file.delete();
-		        	} catch (Exception e) {        		
+		        	} catch (Exception ignored) {
 		        	}
 	        }
 		}
@@ -466,7 +435,7 @@ public class StorageUtils {
 	        	try {
 	        		File file = new File(StorageUtils.EXTERNAL_FILE_PATH + "/" + name);
 	        		totalSize += file.length();
-	        	} catch (Exception e) {        		
+	        	} catch (Exception ignored) {
 	        	}
         }
         return totalSize;

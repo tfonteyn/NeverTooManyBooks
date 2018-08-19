@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue.goodreads;
 
 import net.philipwarner.taskqueue.QueueManager;
 import android.content.Context;
-import android.database.Cursor;
 
 import com.eleybourn.bookcatalogue.BcQueueManager;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -64,7 +63,7 @@ public class SendAllBooksTask extends GenericTask {
 	/**
 	 * Constructor
 	 */
-	public SendAllBooksTask(boolean updatesOnly) {
+	SendAllBooksTask(boolean updatesOnly) {
 		super(BookCatalogueApp.getResourceString(R.string.send_books_to_goodreads));
 		mUpdatesOnly = updatesOnly;
 	}
@@ -85,14 +84,12 @@ public class SendAllBooksTask extends GenericTask {
 
 	/**
 	 * Do the mean of the task. Deal with restarts by using mLastId as starting point.
-	 * 
+	 *
 	 * @param qmanager
 	 * @param context
 	 * @return
-	 * 
-	 * @throws NotAuthorizedException
 	 */
-	public boolean sendAllBooks(QueueManager qmanager, Context context) throws NotAuthorizedException {
+	private boolean sendAllBooks(QueueManager qmanager, Context context) throws NotAuthorizedException {
 		//int lastSave = mCount;
 		boolean needsRetryReset = true;
 
@@ -120,7 +117,6 @@ public class SendAllBooksTask extends GenericTask {
 
 		dbHelper.open();
 		BooksCursor books = null;
-		Cursor shelves = null;
 
 		try {
 			books = dbHelper.getAllBooksForGoodreadsCursor(mLastId, mUpdatesOnly);
@@ -198,25 +194,17 @@ public class SendAllBooksTask extends GenericTask {
 					// Ignore failures, but log them
 					Logger.logError(e, "Failed to close GoodReads books cursor");
 				}
-			if (shelves != null)
-				try {
-					shelves.close();
-				} catch (Exception e)
-				{
-					// Ignore failures, but log them
-					Logger.logError(e, "Failed to close GoodReads book bookshelves cursor");
-				}
 			try {
 				dbHelper.close();				
-			} catch(Exception e)
+			} catch(Exception ignored)
 			{}
 		}
 
 		// Notify the user: '15 books processed: 3 sent successfully, 5 with no ISBN and 7 with ISBN but not found in goodreads'
-		String s = context.getString(R.string.send_all_to_goodreads_result, mCount, mSent, mNoIsbn, mNotFound);
-		BookCatalogueApp.showNotification(R.id.NOTIFICATION, 
-							context.getString(R.string.send_books_to_goodreads), s, 
-							BookCatalogueApp.getAppToForegroundIntent(context));
+		BookCatalogueApp.showNotification(R.id.NOTIFICATION,
+				context.getString(R.string.send_books_to_goodreads),
+				context.getString(R.string.send_all_to_goodreads_result, mCount, mSent, mNoIsbn, mNotFound),
+				BookCatalogueApp.getAppToForegroundIntent(context));
 
 		return true;
 	}

@@ -57,7 +57,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 	/** Timer object for background idle searches */
 	private Timer mTimer;
 	/** Handle inter-thread messages */
-	Handler m_handler = new Handler();
+    final Handler m_handler = new Handler();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -89,7 +89,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 		ftsRebuild.setOnClickListener(mFtsRebuildListener);
 
 		// Note: Timer will be started in OnResume().
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, R.id.layout_root, false);
+		Utils.initBackground(this);
 	}
 
 	/** start the idle timer */
@@ -148,12 +148,12 @@ public class SearchCatalogue extends BookCatalogueActivity {
 			if (doSearch)
 				doSearch();
 		}
-	};
-    
-	/**
+	}
+
+    /**
 	 * Handle the 'Search' button.
 	 */
-	private OnClickListener mShowResultsListener = new OnClickListener() {
+	private final OnClickListener mShowResultsListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			doSearch();
@@ -163,7 +163,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 	/**
 	 * Handle the 'FTS Rebuild' button.
 	 */
-	private OnClickListener mFtsRebuildListener = new OnClickListener() {
+	private final OnClickListener mFtsRebuildListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			mDbHelper.rebuildFts();
@@ -209,7 +209,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 			try {
 				if (c != null)
 					c.close();					
-			} catch (Exception e) {}
+			} catch (Exception ignored) {}
 		}
 		final String message = tmpMsg;
 
@@ -246,7 +246,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 	/**
 	 * Detect when user touches something, just so we know they are 'busy'.
 	 */
-	private OnTouchListener mOnTouchListener = new OnTouchListener() {
+	private final OnTouchListener mOnTouchListener = new OnTouchListener() {
 
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
@@ -258,7 +258,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 	/**
 	 * Detect text changes and call userIsActive(...).
 	 */
-	private TextWatcher mTextWatcher = new TextWatcher() {
+	private final TextWatcher mTextWatcher = new TextWatcher() {
 
 		@Override
 		public void afterTextChanged(Editable s) {
@@ -290,7 +290,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 	protected void onResume() {
 		super.onResume();
 		userIsActive(true);
-		Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);		
+		Utils.initBackground(this);
 	}
 
 	/**
@@ -302,9 +302,9 @@ public class SearchCatalogue extends BookCatalogueActivity {
 		try {
 			if (mDbHelper != null)
 				mDbHelper.close();
-		} catch (Exception e) {}
+		} catch (Exception ignored) {}
 		try {
 			stopIdleTimer();
-		} catch (Exception e) {}
+		} catch (Exception ignored) {}
 	}
 }

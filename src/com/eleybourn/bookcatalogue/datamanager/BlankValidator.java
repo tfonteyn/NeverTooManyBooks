@@ -34,13 +34,14 @@ public class BlankValidator implements DataValidator {
 			// No validation required for invisible fields
 			return;
 		}
+		
 		if (crossValidating)
 			return;
 		try {
 			String s = data.getString(datum);
-			if (!s.equals("")) {
+			if (!s.isEmpty()) {
 				s = s.trim();
-				if (!s.equals("")) {
+				if (!s.isEmpty()) {
 					throw new ValidatorException(R.string.vldt_blank_required, new Object[]{datum.getKey()});
 				}
 				data.putString(datum, s);

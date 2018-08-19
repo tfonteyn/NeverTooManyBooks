@@ -38,10 +38,10 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AbsListView;
@@ -60,8 +60,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.eleybourn.bookcatalogue.BooksMultitypeListHandler.BooklistChangeListener;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder.BookRowInfo;
@@ -142,7 +140,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	/** Multi-type adapter to manage list connection to cursor */
 	private MultitypeListAdapter mAdapter;
 	/** Task queue to get book lists in background */
-	private SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("BoB-List", 1);
+	private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("BoB-List", 1);
 	/** Preferred booklist state in next rebuild */
 	private int mRebuildState;
 
@@ -182,10 +180,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	
 			// Restore view style
 			refreshStyle();
-	
-			// This sets the search capability to local (application) search
-			setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
-			
+
 			// This sets the search capability to local (application) search
 			setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 			setContentView(R.layout.booksonbookshelf);
@@ -203,7 +198,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 			}
 
 			TextView searchTextView = (TextView) findViewById(R.id.search_text);
-			if (mSearchText.equals("")) {
+			if (mSearchText.isEmpty()) {
 				searchTextView.setVisibility(View.GONE);
 			} else {
 				searchTextView.setVisibility(View.VISIBLE);
@@ -215,7 +210,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 				@Override
 				public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
 					mList.moveToPosition(position);
-					ArrayList<SimpleDialogItem> menu = new ArrayList<SimpleDialogItem>();
+					ArrayList<SimpleDialogItem> menu = new ArrayList<>();
 					mListHandler.buildContextMenu(mList.getRowView(), menu);
 					if (menu.size() > 0) {
 						StandardDialogs.selectItemDialog(getLayoutInflater(), null, menu, null, new SimpleDialogOnClickListener() {
@@ -230,7 +225,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 				}
 			});
 	
-			// use the custom fast scroller (the ListView in the XML is our custome version).
+			// use the custom fast scroller (the ListView in the XML is our custom version).
 			getListView().setFastScrollEnabled(true);
 	
 			// Handle item click events
@@ -326,10 +321,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	public boolean onContextItemSelected(android.view.MenuItem item) {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 		mList.moveToPosition(info.position);
-		if (mListHandler.onContextItemSelected(mDb, mList.getRowView(), this, mDb, item.getItemId()))
-			return true;
-		else
-			return super.onContextItemSelected(item);
+		return mListHandler.onContextItemSelected(mDb, mList.getRowView(), this, mDb, item.getItemId()) || super.onContextItemSelected(item);
 	}
 
 	/**
@@ -355,9 +347,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 			mTopRow = lv.getFirstVisiblePosition();
 			View v = lv.getChildAt(0);
 			mTopRowTop = v == null ? 0 : v.getTop();			
-		} catch (Exception e) {};
+		} catch (Exception ignored) {}
 
-		// New style, so use user-pref for rebuild
+        // New style, so use user-pref for rebuild
 		mRebuildState = BooklistPreferencesActivity.getRebuildState();
 		// Do a rebuild
 		mCurrentStyle = style;
@@ -382,7 +374,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 		 * 
 		 * @param isFullRebuild		Indicates whole table structure needs rebuild, vs. just do a reselect of underlying data
 		 */
-		public GetListTask(boolean isFullRebuild) {
+		GetListTask(boolean isFullRebuild) {
 			mIsFullRebuild = isFullRebuild;
 		}
 
@@ -400,7 +392,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 
 					if (mTargetRows != null && mTargetRows.size() > 0) {
 						// First, get the ones that are currently visible...
-						ArrayList<BookRowInfo> visRows = new ArrayList<BookRowInfo>();
+						ArrayList<BookRowInfo> visRows = new ArrayList<>();
 						for(BookRowInfo i: mTargetRows) {
 							if (i.visible) {
 								visRows.add(i);
@@ -457,12 +449,14 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 				mTotalBooks = mTempList.getBookCount();
 				long t6 = System.currentTimeMillis();
 
-				System.out.println("Build: " + (t1-t0));
-				System.out.println("Position: " + (t2-t1));
-				System.out.println("Select: " + (t3-t2));
-				System.out.println("Count(" + count + "): " + (t4-t3) + "/" + (t5-t4) + "/" + (t6-t5));
-				System.out.println("====== " );
-				System.out.println("Total: " + (t6-t0));
+				if (BuildConfig.DEBUG) {
+					System.out.println("Build: " + (t1 - t0));
+					System.out.println("Position: " + (t2 - t1));
+					System.out.println("Select: " + (t3 - t2));
+					System.out.println("Count(" + count + "): " + (t4 - t3) + "/" + (t5 - t4) + "/" + (t6 - t5));
+					System.out.println("====== ");
+					System.out.println("Total: " + (t6 - t0));
+				}
 				// Save a flag to say list was loaded at least once successfully
 				mListHasBeenLoaded = true;
 
@@ -472,11 +466,11 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 					// work...
 					if (mTempList != null && mTempList != mList) {
 						if (mList == null || mTempList.getBuilder() != mList.getBuilder())
-							try { mTempList.getBuilder().close(); } catch (Exception e)  { /* Ignore */ };
+							try { mTempList.getBuilder().close(); } catch (Exception ignore)  {}
 
-						try { mTempList.close(); } catch (Exception e)  { /* Ignore */ };
+                        try { mTempList.close(); } catch (Exception ignore)  {}
 
-					}
+                    }
 				}
 			}
 			
@@ -505,11 +499,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	
 	/**
 	 * Queue a rebuild of the underlying cursor and data.
-	 * 
+	 *
 	 * @param isFullRebuild		Indicates whole table structure needs rebuild, vs. just do a reselect of underlying data
 	 */
 	private void setupList(boolean isFullRebuild) {
-		isFullRebuild = true;
 		mTaskQueue.enqueue(new GetListTask(isFullRebuild));
 		if (mListDialog == null) {
 			mListDialog = ProgressDialog.show(this, "", getString(R.string.getting_books_ellipsis), true, true, new OnCancelListener() {
@@ -531,7 +524,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 		View root = findViewById(R.id.root);
 		View header = findViewById(R.id.header);
 
-		//
 		// Sanity checks as a result of user bug report that was caused by either:
 		// (a) root being null
 		// or
@@ -544,44 +536,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 		if (getResources() == null)
 			throw new RuntimeException("Sanity Check Fail: getResources() returned null; isFinishing() = " + isFinishing());
 
-		Drawable d = null;
-		try {
-			if (!BookCatalogueApp.isBackgroundImageDisabled()) {
-				d = Utils.makeTiledBackground(false);
-			}
-		} catch (Exception e) {
-			// Ignore...if just a coat of paint
-		}
-
-		if (BooklistPreferencesActivity.isBackgroundFlat() || d == null) {
-			final int backgroundColor = getResources().getColor(R.color.background_grey);
-			lv.setBackgroundColor(backgroundColor);
-			Utils.setCacheColorHintSafely(lv, backgroundColor);
-			if (d == null) {
-				root.setBackgroundColor(backgroundColor);
-				header.setBackgroundColor(backgroundColor);
-			} else {
-				root.setBackgroundDrawable(d);
-				header.setBackgroundDrawable(d);
-			}
-		} else {
-			Utils.setCacheColorHintSafely(lv, 0x00000000);
-			// ICS does not cope well with transparent ListView backgrounds with a 0 cache hint, but it does
-			// seem to cope with a background image on the ListView itself.
-			if (Build.VERSION.SDK_INT >= 11) {
-				// Honeycomb
-				lv.setBackgroundDrawable(d);
-//				lv.setBackgroundDrawable(Utils.cleanupTiledBackground(getResources().getDrawable(R.drawable.bc_background_gradient_dim)));
-			} else {
-				lv.setBackgroundColor(0x00000000);				
-			}
-			root.setBackgroundDrawable(d);
-//			root.setBackgroundDrawable(Utils.cleanupTiledBackground(getResources().getDrawable(R.drawable.bc_background_gradient_dim)));
-			header.setBackgroundColor(0x00000000);
-		}
-		root.invalidate();
+		Utils.initBackground(root, lv, header);
 	}
-	
+
 	/**
 	 * Fix background
 	 */
@@ -605,7 +562,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	 * Display the passed cursor in the ListView, and change the position to targetRow.
 	 * 
 	 * @param newList		New cursor to use
-	 * @param targetPos		
+	 * @param targetRows
 	 */
 	private void displayList(BooklistPseudoCursor newList, final ArrayList<BookRowInfo> targetRows) {	
 		if (newList == null) {
@@ -619,9 +576,11 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 		TextView bookCounts = (TextView)findViewById(R.id.bookshelf_count);
 		if ( (showHeaderFlags & BooklistStyle.SUMMARY_SHOW_COUNT) != 0) {
 			if (mUniqueBooks != mTotalBooks) 
-				bookCounts.setText("(" + this.getString(R.string.displaying_n_books_in_m_entries, mUniqueBooks, mTotalBooks) + ")");
+				bookCounts.setText(BookCatalogueApp.getResourceString(R.string.brackets,
+                        this.getString(R.string.displaying_n_books_in_m_entries, mUniqueBooks, mTotalBooks)));
 			else
-				bookCounts.setText("(" + this.getString(R.string.displaying_n_books, mUniqueBooks) + ")");
+				bookCounts.setText(BookCatalogueApp.getResourceString(R.string.brackets,
+						this.getString(R.string.displaying_n_books, mUniqueBooks)));
 			bookCounts.setVisibility(View.VISIBLE);
 		} else {
 			bookCounts.setVisibility(View.GONE);
@@ -637,7 +596,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 		mAdapter = new MultitypeListAdapter(this, mList, mListHandler);
 
 		// Get the ListView and set it up
-		final ListView lv = (ListView)getListView();
+		final ListView lv = getListView();
 		final ListViewHolder lvHolder = new ListViewHolder();
 		ViewTagger.setTag(lv, R.id.TAG_HOLDER, lvHolder);
 
@@ -657,7 +616,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 			} else {
 				lv.setSelectionFromTop(mTopRow, mTopRowTop);
 			}			
-		} catch (Exception e) {}; // Don't really care
+		} catch (Exception ignored) {}
 
 		// If a target position array is set, then queue a runnable to set the position
 		// once we know how many items appear in a typical view and once we can tell 
@@ -706,15 +665,13 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 						
 						// smoothScrollToPosition is only available at API level 8.
 						// Without this call some positioning may be off by one row (see above).
-						if (android.os.Build.VERSION.SDK_INT >= 8) {
-							final int newPos = best.listPosition;
-							getListView().post(new Runnable() {
+						final int newPos = best.listPosition;
+						getListView().post(new Runnable() {
 								@TargetApi(8)
 								@Override
 								public void run() {
 									lv.smoothScrollToPosition(newPos);
 								}});
-						}
 
 						//int newTop = best.listPosition - (last-first)/2;
 						//System.out.println("New Top @" + newTop );
@@ -750,7 +707,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 				// TODO: Investigate why BooklistPseudoCursor causes a scroll even when it is closed!
 				// Need to check isDead because BooklistPseudoCursor misbehaves when activity terminates and closes cursor
 				if (mLastTop != firstVisibleItem && !mIsDead && (showHeaderFlags != 0) ) {
-					ListViewHolder holder = (ListViewHolder)ViewTagger.getTag(view, R.id.TAG_HOLDER);
+					ListViewHolder holder = ViewTagger.getTag(view, R.id.TAG_HOLDER);
 					updateListHeader(holder, firstVisibleItem, hasLevel1, hasLevel2, showHeaderFlags);
 				}
 			}
@@ -761,9 +718,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 		);
 
 		if (mCurrentStyle == null)
-			this.getSupportActionBar().setSubtitle("");
+			this.getActionBar().setSubtitle("");
 		else
-			this.getSupportActionBar().setSubtitle(mCurrentStyle.getDisplayName());
+			this.getActionBar().setSubtitle(mCurrentStyle.getDisplayName());
 			
 		// Close old list
 		if (oldList != null) {
@@ -791,7 +748,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 		if (hasLevel1 && ( flags & BooklistStyle.SUMMARY_SHOW_LEVEL_1) != 0) {
 			if ( mList.moveToPosition(topItem) ) {
 				holder.level1Text.setText(mList.getRowView().getLevel1Data());
-				String s = null;
+				String s;
 				if (hasLevel2 && ( flags & BooklistStyle.SUMMARY_SHOW_LEVEL_2) != 0 ) {
 					s = mList.getRowView().getLevel2Data();
 					holder.level2Text.setText(s);
@@ -848,9 +805,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	 * @author Philip Warner
 	 */
 	private class ListViewHolder {
-		TextView level1Text;
-		TextView level2Text;
-		public ListViewHolder() {
+		final TextView level1Text;
+		final TextView level2Text;
+		ListViewHolder() {
 			level1Text = (TextView)findViewById(R.id.level_1_text);
 			level2Text = (TextView)findViewById(R.id.level_2_text);
 		}
@@ -896,7 +853,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 		Tracker.enterOnPause(this);
 		super.onPause();
 		System.out.println("onPause");
-		if (mSearchText == null || mSearchText.equals(""))
+		if (mSearchText == null || mSearchText.isEmpty())
 			savePosition();
 		
 		if (isFinishing())
@@ -933,8 +890,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 			mDb.close();
 		} catch (Exception e) {
 			Logger.logError(e);			
-		};
-		mListHandler = null;
+		}
+        mListHandler = null;
 		mAdapter = null;
 		mBookshelfSpinner = null;
 		mBookshelfAdapter = null;
@@ -956,7 +913,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	private void initBookshelfSpinner() {
 		// Setup the Bookshelf Spinner 
 		mBookshelfSpinner = (Spinner) findViewById(R.id.bookshelf_name);
-		mBookshelfAdapter = new ArrayAdapter<String>(this, R.layout.spinner_frontpage);
+		mBookshelfAdapter = new ArrayAdapter<>(this, R.layout.spinner_frontpage);
 		mBookshelfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mBookshelfSpinner.setAdapter(mBookshelfAdapter);
 		
@@ -983,7 +940,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 		// the state has been restored. 
 		mBookshelfSpinner.setSelection(bspos);
 		
-		/**
+		/*
 		 * This is fired whenever a bookshelf is selected. It is also fired when the 
 		 * page is loaded with the default (or current) bookshelf.
 		 */
@@ -1055,7 +1012,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 
 		i = mMenuHandler.addItem(menu, MNU_SORT, R.string.sort_and_style_ellipsis, android.R.drawable.ic_menu_sort_alphabetically);
 		i.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-			;
+
 		//mMenuHandler.addItem(menu, MNU_EDIT_STYLE, R.string.edit_style, android.R.drawable.ic_menu_manage);
 
 		mMenuHandler.addItem(menu, MNU_EXPAND, R.string.menu_sort_by_author_expanded, R.drawable.ic_menu_expand);
@@ -1080,7 +1037,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	 */
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		if (mMenuHandler != null && !mMenuHandler.onMenuItemSelected(this, featureId, item)) {
+		if (mMenuHandler != null && !mMenuHandler.onMenuItemSelected(this, item)) {
 			switch(item.getItemId()) {
 
 			case MNU_SORT:
@@ -1325,10 +1282,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 
 	/**
 	 * Add a radio box to the sort options dialogue.
-	 * 
-	 * @param sortDialog
-	 * @param group
-	 * @param style
 	 */
 	private void makeRadio (final AlertDialog sortDialog, final LayoutInflater inf, RadioGroup group, final BooklistStyle style) {
 		View v = inf.inflate(R.layout.booklist_style_menu_radio, null);
@@ -1354,10 +1307,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 
 	/**
 	 * Add a text box to the sort options dialogue.
-	 * 
-	 * @param sortDialog
-	 * @param stringId
-	 * @param listener
 	 */
 	private void makeText (final LinearLayout parent, final LayoutInflater inf, final int stringId, OnClickListener listener) {
 		TextView view = (TextView)inf.inflate(R.layout.booklist_style_menu_text, null);

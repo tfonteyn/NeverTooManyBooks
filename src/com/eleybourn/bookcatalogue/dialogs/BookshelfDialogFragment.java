@@ -24,6 +24,7 @@ import static com.eleybourn.bookcatalogue.BookDetailsAbstract.BOOKSHELF_SEPERATO
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -37,7 +38,6 @@ import android.widget.LinearLayout;
 
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.compat.BookCatalogueDialogFragment;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
@@ -45,7 +45,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  * 
  * @author pjw
  */
-public class BookshelfDialogFragment extends BookCatalogueDialogFragment {
+public class BookshelfDialogFragment extends DialogFragment {
 	/** ID passed by caller. Can be 0, will be passed back in event */
 	private int mDialogId;
 	/** Book ID */
@@ -61,7 +61,7 @@ public class BookshelfDialogFragment extends BookCatalogueDialogFragment {
 	 * @author pjw
 	 */
 	public interface OnBookshelfCheckChangeListener {
-		public void onBookshelfCheckChanged(int dialogId, BookshelfDialogFragment dialog, boolean checked, String shelf, String textList, String encodedList);
+		void onBookshelfCheckChanged(int dialogId, BookshelfDialogFragment dialog, boolean checked, String shelf, String textList, String encodedList);
 	}
 
 	/**
@@ -99,8 +99,7 @@ public class BookshelfDialogFragment extends BookCatalogueDialogFragment {
 
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final View root = inflater.inflate(R.layout.bookshelf_dialog, null);
-        return root;
+        return inflater.inflate(R.layout.bookshelf_dialog, null);
     }
 
 	/**
@@ -143,13 +142,9 @@ public class BookshelfDialogFragment extends BookCatalogueDialogFragment {
     	try {
         	final View rootView = getView();
 
-    		if (mRowId == null) {
-    			bookshelves_for_book = db.fetchAllBookshelves();
-    		} else {
-    			bookshelves_for_book = db.fetchAllBookshelves(mRowId);
-    		}
-    	
-    		// Handle the OK button
+			bookshelves_for_book = db.fetchAllBookshelves(mRowId);
+
+			// Handle the OK button
     		Button button = (Button) rootView.findViewById(R.id.bookshelf_dialog_button);
     		button.setOnClickListener(new View.OnClickListener() {
     			@Override
@@ -169,7 +164,7 @@ public class BookshelfDialogFragment extends BookCatalogueDialogFragment {
     				boolean checked = false;
     				String db_bookshelf = bookshelves_for_book.getString(bookshelves_for_book.getColumnIndex(CatalogueDBAdapter.KEY_BOOKSHELF)).trim();
     				String db_encoded_bookshelf = Utils.encodeListItem(db_bookshelf, BOOKSHELF_SEPERATOR);
-    				if (shelves.indexOf(BOOKSHELF_SEPERATOR + db_encoded_bookshelf + BOOKSHELF_SEPERATOR) > -1) {
+    				if (shelves.contains(BOOKSHELF_SEPERATOR + db_encoded_bookshelf + BOOKSHELF_SEPERATOR)) {
     					checked = true;
     				}
     				cb.setChecked(checked);
@@ -184,9 +179,7 @@ public class BookshelfDialogFragment extends BookCatalogueDialogFragment {
     						String encoded_name = Utils.encodeListItem(name, BOOKSHELF_SEPERATOR);
     						// If box is checked, then we just append to list
     						if (cb.isChecked()) {
-    							String curr = mCurrText;
-    							String list = mCurrList;
-    							if (mCurrText == null || mCurrText.equals("")) {
+    							if (mCurrText == null || mCurrText.isEmpty()) {
     								mCurrText = name;
     								mCurrList = encoded_name;
     							} else {
@@ -197,28 +190,28 @@ public class BookshelfDialogFragment extends BookCatalogueDialogFragment {
     							// Get the underlying list
     							ArrayList<String> shelves = Utils.decodeList(mCurrList, BOOKSHELF_SEPERATOR);
     							// Start a new list
-    							String newList = "";
-    							String newText = "";
+								StringBuilder newList = new StringBuilder();
+								StringBuilder newText = new StringBuilder();
     							for(String s : shelves) {
     								// If item in underlying list is non-blank...
-    								if (s != null && !s.equals("")) {
+    								if (s != null && !s.isEmpty()) {
     									// If item in underlying list does not match...
     									if (!s.equalsIgnoreCase(name)) {
     										// Encode item
     										String item = Utils.encodeListItem(s, BOOKSHELF_SEPERATOR);
     										// Append to list (or set to only element if list empty)
-    										if (newList.equals("")) {
-    											newList = Utils.encodeListItem(s, BOOKSHELF_SEPERATOR);
-    											newText = s;
+    										if (newList.length() == 0) {
+    											newList.append(Utils.encodeListItem(s, BOOKSHELF_SEPERATOR));
+    											newText.append(s);
     										} else {
-    											newList += BOOKSHELF_SEPERATOR + item;
-    											newText += ", " + s;
+    											newList.append(BOOKSHELF_SEPERATOR).append(item);
+    											newText.append(", ").append(s);
     										}
     									}
     								}
     							}
-    							mCurrList = newList;
-    							mCurrText = newText;
+    							mCurrList = newList.toString();
+    							mCurrText = newText.toString();
     						}
     						((OnBookshelfCheckChangeListener)getActivity()).onBookshelfCheckChanged(
     								mDialogId, 

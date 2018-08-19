@@ -38,20 +38,20 @@ import org.xml.sax.Attributes;
  */
 public class XmlFilter {
 	/** The tag for this specific filter */
-	String mTagName = null;
+	private final String mTagName;
 	/** A hashtable to ensure that there are no more than one sub-filter per tag at a given level */
-	Hashtable<String, XmlFilter> mSubFilterHash = new Hashtable<String, XmlFilter>();
+    private final Hashtable<String, XmlFilter> mSubFilterHash = new Hashtable<>();
 	/** List of sub-filters for this filter */
-	ArrayList<XmlFilter> mSubFilters = new ArrayList<XmlFilter>();
+    private final ArrayList<XmlFilter> mSubFilters = new ArrayList<>();
 	/** Action to perform, if any, when the associated tag is started */
-	XmlHandler mStartAction = null;
+    private XmlHandler mStartAction = null;
 	/** Optional parameter put in context before action is called */
-	Object mStartArg = null;
+    private Object mStartArg = null;
 	
 	/** Action to perform, if any, when the associated tag is finished */
-	XmlHandler mEndAction = null;
+    private XmlHandler mEndAction = null;
 	/** Optional parameter put in context before action is called */
-	Object mEndArg = null;
+    private Object mEndArg = null;
 
 	/** Interface definition for filter handlers */
 	public interface XmlHandler {
@@ -70,11 +70,11 @@ public class XmlFilter {
 	 *
 	 */
 	public static class ElementContext {
-		public String uri;
-		public String localName;
-		public String name;
-		public Attributes attributes;
-		public String preText;
+		public final String uri;
+		public final String localName;
+		public final String name;
+		public final Attributes attributes;
+		public final String preText;
 		public String body;
 		public XmlFilter filter;
 		public ElementContext(String uri, String localName, String name, Attributes attributes, String preText) {
@@ -103,14 +103,14 @@ public class XmlFilter {
 	 *
 	 * @return		Boolean indicating it matches.
 	 */
-	public boolean matches(String tag) {
+	private boolean matches(String tag) {
 		return mTagName.equalsIgnoreCase(tag);
 	}
 	
 	/**
 	 * Find a sub-filter for the passed context.
 	 * Currently just used local_name from the context.
-	 * 
+	 *
 	 * @param context
 	 * @return
 	 */
@@ -132,7 +132,7 @@ public class XmlFilter {
 	}
 	/**
 	 * Called when associated tag is started.
-	 * 
+	 *
 	 * @param context
 	 */
 	public void processStart(ElementContext context) {
@@ -143,7 +143,7 @@ public class XmlFilter {
 	}
 	/**
 	 * Called when associated tag is finished.
-	 * 
+	 *
 	 * @param context
 	 */
 	public void processEnd(ElementContext context) {
@@ -154,12 +154,11 @@ public class XmlFilter {
 	}
 	/**
 	 * Get the tag that this filter will match
-	 * 
-	 * @return
 	 */
 	public String getTagName() {
 		return mTagName;
 	}
+
 	/**
 	 * Set the action to perform when the tag associated with this filter is finished.
 	 * 
@@ -241,7 +240,7 @@ public class XmlFilter {
 	 * 
 	 * @param root		Root XmlFilter object.
 	 * @param depth		Recursion depth
-	 * @param filters	Names of tags to add to tree, if not present. 
+	 * @param iter		Names of tags to add to tree, if not present.
 	 *
 	 * @return			The filter matching the final tag name passed.
 	 */

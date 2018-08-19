@@ -22,10 +22,10 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.SubMenu;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.SubMenu;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
@@ -145,13 +145,12 @@ public class MenuHandler {
 	/**
 	 * Handle the default menu items
 	 * 
-	 * @param a				Calling activity
-	 * @param featureId		
-	 * @param item			The item selected
+	 * @param a		Calling activity
+	 * @param item	The item selected
 	 * 
 	 * @return		True, if handled
 	 */
-	public boolean onMenuItemSelected(Activity a, int featureId, MenuItem item) {
+	public boolean onMenuItemSelected(Activity a, MenuItem item) {
 		switch(item.getItemId()) {
 		case MNU_ITM_ADD_BOOK_MANUAL:
 			createBook(a);
@@ -218,7 +217,7 @@ public class MenuHandler {
 	 * Load the Admin Activity
 	 */
 	private void adminPage(Activity a) {
-		Intent i = new Intent(BookCatalogueApp.context, AdministrationFunctions.class);
+		Intent i = new Intent(BookCatalogueApp.getAppContext(), AdministrationFunctions.class);
 		i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 		a.startActivityForResult(i, UniqueId.ACTIVITY_ADMIN);
 	}
@@ -227,7 +226,7 @@ public class MenuHandler {
 	 * Load the Bookshelves Activity
 	 */
 	private void bookshelvesPage(Activity a) {
-		Intent i = new Intent(BookCatalogueApp.context, Bookshelf.class);
+		Intent i = new Intent(BookCatalogueApp.getAppContext(), Bookshelf.class);
 		i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 		a.startActivityForResult(i, UniqueId.ACTIVITY_BOOKSHELF);
 	}
@@ -236,7 +235,7 @@ public class MenuHandler {
 	 * Load the About Activity
 	 */
 	private void aboutPage(Activity a) {
-		Intent i = new Intent(BookCatalogueApp.context, AdministrationAbout.class);
+		Intent i = new Intent(BookCatalogueApp.getAppContext(), AdministrationAbout.class);
 		i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 		a.startActivityForResult(i, UniqueId.ACTIVITY_ABOUT);
 	}
@@ -245,7 +244,7 @@ public class MenuHandler {
 	 * Load the Donate Activity
 	 */
 	private void donatePage(Activity a) {
-		Intent i = new Intent(BookCatalogueApp.context, AdministrationDonate.class);
+		Intent i = new Intent(BookCatalogueApp.getAppContext(), AdministrationDonate.class);
 		i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 		a.startActivityForResult(i, UniqueId.ACTIVITY_DONATE);
 	}
@@ -254,7 +253,7 @@ public class MenuHandler {
 	 * Load the Main Menu Activity
 	 */
 	private void helpPage(Activity a) {
-		Intent i = new Intent(BookCatalogueApp.context, Help.class);
+		Intent i = new Intent(BookCatalogueApp.getAppContext(), Help.class);
 		i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 		a.startActivityForResult(i, UniqueId.ACTIVITY_HELP);
 	}

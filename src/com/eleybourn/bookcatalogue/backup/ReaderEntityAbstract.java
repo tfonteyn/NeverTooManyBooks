@@ -103,7 +103,7 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
 	 */
 	private static class BufferedReaderNoClose extends BufferedReader
     {
-        public BufferedReaderNoClose(Reader in, int flags) {
+        BufferedReaderNoClose(Reader in, int flags) {
 			super(in, flags);
 		}
 

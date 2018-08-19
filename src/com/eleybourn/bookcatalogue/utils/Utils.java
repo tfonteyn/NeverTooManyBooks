@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.utils;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,6 +59,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -88,7 +88,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
@@ -98,12 +97,17 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
 import com.eleybourn.bookcatalogue.ThumbnailCacheWriterTask;
 import com.eleybourn.bookcatalogue.amazon.AmazonUtils;
+import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
 
 public class Utils {
+
+	/** FIXME: initBackground which is not functioning yet, done this way for easy future debug  */
+	private static final boolean BACKGROUND_ALLOWED = false;
+
 	// External DB for cover thumbnails
 	private boolean mCoversDbCreateFail = false;
 	/** Database is non-static member so we don't make it linger longer than necessary */
@@ -111,20 +115,20 @@ public class Utils {
 
 	// Used for formatting dates for sql; everything is assumed to be UTC, or converted to UTC since 
 	// UTC is the default SQLite TZ. 
-	static TimeZone tzUtc = TimeZone.getTimeZone("UTC");
+	private static final TimeZone tzUtc = TimeZone.getTimeZone("UTC");
 
 	// Used for date parsing and display
-	private static SimpleDateFormat mDateFullHMSSqlSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static final SimpleDateFormat mDateFullHMSSqlSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	static { mDateFullHMSSqlSdf.setTimeZone(tzUtc); }
-	private static SimpleDateFormat mDateFullHMSqlSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	private static final SimpleDateFormat mDateFullHMSqlSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	static { mDateFullHMSqlSdf.setTimeZone(tzUtc); }
-	private static SimpleDateFormat mDateSqlSdf = new SimpleDateFormat("yyyy-MM-dd");
+	private static final SimpleDateFormat mDateSqlSdf = new SimpleDateFormat("yyyy-MM-dd");
 	static { mDateSqlSdf.setTimeZone(tzUtc); }
-	static DateFormat mDateDispSdf = DateFormat.getDateInstance(java.text.DateFormat.MEDIUM);
-	private static SimpleDateFormat mLocalDateSqlSdf = new SimpleDateFormat("yyyy-MM-dd");
+	private static final DateFormat mDateDispSdf = DateFormat.getDateInstance(java.text.DateFormat.MEDIUM);
+	private static final SimpleDateFormat mLocalDateSqlSdf = new SimpleDateFormat("yyyy-MM-dd");
 	static { mLocalDateSqlSdf.setTimeZone(Calendar.getInstance().getTimeZone()); }
 
-	private static final ArrayList<SimpleDateFormat> mParseDateFormats = new ArrayList<SimpleDateFormat>();
+	private static final ArrayList<SimpleDateFormat> mParseDateFormats = new ArrayList<>();
 	static {
 		final boolean isEnglish = (Locale.getDefault().getLanguage().equals(Locale.ENGLISH.getLanguage()));
 		addParseDateFormat(!isEnglish, "dd-MMM-yyyy HH:mm:ss");
@@ -168,10 +172,10 @@ public class Utils {
 	//public static final boolean USE_BARCODE = false;
 
 	/**
-	 * Add a format to the parser list; if nedEnglish is set, also add the localized english version
-	 * 
-	 * @param needEnglish
-	 * @param format
+	 * Add a format to the parser list
+	 *
+	 * @param needEnglish   if set, also add the localized english version
+	 * @param format        date format to add
 	 */
 	private static void addParseDateFormat(boolean needEnglish, String format) {
 		mParseDateFormats.add(new SimpleDateFormat(format));
@@ -249,22 +253,24 @@ public class Utils {
 
 	static public ArrayUtils<Author> getAuthorUtils() {
 		if (mAuthorUtils == null) {
-			mAuthorUtils = new ArrayUtils<Author>(new Utils.Factory<Author>(){
+			mAuthorUtils = new ArrayUtils<>(new Utils.Factory<Author>() {
 				@Override
 				public Author get(String source) {
 					return new Author(source);
-				}});			
+				}
+			});
 		}
 		return mAuthorUtils;
 	}
 
 	static public ArrayUtils<Series> getSeriesUtils() {
 		if (mSeriesUtils == null) {
-			mSeriesUtils = new ArrayUtils<Series>(new Utils.Factory<Series>(){
+			mSeriesUtils = new ArrayUtils<>(new Utils.Factory<Series>() {
 				@Override
 				public Series get(String source) {
 					return new Series(source);
-				}});
+				}
+			});
 		}
 		return mSeriesUtils;
 	}
@@ -309,7 +315,7 @@ public class Utils {
 	 * 
 	 * This is used to build text lists separated by 'delim'.
 	 * 
-	 * @param s		String to convert
+	 * @param sa	String to convert
 	 * @return		Converted string
 	 */
 	static String encodeList(ArrayList<String> sa, char delim) {
@@ -331,7 +337,7 @@ public class Utils {
 
 	static public class ArrayUtils<T> {
 
-		Factory<T> mFactory;
+		final Factory<T> mFactory;
 
 		ArrayUtils(Factory<T> factory) {
 			mFactory = factory;
@@ -346,7 +352,7 @@ public class Utils {
 		 * 
 		 * This is used to build text lists separated by 'delim'.
 		 * 
-		 * @param s		String to convert
+		 * @param sa	String to convert
 		 * @return		Converted string
 		 */
 		public String encodeList(ArrayList<T> sa, char delim) {
@@ -374,7 +380,7 @@ public class Utils {
 		 */
 		public ArrayList<T> decodeList(String s, char delim, boolean allowBlank) {
 			StringBuilder ns = new StringBuilder();
-			ArrayList<T> list = new ArrayList<T>();
+			ArrayList<T> list = new ArrayList<>();
 			if (s == null)
 				return list;
 
@@ -408,7 +414,7 @@ public class Utils {
 				    default:
 				    	if (c == delim) {
 				    		String source = ns.toString();
-				    		if (allowBlank || source.length() > 0)
+				    		if (allowBlank || !source.isEmpty())
 						    	list.add(get(source));
 					    	ns.setLength(0);
 					    	break;
@@ -421,7 +427,7 @@ public class Utils {
 			}
 			// It's important to send back even an empty item.
     		String source = ns.toString();
-    		if (allowBlank || source.length() > 0)
+    		if (allowBlank || !source.isEmpty())
 		    	list.add(get(source));
 			return list;
 		}
@@ -430,12 +436,14 @@ public class Utils {
 	/**
 	 * Decode a text list separated by '|' and encoded by encodeListItem.
 	 * 
-	 * @param s		String representing the list
-	 * @return		Array of strings resulting from list
+	 * @param s		    String representing the list
+	 * @param delim     delimiter used in string s
+	 *
+	 * @return		    Array of strings resulting from list
 	 */
 	public static ArrayList<String> decodeList(String s, char delim) {
 		StringBuilder ns = new StringBuilder();
-		ArrayList<String> list = new java.util.ArrayList<String>();
+		ArrayList<String> list = new ArrayList<>();
 		boolean inEsc = false;
 		for (int i = 0; i < s.length(); i++){
 		    char c = s.charAt(i);
@@ -488,7 +496,7 @@ public class Utils {
 	 */
 	static public void appendOrAdd(Bundle values, String key, String value) {
 		String s = Utils.encodeListItem(value, '|');
-		if (!values.containsKey(key) || values.getString(key).length() == 0) {
+		if (!values.containsKey(key) || values.getString(key).isEmpty()) {
 			values.putString(key, s);
 		} else {
 			String curr = values.getString(key);
@@ -514,14 +522,14 @@ public class Utils {
 			return "";
 		}
 		// Turn the URL into an InputStream
-		InputStream in = null;
+		InputStream in;
 		try {
-            HttpGet httpRequest = null;
+            HttpGet httpRequest;
 
 			httpRequest = new HttpGet(u.toURI());
 
             HttpClient httpclient = new DefaultHttpClient();
-            HttpResponse response = (HttpResponse) httpclient.execute(httpRequest);
+            HttpResponse response = httpclient.execute(httpRequest);
 
             HttpEntity entity = response.getEntity();
             BufferedHttpEntity bufHttpEntity = new BufferedHttpEntity(entity);
@@ -535,10 +543,7 @@ public class Utils {
 			//c.setDoOutput(true);
 			//c.connect();
 			//in = c.getInputStream();
-		} catch (IOException e) {
-			Logger.logError(e);
-			return "";
-		} catch (URISyntaxException e) {
+		} catch (IOException | URISyntaxException e) {
 			Logger.logError(e);
 			return "";
 		}
@@ -569,7 +574,7 @@ public class Utils {
 
 			// Copy from input to temp file
 			byte[] buffer = new byte[65536];
-			int len1 = 0;
+			int len1;
 			while ( (len1 = in.read(buffer)) >= 0 ) {
 				f.write(buffer,0, len1);
 			}
@@ -577,22 +582,20 @@ public class Utils {
 			// All OK, so rename to real output file
 			temp.renameTo(out);
 			isOk = true;
-		} catch (FileNotFoundException e) {
-			Logger.logError(e);
 		} catch (IOException e) {
 			Logger.logError(e);
 		} finally {
 			// Delete temp file if it still exists
 			if (temp != null && temp.exists())
-				try { temp.delete(); } catch (Exception e) {};
-		}
+				try { temp.delete(); } catch (Exception ignored) {}
+        }
 		return isOk;
 	}
 
 	/**
 	 * Given a URL, get an image and return as a bitmap.
 	 * 
-	 * @param urlText			Image file URL
+	 * @param urlText	Image file URL
 	 *
 	 * @return	Downloaded bitmap
 	 */
@@ -603,7 +606,7 @@ public class Utils {
 	/**
 	 * Given byte array that represents an image (jpg, png etc), return as a bitmap.
 	 * 
-	 * @param bytes			Raw byte data
+	 * @param bytes		Raw byte data
 	 *
 	 * @return	bitmap
 	 */
@@ -621,7 +624,7 @@ public class Utils {
 	/**
 	 * Given a URL, get an image and return as a byte array.
 	 * 
-	 * @param urlText			Image file URL
+	 * @param urlText	Image file URL
 	 *
 	 * @return	Downloaded byte[]
 	 */
@@ -636,7 +639,7 @@ public class Utils {
 		}
 		// Request it from the network
 		HttpURLConnection c;
-		InputStream in = null;
+		InputStream in;
 		try {
 			c = (HttpURLConnection) u.openConnection();
 			c.setConnectTimeout(30000);
@@ -704,9 +707,9 @@ public class Utils {
 	 * Utility routine to get the data from a URL. Makes sure timeout is set to avoid application
 	 * stalling.
 	 * 
-	 * @param url		URL to retrieve
+	 * @param url	URL to retrieve
+	 *
 	 * @return
-	 * @throws UnknownHostException 
 	 */
 	static public InputStream getInputStream(URL url) throws UnknownHostException {
 		
@@ -786,7 +789,7 @@ public class Utils {
 					connInfo.is = new StatefulBufferedInputStream(connInfo.conn.getInputStream());
 
 					if ( c != null && c.getResponseCode() >= 300) {
-						Logger.logError(new RuntimeException("URL lookup failed: " + c.getResponseCode() + " "  + c.getResponseMessage() + ", URL: " + u.toString()));
+						Logger.logError(new RuntimeException("URL lookup failed: " + c.getResponseCode() + " "  + c.getResponseMessage() + ", URL: " + url.toString()));
 						return null;
 					}
 
@@ -797,8 +800,8 @@ public class Utils {
 					retries--;
 					if (retries-- == 0)
 						throw e;
-					try { Thread.sleep(500); } catch(Exception junk) {};
-				} catch (Exception e) {
+					try { Thread.sleep(500); } catch(Exception ignored) {}
+                } catch (Exception e) {
 					Logger.logError(e);
 					throw new RuntimeException(e);
 				}			
@@ -814,8 +817,8 @@ public class Utils {
 		if (connectivity != null) {
 			NetworkInfo[] info = connectivity.getAllNetworkInfo();
 			if (info != null) {
-				for (int i = 0; i < info.length; i++) {
-					if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+				for (NetworkInfo anInfo : info) {
+					if (anInfo.getState() == NetworkInfo.State.CONNECTED) {
 						return true;
 					}
 				}
@@ -969,7 +972,7 @@ public class Utils {
 		try {
 			if (b.containsKey(key)) {
 				String s = b.getString(key);
-				return (s != null && s.length() > 0);
+				return (s != null && !s.isEmpty());
 			} else {
 				return false;
 			}
@@ -1054,13 +1057,13 @@ public class Utils {
 	 * @param list		List to clean up
 	 */
 	public static <T extends ItemWithIdFixup> boolean pruneList(CatalogueDBAdapter db, ArrayList<T> list) {
-		Hashtable<String,Boolean> names = new Hashtable<String,Boolean>();
-		Hashtable<Long,Boolean> ids = new Hashtable<Long,Boolean>();
+		Hashtable<String,Boolean> names = new Hashtable<>();
+		Hashtable<Long,Boolean> ids = new Hashtable<>();
 
 		// We have to go forwards through the list because 'first item' is important,
 		// but we also can't delete things as we traverse if we are going forward. So
 		// we build a list of items to delete.
-		ArrayList<Integer> toDelete = new ArrayList<Integer>();
+		ArrayList<Integer> toDelete = new ArrayList<>();
 
 		for(int i = 0; i < list.size(); i++) {
 			T item = list.get(i);
@@ -1095,14 +1098,13 @@ public class Utils {
 	 * bill <-- delete
 	 * bill(1)
 	 * 
-	 * @param list
 	 */
 	public static boolean pruneSeriesList(ArrayList<Series> list) {
-		ArrayList<Series> toDelete = new ArrayList<Series>();
-		Hashtable<String, Series> index = new Hashtable<String, Series> ();
+		ArrayList<Series> toDelete = new ArrayList<>();
+		Hashtable<String, Series> index = new Hashtable<>();
 
 		for(Series s: list) {
-			final boolean emptyNum = s.num == null || s.num.trim().equals("");
+			final boolean emptyNum = s.num == null || s.num.trim().isEmpty();
 			final String lcName = s.name.trim().toLowerCase();
 			final boolean inNames = index.containsKey(lcName);
 			if (!inNames) {
@@ -1116,7 +1118,7 @@ public class Utils {
 				} else {
 					// See if the one in 'index' also has a num
 					Series orig = index.get(lcName);
-					if (orig.num == null || orig.num.trim().equals("")) {
+					if (orig.num == null || orig.num.trim().isEmpty()) {
 						// Replace with this one, and mark orig for delete
 						index.put(lcName, s);
 						toDelete.add(orig);
@@ -1142,19 +1144,18 @@ public class Utils {
 	/**
 	 * Convert a array of objects to a string.
 	 * 
-	 * @param <T>
 	 * @param a		Array
 	 * @return		Resulting string
 	 */
 	public static <T> String ArrayToString(ArrayList<T> a) {
-		String details = "";
+		StringBuilder details = new StringBuilder();
 
 		for (T i : a) {
 			if (details.length() > 0)
-				details += "|";
-			details += Utils.encodeListItem(i.toString(), '|');			
+				details.append("|");
+			details.append(Utils.encodeListItem(i.toString(), '|'));
 		}
-		return details;
+		return details.toString();
 	}
 	
 	// TODO: Make sure all URL getters use this if possible.
@@ -1166,42 +1167,21 @@ public class Utils {
 			url = new URL(path);
 			parser = factory.newSAXParser();
 			parser.parse(Utils.getInputStream(url), handler);
-			// Dont bother catching general exceptions, they will be caught by the caller.
-		} catch (MalformedURLException e) {
+			// Don't bother catching general exceptions, they will be caught by the caller.
+		} catch (ParserConfigurationException | IOException | SAXException e) {
 			String s = "unknown";
-			try { s = e.getMessage(); } catch (Exception e2) {};
-			Logger.logError(e, s);
-		} catch (ParserConfigurationException e) {
-			String s = "unknown";
-			try { s = e.getMessage(); } catch (Exception e2) {};
-			Logger.logError(e, s);
-		} catch (SAXException e) {
-			String s = e.getMessage(); // "unknown";
-			try { s = e.getMessage(); } catch (Exception e2) {};
-			Logger.logError(e, s);
-		} catch (java.io.IOException e) {
-			String s = "unknown";
-			try { s = e.getMessage(); } catch (Exception e2) {};
-			Logger.logError(e, s);
+			try { s = e.getMessage(); } catch (Exception ignored) {}
+            Logger.logError(e, s);
 		}
 	}
 
 	/**
 	 * Shrinks the image in the passed file to the specified dimensions, and places the image
-	 * in the passed view. The bitmap is returned.
-	 * 
-	 * @param file
-	 * @param destView
-	 * @param maxWidth
-	 * @param maxHeight
-	 * @param exact
-	 * 
-	 * @return
+	 * in the passed view.
+	 *
+	 * @return  The bitmap, or null
 	 */
 	public static Bitmap fetchFileIntoImageView(File file, ImageView destView, int maxWidth, int maxHeight, boolean exact) {
-
-		Bitmap bm = null;					// resultant Bitmap (which we will return) 
-
 		// Get the file, if it exists. Otherwise set 'help' icon and exit.
 		if (!file.exists()) {
 			if (destView != null)
@@ -1209,22 +1189,20 @@ public class Utils {
 			return null;
 		}
 
-		bm = shrinkFileIntoImageView(destView, file.getPath(), maxWidth, maxHeight, exact);
-
-		return bm;
+		return shrinkFileIntoImageView(destView, file.getPath(), maxWidth, maxHeight, exact);
 	}
 
 	/**
 	 * Construct the cache ID for a given thumbnail spec.
 	 * 
 	 * NOTE: Any changes to the resulting name MUST be reflect in CoversDbHelper.eraseCachedBookCover()
-	 * 
+	 *
 	 * @param hash
 	 * @param maxWidth
 	 * @param maxHeight
 	 * @return
 	 */
-	public static final String getCoverCacheId(final String hash, final int maxWidth, final int maxHeight) {
+	public static String getCoverCacheId(final String hash, final int maxWidth, final int maxHeight) {
 		// NOTE: Any changes to the resulting name MUST be reflect in CoversDbHelper.eraseCachedBookCover()
 		return hash + ".thumb." + maxWidth + "x" + maxHeight + ".jpg";
 	}
@@ -1264,14 +1242,14 @@ public class Utils {
 			try { bytes = coversDb.getFile(cacheId, expiry); } 
 				catch (Exception e) {
 					bytes = null;
-				};
-			if (bytes != null) {
+				}
+            if (bytes != null) {
 				try {
 					bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 				} catch (Exception e) {
 					bytes = null;
-				};
-			}
+				}
+            }
 		}
 
 		if (bm != null) {
@@ -1301,7 +1279,7 @@ public class Utils {
 	 * @param maxWidth			Max width of resulting image
 	 * @param maxHeight			Max height of resulting image
 	 * @param exact				Whether to fit dimensions exactly
-	 * @param bookId			ID of book to retrieve.
+	 * @param hash				ID of book to retrieve.
 	 * @param checkCache		Indicates if cache should be checked for this cover
 	 * @param allowBackground	Indicates if request can be put in background task.
 	 * 
@@ -1351,17 +1329,17 @@ public class Utils {
 	/**
 	 * Shrinks the passed image file spec into the specificed dimensions, and returns the bitmap. If the view 
 	 * is non-null, the image is also placed in the view.
-	 * 
+	 *
 	 * @param destView
 	 * @param filename
 	 * @param maxWidth
 	 * @param maxHeight
 	 * @param exact
-	 * 
+	 *
 	 * @return
 	 */
 	private static Bitmap shrinkFileIntoImageView(ImageView destView, String filename, int maxWidth, int maxHeight, boolean exact) {
-		Bitmap bm = null;
+		Bitmap bm;
 
 		// Read the file to get file size
 		BitmapFactory.Options opt = new BitmapFactory.Options();
@@ -1387,7 +1365,7 @@ public class Utils {
 		
 		// Note that inSampleSize seems to ALWAYS be forced to a power of 2, no matter what we
 		// specify, so we just work with powers of 2.
-		int idealSampleSize = (int)android.util.FloatMath.ceil(1/ratio); // This is the sample size we want to use
+		int idealSampleSize = (int)Math.ceil(1/ratio); // This is the sample size we want to use
 		// Get the nearest *bigger* power of 2.
 		int samplePow2 = (int)Math.pow(2, Math.ceil(Math.log(idealSampleSize)/Math.log(2)));
 		
@@ -1439,7 +1417,7 @@ public class Utils {
 		}
 	}
 
-	/**
+	/*
 	 * Check if phone has a network connection
 	 * 
 	 * @return
@@ -1460,8 +1438,6 @@ public class Utils {
 	 * Does not work....
 	 * 
 	 * ENHANCE: Find a way to make network host checks possible
-	 * 
-	 * @return
 	 */
 	/*
 	public static boolean hostIsAvailable(Context ctx, String host) {
@@ -1498,15 +1474,7 @@ public class Utils {
 	            |  (addrBytes[0] & 0xff);
 	    return addr;
 	}
-	
-	/**
-	 * Format the given string using the passed paraeters.
-	 */
-	public static String format(Context c, int id, Object...objects) {
-		String f = c.getString(id);
-		return String.format(f, objects);
-	}
-	
+
 	/**
 	 * Get the 'covers' DB from external storage.
 	 */
@@ -1593,52 +1561,83 @@ public class Utils {
 		return String.format(sizeFmt,space);		
 	}
 
-	/**
-	 * Set the passed Activity background based on user preferences
+	/*
+	 * Set the background based on user preferences
 	 */
-	public static void initBackground(int bgResource, Activity a, boolean bright) {
-		initBackground(bgResource, a.findViewById(R.id.root), bright);
+	public static void initBackground(Activity a) {
+		initBackground(a,false);
 	}
-
-    public static void initBackground(int bgResource, SherlockFragment f, boolean bright) {
-		initBackground(bgResource, f.getView().findViewById(R.id.root), bright);
+	public static void initBackground(Fragment f) {
+		initBackground(f.getActivity(), false);
 	}
+    public static void initBackground(Activity a, boolean bright) {
+        View root = a.findViewById(R.id.root);
+        initBackground(root,bright);
+    }
 
-	/**
-	 * Set the passed Activity background based on user preferences
-	 */
-	public static void initBackground(int bgResource, Activity a, int rootId, boolean bright) {
-		initBackground(bgResource, a.findViewById(rootId), bright);
-	}
-	
-	public static void initBackground(int bgResource, View root, boolean bright) {
-		try {
-			final int backgroundColor = BookCatalogueApp.context.getResources().getColor(R.color.background_grey);
-
-			if (BookCatalogueApp.isBackgroundImageDisabled()) {
-				root.setBackgroundColor(backgroundColor);
-				if (root instanceof ListView) {
-					setCacheColorHintSafely((ListView)root, backgroundColor);				
-				}
-			} else {
+    //FIXME
+	public static void initBackground(View root, boolean bright) {
+		if (BACKGROUND_ALLOWED) {
+			try {
+				if (BookCatalogueApp.isBackgroundImageDisabled()) {
+                    final int backgroundColor = BookCatalogueApp.getBackgroundColor();
+					System.out.println("initBackground: 0x" + Integer.toHexString(backgroundColor));
+					root.setBackgroundColor(backgroundColor);
+					if (root instanceof ListView) {
+						setCacheColorHintSafely((ListView)root, backgroundColor);
+					}
+				} else {
+					System.out.println("initBackground: drawable");
 				if (root instanceof ListView) {
 					ListView lv = ((ListView)root);
-					setCacheColorHintSafely(lv, 0x00000000);				
+					setCacheColorHintSafely(lv, Color.TRANSPARENT);
 				}
-				//Drawable d = cleanupTiledBackground(a.getResources().getDrawable(bgResource));
-				Drawable d = makeTiledBackground(bright);
-
-				root.setBackgroundDrawable(d);
-			}
+				root.setBackground(makeTiledBackground(bright));
+				}
 			root.invalidate();
-		} catch (Exception e) {
-            // Usually the errors result from memory problems; do a gc just in case.
-            System.gc();
-			// This is a purely cosmetic function; just log the error
-			Logger.logError(e, "Error setting background");
+			} catch (Exception e) {
+				// Usually the errors result from memory problems; do a gc just in case.
+				System.gc();
+				// This is a purely cosmetic function; just log the error
+				Logger.logError(e, "Error setting background");
+			}
 		}
 	}
-	
+
+	// FIXME
+	public static void initBackground(View root, ListView lv, View header) {
+		if (BACKGROUND_ALLOWED) {
+			Drawable d = null;
+			try {
+				if (!BookCatalogueApp.isBackgroundImageDisabled()) {
+					d = makeTiledBackground(false);
+				}
+			} catch (Exception e) {
+				// Ignore...if just a coat of paint
+			}
+
+			if (BooklistPreferencesActivity.isBackgroundFlat() || d == null) {
+				final int backgroundColor = BookCatalogueApp.getBackgroundColor();
+				lv.setBackgroundColor(backgroundColor);
+				setCacheColorHintSafely(lv, backgroundColor);
+				if (d == null) {
+					root.setBackgroundColor(backgroundColor);
+					header.setBackgroundColor(backgroundColor);
+				} else {
+					root.setBackground(d);
+					header.setBackground(d);
+				}
+			} else {
+				setCacheColorHintSafely(lv, Color.TRANSPARENT);
+				// ICS does not cope well with transparent ListView backgrounds with a 0 cache hint, but it does
+				// seem to cope with a background image on the ListView itself.
+				root.setBackground(d);
+//				root.setBackgroundDrawable(Utils.cleanupTiledBackground(getResources().getDrawable(R.drawable.bc_background_gradient_dim)));
+				header.setBackgroundColor(Color.TRANSPARENT);
+			}
+			root.invalidate();
+		}
+	}
 	/**
  	 * Reuse of bitmaps in tiled backgrounds is a known cause of problems:
      *		http://stackoverflow.com/questions/4077487/background-image-not-repeating-in-android-layout
@@ -1650,7 +1649,6 @@ public class Utils {
 	 * 
 	 * The main problem with this approach is that the style is defined in code rather than XML.
 	 *
-	 * @param a			Activity context
 	 * @param bright	Flag indicating if background should be 'bright'
 	 * 
 	 * @return			Background Drawable
@@ -1659,8 +1657,8 @@ public class Utils {
 		// Storage for the layers
 		Drawable[] drawables = new Drawable[2];
 		// Get the BG image, put in tiled drawable
-		Bitmap b = BitmapFactory.decodeResource(BookCatalogueApp.context.getResources(), R.drawable.books_bg);
-		BitmapDrawable bmD = new BitmapDrawable(BookCatalogueApp.context.getResources(), b);
+		Bitmap b = BitmapFactory.decodeResource(BookCatalogueApp.getAppContext().getResources(), R.drawable.books_bg);
+		BitmapDrawable bmD = new BitmapDrawable(BookCatalogueApp.getAppContext().getResources(), b);
 		bmD.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);
 		// Add to layers
 		drawables[0] = bmD;
@@ -1774,10 +1772,7 @@ public class Utils {
 	}
 
 	/**
-	 * Ensure that next up/down/left/right View is visible for all sub-views of the 
-	 * passed view.
-	 * 
-	 * @param root
+	 * Ensure that next up/down/left/right View is visible for all sub-views of the passed view.
 	 */
 	public static void fixFocusSettings(View root) {
 		final INextView getDown = new INextView() {
@@ -1856,7 +1851,7 @@ public class Utils {
 	 * @return	Hashtable of descendants with ID != NO_ID
 	 */
 	private static Hashtable<Integer,View> getViews(View v) {
-		Hashtable<Integer,View> vh = new Hashtable<Integer,View>();
+		Hashtable<Integer,View> vh = new Hashtable<>();
 		getViews(v, vh);
 		return vh;
 	}
@@ -1885,7 +1880,7 @@ public class Utils {
 		
 	}
 	
-	/**
+	/*
 	 * Debug utility to dump an entire view hierarchy to the output.
 	 * 
 	 * @param depth
@@ -1911,11 +1906,11 @@ public class Utils {
 	
 	/**
 	 * Passed date components build a (partial) SQL format date string.
-	 * 
+	 *
 	 * @param year
 	 * @param month
 	 * @param day
-	 * 
+	 *
 	 * @return		Formatted date, eg. '2011-11-01' or '2011-11'
 	 */
 	public static String buildPartialDate(Integer year, Integer month, Integer day) {
@@ -1947,9 +1942,8 @@ public class Utils {
 	/**
 	 * Set the relevant fields in a BigDateDialog
 	 * 
-	 * @param dialog		Dialog to set
-	 * @param current		Current value (may be null)
-	 * @param listener		Listener to be called on dialg completion.
+	 * @param dialog	Dialog to set
+	 * @param current	Current value (may be null)
 	 */
 	public static void prepareDateDialogFragment(PartialDatePickerFragment dialog, Object current) {
 		String dateString = current == null ? "" : current.toString();
@@ -1971,7 +1965,7 @@ public class Utils {
 
 //	/**
 //	 * Build a new BigDateDialog and return it.
-//	 * 
+//	 *
 //	 * @param context
 //	 * @param titleId
 //	 * @param listener
@@ -1987,7 +1981,7 @@ public class Utils {
 	/**
 	 * Utility routine to get an author list from the intent extras
 	 * 
-	 * @param i		Intent with author list
+	 * @param b		Bundle with author list
 	 * @return		List of authors
 	 */
 	@SuppressWarnings("unchecked")
@@ -1998,7 +1992,7 @@ public class Utils {
 	/**
 	 * Utility routine to get a series list from the intent extras
 	 * 
-	 * @param i		Intent with series list
+	 * @param b		Bundle with series list
 	 * @return		List of series
 	 */
 	@SuppressWarnings("unchecked")
@@ -2034,6 +2028,8 @@ public class Utils {
 		    	// Get app info
 		        PackageManager manager = context.getPackageManager(); 
 		        PackageInfo appInfo = manager.getPackageInfo( context.getPackageName(), PackageManager.GET_SIGNATURES);
+
+		        StringBuilder signedBy = new StringBuilder();
 		        // Each sig is a PK of the signer:
 		        //     https://groups.google.com/forum/?fromgroups=#!topic/android-developers/fPtdt6zDzns
 		        for(Signature sig: appInfo.signatures) {
@@ -2041,29 +2037,29 @@ public class Utils {
 	                    final MessageDigest sha1 = MessageDigest.getInstance("MD5");
 	                    final byte[] publicKey = sha1.digest(sig.toByteArray());
 	                    // Turn the hex bytes into a more traditional MD5 string representation.
-	                    final StringBuffer hexString = new StringBuffer();
+	                    final StringBuilder hexString = new StringBuilder();
 	                    boolean first = true;
-	                    for (int i = 0; i < publicKey.length; i++)
-	                    {
-	                        if (!first) {
-	                        	hexString.append(":");
-	                        } else {
-	                        	first = false;
-	                        }
-	                        String byteString = Integer.toHexString(0xFF & publicKey[i]);
-	                        if (byteString.length() == 1) 
-	                        	hexString.append("0");
-	                        hexString.append(byteString);
-	                    }
+						for (byte aPublicKey : publicKey) {
+							if (!first) {
+								hexString.append(":");
+							} else {
+								first = false;
+							}
+							String byteString = Integer.toHexString(0xFF & aPublicKey);
+							if (byteString.length() == 1)
+								hexString.append("0");
+							hexString.append(byteString);
+						}
 	                    String fingerprint = hexString.toString();
 
 	                    // Append as needed (theoretically could have more than one sig */
-	                    if (mSignedBy == null)
-	                    	mSignedBy = fingerprint;
+	                    if (signedBy.length() == 0)
+							signedBy.append(fingerprint);
 	                    else
-	                    	mSignedBy += "/" + fingerprint;
+							signedBy.append("/").append(fingerprint);
 			        }
 		        }
+				mSignedBy = signedBy.toString();
 
 		    } catch (NameNotFoundException e) {
 				// Default if package not found...kind of unlikely
@@ -2087,7 +2083,7 @@ public class Utils {
 	 */
 	public static boolean stringToBoolean(String s, boolean emptyIsFalse) {
 		boolean v;
-		if (s == null || s.equals(""))
+		if (s == null || s.isEmpty())
 			if (emptyIsFalse) {
 				v = false;
 			} else {
@@ -2099,29 +2095,25 @@ public class Utils {
 			v = false;
 		else {
 			s = s.trim().toLowerCase();
-			if (s.equals("t"))
-				v = true;
-			else if (s.equals("f"))
-				v = false;
-			else if (s.equals("true"))
-				v = true;
-			else if (s.equals("false"))
-				v = false;
-			else if (s.equals("y"))
-				v = true;
-			else if (s.equals("n"))
-				v = false;
-			else if (s.equals("yes"))
-				v = true;
-			else if (s.equals("no"))
-				v = false;
-			else {
-				try {
-					Integer i = Integer.parseInt(s);
-					return i != 0;
-				} catch (Exception e) {
-					throw new RuntimeException("Not a valid boolean value");						
-				}
+			switch (s) {
+				case "y":
+				case "yes":
+				case "t":
+				case "true":
+					v = true;
+					break;
+				case "n":
+				case "no":
+				case "f":
+				case "false":
+					v = false;
+					break;
+				default:
+					try {
+						return Integer.parseInt(s) != 0;
+					} catch (Exception e) {
+						throw new RuntimeException("Not a valid boolean value");
+					}
 			}
 		}
 		return v;

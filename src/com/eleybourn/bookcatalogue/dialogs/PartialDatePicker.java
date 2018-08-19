@@ -23,7 +23,6 @@ import java.util.Calendar;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
@@ -34,7 +33,6 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -52,7 +50,7 @@ import com.eleybourn.bookcatalogue.R;
  */
 public class PartialDatePicker extends AlertDialog {
 	/** Calling context */
-	private Context mContext;
+	private final Context mContext;
 
 	/** Currently displayed year; null if empty/invalid */
 	private Integer mYear;
@@ -65,29 +63,28 @@ public class PartialDatePicker extends AlertDialog {
 	private OnDateSetListener mListener;
 
 	/** Local ref to month spinner */
-	private Spinner mMonthSpinner;
+	private final Spinner mMonthSpinner;
 	/** Local ref to day spinner */
-	private Spinner mDaySpinner;
+	private final Spinner mDaySpinner;
 	/** Local ref to day spinner adapter */
-	private ArrayAdapter<String> mDayAdapter;
+	private final ArrayAdapter<String> mDayAdapter;
 	/** Local ref to year text view */
-	private EditText mYearView;
-	
+	private final EditText mYearView;
+
 	/**
 	 * Listener to receive notifications when dialog is closed by any means.
-	 * 
+	 *
 	 * @author pjw
 	 */
-	protected static interface OnDateSetListener {
-		public void onDateSet(PartialDatePicker dialog, Integer year, Integer month, Integer day);
-		public void onCancel(PartialDatePicker dialog);
+	protected interface OnDateSetListener {
+		void onDateSet(PartialDatePicker dialog, Integer year, Integer month, Integer day);
+		void onCancel(PartialDatePicker dialog);
 	}
 
 	/**
 	 * Constructor
 	 * 
 	 * @param context		Calling context
-	 * @param listener		Listener for dialog events
 	 */
 	protected PartialDatePicker(Context context) {
 		this(context, null, null, null);
@@ -97,7 +94,6 @@ public class PartialDatePicker extends AlertDialog {
 	 * Constructor
 	 * 
 	 * @param context		Calling context
-	 * @param listener		Listener for dialog events
 	 * @param year			Starting year
 	 * @param month			Starting month
 	 * @param day			Starting day
@@ -127,12 +123,12 @@ public class PartialDatePicker extends AlertDialog {
 		mDaySpinner = (Spinner)root.findViewById(R.id.day);
 
 		// Create month spinner adapter
-		ArrayAdapter<String> monthAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item);
+		ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
 		monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mMonthSpinner.setAdapter(monthAdapter);
 
 		// Create day spinner adapter
-		mDayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item);
+		mDayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
 		mDayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mDaySpinner.setAdapter(mDayAdapter);
 
@@ -201,10 +197,9 @@ public class PartialDatePicker extends AlertDialog {
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
 			}});
-		
 
 		// Handle YEAR +
-		((Button)root.findViewById(R.id.plus)).setOnClickListener(new View.OnClickListener() {
+		root.findViewById(R.id.plus).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (mYear != null) {
@@ -216,7 +211,7 @@ public class PartialDatePicker extends AlertDialog {
 		);
 
 		// Handle YEAR -
-		((Button)root.findViewById(R.id.minus)).setOnClickListener(new View.OnClickListener() {
+		root.findViewById(R.id.minus).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (mYear != null) {
@@ -234,7 +229,7 @@ public class PartialDatePicker extends AlertDialog {
 		);
 
 		// Handle MONTH +
-		((Button)root.findViewById(R.id.plusMonth)).setOnClickListener(new View.OnClickListener() {
+		root.findViewById(R.id.plusMonth).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				int pos = (mMonthSpinner.getSelectedItemPosition() + 1) % mMonthSpinner.getCount();
@@ -243,7 +238,7 @@ public class PartialDatePicker extends AlertDialog {
 		);
 
 		// Handle MONTH -
-		((Button)root.findViewById(R.id.minusMonth)).setOnClickListener(new View.OnClickListener() {
+		root.findViewById(R.id.minusMonth).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				int pos = (mMonthSpinner.getSelectedItemPosition() - 1 + mMonthSpinner.getCount()) % mMonthSpinner.getCount();
@@ -252,7 +247,7 @@ public class PartialDatePicker extends AlertDialog {
 		);
 
 		// Handle DAY +
-		((Button)root.findViewById(R.id.plusDay)).setOnClickListener(new View.OnClickListener() {
+		root.findViewById(R.id.plusDay).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				int pos = (mDaySpinner.getSelectedItemPosition() + 1) % mDaySpinner.getCount();
@@ -261,7 +256,7 @@ public class PartialDatePicker extends AlertDialog {
 		);
 
 		// Handle DAY -
-		((Button)root.findViewById(R.id.minusDay)).setOnClickListener(new View.OnClickListener() {
+		root.findViewById(R.id.minusDay).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				int pos = (mDaySpinner.getSelectedItemPosition() - 1 + mDaySpinner.getCount()) % mDaySpinner.getCount();
@@ -270,7 +265,7 @@ public class PartialDatePicker extends AlertDialog {
 		);
 
 		// Handle OK
-		((Button)root.findViewById(R.id.ok)).setOnClickListener(new View.OnClickListener() {
+		root.findViewById(R.id.ok).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// Ensure the date is 'hierarchically valid'; require year, if month is non-null, require month if day non-null
@@ -280,31 +275,30 @@ public class PartialDatePicker extends AlertDialog {
 					Toast.makeText(mContext, R.string.if_month_is_specified_year_must_be, Toast.LENGTH_LONG).show();					
 				} else {
 					if (mListener != null)
-						mListener.onDateSet(PartialDatePicker.this, mYear, mMonth, mDay);					
+						mListener.onDateSet(PartialDatePicker.this, mYear, mMonth, mDay);
 				}
 			}}
 		);
 
 		// Handle Cancel
-		((Button)root.findViewById(R.id.cancel)).setOnClickListener(new View.OnClickListener() {
+		root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (mListener != null)
-					mListener.onCancel(PartialDatePicker.this);				
+					mListener.onCancel(PartialDatePicker.this);
 			}}
 		);
 
-		// Handle any other form of cancellation
-		this.setOnCancelListener(new OnCancelListener() {
+		// setting the setOnCancelListener is not permissable in at least Android 5+
+//		// Handle any other form of cancellation
+//		this.setOnCancelListener(new OnCancelListener() {
+//
+//			@Override
+//			public void onCancel(DialogInterface arg0) {
+//				if (mListener != null)
+//					mListener.onCancel(PartialDatePicker.this);
+//			}});
 
-			@Override
-			public void onCancel(DialogInterface arg0) {
-				if (mListener != null)
-					mListener.onCancel(PartialDatePicker.this);				
-			}});
-
-		// We are all set up!
-		
 		// Set the initial date
 		setDate(year, month, day);
 	}
@@ -330,7 +324,7 @@ public class PartialDatePicker extends AlertDialog {
 		mYearView.setText(yearVal);
 		Editable e = mYearView.getEditableText();
 		Selection.setSelection(e, e.length(), e.length());
-		if (yearVal.equals("")) {
+		if (yearVal.isEmpty()) {
 			mYearView.requestFocus();
 			getWindow().setSoftInputMode (WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 		}
@@ -369,8 +363,7 @@ public class PartialDatePicker extends AlertDialog {
 		// Try to convert to integer
 		String val = mYearView.getText().toString();
 		try {
-			int year = Integer.parseInt(val);
-			mYear = year;
+			mYear = Integer.parseInt(val);
 		} catch (Exception e) {
 			mYear = null;
 		}
@@ -475,7 +468,7 @@ public class PartialDatePicker extends AlertDialog {
 				if (daySave > totalDays)
 					daySave = totalDays;
 				mDaySpinner.setSelection(daySave);
-			}			
+			}
 		}
 	}
 
@@ -499,7 +492,7 @@ public class PartialDatePicker extends AlertDialog {
         /* Default order is {year, month, date} so if that's the order then
          * do nothing.
          */
-        if ((order[0] == DateFormat.YEAR) && (order[1] == DateFormat.MONTH)) {
+        if ((order[0] == 'y') && (order[1] == 'M')) {
             return;
         }
         
@@ -515,12 +508,16 @@ public class PartialDatePicker extends AlertDialog {
         parent.removeAllViews();
         // Re-add in the correct order.
         for (char c : order) {
-            if (c == DateFormat.DATE) {
-                parent.addView(d);
-            } else if (c == DateFormat.MONTH) {
-                parent.addView(m);
-            } else {
-                parent.addView (y);
+            switch (c) {
+                case 'd':
+                    parent.addView(d);
+                    break;
+                case 'M':
+                    parent.addView(m);
+                    break;
+                default:
+                    parent.addView(y);
+                    break;
             }
         }
     }

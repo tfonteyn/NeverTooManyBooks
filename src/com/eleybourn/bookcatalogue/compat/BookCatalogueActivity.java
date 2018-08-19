@@ -1,11 +1,11 @@
 package com.eleybourn.bookcatalogue.compat;
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 
 import java.util.Locale;
@@ -14,13 +14,13 @@ import java.util.Locale;
  * Class introduced to reduce the future pain when we remove sherlock (once we no longer 
  * support Android 2.x), and potentially to make it easier to support two versions.
  * 
- * This activity inherits from SherlockFragmentActivity which is just a subclass of
- * the compatibility library FragmentActivity which should be fairly compatible with
+ * This activity inherits from SherlockActivity which is just a subclass of
+ * the compatibility library Activity which should be fairly compatible with
  * Activity in API 11+.
  * 
  * @author pjw
  */
-public class BookCatalogueActivity extends SherlockFragmentActivity {
+public class BookCatalogueActivity extends Activity {
     /** Last locale used so; cached so we can check if it has genuinely changed */
     private Locale mLastLocale = BookCatalogueApp.getPreferredLocale();
 
@@ -28,7 +28,7 @@ public class BookCatalogueActivity extends SherlockFragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActionBar bar = getSupportActionBar();
+        ActionBar bar = getActionBar();
         if (bar != null) {
         	// Show home, use logo (bigger) and show title
         	bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO | ActionBar.DISPLAY_SHOW_TITLE);
@@ -52,10 +52,10 @@ public class BookCatalogueActivity extends SherlockFragmentActivity {
 		
 	}
 
-    @Override
     /**
      * When resuming, check if locale has changed and reload activity if so.
      */
+    @Override
     protected void onResume() {
         reloadIfLocaleChanged();
         super.onResume();

@@ -6,16 +6,16 @@ import java.util.Date;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.Exporter;
-import com.eleybourn.bookcatalogue.compat.BookCatalogueDialogFragment;
 import com.eleybourn.bookcatalogue.utils.Logger;
 
-public class ExportTypeSelectionDialogFragment extends BookCatalogueDialogFragment {
+public class ExportTypeSelectionDialogFragment extends DialogFragment {
 	private int mDialogId;
 	private File mFile;
 
@@ -24,8 +24,8 @@ public class ExportTypeSelectionDialogFragment extends BookCatalogueDialogFragme
 	 * 
 	 * @author pjw
 	 */
-	public static interface OnExportTypeSelectionDialogResultListener {
-		public void onExportTypeSelectionDialogResult(int dialogId, BookCatalogueDialogFragment dialog, ExportSettings settings);
+	public interface OnExportTypeSelectionDialogResultListener {
+		void onExportTypeSelectionDialogResult(int dialogId, DialogFragment dialog, ExportSettings settings);
 	}
 
 	public static class ExportSettings {
@@ -38,7 +38,7 @@ public class ExportTypeSelectionDialogFragment extends BookCatalogueDialogFragme
 	 * Constructor
 	 * 
 	 * @param dialogId	ID passed by caller. Can be 0, will be passed back in event
-	 * @param titleId	Title to display
+	 * @param file      the file
 	 *
 	 * @return			Created fragment
 	 */
@@ -63,7 +63,7 @@ public class ExportTypeSelectionDialogFragment extends BookCatalogueDialogFragme
 		
 	}
 
-	private OnClickListener mRowClickListener = new OnClickListener() {
+	private final OnClickListener mRowClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			handleClick(v);
@@ -71,9 +71,8 @@ public class ExportTypeSelectionDialogFragment extends BookCatalogueDialogFragme
 
 	/**
 	 * Utility routine to set the OnClickListener for a given view item.
-	 * 
+	 * @param root      root view
 	 * @param id		Sub-View ID
-	 * @param l			Listener
 	 */
 	private void setOnClickListener(View root, int id) {
 		View v = root.findViewById(id);
@@ -104,7 +103,7 @@ public class ExportTypeSelectionDialogFragment extends BookCatalogueDialogFragme
     	try {
     		if (v.getId() == R.id.advanced_row) {
     			ExportAdvancedDialogFragment frag = ExportAdvancedDialogFragment.newInstance(1, mFile);
-    			frag.show(getActivity().getSupportFragmentManager(), null);
+    			frag.show(getActivity().getFragmentManager(), null);
     		} else {
         		OnExportTypeSelectionDialogResultListener a = (OnExportTypeSelectionDialogResultListener)getActivity();
         		if (a != null) {
