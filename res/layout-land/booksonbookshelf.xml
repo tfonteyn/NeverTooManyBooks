@@ -18,7 +18,8 @@
             android:id="@+id/bookshelf_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/bookshelf_label"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
             android:paddingBottom="2dp" />
 
         <TextView

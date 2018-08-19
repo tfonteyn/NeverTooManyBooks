@@ -382,10 +382,7 @@ public class BookCatalogueApp extends Application {
             throw new NullPointerException("See log for PackageManager.NameNotFoundException");
         }
 
-        Bundle bundle = ai.metaData;
-		String value = bundle.getString(name);
-		System.out.println("METADATA: " + name + " : " + value);
-		return value;
+		return ai.metaData.getString(name);
 	}
 
 	/**

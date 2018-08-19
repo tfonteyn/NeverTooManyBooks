@@ -970,16 +970,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 				// Do Nothing				
 			}
 		});
-		
-		ImageView bookshelfDown = (ImageView) findViewById(R.id.bookshelf_down);
-		bookshelfDown.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				mBookshelfSpinner.performClick();
-				return;
-			}
-		});
-		
+
 		TextView bookshelfNum = (TextView) findViewById(R.id.bookshelf_num);
 		if (bookshelfNum != null) {
 			bookshelfNum.setOnClickListener(new OnClickListener() {
