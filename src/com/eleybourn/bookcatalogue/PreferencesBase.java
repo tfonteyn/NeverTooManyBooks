@@ -33,7 +33,7 @@ import com.eleybourn.bookcatalogue.properties.Properties;
 import com.eleybourn.bookcatalogue.utils.Logger;
 
 /**
- * Base class to display simple preference-based optins to the user.
+ * Base class to display simple preference-based options to the user.
  * 
  * @author Philip Warner
  */
@@ -48,7 +48,7 @@ public abstract class PreferencesBase extends BookCatalogueActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
-			System.out.println("In onCreate in PreferencesBase");
+			//System.out.println("In onCreate in PreferencesBase");
 			setContentView(this.getLayout());
 			final BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
 
@@ -66,7 +66,7 @@ public abstract class PreferencesBase extends BookCatalogueActivity {
 	}
 
 	/**
-	 * Utility routine to setup a checkobox based on a preference.
+	 * Utility routine to setup a checkbox based on a preference.
 	 * 
 	 * @param prefs		Preferences to use
 	 * @param cbId		CheckBox ID from XML file

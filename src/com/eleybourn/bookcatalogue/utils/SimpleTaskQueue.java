@@ -20,15 +20,15 @@
 
 package com.eleybourn.bookcatalogue.utils;
 
-import java.util.ArrayList;
-import java.util.Stack;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import android.os.Handler;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
+
+import java.util.ArrayList;
+import java.util.Stack;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Class to perform time consuming but light-weight tasks in a worker thread. Users of this
@@ -90,7 +90,6 @@ public class SimpleTaskQueue {
 		void run(SimpleTaskContext taskContext) throws Exception;
 		/**
 		 * Method called in UI thread after the background task has finished.
-		 * @param e TODO
 		 */
 		void onFinish(Exception e);
 	}

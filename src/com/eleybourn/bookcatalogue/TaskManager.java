@@ -20,11 +20,11 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.util.ArrayList;
-
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch.Message;
 import com.eleybourn.bookcatalogue.utils.Logger;
+
+import java.util.ArrayList;
 
 
 /**
@@ -447,7 +447,9 @@ public class TaskManager {
 	 * Cancel all tasks and close dialogs then cleanup; if no tasks running, just close dialogs and cleanup
 	 */
 	protected void close() {
-		System.out.println("DBG: Task Manager close requested");
+		if (BuildConfig.DEBUG) {
+			System.out.println("DBG: Task Manager close requested");
+		}
 		mIsClosing = true;
 		synchronized(mTasks) {
 			for(TaskInfo t : mTasks) {

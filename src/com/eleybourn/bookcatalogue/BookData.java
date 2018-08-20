@@ -19,8 +19,6 @@
  */
 package com.eleybourn.bookcatalogue;
 
-import java.util.ArrayList;
-
 import android.database.Cursor;
 import android.os.Bundle;
 
@@ -29,6 +27,8 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.util.ArrayList;
 
 /**
  * Represents the underlying data for a book.
