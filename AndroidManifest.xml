@@ -6,6 +6,12 @@
     android:versionCode="179"
     android:versionName="5.2.2">
 
+    <!-- 2018-08-20: https://developer.android.com/about/dashboards/
+        6+      ->  66.5%
+        5.1+    ->  82.6%
+        5.0+    ->  86.8%
+        4.4+    ->  95.9%   but 5.0 has "Material" ...
+    -->
     <!-- Android 5.0; 8.1 -->
     <uses-sdk
         android:minSdkVersion="21"
