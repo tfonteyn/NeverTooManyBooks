@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.eleybourn.bookcatalogue"
     android:installLocation="auto"
     android:versionCode="179"
@@ -21,8 +22,11 @@
         android:icon="@drawable/ic_launcher4"
         android:label="@string/app_name"
         android:logo="@drawable/ic_launcher4"
-        android:theme="@android:style/Theme.Material">
+        android:theme="@android:style/Theme.Material"
+        android:allowBackup="true"
+        >
 
+        <!-- application developer keys -->
         <meta-data android:name="bookcatalogue.amazon.appkey" android:value="my_amazon_key" />
         <meta-data android:name="bookcatalogue.goodreads.dev_key" android:value="my_goodreads_key" />
         <meta-data android:name="bookcatalogue.goodreads.dev_secret" android:value="my_goodreads_secret" />
@@ -111,6 +115,7 @@
         <activity android:name=".AdministrationAbout" />
         <activity android:name=".AdministrationDonate" />
         <activity android:name=".AdministrationFunctions" />
+
         <activity
             android:name=".goodreads.GoodreadsRegister"
             android:label="@string/goodreads"
@@ -119,7 +124,7 @@
             android:name=".goodreads.GoodreadsAuthorizationActivity"
             android:launchMode="singleInstance">
 
-            <!-- RELEASE: Work out which of these filters we dont need! -->
+            <!-- RELEASE: Work out which of these filters we don't need! -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
