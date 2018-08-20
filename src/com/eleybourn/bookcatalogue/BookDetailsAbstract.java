@@ -1,15 +1,5 @@
 package com.eleybourn.bookcatalogue;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -39,6 +29,16 @@ import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract class for creating activities containing book details. 
@@ -522,11 +522,8 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	}
 	
 	/**
-	 * Populate Author field by data from {@link #mAuthorList}.
+	 * Populate Author field
 	 * If there is no data shows "Set author" text defined in resources.
-	 * <p>
-	 * Be sure that you get {@link #mAuthorList}. See {@link #populateFieldsFromDb(Long)}
-	 * for example.
 	 */
 	protected void populateAuthorListField() {
 		String newText = mEditManager.getBookData().getAuthorTextShort();
@@ -537,11 +534,8 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	}
 	
 	/**
-	 * Populate Series field by data from {@link #mSeriesList}.
+	 * Populate Series field by data
 	 * If there is no data shows "Set series..." text defined in resources.
-	 * <p>
-	 * Be sure that you get {@link #mSeriesList}. See {@link #populateFieldsFromDb(Long)}
-	 * for example.
 	 */
 	protected void populateSeriesListField() {
 		String newText;
@@ -614,7 +608,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	 */
 	private void invalidateCachedThumbnail() {
 		final Long rowId = mEditManager.getBookData().getRowId();
-		if (rowId != null && rowId != 0) {
+		if (rowId != 0) {
 			try {
 				String hash = mDbHelper.getBookUuid(rowId);			
 				Utils u = new Utils();
@@ -698,7 +692,6 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	 * Populate all fields (See {@link #mFields} ) except of authors and series fields with 
 	 * data from database. To set authors and series fields use {@link #populateAuthorListField()}
 	 * and {@link #populateSeriesListField()} methods.<br>
-	 * Also sets {@link #mAuthorList} and {@link #mSeriesList} values with data from database.
 	 * Data defined by its _id in db.
 	 */
 	protected void populateFieldsFromBook(BookData book) {
