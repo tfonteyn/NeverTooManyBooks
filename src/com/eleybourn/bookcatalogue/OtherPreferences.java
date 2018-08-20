@@ -54,6 +54,9 @@ public class OtherPreferences extends PreferencesBase {
 	/** List of supported locales */
 	private static final ItemEntries<String> mInterfaceLanguageListItems = getLanguageListItems();
 
+	/** List of supported themes */
+	private static final ItemEntries<Integer> mAppThemeItems = getThemeListItems();
+
     /** Booklist Compatibility mode property values */
 	public static final int BOOKLIST_GENERATE_OLD_STYLE = 1;
 	public static final int BOOKLIST_GENERATE_FLAT_TRIGGER = 2;
@@ -119,12 +122,21 @@ public class OtherPreferences extends PreferencesBase {
 		.setNameResourceId(R.string.disable_background_image)
 		.setGroup(PropertyGroup.GRP_USER_INTERFACE) )
 
-    .add(new StringListProperty(mInterfaceLanguageListItems, BookCataloguePreferences.PREF_APP_LOCALE, PropertyGroup.GRP_USER_INTERFACE, R.string.preferred_interface_language)
+    .add(new StringListProperty(mInterfaceLanguageListItems, BookCataloguePreferences.PREF_APP_LOCALE,
+            PropertyGroup.GRP_USER_INTERFACE, R.string.preferred_interface_language)
             .setDefaultValue(null)
             .setPreferenceKey(BookCataloguePreferences.PREF_APP_LOCALE)
             .setGlobal(true)
             .setWeight(200)
             .setGroup(PropertyGroup.GRP_USER_INTERFACE))
+
+	.add(new IntegerListProperty(mAppThemeItems, BookCataloguePreferences.PREF_APP_THEME,
+            PropertyGroup.GRP_USER_INTERFACE, R.string.preferred_theme)
+			.setDefaultValue(THEME_MATERIAL)
+			.setPreferenceKey(BookCataloguePreferences.PREF_APP_THEME)
+			.setGlobal(true)
+			.setWeight(200)
+			.setGroup(PropertyGroup.GRP_USER_INTERFACE))
 
 
     .add(new BooleanProperty(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_INVALID)
@@ -177,8 +189,6 @@ public class OtherPreferences extends PreferencesBase {
 
 	/**
 	 * Get the value of Book list compatibility mode setting
-	 *
-	 * @return
 	 */
 	public static int getBooklistCompatibleMode() {
 		IntegerListProperty prop = (IntegerListProperty) mProperties.get(BookCataloguePreferences.PREF_BOOKLIST_GENERATION_MODE);
@@ -217,7 +227,7 @@ public class OtherPreferences extends PreferencesBase {
 	 * Display current preferences and set handlers to catch changes.
 	 */
 	public void setupViews(final BookCataloguePreferences prefs, Properties globalProps) {
-		// Add the locally constructed porperties
+		// Add the locally constructed properties
 		for(Property p: mProperties)
 			globalProps.add(p);
 	}
@@ -246,13 +256,29 @@ public class OtherPreferences extends PreferencesBase {
 	}
 
 	/**
+	 * Format the list of themes
+	 *
+	 * @return  List of preference themes
+	 */
+	private static ItemEntries<Integer> getThemeListItems() {
+		ItemEntries<Integer> items = new ItemEntries<>();
+
+		String[] themeList = BookCatalogueApp.getResourceStringArray(R.array.supported_themes);
+		for (int i=0; i < themeList.length; i++) {
+			items.add(i, R.string.single_string, themeList[i]);
+		}
+		return items;
+	}
+
+	/**
 	 * Listener for Locale changes; update list and maybe reload
 	 */
 	private final BookCatalogueApp.OnLocaleChangedListener mLocaleListener = new BookCatalogueApp.OnLocaleChangedListener() {
 		@Override
 		public void onLocaleChanged() {
 			updateLanguageListItems();
-			reloadIfLocaleChanged();
+			updateLocaleIfChanged();
+			restartActivityIfNeeded();
 		}
 	};
 

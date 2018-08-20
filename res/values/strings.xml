@@ -1019,13 +1019,20 @@ and you can edit the book via the options menu using the menu button or overflow
 			</p>
 		]]>
     </string>
-    <string name="generic_task_info" translatable="false">Task ID %1$d, Queued at %2$s</string>
-    <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
-    <string name="title_reorder">a|A|an|An|the|The</string>
+
     <!-- End: Added/Updated in 5.2.2 -->
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
-
+    <string name="generic_task_info" translatable="false">Task ID %1$d, Queued at %2$s</string>
+    <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
+    <string name="title_reorder">a|A|an|An|the|The</string>
+    <string name="preferred_theme">Preferred Interface Theme</string>
+    <string name="single_string" translatable="false">%1s</string> <!-- needed for string based ItemEntries properties -->
+    <string-array
+        name="supported_themes">
+        <item>Dark</item>
+        <item>Light</item>
+    </string-array>
     <!-- End: Added/Updated in [Next Version] -->
 
 </resources>

@@ -34,6 +34,8 @@ public class BookCataloguePreferences {
 	public static final String PREF_LAST_BACKUP_FILE = "Backup.LastFile";
 	/** Preferred interface locale */
 	public static final String PREF_APP_LOCALE = "App.Locale";
+	/** Theme */
+	public static final String PREF_APP_THEME = "App.Theme";
 
 	/** Get startup activity preference */
 	public boolean getStartInMyBook() {
@@ -107,7 +109,7 @@ public class BookCataloguePreferences {
 		return m_prefs.edit();
 	}
 
-    /** Static preferenced object so that we can respond to events relating to changes */
+    /** Static preference object so that we can respond to events relating to changes */
     private static SharedPreferences mPrefs = null;
     /** Get (or create) the static shared preferences */
 	public static SharedPreferences getSharedPreferences() {
