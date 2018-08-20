@@ -33,7 +33,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
 import android.util.TypedValue;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
@@ -201,7 +200,7 @@ public class BookCatalogueApp extends Application {
 			mQueueManager = new BcQueueManager(this.getApplicationContext());
 
 		super.onCreate();
-		
+
 		// Watch the preferences and handle changes as necessary
 		//BookCataloguePreferences ap = getPreferences();
 		SharedPreferences p = BookCataloguePreferences.getSharedPreferences();
@@ -227,6 +226,7 @@ public class BookCatalogueApp extends Application {
 				}
 				applyPreferredLocaleIfNecessary(getBaseContext().getResources());
 				notifyLocaleChanged();
+
 			}
 		}
 	};
@@ -362,6 +362,17 @@ public class BookCatalogueApp extends Application {
 
 	/**
 	 * Wrapper to reduce explicit use of the 'context' member.
+	 *
+	 * @param resId		Resource ID
+	 *
+	 * @return			Localized resource string[]
+	 */
+	public static String[] getResourceStringArray(int resId) {
+		return getAppContext().getResources().getStringArray(resId);
+	}
+
+	/**
+	 * Wrapper to reduce explicit use of the 'context' member.
 	 * 
 	 * @param resId		Resource ID
 	 * 
@@ -372,7 +383,7 @@ public class BookCatalogueApp extends Application {
 	}
 
 	public static String getManifestString(String name) {
-        ApplicationInfo ai = null;
+        ApplicationInfo ai;
         try {
             ai = mInstance.getApplicationContext()
                     .getPackageManager()
