@@ -1,5 +1,25 @@
 package com.eleybourn.bookcatalogue.utils;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.scanner.ScannerManager;
+import com.eleybourn.bookcatalogue.scanner.ZxingScanner;
+import com.eleybourn.bookcatalogue.scanner.pic2shop.Scan;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,27 +37,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.widget.Toast;
-
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.scanner.ScannerManager;
-import com.eleybourn.bookcatalogue.scanner.ZxingScanner;
-import com.eleybourn.bookcatalogue.scanner.pic2shop.Scan;
-
 /**
- * Class to wrap common storage related funcions.
+ * Class to wrap common storage related functions.
+ *
+ * TODO: explicitly check/ask for needed permissions.
  * 
  * @author Philip Warner
  */
@@ -45,11 +48,12 @@ public class StorageUtils {
 	private static final String UTF8 = "utf8";
 	private static final int BUFFER_SIZE = 8192;
 
-	private static final String LOCATION = "bookCatalogue";
+	private static final String DIRECTORY_NAME = "bookCatalogue";
 	private static final String DATABASE_NAME = "book_catalogue";
 
-	private static final String EXTERNAL_FILE_PATH = Environment.getExternalStorageDirectory() + "/" + LOCATION;
-	private static final String ERRORLOG_FILE = EXTERNAL_FILE_PATH + "/error.log";
+	private static final String EXTERNAL_FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + DIRECTORY_NAME;
+	private static final String ERRORLOG_FILE = EXTERNAL_FILE_PATH + File.separator + "error.log";
+	private static String NOMEDIA_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + ".nomedia";
 
 	public static String getErrorLog() {
 		return ERRORLOG_FILE;
@@ -59,29 +63,43 @@ public class StorageUtils {
 		return DATABASE_NAME;
 	}
 
+    /**
+     * A .nomedia file will be created which will stop the thumbnails showing up in the gallery (thanks Brandon)
+     */
+    public static void createNoMediaFile() {
+        try {
+            boolean success = new File(NOMEDIA_FILE_PATH).createNewFile();
+            if (!success) {
+                throw new IOException("createNoMediaFile failed");
+            }
+        } catch (IOException e) {
+            Logger.logError(e);
+        }
+    }
+
 	public static File getSharedStorage() {
-		File dir = new File(StorageUtils.EXTERNAL_FILE_PATH);
+		File dir = new File(EXTERNAL_FILE_PATH);
 		dir.mkdir();
 		return dir;
 	}
 
 	public static String getSharedStoragePath() {
-		File dir = new File(StorageUtils.EXTERNAL_FILE_PATH);
+		File dir = new File(EXTERNAL_FILE_PATH);
 		dir.mkdir();
 		return dir.getAbsolutePath();
 	}
 
 	public static void backupDbFile(SQLiteDatabase db, String suffix) {
 		try {
-			final String fileName = LOCATION + suffix;
+			final String fileName = DIRECTORY_NAME + suffix;
 			java.io.InputStream dbOrig = new java.io.FileInputStream(db.getPath());
 			File dir = getSharedStorage();
 			// Path to the external backup
-			String fullFilename = dir.getPath() + "/" + fileName;
+			String fullFilename = dir.getPath() + File.separator + fileName;
 			//check if it exists
 			File existing = new File(fullFilename);
 			if (existing.exists()) {
-				String backupFilename = dir.getPath() + "/" + fileName + ".bak";
+				String backupFilename = dir.getPath() + File.separator + fileName + ".bak";
 				File backup = new File(backupFilename);
 				existing.renameTo(backup);
 			}
@@ -106,12 +124,8 @@ public class StorageUtils {
 	 * Make sure the external shared directory exists
 	 */
 	public static void initSharedDirectory() {
-		new File(StorageUtils.EXTERNAL_FILE_PATH + "/").mkdirs();
-		try {
-			new File(StorageUtils.EXTERNAL_FILE_PATH + "/.nomedia").createNewFile();
-		} catch (IOException e) {
-			Logger.logError(e);
-		}		
+		new File(EXTERNAL_FILE_PATH + File.separator).mkdirs();
+        createNoMediaFile();
 	}
 
 	/**
@@ -177,7 +191,7 @@ public class StorageUtils {
 				// Get the mount point
 				if (m.find()) {
 					// See if it has a bookCatalogue directory
-					File dir = new File(m.group(1) + "/bookCatalogue");
+					File dir = new File(m.group(1) + File.separator + DIRECTORY_NAME);
 					//info.append("       matched " + dir.getAbsolutePath() + "\n");
 					dirs.add(dir);
 				} else {
@@ -198,7 +212,7 @@ public class StorageUtils {
 		try {
 			String loc1 = System.getenv("EXTERNAL_STORAGE");
 			if (loc1 != null) {
-				File dir = new File(loc1 + "/bookCatalogue");
+				File dir = new File(loc1 + File.separator + DIRECTORY_NAME);
 				dirs.add(dir);
 				//info.append("Loc1 added " + dir.getAbsolutePath() + "\n");
 			} else {
@@ -207,7 +221,7 @@ public class StorageUtils {
 
 			String loc2 = System.getenv("SECONDARY_STORAGE");
 			if (loc2 != null && !loc2.equals(loc1)) {
-				File dir = new File(loc2 + "/bookCatalogue");
+				File dir = new File(loc2 + File.separator + DIRECTORY_NAME);
 				dirs.add(dir);
 				//info.append("Loc2 added " + dir.getAbsolutePath() + "\n");
 			} else {
@@ -264,7 +278,7 @@ public class StorageUtils {
 	static public boolean sdCardWritable() {
 		/* Test write to the SDCard */
 		try {
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(EXTERNAL_FILE_PATH + "/.nomedia"), UTF8), BUFFER_SIZE);
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(NOMEDIA_FILE_PATH), UTF8), BUFFER_SIZE);
 			out.write("");
 			out.close();
 			return true;
@@ -273,19 +287,19 @@ public class StorageUtils {
 		}		
 	}
 
-	private static final String[] mPurgeableFilePrefixes = new String[]{StorageUtils.LOCATION + "DbUpgrade", StorageUtils.LOCATION + "DbExport", "error.log", "tmp"};
-	private static final String[] mDebugFilePrefixes = new String[]{StorageUtils.LOCATION + "DbUpgrade", StorageUtils.LOCATION + "DbExport", "error.log", "export.csv"};
+	private static final String[] mPurgeableFilePrefixes = new String[]{DIRECTORY_NAME + "DbUpgrade", DIRECTORY_NAME + "DbExport", "error.log", "tmp"};
+	private static final String[] mDebugFilePrefixes = new String[]{DIRECTORY_NAME + "DbUpgrade", DIRECTORY_NAME + "DbExport", "error.log", "export.csv"};
 
 	/**
 	 * Collect and send com.eleybourn.bookcatalogue.debug info to a support email address. 
 	 * 
-	 * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MALNING LIST OR FORUM!
+	 * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MAILING LIST OR FORUM!
 	 */
 	public static void sendDebugInfo(Context context, CatalogueDBAdapter dbHelper) {
 		// Create a temp DB copy.
-		String tmpName = StorageUtils.LOCATION + "DbExport-tmp.db";
+		String tmpName = DIRECTORY_NAME + "DbExport-tmp.db";
 		dbHelper.backupDbFile(tmpName);
-		File dbFile = new File(StorageUtils.EXTERNAL_FILE_PATH + "/" + tmpName);
+		File dbFile = new File(EXTERNAL_FILE_PATH + File.separator + tmpName);
 		dbFile.deleteOnExit();
 		// setup the mail message
 		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
@@ -356,7 +370,7 @@ public class StorageUtils {
 		ArrayList<String> files = new ArrayList<>();
 		
 		// Find all files of interest to send
-		File dir = new File(StorageUtils.EXTERNAL_FILE_PATH);
+		File dir = new File(EXTERNAL_FILE_PATH);
 		try {
 			for (String name : dir.list()) {
 				boolean send = false;
@@ -372,7 +386,7 @@ public class StorageUtils {
 			// Build the attachment list
 			for (String file : files)
 			{
-				File fileIn = new File(StorageUtils.EXTERNAL_FILE_PATH + "/" + file);
+				File fileIn = new File(EXTERNAL_FILE_PATH + File.separator + file);
 				if (fileIn.exists() && fileIn.length() > 0) {
 					Uri u = Uri.fromFile(fileIn);
 					uris.add(u);
@@ -394,8 +408,8 @@ public class StorageUtils {
 	 * Cleanup any purgeable files.
 	 */
 	public static void cleanupFiles() {
-		if (StorageUtils.sdCardWritable()) {
-	        File dir = new File(StorageUtils.EXTERNAL_FILE_PATH);
+		if (sdCardWritable()) {
+	        File dir = new File(EXTERNAL_FILE_PATH);
 	        for (String name : dir.list()) {
 	        	boolean purge = false;
 	        	for(String prefix : mPurgeableFilePrefixes)
@@ -405,8 +419,11 @@ public class StorageUtils {
 	        		}
 	        	if (purge)
 		        	try {
-		        		File file = new File(StorageUtils.EXTERNAL_FILE_PATH + "/" + name);
-			        	file.delete();
+		        		File file = new File(EXTERNAL_FILE_PATH + File.separator + name);
+			        	boolean success = file.delete();
+			        	if (!success) {
+			        		Log.e("StorageUtils", "cleanupFiles failed to delete: " + file.getAbsolutePath());
+						}
 		        	} catch (Exception ignored) {
 		        	}
 	        }
@@ -418,12 +435,12 @@ public class StorageUtils {
 	 * @return	size, in bytes
 	 */
 	public static long cleanupFilesTotalSize() {
-		if (!StorageUtils.sdCardWritable())
+		if (!sdCardWritable())
 			return 0;
 
 		long totalSize = 0;
 
-		File dir = new File(StorageUtils.EXTERNAL_FILE_PATH);
+		File dir = new File(EXTERNAL_FILE_PATH);
         for (String name : dir.list()) {
         	boolean purge = false;
         	for(String prefix : mPurgeableFilePrefixes)
@@ -433,7 +450,7 @@ public class StorageUtils {
         		}
         	if (purge)
 	        	try {
-	        		File file = new File(StorageUtils.EXTERNAL_FILE_PATH + "/" + name);
+	        		File file = new File(EXTERNAL_FILE_PATH + File.separator + name);
 	        		totalSize += file.length();
 	        	} catch (Exception ignored) {
 	        	}

@@ -19,6 +19,49 @@
  */
 package com.eleybourn.bookcatalogue;
 
+import android.app.SearchManager;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteCursorDriver;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteDoneException;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQuery;
+import android.graphics.Bitmap;
+import android.provider.BaseColumns;
+import android.widget.ImageView;
+
+import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
+import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
+import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
+import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
+import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
+import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
+import com.eleybourn.bookcatalogue.database.SerializationUtils;
+import com.eleybourn.bookcatalogue.database.SqlStatementManager;
+import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.utils.TrackedCursor;
+import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.io.File;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_AUTHOR_NAME;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_BOOK;
@@ -50,49 +93,6 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOK_
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOK_LIST_STYLES;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOK_SERIES;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_SERIES;
-
-import java.io.File;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import android.app.SearchManager;
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.CursorIndexOutOfBoundsException;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteCursorDriver;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
-import android.database.sqlite.SQLiteDoneException;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteQuery;
-import android.graphics.Bitmap;
-import android.provider.BaseColumns;
-import android.widget.ImageView;
-
-import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
-import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
-import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
-import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
-import com.eleybourn.bookcatalogue.database.SerializationUtils;
-import com.eleybourn.bookcatalogue.database.SqlStatementManager;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
-import com.eleybourn.bookcatalogue.utils.Logger;
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.TrackedCursor;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Book Catalogue database access helper class. Defines the basic CRUD operations
@@ -995,12 +995,7 @@ public class CatalogueDBAdapter {
 			}
 			if (curVersion == 39) {
 				curVersion++;
-				try {
-					new File(StorageUtils.getSharedStoragePath() + "/.nomedia").createNewFile();
-				} catch (Exception e) {
-					// Don't care about this exception
-					Logger.logError(e);
-				}
+				StorageUtils.createNoMediaFile();
 			}
 			if (curVersion == 40) {
 				curVersion++;
