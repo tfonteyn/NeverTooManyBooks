@@ -20,13 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_READ;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_TITLE;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOKS;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -51,7 +44,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -85,6 +77,13 @@ import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.TrackedCursor;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_READ;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_TITLE;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOKS;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
