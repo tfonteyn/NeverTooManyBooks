@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.database.SQLException;
@@ -57,6 +55,8 @@ import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEditorListener;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.util.ArrayList;
 
 
 
@@ -289,7 +289,9 @@ public class BookEditFields extends BookDetailsAbstract
 		// Restore default visibility and hide unused/unwanted and empty fields
 		showHideFields(false);
 
-		System.out.println("BEF popF: " + (System.currentTimeMillis() - t0));
+        if (BuildConfig.DEBUG) {
+            System.out.println("BEF popF: " + (System.currentTimeMillis() - t0));
+        }
 	}
 	
 	/**
@@ -349,7 +351,9 @@ public class BookEditFields extends BookDetailsAbstract
 		tv.setFocusable(false);
 		// Set the colour to prevent flicker on click
 		tv.setTextColor(this.getResources().getColor(android.R.color.primary_text_dark_nodisable));
-		System.out.println("BEF bDesc: " + (System.currentTimeMillis() - t0));
+		if (BuildConfig.DEBUG) {
+			System.out.println("BEF bDesc: " + (System.currentTimeMillis() - t0));
+		}
 	}
 
 	private void clearOldInternalSpans(TextView tv) {

@@ -20,10 +20,6 @@
 
 package com.eleybourn.bookcatalogue.database;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.Date;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursorDriver;
@@ -32,6 +28,7 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteQuery;
 import android.graphics.Bitmap;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
@@ -43,6 +40,10 @@ import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.TrackedCursor;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.Date;
 
 /**
  * DB Helper for Covers DB on external storage.
@@ -158,7 +159,9 @@ public class CoversDbHelper {
 		}
 		synchronized(mInstanceCount) {
 			mInstanceCount++;
-			System.out.println("CovDBA instances: " + mInstanceCount);
+			if (BuildConfig.DEBUG) {
+				System.out.println("CovDBA instances: " + mInstanceCount);
+			}
 		}
 	}
 
@@ -348,7 +351,9 @@ public class CoversDbHelper {
 		mStatements.close();
 		synchronized(mInstanceCount) {
 			mInstanceCount--;
-			System.out.println("CovDBA instances: " + mInstanceCount);
+			if (BuildConfig.DEBUG) {
+				System.out.println("CovDBA instances: " + mInstanceCount);
+			}
 		}
 	}
 	

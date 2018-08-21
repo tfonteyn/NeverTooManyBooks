@@ -19,11 +19,11 @@
  */
 package com.eleybourn.bookcatalogue.debug;
 
-import java.util.Date;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.acra.ACRA;
 
-import com.eleybourn.bookcatalogue.utils.Utils;
+import java.util.Date;
 
 public class Tracker {
 
@@ -103,13 +103,7 @@ public class Tracker {
 	public static void exitOnSaveInstanceState(Object a) {
 		handleEvent(a,"OnSaveInstanceState", States.Exit);
 	}
-	public static void enterOnRestoreInstanceState(Object a) {
-		handleEvent(a,"OnRestoreInstanceState", States.Enter);		
-	}
-	public static void exitOnRestoreInstanceState(Object a) {
-		handleEvent(a,"OnRestoreInstanceState", States.Exit);		
-	}
-	
+
 	public static void handleEvent(Object o, String name, States type) {
 		Event e = new Event(o, name, type);
 		mEventBuffer[mNextEventBufferPos] = e;

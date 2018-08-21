@@ -19,12 +19,9 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupReader.BackupReaderListener;
 import com.eleybourn.bookcatalogue.backup.BackupWriter.BackupWriterListener;
@@ -36,6 +33,10 @@ import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTaskAbstract;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 
 /**
  * Class for public static methods relating to backup/restore
@@ -103,7 +104,9 @@ public class BackupManager {
 				BackupWriter wrt = null;
 
 				try {
-					System.out.println("Starting " + tempFile.getAbsolutePath());
+					if (BuildConfig.DEBUG) {
+						System.out.println("Starting " + tempFile.getAbsolutePath());
+					}
 					TarBackupContainer bkp = new TarBackupContainer(tempFile);
 					wrt = bkp.newWriter();
 
@@ -136,7 +139,9 @@ public class BackupManager {
 						}}, backupFlags, since);
 
 					if (fragment.isCancelled()) {
-						System.out.println("Cancelled " + resultingFile.getAbsolutePath());
+						if (BuildConfig.DEBUG) {
+							System.out.println("Cancelled " + resultingFile.getAbsolutePath());
+						}
 						if (tempFile.exists())
 							tempFile.delete();
 					} else {
@@ -144,7 +149,9 @@ public class BackupManager {
 							resultingFile.delete();
 						tempFile.renameTo(resultingFile);
 						mBackupOk = true;
-						System.out.println("Finished " + resultingFile.getAbsolutePath() + ", size = " + resultingFile.length());
+						if (BuildConfig.DEBUG) {
+							System.out.println("Finished " + resultingFile.getAbsolutePath() + ", size = " + resultingFile.length());
+						}
 					}
 				} catch (Exception e) {
 					Logger.logError(e);
@@ -200,7 +207,9 @@ public class BackupManager {
 			@Override
 			public void run(final SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
 				try {
-					System.out.println("Starting " + inputFile.getAbsolutePath());
+					if (BuildConfig.DEBUG) {
+						System.out.println("Starting " + inputFile.getAbsolutePath());
+					}
 					BackupReader rdr = BackupManager.readBackup(inputFile);
 					rdr.restore(new BackupReaderListener() {
 						@Override
@@ -221,7 +230,9 @@ public class BackupManager {
 					Logger.logError(e);
 					throw new RuntimeException("Error during restore", e);
 				}
-				System.out.println("Finished " + inputFile.getAbsolutePath() + ", size = " + inputFile.length());
+				if (BuildConfig.DEBUG) {
+					System.out.println("Finished " + inputFile.getAbsolutePath() + ", size = " + inputFile.length());
+				}
 			}
 		};
 		SimpleTaskQueueProgressFragment frag = SimpleTaskQueueProgressFragment.runTaskWithProgress(context,

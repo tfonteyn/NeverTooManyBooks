@@ -19,8 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -32,9 +30,12 @@ import android.os.Looper;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
+
+import java.util.ArrayList;
 
 /**
  * Fragment Class to wrap a trivial progress dialog around (generally) a single task.
@@ -403,7 +404,9 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
 		
 		// If no tasks left, exit
 		if (!mQueue.hasActiveTasks()) {
-			System.out.println("STQPF: Tasks finished while activity absent, closing");
+			if (BuildConfig.DEBUG) {
+				System.out.println("STQPF: Tasks finished while activity absent, closing");
+			}
 			dismiss();
 		}
 	}
@@ -490,7 +493,9 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
 	 * Refresh the dialog, or post a refresh to the UI thread
 	 */
 	private void requestUpdateProgress() {
-		System.out.println("STQPF: " + mMessage + " (" + mProgress + "/" + mMax + ")");
+		if (BuildConfig.DEBUG) {
+			System.out.println("STQPF: " + mMessage + " (" + mProgress + "/" + mMax + ")");
+		}
 		if (Thread.currentThread() == mHandler.getLooper().getThread()) {
 			updateProgress();
 		} else {

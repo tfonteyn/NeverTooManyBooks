@@ -20,6 +20,29 @@
 
 package com.eleybourn.bookcatalogue.goodreads.api;
 
+import android.os.Bundle;
+
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NetworkException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.api.SimpleXmlFilter.BuilderContext;
+import com.eleybourn.bookcatalogue.goodreads.api.SimpleXmlFilter.XmlListener;
+import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.ElementContext;
+import com.eleybourn.bookcatalogue.utils.Utils;
+
+import org.apache.http.client.methods.HttpGet;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
+
 import static com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.GOODREADS_API_ROOT;
 import static com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.ADDED;
 import static com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.AUTHORS;
@@ -50,28 +73,6 @@ import static com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler.Li
 import static com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.START;
 import static com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.TOTAL;
 import static com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.UPDATED;
-
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
-
-import org.apache.http.client.methods.HttpGet;
-
-import android.os.Bundle;
-
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NetworkException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
-import com.eleybourn.bookcatalogue.goodreads.api.SimpleXmlFilter.BuilderContext;
-import com.eleybourn.bookcatalogue.goodreads.api.SimpleXmlFilter.XmlListener;
-import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.ElementContext;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Class to implement the reviews.list api call. It queries based on the passed parameters and returns
@@ -165,9 +166,12 @@ public class ListReviewsApiHandler extends ApiHandler {
         // When we get here, the data has been collected but needs to be processed into standard form.
         Bundle results = mFilters.getData();
 
-        // Return parsed results.
-		long t1 = System.currentTimeMillis();
-		System.out.println("Found " + results.getLong(TOTAL) + " books in " + (t1 - t0) + "ms");
+		if (BuildConfig.DEBUG) {
+			long t1 = System.currentTimeMillis();
+			System.out.println("Found " + results.getLong(TOTAL) + " books in " + (t1 - t0) + "ms");
+		}
+
+		// Return parsed results.
         return results;
 	}
 

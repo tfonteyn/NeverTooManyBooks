@@ -1,11 +1,12 @@
 package com.eleybourn.bookcatalogue.utils;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
+import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
+
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.PriorityQueue;
-
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 
 /**
  * Class to execute Runnable objects in a separate thread after a predetermined delay.
@@ -89,7 +90,9 @@ public class Terminator {
 
 		@Override
 		public void run(SimpleTaskContext taskContext) {
-			System.out.println("Terminator starting");
+			if (BuildConfig.DEBUG) {
+				System.out.println("Terminator starting");
+			}
 			do {
 				Event e;
 				long delay;
@@ -135,7 +138,9 @@ public class Terminator {
 
 		@Override
 		public void onFinish(Exception e) {
-			System.out.println("Terminator terminating. I'll be back.");
+			if (BuildConfig.DEBUG) {
+				System.out.println("Terminator terminating. I'll be back.");
+			}
 		}
 		
 	}

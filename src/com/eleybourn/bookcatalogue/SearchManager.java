@@ -20,10 +20,6 @@
 
  package com.eleybourn.bookcatalogue;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.TaskManager.TaskManagerListener;
@@ -32,6 +28,10 @@ import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
 
 /**
  * Class to co-ordinate multiple SearchThread objects using an existing TaskManager.
@@ -139,7 +139,9 @@ public class SearchManager implements TaskManagerListener {
 			// Stop listening FIRST...otherwise, if sendResults() calls a listener that starts
 			// a new task, we will stop listening for the new task.
 			TaskManager.getMessageSwitch().removeListener(mTaskManager.getSenderId(), this);
-			System.out.println("Not listening(1)");
+			if (BuildConfig.DEBUG) {
+				System.out.println("Not listening(1)");
+			}
 			// Notify the listeners.
 			sendResults();
 		}

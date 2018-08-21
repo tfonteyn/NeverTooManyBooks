@@ -20,20 +20,21 @@
 
 package com.eleybourn.bookcatalogue.goodreads.api;
 
+import android.os.Bundle;
+
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NetworkException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+
+import org.apache.http.client.methods.HttpGet;
+
 import java.io.IOException;
 
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
-
-import org.apache.http.client.methods.HttpGet;
-
-import android.os.Bundle;
-
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NetworkException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
 
 import static com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.GOODREADS_API_ROOT;
 
@@ -111,10 +112,13 @@ public class BookshelfListApiHandler extends ApiHandler {
         // When we get here, the data has been collected but needs to be processed into standard form.
         Bundle results = mFilters.getData();
 
-        // Return parsed results.
-		long t1 = System.currentTimeMillis();
-		System.out.println("Found " + results.getLong(BookshelfListFieldNames.TOTAL) + " shelves in " + (t1 - t0) + "ms");
-        return results;
+		if (BuildConfig.DEBUG) {
+			long t1 = System.currentTimeMillis();
+			System.out.println("Found " + results.getLong(BookshelfListFieldNames.TOTAL) + " shelves in " + (t1 - t0) + "ms");
+		}
+
+		// Return parsed results.
+		return results;
 	}
 
 	/*

@@ -52,6 +52,7 @@ import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.GetThumbnailTask;
 import com.eleybourn.bookcatalogue.LibraryThingManager;
@@ -614,10 +615,12 @@ public class Utils {
 		if (bytes == null || bytes.length == 0)
 			return null;
 
-		BitmapFactory.Options options = new BitmapFactory.Options();
-        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length,options);
-        String s = "Array " + bytes.length + " bytes, bitmap " + bitmap.getHeight() + "x" + bitmap.getWidth();
-        System.out.println(s);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length,new BitmapFactory.Options());
+
+		if (BuildConfig.DEBUG) {
+			String s = "Array " + bytes.length + " bytes, bitmap " + bitmap.getHeight() + "x" + bitmap.getWidth();
+			System.out.println(s);
+		}
         return bitmap;
 	}
 
@@ -1581,13 +1584,17 @@ public class Utils {
 			try {
 				if (BookCatalogueApp.isBackgroundImageDisabled()) {
                     final int backgroundColor = BookCatalogueApp.getBackgroundColor();
-					System.out.println("initBackground: 0x" + Integer.toHexString(backgroundColor));
+					if (BuildConfig.DEBUG) {
+						System.out.println("initBackground: 0x" + Integer.toHexString(backgroundColor));
+					}
 					root.setBackgroundColor(backgroundColor);
 					if (root instanceof ListView) {
 						setCacheColorHintSafely((ListView)root, backgroundColor);
 					}
 				} else {
-					System.out.println("initBackground: drawable");
+					if (BuildConfig.DEBUG) {
+						System.out.println("initBackground: drawable");
+					}
 				if (root instanceof ListView) {
 					ListView lv = ((ListView)root);
 					setCacheColorHintSafely(lv, Color.TRANSPARENT);
@@ -1739,8 +1746,7 @@ public class Utils {
 		try {
 			lv.setCacheColorHint(hint);
 		} catch (IndexOutOfBoundsException e) {
-			// Ignore
-			System.out.println("Android Bug avoided");
+			Logger.logError("Android Bug avoided");
 		}
 	}
 	

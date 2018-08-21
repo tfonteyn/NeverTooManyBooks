@@ -19,24 +19,25 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.util.Date;
-
 import android.database.Cursor;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookEditFields;
 import com.eleybourn.bookcatalogue.BooksCursor;
 import com.eleybourn.bookcatalogue.BooksRowView;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.Date;
 
 /**
  * Implementation of Exporter that creates a CSV file.
@@ -259,7 +260,9 @@ public class CsvExporter implements Exporter {
 			}
 	
 		} finally {
-			System.out.println("Books Exported: " + num);
+			if (BuildConfig.DEBUG) {
+				System.out.println("Books Exported: " + num);
+			}
 			if (displayingStartupMessage) {
 				try {
 					listener.onProgress("", 0);

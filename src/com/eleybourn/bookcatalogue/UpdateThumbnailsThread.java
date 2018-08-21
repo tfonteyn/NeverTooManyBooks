@@ -20,12 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.io.File;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
-
 import android.database.Cursor;
 import android.os.Bundle;
 
@@ -35,6 +29,12 @@ import com.eleybourn.bookcatalogue.UpdateFromInternet.FieldUsages.Usages;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Class to update all thumbnails (and some other data) in a background thread.
@@ -252,7 +252,9 @@ public class UpdateThumbnailsThread extends ManagedTask {
 	 * @param cancelled
 	 */
 	private boolean handleSearchFinished(Bundle bookData, boolean cancelled) {
-		System.out.println("onSearchFinished (cancel = " + cancelled + ")");
+		if (BuildConfig.DEBUG) {
+			System.out.println("onSearchFinished (cancel = " + cancelled + ")");
+		}
 	
 		// Set cancelled flag if the task was cancelled
 		if (cancelled) {

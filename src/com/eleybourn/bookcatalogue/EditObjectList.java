@@ -20,9 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -41,6 +38,9 @@ import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Base class for editing a list of objects. The inheritor must specify a view id
@@ -286,7 +286,9 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
             lv.post(new Runnable() {
 				@Override
 				public void run() {
-					System.out.println("Positioning to " + newFirst + "+{" + offset + "}");
+					if (BuildConfig.DEBUG) {
+						System.out.println("Positioning to " + newFirst + "+{" + offset + "}");
+					}
 					lv.requestFocusFromTouch();
 					lv.setSelectionFromTop(newFirst, offset);
 					lv.post(new Runnable() {

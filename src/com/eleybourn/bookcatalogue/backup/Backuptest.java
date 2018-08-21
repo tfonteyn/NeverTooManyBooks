@@ -19,14 +19,15 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
-import java.io.File;
-import java.io.IOException;
-
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.backup.BackupReader.BackupReaderListener;
 import com.eleybourn.bookcatalogue.backup.BackupWriter.BackupWriterListener;
 import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Tets module. DEBUG ONLY!
@@ -52,8 +53,11 @@ public class Backuptest {
 	}
 
 	public static void performBackupTar(File file) throws IOException {
-		System.out.println("Starting " + file.getAbsolutePath());
+		if (BuildConfig.DEBUG) {
+			System.out.println("Starting " + file.getAbsolutePath());
+		}
 		TarBackupContainer bkp = new TarBackupContainer(file);
+
 		BackupWriter wrt = bkp.newWriter();
 
 		wrt.backup(new BackupWriterListener() {
@@ -73,7 +77,9 @@ public class Backuptest {
 				if (message != null)
 					mMessage = message;
 				mPosition += delta;
-				System.out.println("BKP: " + mMessage + " " + mPosition + " of " + mMax);
+				if (BuildConfig.DEBUG) {
+					System.out.println("BKP: " + mMessage + " " + mPosition + " of " + mMax);
+				}
 			}
 
 			@Override
@@ -90,11 +96,15 @@ public class Backuptest {
 			public int getTotalBooks() {
 				return mTotalBooks;
 			}}, Exporter.EXPORT_ALL, null);
-		System.out.println("Finished " + file.getAbsolutePath() + ", size = " + file.length());
+		if (BuildConfig.DEBUG) {
+			System.out.println("Finished " + file.getAbsolutePath() + ", size = " + file.length());
+		}
 	}
 
 	public static void performRestoreTar(File file) throws IOException {
-		System.out.println("Starting " + file.getAbsolutePath());
+		if (BuildConfig.DEBUG) {
+			System.out.println("Starting " + file.getAbsolutePath());
+		}
 		
 		TarBackupContainer bkp = new TarBackupContainer(file);
 		// Each format should provide a validator of some kind
@@ -118,7 +128,9 @@ public class Backuptest {
 				if (message != null)
 					mMessage = message;
 				mPosition += delta;
-				System.out.println("RST: " + mMessage + " " + mPosition + " of " + mMax);
+				if (BuildConfig.DEBUG) {
+					System.out.println("RST: " + mMessage + " " + mPosition + " of " + mMax);
+				}
 			}
 
 			@Override
@@ -126,7 +138,9 @@ public class Backuptest {
 				return mIsCancelled;
 			}}, Importer.IMPORT_ALL);
 
-		System.out.println("Finished " + file.getAbsolutePath() + ", size = " + file.length());
+		if (BuildConfig.DEBUG) {
+			System.out.println("Finished " + file.getAbsolutePath() + ", size = " + file.length());
+		}
 	}
 
 

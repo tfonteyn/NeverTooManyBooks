@@ -19,11 +19,66 @@
  */
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteCursorDriver;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteDoneException;
+import android.database.sqlite.SQLiteQuery;
+
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.OtherPreferences;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistAuthorGroup;
+import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistSeriesGroup;
+import com.eleybourn.bookcatalogue.booklist.BooklistStyle.CompoundKey;
+import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
+import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
+import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
+import com.eleybourn.bookcatalogue.database.DbUtils.DomainDefinition;
+import com.eleybourn.bookcatalogue.database.DbUtils.JoinContext;
+import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
+import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition.TableTypes;
+import com.eleybourn.bookcatalogue.database.SqlStatementManager;
+import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.utils.Logger;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Locale;
+import java.util.Map.Entry;
+
 import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.EMPTY_STRING_ARRAY;
 import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_LOANED_TO;
 import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.encodeString;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.*;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_AUTHOR;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_BOOK;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_DAY_ADDED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_DAY_READ;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_FORMAT;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_GENRE;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_LANGUAGE;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_LOANED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_LOCATION;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_MONTH_ADDED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_MONTH_PUBLISHED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_MONTH_READ;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_PUBLISHER;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_RATING;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_READ_AND_UNREAD;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_SERIES;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_TITLE_LETTER;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_UPDATE_DAY;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_UPDATE_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_UPDATE_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_ADDED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_PUBLISHED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_READ;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_ABSOLUTE_POSITION;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_ADDED_DATE;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_ADDED_DAY;
@@ -73,8 +128,8 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_SERIE
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_TITLE_LETTER;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_UPDATE_DAY;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_UPDATE_YEAR;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_UPDATE_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_UPDATE_YEAR;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_VISIBLE;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_AUTHORS;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOKS;
@@ -89,37 +144,6 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_LOAN;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_ROW_NAVIGATOR_DEFN;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_ROW_NAVIGATOR_FLATTENED_DEFN;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_SERIES;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Locale;
-import java.util.Map.Entry;
-
-import android.database.Cursor;
-import android.database.sqlite.SQLiteCursorDriver;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
-import android.database.sqlite.SQLiteDoneException;
-import android.database.sqlite.SQLiteQuery;
-
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.OtherPreferences;
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistAuthorGroup;
-import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistSeriesGroup;
-import com.eleybourn.bookcatalogue.booklist.BooklistStyle.CompoundKey;
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
-import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
-import com.eleybourn.bookcatalogue.database.DbUtils.DomainDefinition;
-import com.eleybourn.bookcatalogue.database.DbUtils.JoinContext;
-import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
-import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition.TableTypes;
-import com.eleybourn.bookcatalogue.database.SqlStatementManager;
-import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.utils.Logger;
 
 
 /**
@@ -186,7 +210,9 @@ public class BooklistBuilder {
 	public BooklistBuilder(CatalogueDBAdapter adapter, BooklistStyle style) {
 		synchronized(mInstanceCount) {
 			mInstanceCount++;
-			System.out.println("Builder instances: " + mInstanceCount);
+			if (BuildConfig.DEBUG) {
+				System.out.println("Builder instances: " + mInstanceCount);
+			}
 		}
 
 		// Allocate ID
@@ -408,9 +434,12 @@ public class BooklistBuilder {
 			mListTable.drop(mDb);
 			long t1 = System.currentTimeMillis();
 			mListTable.create(mDb, false);
-			long t2 = System.currentTimeMillis();
-			System.out.println("Drop = " + (t1-t0));
-			System.out.println("Create = " + (t2-t1));			
+
+			if (BuildConfig.DEBUG) {
+				long t2 = System.currentTimeMillis();
+				System.out.println("Drop = " + (t1-t0));
+				System.out.println("Create = " + (t2-t1));
+			}
 		}
 
 		/**
@@ -1417,35 +1446,36 @@ public class BooklistBuilder {
 				long t10 = System.currentTimeMillis();
 				//mDb.execSQL("analyze " + mTableName);
 				long t11 = System.currentTimeMillis();
-				
-				System.out.println("T0a: " + (t0a-t0));
-				System.out.println("T0b: " + (t0b-t0a));
-				System.out.println("T0c: " + (t0c-t0b));
-				System.out.println("T0d: " + (t0d-t0c));
-				System.out.println("T0e: " + (t0e-t0d));
-				System.out.println("T1: " + (t1-t0));
-				System.out.println("T1a: " + (t1a-t1));
-				System.out.println("T1b: " + (t1b-t1a));
-				System.out.println("T1c: " + (t2-t1b));
-				System.out.println("T2a[0]: " + (t2a[0]-t2));
-				for(int i = 1; i < mStyle.size(); i++) {
-					System.out.println("T2a[" + i + "]: " + (t2a[i]-t2a[i-1]));				
+
+				if (BuildConfig.DEBUG) {
+					System.out.println("T0a: " + (t0a - t0));
+					System.out.println("T0b: " + (t0b - t0a));
+					System.out.println("T0c: " + (t0c - t0b));
+					System.out.println("T0d: " + (t0d - t0c));
+					System.out.println("T0e: " + (t0e - t0d));
+					System.out.println("T1: " + (t1 - t0));
+					System.out.println("T1a: " + (t1a - t1));
+					System.out.println("T1b: " + (t1b - t1a));
+					System.out.println("T1c: " + (t2 - t1b));
+					System.out.println("T2a[0]: " + (t2a[0] - t2));
+					for (int i = 1; i < mStyle.size(); i++) {
+						System.out.println("T2a[" + i + "]: " + (t2a[i] - t2a[i - 1]));
+					}
+					System.out.println("T3: " + (t3 - t2a[mStyle.size() - 1]));
+					System.out.println("T3a: " + (t3a - t3));
+					System.out.println("T3b: " + (t3b - t3a));
+					System.out.println("T4: " + (t4 - t3b));
+					System.out.println("T4a: " + (t4a - t4));
+					System.out.println("T4b: " + (t4b - t4a));
+					System.out.println("T4c: " + (t4c - t4b));
+					//System.out.println("T5: " + (t5-t4));
+					//System.out.println("T6: " + (t6-t5));
+					//System.out.println("T7: " + (t7-t6));
+					System.out.println("T8: " + (t8 - t4c));
+					System.out.println("T9: " + (t9 - t8));
+					System.out.println("T10: " + (t10 - t9));
+					System.out.println("T11: " + (t11 - t10));
 				}
-				System.out.println("T3: " + (t3-t2a[mStyle.size()-1]));
-				System.out.println("T3a: " + (t3a-t3));
-				System.out.println("T3b: " + (t3b-t3a));
-				System.out.println("T4: " + (t4-t3b));
-				System.out.println("T4a: " + (t4a-t4));
-				System.out.println("T4b: " + (t4b-t4a));
-				System.out.println("T4c: " + (t4c-t4b));
-				//System.out.println("T5: " + (t5-t4));
-				//System.out.println("T6: " + (t6-t5));
-				//System.out.println("T7: " + (t7-t6));
-				System.out.println("T8: " + (t8-t4c));
-				System.out.println("T9: " + (t9-t8));
-				System.out.println("T10: " + (t10-t9));
-				System.out.println("T11: " + (t11-t10));
-	
 				mDb.setTransactionSuccessful();
 	
 				mSummary = summary;
@@ -1967,8 +1997,11 @@ public class BooklistBuilder {
 		SynchronizedStatement fooStmt = mDb.compileStatement(foo);
 		int cnt = (int)fooStmt.simpleQueryForLong();
 		fooStmt.close();
-		long tc1 = System.currentTimeMillis();
-		System.out.println("Pseudo-count (" + name + ") = " + cnt + " completed in " + (tc1 - tc0) + "ms");
+
+		if (BuildConfig.DEBUG) {
+			long tc1 = System.currentTimeMillis();
+			System.out.println("Pseudo-count (" + name + ") = " + cnt + " completed in " + (tc1 - tc0) + "ms");
+		}
 		return cnt;
 	}
 
@@ -2115,7 +2148,9 @@ public class BooklistBuilder {
 			deleteListNodeSettings();
 		}
 		long t1 = System.currentTimeMillis() - t0;
-		System.out.println("Expand All: " + t1);
+		if (BuildConfig.DEBUG) {
+			System.out.println("Expand All: " + t1);
+		}
 	}
 
 	/**
@@ -2196,7 +2231,9 @@ public class BooklistBuilder {
 	private void cleanup(final boolean isFinalize) {
 		if (mStatements.size() != 0) {
 			if (isFinalize) {
-				System.out.println("Finalizing BooklistBuilder with active statements");				
+				if (BuildConfig.DEBUG) {
+					System.out.println("Finalizing BooklistBuilder with active statements");
+				}
 			}
 			try {
 				mStatements.close();
@@ -2206,7 +2243,9 @@ public class BooklistBuilder {
         }
 		if (mNavTable != null) {
 			if (isFinalize) {
-				System.out.println("Finalizing BooklistBuilder with nav table");				
+				if (BuildConfig.DEBUG) {
+					System.out.println("Finalizing BooklistBuilder with nav table");
+				}
 			}
 			try { 
 				mNavTable.close();
@@ -2218,7 +2257,9 @@ public class BooklistBuilder {
         }
 		if (mListTable != null) {
 			if (isFinalize) {
-				System.out.println("Finalizing BooklistBuilder with list table");				
+				if (BuildConfig.DEBUG) {
+					System.out.println("Finalizing BooklistBuilder with list table");
+				}
 			}
 			try { 
 				mListTable.close();
@@ -2233,7 +2274,9 @@ public class BooklistBuilder {
 			// Only de-reference once!
 			synchronized(mInstanceCount) {
 				mInstanceCount--;
-				System.out.println("Builder instances: " + mInstanceCount);
+				if (BuildConfig.DEBUG) {
+					System.out.println("Builder instances: " + mInstanceCount);
+				}
 			}
 			mReferenceDecremented = true;
 		}

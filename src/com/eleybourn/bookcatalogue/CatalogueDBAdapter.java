@@ -106,9 +106,6 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_SERIE
  * 
  */
 public class CatalogueDBAdapter {
-	/** DEBUG ONLY. Set to true to enable logging of instances of this class. */
-	public static final boolean DEBUG_INSTANCES = false;
-	
 	/** Debug counter */
 	private static Integer mInstanceCount = 0;
 
@@ -1737,7 +1734,7 @@ public class CatalogueDBAdapter {
 	}
 	private static final ArrayList< InstanceRef > mInstances = new ArrayList<>();
 	private static void addInstance(CatalogueDBAdapter db) {
-		if (DEBUG_INSTANCES) {
+		if (BuildConfig.DEBUG) {
 			mInstances.add(new InstanceRef(db));		
 		}
 	}
@@ -1782,8 +1779,8 @@ public class CatalogueDBAdapter {
 	public CatalogueDBAdapter(Context ctx) {
 		synchronized(mInstanceCount) {
 			mInstanceCount++;
-			System.out.println("CatDBA instances: " + mInstanceCount);
-			if (DEBUG_INSTANCES) {			
+			if (BuildConfig.DEBUG) {
+				System.out.println("CatDBA instances: " + mInstanceCount);
 				addInstance(this);
 			}
 		}
@@ -1841,8 +1838,8 @@ public class CatalogueDBAdapter {
 
 			synchronized(mInstanceCount) {
 				mInstanceCount--;
-				System.out.println("CatDBA instances: " + mInstanceCount);
-				if (DEBUG_INSTANCES) {
+				if (BuildConfig.DEBUG) {
+					System.out.println("CatDBA instances: " + mInstanceCount);
 					removeInstance(this);
 				}
 			}
@@ -5924,8 +5921,10 @@ public class CatalogueDBAdapter {
 				mDb.execSQL("Alter Table " + ftsTemp + " rename to " + TBL_BOOKS_FTS);
 		}
 
-		long t1 = System.currentTimeMillis();
-		System.out.println("books reindexed in " + (t1-t0) + "ms");
+		if (BuildConfig.DEBUG) {
+			long t1 = System.currentTimeMillis();
+			System.out.println("books reindexed in " + (t1 - t0) + "ms");
+		}
 	}
 
 	/**

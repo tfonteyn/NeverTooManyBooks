@@ -193,10 +193,11 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
 
 		@Override
 		public void onProgress(int count, int max, String message) {
-			// RELEASE: Remove these lines!
-			String dbgMsg =  count + "/" + max + ", '" + message.replace("\n", "\\n") + "'";
-			Tracker.handleEvent(ActivityWithTasks.this, "SearchProgress " + dbgMsg, States.Running);
-			System.out.println("PRG: " + dbgMsg);
+			if (BuildConfig.DEBUG) {
+				String dbgMsg = count + "/" + max + ", '" + message.replace("\n", "\\n") + "'";
+				Tracker.handleEvent(ActivityWithTasks.this, "SearchProgress " + dbgMsg, States.Running);
+				System.out.println("PRG: " + dbgMsg);
+			}
 
 			// Save the details
 			mProgressCount = count;

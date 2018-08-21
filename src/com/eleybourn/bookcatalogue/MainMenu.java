@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.util.ArrayList;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -34,6 +32,8 @@ import com.eleybourn.bookcatalogue.utils.AlertDialogUtils;
 import com.eleybourn.bookcatalogue.utils.AlertDialogUtils.AlertDialogItem;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.util.ArrayList;
 
 /**
  * Implement the 'Main Menu' for BookCatalogue. This is one of two possible start screens.
@@ -111,8 +111,9 @@ public class MainMenu extends BookCatalogueActivity {
 	public void onResume() {
 		super.onResume();
 
-		if (CatalogueDBAdapter.DEBUG_INSTANCES)
+		if (BuildConfig.DEBUG) {
 			CatalogueDBAdapter.dumpInstances();
+		}
 
 		final boolean showGr = GoodreadsManager.hasCredentials();
 
@@ -124,10 +125,12 @@ public class MainMenu extends BookCatalogueActivity {
 		}
 
 		/*
-		 * RELEASE: DEBUG ONLY; used when tracking a bug in android 2.1, but kept because
+		 * DEBUG ONLY; used when tracking a bug in android 2.1, but kept because
 		 * there are still non-fatal anomalies.
 		 */
-		// CatalogueDBAdapter.printReferenceCount("MainMenu resumed");
+		if (BuildConfig.DEBUG) {
+			CatalogueDBAdapter.printReferenceCount("MainMenu resumed");
+		}
 	}
 
 	/**

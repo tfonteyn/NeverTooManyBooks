@@ -20,16 +20,15 @@
 
 package com.eleybourn.bookcatalogue;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /** 
  * An XML handler for the Amazon return 
@@ -343,7 +342,7 @@ public class SearchAmazonHandler extends DefaultHandler {
 					mCurrencyCode = mBuilder.toString();
 				} else {
 					if (BuildConfig.DEBUG) {
-						// Debug Only; see what we are missing.
+						// see what we are missing.
 						System.out.println(localName + "->'" + mBuilder.toString() + "'");
 					}
 				}

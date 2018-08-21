@@ -19,20 +19,21 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
-
 import android.content.SharedPreferences;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.SerializationUtils.DeserializationException;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
 
 /**
  * Basic implementation of format-agnostic BackupReader methods using 
@@ -100,7 +101,9 @@ public abstract class BackupReaderAbstract implements BackupReader {
 		}
 		close();
 
-		System.out.println("Restored " + coverCount + " covers");
+		if (BuildConfig.DEBUG) {
+			System.out.println("Restored " + coverCount + " covers");
+		}
 	}
 
 	/**

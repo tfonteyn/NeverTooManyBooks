@@ -20,12 +20,6 @@
 
 package com.eleybourn.bookcatalogue.database;
 
-import java.lang.reflect.Field;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteClosable;
@@ -37,10 +31,17 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQuery;
 import android.database.sqlite.SQLiteStatement;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.LockTypes;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.utils.Logger;
+
+import java.lang.reflect.Field;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Classes used to help synchronize database access across threads.
@@ -693,19 +694,20 @@ public class DbSync {
 				f.setAccessible(true);
 				int refs = (Integer) f.get(db); //IllegalAccessException
 				if (msg != null) {
-					System.out.println("DBRefs (" + msg + "): " + refs);
-					//if (refs < 100) {
-					//	System.out.println("DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");					
-					//} else if (refs < 1001) {
-					//	System.out.println("DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 1000)!");					
-					//} else {
-					//	System.out.println("DBRefs (" + msg + "): " + refs);
-					//}					
+					if (BuildConfig.DEBUG) {
+						System.out.println("DBRefs (" + msg + "): " + refs);
+						//if (refs < 100) {
+						//	System.out.println("DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");
+						//} else if (refs < 1001) {
+						//	System.out.println("DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 1000)!");
+						//} else {
+						//	System.out.println("DBRefs (" + msg + "): " + refs);
+						//}
+					}
 				}
 				return refs;
 			} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.logError(e);
 			}
 			return 0;			
 		}

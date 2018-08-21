@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue.goodreads;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -41,6 +39,8 @@ import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
+
+import java.util.ArrayList;
 
 /**
  * Search goodreads for a book and display the list of results. Use background tasks to get thumbnails and update when retrieved.
@@ -193,7 +193,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 						}});
 
 				} catch (Exception e) {
-					System.out.println(e.getMessage());
+					Logger.logError(e);
 					throw new RuntimeException(e);
 				}
 	        } else {

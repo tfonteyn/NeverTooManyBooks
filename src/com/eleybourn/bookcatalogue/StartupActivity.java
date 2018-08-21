@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.lang.ref.WeakReference;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -42,6 +40,8 @@ import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Single Activity to be the 'Main' activity for the app. I does app-startup stuff which is initially
@@ -114,7 +114,9 @@ public class StartupActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		System.out.println("Startup isTaskRoot() = " + isTaskRoot());
+		if (BuildConfig.DEBUG) {
+			System.out.println("Startup isTaskRoot() = " + isTaskRoot());
+		}
 
 		mHasBeenCalled = true;
 		mUiThread = Thread.currentThread();
@@ -218,9 +220,13 @@ public class StartupActivity extends Activity {
 	 * be queued in onCreate().
 	 */
 	private void taskCompleted(SimpleTask task) {
-		System.out.println("Task Completed: " + task.getClass().getSimpleName());
+		if (BuildConfig.DEBUG) {
+			System.out.println("Task Completed: " + task.getClass().getSimpleName());
+		}
 		if (!mTaskQueue.hasActiveTasks()) {
-			System.out.println("Task Completed - no more");
+			if (BuildConfig.DEBUG) {
+				System.out.println("Task Completed - no more");
+			}
 			stage2Startup();
 		}
 	}

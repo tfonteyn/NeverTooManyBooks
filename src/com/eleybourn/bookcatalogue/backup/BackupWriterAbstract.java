@@ -19,22 +19,23 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Date;
-
 import android.content.SharedPreferences;
 import android.database.Cursor;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.utils.Logger;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Date;
 
 /**
  * Basic implementation of format-agnostic BackupWriter methods using 
@@ -105,7 +106,9 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 			}
 		}
 
-		System.out.println("Closed writer");
+		if (BuildConfig.DEBUG) {
+			System.out.println("Closed writer");
+		}
 	}
 
 	/**
@@ -155,7 +158,9 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 		};
 
 		// Get a temp file and mark for delete
-		System.out.println("Getting books");
+		if (BuildConfig.DEBUG) {
+			System.out.println("Getting books");
+		}
 		File temp = File.createTempFile("bookcat", ".tmp");
 		temp.deleteOnExit();
 		FileOutputStream output = null;
@@ -177,7 +182,9 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 	 */
 	private void writeBooks(File exportFile) throws IOException {
 		try {
-			System.out.println("Writing Books");
+			if (BuildConfig.DEBUG) {
+				System.out.println("Writing Books");
+			}
 			putBooks(exportFile);
 		} finally {
 			if (exportFile.exists())
@@ -257,7 +264,9 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 			}
 		}
 
-		System.out.println("Writing Images");
+		if (BuildConfig.DEBUG) {
+			System.out.println("Writing Images");
+		}
 		
 		int ok = 0;
 		int missing = 0;

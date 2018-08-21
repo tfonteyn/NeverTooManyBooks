@@ -19,6 +19,15 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.content.SharedPreferences;
+import android.os.Bundle;
+
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
+import com.eleybourn.bookcatalogue.database.SerializationUtils;
+import com.eleybourn.bookcatalogue.database.SerializationUtils.DeserializationException;
+import com.eleybourn.bookcatalogue.utils.Logger;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -28,13 +37,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Serializable;
-
-import android.content.SharedPreferences;
-import android.os.Bundle;
-
-import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
-import com.eleybourn.bookcatalogue.database.SerializationUtils;
-import com.eleybourn.bookcatalogue.database.SerializationUtils.DeserializationException;
 
 /**
  * Basic implementation of format-agnostic ReaderEntity methods using 
@@ -69,13 +71,15 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
 				out.write(buffer, 0, cnt);
 			}
 		} finally {
-			if (out != null && out.getChannel().isOpen())
+			if (out.getChannel().isOpen())
 				out.close();
 			try {
 				outFile.setLastModified(this.getDateModified().getTime());
 			} catch (Exception e) {
 				// Ignore...it's nice to set the date, but not mandatory
-				System.out.println(e.getMessage());
+				if (BuildConfig.DEBUG) {
+                    Logger.logError(e);
+				}
 			}
 		}
 	}

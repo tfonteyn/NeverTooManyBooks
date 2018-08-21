@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -242,7 +243,9 @@ public class StorageUtils {
 					if (csvFiles != null) {
 						//info.append("    found " + csvFiles.length + " in " + dir.getAbsolutePath() + "\n");
 						for (File f : csvFiles) {
-							System.out.println("Found: " + f.getAbsolutePath());
+							if (BuildConfig.DEBUG) {
+								System.out.println("Found: " + f.getAbsolutePath());
+							}
 							final String cp = f.getCanonicalPath();
 							if (paths.contains(cp)) {
 								//info.append("        already present as " + cp + "\n");								

@@ -20,9 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.util.ArrayList;
-
-import net.philipwarner.taskqueue.QueueManager;
 import android.app.AlertDialog;
 import android.app.ExpandableListActivity;
 import android.app.SearchManager;
@@ -69,6 +66,10 @@ import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import com.eleybourn.bookcatalogue.widgets.FastScrollExpandableListView;
+
+import net.philipwarner.taskqueue.QueueManager;
+
+import java.util.ArrayList;
 
 /*
  * A book catalogue application that integrates with Google Books.
@@ -189,7 +190,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				final String action = i.getAction();
 				if (action != null && action.equals("android.intent.action.MAIN") && i.hasCategory("android.intent.category.LAUNCHER")) {
 					// This is a startup for the main application, so defer it to the StartupActivity
-					System.out.println("Old shortcut detected, redirecting");
+					Logger.logError("Old shortcut detected, redirecting");
 					i = new Intent(this.getApplicationContext(), StartupActivity.class);
 					startActivity(i);
 					finish();
@@ -1322,7 +1323,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			//System.gc();
 			//Debug.getMemoryInfo(after);
 			//
-			//int delta = (after.dalvikPrivateDirty + after.nativePrivateDirty + after.otherPrivateDirty) 
+			//int delta = (after.dalvikPrivateDirty + after.nativePrivateDirty + after.otherPrivateDirty)
 			//				- (before.dalvikPrivateDirty + before.nativePrivateDirty + before.otherPrivateDirty);
 			//System.out.println("Usage Change = " + delta + " (completed in " + t0 + "ms)");
 

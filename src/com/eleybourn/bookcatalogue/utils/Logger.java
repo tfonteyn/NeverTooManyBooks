@@ -20,6 +20,9 @@
 
 package com.eleybourn.bookcatalogue.utils;
 
+import android.os.Build;
+import android.util.Log;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,11 +33,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import android.os.Build;
-import android.util.Log;
-
 public class Logger {
-	
+
+	public static void logError(String msg) {
+		logError(null,msg);
+	}
 	public static void logError(Exception e) {
 		logError(e, "");
 	}
@@ -49,9 +52,11 @@ public class Logger {
 		
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
-		e.printStackTrace(pw);
+		if (e != null) {
+			e.printStackTrace(pw);
+		}
 		
-		String error = "An Exception Occurred @ " + now + "\n" +
+		String error = "An Exception/Error Occurred @ " + now + "\n" +
 			"In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ") \n" + 
 			msg + "\n" + 
 			sw.toString();

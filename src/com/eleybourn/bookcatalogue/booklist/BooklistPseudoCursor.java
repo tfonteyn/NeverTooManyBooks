@@ -19,14 +19,15 @@
  */
 
 package com.eleybourn.bookcatalogue.booklist;
+import android.database.AbstractCursor;
+
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.utils.Utils;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map.Entry;
-
-import android.database.AbstractCursor;
-
-import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Yet Another Rabbit Burrow ("YARB" -- did I invent a new acronym?). What led to this?
@@ -145,7 +146,9 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
 		synchronized(this) {
 			if (!mCursors.containsKey(cursorId)) {
 				// Get a new cursor
-				System.out.println("Getting cursor at " + cursorId);
+				if (BuildConfig.DEBUG) {
+					System.out.println("Getting cursor at " + cursorId);
+				}
 				mCursors.put(cursorId, mBuilder.getOffsetCursor(cursorStartPos, CURSOR_SIZE));
 
 				// Add this cursor id to the 'top' of the MRU list.
@@ -228,7 +231,9 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
 		}
 		// Purge them
 		for(Integer i: toPurge) {
-			System.out.println("Removing cursor at " + i);
+			if (BuildConfig.DEBUG) {
+				System.out.println("Removing cursor at " + i);
+			}
 			BooklistCursor c = mCursors.remove(i);
 			c.close();
 		}

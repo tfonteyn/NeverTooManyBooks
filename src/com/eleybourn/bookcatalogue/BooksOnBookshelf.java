@@ -908,7 +908,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 System.out.println("BoB instances: " + mInstanceCount);
             }
 		}
-		TrackedCursor.dumpCursors();
+
+        if(BuildConfig.DEBUG) {
+		    TrackedCursor.dumpCursors();
+        }
 		Tracker.exitOnDestroy(this);
 	}
 	

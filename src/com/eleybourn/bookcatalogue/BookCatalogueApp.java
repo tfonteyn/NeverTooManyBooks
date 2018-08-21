@@ -420,7 +420,6 @@ public class BookCatalogueApp extends Application {
 			// windowBackground is not a color, probably a drawable
 			//Drawable d = activity.getResources().getDrawable(tv.resourceId);
 			//TODO: is this ever reached ?
-			System.out.println("BookCatalogueApp.getBackgroundColor: windowBackground is not a color, probably a drawable");
 			return R.color.background_grey;
 		}
 	}

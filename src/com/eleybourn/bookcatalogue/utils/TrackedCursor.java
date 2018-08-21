@@ -20,20 +20,19 @@
 
 package com.eleybourn.bookcatalogue.utils;
 
+import android.database.sqlite.SQLiteCursorDriver;
+import android.database.sqlite.SQLiteQuery;
+
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedCursor;
+import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import android.database.sqlite.SQLiteCursorDriver;
-import android.database.sqlite.SQLiteQuery;
-
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedCursor;
-import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
-
 /**
  * DEBUG CLASS to help com.eleybourn.bookcatalogue.debug cursor leakage.
- * 
- * Set the static variable DEBUG_TRACKED_CURSOR to 'false' to make most of the code a NOP.
  * 
  * By using TrackedCursorFactory it is possible to use this class to analyze when and
  * where cursors are being allocated, and whether they are being deallocated in a timely
@@ -43,9 +42,6 @@ import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
  */
 public class TrackedCursor extends SynchronizedCursor  {
 	
-	/** Set to TRUE to actually track cursors. Otherwise, most code is optimized out. */
-	private static final boolean DEBUG_TRACKED_CURSOR = false;
-
 	/* Static Data */
 	/* =========== */
 
@@ -69,18 +65,10 @@ public class TrackedCursor extends SynchronizedCursor  {
 	/** Debug counter */
 	private static Integer mInstanceCount = 0;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param driver
-	 * @param editTable
-	 * @param query
-	 * @param sync
-	 */
 	public TrackedCursor(SQLiteCursorDriver driver, String editTable, SQLiteQuery query, Synchronizer sync) {
 		super(driver, editTable, query, sync);
 
-		if (DEBUG_TRACKED_CURSOR) {
+		if (BuildConfig.DEBUG) {
 			synchronized(mInstanceCount) {
 				mInstanceCount++;
 				System.out.println("Cursor instances: " + mInstanceCount);
@@ -110,7 +98,7 @@ public class TrackedCursor extends SynchronizedCursor  {
 	@Override
 	public void close() {
 		super.close();
-		if (DEBUG_TRACKED_CURSOR) {
+		if (BuildConfig.DEBUG) {
 			if (!mIsClosedFlg) {
 				synchronized(mInstanceCount) {
 					mInstanceCount--;
@@ -133,7 +121,7 @@ public class TrackedCursor extends SynchronizedCursor  {
 	 */
 	@Override
 	public void finalize() {
-		if (DEBUG_TRACKED_CURSOR) {
+		if (BuildConfig.DEBUG) {
 			if (mWeakRef != null) {
 				// This is a cursor that is being deleted before it is closed.
 				// Setting a break here is sometimes useful.
@@ -149,13 +137,13 @@ public class TrackedCursor extends SynchronizedCursor  {
 	/**
 	 * Get the stack trace recorded when cursor created
 	 */
-	public StackTraceElement[] getStackTrace() {
+    private StackTraceElement[] getStackTrace() {
 		return mStackTrace;
 	}
 	/**
 	 * Get the ID of this cursor
 	 */
-	final public long getCursorId() {
+	private long getCursorId() {
 		return mId;
 	}
 
@@ -164,9 +152,10 @@ public class TrackedCursor extends SynchronizedCursor  {
 	 * different from the list of open cursors because non-referenced cursors may 
 	 * have been deleted and the finalizer not called.
 	 */
+	@SuppressWarnings("unused")
 	public static long getCursorCountApproximate() {
 		long count = 0;
-		if (DEBUG_TRACKED_CURSOR) {
+		if (BuildConfig.DEBUG) {
 			synchronized(mCursors) {
 				count = mCursors.size();
 			}
@@ -181,10 +170,11 @@ public class TrackedCursor extends SynchronizedCursor  {
 	 * 
 	 * Note: This is not a *cheap* operation.
 	 */
+    @SuppressWarnings("unused")
 	public static long getCursorCount() {
 		long count = 0;
 
-		if (DEBUG_TRACKED_CURSOR) {			
+		if (BuildConfig.DEBUG) {
 			ArrayList<WeakReference<TrackedCursor>> list = new ArrayList<>();
 			synchronized(mCursors) {
 				for(WeakReference<TrackedCursor> r : mCursors) {
@@ -207,7 +197,7 @@ public class TrackedCursor extends SynchronizedCursor  {
 	 * Dump all open cursors to System.out.
 	 */
 	public static void dumpCursors() {
-		if (DEBUG_TRACKED_CURSOR) {			
+		if (BuildConfig.DEBUG) {
 			for(TrackedCursor c : getCursors()) {
 				System.out.println("Cursor " + c.getCursorId());
 				for (StackTraceElement s : c.getStackTrace()) {
@@ -220,9 +210,9 @@ public class TrackedCursor extends SynchronizedCursor  {
 	/**
 	 * Get a collection of open cursors at the current time.
 	 */
-	public static ArrayList<TrackedCursor> getCursors() {
+	private static ArrayList<TrackedCursor> getCursors() {
 		ArrayList<TrackedCursor> list = new ArrayList<>();
-		if (DEBUG_TRACKED_CURSOR) {
+		if (BuildConfig.DEBUG) {
 			synchronized(mCursors) {
 				for(WeakReference<TrackedCursor> r : mCursors) {
 					TrackedCursor c = r.get();
