@@ -59,6 +59,7 @@
         <item name="android:paddingStart">@dimen/padding_book_details_info</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
+
     <style name="fileDetailsTextStyle" parent="bookDetailsTextStyle">
         <!--  selectable makes clicking not work well -->
         <item name="android:textIsSelectable">false</item>
@@ -101,6 +102,15 @@
         <item name="android:hint">@string/notset</item>
     </style>
 
+    <style name="dataEntryButtonStyle" parent="@style/editorFieldTextStyleBase" />
+
+    <style name="editorFieldTextStyle" parent="@style/editorFieldTextStyleBase" />
+
+    <style name="DialogTitleTheme">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="DialogDividerTheme" />
     <style name="localeBasedTextEntry" parent="@style/editorFieldTextStyle">
         <item name="android:inputType">textCapWords</item>
     </style>
