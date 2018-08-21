@@ -74,7 +74,8 @@ public class FieldVisibility extends BookCatalogueActivity {
 	 */
 	public void setupFields() {
 		// The fields to show/hide
-		String[] fields = {CatalogueDBAdapter.KEY_AUTHOR_ID, CatalogueDBAdapter.KEY_TITLE, "thumbnail", 
+		String[] fields = {
+		        CatalogueDBAdapter.KEY_AUTHOR_ID, CatalogueDBAdapter.KEY_TITLE, "thumbnail",
 				CatalogueDBAdapter.KEY_ISBN, CatalogueDBAdapter.KEY_SERIES_NAME, CatalogueDBAdapter.KEY_SERIES_NUM, 
 				CatalogueDBAdapter.KEY_PUBLISHER, CatalogueDBAdapter.KEY_DATE_PUBLISHED, CatalogueDBAdapter.KEY_BOOKSHELF, 
 				CatalogueDBAdapter.KEY_PAGES, CatalogueDBAdapter.KEY_LIST_PRICE, CatalogueDBAdapter.KEY_READ, 
@@ -82,19 +83,30 @@ public class FieldVisibility extends BookCatalogueActivity {
 				CatalogueDBAdapter.KEY_LOCATION, CatalogueDBAdapter.KEY_READ_START, CatalogueDBAdapter.KEY_READ_END, 
 				CatalogueDBAdapter.KEY_FORMAT, CatalogueDBAdapter.KEY_SIGNED, CatalogueDBAdapter.KEY_DESCRIPTION, 
 				CatalogueDBAdapter.KEY_GENRE, DatabaseDefinitions.DOM_LANGUAGE.name};
-		int[] fieldRs = {R.string.author, R.string.title, R.string.thumbnail, R.string.isbn, R.string.series, R.string.series_num, 
-				R.string.publisher, R.string.date_published, R.string.bookshelf, R.string.pages, R.string.list_price,
-				R.string.read, R.string.rating, R.string.notes, R.string.anthology, R.string.location_of_book, 
-				R.string.read_start, R.string.read_end, R.string.format, R.string.signed, R.string.description, 
+		int[] fieldRs = {
+		        R.string.author, R.string.title, R.string.thumbnail,
+                R.string.isbn, R.string.series, R.string.series_num,
+				R.string.publisher, R.string.date_published, R.string.bookshelf,
+                R.string.pages, R.string.list_price, R.string.read,
+                R.string.rating, R.string.notes, R.string.anthology,
+                R.string.location_of_book, R.string.read_start, R.string.read_end,
+                R.string.format, R.string.signed, R.string.description,
 				R.string.genre, R.string.language};
-		boolean[] compulsory = {true, true, false, false, false, false, false, false, 
-				true, false, false, false, false, false, false, false, false, false, false, false, false, false, false};
+		boolean[] compulsory = {
+		        true, true, false,
+                false, false, false,
+                false, false, true,
+                false, false, false,
+                false, false, false,
+                false, false, false,
+                false, false, false,
+                false, false};
 		
 		SharedPreferences mPrefs = getSharedPreferences("bookCatalogue", MODE_PRIVATE);
 		//SharedPreferences.Editor ed = mPrefs.edit();
 		//ed.putString(STATE_BOOKSHELF, bookshelf);
 		//ed.commit();
-		
+
 		// Display the list of fields
 		LinearLayout parent = (LinearLayout) findViewById(R.id.manage_fields_scrollview);
 		for (int i = 0; i<fields.length; i++) {
