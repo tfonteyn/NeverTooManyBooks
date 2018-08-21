@@ -24,60 +24,53 @@
 
             <TextView
                 android:id="@+id/my_books_label"
-                style="@style/main_menu_item"
+                android:text="@string/my_books"
                 android:drawableStart="@drawable/ic_menu_shelves"
-                android:text="@string/my_books" />
+                style="@style/main_menu_item" />
 
             <TextView
                 android:id="@+id/my_books_classic_label"
-                style="@style/main_menu_item"
+                android:text="@string/my_books_classic"
                 android:drawableStart="@drawable/ic_menu_bookshelves"
-                android:text="@string/my_books_classic" />
+                style="@style/main_menu_item" />
 
             <TextView
                 android:id="@+id/add_book_label"
                 style="@style/main_menu_item"
-                android:drawableStart="@drawable/ic_menu_add_book"
+                android:drawableStart="@android:drawable/ic_menu_add"
                 android:text="@string/menu_insert" />
 
             <TextView
                 android:id="@+id/loan_label"
-                style="@style/main_menu_item"
-                android:drawableStart="@android:drawable/ic_menu_send"
                 android:text="@string/loan_return_book"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:drawableStart="@android:drawable/ic_menu_send"
+                style="@style/main_menu_item"/>
 
             <TextView
                 android:id="@+id/search_label"
-                style="@style/main_menu_item"
-                android:drawableStart="@android:drawable/ic_menu_search"
                 android:text="@string/search"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:drawableStart="@android:drawable/ic_menu_search"
+                style="@style/main_menu_item"/>
 
             <TextView
                 android:id="@+id/administration_label"
-                style="@style/main_menu_item"
+                android:text="@string/admin_and_prefs"
                 android:drawableStart="@android:drawable/ic_menu_preferences"
-                android:text="@string/admin_and_prefs" />
+                style="@style/main_menu_item" />
 
             <TextView
                 android:id="@+id/goodreads_label"
-                style="@style/main_menu_item"
+                android:text="@string/goodreads"
                 android:drawableStart="@drawable/ic_menu_gr_logo"
-                android:text="@string/goodreads" />
+                style="@style/main_menu_item" />
 
             <TextView
                 android:id="@+id/about_label"
                 style="@style/main_menu_item"
                 android:drawableStart="@android:drawable/ic_menu_info_details"
                 android:text="@string/about_label" />
-
-            <!-- Now in 'My Books' -->
-            <!-- <TextView -->
-            <!-- android:id="@+id/browse_label" -->
-            <!-- style="@style/main_menu_item" -->
-            <!-- android:drawableLeft="@android:drawable/ic_menu_compass" -->
-            <!-- android:text="@string/browse_books" /> -->
 
             <TextView
                 android:id="@+id/help_label"
@@ -87,9 +80,9 @@
             
             <TextView
                 android:id="@+id/donate_label"
-                style="@style/main_menu_item"
+                android:text="@string/donate_label"
                 android:drawableStart="@drawable/ic_menu_donate"
-                android:text="@string/donate_label" />
+                style="@style/main_menu_item" />
         </LinearLayout>
     </ScrollView>
 

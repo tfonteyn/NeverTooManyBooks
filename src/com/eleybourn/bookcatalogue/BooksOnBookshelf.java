@@ -80,6 +80,7 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_READ;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_TITLE;
@@ -116,7 +117,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	/** Flag to indicate that a list has been successfully loaded -- affects the way we save state */
 	private boolean mListHasBeenLoaded = false;
 
-	/** Used by onScroll to detect when the top row has actuallt changed. */
+	/** Used by onScroll to detect when the top row has actually changed. */
 	private int mLastTop = -1;
 	/** ProgressDialog used to display "Getting books...". Needed here so we can dismiss it on close. */
 	private ProgressDialog mListDialog = null;
@@ -528,12 +529,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 		// or
 		// (b) getResources() returning null
 		//
-		if (root == null)
-			throw new RuntimeException("Sanity Check Fail: Root view not found; isFinishing() = " + isFinishing());
-		if (header == null)
-			throw new RuntimeException("Sanity Check Fail: Header view not found; isFinishing() = " + isFinishing());
-		if (getResources() == null)
-			throw new RuntimeException("Sanity Check Fail: getResources() returned null; isFinishing() = " + isFinishing());
+        Objects.requireNonNull(root,"Sanity Check Fail: Root view not found; isFinishing() = " + isFinishing());
+        Objects.requireNonNull(header,"Sanity Check Fail: Header view not found; isFinishing() = " + isFinishing());
+        Objects.requireNonNull(getResources() == null,"Sanity Check Fail: getResources() returned null; isFinishing() = " + isFinishing());
 
 		Utils.initBackground(root, lv, header);
 	}
@@ -561,12 +559,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	 * Display the passed cursor in the ListView, and change the position to targetRow.
 	 * 
 	 * @param newList		New cursor to use
-	 * @param targetRows
+	 * @param targetRows	if set, change the position to targetRow.
 	 */
-	private void displayList(BooklistPseudoCursor newList, final ArrayList<BookRowInfo> targetRows) {	
-		if (newList == null) {
-			throw new RuntimeException("Unexpected empty list");
-		}
+	private void displayList(BooklistPseudoCursor newList, final ArrayList<BookRowInfo> targetRows) {
+	    Objects.requireNonNull(newList,"Unexpected empty list");
 
 		final int showHeaderFlags = (mCurrentStyle == null ? BooklistStyle.SUMMARY_SHOW_ALL : mCurrentStyle.getShowHeaderInfo());
 
@@ -629,7 +625,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 					int first = lv.getFirstVisiblePosition();
 					int last = lv.getLastVisiblePosition();
 					int centre = (last+first)/2;
-					System.out.println("New List: (" + first + ", " + last + ")<-" + centre );
+					if (BuildConfig.DEBUG) {
+						System.out.println("New List: (" + first + ", " + last + ")<-" + centre);
+					}
 					// Get the first 'target' and make it 'best candidate'
 					BookRowInfo best = targetRows.get(0);
 					int dist = Math.abs(best.listPosition - centre);
@@ -643,10 +641,14 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 						}
 					}
 
-					System.out.println("Best @" + best.listPosition );
+                    if (BuildConfig.DEBUG) {
+                        System.out.println("Best @" + best.listPosition);
+                    }
 					// Try to put at top if not already visible, or only partially visible
 					if (first >= best.listPosition || last <= best.listPosition) {
-						System.out.println("Adjusting position");
+						if (BuildConfig.DEBUG) {
+							System.out.println("Adjusting position");
+						}
 						//
 						// setSelectionfromTop does not seem to always do what is expected.
 						// But adding smoothScrollToPosition seems to get the job done reasonably well.
@@ -673,7 +675,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 								}});
 
 						//int newTop = best.listPosition - (last-first)/2;
-						//System.out.println("New Top @" + newTop );
+                       // if (BuildConfig.DEBUG) {
+                            //System.out.println("New Top @" + newTop );
+                        //}
 						//lv.setSelection(newTop);
 					}
 				}});
@@ -727,8 +731,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 				oldList.getBuilder().close();
 			oldList.close();
 		}
-		long t1 = System.currentTimeMillis();
-		System.out.println("displayList: " + (t1 - t0));
+		if (BuildConfig.DEBUG) {
+			long t1 = System.currentTimeMillis();
+			System.out.println("displayList: " + (t1 - t0));
+		}
 	}
 
 	/**
@@ -766,12 +772,16 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	private BooklistBuilder buildBooklist(boolean isFullRebuild) {
 		// If not a full rebuild then just use the current builder to requery the underlying data
 		if (mList != null && !isFullRebuild) {
-			System.out.println("Doing rebuild()");
+		    if (BuildConfig.DEBUG) {
+                System.out.println("Doing rebuild()");
+            }
 			BooklistBuilder b = mList.getBuilder();
 			b.rebuild();
 			return b;
 		} else {
-			System.out.println("Doing full reconstruct");
+            if (BuildConfig.DEBUG) {
+                System.out.println("Doing full reconstruct");
+            }
 			// Make sure we have a style chosen
 			BooklistStyles styles = BooklistStyles.getAllStyles(mDb);
 			if (mCurrentStyle == null) {
@@ -851,7 +861,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	public void onPause() {
 		Tracker.enterOnPause(this);
 		super.onPause();
-		System.out.println("onPause");
 		if (mSearchText == null || mSearchText.isEmpty())
 			savePosition();
 		
@@ -871,9 +880,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	public void onDestroy() {
 		Tracker.enterOnDestroy(this);
 		super.onDestroy();
-		System.out.println("onDestroy");
-		mIsDead = true;
 
+		mIsDead = true;
 		mTaskQueue.finish();
 
 		try {
@@ -896,7 +904,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 		mBookshelfAdapter = null;
 		synchronized(mInstanceCount) {
 			mInstanceCount--;
-			System.out.println("BoB instances: " + mInstanceCount);
+            if (BuildConfig.DEBUG) {
+                System.out.println("BoB instances: " + mInstanceCount);
+            }
 		}
 		TrackedCursor.dumpCursors();
 		Tracker.exitOnDestroy(this);
@@ -1012,8 +1022,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 		mMenuHandler.addSearchItem(menu)
 					.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
-		final boolean showGr = GoodreadsManager.hasCredentials();
-		if (showGr) {
+		if (GoodreadsManager.hasCredentials()) {
 			mMenuHandler.addItem(menu, MNU_GOODREADS, R.string.goodreads, R.drawable.ic_menu_gr_logo);
 		}
 
@@ -1106,7 +1115,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-		System.out.println("In onActivityResult for BooksOnBookshelf for request " + requestCode);
+		Tracker.enterOnActivityResult(this,requestCode, resultCode);
 
 		mMarkBookId = 0;
 
@@ -1200,7 +1209,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 			*/
 			// We call bookshelf not fillData in case the bookshelves have been updated.
 		}
-		
+		Tracker.exitOnActivityResult(this,requestCode,resultCode);
 	}
 
 	/**
@@ -1327,13 +1336,15 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	}
 	
 	/**
-	 * TODO DEBUG ONLY. Count instances
+	 * DEBUG ONLY. Count instances
 	 */
 	public BooksOnBookshelf() {
 		super();
-		synchronized(mInstanceCount) {
-			mInstanceCount++;
-			System.out.println("BoB instances: " + mInstanceCount);
+		if (BuildConfig.DEBUG) {
+			synchronized (mInstanceCount) {
+				mInstanceCount++;
+				System.out.println("BoB instances: " + mInstanceCount);
+			}
 		}
 	}
 }

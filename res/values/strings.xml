@@ -251,7 +251,7 @@
     <string name="my_books">My Books</string>
     <string name="my_books_classic">My Books (Classic)</string>
     <string name="loan_return_book">Loan, Return or Edit Book</string>
-    <string name="admin_and_prefs">Administration and Preferences</string>
+    <string name="admin_and_prefs">Admin and Preferences</string>
     <string name="edit_book_send_to_gr">Send to goodreads</string>
     <string name="goodreads">goodreads</string>
     <string name="goodreads_auth_blurb_part1">goodreads is a web site whose stated mission is "to help people find and share books they love".

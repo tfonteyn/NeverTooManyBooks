@@ -115,7 +115,7 @@
         <TextView
             android:id="@+id/send_books_to_goodreads_label"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_archive"
+            android:drawableStart="@android:drawable/ic_menu_send"
             android:text="@string/send_books_to_goodreads" />
 
         <!-- CREDENTIALS HEADING -->
@@ -169,7 +169,7 @@
         <TextView
             android:id="@+id/erase_cover_cache_label"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_close_clear_cancel"
+            android:drawableStart="@android:drawable/ic_menu_close_clear_cancel"
             android:text="@string/erase_cover_cache" />
 
         <!-- BACKUP DATABASE (DEBUG ONLY!) -->
@@ -177,7 +177,7 @@
         <TextView
             android:id="@+id/backup_label"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_archive"
+            android:drawableStart="@android:drawable/ic_menu_send"
             android:text="@string/copy_database" />
     </LinearLayout>
 

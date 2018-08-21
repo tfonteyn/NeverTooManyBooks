@@ -55,7 +55,21 @@ public class MenuHandler {
 		mSort = 0;
 		menu.clear();
 	}
-	
+	/**
+	 * Add a custom menu item.
+	 *
+	 * @param menu		Root menu
+	 * @param id		Menu item ID
+	 * @param stringId	String ID to display
+	 * @param icon		Icon for menu item
+	 *
+	 * @return			The new item
+	 */
+	public MenuItem addItem( Menu menu, int id, int stringId, int icon ) {
+		return menu.add(0, id, mSort++, stringId)
+				.setIcon(icon);
+	}
+
 	/**
 	 * Add menu and submenu for book creation.
 	 * 
@@ -63,40 +77,27 @@ public class MenuHandler {
 	 */
 	public void addCreateBookItems(Menu menu) {
 		SubMenu addMenu = menu.addSubMenu(0, MNU_ADD_BOOK, mSort++, BookCatalogueApp.getResourceString(R.string.menu_insert) + "...");
-		//addMenu.setIcon(android.R.drawable.ic_menu_add);
-		addMenu.setIcon(R.drawable.ic_action_book_add);
+
+		addMenu.setIcon(android.R.drawable.ic_menu_add);
+		//addMenu.setIcon(R.drawable.ic_action_book_add);
 		addMenu.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		{
 			if (Utils.USE_BARCODE) {
-				MenuItem insertBC = addMenu.add(0, MNU_ITM_ADD_BOOK_BARCODE, mSort++, R.string.scan_barcode_isbn);
-				insertBC.setIcon(R.drawable.ic_menu_insert_barcode);	
+				addMenu.add(0, MNU_ITM_ADD_BOOK_BARCODE, mSort++, R.string.scan_barcode_isbn)
+						.setIcon(R.drawable.ic_menu_insert_barcode);
 			}
-			MenuItem insertISBN = addMenu.add(0, MNU_ITM_ADD_BOOK_ISBN, mSort++, R.string.enter_isbn);
-			insertISBN.setIcon(android.R.drawable.ic_menu_zoom);
+			addMenu.add(0, MNU_ITM_ADD_BOOK_ISBN, mSort++, R.string.enter_isbn)
+					.setIcon(android.R.drawable.ic_menu_zoom);
 			
-			MenuItem insertName = addMenu.add(0, MNU_ITM_ADD_BOOK_NAMES, mSort++, R.string.search_internet);
-			insertName.setIcon(android.R.drawable.ic_menu_zoom);
+			addMenu.add(0, MNU_ITM_ADD_BOOK_NAMES, mSort++, R.string.search_internet)
+					.setIcon(android.R.drawable.ic_menu_zoom);
 
-			MenuItem insertBook = addMenu.add(0, MNU_ITM_ADD_BOOK_MANUAL, mSort++, R.string.add_manually);
-			insertBook.setIcon(android.R.drawable.ic_menu_add);
+			addMenu.add(0, MNU_ITM_ADD_BOOK_MANUAL, mSort++, R.string.add_manually)
+					.setIcon(android.R.drawable.ic_menu_add);
 		}
 	}
 
-	/**
-	 * Add a custom menu item.
-	 * 
-	 * @param menu		Root menu
-	 * @param id		Menu item ID
-	 * @param stringId	String ID to display
-	 * @param icon		Icon for menu item
-	 * 
-	 * @return			The new item
-	 */
-	public MenuItem addItem( Menu menu, int id, int stringId, int icon ) {
-		MenuItem item = menu.add(0, id, mSort++, stringId);
-		item.setIcon(icon);		
-		return item;
-	}
+
 
 	/**
 	 * Add the default 'help & admin' menu item
@@ -104,31 +105,21 @@ public class MenuHandler {
 	 * @param menu	root menu
 	 */
 	public void addCreateHelpAndAdminItems(Menu menu) {
-		{
-			String title = BookCatalogueApp.getResourceString(R.string.menu_bookshelf);
-			MenuItem item = menu.add(0, MNU_ITM_BOOKSHELVES, mSort++, title);
-			item.setIcon(R.drawable.ic_menu_bookshelves);
-		}
-		{
-			String helpTitle = BookCatalogueApp.getResourceString(R.string.help);
-			MenuItem help = menu.add(0, MNU_ITM_HELP, mSort++, helpTitle);
-			help.setIcon(android.R.drawable.ic_menu_help);
-		}
-		{
-			String adminTitle = BookCatalogueApp.getResourceString(R.string.menu_administration);
-			MenuItem admin = menu.add(0, MNU_ITM_ADMIN, mSort++, adminTitle);
-			admin.setIcon(android.R.drawable.ic_menu_manage);
-		}
-		{
-			String aboutTitle = BookCatalogueApp.getResourceString(R.string.about_label);
-			MenuItem admin = menu.add(0, MNU_ITM_ABOUT, mSort++, aboutTitle);
-			admin.setIcon(android.R.drawable.ic_menu_info_details);
-		}
-		{
-			String aboutTitle = BookCatalogueApp.getResourceString(R.string.donate_label);
-			MenuItem admin = menu.add(0, MNU_ITM_DONATE, mSort++, aboutTitle);
-			admin.setIcon(R.drawable.ic_menu_donate);
-		}
+
+			menu.add(0, MNU_ITM_BOOKSHELVES, mSort++, BookCatalogueApp.getResourceString(R.string.menu_bookshelf))
+					.setIcon(R.drawable.ic_menu_bookshelves);
+
+			menu.add(0, MNU_ITM_HELP, mSort++, BookCatalogueApp.getResourceString(R.string.help))
+					.setIcon(android.R.drawable.ic_menu_help);
+
+			menu.add(0, MNU_ITM_ADMIN, mSort++, BookCatalogueApp.getResourceString(R.string.menu_administration))
+					.setIcon(android.R.drawable.ic_menu_manage);
+
+			menu.add(0, MNU_ITM_ABOUT, mSort++, BookCatalogueApp.getResourceString(R.string.about_label))
+					.setIcon(android.R.drawable.ic_menu_info_details);
+
+			menu.add(0, MNU_ITM_DONATE, mSort++, BookCatalogueApp.getResourceString(R.string.donate_label))
+					.setIcon(R.drawable.ic_menu_donate);
 	}
 	
 	/**
@@ -137,9 +128,8 @@ public class MenuHandler {
 	 * @param menu	root menu
 	 */
 	public MenuItem addSearchItem(Menu menu) {
-		MenuItem search = menu.add(0, MNU_ITM_SEARCH, mSort++, R.string.menu_search);
-		search.setIcon(android.R.drawable.ic_menu_search);
-		return search;
+		return menu.add(0, MNU_ITM_SEARCH, mSort++, R.string.menu_search)
+				.setIcon(android.R.drawable.ic_menu_search);
 	}
 
 	/**
