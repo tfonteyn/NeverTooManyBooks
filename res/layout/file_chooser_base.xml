@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:id="@+id/buttons"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
@@ -32,7 +32,7 @@
 
     <LinearLayout
         android:id="@+id/browser_fragment"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/buttons"
         android:orientation="vertical" >

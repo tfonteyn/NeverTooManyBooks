@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:paddingStart="@dimen/padding_border"
@@ -10,7 +10,7 @@
 
     <RelativeLayout
         android:id="@+id/header"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
 
@@ -45,7 +45,7 @@
 
         <TextView
             android:id="@+id/level_1_text"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/bookshelf_count"
             android:paddingStart="@dimen/padding_border"
@@ -55,7 +55,7 @@
 
         <TextView
             android:id="@+id/level_2_text"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/level_1_text"
             android:paddingStart="@dimen/padding_border"
@@ -66,7 +66,7 @@
 
     <View
         android:id="@+id/header_divider"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@id/header"
         android:paddingBottom="2dp"
@@ -76,20 +76,20 @@
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:layout_below="@id/header_divider"
         android:orientation="vertical">
 
         <com.eleybourn.bookcatalogue.widgets.FastScrollListView
             android:id="@+id/android:list"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:textSize="16sp" />
 
         <TextView
             android:id="@+id/android:empty"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/nobooks"
             android:textSize="16sp" />

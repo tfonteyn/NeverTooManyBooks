@@ -2,19 +2,19 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:fillViewport="true" >
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="@dimen/padding_border" >
 
         <TextView
             android:id="@+id/export_advanced_blurb"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="6dp"
             android:text="@string/export_advanced_blurb"
@@ -50,7 +50,7 @@
 
             <TextView
                 android:id="@+id/book_details_blurb"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@id/book_details"
                 android:layout_alignEnd="@id/book_details"
@@ -89,7 +89,7 @@
 
             <TextView
                 android:id="@+id/cover_images_blurb"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/cover_images"
                 android:layout_alignEnd="@+id/cover_images"
@@ -130,7 +130,7 @@
 
             <TextView
                 android:id="@+id/preferences_blurb"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@id/preferences"
                 android:layout_alignEnd="@id/preferences"
@@ -141,7 +141,7 @@
 
         <TextView
             android:id="@+id/export_advanced_date_blurb"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="6dp"
             android:text="@string/export_advanced_date_blurb"

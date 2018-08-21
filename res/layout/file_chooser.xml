@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:paddingStart="@dimen/padding_border"
@@ -9,7 +9,7 @@
 
     <RelativeLayout
         android:id="@+id/path_details"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:focusableInTouchMode="true" >
@@ -39,7 +39,7 @@
 
         <TextView
             android:id="@+id/path"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toStartOf="@+id/create"
@@ -54,7 +54,7 @@
 
     <View
         android:id="@+id/header_divider"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@+id/path_details"
         style="@style/main_menu_header_divider"
@@ -62,7 +62,7 @@
 
     <EditText
         android:id="@+id/file_name"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:text="fred.bcbk"
@@ -74,7 +74,7 @@
 
     <View
         android:id="@+id/footer_divider"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_above="@+id/file_name"
         style="@style/main_menu_header_divider"
@@ -82,7 +82,7 @@
     
     <com.eleybourn.bookcatalogue.widgets.FastScrollListView
         android:id="@+id/android:list"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/footer_divider"
         android:layout_below="@+id/header_divider"

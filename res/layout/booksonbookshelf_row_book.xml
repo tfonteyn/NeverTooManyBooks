@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/row"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:scaleType="fitStart" >
@@ -58,7 +58,7 @@
 
         <TextView
             android:id="@+id/author"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/padding_border"
             android:paddingEnd="@dimen/padding_border"
@@ -67,7 +67,7 @@
 
         <TextView
             android:id="@+id/shelves"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/padding_border"
             android:paddingEnd="@dimen/padding_border"
@@ -76,7 +76,7 @@
 
         <TextView
             android:id="@+id/location"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/padding_border"
             android:paddingEnd="@dimen/padding_border"
@@ -85,7 +85,7 @@
 
         <TextView
             android:id="@+id/publisher"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/padding_border"
             android:paddingEnd="@dimen/padding_border"

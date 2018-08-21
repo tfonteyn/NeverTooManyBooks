@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- incompatible with APIL4 android:fadeScrollbars="false" -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:scrollbars="vertical" >
 
     <LinearLayout
         android:id="@+id/menu"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
 
@@ -18,7 +18,7 @@
         </RadioGroup>
 
         <View
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="1dp"
             android:paddingBottom="@dimen/padding_border_double"
             style="@style/main_menu_header_divider"

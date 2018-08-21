@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:fillViewport="true"
     android:paddingStart="@dimen/padding_border"
@@ -11,7 +11,7 @@
 
     <LinearLayout
         android:id="@+id/dynamic_properties"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="top"
         android:orientation="vertical"
@@ -23,7 +23,7 @@
         MANAGEMENT Header 
 	    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
 			android:orientation="horizontal"
-			android:layout_width="fill_parent" 
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:paddingLeft="0sp">
 
