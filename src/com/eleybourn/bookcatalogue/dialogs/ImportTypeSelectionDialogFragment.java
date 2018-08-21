@@ -1,8 +1,5 @@
 package com.eleybourn.bookcatalogue.dialogs;
 
-import java.io.File;
-import java.io.IOException;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -18,6 +15,9 @@ import com.eleybourn.bookcatalogue.backup.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.BackupReader;
 import com.eleybourn.bookcatalogue.utils.Logger;
+
+import java.io.File;
+import java.io.IOException;
 
 public class ImportTypeSelectionDialogFragment extends DialogFragment {
 	private int mDialogId;
@@ -99,7 +99,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
 
         View v = getActivity().getLayoutInflater().inflate(R.layout.import_type_selection, null);
 		AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(v).setTitle(R.string.import_from_archive).create();
-		alertDialog.setIcon(R.drawable.ic_menu_help);
+		alertDialog.setIcon(android.R.drawable.ic_menu_help);
 		alertDialog.setCanceledOnTouchOutside(false);
 
 		setOnClickListener(v, R.id.all_books_row);

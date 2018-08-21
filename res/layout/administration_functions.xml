@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
@@ -32,7 +33,7 @@
         <TextView
             android:id="@+id/fields_label"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_agenda"
+            android:drawableStart="@android:drawable/ic_menu_agenda"
             android:text="@string/menu_manage_fields" />
 
         <!-- BOOK LIST PREFS -->
@@ -40,7 +41,7 @@
         <TextView
             android:id="@+id/booklist_preferences_label"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_manage"
+            android:drawableStart="@android:drawable/ic_menu_manage"
             android:text="@string/booklist_preferences" />
 
         <!-- Edit Styles -->
@@ -48,7 +49,7 @@
         <TextView
             android:id="@+id/edit_styles_label"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_manage"
+            android:drawableStart="@android:drawable/ic_menu_manage"
             android:text="@string/edit_book_list_styles" />
 
         <!-- OTHER PREFS -->
@@ -56,7 +57,7 @@
         <TextView
             android:id="@+id/other_prefs_label"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_manage"
+            android:drawableStart="@android:drawable/ic_menu_manage"
             android:text="@string/other_preferences" />
 
         <!-- DATA IMPORT/EXPORT -->
@@ -70,25 +71,25 @@
         <TextView
             android:id="@+id/backup_catalogue_label"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_save"
+            android:drawableStart="@android:drawable/ic_menu_save"
             android:text="@string/backup_to_archive" />
 
         <TextView
             android:id="@+id/restore_catalogue_label"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_upload"
+            android:drawableStart="@android:drawable/ic_menu_upload"
             android:text="@string/import_from_archive" />
 
         <TextView
             android:id="@+id/export_label"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_save"
+            android:drawableStart="@android:drawable/ic_menu_save"
             android:text="@string/export_to_csv" />
 
         <TextView
             android:id="@+id/import_label"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_upload"
+            android:drawableStart="@android:drawable/ic_menu_upload"
             android:text="@string/import_from_csv" />
 
         <!-- UPDATE FIELDS -->
@@ -96,7 +97,7 @@
         <TextView
             android:id="@+id/thumb_label"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_gallery"
+            android:drawableStart="@android:drawable/ic_menu_gallery"
             android:text="@string/update_fields" />
 
         <TextView
@@ -108,7 +109,7 @@
         <TextView
             android:id="@+id/import_all_from_goodreads_label"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_upload"
+            android:drawableStart="@android:drawable/ic_menu_upload"
             android:text="@string/import_all_from_goodreads" />
 
         <TextView
@@ -136,7 +137,7 @@
         <TextView
             android:id="@+id/librarything_auth"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_gallery"
+            android:drawableStart="@android:drawable/ic_menu_gallery"
             android:text="@string/library_thing" />
 
         <!-- ADVANCED OPTIONS Header -->
@@ -152,7 +153,7 @@
         <TextView
             android:id="@+id/background_tasks_label"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_recent_history"
+            android:drawableStart="@android:drawable/ic_menu_recent_history"
             android:text="@string/background_tasks" />
 
         <!-- RESET HINTS -->
@@ -160,7 +161,7 @@
         <TextView
             android:id="@+id/reset_hints_label"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_agenda"
+            android:drawableStart="@android:drawable/ic_menu_agenda"
             android:text="@string/reset_hints" />
 
         <!-- ERASE COVER CACHE -->

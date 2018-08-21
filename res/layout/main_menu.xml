@@ -57,7 +57,7 @@
             <TextView
                 android:id="@+id/administration_label"
                 style="@style/main_menu_item"
-                android:drawableStart="@drawable/ic_menu_preferences"
+                android:drawableStart="@android:drawable/ic_menu_preferences"
                 android:text="@string/admin_and_prefs" />
 
             <TextView
@@ -69,7 +69,7 @@
             <TextView
                 android:id="@+id/about_label"
                 style="@style/main_menu_item"
-                android:drawableStart="@drawable/ic_menu_info_details"
+                android:drawableStart="@android:drawable/ic_menu_info_details"
                 android:text="@string/about_label" />
 
             <!-- Now in 'My Books' -->
@@ -82,7 +82,7 @@
             <TextView
                 android:id="@+id/help_label"
                 style="@style/main_menu_item"
-                android:drawableStart="@drawable/ic_menu_help"
+                android:drawableStart="@android:drawable/ic_menu_help"
                 android:text="@string/help" />
             
             <TextView

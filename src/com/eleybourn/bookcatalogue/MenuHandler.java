@@ -122,7 +122,7 @@ public class MenuHandler {
 		{
 			String aboutTitle = BookCatalogueApp.getResourceString(R.string.about_label);
 			MenuItem admin = menu.add(0, MNU_ITM_ABOUT, mSort++, aboutTitle);
-			admin.setIcon(R.drawable.ic_menu_info_details);
+			admin.setIcon(android.R.drawable.ic_menu_info_details);
 		}
 		{
 			String aboutTitle = BookCatalogueApp.getResourceString(R.string.donate_label);

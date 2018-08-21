@@ -33,7 +33,7 @@
             android:layout_gravity="center_vertical"
             android:contentDescription="@string/up_folder"
             android:gravity="center_vertical"
-            android:src="@drawable/ic_menu_add"
+            android:src="@android:drawable/ic_menu_add"
             android:text="@string/add"
             android:visibility="gone" />
 

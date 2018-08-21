@@ -1,7 +1,5 @@
 package com.eleybourn.bookcatalogue.dialogs;
 
-import java.io.File;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -19,6 +17,8 @@ import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.Exp
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.OnExportTypeSelectionDialogResultListener;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.io.File;
 
 public class ExportAdvancedDialogFragment extends DialogFragment {
 	private int mDialogId;
@@ -106,7 +106,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
 
         View v = getActivity().getLayoutInflater().inflate(R.layout.export_advanced_options, null);
 		AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(v).setTitle(R.string.advanced_options).create();
-		alertDialog.setIcon(R.drawable.ic_menu_help);
+		alertDialog.setIcon(android.R.drawable.ic_menu_help);
 		alertDialog.setCanceledOnTouchOutside(false);
 
 		v.findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {

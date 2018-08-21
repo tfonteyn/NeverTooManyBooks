@@ -20,7 +20,7 @@
         <TextView
             android:id="@+id/import_all_from_goodreads_label"
             style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_upload"
+            android:drawableStart="@android:drawable/ic_menu_upload"
             android:text="@string/import_all_from_goodreads" />
 
         <TextView
