@@ -23,23 +23,33 @@ import java.util.Locale;
  * @author pjw
  */
 public class BookCatalogueActivity extends Activity {
+    /**
+     * NEWKIND: add new supported themes here and in R.array.supported_themes,
+     * the string-array order must match the THEMES order
+     * The preferences choice will be build according to the string-array list/order.
+     */
+    protected static final int DEFAULT_THEME = 0;
+    protected static final int[] THEMES = {
+            R.style.AppThemeMaterial,
+            R.style.AppThemeMaterialLight,
+            R.style.AppThemeHolo,
+            R.style.AppThemeHoloLight,
+            R.style.AppThemeDeviceDefault,
+            R.style.AppThemeDeviceDefaultLight
+    };
+
     /** Last locale used so; cached so we can check if it has genuinely changed */
     private Locale mLastLocale = BookCatalogueApp.getPreferredLocale();
+    /** same for Theme */
+    private int mLastTheme = BookCatalogueApp.getAppPreferences().getInt(BookCataloguePreferences.PREF_APP_THEME, DEFAULT_THEME);
 
-    /** the order has to match the theme display name as defined in R.array.supported_themes
-     * NEWKIND: add new supported themes here
-     */
-    protected static final int THEME_MATERIAL = 0;
-    protected static final int THEME_MATERIAL_LIGHT = 1;
-
-    private int mLastTheme = BookCatalogueApp.getAppPreferences().getInt(BookCataloguePreferences.PREF_APP_THEME, THEME_MATERIAL);
-
+    /** when a locale or theme is changed, a restart of the activity is needed */
     private boolean mReloadOnResume = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
-	    setCustomTheme();
+        setTheme(THEMES[mLastTheme]);
         super.onCreate(savedInstanceState);
 
         ActionBar bar = getActionBar();
@@ -82,10 +92,9 @@ public class BookCatalogueActivity extends Activity {
      * Reload this activity if locale has changed.
      */
     protected void updateLocaleIfChanged() {
-        Locale old = mLastLocale;
-        Locale curr = BookCatalogueApp.getPreferredLocale();
-        if ((curr != null && !curr.equals(old)) || (curr == null && old != null)) {
-            mLastLocale = curr;
+        Locale current = BookCatalogueApp.getPreferredLocale();
+        if ((current != null && !current.equals(mLastLocale)) || (current == null && mLastLocale != null)) {
+            mLastLocale = current;
             BookCatalogueApp.applyPreferredLocaleIfNecessary(this.getResources());
             mReloadOnResume = true;
         }
@@ -95,27 +104,11 @@ public class BookCatalogueActivity extends Activity {
      * Reload this activity if theme has changed.
      */
     protected void updateThemeIfChanged() {
-        int curr = BookCatalogueApp.getAppPreferences().getInt(BookCataloguePreferences.PREF_APP_THEME, THEME_MATERIAL);
-        System.out.println("updateThemeIfChanged current: " + curr + ", last: " + mLastTheme);
-
-        if (mLastTheme != curr) {
-            mLastTheme = curr;
-            setCustomTheme();
+        int current = BookCatalogueApp.getAppPreferences().getInt(BookCataloguePreferences.PREF_APP_THEME, DEFAULT_THEME);
+        if (mLastTheme != current) {
+            mLastTheme = current;
+            setTheme(THEMES[mLastTheme]);
             mReloadOnResume = true;
-        }
-    }
-
-    /**
-     * NEWKIND: add new supported themes here
-     */
-    private void setCustomTheme() {
-        switch (mLastTheme) {
-            case THEME_MATERIAL_LIGHT:
-                setTheme(R.style.AppThemeLight);
-                break;
-            default:
-                setTheme(R.style.AppThemeDark);
-                break;
         }
     }
 

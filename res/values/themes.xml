@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppThemeDark" parent="android:style/Theme.Material" />
-    <style name="AppThemeLight" parent="android:style/Theme.Material.Light" />
+    <!-- themes externalised, so we can modify them individually if needed -->
+    <style name="AppThemeMaterial" parent="android:style/Theme.Material" />
+    <style name="AppThemeMaterialLight" parent="android:style/Theme.Material.Light" />
+
+    <style name="AppThemeHolo" parent="@android:style/Theme.Holo" />
+    <style name="AppThemeHoloLight" parent="@android:style/Theme.Holo.Light" />
+
+    <style name="AppThemeDeviceDefault" parent="@android:style/Theme.DeviceDefault" />
+    <style name="AppThemeDeviceDefaultLight" parent="@android:style/Theme.DeviceDefault.Light" />
+
+
 </resources>

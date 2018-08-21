@@ -962,7 +962,7 @@ and you can edit the book via the options menu using the menu button or overflow
     <!--  Menu Item - will be in the next release -->
 
     <!-- Heading for the "new_in_xxx" message to make future updates less work for translators...I hope -->
-    <!-- The plan is to use specific feature strings so that we can also update the store listing and add/remove reatures easily -->
+    <!-- The plan is to use specific feature strings so that we can also update the store listing and add/remove features easily -->
     <!-- Part of the "new in x.x.x" message -->
 
     <!-- End: Added/Updated in 5.1.2 -->
@@ -1030,8 +1030,12 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="single_string" translatable="false">%1s</string> <!-- needed for string based ItemEntries properties -->
     <string-array
         name="supported_themes">
-        <item>Dark</item>
-        <item>Light</item>
+        <item>Material</item>
+        <item>Material Light</item>
+        <item>Holo</item>
+        <item>Holo Light</item>
+        <item>Default</item>
+        <item>Default Light</item>
     </string-array>
     <!-- End: Added/Updated in [Next Version] -->
 
