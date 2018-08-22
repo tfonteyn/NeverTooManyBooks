@@ -20,9 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -56,10 +53,15 @@ import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEd
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
+import java.io.File;
+import java.util.ArrayList;
+
 /**
  * A tab host activity which holds the three edit book tabs 1. Edit Details /
  * Book Details 2. Edit Comments 3. Loan Book
- * 
+ *
+ * TODO: ActionBar.Tab is deprecated since API level 21.
+ *
  * @author Evan Leybourn
  */
 public class BookEdit extends BookCatalogueActivity implements BookEditFragmentAbstract.BookEditManager,

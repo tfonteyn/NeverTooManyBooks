@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -37,276 +37,266 @@ import java.util.ArrayList;
 
 /**
  * Implement the 'Main Menu' for BookCatalogue. This is one of two possible start screens.
- * 
- * - 'My Books' -> preferred bookshelf view 
- * - 'Add Book' -> Add Method Dialog 
+ *
+ * - 'My Books' -> preferred bookshelf view
+ * - 'Add Book' -> Add Method Dialog
  * - 'Loan/Return/Edit Book'
- * - 'Search' 
+ * - 'Search'
  * - 'Admin & Preferences'
  * - Help
  * - Export/Import/Sync
- * 
+ *
  * @author Philip Warner
- * 
+ *
  */
 public class MainMenu extends BookCatalogueActivity {
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		// Get the preferences and extras.
-		BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
-		Bundle extras = this.getIntent().getExtras();
+        // Get the preferences and extras.
+        BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+        Bundle extras = this.getIntent().getExtras();
 
-		// Handle startup specially.
-		if (extras != null && extras.containsKey("startup") && extras.getBoolean("startup")) {
-			// Check if we really want to start this activity.
-			if (prefs.getStartInMyBook()) {
-				doMyBooks();
-				finish();
-				return;
-			}
-		}
+        // Handle startup specially.
+        if (extras != null && extras.containsKey("startup") && extras.getBoolean("startup")) {
+            // Check if we really want to start this activity.
+            if (prefs.getStartInMyBook()) {
+                doMyBooks();
+                finish();
+                return;
+            }
+        }
 
-		// If we get here, we're meant to be in this activity.
-		setContentView(R.layout.main_menu);
-		setTitle(R.string.app_name);
+        // If we get here, we're meant to be in this activity.
+        setContentView(R.layout.main_menu);
+        setTitle(R.string.app_name);
 
-		// Display/hide the 'classic' my books item
-		int classicVis;
-		if (prefs.getBoolean(BookCataloguePreferences.PREF_INCLUDE_CLASSIC_MY_BOOKS, false))
-			classicVis = View.VISIBLE;
-		else
-			classicVis = View.GONE;
+        // Display/hide the 'classic' my books item
+        int classicVis;
+        if (prefs.getBoolean(BookCataloguePreferences.PREF_INCLUDE_CLASSIC_MY_BOOKS, false))
+            classicVis = View.VISIBLE;
+        else
+            classicVis = View.GONE;
 
-		View v = findViewById(R.id.my_books_classic_label);
-		v.setVisibility(classicVis);
+        View v = findViewById(R.id.my_books_classic_label);
+        v.setVisibility(classicVis);
 
-		// Setup handlers for items. It's just a menu after all.
-		setOnClickListener(R.id.my_books_label, mBrowseHandler);
-		setOnClickListener(R.id.my_books_classic_label, mMyBooksHandler);
-		setOnClickListener(R.id.add_book_label, mAddBookHandler);
-		setOnClickListener(R.id.loan_label, mLoanBookHandler);
-		setOnClickListener(R.id.search_label, mSearchHandler);
-		setOnClickListener(R.id.administration_label, mAdminHandler);
-		setOnClickListener(R.id.about_label, mAboutHandler);
-		setOnClickListener(R.id.help_label, mHelpHandler);
-		setOnClickListener(R.id.donate_label, mDonateHandler);
-		// Goodreads will be shown/hidden in onResume()
-		setOnClickListener(R.id.goodreads_label, mGoodreadsHandler);
-		
-		if (savedInstanceState == null) {
-			HintManager.displayHint(this, R.string.hint_tempus_locum, null);
-			HintManager.displayHint(this, R.string.hint_startup_screen, null);
-		}
+        // Setup handlers for items. It's just a menu after all.
+        setOnClickListener(R.id.my_books_label, mBrowseHandler);
+        setOnClickListener(R.id.my_books_classic_label, mMyBooksHandler);
+        setOnClickListener(R.id.add_book_label, mAddBookHandler);
+        setOnClickListener(R.id.loan_label, mLoanBookHandler);
+        setOnClickListener(R.id.search_label, mSearchHandler);
+        setOnClickListener(R.id.administration_label, mAdminHandler);
+        setOnClickListener(R.id.about_label, mAboutHandler);
+        setOnClickListener(R.id.help_label, mHelpHandler);
+        setOnClickListener(R.id.donate_label, mDonateHandler);
+        // Goodreads will be shown/hidden in onResume()
+        setOnClickListener(R.id.goodreads_label, mGoodreadsHandler);
 
-		Utils.initBackground(this, true);
-	}
+        if (savedInstanceState == null) {
+            HintManager.displayHint(this, R.string.hint_tempus_locum, null);
+            HintManager.displayHint(this, R.string.hint_startup_screen, null);
+        }
 
-	/**
-	 * Fix background
-	 */
-	@Override 
-	public void onResume() {
-		super.onResume();
+        Utils.initBackground(this, true);
+    }
 
-		if (BuildConfig.DEBUG) {
-			CatalogueDBAdapter.dumpInstances();
-		}
+    /**
+     * Fix background
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
 
-		final boolean showGr = GoodreadsManager.hasCredentials();
+        if (BuildConfig.DEBUG) {
+            CatalogueDBAdapter.dumpInstances();
+        }
 
-		View grItem = findViewById(R.id.goodreads_label);
-		if (showGr) {
-			grItem.setVisibility(View.VISIBLE);
-		} else {
-			grItem.setVisibility(View.GONE);
-		}
+        View grItem = findViewById(R.id.goodreads_label);
+        if (GoodreadsManager.hasCredentials()) {
+            grItem.setVisibility(View.VISIBLE);
+        } else {
+            grItem.setVisibility(View.GONE);
+        }
 
-		/*
-		 * DEBUG ONLY; used when tracking a bug in android 2.1, but kept because
-		 * there are still non-fatal anomalies.
-		 */
-		if (BuildConfig.DEBUG) {
-			CatalogueDBAdapter.printReferenceCount("MainMenu resumed");
-		}
-	}
+        /*
+         * DEBUG ONLY; used when tracking a bug in android 2.1, but kept because
+         * there are still non-fatal anomalies.
+         */
+        if (BuildConfig.DEBUG) {
+            CatalogueDBAdapter.printReferenceCount("MainMenu resumed");
+        }
+    }
 
-	/**
-	 * Add Book Menu Handler
-	 */
-	private final OnClickListener mAddBookHandler = new OnClickListener() {
-		@Override public void onClick(View v) {
-			ArrayList<AlertDialogItem> items = new ArrayList<>();
-			items.add( new AlertDialogItem(getString(R.string.scan_barcode_isbn), mCreateBookScan) );
-			items.add( new AlertDialogItem(getString(R.string.enter_isbn), mCreateBookIsbn) );
-			items.add( new AlertDialogItem(getString(R.string.search_internet), mCreateBookName) );
-			items.add( new AlertDialogItem(getString(R.string.add_manually), mCreateBookManually) );
-			AlertDialogUtils.showContextDialogue(MainMenu.this, getString(R.string.menu_insert), items);
-		}
-	};
+    /**
+     * Add Book Menu Handler
+     */
+    private final OnClickListener mAddBookHandler = new OnClickListener() {
+        @Override public void onClick(View v) {
+            ArrayList<AlertDialogItem> items = new ArrayList<>();
+            items.add( new AlertDialogItem(getString(R.string.scan_barcode_isbn), mCreateBookScan) );
+            items.add( new AlertDialogItem(getString(R.string.enter_isbn), mCreateBookIsbn) );
+            items.add( new AlertDialogItem(getString(R.string.search_internet), mCreateBookName) );
+            items.add( new AlertDialogItem(getString(R.string.add_manually), mCreateBookManually) );
+            AlertDialogUtils.showContextDialogue(MainMenu.this, getString(R.string.menu_insert), items);
+        }
+    };
 
-	/**
-	 * Loan Book Menu Handler
-	 */
-	private final OnClickListener mLoanBookHandler = new OnClickListener() {
-		@Override public void onClick(View v) {
-			//Intent i = new Intent(this, BookCatalogue.class);
-			//i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			//startActivity(i);
-		}
-	};
+    /**
+     * Loan Book Menu Handler
+     */
+    private final OnClickListener mLoanBookHandler = new OnClickListener() {
+        @Override public void onClick(View v) {
+            //Intent i = new Intent(this, BookCatalogue.class);
+            //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            //startActivity(i);
+        }
+    };
 
-	/**
-	 * Search Menu Handler
-	 */
-	private final OnClickListener mSearchHandler = new OnClickListener() {
-		@Override public void onClick(View v) {
-			Intent i = new Intent(MainMenu.this, SearchCatalogue.class);
-			//i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			startActivity(i);
-		}
-	};
+    /**
+     * Search Menu Handler
+     */
+    private final OnClickListener mSearchHandler = new OnClickListener() {
+        @Override public void onClick(View v) {
+            Intent i = new Intent(MainMenu.this, SearchCatalogue.class);
+            //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
+        }
+    };
 
-	/**
-	 * Admin Menu Handler
-	 */
-	private final OnClickListener mAdminHandler = new OnClickListener() {
-		@Override public void onClick(View v) {
-			Intent i = new Intent(MainMenu.this, AdministrationFunctions.class);
-			startActivity(i);			
-		}
-	};
+    /**
+     * Admin Menu Handler
+     */
+    private final OnClickListener mAdminHandler = new OnClickListener() {
+        @Override public void onClick(View v) {
+            Intent i = new Intent(MainMenu.this, AdministrationFunctions.class);
+            startActivity(i);
+        }
+    };
 
-	/**
-	 * Browse Handler
-	 */
-	private final OnClickListener mBrowseHandler = new OnClickListener() {
-		@Override public void onClick(View v) {
-			Intent i = new Intent(MainMenu.this, BooksOnBookshelf.class);
-			startActivity(i);
-		}
-	};
+    /**
+     * Browse Handler
+     */
+    private final OnClickListener mBrowseHandler = new OnClickListener() {
+        @Override public void onClick(View v) {
+            Intent i = new Intent(MainMenu.this, BooksOnBookshelf.class);
+            startActivity(i);
+        }
+    };
 
-	/**
-	 * Goodreads Menu Handler
-	 */
-	private final OnClickListener mGoodreadsHandler = new OnClickListener() {
-		@Override public void onClick(View v) {
-			GoodreadsUtils.showGoodreadsOptions(MainMenu.this);
-		}
-	};
+    /**
+     * Goodreads Menu Handler
+     */
+    private final OnClickListener mGoodreadsHandler = new OnClickListener() {
+        @Override public void onClick(View v) {
+            GoodreadsUtils.showGoodreadsOptions(MainMenu.this);
+        }
+    };
 
-	/**
-	 * About Menu Handler
-	 */
-	private final OnClickListener mAboutHandler = new OnClickListener() {
-		@Override public void onClick(View v) {
-			Intent i = new Intent(MainMenu.this, AdministrationAbout.class);
-			startActivity(i);
-		}
-	};
+    /**
+     * About Menu Handler
+     */
+    private final OnClickListener mAboutHandler = new OnClickListener() {
+        @Override public void onClick(View v) {
+            Intent i = new Intent(MainMenu.this, AdministrationAbout.class);
+            startActivity(i);
+        }
+    };
 
-	/**
-	 * Help Menu Handler
-	 */
-	private final OnClickListener mHelpHandler = new OnClickListener() {
-		@Override public void onClick(View v) {
-			Intent i = new Intent(MainMenu.this, Help.class);
-			startActivity(i);			
-		}
-	};
+    /**
+     * Help Menu Handler
+     */
+    private final OnClickListener mHelpHandler = new OnClickListener() {
+        @Override public void onClick(View v) {
+            Intent i = new Intent(MainMenu.this, Help.class);
+            startActivity(i);
+        }
+    };
 
-	/**
-	 * Donate Menu Handler
-	 */
-	private final OnClickListener mDonateHandler = new OnClickListener() {
-		@Override public void onClick(View v) {
-			Intent i = new Intent(MainMenu.this, AdministrationDonate.class);
-			startActivity(i);
-		}
-	};
+    /**
+     * Donate Menu Handler
+     */
+    private final OnClickListener mDonateHandler = new OnClickListener() {
+        @Override public void onClick(View v) {
+            Intent i = new Intent(MainMenu.this, AdministrationDonate.class);
+            startActivity(i);
+        }
+    };
 
-	/**
-	 * Utility routine to set the OnClickListener for a given view item.
-	 * 
-	 * @param id		Sub-View ID
-	 * @param l			Listener
-	 */
-	private void setOnClickListener(int id, OnClickListener l) {
-		View v = this.findViewById(id);
-		v.setOnClickListener(l);
-		v.setBackgroundResource(android.R.drawable.list_selector_background);
-	}
+    /**
+     * Utility routine to set the OnClickListener for a given view item.
+     *
+     * @param id		Sub-View ID
+     * @param l			Listener
+     */
+    private void setOnClickListener(int id, OnClickListener l) {
+        View v = this.findViewById(id);
+        v.setOnClickListener(l);
+        v.setBackgroundResource(android.R.drawable.list_selector_background);
+    }
 
-	/**
-	 * 'My Books' menu item.
-	 */
-	private final OnClickListener mMyBooksHandler = new OnClickListener() {
-		@Override public void onClick(View v) { doMyBooks(); }
-	};
-	/**
-	 * Method to start the book catalogue activity. Can be called from onCreate as well
-	 * as from a menu item.
-	 */
-	private void doMyBooks() {
-		Intent i = new Intent(this, BookCatalogueClassic.class);
-		startActivity(i);
-	}
+    /**
+     * 'My Books' menu item.
+     */
+    private final OnClickListener mMyBooksHandler = new OnClickListener() {
+        @Override public void onClick(View v) { doMyBooks(); }
+    };
+    /**
+     * Method to start the book catalogue activity. Can be called from onCreate as well
+     * as from a menu item.
+     */
+    private void doMyBooks() {
+        Intent i = new Intent(this, BookCatalogueClassic.class);
+        startActivity(i);
+    }
 
-	/**
-	 * Add Book Sub-Menu: Load the BookEdit Activity
-	 */
-	private final Runnable mCreateBookManually = new Runnable() {
-		@Override
-		public void run() {
-			Intent i = new Intent(MainMenu.this, BookEdit.class);
-			startActivity(i);
-		}
-	};
-	
-	/**
-	 * Add Book Sub-Menu: Load the Search by ISBN Activity
-	 */
-	private final Runnable mCreateBookIsbn = new Runnable() {
-		@Override
-		public void run() {
-			Intent i = new Intent(MainMenu.this, BookISBNSearch.class);
-			i.putExtra(BookISBNSearch.BY, "isbn");
-			startActivity(i);
-		}
-	};
-	
-	/**
-	 * Add Book Sub-Menu: Load the Search by ISBN Activity
-	 */
-	private final Runnable mCreateBookName = new Runnable() {
-		@Override
-		public void run() {
-			Intent i = new Intent(MainMenu.this, BookISBNSearch.class);
-			i.putExtra(BookISBNSearch.BY, "name");
-			startActivity(i);
-		}
-	};
+    /**
+     * Add Book Sub-Menu: Load the BookEdit Activity
+     */
+    private final Runnable mCreateBookManually = new Runnable() {
+        @Override
+        public void run() {
+            Intent i = new Intent(MainMenu.this, BookEdit.class);
+            startActivity(i);
+        }
+    };
 
-	/**
-	 * Add Book Sub-Menu: Load the Search by ISBN Activity to begin scanning.
-	 */
-	private final Runnable mCreateBookScan = new Runnable() {
-		@Override
-		public void run() {
-			Intent i = new Intent(MainMenu.this, BookISBNSearch.class);
-			i.putExtra(BookISBNSearch.BY, "scan");
-			startActivity(i);
-		}
-	};
+    /**
+     * Add Book Sub-Menu: Load the Search by ISBN Activity
+     */
+    private final Runnable mCreateBookIsbn = new Runnable() {
+        @Override
+        public void run() {
+            Intent i = new Intent(MainMenu.this, BookISBNSearch.class);
+            i.putExtra(BookISBNSearch.BY, "isbn");
+            startActivity(i);
+        }
+    };
 
-	/**
-	 * Cleanup!
-	 */
-	@Override 
-	public void onDestroy() {
-		super.onDestroy();
-	}
+    /**
+     * Add Book Sub-Menu: Load the Search by ISBN Activity
+     */
+    private final Runnable mCreateBookName = new Runnable() {
+        @Override
+        public void run() {
+            Intent i = new Intent(MainMenu.this, BookISBNSearch.class);
+            i.putExtra(BookISBNSearch.BY, "name");
+            startActivity(i);
+        }
+    };
+
+    /**
+     * Add Book Sub-Menu: Load the Search by ISBN Activity to begin scanning.
+     */
+    private final Runnable mCreateBookScan = new Runnable() {
+        @Override
+        public void run() {
+            Intent i = new Intent(MainMenu.this, BookISBNSearch.class);
+            i.putExtra(BookISBNSearch.BY, "scan");
+            startActivity(i);
+        }
+    };
 }
