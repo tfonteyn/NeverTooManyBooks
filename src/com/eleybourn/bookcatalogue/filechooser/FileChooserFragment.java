@@ -19,9 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.filechooser;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
@@ -40,6 +37,9 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.filechooser.FileLister.FileListerListener;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter.ViewProvider;
+
+import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Fragment to display a simple directory/file browser.
@@ -62,6 +62,11 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 	 */
 	public interface PathChangedListener {
 		void onPathChanged(File root);
+	}
+
+	/** Create a new chooser fragment */
+	public static FileChooserFragment newInstance(String rootPath, String fileName) {
+		return newInstance(new File(rootPath), fileName);
 	}
 
 	/** Create a new chooser fragment */

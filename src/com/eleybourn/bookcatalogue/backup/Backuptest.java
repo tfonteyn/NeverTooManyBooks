@@ -30,13 +30,15 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Tets module. DEBUG ONLY!
+ * Test module. DEBUG ONLY!
  * 
  * @author pjw
  */
 public class Backuptest {
+	private static final String BACKUP_TAR = "backup.tar";
+
 	public static void testBackupTar() {
-		File f = new File(StorageUtils.getSharedStoragePath() + "/backup.tar");
+		File f = StorageUtils.getFile(BACKUP_TAR);
 		try {
 			performBackupTar(f);
 		} catch (IOException e) {
@@ -44,7 +46,7 @@ public class Backuptest {
 		}
 	}
 	public static void testRestoreTar() {
-		File f = new File(StorageUtils.getSharedStoragePath() + "/backup.tar");
+		File f = StorageUtils.getFile(BACKUP_TAR);
 		try {
 			performRestoreTar(f);
 		} catch (IOException e) {

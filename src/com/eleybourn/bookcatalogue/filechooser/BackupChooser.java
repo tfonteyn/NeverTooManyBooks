@@ -19,9 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.filechooser;
 
-import java.io.File;
-import java.util.Date;
-
 import android.app.DialogFragment;
 import android.os.Bundle;
 
@@ -43,6 +40,9 @@ import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.io.File;
+import java.util.Date;
 
 /**
  * FileChooser activity to choose an archive file to open/save
@@ -93,8 +93,8 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 	@Override
 	protected FileChooserFragment getChooserFragment() {
 		BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
-		String lastBackup = prefs.getString(BookCataloguePreferences.PREF_LAST_BACKUP_FILE, StorageUtils.getSharedStoragePath());
-		return FileChooserFragment.newInstance(new File(lastBackup), getDefaultFileName());
+		String lastBackup = prefs.getString(BookCataloguePreferences.PREF_LAST_BACKUP_FILE, StorageUtils.getSharedDirectory().getAbsolutePath());
+		return FileChooserFragment.newInstance(lastBackup, getDefaultFileName());
 	}
 
 	/**

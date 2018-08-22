@@ -44,14 +44,16 @@ package com.eleybourn.bookcatalogue.database;
  * limitations under the License.
  */
 
-import java.util.concurrent.locks.ReentrantLock;
-
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
+ * TODO: migrate to native API
+ *
  * Based on SQLiteOpenHelper this class allows Android versions prior to 2.2 to
  * have SQLiteOpenHelper functionality when creating databases on other locations.
  * 

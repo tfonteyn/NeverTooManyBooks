@@ -570,7 +570,7 @@ public class Utils {
 
 		try {
 			// Get a temp file to avoid overwriting output unless copy works
-			temp = File.createTempFile("temp_", null, StorageUtils.getSharedStorage());
+			temp = File.createTempFile("temp_", null, StorageUtils.getSharedDirectory());
 			FileOutputStream f = new FileOutputStream(temp);
 
 			// Copy from input to temp file

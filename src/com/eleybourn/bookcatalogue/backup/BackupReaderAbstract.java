@@ -43,7 +43,6 @@ import java.util.Date;
  */
 public abstract class BackupReaderAbstract implements BackupReader {
 	private final CatalogueDBAdapter mDbHelper;
-	private final File mSharedStorage = StorageUtils.getSharedStorage();
 
 	/**
 	 * Constructor
@@ -154,7 +153,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
 	 */
 	private void restoreCover(BackupReaderListener listener, ReaderEntity cover, int flags) throws IOException {
 		listener.step("Processing Covers...", 1);
-		final File curr = new File(mSharedStorage + "/" + cover.getName());
+		final File curr = StorageUtils.getFile(cover.getName());
 		final Date covDate = cover.getDateModified();
 		if ( (flags & Importer.IMPORT_NEW_OR_UPDATED) != 0) {			
 			if (curr.exists()) {
@@ -164,7 +163,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
 				}
 			}
 		}
-		cover.saveToDirectory(mSharedStorage);
+		cover.saveToDirectory(StorageUtils.getSharedDirectory());
 		curr.setLastModified(covDate.getTime());
 	}
 

@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.utils;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -9,6 +11,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -28,7 +32,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,12 +55,17 @@ public class StorageUtils {
 	private static final String UTF8 = "utf8";
 	private static final int BUFFER_SIZE = 8192;
 
-	private static final String DIRECTORY_NAME = "bookCatalogue";
-	private static final String DATABASE_NAME = "book_catalogue";
+    private static final String DATABASE_NAME = "book_catalogue";
 
+    // relative filename
+    private static final String DIRECTORY_NAME = "bookCatalogue";
+
+	// fully qualified filenames
 	private static final String EXTERNAL_FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + DIRECTORY_NAME;
 	private static final String ERRORLOG_FILE = EXTERNAL_FILE_PATH + File.separator + "error.log";
-	private static String NOMEDIA_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + ".nomedia";
+	private static final String NOMEDIA_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + ".nomedia";
+
+	private static boolean mSharedDirExists;
 
 	public static String getErrorLog() {
 		return ERRORLOG_FILE;
@@ -64,48 +75,107 @@ public class StorageUtils {
 		return DATABASE_NAME;
 	}
 
+    public static final int PERM_RESULT_WRITE_EXTERNAL_STORAGE = 0;
+
+    public static void checkPermissions(Activity a) {
+        if (ContextCompat.checkSelfPermission(a, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(a, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERM_RESULT_WRITE_EXTERNAL_STORAGE);
+        }
+    }
     /**
      * A .nomedia file will be created which will stop the thumbnails showing up in the gallery (thanks Brandon)
      */
     public static void createNoMediaFile() {
         try {
-            boolean success = new File(NOMEDIA_FILE_PATH).createNewFile();
-            if (!success) {
-                throw new IOException("createNoMediaFile failed");
-            }
-        } catch (IOException e) {
-            Logger.logError(e);
+            new File(NOMEDIA_FILE_PATH).createNewFile();
+        } catch (IOException ignore) {
         }
     }
 
-	public static File getSharedStorage() {
-		File dir = new File(EXTERNAL_FILE_PATH);
-		dir.mkdir();
-		return dir;
+	/**
+	 * Make sure the external shared directory exists
+     *
+	 */
+	private static void initSharedDirectory() {
+	    File dir = new File(EXTERNAL_FILE_PATH);
+        if (dir.exists() && dir.isDirectory())
+            return;
+
+	    try {
+            mSharedDirExists = dir.mkdirs() || dir.isDirectory();
+        } catch (SecurityException e) {
+            mSharedDirExists  = false;
+            Logger.logError(e);
+        }
+
+        if (!mSharedDirExists) {
+            Logger.logError("Could not write to shared storage. Please restart and grant permission when asked.");
+            return;
+        }
+		createNoMediaFile();
 	}
 
-	public static String getSharedStoragePath() {
-		File dir = new File(EXTERNAL_FILE_PATH);
-		dir.mkdir();
-		return dir.getAbsolutePath();
+	/**
+	 * Get a File, don't check on existence or creation
+	 */
+	public static File getFile(String fileName) {
+		return getFile(null, fileName);
 	}
 
+    /**
+     * Get a File, don't check on existence or creation
+     */
+    public static File getFile(String dir, String fileName) {
+        if (!mSharedDirExists) {
+            initSharedDirectory();
+        }
+        String subdirName = (dir == null || dir.isEmpty()) ? "" : File.separator + dir;
+
+        return new File(EXTERNAL_FILE_PATH + subdirName + File.separator + fileName);
+    }
+
+	/**
+	 * @return the shared root Directory object, create if needed
+	 */
+	public static File getSharedDirectory() {
+        if (!mSharedDirExists) {
+            initSharedDirectory();
+        }
+        return new File(EXTERNAL_FILE_PATH);
+	}
+
+	/**
+     *  (create and) get the subdir relative to the shared dir
+     *
+     * @param subDirectoryName  the name of the sub dir to append, example: "mynewdir[/myoptionaldir]"
+     *
+     * @return a sub directory object
+	 */
+	public static File getDirectory(String subDirectoryName) {
+        File dir = new File(EXTERNAL_FILE_PATH + File.separator + subDirectoryName);
+        dir.mkdirs();
+        return dir;
+	}
+
+    /**
+     *
+     * @param db        file to backup
+     * @param suffix    suffix to apply to the directory name
+     */
 	public static void backupDbFile(SQLiteDatabase db, String suffix) {
 		try {
 			final String fileName = DIRECTORY_NAME + suffix;
-			java.io.InputStream dbOrig = new java.io.FileInputStream(db.getPath());
-			File dir = getSharedStorage();
-			// Path to the external backup
-			String fullFilename = dir.getPath() + File.separator + fileName;
+
 			//check if it exists
-			File existing = new File(fullFilename);
+			File existing = getFile(fileName);
 			if (existing.exists()) {
-				String backupFilename = dir.getPath() + File.separator + fileName + ".bak";
-				File backup = new File(backupFilename);
-				existing.renameTo(backup);
+				existing.renameTo(getFile(fileName + ".bak"));
 			}
-			java.io.OutputStream dbCopy = new java.io.FileOutputStream(fullFilename);
-			
+
+            InputStream dbOrig = new FileInputStream(db.getPath());
+			OutputStream dbCopy = new FileOutputStream(getFile(fileName));
+
 			byte[] buffer = new byte[1024];
 			int length;
 			while ((length = dbOrig.read(buffer))>0) {
@@ -121,13 +191,7 @@ public class StorageUtils {
 		}
 	}
 
-	/**
-	 * Make sure the external shared directory exists
-	 */
-	public static void initSharedDirectory() {
-		new File(EXTERNAL_FILE_PATH + File.separator).mkdirs();
-        createNoMediaFile();
-	}
+
 
 	/**
 	 * Compare two files based on date. Used for sorting file list by date.
@@ -300,9 +364,9 @@ public class StorageUtils {
 	 */
 	public static void sendDebugInfo(Context context, CatalogueDBAdapter dbHelper) {
 		// Create a temp DB copy.
-		String tmpName = DIRECTORY_NAME + "DbExport-tmp.db";
-		dbHelper.backupDbFile(tmpName);
-		File dbFile = new File(EXTERNAL_FILE_PATH + File.separator + tmpName);
+		String tmpFileName = DIRECTORY_NAME + "DbExport-tmp.db";
+		dbHelper.backupDbFile(tmpFileName);
+		File dbFile = getFile(tmpFileName);
 		dbFile.deleteOnExit();
 		// setup the mail message
 		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
@@ -373,7 +437,7 @@ public class StorageUtils {
 		ArrayList<String> files = new ArrayList<>();
 		
 		// Find all files of interest to send
-		File dir = new File(EXTERNAL_FILE_PATH);
+		File dir = getSharedDirectory();
 		try {
 			for (String name : dir.list()) {
 				boolean send = false;
@@ -389,7 +453,7 @@ public class StorageUtils {
 			// Build the attachment list
 			for (String file : files)
 			{
-				File fileIn = new File(EXTERNAL_FILE_PATH + File.separator + file);
+				File fileIn = getFile(file);
 				if (fileIn.exists() && fileIn.length() > 0) {
 					Uri u = Uri.fromFile(fileIn);
 					uris.add(u);
@@ -412,7 +476,7 @@ public class StorageUtils {
 	 */
 	public static void cleanupFiles() {
 		if (sdCardWritable()) {
-	        File dir = new File(EXTERNAL_FILE_PATH);
+	        File dir = getSharedDirectory();
 	        for (String name : dir.list()) {
 	        	boolean purge = false;
 	        	for(String prefix : mPurgeableFilePrefixes)
@@ -422,7 +486,7 @@ public class StorageUtils {
 	        		}
 	        	if (purge)
 		        	try {
-		        		File file = new File(EXTERNAL_FILE_PATH + File.separator + name);
+		        		File file = getFile(name);
 			        	boolean success = file.delete();
 			        	if (!success) {
 			        		Log.e("StorageUtils", "cleanupFiles failed to delete: " + file.getAbsolutePath());
@@ -443,7 +507,7 @@ public class StorageUtils {
 
 		long totalSize = 0;
 
-		File dir = new File(EXTERNAL_FILE_PATH);
+		File dir = getSharedDirectory();
         for (String name : dir.list()) {
         	boolean purge = false;
         	for(String prefix : mPurgeableFilePrefixes)
@@ -453,7 +517,7 @@ public class StorageUtils {
         		}
         	if (purge)
 	        	try {
-	        		File file = new File(EXTERNAL_FILE_PATH + File.separator + name);
+	        		File file = getFile(name);
 	        		totalSize += file.length();
 	        	} catch (Exception ignored) {
 	        	}

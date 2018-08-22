@@ -80,7 +80,8 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	protected Integer mThumbEditSize;
 	/** Zoom size is minimum of MAX_ZOOM_THUMBNAIL_SIZE and largest screen dimension. */
 	protected Integer mThumbZoomSize;
-	
+
+	private static final String TEMP_IMAGE_DIRECTORY = "tmp_images";
 	/**
 	 * Handler to process a cover selected from the CoverBrowser.
 	 */
@@ -371,16 +372,15 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	 * Delete everything in the temp file directory
 	 */
 	private void cleanupTempImages() {
-		File[] files = getTempImageDir().listFiles();
-		if (files != null) {
-			for (File f: files) {
-				try {
-					f.delete();					
-				} catch (Exception e) {
-					Logger.logError(e, "Unable to clean up temp file");
-				}
-			}			
-		}
+        File dir = StorageUtils.getDirectory(TEMP_IMAGE_DIRECTORY);
+        if (dir.exists() && dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    f.delete();
+                }
+            }
+        }
 	}
 	
 	private void copyFile(File src, File dst) throws IOException {
@@ -487,13 +487,6 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	}
 	
 	/**
-	 * Get a temp file for camera images
-	 */
-	private File getCameraImageFile() {
-		return new File(getTempImageDir().getAbsolutePath() + "/camera" + mTempImageCounter + ".jpg");
-	}
-	
-	/**
 	 * Get the File object for the cover of the book we are editing. If the boo
 	 * is new, return the standard temp file.
 	 */
@@ -503,24 +496,21 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 		else
 			return CatalogueDBAdapter.fetchThumbnailByUuid(mDbHelper.getBookUuid(rowId));			
 	}
-	
+
+    /**
+     * Get a temp file for camera images
+     */
+    private File getCameraImageFile() {
+        return StorageUtils.getFile(TEMP_IMAGE_DIRECTORY ,"camera" + mTempImageCounter + ".jpg");
+    }
+
 	/**
 	 * Get a temp file for cropping output
 	 */
 	private File getCroppedImageFileName() {
-		return new File(getTempImageDir().getAbsolutePath() + "/cropped" + mTempImageCounter + ".jpg");
+		return StorageUtils.getFile(TEMP_IMAGE_DIRECTORY, "cropped" + mTempImageCounter + ".jpg");
 	}
-	
-	/**
-	 * Get a temp directory for image manipulation (create if necessary)
-	 */
-	private File getTempImageDir() {
-		File f = new File(StorageUtils.getSharedStoragePath() + "/tmp_images/");
-		if (!f.exists())
-			f.mkdirs();
-		return f;
-	}
-	
+
 	/**
 	 * Populate Author field
 	 * If there is no data shows "Set author" text defined in resources.

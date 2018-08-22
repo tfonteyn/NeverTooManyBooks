@@ -665,8 +665,6 @@ public class CatalogueDBAdapter {
 			DatabaseDefinitions.TBL_BOOK_LIST_STYLES.createAll(sdb, true);
 
 			createTriggers(sdb);
-
-			StorageUtils.initSharedDirectory();
 		}
 
 
@@ -1784,7 +1782,8 @@ public class CatalogueDBAdapter {
 				addInstance(this);
 			}
 		}
-		if (mDbHelper == null)
+
+        if (mDbHelper == null)
 			mDbHelper = new DatabaseHelper(ctx);
 	}
 	
@@ -1797,8 +1796,7 @@ public class CatalogueDBAdapter {
 	 * @throws SQLException if the database could be neither opened or created
 	 */
 	public CatalogueDBAdapter open() throws SQLException {
-		/* Create the bookCatalogue directory if it does not exist */
-		StorageUtils.getSharedStorage();
+
 		if (mDb == null) {
 			// Get the DB wrapper
 			mDb = new SynchronizedDb(mDbHelper, mSynchronizer);
@@ -1885,7 +1883,7 @@ public class CatalogueDBAdapter {
 	 * Get the 'standard' temp file name for new books, including a suffix
 	 */
 	public static File getTempThumbnail(String suffix) {
-		return new File(StorageUtils.getSharedStoragePath() + "/tmp" + suffix + ".jpg");
+		return StorageUtils.getFile("tmp" + suffix + ".jpg");
 	}
 
 	/**
@@ -1920,14 +1918,12 @@ public class CatalogueDBAdapter {
 		if (suffix == null)
 			suffix = "";
 
-		File file;
 		if (prefix == null || prefix.isEmpty()) {
 			return getTempThumbnail(suffix);
 		} else {
-			final String base = StorageUtils.getSharedStorage() + "/" + prefix + suffix;
-			file = new File(base + ".jpg");
+            File file = StorageUtils.getFile(prefix + suffix + ".jpg");
 			if (!file.exists()) {
-				File png = new File(base + ".png");
+				File png = StorageUtils.getFile(prefix + suffix + ".png");
 				if (png.exists())
 					return png;
 				else

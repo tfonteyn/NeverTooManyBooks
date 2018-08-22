@@ -20,9 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -46,6 +43,9 @@ import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.io.File;
+import java.util.ArrayList;
 
 /**
  * 
@@ -524,9 +524,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 				ArrayList<Uri> uris = new ArrayList<>();
 				// Find all files of interest to send
 				try {
-					File fileIn = new File(StorageUtils.getSharedStoragePath() + "/" + "export.csv");
-					Uri u = Uri.fromFile(fileIn);
-					uris.add(u);
+					uris.add(Uri.fromFile(StorageUtils.getFile("export.csv")));
 					// Send it, if there are any files to send.
 					emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
 					startActivity(Intent.createChooser(emailIntent, "Send mail..."));        	

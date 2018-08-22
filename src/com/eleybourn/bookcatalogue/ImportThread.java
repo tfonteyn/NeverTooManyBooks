@@ -1,14 +1,14 @@
 package com.eleybourn.bookcatalogue;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
 import com.eleybourn.bookcatalogue.backup.CsvImporter;
 import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.backup.LocalCoverFinder;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 /**
  * Class to handle import in a separate thread.
@@ -31,21 +31,19 @@ public class ImportThread extends ManagedTask {
 		}
 	}
 
-    //private int mImportUpdated;
-	//private int mImportCreated;
-
-	public ImportThread(TaskManager manager, String fileSpec) {
+	ImportThread(TaskManager manager, String fileSpec) {
 		super(manager);
         File mFile = new File(fileSpec);
 		// Changed getCanonicalPath to getAbsolutePath based on this bug in Android 2.1:
 		//     http://code.google.com/p/android/issues/detail?id=4961
 		mFileSpec = mFile.getAbsolutePath();
-        String mSharedStoragePath = StorageUtils.getSharedStorage().getAbsolutePath();
 
 		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
 		mDbHelper.open();
 
-		mCoverFinder = new LocalCoverFinder(mFile.getParent(), mSharedStoragePath);
+		mCoverFinder = new LocalCoverFinder(mFile.getParent(),
+				StorageUtils.getSharedDirectory().getAbsolutePath());
+
 		//getMessageSwitch().addListener(getSenderId(), taskHandler, false);
 		//Debug.startMethodTracing();
 	}
@@ -54,6 +52,9 @@ public class ImportThread extends ManagedTask {
 	protected void onThreadFinish() {
 		cleanup();
 	}
+
+	//private int mImportUpdated;
+	//private int mImportCreated;
 
 //	/**
 //	 * This program reads a text file line by line and print to the console. It uses
@@ -130,7 +131,23 @@ public class ImportThread extends ManagedTask {
 		}
 
 	}
-		
+
+    /**
+     * Cleanup any DB connection etc after main task has run.
+     */
+    private void cleanup() {
+        if (mDbHelper != null) {
+            mDbHelper.close();
+            mDbHelper = null;
+        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        cleanup();
+        super.finalize();
+    }
+
 //		if (export == null || export.size() == 0)
 //			return;
 //
@@ -755,20 +772,4 @@ public class ImportThread extends ManagedTask {
 //		String s = BookCatalogueApp.getResourceString(R.string.columns_are_blank);
 //		throw new ImportException(String.format(s, Utils.join( names, ","), row));
 //	}
-
-	/**
-	 * Cleanup any DB connection etc after main task has run.
-	 */
-	private void cleanup() {
-		if (mDbHelper != null) {
-			mDbHelper.close();
-			mDbHelper = null;
-		}		
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		cleanup();
-		super.finalize();
-	}
 }

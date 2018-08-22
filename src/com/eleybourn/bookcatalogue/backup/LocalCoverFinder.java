@@ -19,16 +19,16 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
  * Class to find covers for an importer when the import is reading from a local directory.
@@ -39,13 +39,11 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 	/** The root path to search for files */
 	private final String mSrc;
     private final boolean mIsForeign;
-	private final String mSharedStoragePath;
 	private final CatalogueDBAdapter mDbHelper;
 
 	public LocalCoverFinder(String srcPath, String dstPath) {
 		mSrc = srcPath;
 		mIsForeign = !mSrc.equals(dstPath);
-		mSharedStoragePath = StorageUtils.getSharedStorage().getAbsolutePath();
 
 		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
 		mDbHelper.open();
@@ -105,9 +103,9 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 		
 		// Get the new path based on the input file type.
 		if (orig.getAbsolutePath().toLowerCase().endsWith(".png")) 
-			newFile = new File(mSharedStoragePath + "/" + newUuid + ".png");
+			newFile = StorageUtils.getFile(newUuid + ".png");
 		else
-			newFile = new File(mSharedStoragePath + "/" + newUuid + ".jpg");
+			newFile = StorageUtils.getFile(newUuid + ".jpg");
 
 		return newFile;
 	}

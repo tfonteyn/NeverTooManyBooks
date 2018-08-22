@@ -68,7 +68,7 @@ public class CoversDbHelper {
 	private final SqlStatementManager mStatements = new SqlStatementManager();
 
 	/** DB location */
-	private static final String COVERS_DATABASE_NAME = StorageUtils.getSharedStoragePath() + "/covers.db";
+	private static final String COVERS_DATABASE_NAME = "covers.db";
 	/** DB Version */
 	private static final int COVERS_DATABASE_VERSION = 1;
 
@@ -135,7 +135,7 @@ public class CoversDbHelper {
 			throw new RuntimeException("Covers database unavailable");
 
 		if (mHelper == null) {
-			mHelper = new CoversHelper(COVERS_DATABASE_NAME, mTrackedCursorFactory, COVERS_DATABASE_VERSION);
+			mHelper = new CoversHelper(StorageUtils.getFile(COVERS_DATABASE_NAME).getAbsolutePath(), mTrackedCursorFactory, COVERS_DATABASE_VERSION);
 		}
 		if (mSharedDb == null) {
 			// Try to connect.
@@ -144,8 +144,8 @@ public class CoversDbHelper {
 			} catch (Exception e) {
 				// Assume exception means DB corrupt. Log, rename, and retry
 				Logger.logError(e, "Failed to open covers db");
-				File f = new File(COVERS_DATABASE_NAME);
-				f.renameTo(new File(COVERS_DATABASE_NAME + ".dead"));
+				File f = StorageUtils.getFile(COVERS_DATABASE_NAME);
+				f.renameTo(StorageUtils.getFile(COVERS_DATABASE_NAME + ".dead"));
 
 				// Connect again...
 				try {

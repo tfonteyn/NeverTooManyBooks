@@ -1,13 +1,13 @@
 package com.eleybourn.bookcatalogue;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import com.eleybourn.bookcatalogue.backup.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Class to handle export in a separate thread.
@@ -15,11 +15,9 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  * @author Philip Warner
  */
 public class ExportThread extends ManagedTask {
-	// Changed the paths to non-static variable because if this code is called 
-	// while a phone sync is in progress, they will not be set correctly
-	private final String mFilePath = StorageUtils.getSharedStorage().getAbsolutePath();
-	private final String mExportFileName = mFilePath + "/export.csv";
-	private final String mTempFileName = mFilePath + "/export.tmp";
+
+	private static final String EXPORT_FILE_NAME = "export.csv";
+	private static final String EXPORT_TEMP_FILE_NAME = "export.tmp";
 	private static String UTF8 = "utf8";
 	private static int BUFFER_SIZE = 8192;
 	private CatalogueDBAdapter mDbHelper;
@@ -65,7 +63,7 @@ public class ExportThread extends ManagedTask {
 			return;			
 		}
 		try {
-			FileOutputStream out = new FileOutputStream(mTempFileName);
+			FileOutputStream out = new FileOutputStream(StorageUtils.getFile(EXPORT_TEMP_FILE_NAME));
 			CsvExporter exporter = new CsvExporter();
 			exporter.export(out, mOnExportListener, Exporter.EXPORT_ALL, null);
 			if (out != null && out.getChannel().isOpen()) {
@@ -127,7 +125,7 @@ public class ExportThread extends ManagedTask {
 //				mManager.setMax(this, totalBooks);
 //
 //				/* write to the SDCard */
-//				BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mTempFileName), UTF8), BUFFER_SIZE);
+//				BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getFile(EXPORT_TEMP_FILE_NAME)), UTF8), BUFFER_SIZE);
 //				out.write(export.toString());
 //				if (books.moveToFirst()) {
 //					do { 
@@ -269,22 +267,22 @@ public class ExportThread extends ManagedTask {
 	 * Backup the current file
 	 */
 	private void renameFiles() {
-		File temp = new File(mTempFileName);
-		File export = new File(mExportFileName);
+		File temp = StorageUtils.getFile(EXPORT_TEMP_FILE_NAME);
 		if (isCancelled()) {
 			if (temp.exists())
 				temp.delete();
 		} else {
-			String fmt = mFilePath + "/export.%s.csv";
-			File fLast = new File(String.format(fmt, 5));
+			String fmt = "export.%s.csv";
+			File fLast = StorageUtils.getFile(String.format(fmt, 5));
 			if (fLast.exists())
 				fLast.delete();
 			for(int i = 4; i > 0; i--) {
-				File fCurr = new File(String.format(fmt, i));
+				File fCurr = StorageUtils.getFile(String.format(fmt, i));
 				if (fCurr.exists())
 					fCurr.renameTo(fLast);
 				fLast = fCurr;
 			}
+            File export = StorageUtils.getFile(EXPORT_FILE_NAME);
 			if (export.exists())
 				export.renameTo(fLast);
 			if (temp.exists())
