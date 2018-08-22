@@ -20,6 +20,30 @@
 
 package com.eleybourn.bookcatalogue.goodreads.api;
 
+import android.os.Bundle;
+
+import com.eleybourn.bookcatalogue.Author;
+import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.Series;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NetworkException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.ElementContext;
+import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.XmlHandler;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.utils.Utils;
+
+import org.apache.http.client.methods.HttpGet;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
+
 import static com.eleybourn.bookcatalogue.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.BOOK_ID;
 import static com.eleybourn.bookcatalogue.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.BOOK_URL;
 import static com.eleybourn.bookcatalogue.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.IMAGE;
@@ -37,29 +61,6 @@ import static com.eleybourn.bookcatalogue.goodreads.api.ShowBookApiHandler.ShowB
 import static com.eleybourn.bookcatalogue.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.SHELVES;
 import static com.eleybourn.bookcatalogue.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.SMALL_IMAGE;
 import static com.eleybourn.bookcatalogue.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.WORK_ID;
-
-import java.io.IOException;
-import java.util.ArrayList;
-
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
-
-import org.apache.http.client.methods.HttpGet;
-
-import android.os.Bundle;
-
-import com.eleybourn.bookcatalogue.Author;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.Series;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NetworkException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
-import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.ElementContext;
-import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.XmlHandler;
-import com.eleybourn.bookcatalogue.utils.Logger;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Class to query and response to search.books api call. This is an abstract class
@@ -229,10 +230,10 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     	//public static final String BOOK_URL = "__url";
 
         if (mAuthors != null && mAuthors.size() > 0)
-			mBook.putString(CatalogueDBAdapter.KEY_AUTHOR_DETAILS, Utils.getAuthorUtils().encodeList(mAuthors, '|'));
+			mBook.putString(CatalogueDBAdapter.KEY_AUTHOR_DETAILS, ArrayUtils.getAuthorUtils().encodeList(mAuthors, '|'));
 
         if (mSeries != null && mSeries.size() > 0)
-			mBook.putString(CatalogueDBAdapter.KEY_SERIES_DETAILS, Utils.getSeriesUtils().encodeList(mSeries, '|'));
+			mBook.putString(CatalogueDBAdapter.KEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(mSeries, '|'));
 
         if (mShelves != null && mShelves.size() > 0)
         	mBook.putStringArrayList(SHELVES, mShelves);

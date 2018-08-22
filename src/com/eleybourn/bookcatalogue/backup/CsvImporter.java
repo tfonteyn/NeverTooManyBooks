@@ -19,13 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Date;
-
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.Author;
@@ -37,8 +30,16 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Implementation of Importer that reads a CSV file.
@@ -212,7 +213,7 @@ public class CsvImporter {
 					}
 
 					// Now build the array for authors
-					ArrayList<Author> aa = Utils.getAuthorUtils().decodeList(authorDetails, '|', false);
+					ArrayList<Author> aa = ArrayUtils.getAuthorUtils().decodeList(authorDetails, '|', false);
 					Utils.pruneList(db, aa);
 					values.putSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, aa);
 				}
@@ -236,7 +237,7 @@ public class CsvImporter {
 						}
 					}
 					// Handle the series
-					ArrayList<Series> sa = Utils.getSeriesUtils().decodeList(seriesDetails, '|', false);
+					ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList(seriesDetails, '|', false);
 					Utils.pruneSeriesList(sa);
 					Utils.pruneList(db, sa);
 					values.putSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY, sa);				

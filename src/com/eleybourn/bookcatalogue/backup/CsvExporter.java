@@ -29,6 +29,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -202,12 +203,12 @@ public class CsvExporter implements Exporter {
 						}
 						bookshelves.close();
 
-						String authorDetails = Utils.getAuthorUtils().encodeList( db.getBookAuthorList(id), '|' );
+						String authorDetails = ArrayUtils.getAuthorUtils().encodeList( db.getBookAuthorList(id), '|' );
 						// Sanity check: ensure author is non-blank. This HAPPENS. Probably due to constraint failures.
 						if (authorDetails == null || authorDetails.trim().isEmpty())
 							authorDetails = AUTHOR + ", " + UNKNOWN;
 
-						String seriesDetails = Utils.getSeriesUtils().encodeList( db.getBookSeriesList(id), '|' );
+						String seriesDetails = ArrayUtils.getSeriesUtils().encodeList( db.getBookSeriesList(id), '|' );
 
 						row.setLength(0);
 						row.append("\"").append(formatCell(id)).append("\",");
