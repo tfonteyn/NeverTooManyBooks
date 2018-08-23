@@ -129,7 +129,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 		if (savedInstanceState == null) {
 			mRootPath = new File(getArguments().getString(ARG_ROOT_PATH));
 			String fileName = getArguments().getString(ARG_FILE_NAME);
-			EditText et = (EditText) getView().findViewById(R.id.file_name);
+			EditText et = getView().findViewById(R.id.file_name);
 			et.setText(fileName);
 			((TextView) getView().findViewById(R.id.path)).setText(mRootPath.getAbsolutePath());
 			tellActivityPathChanged();
@@ -194,7 +194,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 					mRootPath = fileDetails.getFile();
 					tellActivityPathChanged();
 				} else {
-					EditText et = (EditText) FileChooserFragment.this.getView().findViewById(R.id.file_name);
+					EditText et = FileChooserFragment.this.getView().findViewById(R.id.file_name);
 					et.setText(fileDetails.getFile().getName());
 				}
 			}
@@ -207,7 +207,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 	 * @return File
 	 */
 	public File getSelectedFile() {
-		EditText et = (EditText) getView().findViewById(R.id.file_name);
+		EditText et = getView().findViewById(R.id.file_name);
 		return new File(mRootPath.getAbsolutePath() + "/" + et.getText().toString());
 	}
 
@@ -226,7 +226,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 		mList = list;
 		// We pass 0 as view ID since each item can provide the view id
 		DirectoryAdapter adapter = new DirectoryAdapter(getActivity(), 0, mList);
-		ListView lv = ((ListView) getView().findViewById(android.R.id.list));
+		ListView lv = getView().findViewById(android.R.id.list);
 		lv.setAdapter(adapter);
 	}
 

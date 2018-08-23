@@ -74,7 +74,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 		});
 
 		// Set the name
-		TextView text = (TextView) v.findViewById(R.id.name);
+		TextView text = v.findViewById(R.id.name);
 		text.setText(getName());
 		
 		// Try to find the list item that corresponds to the current stored value.
@@ -217,7 +217,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 	 * Set the 'value' field in the passed view to match the passed item.
 	 */
 	private void setValueInView(View baseView, ItemEntry<T> item) {
-		TextView text = (TextView) baseView.findViewById(R.id.value);
+		TextView text = baseView.findViewById(R.id.value);
 
 		if (item == null) {
 			text.setText("");		
@@ -242,7 +242,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 
 		// Get the view and the radio group
 		View root = inflater.inflate(R.layout.property_value_list_list, null);
-		RadioGroup grp = (RadioGroup) root.findViewById(R.id.values);
+		RadioGroup grp = root.findViewById(R.id.values);
 
 		// Get the current value
 		T curr = get();
@@ -272,8 +272,8 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 					selected = true;
 				// Make the view for this item
 				View v = inflater.inflate(R.layout.property_value_list_item, null);
-				TextView name = (TextView) v.findViewById(R.id.name);
-				RadioButton sel = (RadioButton) v.findViewById(R.id.selector);
+				TextView name = v.findViewById(R.id.name);
+				RadioButton sel = v.findViewById(R.id.selector);
 				//Set the various values
 				sel.setChecked(selected);
 				name.setText(e.getString());

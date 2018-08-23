@@ -145,7 +145,7 @@ public class BookshelfDialogFragment extends DialogFragment {
 			bookshelves_for_book = db.fetchAllBookshelves(mRowId);
 
 			// Handle the OK button
-    		Button button = (Button) rootView.findViewById(R.id.bookshelf_dialog_button);
+    		Button button = rootView.findViewById(R.id.bookshelf_dialog_button);
     		button.setOnClickListener(new View.OnClickListener() {
     			@Override
     			public void onClick(View v) {
@@ -154,7 +154,7 @@ public class BookshelfDialogFragment extends DialogFragment {
     		});
 
     		// Get the root view for the list of checkboxes
-    		LinearLayout cbRoot = (LinearLayout) rootView.findViewById(R.id.bookshelf_dialog_root);
+    		LinearLayout cbRoot = rootView.findViewById(R.id.bookshelf_dialog_root);
 
     		// Loop through all bookshelves and build the checkbox list
     		if (bookshelves_for_book.moveToFirst()) { 

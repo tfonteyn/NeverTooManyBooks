@@ -70,11 +70,11 @@ public class SearchCatalogue extends BookCatalogueActivity {
 		setContentView(R.layout.search_catalogue_criteria);
 		
 		View layout = this.findViewById(R.id.layout_root);
-		EditText criteria = (EditText) this.findViewById(R.id.criteria);
-		EditText author = (EditText) this.findViewById(R.id.author);
-		EditText title = (EditText) this.findViewById(R.id.title);
-		Button showResults = (Button) this.findViewById(R.id.search);
-		Button ftsRebuild = (Button) this.findViewById(R.id.rebuild);
+		EditText criteria = this.findViewById(R.id.criteria);
+		EditText author = this.findViewById(R.id.author);
+		EditText title = this.findViewById(R.id.title);
+		Button showResults = this.findViewById(R.id.search);
+		Button ftsRebuild = this.findViewById(R.id.rebuild);
 
 		// If the user touches anything, it's not idle
 		layout.setOnTouchListener(mOnTouchListener);
@@ -217,7 +217,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 		m_handler.post(new Runnable(){
 			@Override
 			public void run() {
-				TextView booksFound = (TextView) SearchCatalogue.this.findViewById(R.id.books_found);
+				TextView booksFound = SearchCatalogue.this.findViewById(R.id.books_found);
 				booksFound.setText(message);		
 			}
 		});
@@ -236,7 +236,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 			mIdleStart = System.currentTimeMillis();
 			// If the search is dirty, make sure idle timer is running and update UI
 			if (mSearchDirty) {
-				TextView booksFound = (TextView) SearchCatalogue.this.findViewById(R.id.books_found);
+				TextView booksFound = SearchCatalogue.this.findViewById(R.id.books_found);
 				booksFound.setText("(waiting for idle)");
 				startIdleTimer(); // (if not started)				
 			}

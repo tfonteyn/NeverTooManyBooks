@@ -153,7 +153,7 @@ public class BookEditFields extends BookDetailsAbstract
 			AutoCompleteTextView formatText = (AutoCompleteTextView) formatField.getView();
 			formatText.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getFormats()));
 			// Get the drop-down button for the formats list and setup dialog
-			ImageView formatButton = (ImageView) getView().findViewById(R.id.format_button);
+			ImageView formatButton = getView().findViewById(R.id.format_button);
 			formatButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -315,7 +315,7 @@ public class BookEditFields extends BookDetailsAbstract
 	}
 
 	private void setupUi() {
-		final CheckBox cb = (CheckBox)getView().findViewById(R.id.anthology);
+		final CheckBox cb = getView().findViewById(R.id.anthology);
 
 		cb.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
@@ -331,7 +331,7 @@ public class BookEditFields extends BookDetailsAbstract
 	private void buildDescription() {
 		double t0 = System.currentTimeMillis();
 		// get the view
-		final TextView tv = (TextView)getView().findViewById(R.id.descriptionLabel);
+		final TextView tv = getView().findViewById(R.id.descriptionLabel);
 		// Build the prefix text ('Description ')
 		String baseText = getString(R.string.description) + " ";
 		// Create the span ('Description (edit...)').

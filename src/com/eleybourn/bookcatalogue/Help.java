@@ -62,7 +62,7 @@ public class Help extends BookCatalogueActivity {
 			setContentView(R.layout.help);
 			res = getResources();
 			
-			TextView webinstructions = (TextView) findViewById(R.id.helpinstructions);
+			TextView webinstructions = findViewById(R.id.helpinstructions);
 			webinstructions.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -72,7 +72,7 @@ public class Help extends BookCatalogueActivity {
 				}
 			});
 			
-			TextView webpage = (TextView) findViewById(R.id.helppage);
+			TextView webpage = findViewById(R.id.helppage);
 			webpage.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -82,7 +82,7 @@ public class Help extends BookCatalogueActivity {
 				}
 			});
 			
-			Button sendInfo = (Button) findViewById(R.id.send_info);
+			Button sendInfo = findViewById(R.id.send_info);
 			sendInfo.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -101,8 +101,8 @@ public class Help extends BookCatalogueActivity {
 
 	private void setupCleanupButton() {
 		try {
-			Button cleanupBtn = (Button) findViewById(R.id.cleanup_button);
-			TextView cleanupTxt = (TextView) findViewById(R.id.cleanup_text);
+			Button cleanupBtn = findViewById(R.id.cleanup_button);
+			TextView cleanupTxt = findViewById(R.id.cleanup_text);
 
 			cleanupBtn.setOnClickListener(new OnClickListener() {
 				@Override

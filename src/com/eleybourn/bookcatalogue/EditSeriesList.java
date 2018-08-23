@@ -48,11 +48,11 @@ public class EditSeriesList extends EditObjectList<Series> {
 	@Override
 	protected void onSetupView(View target, Series object) {
 		if (object != null) {
-			TextView dt = (TextView) target.findViewById(R.id.row_series);
+			TextView dt = target.findViewById(R.id.row_series);
 			if (dt != null)
 				dt.setText(object.getDisplayName());
 			
-			TextView st = (TextView) target.findViewById(R.id.row_series_sort);
+			TextView st = target.findViewById(R.id.row_series_sort);
 			if (st != null) {
 				if (object.getDisplayName().equals(object.getSortName())) {
 					st.setVisibility(View.GONE);
@@ -61,7 +61,7 @@ public class EditSeriesList extends EditObjectList<Series> {
 					st.setText(object.getSortName());
 				}
 			}
-			TextView et = (TextView) target.findViewById(R.id.row_series_num);
+			TextView et = target.findViewById(R.id.row_series_num);
 			if (et != null)
 				et.setText(object.num);
 		}
@@ -82,10 +82,10 @@ public class EditSeriesList extends EditObjectList<Series> {
 	
 	@Override
 	protected void onAdd(View v) {
-		AutoCompleteTextView t = ((AutoCompleteTextView)EditSeriesList.this.findViewById(R.id.series));
+		AutoCompleteTextView t = EditSeriesList.this.findViewById(R.id.series);
 		String s = t.getText().toString().trim();
 		if (!s.isEmpty()) {
-			EditText et = ((EditText)EditSeriesList.this.findViewById(R.id.series_num));
+			EditText et = EditSeriesList.this.findViewById(R.id.series_num);
 			String n = et.getText().toString();
 			if (n == null)
 				n = "";
@@ -124,22 +124,22 @@ public class EditSeriesList extends EditObjectList<Series> {
 		dialog.setContentView(R.layout.edit_book_series);
 		dialog.setTitle(R.string.edit_book_series);
 
-		AutoCompleteTextView seriesView = (AutoCompleteTextView) dialog.findViewById(R.id.series);
+		AutoCompleteTextView seriesView = dialog.findViewById(R.id.series);
 		seriesView.setText(series.name);
 		seriesView.setAdapter(mSeriesAdapter);
 
-		EditText numView = (EditText) dialog.findViewById(R.id.series_num);
+		EditText numView = dialog.findViewById(R.id.series_num);
 		numView.setText(series.num);
 
 		setTextOrHideView(dialog.findViewById(R.id.title_label), mBookTitleLabel);
 		setTextOrHideView(dialog.findViewById(R.id.title), mBookTitle);
 
-		Button saveButton = (Button) dialog.findViewById(R.id.confirm);
+		Button saveButton = dialog.findViewById(R.id.confirm);
 		saveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				AutoCompleteTextView seriesView = (AutoCompleteTextView) dialog.findViewById(R.id.series);
-				EditText numView = (EditText) dialog.findViewById(R.id.series_num);
+				AutoCompleteTextView seriesView = dialog.findViewById(R.id.series);
+				EditText numView = dialog.findViewById(R.id.series_num);
 				String newName = seriesView.getText().toString().trim();
 				if (newName == null || newName.isEmpty()) {
 					Toast.makeText(EditSeriesList.this, R.string.series_is_blank, Toast.LENGTH_LONG).show();
@@ -150,7 +150,7 @@ public class EditSeriesList extends EditObjectList<Series> {
 				dialog.dismiss();
 			}
 		});
-		Button cancelButton = (Button) dialog.findViewById(R.id.cancel);
+		Button cancelButton = dialog.findViewById(R.id.cancel);
 		cancelButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -234,7 +234,7 @@ public class EditSeriesList extends EditObjectList<Series> {
 	
 	@Override
 	protected boolean onSave(Intent intent) {
-		final AutoCompleteTextView t = ((AutoCompleteTextView)EditSeriesList.this.findViewById(R.id.series));
+		final AutoCompleteTextView t = EditSeriesList.this.findViewById(R.id.series);
 		Resources res = this.getResources();
 		String s = t.getText().toString().trim();
 		if (!s.isEmpty()) {

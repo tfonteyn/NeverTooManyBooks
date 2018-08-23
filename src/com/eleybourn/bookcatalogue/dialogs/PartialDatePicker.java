@@ -118,9 +118,9 @@ public class PartialDatePicker extends AlertDialog {
 		setView(root);
 
 		// Get UI components for later use
-		mYearView = (EditText)root.findViewById(R.id.year);
-		mMonthSpinner = (Spinner)root.findViewById(R.id.month);
-		mDaySpinner = (Spinner)root.findViewById(R.id.day);
+		mYearView = root.findViewById(R.id.year);
+		mMonthSpinner = root.findViewById(R.id.month);
+		mDaySpinner = root.findViewById(R.id.day);
 
 		// Create month spinner adapter
 		ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
@@ -499,7 +499,7 @@ public class PartialDatePicker extends AlertDialog {
         /* Remove the 3 pickers from their parent and then add them back in the
          * required order.
          */
-        LinearLayout parent = (LinearLayout) root.findViewById(R.id.dateSelector);
+        LinearLayout parent = root.findViewById(R.id.dateSelector);
         // Get the three views
         View y = root.findViewById(R.id.yearSelector);
         View m = root.findViewById(R.id.monthSelector);

@@ -285,7 +285,7 @@ public class StandardDialogs {
 	public static void selectItemDialog(LayoutInflater inflater, String message, ArrayList<SimpleDialogItem> items, SimpleDialogItem selectedItem, final SimpleDialogOnClickListener handler) {
 		// Get the view and the radio group
 		final View root = inflater.inflate(R.layout.select_list_dialog, null);
-		TextView msg = (TextView) root.findViewById(R.id.message);
+		TextView msg = root.findViewById(R.id.message);
 
 		// Build the base dialog
 		final AlertDialog.Builder builder = new AlertDialog.Builder(inflater.getContext()).setView(root);
@@ -329,7 +329,7 @@ public class StandardDialogs {
 			}};		
 
 		// Add the items to the dialog
-		LinearLayout list = (LinearLayout)root.findViewById(R.id.list);
+		LinearLayout list = root.findViewById(R.id.list);
 		for(SimpleDialogItem item: items) {
 			View v = item.getView(inflater);
 			v.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -398,16 +398,16 @@ public class StandardDialogs {
 			// Create the view
 			View v = inflater.inflate(R.layout.file_list_item, null);
 			// Set the file name
-			TextView name = (TextView) v.findViewById(R.id.name);
+			TextView name = v.findViewById(R.id.name);
 			name.setText(mFile.getName());
 			// Set the path
-			TextView location = (TextView) v.findViewById(R.id.path);
+			TextView location = v.findViewById(R.id.path);
 			location.setText(mFile.getParent());
 			// Set the size
-			TextView size = (TextView) v.findViewById(R.id.size);
+			TextView size = v.findViewById(R.id.size);
 			size.setText(Convert.formatFileSize(mFile.length()));
 			// Set the last modified date
-			TextView update = (TextView) v.findViewById(R.id.updated);
+			TextView update = v.findViewById(R.id.updated);
 			update.setText(DateUtils.toPrettyDateTime(new Date(mFile.lastModified())));
 			// Return it
 			return v;
@@ -435,7 +435,7 @@ public class StandardDialogs {
 			// Create the view
 			View v = inflater.inflate(R.layout.string_list_item, null);
 			// Set the name
-			TextView name = (TextView) v.findViewById(R.id.name);
+			TextView name = v.findViewById(R.id.name);
 			name.setText(mObject.toString());
 			// Return it
 			return v;
@@ -471,7 +471,7 @@ public class StandardDialogs {
 		@Override
 		public View getView(LayoutInflater inflater) {
 			View v = super.getView(inflater);
-			TextView name = (TextView) v.findViewById(R.id.name);
+			TextView name = v.findViewById(R.id.name);
 			name.setCompoundDrawablesWithIntrinsicBounds(mDrawableId, 0, 0, 0);
 			getSelector(v).setVisibility(View.GONE);
 			return v;

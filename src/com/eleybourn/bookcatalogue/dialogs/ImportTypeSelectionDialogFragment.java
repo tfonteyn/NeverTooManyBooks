@@ -106,7 +106,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
 		if (mArchiveHasValidDates) {
 			setOnClickListener(v, R.id.new_and_changed_books_row);
 		} else {
-			TextView blurb = (TextView)v.findViewById(R.id.new_and_changed_books_blurb);
+			TextView blurb = v.findViewById(R.id.new_and_changed_books_blurb);
 			blurb.setText(R.string.old_archive_blurb);
 		}
 

@@ -162,8 +162,8 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 		if (h == null) {
 			// New view, so build the Holder
 			h = new Holder();
-			h.name = (TextView)target.findViewById(R.id.name);
-			h.present = (ImageView)target.findViewById(R.id.present);
+			h.name = target.findViewById(R.id.name);
+			h.present = target.findViewById(R.id.present);
 			// Tag the parts that need it
 			ViewTagger.setTag(target, R.id.TAG_HOLDER, h);
 			ViewTagger.setTag(h.present, R.id.TAG_HOLDER, h);

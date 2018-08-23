@@ -130,7 +130,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
 		addIfVisible(DatabaseDefinitions.DOM_LANGUAGE.name, null, R.string.language, Usages.COPY_IF_BLANK, false);
 
 		// Display the list of fields
-		LinearLayout parent = (LinearLayout) findViewById(R.id.manage_fields_scrollview);
+		LinearLayout parent = findViewById(R.id.manage_fields_scrollview);
 		for(FieldUsage usage : mFieldUsages.values()) {
 			//Create the LinearLayout to hold each row
 			LinearLayout ll = new LinearLayout(this);
@@ -209,7 +209,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
 			parent.addView(ll);			
 		}
 
-		Button confirmBtn = (Button) findViewById(R.id.confirm);
+		Button confirmBtn = findViewById(R.id.confirm);
 		confirmBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -259,7 +259,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
 			}
 		});
 
-		Button cancelBtn = (Button) findViewById(R.id.cancel);
+		Button cancelBtn = findViewById(R.id.cancel);
 		cancelBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -269,12 +269,12 @@ public class UpdateFromInternet extends ActivityWithTasks {
 	}
 
 	private int readUserSelections() {
-		LinearLayout parent = (LinearLayout) findViewById(R.id.manage_fields_scrollview);
+		LinearLayout parent = findViewById(R.id.manage_fields_scrollview);
 		int nChildren = parent.getChildCount();
 		int nSelected = 0;
 		for (int i = 0; i<nChildren; i++) {
 			View v = parent.getChildAt(i);
-			CheckBox cb = (CheckBox) v.findViewById(R.id.fieldCheckbox);
+			CheckBox cb = v.findViewById(R.id.fieldCheckbox);
 			if (cb != null) {
 				FieldUsage usage = (FieldUsage) ViewTagger.getTag(cb);
 				usage.selected = cb.isChecked();

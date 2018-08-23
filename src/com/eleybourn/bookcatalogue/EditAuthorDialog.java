@@ -42,17 +42,17 @@ public class EditAuthorDialog {
 		final Dialog dialog = new Dialog(mContext);
 		dialog.setContentView(R.layout.edit_author);
 		dialog.setTitle(R.string.edit_author_details);
-		EditText familyView = (EditText) dialog.findViewById(R.id.family_name);
-		EditText givenView = (EditText) dialog.findViewById(R.id.given_names);
+		EditText familyView = dialog.findViewById(R.id.family_name);
+		EditText givenView = dialog.findViewById(R.id.given_names);
 		familyView.setText(author.familyName);
 		givenView.setText(author.givenNames);
 
-		Button saveButton = (Button) dialog.findViewById(R.id.confirm);
+		Button saveButton = dialog.findViewById(R.id.confirm);
 		saveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				EditText familyView = (EditText) dialog.findViewById(R.id.family_name);
-				EditText givenView = (EditText) dialog.findViewById(R.id.given_names);
+				EditText familyView = dialog.findViewById(R.id.family_name);
+				EditText givenView = dialog.findViewById(R.id.given_names);
 				String newFamily = familyView.getText().toString().trim();
 				if (newFamily.isEmpty()) {
 					Toast.makeText(mContext, R.string.author_is_blank, Toast.LENGTH_LONG).show();
@@ -64,7 +64,7 @@ public class EditAuthorDialog {
 				confirmEdit(author, newAuthor);
 			}
 		});
-		Button cancelButton = (Button) dialog.findViewById(R.id.cancel);
+		Button cancelButton = dialog.findViewById(R.id.cancel);
 		cancelButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

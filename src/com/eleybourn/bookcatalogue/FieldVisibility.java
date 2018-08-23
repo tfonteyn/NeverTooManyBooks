@@ -108,7 +108,7 @@ public class FieldVisibility extends BookCatalogueActivity {
 		//ed.commit();
 
 		// Display the list of fields
-		LinearLayout parent = (LinearLayout) findViewById(R.id.manage_fields_scrollview);
+		LinearLayout parent = findViewById(R.id.manage_fields_scrollview);
 		for (int i = 0; i<fields.length; i++) {
 			final String prefs_name = prefix + fields[i];
 			//Create the LinearLayout to hold each row

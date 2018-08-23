@@ -277,7 +277,7 @@ public class CoverBrowser {
 				return;
 			// Update the ImageSwitcher
 			File file = new File(fileSpec);
-			TextView msgVw = (TextView)mDialog.findViewById(R.id.switcherStatus);
+			TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
 			if (file.exists() && file.length() > 100) {
 				Drawable d = new BitmapDrawable(mContext.getResources(),
 						ViewUtils.fetchFileIntoImageView(file, null, mPreviewSize*4, mPreviewSize*4, true ));
@@ -333,14 +333,14 @@ public class CoverBrowser {
 		mDialog.setTitle(R.string.select_cover);
 
 		// The switcher will be used to display larger versions; needed for onItemClick().
-		final ImageSwitcher switcher = (ImageSwitcher) mDialog.findViewById(R.id.switcher);
+		final ImageSwitcher switcher = mDialog.findViewById(R.id.switcher);
 
 		// Setup the Gallery.
-		final Gallery gallery = (Gallery) mDialog.findViewById(R.id.gallery);
+		final Gallery gallery = mDialog.findViewById(R.id.gallery);
 		gallery.setVisibility(View.VISIBLE);
 
 		// Show help message
-		TextView msgVw = (TextView)mDialog.findViewById(R.id.switcherStatus);
+		TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
 		msgVw.setText(R.string.click_on_thumb);
 		msgVw.setVisibility(View.VISIBLE);
 
@@ -358,7 +358,7 @@ public class CoverBrowser {
 		gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 	    		// Show status message
-	    		TextView msgVw = (TextView)mDialog.findViewById(R.id.switcherStatus);
+	    		TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
         		switcher.setVisibility(View.GONE);
 	    		msgVw.setText(R.string.loading);
         		msgVw.setVisibility(View.VISIBLE);

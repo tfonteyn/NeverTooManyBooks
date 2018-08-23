@@ -136,10 +136,10 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 			// No holder found, create one
 
 			h = new Holder();
-			h.name = (TextView)target.findViewById(R.id.name);
-			h.groups = (TextView)target.findViewById(R.id.groups);
-			h.kind = (TextView)target.findViewById(R.id.kind);
-			h.preferred = (ImageView)target.findViewById(R.id.preferred);
+			h.name = target.findViewById(R.id.name);
+			h.groups = target.findViewById(R.id.groups);
+			h.kind = target.findViewById(R.id.kind);
+			h.preferred = target.findViewById(R.id.preferred);
 			// Tag relevant views
 			ViewTagger.setTag(target, R.id.TAG_HOLDER, h);
 			ViewTagger.setTag(h.preferred, R.id.TAG_HOLDER, h);

@@ -71,13 +71,13 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
 		// Set the view and handle the save/cancel buttons.
 		this.setContentView(R.layout.booklist_style_properties);
 
-		Button save = (Button) findViewById(R.id.confirm);
+		Button save = findViewById(R.id.confirm);
 		save.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				handleSave();
 			}});
-		Button cancel = (Button) findViewById(R.id.cancel);
+		Button cancel = findViewById(R.id.cancel);
 		cancel.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -125,7 +125,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
 	 * Setup the style properties views based on the current style
 	 */
 	private void displayProperties() {
-		ViewGroup vg = (ViewGroup) this.findViewById(R.id.body);
+		ViewGroup vg = this.findViewById(R.id.body);
 		vg.removeAllViews();
 
 		mProperties = mStyle.getProperties();
@@ -170,9 +170,9 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
 		public View getView(LayoutInflater inflater) {
 			View v = inflater.inflate(R.layout.property_value_string_button, null);
 			ViewTagger.setTag(v, R.id.TAG_PROPERTY, this);
-			final TextView name = (TextView)v.findViewById(R.id.name);
-			final TextView value = (TextView)v.findViewById(R.id.value);
-			final Button btn = (Button)v.findViewById(R.id.edit_button);
+			final TextView name = v.findViewById(R.id.name);
+			final TextView value = v.findViewById(R.id.value);
+			final Button btn = v.findViewById(R.id.edit_button);
 			name.setText(getName());
 			value.setHint(getName());
 			value.setText(get());

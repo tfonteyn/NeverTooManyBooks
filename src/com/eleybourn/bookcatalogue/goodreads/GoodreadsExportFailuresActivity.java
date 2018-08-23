@@ -126,7 +126,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	 * Update the header to reflect current cursor size.
 	 */
 	protected void updateHeader() {
-		TextView head = (TextView) this.findViewById(com.eleybourn.bookcatalogue.R.id.events_found);
+		TextView head = this.findViewById(R.id.events_found);
 		head.setText(m_cursor.getCount() + " Events found");		
 	}
 

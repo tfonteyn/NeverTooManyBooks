@@ -69,7 +69,7 @@ public class TextFieldEditor extends AlertDialog {
 		setView(root);
 
 		// get the next view
-		mTextView = (EditText)root.findViewById(R.id.text);
+		mTextView = root.findViewById(R.id.text);
 
 		// Handle OK
 		root.findViewById(R.id.ok).setOnClickListener(new View.OnClickListener() {

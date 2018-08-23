@@ -95,7 +95,7 @@ public abstract class BindableItemListActivity extends BookCatalogueListActivity
 
 			setListAdapter(m_listAdapter);
 
-			ListView lv = (ListView) this.findViewById(android.R.id.list);
+			ListView lv = this.findViewById(android.R.id.list);
 
 			lv.setOnItemClickListener( new OnItemClickListener() {
 				@Override

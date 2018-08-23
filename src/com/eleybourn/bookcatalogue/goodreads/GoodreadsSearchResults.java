@@ -178,9 +178,9 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 					// Get a new View and make the holder for it.
 					convertView = mInflater.inflate(R.layout.goodreads_work_item, parent, false);
 					holder = new ListHolder();
-					holder.author = (TextView)convertView.findViewById(R.id.author);
-					holder.title = (TextView)convertView.findViewById(R.id.title);
-					holder.cover = (ImageView)convertView.findViewById(R.id.cover);
+					holder.author = convertView.findViewById(R.id.author);
+					holder.title = convertView.findViewById(R.id.title);
+					holder.cover = convertView.findViewById(R.id.cover);
 
 					// Save the holder
 					ViewTagger.setTag(convertView, holder);

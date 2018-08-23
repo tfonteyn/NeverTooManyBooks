@@ -107,7 +107,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
 		});
 
 		// Handle Open/Save button
-		Button confirm = (Button) findViewById(R.id.confirm);
+		Button confirm = findViewById(R.id.confirm);
 
 		if (mIsSaveDialog) {
 			confirm.setText(R.string.save);

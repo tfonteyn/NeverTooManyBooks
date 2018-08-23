@@ -197,7 +197,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 				mSearchText = "";
 			}
 
-			TextView searchTextView = (TextView) findViewById(R.id.search_text);
+			TextView searchTextView = findViewById(R.id.search_text);
 			if (mSearchText.isEmpty()) {
 				searchTextView.setVisibility(View.GONE);
 			} else {
@@ -568,7 +568,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 
 		initBackground();
 
-		TextView bookCounts = (TextView)findViewById(R.id.bookshelf_count);
+		TextView bookCounts = findViewById(R.id.bookshelf_count);
 		if ( (showHeaderFlags & BooklistStyle.SUMMARY_SHOW_COUNT) != 0) {
 			if (mUniqueBooks != mTotalBooks) 
 				bookCounts.setText(BookCatalogueApp.getResourceString(R.string.brackets,
@@ -817,8 +817,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 		final TextView level1Text;
 		final TextView level2Text;
 		ListViewHolder() {
-			level1Text = (TextView)findViewById(R.id.level_1_text);
-			level2Text = (TextView)findViewById(R.id.level_2_text);
+			level1Text = findViewById(R.id.level_1_text);
+			level2Text = findViewById(R.id.level_2_text);
 		}
 	}
 
@@ -924,7 +924,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	
 	private void initBookshelfSpinner() {
 		// Setup the Bookshelf Spinner 
-		mBookshelfSpinner = (Spinner) findViewById(R.id.bookshelf_name);
+		mBookshelfSpinner = findViewById(R.id.bookshelf_name);
 		mBookshelfAdapter = new ArrayAdapter<>(this, R.layout.spinner_frontpage);
 		mBookshelfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mBookshelfSpinner.setAdapter(mBookshelfAdapter);
@@ -983,7 +983,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 			}
 		});
 
-		TextView bookshelfNum = (TextView) findViewById(R.id.bookshelf_num);
+		TextView bookshelfNum = findViewById(R.id.bookshelf_num);
 		if (bookshelfNum != null) {
 			bookshelfNum.setOnClickListener(new OnClickListener() {
 				@Override
@@ -1243,8 +1243,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 	private void doSortMenu(final boolean showAll) {
 		LayoutInflater inf = this.getLayoutInflater();
 		View root = inf.inflate(R.layout.booklist_style_menu, null);
-		RadioGroup group = (RadioGroup)root.findViewById(R.id.radio_buttons);
-		LinearLayout main = (LinearLayout)root.findViewById(R.id.menu);
+		RadioGroup group = root.findViewById(R.id.radio_buttons);
+		LinearLayout main = root.findViewById(R.id.menu);
 
 		final AlertDialog sortDialog = new AlertDialog.Builder(this).setView(root).create();
 		sortDialog.setTitle(R.string.select_style);

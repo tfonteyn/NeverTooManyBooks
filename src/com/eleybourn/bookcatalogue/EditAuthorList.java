@@ -55,11 +55,11 @@ public class EditAuthorList extends EditObjectList<Author> {
 	@Override
 	protected void onSetupView(View target, Author object) {
 		if (object != null) {
-			TextView at = (TextView) target.findViewById(R.id.row_author);
+			TextView at = target.findViewById(R.id.row_author);
 			if (at != null) {
 				at.setText(object.getDisplayName());
 			}
-			at = (TextView) target.findViewById(R.id.row_author_sort);
+			at = target.findViewById(R.id.row_author_sort);
 			if (at != null) {
 				at.setText(object.getSortName());
 			}
@@ -82,7 +82,7 @@ public class EditAuthorList extends EditObjectList<Author> {
 	 */
 	protected void onAdd(View v) {
 		// Get the text
-		AutoCompleteTextView t = ((AutoCompleteTextView)EditAuthorList.this.findViewById(R.id.author));
+		AutoCompleteTextView t = EditAuthorList.this.findViewById(R.id.author);
 		String s = t.getText().toString().trim();
 		if (!s.isEmpty()) {
 			// Get an author and try to find in DB.
@@ -122,17 +122,17 @@ public class EditAuthorList extends EditObjectList<Author> {
 		final Dialog dialog = new Dialog(this);
 		dialog.setContentView(R.layout.edit_author);
 		dialog.setTitle(R.string.edit_author_details);
-		EditText familyView = (EditText) dialog.findViewById(R.id.family_name);
-		EditText givenView = (EditText) dialog.findViewById(R.id.given_names);
+		EditText familyView = dialog.findViewById(R.id.family_name);
+		EditText givenView = dialog.findViewById(R.id.given_names);
 		familyView.setText(author.familyName);
 		givenView.setText(author.givenNames);
 
-		Button saveButton = (Button) dialog.findViewById(R.id.confirm);
+		Button saveButton = dialog.findViewById(R.id.confirm);
 		saveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				EditText familyView = (EditText) dialog.findViewById(R.id.family_name);
-				EditText givenView = (EditText) dialog.findViewById(R.id.given_names);
+				EditText familyView = dialog.findViewById(R.id.family_name);
+				EditText givenView = dialog.findViewById(R.id.given_names);
 				String newFamily = familyView.getText().toString().trim();
 				if (newFamily.isEmpty()) {
 					Toast.makeText(EditAuthorList.this, R.string.author_is_blank, Toast.LENGTH_LONG).show();
@@ -144,7 +144,7 @@ public class EditAuthorList extends EditObjectList<Author> {
 				confirmEditAuthor(author, newAuthor);
 			}
 		});
-		Button cancelButton = (Button) dialog.findViewById(R.id.cancel);
+		Button cancelButton = dialog.findViewById(R.id.cancel);
 		cancelButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -216,7 +216,7 @@ public class EditAuthorList extends EditObjectList<Author> {
 	
 	@Override
 	protected boolean onSave(Intent intent) {
-		final AutoCompleteTextView t = ((AutoCompleteTextView)EditAuthorList.this.findViewById(R.id.author));
+		final AutoCompleteTextView t = EditAuthorList.this.findViewById(R.id.author);
 		Resources res = this.getResources();
 		String s = t.getText().toString().trim();
 		if (!s.isEmpty()) {

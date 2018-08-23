@@ -72,11 +72,11 @@ public class BackupFileDetails implements FileDetails {
 	public void onSetupView(Context c, int position, View target) {
 
 		// Set the basic data
-		TextView name = (TextView)target.findViewById(R.id.name);
+		TextView name = target.findViewById(R.id.name);
 		name.setText(mFile.getName());
-		TextView date = (TextView)target.findViewById(R.id.date);
-		ImageView image = (ImageView)target.findViewById(R.id.icon);
-		TextView details = (TextView)target.findViewById(R.id.details);
+		TextView date = target.findViewById(R.id.date);
+		ImageView image = target.findViewById(R.id.icon);
+		TextView details = target.findViewById(R.id.details);
 		
 		// For directories, hide the extra data
 		if (mFile.isDirectory()) {

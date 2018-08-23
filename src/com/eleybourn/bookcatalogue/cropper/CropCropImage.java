@@ -100,7 +100,7 @@ public class CropCropImage extends CropMonitoredActivity {
 
 		setContentView(R.layout.cropcropimage);
 
-		mImageView = (CropImageView) findViewById(R.id.image);
+		mImageView = findViewById(R.id.image);
 
 		showStorageToast(this);
 

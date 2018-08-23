@@ -80,7 +80,7 @@ public class Properties implements Iterable<Property> {
 			if (currGroup != lastGroup) {
 				// Add a new header
 				View v = inflater.inflate(R.layout.property_group, null);
-				TextView text = (TextView) v.findViewById(R.id.name);
+				TextView text = v.findViewById(R.id.name);
 				if (text != null)
 					text.setText(currGroup.getNameId());
 				parent.addView(v);
