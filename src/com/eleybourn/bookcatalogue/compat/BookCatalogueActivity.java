@@ -9,7 +9,6 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.util.Locale;
 
@@ -52,8 +51,6 @@ public class BookCatalogueActivity extends Activity {
 
         setTheme(THEMES[mLastTheme]);
         super.onCreate(savedInstanceState);
-
-        StorageUtils.checkPermissions(this);
 
         ActionBar bar = getActionBar();
         if (bar != null) {

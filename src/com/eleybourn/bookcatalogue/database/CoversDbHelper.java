@@ -51,10 +51,8 @@ import java.util.Date;
 /**
  * Singleton to preserve resources
  *
- * TODO: make close() only really close if number of getInstance calls is 0
- *
  * DB Helper for Covers DB on external storage.
- * 
+ *
  * In the initial pass, the covers database has a single table whose members are accessed via unique
  * 'file names'.
  * 
@@ -156,7 +154,7 @@ public class CoversDbHelper implements AutoCloseable  {
 	 */
     private CoversDbHelper() {
 		if (mSharedDb == null) {
-            GenericOpenHelper mHelper = new CoversHelper(StorageUtils.getFile(COVERS_DATABASE_NAME).getAbsolutePath(),
+            GenericOpenHelper mHelper = new CoversHelper(StorageUtils.getSharedDirectoryPath(),
                     mTrackedCursorFactory, COVERS_DATABASE_VERSION);
 
             // Try to connect.

@@ -127,7 +127,7 @@ public class BookData extends DataManager {
 	}
 
 	/**
-	 * Create the list of bookshlves in the underlying data
+	 * Create the list of bookshelves in the underlying data
 	 * 
 	 * @param db		Database connection
 	 * 

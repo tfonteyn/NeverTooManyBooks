@@ -101,7 +101,7 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_SERIE
  * Book Catalogue database access helper class. Defines the basic CRUD operations
  * for the catalogue (based on the Notepad tutorial), and gives the 
  * ability to list all books as well as retrieve or modify a specific book.
- * 
+ *
  * NOTE: As of 4.2, DO NOT USE OnUpgrade TO DISPLAY UPGRADE MESSAGES. Use the UpgradeMessageManager class
  * This change separated messages from DB changes (most releases do not involve DB upgrades).
  * 
@@ -989,7 +989,6 @@ public class CatalogueDBAdapter {
 			}
 			if (curVersion == 39) {
 				curVersion++;
-				StorageUtils.createNoMediaFile();
 			}
 			if (curVersion == 40) {
 				curVersion++;

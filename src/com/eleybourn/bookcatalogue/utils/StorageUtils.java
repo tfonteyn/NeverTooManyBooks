@@ -1,7 +1,5 @@
 package com.eleybourn.bookcatalogue.utils;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -11,8 +9,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -47,8 +43,6 @@ import java.util.regex.Pattern;
 /**
  * Class to wrap common storage related functions.
  *
- * TODO: explicitly check/ask for needed permissions.
- * 
  * @author Philip Warner
  */
 public class StorageUtils {
@@ -60,105 +54,105 @@ public class StorageUtils {
 
     private static final String DATABASE_NAME = "book_catalogue";
 
-    // relative filename
+    // our root directory to be created on the 'external storage'
     private static final String DIRECTORY_NAME = "bookCatalogue";
 
-	// fully qualified filenames
+	// directories
 	private static final String EXTERNAL_FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + DIRECTORY_NAME;
-	private static final String ERRORLOG_FILE = EXTERNAL_FILE_PATH + File.separator + "error.log";
+    private static final String TEMP_IMAGE_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "tmp_images";
+
+    // files in above directories
+    private static final String ERRORLOG_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "error.log";
 	private static final String NOMEDIA_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + ".nomedia";
+
 
 	private static boolean mSharedDirExists;
 
 	public static String getErrorLog() {
-		return ERRORLOG_FILE;
+		return ERRORLOG_FILE_PATH;
 	}
 
 	public static String getDatabaseName() {
 		return DATABASE_NAME;
 	}
 
-    public static final int PERM_RESULT_WRITE_EXTERNAL_STORAGE = 0;
 
-    public static void checkPermissions(Activity a) {
-        if (ContextCompat.checkSelfPermission(a, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(a, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERM_RESULT_WRITE_EXTERNAL_STORAGE);
-        }
-    }
-    /**
-     * A .nomedia file will be created which will stop the thumbnails showing up in the gallery (thanks Brandon)
-     */
-    public static void createNoMediaFile() {
-        try {
-            new File(NOMEDIA_FILE_PATH).createNewFile();
-        } catch (IOException ignore) {
+    private static void createDir(String name) {
+        File dir = new File(name);
+        boolean ok = dir.mkdirs() || dir.isDirectory();
+        if (!ok) {
+            Logger.logError("Could not write to shared storage. No permission on: " + name);
         }
     }
 
 	/**
 	 * Make sure the external shared directory exists
+     * Logs failures themselves, but does NOT fail function
+     *
+     * TODO: reduce calls to this!
      *
 	 */
-	private static void initSharedDirectory() {
-	    File dir = new File(EXTERNAL_FILE_PATH);
-        if (dir.exists() && dir.isDirectory())
+	private static void initSharedDirectories() {
+	    File rootDir = new File(EXTERNAL_FILE_PATH);
+	    // quick return
+        if (rootDir.exists() && rootDir.isDirectory())
             return;
 
-	    try {
-            mSharedDirExists = dir.mkdirs() || dir.isDirectory();
-        } catch (SecurityException e) {
-            mSharedDirExists  = false;
-            Logger.logError(e);
-        }
+        createDir(EXTERNAL_FILE_PATH);
+        createDir(TEMP_IMAGE_FILE_PATH);
 
-        if (!mSharedDirExists) {
-            Logger.logError("Could not write to shared storage. Please restart and grant permission when asked.");
-            return;
+        // * A .nomedia file will be created which will stop the thumbnails showing up in the gallery (thanks Brandon)
+        try {
+            new File(NOMEDIA_FILE_PATH).createNewFile();
+        } catch (IOException e) {
+            Logger.logError(e,"Failed to create .media file: " + NOMEDIA_FILE_PATH);
         }
-		createNoMediaFile();
-	}
+    }
 
 	/**
 	 * Get a File, don't check on existence or creation
 	 */
 	public static File getFile(String fileName) {
-		return getFile(null, fileName);
-	}
+        initSharedDirectories();
 
-    /**
-     * Get a File, don't check on existence or creation
-     */
-    public static File getFile(String dir, String fileName) {
-        if (!mSharedDirExists) {
-            initSharedDirectory();
-        }
-        String subdirName = (dir == null || dir.isEmpty()) ? "" : File.separator + dir;
-
-        return new File(EXTERNAL_FILE_PATH + subdirName + File.separator + fileName);
+        return new File(EXTERNAL_FILE_PATH + File.separator + fileName);
     }
 
 	/**
 	 * @return the shared root Directory object, create if needed
 	 */
 	public static File getSharedDirectory() {
-        if (!mSharedDirExists) {
-            initSharedDirectory();
-        }
+        initSharedDirectories();
+
         return new File(EXTERNAL_FILE_PATH);
 	}
 
-	/**
-     *  (create and) get the subdir relative to the shared dir
+    /**
+     * full path, without trailing File.separator !
+     * @return
+     */
+    public static String getSharedDirectoryPath() {
+        return EXTERNAL_FILE_PATH;
+    }
+
+    /**
      *
-     * @param subDirectoryName  the name of the sub dir to append, example: "mynewdir[/myoptionaldir]"
-     *
-     * @return a sub directory object
-	 */
-	public static File getDirectory(String subDirectoryName) {
-        File dir = new File(EXTERNAL_FILE_PATH + File.separator + subDirectoryName);
-        dir.mkdirs();
-        return dir;
+     * @param fileName in the temp image directory
+     * @return the file
+     */
+    public static File getTempImageFile(String fileName) {
+        initSharedDirectories();
+
+        return getFile(TEMP_IMAGE_FILE_PATH + File.separator + fileName);
+    }
+
+    /**
+     * @return the temp image directory
+     */
+	public static File getTempImageDirectory() {
+        initSharedDirectories();
+
+        return new File(TEMP_IMAGE_FILE_PATH);
 	}
 
     /**

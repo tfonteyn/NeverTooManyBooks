@@ -44,8 +44,9 @@ import java.util.List;
 
 /**
  * Abstract class for creating activities containing book details. 
- * Here we define common method for all childs: database and background initializing,
+ * Here we define common method for all children: database and background initializing,
  * initializing fields and display metrics and other common tasks.
+ *
  * @author n.silin
  */
 public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
@@ -83,7 +84,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	/** Zoom size is minimum of MAX_ZOOM_THUMBNAIL_SIZE and largest screen dimension. */
 	protected Integer mThumbZoomSize;
 
-	private static final String TEMP_IMAGE_DIRECTORY = "tmp_images";
+
 	/**
 	 * Handler to process a cover selected from the CoverBrowser.
 	 */
@@ -374,7 +375,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 	 * Delete everything in the temp file directory
 	 */
 	private void cleanupTempImages() {
-        File dir = StorageUtils.getDirectory(TEMP_IMAGE_DIRECTORY);
+        File dir = StorageUtils.getTempImageDirectory();
         if (dir.exists() && dir.isDirectory()) {
             File[] files = dir.listFiles();
             if (files != null) {
@@ -503,14 +504,14 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
      * Get a temp file for camera images
      */
     private File getCameraImageFile() {
-        return StorageUtils.getFile(TEMP_IMAGE_DIRECTORY ,"camera" + mTempImageCounter + ".jpg");
+        return StorageUtils.getTempImageFile("camera" + mTempImageCounter + ".jpg");
     }
 
 	/**
 	 * Get a temp file for cropping output
 	 */
 	private File getCroppedImageFileName() {
-		return StorageUtils.getFile(TEMP_IMAGE_DIRECTORY, "cropped" + mTempImageCounter + ".jpg");
+		return StorageUtils.getTempImageFile("cropped" + mTempImageCounter + ".jpg");
 	}
 
 	/**

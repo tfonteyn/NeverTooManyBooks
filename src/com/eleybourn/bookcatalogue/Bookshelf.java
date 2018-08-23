@@ -49,7 +49,7 @@ public class Bookshelf extends BookCatalogueListActivity {
 	private static final int DELETE_ID = Menu.FIRST + 1;
 
 	/* Side-step a bug in HONEYCOMB. It seems that startManagingCursor() in honeycomb causes
-	 * child-list cursors for ExpanadableList objects to be closed prematurely. So we seem to have
+	 * child-list cursors for ExpandableList objects to be closed prematurely. So we seem to have
 	 * to roll our own...see http://osdir.com/ml/Android-Developers/2011-03/msg02605.html.
 	 */
 	private ArrayList<Cursor> mManagedCursors = new ArrayList<>();

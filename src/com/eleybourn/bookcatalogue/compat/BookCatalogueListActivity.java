@@ -5,8 +5,6 @@ import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
 /**
  * Class introduced to reduce the future pain when we remove sherlock (once we no longer 
  * support Android 2.x), and potentially to make it easier to support two versions.
@@ -23,8 +21,6 @@ public class BookCatalogueListActivity extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        StorageUtils.checkPermissions(this);
 
         ActionBar bar = getActionBar();
         if (bar != null) {
