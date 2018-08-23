@@ -35,11 +35,12 @@ import com.eleybourn.bookcatalogue.dialogs.ImportTypeSelectionDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.ImportTypeSelectionDialogFragment.OnImportTypeSelectionDialogResultListener;
 import com.eleybourn.bookcatalogue.dialogs.MessageDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.MessageDialogFragment.OnMessageDialogResultListener;
+import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
 import java.util.Date;
@@ -80,7 +81,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 	 */
 	private String getDefaultFileName() {
     	if (isSaveDialog()) {
-    		final String sqlDate = Utils.toLocalSqlDateOnly(new Date());
+    		final String sqlDate = DateUtils.toLocalSqlDateOnly(new Date());
     		return "BookCatalogue-" + sqlDate.replace(" ", "-").replace(":", "") + ".bcbk";
     	} else {
     		return "";
@@ -153,7 +154,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 				return;
 			}
 			// Show a helpful message
-			String msg = getString(R.string.archive_complete_details, mBackupFile.getParent(), mBackupFile.getName(), Utils.formatFileSize(mBackupFile.length()));
+			String msg = getString(R.string.archive_complete_details, mBackupFile.getParent(), mBackupFile.getName(), Convert.formatFileSize(mBackupFile.length()));
 			MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_SAVE, R.string.backup_to_archive, msg, R.string.ok, 0, 0);
 			frag.show(getFragmentManager(), null);
 
@@ -226,7 +227,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 					String lastBackup = BookCatalogueApp.getAppPreferences().getString(BookCataloguePreferences.PREF_LAST_BACKUP_DATE, null);
 					if (lastBackup != null && !lastBackup.isEmpty()) {
 						try {
-							settings.dateFrom = Utils.parseDate(lastBackup);
+							settings.dateFrom = DateUtils.parseDate(lastBackup);
 						} catch (Exception e) {
 							// Just ignore; backup everything
 							Logger.logError(e);

@@ -53,8 +53,10 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickListener;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEditorListener;
+import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.ViewUtils;
 
 import java.util.ArrayList;
 
@@ -197,7 +199,7 @@ public class BookEditFields extends BookDetailsAbstract
 			setupUi();
 
 			try {
-				Utils.fixFocusSettings(getView());
+				ViewUtils.fixFocusSettings(getView());
 				getView().findViewById(R.id.author).requestFocus();
 			} catch (Exception e) {
 				// Log, but ignore. This is a non-critical feature that prevents crashes when the
@@ -234,7 +236,7 @@ public class BookEditFields extends BookDetailsAbstract
 
 	private void showDatePublishedDialog() {
 		PartialDatePickerFragment frag = PartialDatePickerFragment.newInstance();
-		Utils.prepareDateDialogFragment(frag, mFields.getField(R.id.date_published).getValue());
+		frag.setDate(mFields.getField(R.id.date_published).getValue());
 		frag.setTitle(R.string.date_published);
 		frag.setDialogId(R.id.date_published); // Set to the destination field ID
 		frag.show(getFragmentManager(), null);
@@ -305,7 +307,7 @@ public class BookEditFields extends BookDetailsAbstract
 			if (currShelf.isEmpty()) {
 				currShelf = mDbHelper.getBookshelfName(1);
 			}
-			String encoded_shelf = Utils.encodeListItem(currShelf, BOOKSHELF_SEPERATOR);
+			String encoded_shelf = Convert.encodeListItem(currShelf, BOOKSHELF_SEPERATOR);
 			Field fe = mFields.getField(R.id.bookshelf);
 			fe.setValue(currShelf);
 			book.setBookshelfList(encoded_shelf);					
@@ -382,10 +384,11 @@ public class BookEditFields extends BookDetailsAbstract
 		Tracker.enterOnActivityResult(this, requestCode, resultCode);			
 		try {
 			super.onActivityResult(requestCode, resultCode, intent);
+
 			switch(requestCode) {
 			case ACTIVITY_EDIT_AUTHORS:
 				if (resultCode == Activity.RESULT_OK && intent.hasExtra(CatalogueDBAdapter.KEY_AUTHOR_ARRAY)){
-					mEditManager.getBookData().setAuthorList(Utils.getAuthorsFromBundle(intent.getExtras()));
+					mEditManager.getBookData().setAuthorList((ArrayList<Author>) intent.getSerializableExtra(CatalogueDBAdapter.KEY_AUTHOR_ARRAY));
 					mEditManager.setDirty(true);
 				} else {
 					// Even though the dialog was terminated, some authors MAY have been updated/added.
@@ -399,7 +402,7 @@ public class BookEditFields extends BookDetailsAbstract
 				mEditManager.setDirty(oldDirty);
 			case ACTIVITY_EDIT_SERIES:
 				if (resultCode == Activity.RESULT_OK && intent.hasExtra(CatalogueDBAdapter.KEY_SERIES_ARRAY)){
-					mEditManager.getBookData().setSeriesList(Utils.getSeriesFromBundle(intent.getExtras()));
+					mEditManager.getBookData().setSeriesList((ArrayList<Series>) intent.getSerializableExtra(CatalogueDBAdapter.KEY_SERIES_ARRAY));
 					populateSeriesListField();
 					mEditManager.setDirty(true);
 				}
@@ -452,7 +455,7 @@ public class BookEditFields extends BookDetailsAbstract
 	 */
 	@Override
 	public void onPartialDatePickerSet(int dialogId, PartialDatePickerFragment dialog, Integer year, Integer month, Integer day) {
-		String value = Utils.buildPartialDate(year, month, day);
+		String value = Convert.buildPartialDate(year, month, day);
 		mFields.getField(dialogId).setValue(value);
 		dialog.dismiss();
 	}

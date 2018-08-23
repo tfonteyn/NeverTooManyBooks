@@ -1,9 +1,5 @@
 package com.eleybourn.bookcatalogue.filechooser;
 
-import java.io.File;
-import java.text.DateFormat;
-import java.util.Date;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Parcel;
@@ -16,7 +12,11 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupInfo;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.Convert;
+
+import java.io.File;
+import java.text.DateFormat;
+import java.util.Date;
 
 /**
  * Implementation of FileDetails that record data about backup files in a background thread.
@@ -99,9 +99,9 @@ public class BackupFileDetails implements FileDetails {
 					s = books;
 				}
 				details.setText(s);	
-				date.setText(Utils.formatFileSize(mFile.length()) + ",  " + DateFormat.getDateTimeInstance().format(mInfo.getCreateDate()));
+				date.setText(Convert.formatFileSize(mFile.length()) + ",  " + DateFormat.getDateTimeInstance().format(mInfo.getCreateDate()));
 			} else {
-				date.setText(Utils.formatFileSize(mFile.length()) + ",  " + DateFormat.getDateTimeInstance().format(new Date(mFile.lastModified())));
+				date.setText(Convert.formatFileSize(mFile.length()) + ",  " + DateFormat.getDateTimeInstance().format(new Date(mFile.lastModified())));
 				details.setVisibility(View.GONE);
 			}
 		}

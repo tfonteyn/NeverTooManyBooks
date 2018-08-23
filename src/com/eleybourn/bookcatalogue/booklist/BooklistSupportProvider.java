@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
-import com.eleybourn.bookcatalogue.utils.Utils;
-
 /**
  * Interface for objects that can provide long-lived instances of Booklist-related items.
  * Typically this interface is implemented by objects that have a close() method (eg. cursors)
@@ -31,6 +29,5 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  */
 public interface BooklistSupportProvider {
 	BooklistRowView getRowView();
-	Utils getUtils();
 	BooklistBuilder getBuilder();
 }

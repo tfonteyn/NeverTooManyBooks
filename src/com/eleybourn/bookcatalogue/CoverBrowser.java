@@ -50,8 +50,8 @@ import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
+import com.eleybourn.bookcatalogue.utils.ViewUtils;
 
 /**
  * Class to display and manage a cover image browser in a dialog.
@@ -224,7 +224,7 @@ public class CoverBrowser {
 			file.deleteOnExit();
 			//CoverImageAdapter cia = (CoverImageAdapter) gallery.getAdapter();
 			//cia.notifyDataSetChanged();
-			Utils.fetchFileIntoImageView(file, v, mPreviewSize, mPreviewSize, true );				
+			ViewUtils.fetchFileIntoImageView(file, v, mPreviewSize, mPreviewSize, true );
 		}
 	}
 
@@ -280,7 +280,7 @@ public class CoverBrowser {
 			TextView msgVw = (TextView)mDialog.findViewById(R.id.switcherStatus);
 			if (file.exists() && file.length() > 100) {
 				Drawable d = new BitmapDrawable(mContext.getResources(),
-						Utils.fetchFileIntoImageView(file, null, mPreviewSize*4, mPreviewSize*4, true ));
+						ViewUtils.fetchFileIntoImageView(file, null, mPreviewSize*4, mPreviewSize*4, true ));
 				switcher.setImageDrawable(d);
 				ViewTagger.setTag(switcher, file.getAbsolutePath());    			
 				msgVw.setVisibility(View.GONE);
@@ -598,7 +598,7 @@ public class CoverBrowser {
 				i.setImageResource(android.R.drawable.ic_menu_help);
 			} else {
 				// Present, so use it.
-				Utils.fetchFileIntoImageView(f, i, mPreviewSize, mPreviewSize, true );
+				ViewUtils.fetchFileIntoImageView(f, i, mPreviewSize, mPreviewSize, true );
 			}
 			
 			return i;

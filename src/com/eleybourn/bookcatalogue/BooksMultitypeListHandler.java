@@ -33,6 +33,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eleybourn.bookcatalogue.amazon.AmazonUtils;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistRowView;
@@ -45,12 +46,13 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogMenuItem;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NetworkException;
 import com.eleybourn.bookcatalogue.goodreads.SendOneBookTask;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
+import com.eleybourn.bookcatalogue.utils.ViewUtils;
 
 import net.philipwarner.taskqueue.QueueManager;
 
@@ -301,13 +303,13 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 				scale = 0.8f;
 
 			// Find the various views we use.
-			title = (TextView) v.findViewById(R.id.title);
-			cover = (ImageView) v.findViewById(R.id.cover);
-			seriesNum = (TextView) v.findViewById(R.id.series_num);
-			seriesNumLong = (TextView) v.findViewById(R.id.series_num_long);				
+			title = v.findViewById(R.id.title);
+			cover = v.findViewById(R.id.cover);
+			seriesNum = v.findViewById(R.id.series_num);
+			seriesNumLong = v.findViewById(R.id.series_num_long);
 
 			final int iconSize = (int)(title.getTextSize() * scale);
-			read = (ImageView) v.findViewById(R.id.read);
+			read = v.findViewById(R.id.read);
 			LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, iconSize ); 
 			read.setMaxHeight(iconSize);
 			read.setMaxWidth(iconSize);
@@ -333,28 +335,28 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 			} else
 				cover.setVisibility(View.GONE);
 
-			shelves = (TextView) v.findViewById(R.id.shelves);
+			shelves = v.findViewById(R.id.shelves);
 			if ( (extras & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
 				shelves.setVisibility(View.VISIBLE);
 			} else {
 				shelves.setVisibility(View.GONE);
 			}
 
-			author = (TextView) v.findViewById(R.id.author);
+			author = v.findViewById(R.id.author);
 			if ( (extras & BooklistStyle.EXTRAS_AUTHOR) != 0 ) {
 				author.setVisibility(View.VISIBLE);
 			} else {
 				author.setVisibility(View.GONE);
 			}
 
-			location = (TextView) v.findViewById(R.id.location);
+			location = v.findViewById(R.id.location);
 			if ( (extras & BooklistStyle.EXTRAS_LOCATION) != 0) {
 				location.setVisibility(View.VISIBLE);
 			} else {
 				location.setVisibility(View.GONE);
 			}
 
-			publisher = (TextView) v.findViewById(R.id.publisher);
+			publisher = v.findViewById(R.id.publisher);
 			if ( (extras & BooklistStyle.EXTRAS_PUBLISHER) != 0 ) {
 				publisher.setVisibility(View.VISIBLE);
 			} else {
@@ -409,8 +411,11 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 
 			// Thumbnail
 			if ( (extras & BooklistStyle.EXTRAS_THUMBNAIL) != 0)
-				rowView.getUtils().fetchBookCoverIntoImageView(cover, rowView.getMaxThumbnailWidth(), rowView.getMaxThumbnailHeight(), true, rowView.getBookUuid(), 
-																BooklistPreferencesActivity.isThumbnailCacheEnabled(), BooklistPreferencesActivity.isBackgroundThumbnailsEnabled());
+				ViewUtils.fetchBookCoverIntoImageView(cover,
+						rowView.getMaxThumbnailWidth(), rowView.getMaxThumbnailHeight(),
+						true, rowView.getBookUuid(),
+						BooklistPreferencesActivity.isThumbnailCacheEnabled(),
+						BooklistPreferencesActivity.isBackgroundThumbnailsEnabled());
 
 			// Extras
 			
@@ -636,7 +641,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 		@Override
 		public void map(BooklistRowView rowView, View v) {
 			rowInfo = v.findViewById(R.id.row_info);
-			text = (TextView) v.findViewById(R.id.name);
+			text = v.findViewById(R.id.name);
 		}
 		@Override
 		public void set(BooklistRowView rowView, View v, final int level) {
@@ -671,7 +676,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 		@Override
 		public void map(BooklistRowView rowView, View v) {
 			rowInfo = v.findViewById(R.id.row_info);
-			text = (TextView) v.findViewById(R.id.name);
+			text = v.findViewById(R.id.name);
 		}
 		@Override
 		public void set(BooklistRowView rowView, View v, final int level) {
@@ -682,7 +687,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 				// If valid, get the name
 				if (i > 0 && i <= 12) {
 					// Create static formatter if necessary
-					s = Utils.getMonthName(i);
+					s = DateUtils.getMonthName(i);
 				}
 			} catch (Exception e) {
 				Logger.logError(e);
@@ -718,7 +723,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 		@Override
 		public void map(BooklistRowView rowView, View v) {
 			rowInfo = v.findViewById(R.id.row_info);
-			text = (TextView) v.findViewById(R.id.name);
+			text = v.findViewById(R.id.name);
 		}
 		@Override
 		public void set(BooklistRowView rowView, View v, final int level) {
@@ -1029,20 +1034,20 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 
 		case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
 			String author = getAuthorFromRow(db, rowView);
-			Utils.openAmazonSearchPage(context, author, null);
+			AmazonUtils.openAmazonSearchPage(context, author, null);
 			return true;
 		}
 		
 		case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
 			String series = getSeriesFromRow(db, rowView);
-			Utils.openAmazonSearchPage(context, null, series);
+			AmazonUtils.openAmazonSearchPage(context, null, series);
 			return true;
 		}
 		
 		case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
 			String author = getAuthorFromRow(db, rowView);
 			String series = getSeriesFromRow(db, rowView);
-			Utils.openAmazonSearchPage(context, author, series);
+			AmazonUtils.openAmazonSearchPage(context, author, series);
 			return true;			
 		}
 

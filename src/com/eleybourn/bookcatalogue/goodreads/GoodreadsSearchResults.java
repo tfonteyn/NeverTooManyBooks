@@ -35,9 +35,9 @@ import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.compat.BookCatalogueListActivity;
 import com.eleybourn.bookcatalogue.goodreads.api.SearchBooksApiHandler;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
@@ -86,7 +86,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 			finish();
 			return;
 		}
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	/**

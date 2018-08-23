@@ -35,6 +35,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.compat.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -58,7 +59,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
  			setTitle(R.string.app_name);
 			setContentView(R.layout.administration_about);
 			setupAdmin();
-			Utils.initBackground(this);
+			BCBackground.init(this);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -70,7 +71,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 	/**
 	 * This function builds the Admin page in 4 sections. 
@@ -82,7 +83,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
 	 */
 	public void setupAdmin() {
 		/* Version Number */
-		TextView release = (TextView) findViewById(R.id.version);
+		TextView release = findViewById(R.id.version);
 		PackageManager manager = this.getPackageManager();
 		PackageInfo info;
 		try {
@@ -93,7 +94,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
 			Logger.logError(e);
 		}
 		final Resources res = this.getResources();
-		TextView webpage = (TextView) findViewById(R.id.webpage);
+		TextView webpage = findViewById(R.id.webpage);
 		webpage.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -102,7 +103,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
 				return;
 			}
 		});
-		TextView sourcecode = (TextView) findViewById(R.id.sourcecode);
+		TextView sourcecode = findViewById(R.id.sourcecode);
 		sourcecode.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -111,7 +112,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
 				return;
 			}
 		});
-		TextView contact1 = (TextView) findViewById(R.id.contact1);
+		TextView contact1 = findViewById(R.id.contact1);
 		contact1.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -119,7 +120,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
 				return;
 			}
 		});
-		TextView contact2 = (TextView) findViewById(R.id.contact2);
+		TextView contact2 = findViewById(R.id.contact2);
 		contact2.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -129,7 +130,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
 		});
 		
 		{
-			TextView tv = (TextView) findViewById(R.id.amazon_links_info);
+			TextView tv = findViewById(R.id.amazon_links_info);
 			// Setup the linked HTML
 			String text = getString(R.string.hint_amazon_links_blurb, 
 					getString(R.string.amazon_books_by_author),

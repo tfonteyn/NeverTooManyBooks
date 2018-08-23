@@ -31,8 +31,8 @@ import com.eleybourn.bookcatalogue.properties.Property;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.StringListProperty;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.SoundManager;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.Locale;
 
@@ -202,7 +202,7 @@ public class OtherPreferences extends PreferencesBase {
 		updateLanguageListItems();
 
 		setTitle(R.string.other_preferences);
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	@Override
@@ -220,7 +220,7 @@ public class OtherPreferences extends PreferencesBase {
 		super.onResume();
 		// Listen for locale changes (this activity CAN change it)
 		BookCatalogueApp.registerOnLocaleChangedListener(mLocaleListener);
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	/**

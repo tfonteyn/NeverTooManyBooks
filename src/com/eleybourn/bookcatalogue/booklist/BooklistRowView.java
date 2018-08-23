@@ -20,6 +20,17 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
+
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
+
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_ABSOLUTE_POSITION;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_AUTHOR_ID;
@@ -36,16 +47,6 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_SERIE
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_TITLE_LETTER;
-import android.content.res.Resources;
-import android.database.Cursor;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
-
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * RowView object for the BooklistCursor.
@@ -139,13 +140,6 @@ public class BooklistRowView {
 	}
 
 	/**
-	 * Get Utils from underlying cursor
-	 */
-	public Utils getUtils() {
-		return ((BooklistSupportProvider)mCursor).getUtils();
-	}
-
-	/**
 	 * Accessor
 	 */
 	public BooklistStyle getStyle() {
@@ -234,7 +228,7 @@ public class BooklistRowView {
 				// If valid, get the name
 				if (i > 0 && i <= 12) {
 					// Create static formatter if necessary
-					s = Utils.getMonthName(i);
+					s = DateUtils.getMonthName(i);
 				}				
 			} catch (Exception ignored) {}
 			break;

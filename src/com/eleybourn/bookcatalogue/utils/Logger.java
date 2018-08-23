@@ -34,6 +34,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Logger {
+	private Logger() {
+	}
 
 	public static void logError(String msg) {
 		logError(null,msg);

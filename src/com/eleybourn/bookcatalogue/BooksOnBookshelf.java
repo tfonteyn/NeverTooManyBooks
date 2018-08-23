@@ -69,13 +69,13 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogMenuItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickListener;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.TrackedCursor;
-import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
@@ -533,7 +533,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         Objects.requireNonNull(header,"Sanity Check Fail: Header view not found; isFinishing() = " + isFinishing());
         Objects.requireNonNull(getResources() == null,"Sanity Check Fail: getResources() returned null; isFinishing() = " + isFinishing());
 
-		Utils.initBackground(root, lv, header);
+		BCBackground.init(root, lv, header);
 	}
 
 	/**

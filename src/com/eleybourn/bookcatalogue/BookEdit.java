@@ -50,8 +50,8 @@ import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment.OnPartialDa
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEditorListener;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.Logger;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -104,10 +104,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 	private BookData mBookData;
 	private boolean mIsReadOnly;
 
-	private Button mConfirmButton;
-	private Button mCancelButton;
-
-	public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
 		Tracker.enterOnCreate(this);
 		super.onCreate(savedInstanceState);
 
@@ -192,8 +189,8 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 			findViewById(R.id.buttons).setVisibility(View.VISIBLE);
 		}
 
-		mConfirmButton = (Button) findViewById(R.id.confirm);
-		mCancelButton = (Button) findViewById(R.id.cancel);
+        Button mConfirmButton = findViewById(R.id.confirm);
+        Button mCancelButton = findViewById(R.id.cancel);
 
 		// mConfirmButton.setOnClickListener - This is set in populate fields.
 		// The behaviour changes depending on if it is adding or saving
@@ -231,7 +228,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 		setActivityTitle();
 
 		// Setup the background
-		Utils.initBackground(this);
+		BCBackground.init(this);
 
 		Tracker.exitOnCreate(this);
 
@@ -662,10 +659,6 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 	 * @return Boolean success or failure.
 	 */
 	private boolean validate() {
-		Fragment frag = getFragmentManager().findFragmentById(R.id.fragment);
-		if (frag instanceof DataEditor) {
-			((DataEditor) frag).saveAllEdits(mBookData);
-		}
 		if (!mBookData.validate()) {
 			Toast.makeText(this, mBookData.getValidationExceptionMessage(getResources()), Toast.LENGTH_LONG).show();
 			return false;
@@ -694,10 +687,17 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 	 * @param nextStep   The next step to be executed on success/failure.
 	 */
 	private void saveState(final PostSaveAction nextStep) {
+        Fragment frag = getFragmentManager().findFragmentById(R.id.fragment);
+        if (frag instanceof DataEditor) {
+            ((DataEditor) frag).saveAllEdits(mBookData);
+        }
+
 		// Ignore validation failures; we still validate to get the current values.
-//		if (!validate()) {
-//			// nextStep.failure();
-//			// return;
+        validate();
+//       boolean validateTmp = validate();
+//		if (!validateTmp()) {
+//			nextStep.failure();
+//			return;
 //		}
 
 		// However, there is some data that we really do require...
@@ -841,17 +841,19 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 	 */
 	private void setActivityTitle() {
 		ActionBar bar = this.getActionBar();
-		if (mIsReadOnly && mList != null) {
-			bar.setTitle(mBookData.getString(CatalogueDBAdapter.KEY_TITLE));
-			bar.setSubtitle(mBookData.getAuthorTextShort() + " ("
-					+ String.format(getResources().getString(R.string.x_of_y), mList.getAbsolutePosition(), mList.getCount()) + ")");
-		} else if (mBookData.getRowId() > 0) {
-			bar.setTitle(mBookData.getString(CatalogueDBAdapter.KEY_TITLE));
-			bar.setSubtitle(mBookData.getAuthorTextShort());
-		} else {
-			bar.setTitle(this.getResources().getString(R.string.menu_insert));
-			bar.setSubtitle(null);
-		}
+		if (bar != null) {
+            if (mIsReadOnly && mList != null) {
+                bar.setTitle(mBookData.getString(CatalogueDBAdapter.KEY_TITLE));
+                bar.setSubtitle(mBookData.getAuthorTextShort() + " ("
+                        + String.format(getResources().getString(R.string.x_of_y), mList.getAbsolutePosition(), mList.getCount()) + ")");
+            } else if (mBookData.getRowId() > 0) {
+                bar.setTitle(mBookData.getString(CatalogueDBAdapter.KEY_TITLE));
+                bar.setSubtitle(mBookData.getAuthorTextShort());
+            } else {
+                bar.setTitle(this.getResources().getString(R.string.menu_insert));
+                bar.setSubtitle(null);
+            }
+        }
 	}
 
 	private ArrayList<String> mPublishers;

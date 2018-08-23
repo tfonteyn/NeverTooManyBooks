@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.io.File;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -34,11 +32,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.compat.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
-import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.io.File;
 
 /**
  * 
@@ -60,7 +60,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 			setTitle(R.string.library_thing);
 			setContentView(R.layout.administration_librarything);
 			setupAdmin();
-			Utils.initBackground(this);
+			BCBackground.init(this);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -72,12 +72,12 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	public void setupAdmin() {
 		/* LT Reg Link */
-		TextView register = (TextView) findViewById(R.id.register_url);
+		TextView register = findViewById(R.id.register_url);
 		register.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -88,7 +88,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 		});
 		
 		/* DevKey Link */
-		TextView devkeyLink = (TextView) findViewById(R.id.devkey_url);
+		TextView devkeyLink = findViewById(R.id.devkey_url);
 		devkeyLink.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -98,16 +98,16 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 			}
 		});
 
-		EditText devkeyView = (EditText) findViewById(R.id.devkey);
+		EditText devkeyView = findViewById(R.id.devkey);
 		SharedPreferences prefs = getSharedPreferences("bookCatalogue", Context.MODE_PRIVATE);
 		devkeyView.setText(prefs.getString(LibraryThingManager.LT_DEVKEY_PREF_NAME, ""));
 		
 		/* Save Button */
-		Button btn = (Button) findViewById(R.id.confirm);
+		Button btn = findViewById(R.id.confirm);
 		btn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				EditText devkeyView = (EditText) findViewById(R.id.devkey);
+				EditText devkeyView = findViewById(R.id.devkey);
 				String devkey = devkeyView.getText().toString();
 				SharedPreferences prefs = getSharedPreferences("bookCatalogue", Context.MODE_PRIVATE);
 				SharedPreferences.Editor ed = prefs.edit();
@@ -153,7 +153,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 		});
 
 		/* Reset Button */
-		Button resetBtn = (Button) findViewById(R.id.reset_messages);
+		Button resetBtn = findViewById(R.id.reset_messages);
 		resetBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

@@ -30,8 +30,8 @@ import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.utils.AlertDialogUtils;
 import com.eleybourn.bookcatalogue.utils.AlertDialogUtils.AlertDialogItem;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -101,7 +101,7 @@ public class MainMenu extends BookCatalogueActivity {
             HintManager.displayHint(this, R.string.hint_startup_screen, null);
         }
 
-        Utils.initBackground(this, true);
+        BCBackground.init(this, true);
     }
 
     /**

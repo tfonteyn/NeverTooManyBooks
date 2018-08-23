@@ -331,15 +331,6 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
 	}
 
 	/**
-	 * Get/create the Utils object for accessing covers.
-	 */
-	public Utils getUtils() {
-		if (mUtils == null)
-			mUtils = new Utils();
-		return mUtils;
-	}
-
-	/**
 	 * Get the number of levels in the book list.
 	 */
 	public int numLevels() {
@@ -381,14 +372,7 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
 		Tracker.handleEvent(this, "Close " + this.toString(), Tracker.States.Enter);
 		super.close();
 
-
 		clearCursors();
-
-		if (mUtils != null) {
-			mUtils.close();
-			mUtils = null;
-		}
-
 		Tracker.handleEvent(this, "Close " + this.toString(), Tracker.States.Exit);
 	}
 }

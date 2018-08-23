@@ -27,25 +27,32 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteQuery;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.GetThumbnailTask;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.DbUtils.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.TrackedCursor;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Date;
 
 /**
+ * Singleton to preserve resources
+ *
+ * TODO: make close() only really close if number of getInstance calls is 0
+ *
  * DB Helper for Covers DB on external storage.
  * 
  * In the initial pass, the covers database has a single table whose members are accessed via unique
@@ -53,18 +60,18 @@ import java.util.Date;
  * 
  * @author Philip Warner
  */
-public class CoversDbHelper {
-	private static GenericOpenHelper mHelper;
-	private static SynchronizedDb mSharedDb;
-	private static boolean mSharedDbUnavailable = false;
+public class CoversDbHelper implements AutoCloseable  {
 
-	/** Debug counter */
-	private static Integer mInstanceCount = 0;
+    /** every method in this class MUST test on != null */
+	private static SynchronizedDb mSharedDb;
+
+	/** close() will only really close if 0 is reached */
+	private static Integer mCountToGetInstance = 0;
 
 	/** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync */
 	private static final Synchronizer mSynchronizer = new Synchronizer();
 
-	/** List of statements we create so we can close them when object is closed. */
+	/** List of statements we create so we can clean them when the instance is closed. */
 	private final SqlStatementManager mStatements = new SqlStatementManager();
 
 	/** DB location */
@@ -125,66 +132,98 @@ public class CoversDbHelper {
 			.addIndex("file_date", true, DOM_FILENAME, DOM_DATE);
 	}
 
-    public static final TableDefinition TABLES[] = new TableDefinition[] {TBL_IMAGE};
+    static final TableDefinition TABLES[] = new TableDefinition[] {TBL_IMAGE};
+
+	private static CoversDbHelper mInstance;
+
+    /**
+	 * Get the 'covers' DB from external storage.
+     *
+     * Always use as:
+     *   try(CoversDbHelper coversDbHelper = CoversDbHelper.getInstance()) { use coversDbHelper here }
+     *
+     * or call close() yourself ... but if you forget, you might waste resources
+	 */
+	public static CoversDbHelper getInstance() {
+	    if (mInstance == null) {
+            mInstance = new CoversDbHelper();
+        }
+		return mInstance;
+	}
 
 	/**
 	 * Constructor. Fill in required fields. This is NOT based on SQLiteOpenHelper so does not need a context.
 	 */
-	public CoversDbHelper() {
-		if (mSharedDbUnavailable)
-			throw new RuntimeException("Covers database unavailable");
-
-		if (mHelper == null) {
-			mHelper = new CoversHelper(StorageUtils.getFile(COVERS_DATABASE_NAME).getAbsolutePath(), mTrackedCursorFactory, COVERS_DATABASE_VERSION);
-		}
+    private CoversDbHelper() {
 		if (mSharedDb == null) {
-			// Try to connect.
-			try {
-				mSharedDb = new SynchronizedDb(mHelper, mSynchronizer);				
-			} catch (Exception e) {
-				// Assume exception means DB corrupt. Log, rename, and retry
-				Logger.logError(e, "Failed to open covers db");
-				File f = StorageUtils.getFile(COVERS_DATABASE_NAME);
-				f.renameTo(StorageUtils.getFile(COVERS_DATABASE_NAME + ".dead"));
+            GenericOpenHelper mHelper = new CoversHelper(StorageUtils.getFile(COVERS_DATABASE_NAME).getAbsolutePath(),
+                    mTrackedCursorFactory, COVERS_DATABASE_VERSION);
 
-				// Connect again...
-				try {
-					mSharedDb = new SynchronizedDb(mHelper, mSynchronizer);									
-				} catch (Exception e2) {
-					// If we fail a second time (creating a new DB), then just give up.
-					mSharedDbUnavailable = true;
-					throw new RuntimeException("Covers database unavailable");
-				}
-			}
-		}
-		synchronized(mInstanceCount) {
-			mInstanceCount++;
-			if (BuildConfig.DEBUG) {
-				System.out.println("CovDBA instances: " + mInstanceCount);
-			}
-		}
+            // Try to connect.
+            try {
+                mSharedDb = new SynchronizedDb(mHelper, mSynchronizer);
+            } catch (Exception e) {
+                // Assume exception means DB corrupt. Log, rename, and retry
+                Logger.logError(e, "Failed to open covers db");
+                File f = StorageUtils.getFile(COVERS_DATABASE_NAME);
+                if (!f.renameTo(StorageUtils.getFile(COVERS_DATABASE_NAME + ".dead"))) {
+                    Logger.logError("Failed to rename dead covers database: ");
+                }
+
+                // Connect again...
+                try {
+                    mSharedDb = new SynchronizedDb(mHelper, mSynchronizer);
+                } catch (Exception e2) {
+                    // If we fail a second time (creating a new DB), then just give up.
+                    Logger.logError(e2,"Covers database unavailable");
+                }
+            }
+        }
+
+        synchronized(this) {
+            mCountToGetInstance++;
+            if (BuildConfig.DEBUG) {
+                System.out.println("CovDBA instances created: " + mCountToGetInstance);
+            }
+        }
+
 	}
 
-	private SynchronizedDb getDb() {
-		return mSharedDb;
-	}
+    @Override
+    public void close() {
+        synchronized(this) {
+            mCountToGetInstance--;
+            if (BuildConfig.DEBUG) {
+                System.out.println("CovDBA instances left: " + mCountToGetInstance);
+            }
 
-	/**
-	 * Delete the named 'file'
-	 *
-	 * @param filename
-	 */
-	public void deleteFile(final String filename) {
-		SynchronizedDb db = getDb();
-		SyncLock txLock = db.beginTransaction(true);
-		try {
-			db.execSQL("Drop table " + TBL_IMAGE);
-			DbUtils.createTables(db, new TableDefinition[] {TBL_IMAGE}, true);
-			db.setTransactionSuccessful();
-		} finally {
-			db.endTransaction(txLock);
-		}
-	}
+            if (mCountToGetInstance == 0) {
+                if (mSharedDb != null) {
+                    mStatements.close();
+                    mSharedDb.close();
+                    mSharedDb = null;
+                }
+            }
+        }
+    }
+
+//    /**
+//	 * Delete the named 'file'
+//	 */
+//	public void deleteFile(final String filename) {
+//	    if (mSharedDb == null) {
+//            return;
+//        }
+//
+//        SyncLock txLock = mSharedDb.beginTransaction(true);
+//        try {
+//            mSharedDb.execSQL("Drop table " + TBL_IMAGE);
+//            DbUtils.createTables(mSharedDb, new TableDefinition[]{TBL_IMAGE}, true);
+//            mSharedDb.setTransactionSuccessful();
+//        } finally {
+//            mSharedDb.endTransaction(txLock);
+//        }
+//	}
 	
 	/**
 	 * Delete the cached covers associated with the passed hash
@@ -193,36 +232,43 @@ public class CoversDbHelper {
 	 */
 	private SynchronizedStatement mDeleteBookCoversStmt = null;
 	public void deleteBookCover(final String bookHash) {
-		SynchronizedDb db = getDb();
+        if (mSharedDb == null) {
+            return;
+        }
 
 		if (mDeleteBookCoversStmt == null) {
 			String sql = "Delete From " + TBL_IMAGE + " Where " + DOM_FILENAME + " LIKE ?";
-			mDeleteBookCoversStmt = mStatements.add(db, "mDeleteBookCoversStmt", sql);
+			mDeleteBookCoversStmt = mStatements.add(mSharedDb, "mDeleteBookCoversStmt", sql);
 		}
 
 		mDeleteBookCoversStmt.bindString(1, bookHash + "%");
 
-		SyncLock txLock = db.beginTransaction(true);
+		SyncLock txLock = mSharedDb.beginTransaction(true);
 		try {
 			mDeleteBookCoversStmt.execute();
-			db.setTransactionSuccessful();
+            mSharedDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction(txLock);
+            mSharedDb.endTransaction(txLock);
 		}
 	}
 
 	/**
 	 * Get the named 'file'
-	 * 
-	 * @param filename
 	 *
 	 * @return	byte[] of image data
 	 */
 	public final byte[] getFile(final String filename, final Date lastModified) {
-		SynchronizedDb db = this.getDb();
+        if (mSharedDb == null) {
+            return null;
+        }
 
-		Cursor c = db.query(TBL_IMAGE.getName(), new String[]{DOM_IMAGE.name}, DOM_FILENAME + "=? and " + DOM_DATE + " > ?", 
-							new String[]{filename, Utils.toSqlDateTime(lastModified)}, null, null, null);
+		Cursor c = mSharedDb.query(TBL_IMAGE.getName(),
+                new String[]{DOM_IMAGE.name},
+                DOM_FILENAME + "=? and " + DOM_DATE + " > ?",
+                new String[]{filename, DateUtils.toSqlDateTime(lastModified)},
+                null,
+                null,
+                null);
 		try {
 			if (!c.moveToFirst())
 				return null;		
@@ -232,30 +278,32 @@ public class CoversDbHelper {
 		}
 	}
 
-	/**
-	 * Get the named 'file'
-	 *
-	 * @param filename
-	 *
-	 * @return	byte[] of image data
-	 */
-	public boolean isEntryValid(String filename, Date lastModified) {
-		SynchronizedDb db = this.getDb();
-		Cursor c = db.query(TBL_IMAGE.getName(), new String[]{DOM_ID.name}, DOM_FILENAME + "=? and " + DOM_DATE + " > ?", 
-								new String[]{filename, Utils.toSqlDateTime(lastModified)}, null, null, null);
-		try {
-			return c.moveToFirst();
-		} finally {
-			c.close();
-		}
-	}
+//	/**
+//	 * Get the named 'file'
+//	 *
+//	 * @return	byte[] of image data
+//	 */
+//	public boolean isEntryValid(String filename, Date lastModified) {
+//        if (mSharedDb == null) {
+//            return false;
+//        }
+//		Cursor c = mSharedDb.query(TBL_IMAGE.getName(), new String[]{DOM_ID.name}, DOM_FILENAME + "=? and " + DOM_DATE + " > ?",
+//								new String[]{filename, DateUtils.toSqlDateTime(lastModified)}, null, null, null);
+//		try {
+//			return c.moveToFirst();
+//		} finally {
+//			c.close();
+//		}
+//	}
+
 	/**
 	 * Save the passed bitmap to a 'file'
-	 *
-	 * @param filename
-	 * @param bm
-	 */
-	public void saveFile(final String filename, final Bitmap bm) {
+     */
+	public void saveFile(final Bitmap bm, final String filename) {
+        if (mSharedDb == null) {
+            return;
+        }
+
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		bm.compress(Bitmap.CompressFormat.JPEG, 70, out);
 		byte[] bytes = out.toByteArray();
@@ -270,12 +318,14 @@ public class CoversDbHelper {
 	 * @param bm
 	 */
 	private SynchronizedStatement mExistsStmt = null;
-	public void saveFile(final String filename, final int height, final int width, final byte[] bytes) {
-		SynchronizedDb db = this.getDb();
+	private void saveFile(final String filename, final int height, final int width, final byte[] bytes) {
+        if (mSharedDb == null) {
+            return;
+        }
 
 		if (mExistsStmt == null) {
 			String sql = "Select Count(" + DOM_ID + ") From " + TBL_IMAGE + " Where " + DOM_FILENAME + " = ?";
-			mExistsStmt = mStatements.add(db, "mExistsStmt", sql);
+			mExistsStmt = mStatements.add(mSharedDb, "mExistsStmt", sql);
 		}
 
 		ContentValues cv = new ContentValues();
@@ -283,7 +333,7 @@ public class CoversDbHelper {
 		cv.put(DOM_FILENAME.name, filename);
 		cv.put(DOM_IMAGE.name, bytes);
 
-		cv.put(DOM_DATE.name, Utils.toSqlDateTime(new Date()));
+		cv.put(DOM_DATE.name, DateUtils.toSqlDateTime(new Date()));
 		cv.put(DOM_TYPE.name, "T");
 		cv.put(DOM_WIDTH.name, height);
 		cv.put(DOM_HEIGHT.name, width);
@@ -292,18 +342,18 @@ public class CoversDbHelper {
 		mExistsStmt.bindString(1, filename);
 		long rows;
 		
-		SyncLock txLock = db.beginTransaction(true);
+		SyncLock txLock = mSharedDb.beginTransaction(true);
 		try {
 			if (mExistsStmt.simpleQueryForLong() == 0) {
-				rows = db.insert(TBL_IMAGE.getName(), null, cv);
+				rows = mSharedDb.insert(TBL_IMAGE.getName(), null, cv);
 			} else {
-				rows = db.update(TBL_IMAGE.getName(), cv, DOM_FILENAME.name + " = ?", new String[] {filename});
+				rows = mSharedDb.update(TBL_IMAGE.getName(), cv, DOM_FILENAME.name + " = ?", new String[] {filename});
 			}
 			if (rows == 0)
 				throw new RuntimeException("Failed to insert data");
-			db.setTransactionSuccessful();
+            mSharedDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction(txLock);
+            mSharedDb.endTransaction(txLock);
 		}
 	}
 
@@ -312,49 +362,117 @@ public class CoversDbHelper {
 	 */
 	private SynchronizedStatement mEraseCoverCacheStmt = null;
 	public void eraseCoverCache() {
-		SynchronizedDb db = this.getDb();
+        if (mSharedDb == null) {
+            return;
+        }
 
 		if (mEraseCoverCacheStmt == null) {
 			String sql = "Delete From " + TBL_IMAGE;
-			mEraseCoverCacheStmt = mStatements.add(db, "mEraseCoverCacheStmt",  sql);
+			mEraseCoverCacheStmt = mStatements.add(mSharedDb, "mEraseCoverCacheStmt",  sql);
 		}
 		mEraseCoverCacheStmt.execute();
 	}
+    /**
+     * Called in the UI thread, will return a cached image OR NULL.
+     *
+     * @param originalFile	File representing original image file
+     * @param destView		View to populate
+     * @param hash          used to construct the cacheId
+     * @param maxWidth      used to construct the cacheId
+     * @param maxHeight     used to construct the cacheId
+     *
+     * @return				Bitmap (if cached) or NULL (if not cached)
+     */
+    public Bitmap fetchCachedImageIntoImageView(final File originalFile, final ImageView destView, final String hash, final int maxWidth, final int maxHeight) {
+        return fetchCachedImageIntoImageView(originalFile, destView, getThumbnailCoverCacheId(hash, maxWidth, maxHeight));
+    }
+
+    /**
+     * Called in the UI thread, will return a cached image OR NULL.
+     *
+     * @param originalFile	File representing original image file
+     * @param destView		View to populate
+     * @param cacheId		ID of the image in the cache
+     *
+     * @return				Bitmap (if cached) or NULL (if not cached)
+     */
+    public Bitmap fetchCachedImageIntoImageView(final File originalFile, final ImageView destView, final String cacheId) {
+        if (mSharedDb == null) {
+            return null;
+        }
+
+        Bitmap bm = null;   // resultant Bitmap (which we will return)
+
+        byte[] bytes;
+        Date expiry;
+        if (originalFile == null)
+            expiry = new Date(0L);
+        else
+            expiry = new Date(originalFile.lastModified());
+
+        // Wrap in try/catch. It's possible the SDCard got removed and DB is now inaccessible
+        try {
+            bytes = getFile(cacheId, expiry);
+        } catch (Exception e) {
+            bytes = null;
+        }
+
+        if (bytes != null) {
+            try {
+                bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            } catch (Exception ignore) {
+            }
+        }
+
+        if (bm != null) {
+            //
+            // Remove any tasks that may be getting the image because they may overwrite anything we do.
+            // Remember: the view may have been re-purposed and have a different associated task which
+            // must be removed from the view and removed from the queue.
+            //
+            if (destView != null)
+                GetThumbnailTask.clearOldTaskFromView( destView );
+
+            // We found it in cache
+            if (destView != null)
+                destView.setImageBitmap(bm);
+            // Return the image
+        }
+        return bm;
+    }
+
+    /**
+     * Construct the cache ID for a given thumbnail spec.
+     *
+     * TODO: is this note still true ?
+     * NOTE: Any changes to the resulting name MUST be reflect in CoversDbHelper.eraseCachedBookCover()
+     */
+    public static String getThumbnailCoverCacheId(final String hash, final int maxWidth, final int maxHeight) {
+        return hash + ".thumb." + maxWidth + "x" + maxHeight + ".jpg";
+    }
 
 	/**
 	 * Erase all cached images relating to the passed book UUID.
-	 *
-	 * @param uuid
 	 */
-	public int eraseCachedBookCover(String uuid) {
-		SynchronizedDb db = this.getDb();
+	public void eraseCachedBookCover(String uuid) {
+        if (mSharedDb == null) {
+            return;
+        }
 		// We use encodeString here because it's possible a user screws up the data and imports
 		// bad UUIDs...this has happened.
 		String sql = DOM_FILENAME + " glob '" + CatalogueDBAdapter.encodeString(uuid) + ".*'";
-		return db.delete(TBL_IMAGE.getName(), sql, CatalogueDBAdapter.EMPTY_STRING_ARRAY);
-	}
+        mSharedDb.delete(TBL_IMAGE.getName(), sql, CatalogueDBAdapter.EMPTY_STRING_ARRAY);
+    }
 	
 	/**
 	 * Analyze the database
 	 */
 	public void analyze() {
-		SynchronizedDb db = this.getDb();
-		String sql;
+        if (mSharedDb == null) {
+            return;
+        }
 		// Don't do VACUUM -- it's a complete rebuild
-		//sql = "vacuum";
-		//db.execSQL(sql);
-		sql = "analyze";
-		db.execSQL(sql);
+		//mSharedDb.execSQL("vacuum");
+        mSharedDb.execSQL("analyze");
 	}
-
-	public void close() {
-		mStatements.close();
-		synchronized(mInstanceCount) {
-			mInstanceCount--;
-			if (BuildConfig.DEBUG) {
-				System.out.println("CovDBA instances: " + mInstanceCount);
-			}
-		}
-	}
-	
 }

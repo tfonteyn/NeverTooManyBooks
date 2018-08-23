@@ -20,12 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.net.URL;
-import java.util.ArrayList;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -50,9 +44,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter.AnthologyTitleExistsException;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
+
+import java.net.URL;
+import java.util.ArrayList;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 public class BookEditAnthology extends BookEditFragmentAbstract {
 	
@@ -60,7 +61,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 	private AutoCompleteTextView mAuthorText;
 	private String bookAuthor;
 	private String bookTitle;
-	private Button mAdd;
+	private Button mAdd = (Button) getView().findViewById(R.id.row_add);
 	private CheckBox mSame;
 	private Integer mEditPosition = null;
 	int anthology_num = CatalogueDBAdapter.ANTHOLOGY_NO;
@@ -99,7 +100,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 		// Setup the same author field
 		anthology_num = book.getInt(CatalogueDBAdapter.KEY_ANTHOLOGY_MASK);			
 
-		mSame = (CheckBox) getView().findViewById(R.id.same_author);
+		mSame = getView().findViewById(R.id.same_author);
 		if ((anthology_num & CatalogueDBAdapter.ANTHOLOGY_MULTIPLE_AUTHORS) != 0) {
 			mSame.setChecked(false);
 		} else {
@@ -114,16 +115,15 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 		});
 		
 		ArrayAdapter<String> author_adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, mDbHelper.getAllAuthors());
-		mAuthorText = (AutoCompleteTextView) getView().findViewById(R.id.add_author);
+		mAuthorText = getView().findViewById(R.id.add_author);
 		mAuthorText.setAdapter(author_adapter);
 		if (mSame.isChecked()) {
 			mAuthorText.setVisibility(View.GONE);
 		} else {
 			mAuthorText.setVisibility(View.VISIBLE);			
 		}
-		mTitleText = (EditText) getView().findViewById(R.id.add_title);
+		mTitleText = getView().findViewById(R.id.add_title);
 
-		mAdd = (Button) getView().findViewById(R.id.row_add);
 		mAdd.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				try {
@@ -156,7 +156,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 		fillAnthology();
 
 		// Setup the background
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 	
 	public void fillAnthology(int scroll_to_id) {
@@ -206,9 +206,9 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 
 		@Override
 		protected void onSetupView(AnthologyTitle anthology, int position, View target) {
-			TextView author = (TextView)target.findViewById(R.id.row_author);
+			TextView author = target.findViewById(R.id.row_author);
 			author.setText(anthology.getAuthor().getDisplayName());
-			TextView title = (TextView)target.findViewById(R.id.row_title);
+			TextView title = target.findViewById(R.id.row_title);
 			title.setText(anthology.getTitle());
 		}
 		
@@ -322,7 +322,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 						anthology_author = anthology_title.substring(pos+4);
 						anthology_title = anthology_title.substring(0, pos);
 					}
-					// Trim extraneous punctionaction and whitespace from the titles and authors
+					// Trim extraneous punctuation and whitespace from the titles and authors
 					anthology_author = anthology_author.trim().replace("\n", " ").replaceAll("[\\,\\.\\'\\:\\;\\`\\~\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\_\\+]*$", "").trim();
 					anthology_title = anthology_title.trim().replace("\n", " ").replaceAll("[\\,\\.\\'\\:\\;\\`\\~\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\_\\+]*$", "").trim();
 					AnthologyTitle anthology = new AnthologyTitle(new Author(anthology_author), anthology_title);

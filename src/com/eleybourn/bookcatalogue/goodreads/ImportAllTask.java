@@ -20,21 +20,6 @@
 
 package com.eleybourn.bookcatalogue.goodreads;
 
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_ADDED_DATE;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_LAST_GOODREADS_SYNC_DATE;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
-import static com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.UPDATED;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-
-import net.philipwarner.taskqueue.QueueManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -51,8 +36,26 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
 import com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames;
+import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import net.philipwarner.taskqueue.QueueManager;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
+
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_ADDED_DATE;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_LAST_GOODREADS_SYNC_DATE;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
+import static com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.UPDATED;
 
 /**
  * Import all a users 'reviews' from goodreads; a users 'reviews' consistes of all the books that 
@@ -99,7 +102,7 @@ public class ImportAllTask extends GenericTask {
 			if (lastSync == null) {
 				mUpdatesAfter = null;
 			} else {
-				mUpdatesAfter = Utils.toSqlDateTime(lastSync);			
+				mUpdatesAfter = DateUtils.toSqlDateTime(lastSync);
 			}
 		} else {
 			mUpdatesAfter = null;
@@ -478,7 +481,7 @@ public class ImportAllTask extends GenericTask {
         	for(Bundle sb: shelves) {
         		String shelf = translateBookshelf(db, sb.getString(ListReviewsFieldNames.SHELF));
         		if (shelf != null && !shelf.isEmpty()) {
-        			shelf = Utils.encodeListItem(shelf, BookEditFields.BOOKSHELF_SEPERATOR);
+        			shelf = Convert.encodeListItem(shelf, BookEditFields.BOOKSHELF_SEPERATOR);
         			if (shelfNames == null)
 		        		shelfNames = new StringBuilder(shelf);
         			else
@@ -492,8 +495,8 @@ public class ImportAllTask extends GenericTask {
         // We need to set BOTH of these fields, otherwise the add/update method will set the
         // last_update_date for us, and that will most likely be set ahead of the GR update date
         Date now = new Date();
-        book.putString(DOM_LAST_GOODREADS_SYNC_DATE.name, Utils.toSqlDateTime(now));
-        book.putString(DOM_LAST_UPDATE_DATE.name, Utils.toSqlDateTime(now));
+        book.putString(DOM_LAST_GOODREADS_SYNC_DATE.name, DateUtils.toSqlDateTime(now));
+        book.putString(DOM_LAST_UPDATE_DATE.name, DateUtils.toSqlDateTime(now));
 
         return book;
 	}
@@ -518,11 +521,11 @@ public class ImportAllTask extends GenericTask {
 		if (val == null || val.isEmpty())
 			return null;
 
-		Date d = Utils.parseDate(val);
+		Date d = DateUtils.parseDate(val);
 		if (d == null)
 			return null;
 
-		val = Utils.toSqlDateTime(d);
+		val = DateUtils.toSqlDateTime(d);
 		dest.putString(destField, val);
 		return val;
 	}

@@ -29,7 +29,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
@@ -38,7 +40,6 @@ import android.util.TypedValue;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Terminator;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -48,6 +49,7 @@ import org.acra.collector.CrashReportData;
 import org.acra.sender.ReportSenderException;
 
 import java.lang.ref.WeakReference;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Locale;
@@ -190,7 +192,7 @@ public class BookCatalogueApp extends Application {
 		ACRA.getErrorReporter().setReportSender(bcSender);
 
         // Save the app signer
-		ACRA.getErrorReporter().putCustomData("Signed-By", Utils.signedBy(this));
+		ACRA.getErrorReporter().putCustomData("Signed-By", signedBy(this));
 
         // Create the notifier
     	mNotifier = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
@@ -542,19 +544,16 @@ public class BookCatalogueApp extends Application {
      * @param res   Resources to use
      * @return  true if it was actually changed
      */
-    public static boolean applyPreferredLocaleIfNecessary(Resources res) {
-        if (mPreferredLocale == null)
-            return false;
+    public static void applyPreferredLocaleIfNecessary(Resources res) {
+        if (mPreferredLocale == null || (res.getConfiguration().locale.equals(mPreferredLocale))) {
+			return;
+		}
 
-        if (res.getConfiguration().locale.equals(mPreferredLocale))
-            return false;
         Locale.setDefault(mPreferredLocale);
         Configuration config = new Configuration();
         config.locale = mPreferredLocale;
         res.updateConfiguration(config, res.getDisplayMetrics());
-
-        return true;
-    }
+	}
 
     /**
      * Monitor configuration changes (like rotation) to make sure we reset the locale.
@@ -596,5 +595,60 @@ public class BookCatalogueApp extends Application {
     
     public static Locale getSystemLocal() {
     	return mInitialLocale;
+    }
+
+    /**
+     * Return the MD5 hash of the public key that signed this app, or a useful
+     * text message if an error or other problem occurred.
+     *
+     * No longer caching as only needed at a crash anyhow
+     */
+    public static String signedBy(Context context) {
+        StringBuilder signedBy = new StringBuilder();
+
+        try {
+            // Get app info
+            PackageManager manager = context.getPackageManager();
+            PackageInfo appInfo = manager.getPackageInfo( context.getPackageName(), PackageManager.GET_SIGNATURES);
+
+            // Each sig is a PK of the signer:
+            //     https://groups.google.com/forum/?fromgroups=#!topic/android-developers/fPtdt6zDzns
+            for(Signature sig: appInfo.signatures) {
+                if (sig != null) {
+                    final MessageDigest sha1 = MessageDigest.getInstance("MD5");
+                    final byte[] publicKey = sha1.digest(sig.toByteArray());
+                    // Turn the hex bytes into a more traditional MD5 string representation.
+                    final StringBuilder hexString = new StringBuilder();
+                    boolean first = true;
+                    for (byte aPublicKey : publicKey) {
+                        if (!first) {
+                            hexString.append(":");
+                        } else {
+                            first = false;
+                        }
+                        String byteString = Integer.toHexString(0xFF & aPublicKey);
+                        if (byteString.length() == 1)
+                            hexString.append("0");
+                        hexString.append(byteString);
+                    }
+                    String fingerprint = hexString.toString();
+
+                    // Append as needed (theoretically could have more than one sig */
+                    if (signedBy.length() == 0)
+                        signedBy.append(fingerprint);
+                    else
+                        signedBy.append("/").append(fingerprint);
+                }
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            // Default if package not found...kind of unlikely
+            return "NOPACKAGE";
+
+        } catch (Exception e) {
+            // Default if we die
+            return e.getMessage();
+        }
+
+        return signedBy.toString();
     }
 }

@@ -20,9 +20,6 @@
 
 package com.eleybourn.bookcatalogue.utils;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -40,6 +37,9 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.R;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 /**
  * Class to manage the display of 'hints' withing the application. Each hint dialog has 
  * a 'Do not show again' option, that results in an update to the preferences which 
@@ -51,6 +51,9 @@ import com.eleybourn.bookcatalogue.R;
  * @author Philip Warner
  */
 public class HintManager {
+	private HintManager() {
+	}
+
 	/** Preferences prefix */
 	private final static String TAG = "HintManager";
 	/** Preferences prefix for hints */
@@ -112,9 +115,9 @@ public class HintManager {
 		dialog.setContentView(R.layout.hint_dialogue);
 		
 		// Get the various Views
-		final TextView msg = (TextView)dialog.findViewById(R.id.hint);
-		final CheckBox cb = (CheckBox)dialog.findViewById(R.id.hide_hint_checkbox); // new CheckBox(context);
-		final Button ok = (Button)dialog.findViewById(R.id.confirm);
+		final TextView msg = dialog.findViewById(R.id.hint);
+		final CheckBox cb = dialog.findViewById(R.id.hide_hint_checkbox); // new CheckBox(context);
+		final Button ok = dialog.findViewById(R.id.confirm);
 
 		// Setup the views
 		String hintText = BookCatalogueApp.getAppContext().getResources().getString(stringId, args);

@@ -280,7 +280,7 @@ public class ImportThread extends ManagedTask {
 //					}
 //
 //					// Now build the array for authors
-//					ArrayList<Author> aa = ArrayUtils.getAuthorUtils().decodeList(authorDetails, '|', false);
+//					ArrayList<Author> aa = Convert.decodeList(authorDetails, '|', false);
 //					Utils.pruneList(mDbHelper, aa);
 //					values.putSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, aa);
 //				}
@@ -304,7 +304,7 @@ public class ImportThread extends ManagedTask {
 //						}
 //					}
 //					// Handle the series
-//					ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList(seriesDetails, '|', false);
+//					ArrayList<Series> sa = Convert.decodeList(seriesDetails, '|', false);
 //					Utils.pruneSeriesList(sa);
 //					Utils.pruneList(mDbHelper, sa);
 //					values.putSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY, sa);				

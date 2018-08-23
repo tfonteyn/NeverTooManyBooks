@@ -30,9 +30,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.compat.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
+import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * 
@@ -91,7 +92,7 @@ public class Help extends BookCatalogueActivity {
 			
 			setupCleanupButton();
 			
-			Utils.initBackground(this);
+			BCBackground.init(this);
 
 		} catch (Exception e) {
 			Logger.logError(e);
@@ -120,7 +121,7 @@ public class Help extends BookCatalogueActivity {
 				cleanupBtn.setVisibility(View.VISIBLE);
 				cleanupTxt.setVisibility(View.VISIBLE);
 				String fmt = getString(R.string.cleanup_files_text);
-				String sizeStr = Utils.formatFileSize(space);
+				String sizeStr = Convert.formatFileSize(space);
 				cleanupTxt.setText(String.format(fmt, sizeStr));
 
 			}			
@@ -133,7 +134,7 @@ public class Help extends BookCatalogueActivity {
 	protected void onResume() {
 		super.onResume();
 		setupCleanupButton();		
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	/**

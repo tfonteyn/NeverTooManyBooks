@@ -208,9 +208,9 @@ public class BooklistBuilder {
 	 * @param style		Book list style to use
 	 */
 	public BooklistBuilder(CatalogueDBAdapter adapter, BooklistStyle style) {
-		synchronized(mInstanceCount) {
-			mInstanceCount++;
-			if (BuildConfig.DEBUG) {
+		if (BuildConfig.DEBUG) {
+			synchronized(mInstanceCount) {
+				mInstanceCount++;
 				System.out.println("Builder instances: " + mInstanceCount);
 			}
 		}

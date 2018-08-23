@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
-import java.util.ArrayList;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -36,10 +34,12 @@ import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.EditObjectList;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.Logger;
-import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
+
+import java.util.ArrayList;
 
 /**
  * Activity to edit the list of styles and enable/disable their presence in the
@@ -79,7 +79,7 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 			if (savedInstanceState == null)
 				HintManager.displayHint(this, R.string.hint_booklist_styles_editor, null);
 
-			Utils.initBackground(this);
+			BCBackground.init(this);
 
 		} catch (Exception e) {
 			Logger.logError(e);
@@ -92,7 +92,7 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	/**

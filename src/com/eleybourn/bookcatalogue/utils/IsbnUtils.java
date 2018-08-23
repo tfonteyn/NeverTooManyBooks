@@ -20,6 +20,8 @@
 package com.eleybourn.bookcatalogue.utils;
 
 public class IsbnUtils {
+	private IsbnUtils() {
+	}
 
 	private static class IsbnInfo {
 		final int[] digits;
@@ -107,7 +109,7 @@ public class IsbnUtils {
 			return true;
 		}
 		
-		public String getIsbn10() {
+		String getIsbn10() {
 			StringBuilder sb = new StringBuilder();
 			int[] vals;
 			if (size == 10) {
@@ -132,7 +134,7 @@ public class IsbnUtils {
 			return sb.toString();
 		}
 
-		public String getIsbn13() {
+		String getIsbn13() {
 			StringBuilder sb = new StringBuilder();
 			int[] vals;
 			if (size == 13) {

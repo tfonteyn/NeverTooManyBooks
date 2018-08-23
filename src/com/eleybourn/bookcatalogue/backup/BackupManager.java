@@ -27,12 +27,12 @@ import com.eleybourn.bookcatalogue.backup.BackupReader.BackupReaderListener;
 import com.eleybourn.bookcatalogue.backup.BackupWriter.BackupWriterListener;
 import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
 import com.eleybourn.bookcatalogue.compat.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTaskAbstract;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -97,7 +97,7 @@ public class BackupManager {
 
 		FragmentTask task = new FragmentTaskAbstract() {
 			private boolean mBackupOk = false;
-			private final String mBackupDate = Utils.toSqlDateTime(new Date());
+			private final String mBackupDate = DateUtils.toSqlDateTime(new Date());
 
 			@Override
 			public void run(final SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {

@@ -19,18 +19,18 @@
  */
 package com.eleybourn.bookcatalogue.datamanager;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Set;
-
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.Convert;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Class to manage a version of a set of related data.
@@ -438,7 +438,7 @@ public class DataManager {
 	 * @return		Formatted string
 	 */
 	public String getDataAsString() {
-		return Utils.bundleToString(mBundle);
+		return Convert.toString(mBundle);
 	}
 	
 	/**
@@ -448,7 +448,7 @@ public class DataManager {
 	 * @param value
 	 */
 	public void appendOrAdd(String key, String value) {
-		String s = Utils.encodeListItem(value, '|');
+		String s = Convert.encodeListItem(value, '|');
 		if (!containsKey(key) || getString(key).isEmpty()) {
 			putString(key, s);
 		} else {

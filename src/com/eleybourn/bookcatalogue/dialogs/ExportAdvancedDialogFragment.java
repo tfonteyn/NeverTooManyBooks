@@ -15,8 +15,8 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.ExportSettings;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.OnExportTypeSelectionDialogResultListener;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Logger;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
 
@@ -166,7 +166,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
 			String s = v.findViewById(R.id.txtDate).toString();
 			try {
 				settings.options |= Exporter.EXPORT_SINCE;
-				settings.dateFrom = Utils.parseDate(s);
+				settings.dateFrom = DateUtils.parseDate(s);
 			} catch(Exception e) {
 				Toast.makeText(getActivity(), R.string.no_date, Toast.LENGTH_LONG).show();
 				return null;

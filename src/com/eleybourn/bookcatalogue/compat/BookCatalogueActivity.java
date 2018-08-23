@@ -9,6 +9,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.util.Locale;
 
@@ -52,6 +53,8 @@ public class BookCatalogueActivity extends Activity {
         setTheme(THEMES[mLastTheme]);
         super.onCreate(savedInstanceState);
 
+        StorageUtils.checkPermissions(this);
+
         ActionBar bar = getActionBar();
         if (bar != null) {
         	// Show home, use logo (bigger) and show title
@@ -60,7 +63,7 @@ public class BookCatalogueActivity extends Activity {
     		bar.setDisplayHomeAsUpEnabled(! (this.isTaskRoot() || getIntent().getBooleanExtra("willBeTaskRoot", false) ) );
         }
     }
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {

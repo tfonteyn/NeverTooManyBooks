@@ -37,7 +37,9 @@ import java.util.HashSet;
  * By using TrackedCursorFactory it is possible to use this class to analyze when and
  * where cursors are being allocated, and whether they are being deallocated in a timely
  * fashion.
- * 
+ *
+ * Most code is removed by BuildConfig.DEBUG for production.
+ *
  * @author Philip Warner
  */
 public class TrackedCursor extends SynchronizedCursor  {
@@ -54,7 +56,7 @@ public class TrackedCursor extends SynchronizedCursor  {
 	/* ============= */
 
 	/** ID of the current cursor */
-	private final Long mId;
+	private Long mId;
 	/** We record a stack track when a cursor is created. */
 	private StackTraceElement[] mStackTrace;
 	/** Weak reference to this object, used in cursor collection */
@@ -87,8 +89,6 @@ public class TrackedCursor extends SynchronizedCursor  {
 				mWeakRef = new WeakReference<>(this);
 				mCursors.add(mWeakRef);
 			}			
-		} else {
-			mId = 0L;
 		}
 	}
 
@@ -160,7 +160,6 @@ public class TrackedCursor extends SynchronizedCursor  {
 				count = mCursors.size();
 			}
 		}
-
 		return count;
 	}
 
@@ -179,17 +178,17 @@ public class TrackedCursor extends SynchronizedCursor  {
 			synchronized(mCursors) {
 				for(WeakReference<TrackedCursor> r : mCursors) {
 					TrackedCursor c = r.get();
-					if (c != null)
+					if (c != null) {
 						count++;
-					else
+					} else {
 						list.add(r);
+					}
 				}
 				for(WeakReference<TrackedCursor> r : list) {
 					mCursors.remove(r);
 				}
 			}
 		}
-
 		return count;
 	}
 
@@ -216,8 +215,9 @@ public class TrackedCursor extends SynchronizedCursor  {
 			synchronized(mCursors) {
 				for(WeakReference<TrackedCursor> r : mCursors) {
 					TrackedCursor c = r.get();
-					if (c != null)
+					if (c != null) {
 						list.add(c);
+					}
 				}
 			}			
 		}

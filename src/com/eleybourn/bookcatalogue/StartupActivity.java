@@ -33,13 +33,14 @@ import android.os.Handler;
 import android.text.Html;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
+import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.OnTaskFinishListener;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.lang.ref.WeakReference;
 
@@ -118,6 +119,8 @@ public class StartupActivity extends Activity {
 			System.out.println("Startup isTaskRoot() = " + isTaskRoot());
 		}
 
+        StorageUtils.checkPermissions(this);
+
 		mHasBeenCalled = true;
 		mUiThread = Thread.currentThread();
 
@@ -171,8 +174,6 @@ public class StartupActivity extends Activity {
 
 	/**
 	 * Update the progress dialog, if it has not been dismissed.
-	 *
-	 * @param stringId
 	 */
 	public void updateProgress(final int stringId) {
 		updateProgress(getString(stringId));
@@ -180,8 +181,6 @@ public class StartupActivity extends Activity {
 
 	/**
 	 * Update the progress dialog, if it has not been dismissed.
-	 *
-	 * @param message
 	 */
 	public void updateProgress(final String message) {
 		// If mProgress is null, it has been dismissed. Don't update.
@@ -233,8 +232,6 @@ public class StartupActivity extends Activity {
 
 	/**
 	 * Get (or create) the task queue.
-	 *
-	 * @return
 	 */
 	private SimpleTaskQueue getQueue() {
 		if (mTaskQueue == null) {
@@ -421,6 +418,7 @@ public class StartupActivity extends Activity {
 
 		@Override
 		public void run(SimpleTaskContext taskContext) {
+
 			CatalogueDBAdapter db = taskContext.getDb();
 			BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
 
@@ -428,9 +426,9 @@ public class StartupActivity extends Activity {
 			// Analyze DB
 			db.analyzeDb();
 			if (BooklistPreferencesActivity.isThumbnailCacheEnabled()) {
-				// Analyze the covers DB
-				Utils utils = taskContext.getUtils();
-				utils.analyzeCovers();								
+                try(CoversDbHelper coversDbHelper = CoversDbHelper.getInstance()) {
+                    coversDbHelper.analyze();
+                }
 			}
 			
 			if (prefs.getBoolean(PREF_AUTHOR_SERIES_FIXUP_REQUIRED, false)) {
@@ -440,7 +438,8 @@ public class StartupActivity extends Activity {
 		}
 
 		@Override
-		public void onFinish(Exception e) {}
+		public void onFinish(Exception e) {
+		}
 
 	}
 	

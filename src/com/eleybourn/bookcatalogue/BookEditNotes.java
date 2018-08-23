@@ -21,8 +21,6 @@
 package com.eleybourn.bookcatalogue;
 
 //import android.R;
-import java.util.ArrayList;
-import java.util.Date;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -38,8 +36,13 @@ import com.eleybourn.bookcatalogue.datamanager.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment.OnPartialDatePickerListener;
+import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Logger;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.ViewUtils;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 /*
  * A book catalogue application that integrates with Google Books.
@@ -131,7 +134,7 @@ public class BookEditNotes extends BookEditFragmentAbstract implements OnPartial
 			});
 
 			try {
-				Utils.fixFocusSettings(getView());				
+				ViewUtils.fixFocusSettings(getView());
 			} catch (Exception e) {
 				// Log, but ignore. This is a non-critical feature that prevents crashes when the
 				// 'next' key is pressed and some views have been hidden.
@@ -145,7 +148,7 @@ public class BookEditNotes extends BookEditFragmentAbstract implements OnPartial
 				}});
 
 			// Setup the background
-			//Utils.initBackground(R.drawable.bc_background_gradient_dim, this, false);
+			//Utils.init(R.drawable.bc_background_gradient_dim, this, false);
 			
 		} catch (Exception e) {
 			Logger.logError(e);
@@ -162,11 +165,11 @@ public class BookEditNotes extends BookEditFragmentAbstract implements OnPartial
 			String dateString;
 			Object o = mFields.getField(R.id.read_start).getValue();
 			if (o == null || o.toString().isEmpty()) {
-				dateString = Utils.toSqlDateTime(new Date());
+				dateString = DateUtils.toSqlDateTime(new Date());
 			} else {
 				dateString = o.toString();
 			}
-			Utils.prepareDateDialogFragment(frag, dateString);
+			frag.setDate(dateString);
 		} catch (Exception e) {
 			// use the default date
 		}
@@ -184,11 +187,11 @@ public class BookEditNotes extends BookEditFragmentAbstract implements OnPartial
 			String dateString;
 			Object o = mFields.getField(R.id.read_end).getValue();
 			if (o == null || o.toString().isEmpty()) {
-				dateString = Utils.toSqlDateTime(new Date());
+				dateString = DateUtils.toSqlDateTime(new Date());
 			} else {
 				dateString = o.toString();
 			}
-			Utils.prepareDateDialogFragment(frag, dateString);
+			frag.setDate(dateString);
 		} catch (Exception e) {
 			// use the default date
 		}
@@ -202,7 +205,7 @@ public class BookEditNotes extends BookEditFragmentAbstract implements OnPartial
 	 */
 	@Override
 	public void onPartialDatePickerSet(int dialogId, PartialDatePickerFragment dialog, Integer year, Integer month, Integer day) {
-		String value = Utils.buildPartialDate(year, month, day);
+		String value = Convert.buildPartialDate(year, month, day);
 		mFields.getField(dialogId).setValue(value);
 		dialog.dismiss();
 	}

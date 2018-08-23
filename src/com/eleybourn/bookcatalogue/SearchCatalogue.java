@@ -20,9 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,7 +34,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.compat.BookCatalogueActivity;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Catalogue search based on the SQLite FTS engine. Due to the speed of FTS it updates the 
@@ -89,7 +89,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 		ftsRebuild.setOnClickListener(mFtsRebuildListener);
 
 		// Note: Timer will be started in OnResume().
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	/** start the idle timer */
@@ -290,7 +290,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 	protected void onResume() {
 		super.onResume();
 		userIsActive(true);
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	/**

@@ -45,9 +45,9 @@ public class BookshelfEdit extends BookCatalogueActivity {
 			
 			setContentView(R.layout.edit_bookshelf);
 			
-			mBookshelfText = (EditText) findViewById(R.id.bookshelf);
-			mConfirmButton = (Button) findViewById(R.id.confirm);
-			mCancelButton = (Button) findViewById(R.id.cancel);
+			mBookshelfText = findViewById(R.id.bookshelf);
+			mConfirmButton = findViewById(R.id.confirm);
+			mCancelButton = findViewById(R.id.cancel);
 			
 			mRowId = savedInstanceState != null ? savedInstanceState.getLong(CatalogueDBAdapter.KEY_ROWID) : null;
 			if (mRowId == null) {

@@ -32,6 +32,7 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
+import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogFileItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
@@ -39,10 +40,10 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickLi
 import com.eleybourn.bookcatalogue.filechooser.BackupChooser;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegister;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -89,7 +90,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 				}				
 			}
 			setupAdmin();
-			Utils.initBackground(this);
+			BCBackground.init(this);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -343,11 +344,8 @@ public class AdministrationFunctions extends ActivityWithTasks {
 			v.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Utils utils = new Utils();
-					try {
-						utils.eraseCoverCache();
-					} finally {
-						utils.close();
+					try(CoversDbHelper coversDbHelper = CoversDbHelper.getInstance()) {
+						coversDbHelper.eraseCoverCache();
 					}
 					return;
 				}
@@ -483,7 +481,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(this);
+		BCBackground.init(this);
 		if (mExportOnStartup)
 			exportData();
 	}

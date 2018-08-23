@@ -20,12 +20,6 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.*;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
@@ -39,7 +33,32 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.database.SerializationUtils;
 import com.eleybourn.bookcatalogue.database.SerializationUtils.DeserializationException;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.Convert;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_AUTHOR;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_DAY_ADDED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_FORMAT;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_GENRE;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_LANGUAGE;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_LOANED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_LOCATION;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_MONTH_ADDED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_MONTH_PUBLISHED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_MONTH_READ;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_RATING;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_READ_AND_UNREAD;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_SERIES;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_UPDATE_DAY;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_UPDATE_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_UPDATE_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_ADDED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_PUBLISHED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_READ;
 
 /**
  * Collection of system-defined and user-defined Book List styles.
@@ -80,7 +99,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
 		BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
 		String itemStr = prefs.getString(PREF_MENU_ITEMS, null);
 		if (itemStr != null && !itemStr.equals("")) {
-			list = Utils.decodeList(itemStr, '|');
+			list = Convert.decodeList(itemStr, '|');
 			for(int i = 0; i < list.size(); i++) {
 				String name = list.get(i);
 				if (name != null && !name.isEmpty() && !hash.contains(name))
@@ -286,7 +305,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
 		String itemStr = BookCatalogueApp.getAppPreferences().getString(PREF_MENU_ITEMS, null);
 		if (itemStr != null && !itemStr.isEmpty()) {
 			// Break it up and process in order
-			ArrayList<String> list = Utils.decodeList(itemStr, '|');
+			ArrayList<String> list = Convert.decodeList(itemStr, '|');
 			if (list != null) {
 				for(String n: list) {
 					// Add any exiting style that is preferred
@@ -421,7 +440,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
 			if (s.isPreferred()) {
 				if (items.length() > 0)
 					items.append("|");
-				items.append(Utils.encodeListItem(s.getCanonicalName(), '|'));
+				items.append(Convert.encodeListItem(s.getCanonicalName(), '|'));
 			}
 		}
 		Editor e = BookCatalogueApp.getAppPreferences().edit();

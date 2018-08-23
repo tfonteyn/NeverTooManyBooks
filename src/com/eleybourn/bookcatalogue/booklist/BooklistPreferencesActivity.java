@@ -34,9 +34,9 @@ import com.eleybourn.bookcatalogue.properties.Properties;
 import com.eleybourn.bookcatalogue.properties.Property;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.ValuePropertyWithGlobalDefault;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.Logger;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Activity to manage the preferences associate with Book lists (and the BooksOnBookshelf activity).
@@ -134,7 +134,7 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 			setTitle(R.string.booklist_preferences);
 			if (savedInstanceState == null)
 				HintManager.displayHint(this, R.string.hint_booklist_global_properties, null);
-			Utils.initBackground(this);
+			BCBackground.init(this);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -214,7 +214,7 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	public static boolean isBackgroundFlat() {

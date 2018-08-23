@@ -20,10 +20,6 @@
 
 package com.eleybourn.bookcatalogue.dialogs;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -46,9 +42,14 @@ import com.eleybourn.bookcatalogue.LibraryThingManager;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegister;
+import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Logger;
-import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class StandardDialogs {
 
@@ -404,10 +405,10 @@ public class StandardDialogs {
 			location.setText(mFile.getParent());
 			// Set the size
 			TextView size = (TextView) v.findViewById(R.id.size);
-			size.setText(Utils.formatFileSize(mFile.length()));
+			size.setText(Convert.formatFileSize(mFile.length()));
 			// Set the last modified date
 			TextView update = (TextView) v.findViewById(R.id.updated);
-			update.setText(Utils.toPrettyDateTime(new Date(mFile.lastModified())));
+			update.setText(DateUtils.toPrettyDateTime(new Date(mFile.lastModified())));
 			// Return it
 			return v;
 		}
@@ -419,7 +420,7 @@ public class StandardDialogs {
 	public static class SimpleDialogObjectItem implements SimpleDialogItem {
 		private final Object mObject; 
 
-		public SimpleDialogObjectItem(Object object) {
+		SimpleDialogObjectItem(Object object) {
 			mObject = object;
 		}
 		

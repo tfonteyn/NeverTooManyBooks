@@ -20,14 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.text.DateFormat;
-import java.util.ArrayList;
-
-import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
-import net.philipwarner.taskqueue.ContextDialogItem;
-import net.philipwarner.taskqueue.Event;
-import net.philipwarner.taskqueue.EventsCursor;
-import net.philipwarner.taskqueue.QueueManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDoneException;
@@ -45,6 +37,15 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.goodreads.SendOneBookTask;
 import com.eleybourn.bookcatalogue.utils.HintManager.HintOwner;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
+
+import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
+import net.philipwarner.taskqueue.ContextDialogItem;
+import net.philipwarner.taskqueue.Event;
+import net.philipwarner.taskqueue.EventsCursor;
+import net.philipwarner.taskqueue.QueueManager;
+
+import java.text.DateFormat;
+import java.util.ArrayList;
 
 /**
  * Class to define all book-related events that may be stored in the QueueManager.
@@ -68,7 +69,7 @@ public class BookEvents {
 	public static class BookEvent extends Event {
 		private static final long serialVersionUID = 74746691665235897L;
 
-		protected final long m_bookId;
+		final long m_bookId;
 
 		/**
 		 * Constructor
@@ -130,12 +131,12 @@ public class BookEvents {
 			holder.event = this;
 			holder.rowId = cursor.getId();
 
-			holder.author = (TextView)view.findViewById(com.eleybourn.bookcatalogue.R.id.author);
-			holder.checkbox = (CheckBox)view.findViewById(com.eleybourn.bookcatalogue.R.id.checked);
-			holder.date = (TextView)view.findViewById(com.eleybourn.bookcatalogue.R.id.date);
-			holder.error = (TextView)view.findViewById(com.eleybourn.bookcatalogue.R.id.error);
-			holder.retry = (Button)view.findViewById(com.eleybourn.bookcatalogue.R.id.retry);
-			holder.title = ((TextView)view.findViewById(com.eleybourn.bookcatalogue.R.id.title));
+			holder.author = view.findViewById(R.id.author);
+			holder.checkbox = view.findViewById(R.id.checked);
+			holder.date = view.findViewById(R.id.date);
+			holder.error = view.findViewById(R.id.error);
+			holder.retry = view.findViewById(R.id.retry);
+			holder.title = view.findViewById(R.id.title);
 
 			ViewTagger.setTag(view, R.id.TAG_BOOK_EVENT_HOLDER, holder);
 			ViewTagger.setTag(holder.checkbox, R.id.TAG_BOOK_EVENT_HOLDER, holder);

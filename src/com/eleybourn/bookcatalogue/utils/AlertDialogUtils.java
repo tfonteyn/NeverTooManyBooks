@@ -19,11 +19,11 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
-import java.util.ArrayList;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+
+import java.util.ArrayList;
 
 /**
  * Utilities related to building an AlertDialog that is just a list of clickable options.
@@ -31,6 +31,9 @@ import android.content.DialogInterface;
  * @author Philip Warner
  */
 public class AlertDialogUtils {
+	private AlertDialogUtils() {
+	}
+
 	/**
 	 * Class to make building a 'context menu' from an AlertDialog a little easier.
 	 * Used in Event.buildDialogItems and related Activities.

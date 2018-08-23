@@ -20,13 +20,14 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.os.Bundle;
+
+import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.Utils;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import android.os.Bundle;
-
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /* 
  * An XML handler for the Google Books entry return 
@@ -155,7 +156,7 @@ public class SearchGoogleBooksEntryHandler extends DefaultHandler {
 				}
 			}
 		} else if (localName.equalsIgnoreCase(AUTHOR)){
-			Utils.appendOrAdd(mValues, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, builder.toString());
+			Convert.appendOrAdd(mValues, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, builder.toString());
 		} else if (localName.equalsIgnoreCase(PUBLISHER)){
 			addIfNotPresent(CatalogueDBAdapter.KEY_PUBLISHER);
 		} else if (localName.equalsIgnoreCase(DATE_PUBLISHED)){
@@ -189,7 +190,7 @@ public class SearchGoogleBooksEntryHandler extends DefaultHandler {
 				String thumbnail = attributes.getValue("", "href");
 				String filename = Utils.saveThumbnailFromUrl(thumbnail, "_GB");
 				if (filename.length() > 0)
-					Utils.appendOrAdd(mValues, THUMBNAIL_KEY, filename);
+					Convert.appendOrAdd(mValues, THUMBNAIL_KEY, filename);
 			}
 		}
 	}

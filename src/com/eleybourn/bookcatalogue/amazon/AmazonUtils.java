@@ -1,18 +1,20 @@
 package com.eleybourn.bookcatalogue.amazon;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import com.amazon.device.associates.AssociatesAPI;
 import com.amazon.device.associates.LinkService;
 import com.amazon.device.associates.OpenSearchPageRequest;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.utils.Logger;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * Wrappers for Amazon API
@@ -36,7 +38,7 @@ public class AmazonUtils {
 		author = cleanupSearchString(author);
 		series = cleanupSearchString(series);
 
-		String extra = AmazonUtils.buildSearchArgs(author, series);
+		String extra = buildSearchArgs(author, series);
 
 		if (extra != null && !extra.trim().isEmpty()) {
 			url += extra;
@@ -64,7 +66,7 @@ public class AmazonUtils {
 		}
 	}
 
-	public static String buildSearchArgs(String author, String series) {
+	private static String buildSearchArgs(String author, String series) {
 		// This code works, but Amazon have a nasty tendency to cancel Associate IDs...
 		//String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
 		String extra = "";
@@ -115,5 +117,24 @@ public class AmazonUtils {
 			prev = curr;
 		}
 		return out.toString();
+	}
+
+	public static void openAmazonSearchPage(Activity context, String author, String series) {
+
+		try {
+			openLink(context, author, series);
+		} catch(Exception ae) {
+			// An Amazon error should not crash the app
+			Logger.logError(ae, "Unable to call the Amazon API");
+			Toast.makeText(context, R.string.unexpected_error, Toast.LENGTH_LONG).show();
+			// This code works, but Amazon have a nasty tendency to cancel Associate IDs...
+			//String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
+			//String extra = buildSearchArgs(author, series);
+			//if (extra != null && !extra.trim().equals("")) {
+			//	Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + extra));
+			//	context.startActivity(loadweb);
+			//}
+		}
+		return;
 	}
 }

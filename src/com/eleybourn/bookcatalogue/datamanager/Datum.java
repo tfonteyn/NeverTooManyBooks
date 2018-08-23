@@ -19,11 +19,11 @@
  */
 package com.eleybourn.bookcatalogue.datamanager;
 
-import java.io.Serializable;
-
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.Convert;
+
+import java.io.Serializable;
 
 /**
  * Class to manage storage and retrieval of a piece of data from a bundle as well as
@@ -134,7 +134,7 @@ public class Datum {
 		try {
 			return (Boolean) o;
 		} catch (ClassCastException e) {
-			return Utils.objectToBoolean(o);
+			return Convert.toBoolean(o);
 		}
 	}
 	/**
@@ -399,7 +399,7 @@ public class Datum {
 				try {
 					return Long.parseLong(s);					
 				}catch (NumberFormatException e1) {
-					if ( Utils.objectToBoolean(o) ) {
+					if ( Convert.toBoolean(o) ) {
 						return 1;
 					} else {
 						return 0;

@@ -31,7 +31,7 @@ import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuth
 import com.eleybourn.bookcatalogue.goodreads.api.SimpleXmlFilter.BuilderContext;
 import com.eleybourn.bookcatalogue.goodreads.api.SimpleXmlFilter.XmlListener;
 import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.ElementContext;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import org.apache.http.client.methods.HttpGet;
 
@@ -446,7 +446,7 @@ public class ListReviewsApiHandler extends ApiHandler {
         	String date = b.getString(key);
         	try {
         		Date d = mUpdateDateFmt.parse(date);
-        		date = Utils.toSqlDateTime(d);
+        		date = DateUtils.toSqlDateTime(d);
         		b.putString(key, date);
         	} catch (Exception e) {
         		b.remove(key);

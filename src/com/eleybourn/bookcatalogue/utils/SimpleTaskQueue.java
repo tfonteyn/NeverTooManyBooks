@@ -24,7 +24,6 @@ import android.os.Handler;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -150,6 +149,7 @@ public class SimpleTaskQueue {
 		boolean finishRequested = true;
 		public final long id;
 		SimpleTaskQueueThread activeThread = null;
+
 		SimpleTaskWrapper(SimpleTaskQueue owner, SimpleTask task) {
 			mOwner = owner;
 			this.task = task;
@@ -166,18 +166,7 @@ public class SimpleTaskQueue {
 				throw new RuntimeException("SimpleTaskWrapper can only be used a context during the run() stage");
 			return activeThread.getDb();
 		}
-		@Override
-		public CoversDbHelper getCoversDb() {
-			if (activeThread == null)
-				throw new RuntimeException("SimpleTaskWrapper can only be used a context during the run() stage");
-			return activeThread.getCoversDb();
-		}
-		@Override
-		public Utils getUtils() {
-			if (activeThread == null)
-				throw new RuntimeException("SimpleTaskWrapper can only be used a context during the run() stage");
-			return activeThread.getUtils();
-		}
+
 		@Override
 		public void setRequiresFinish(boolean requiresFinish) {
 			this.finishRequested = requiresFinish;
@@ -426,8 +415,6 @@ public class SimpleTaskQueue {
 
 	public interface SimpleTaskContext {
 		CatalogueDBAdapter getDb();
-        CoversDbHelper getCoversDb();
-        Utils getUtils();
         void setRequiresFinish(boolean requiresFinish);
         boolean getRequiresFinish();
         boolean isTerminating();
@@ -442,10 +429,6 @@ public class SimpleTaskQueue {
 	private class SimpleTaskQueueThread extends Thread {
 		/** DB Connection, if task requests one. Survives while thread is alive */
 		CatalogueDBAdapter mDb = null;
-		/** Covers DB Connection, if task requests one. Survives while thread is alive */
-		CoversDbHelper mCoversDb = null;
-		/** Utils object, if needed. Survives while thread is alive */
-		Utils mUtils = null;
 
 		/**
 		 * Main worker thread logic
@@ -471,7 +454,7 @@ public class SimpleTaskQueue {
 					//System.out.println("SimpleTaskQueue(run): " + mQueue.size());						
 					handleRequest(this, req);
 				}
-			} catch (InterruptedException e) {
+			} catch (InterruptedException ignore) {
 				// Ignore; these will happen when object is destroyed
 			} catch (Exception e) {
 				Logger.logError(e);
@@ -479,14 +462,6 @@ public class SimpleTaskQueue {
 				try {
 					if (mDb != null)
 						mDb.close();					
-				} catch (Exception ignored) {}
-				try {
-					if (mCoversDb != null)
-						mCoversDb.close();					
-				} catch (Exception ignored) {}
-				try {
-					if (mUtils != null)
-						mUtils.close();					
 				} catch (Exception ignored) {}
 			}
 		}
@@ -497,18 +472,6 @@ public class SimpleTaskQueue {
 				mDb.open();
 			}
 			return mDb;
-		}
-
-		public Utils getUtils() {
-			if (mUtils == null)
-				mUtils = new Utils();
-			return mUtils;
-		}
-
-		public CoversDbHelper getCoversDb() {
-			if (mCoversDb == null)
-				mCoversDb = new CoversDbHelper();
-			return mCoversDb;
 		}
 	}
 }

@@ -25,7 +25,8 @@ import android.os.Bundle;
 import com.eleybourn.bookcatalogue.TaskManager.TaskManagerListener;
 import com.eleybourn.bookcatalogue.goodreads.SearchGoodreadsThread;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -351,11 +352,11 @@ public class SearchManager implements TaskManagerListener {
 						break;
 					case CatalogueDBAdapter.KEY_DATE_PUBLISHED:
 						// Grab a different date if we can parse it.
-						Date newDate = Utils.parseDate(bookData.getString(k));
+						Date newDate = DateUtils.parseDate(bookData.getString(k));
 						if (newDate != null) {
 							String curr = mBookData.getString(k);
-							if (Utils.parseDate(curr) == null) {
-								mBookData.putString(k, Utils.toSqlDateOnly(newDate));
+							if (DateUtils.parseDate(curr) == null) {
+								mBookData.putString(k, DateUtils.toSqlDateOnly(newDate));
 							}
 						}
 						break;
@@ -419,7 +420,7 @@ public class SearchManager implements TaskManagerListener {
 
 		if (authors != null && !authors.isEmpty()) {
 			// Decode the collected author names and convert to an ArrayList
-			ArrayList<Author> aa = ArrayUtils.getAuthorUtils().decodeList(authors, '|', false);
+			ArrayList<Author> aa = Convert.decodeList(authors, '|', false);
 			mBookData.putSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, aa);			
 		}
 
@@ -458,7 +459,7 @@ public class SearchManager implements TaskManagerListener {
 		if (series != null && !series.isEmpty()) {
 			// Decode the collected series names and convert to an ArrayList
 			try {
-				ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList(series, '|', false);
+				ArrayList<Series> sa = Convert.decodeList(series, '|', false);
 				mBookData.putSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY, sa);
 			} catch (Exception e) {
 				Logger.logError(e);

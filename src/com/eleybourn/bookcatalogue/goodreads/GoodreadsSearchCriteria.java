@@ -32,7 +32,7 @@ import com.eleybourn.bookcatalogue.BooksRowView;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.compat.BookCatalogueActivity;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
 
 /**
  * Activity to handle searching goodreads for books that did not automatically convert. These
@@ -112,7 +112,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
 				doSearch();
 			}});
 		
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	/**

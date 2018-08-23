@@ -19,15 +19,15 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
-import java.util.Date;
-
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
+
+import java.util.Date;
 
 /**
  * Class to encapsulate the INFO block from an archive
@@ -82,7 +82,7 @@ public class BackupInfo {
 	
 		info.putInt(INFO_ARCHVERSION, container.getVersion());
 		info.putInt(INFO_COMPATARCHIVER, 1);
-		info.putString(INFO_CREATEDATE, Utils.toSqlDateTime(new Date()));
+		info.putString(INFO_CREATEDATE, DateUtils.toSqlDateTime(new Date()));
 		info.putInt(INFO_NUMBOOKS, bookCount);
 		info.putInt(INFO_NUMCOVERS, coverCount);
 	    try {
@@ -116,7 +116,7 @@ public class BackupInfo {
 	}
 
 	public Date getCreateDate() {
-		return Utils.parseDate(mBundle.getString(INFO_CREATEDATE));
+		return DateUtils.parseDate(mBundle.getString(INFO_CREATEDATE));
 	}
 	
 	public int getNumBooks() {

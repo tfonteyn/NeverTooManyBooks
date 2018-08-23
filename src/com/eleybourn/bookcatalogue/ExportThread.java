@@ -190,8 +190,8 @@ public class ExportThread extends ManagedTask {
 //						}
 //						bookshelves.close();
 //
-//						String authorDetails = ArrayUtils.getAuthorUtils().encodeList( mDbHelper.getBookAuthorList(id), '|' );
-//						String seriesDetails = ArrayUtils.getSeriesUtils().encodeList( mDbHelper.getBookSeriesList(id), '|' );
+//						String authorDetails = Convert.encodeList( mDbHelper.getBookAuthorList(id), '|' );
+//						String seriesDetails = Convert.encodeList( mDbHelper.getBookSeriesList(id), '|' );
 //
 //						row.setLength(0);
 //						row.append("\"" + formatCell(id) + "\",");

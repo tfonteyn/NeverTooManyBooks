@@ -20,23 +20,24 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+
+import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.utils.Utils;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 import java.net.URL;
 import java.util.ArrayList;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-
-import com.eleybourn.bookcatalogue.utils.Logger;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Handle all aspects of searching (and ultimately synchronizing with) LibraryThing.
@@ -495,7 +496,7 @@ public class LibraryThingManager {
 		 * @param key	Key for data to add
 		 */
 		private void appendOrAdd(String key) {
-			Utils.appendOrAdd(mBookData, key, mBuilder.toString());
+			Convert.appendOrAdd(mBookData, key, mBuilder.toString());
 		}
 
 		@Override
@@ -543,7 +544,7 @@ public class LibraryThingManager {
 
 			} else if (localName.equalsIgnoreCase(AUTHOR)) {
 				// Add the author
-				Utils.appendOrAdd(mBookData, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, mBuilder.toString());
+				Convert.appendOrAdd(mBookData, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, mBuilder.toString());
 
 			} else if (localName.equalsIgnoreCase(FACT)) {
 				// Process the FACT according to the active FIELD type.
@@ -615,7 +616,7 @@ public class LibraryThingManager {
 		// Save it with an _LT suffix
 		String filename = Utils.saveThumbnailFromUrl(url, "_LT_" + size + "_" + isbn);
 		if (filename.length() > 0 && bookData != null)
-			Utils.appendOrAdd(bookData, "__thumbnail", filename);
+			Convert.appendOrAdd(bookData, "__thumbnail", filename);
 		return filename;
 	}
 	

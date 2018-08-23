@@ -20,7 +20,17 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.util.ArrayList;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExportFailuresActivity;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
+import com.eleybourn.bookcatalogue.utils.HintManager;
+import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import net.philipwarner.taskqueue.BindableItem;
 import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
@@ -31,17 +41,8 @@ import net.philipwarner.taskqueue.QueueManager;
 import net.philipwarner.taskqueue.Task;
 import net.philipwarner.taskqueue.TasksCursor;
 import net.philipwarner.taskqueue.TasksCursor.TaskCursorSubtype;
-import android.content.Context;
-import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView;
 
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExportFailuresActivity;
-import com.eleybourn.bookcatalogue.utils.HintManager;
-import com.eleybourn.bookcatalogue.utils.Logger;
-import com.eleybourn.bookcatalogue.utils.Utils;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
+import java.util.ArrayList;
 
 /**
  * Activity to display the available QueueManager Task object subclasses to the user.
@@ -84,7 +85,7 @@ public class TaskListActivity extends BindableItemListActivity {
 			if (savedInstanceState == null)
 				HintManager.displayHint(this, R.string.hint_background_tasks, null);
 
-			Utils.initBackground(this);
+			BCBackground.init(this);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -107,7 +108,7 @@ public class TaskListActivity extends BindableItemListActivity {
 	protected void onResume() {
 		super.onResume();
 		refreshData();
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	} 
 
 	/**

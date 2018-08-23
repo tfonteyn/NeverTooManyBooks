@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.util.ArrayList;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -36,7 +34,9 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.compat.BookCatalogueListActivity;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
+
+import java.util.ArrayList;
 
 /*
  * A book catalogue application that integrates with Google Books.
@@ -98,7 +98,7 @@ public class Bookshelf extends BookCatalogueListActivity {
 		mDbHelper.open();
 		fillBookshelves();
 		registerForContextMenu(getListView());
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 	
 	/**
@@ -107,7 +107,7 @@ public class Bookshelf extends BookCatalogueListActivity {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	private void fillBookshelves() {

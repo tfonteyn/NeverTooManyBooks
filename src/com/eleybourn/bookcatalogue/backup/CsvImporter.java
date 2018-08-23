@@ -30,7 +30,8 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -213,7 +214,7 @@ public class CsvImporter {
 					}
 
 					// Now build the array for authors
-					ArrayList<Author> aa = ArrayUtils.getAuthorUtils().decodeList(authorDetails, '|', false);
+					ArrayList<Author> aa = Convert.decodeList(authorDetails, '|', false);
 					Utils.pruneList(db, aa);
 					values.putSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, aa);
 				}
@@ -237,7 +238,7 @@ public class CsvImporter {
 						}
 					}
 					// Handle the series
-					ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList(seriesDetails, '|', false);
+					ArrayList<Series> sa = Convert.decodeList(seriesDetails, '|', false);
 					Utils.pruneSeriesList(sa);
 					Utils.pruneList(db, sa);
 					values.putSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY, sa);				
@@ -293,7 +294,7 @@ public class CsvImporter {
 									bookDate = null; // Local record has never been updated
 								} else {
 									try {
-										bookDate = Utils.parseDate(bookDateStr);
+										bookDate = DateUtils.parseDate(bookDateStr);
 									} catch (Exception e) {
 										bookDate = null; // Treat as if never updated
 									}
@@ -303,7 +304,7 @@ public class CsvImporter {
 									importDate = null; // Imported record has never been updated
 								} else {
 									try {
-										importDate = Utils.parseDate(importDateStr);
+										importDate = DateUtils.parseDate(importDateStr);
 									} catch (Exception e) {
 										importDate = null; // Treat as if never updated
 									}
@@ -560,7 +561,7 @@ public class CsvImporter {
 				return;
 		
 		String s = BookCatalogueApp.getResourceString(R.string.file_must_contain_any_column);
-		throw new ImportException(String.format(s, Utils.join(names, ",")));
+		throw new ImportException(String.format(s, Convert.join(names, ",")));
 	}
 
 	private void requireNonblank(BookData values, int row, String name) {
@@ -577,7 +578,7 @@ public class CsvImporter {
 				return;
 
 		String s = BookCatalogueApp.getResourceString(R.string.columns_are_blank);
-		throw new ImportException(String.format(s, Utils.join( names, ","), row));
+		throw new ImportException(String.format(s, Convert.join( names, ","), row));
 	}
 
 }

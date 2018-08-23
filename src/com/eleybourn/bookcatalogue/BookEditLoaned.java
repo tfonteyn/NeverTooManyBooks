@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.util.ArrayList;
-
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,8 +33,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.Logger;
-import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.util.ArrayList;
 
 /**
  * This class is called by the BookEdit activity and displays the Loaned Tab
@@ -101,7 +101,7 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
 				loaned(user);
 			}
 			// Setup the background
-			Utils.initBackground(this);
+			BCBackground.init(this);
 		} finally {
 			Tracker.exitOnCreate(this);			
 		}

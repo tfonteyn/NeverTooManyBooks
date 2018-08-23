@@ -38,9 +38,9 @@ import com.eleybourn.bookcatalogue.properties.Properties;
 import com.eleybourn.bookcatalogue.properties.Property.ValidationException;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.StringProperty;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.Logger;
-import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 /**
@@ -109,7 +109,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
 		if (savedInstanceState == null)
 			HintManager.displayHint(this, R.string.hint_booklist_style_properties, null);
 
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	/**

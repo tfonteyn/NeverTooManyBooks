@@ -27,8 +27,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import com.eleybourn.bookcatalogue.compat.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.Logger;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * 
@@ -50,7 +50,7 @@ public class AdministrationDonate extends BookCatalogueActivity {
 			setTitle(R.string.app_name);
 			setContentView(R.layout.administration_donate);
 			setupAdmin();
-			Utils.initBackground(this);
+			BCBackground.init(this);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -62,7 +62,7 @@ public class AdministrationDonate extends BookCatalogueActivity {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	/**

@@ -52,6 +52,9 @@ import java.util.regex.Pattern;
  * @author Philip Warner
  */
 public class StorageUtils {
+	private StorageUtils() {
+	}
+
 	private static final String UTF8 = "utf8";
 	private static final int BUFFER_SIZE = 8192;
 
@@ -394,7 +397,7 @@ public class StorageUtils {
 			.append("Phone Product: ").append(Build.PRODUCT).append("\n")
 			.append("Phone Brand: ").append(Build.BRAND).append("\n")
 			.append("Phone ID: ").append(Build.ID).append("\n")
-			.append("Signed-By: ").append(Utils.signedBy(context)).append("\n")
+			.append("Signed-By: ").append(BookCatalogueApp.signedBy(context)).append("\n")
 			.append("\nHistory:\n").append(Tracker.getEventsInfo()).append("\n");
 
 		// Scanners installed

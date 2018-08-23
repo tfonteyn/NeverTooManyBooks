@@ -47,7 +47,7 @@ public class ThumbnailCacheWriterTask implements SimpleTask {
 	private static SimpleTaskQueue mQueue = new SimpleTaskQueue("cachewriter", 1);
 
 	/**
-	 * Queue the passed bitmap to be compresed and written to the database, will be recycled if
+	 * Queue the passed bitmap to be compressed and written to the database, will be recycled if
 	 * flag is set.
 	 * 
 	 * @param cacheId		Cache ID to use
@@ -61,8 +61,6 @@ public class ThumbnailCacheWriterTask implements SimpleTask {
 
 	/**
 	 * Check if there is an active task in the queue.
-	 *
-	 * @return
 	 */
 	public static boolean hasActiveTasks() {
 		return mQueue.hasActiveTasks();
@@ -85,7 +83,7 @@ public class ThumbnailCacheWriterTask implements SimpleTask {
 	 * @param source		Raw bitmap to store
 	 * @param canRecycle	Indicates bitmap should be recycled after use
 	 */
-	public ThumbnailCacheWriterTask(String cacheId, Bitmap source, boolean canRecycle) {
+	private ThumbnailCacheWriterTask(String cacheId, Bitmap source, boolean canRecycle) {
 		mCacheId = cacheId;
 		mBitmap = source;
 		mCanRecycle = canRecycle;
@@ -100,14 +98,9 @@ public class ThumbnailCacheWriterTask implements SimpleTask {
 			// Was probably recycled by rapid scrolling of view
 			mBitmap = null;
 		} else {
-			CoversDbHelper db = null;
-			try {
-				db = taskContext.getCoversDb();
-			} catch (Exception e) {
-				// No db...
-			}
-			if (db != null)
-				db.saveFile(mCacheId, mBitmap);
+            try(CoversDbHelper coversDbHelper = CoversDbHelper.getInstance()) {
+                coversDbHelper.saveFile(mBitmap, mCacheId);
+            }
 			if (mCanRecycle) {
 				mBitmap.recycle();
 				mBitmap = null;

@@ -20,7 +20,7 @@
 package com.eleybourn.bookcatalogue.datamanager;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 /**
  * Validator to apply a default value and validate as a Date
@@ -49,8 +49,8 @@ public class DateValidator extends DefaultFieldValidator {
 		super.validate(data, datum, crossValidating);
 
 		try {
-			java.util.Date d = Utils.parseDate(data.getString(datum));
-			data.putString(datum, Utils.toSqlDateTime(d));
+			java.util.Date d = DateUtils.parseDate(data.getString(datum));
+			data.putString(datum, DateUtils.toSqlDateTime(d));
 		} catch (Exception e) {
 			throw new ValidatorException(R.string.vldt_date_expected, new Object[]{datum.getKey()});					
 		}

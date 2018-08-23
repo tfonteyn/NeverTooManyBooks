@@ -20,6 +20,8 @@
 package com.eleybourn.bookcatalogue.utils;
 
 public class AsinUtils {
+	private AsinUtils() {
+	}
 
 	private static final String mValidAsinCharacters = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	

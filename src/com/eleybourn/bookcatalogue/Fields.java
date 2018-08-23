@@ -43,8 +43,8 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.Logger;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.lang.ref.WeakReference;
 import java.text.ParseException;
@@ -555,7 +555,7 @@ public class Fields extends ArrayList<Fields.Field> {
 			if (s != null) {
 				try {
 					s = field.format(s);
-					v.setChecked(Utils.stringToBoolean(s, true));
+					v.setChecked(Convert.toBoolean(s, true));
 				} catch (Exception e) {
 					v.setChecked(false);
 				}

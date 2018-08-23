@@ -19,10 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.dialogs;
 
-import static com.eleybourn.bookcatalogue.BookDetailsAbstract.BOOKSHELF_SEPERATOR;
-
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.database.Cursor;
@@ -38,7 +34,11 @@ import android.widget.LinearLayout;
 
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.Convert;
+
+import java.util.ArrayList;
+
+import static com.eleybourn.bookcatalogue.BookDetailsAbstract.BOOKSHELF_SEPERATOR;
 
 /**
  * Fragment wrapper for the Bookshelf list
@@ -163,7 +163,7 @@ public class BookshelfDialogFragment extends DialogFragment {
     				final CheckBox cb = new CheckBox(getActivity());
     				boolean checked = false;
     				String db_bookshelf = bookshelves_for_book.getString(bookshelves_for_book.getColumnIndex(CatalogueDBAdapter.KEY_BOOKSHELF)).trim();
-    				String db_encoded_bookshelf = Utils.encodeListItem(db_bookshelf, BOOKSHELF_SEPERATOR);
+    				String db_encoded_bookshelf = Convert.encodeListItem(db_bookshelf, BOOKSHELF_SEPERATOR);
     				if (shelves.contains(BOOKSHELF_SEPERATOR + db_encoded_bookshelf + BOOKSHELF_SEPERATOR)) {
     					checked = true;
     				}
@@ -176,7 +176,7 @@ public class BookshelfDialogFragment extends DialogFragment {
     					public void onClick(View v) {
     						String hint = cb.getHint() + "";
     						String name = hint.trim();
-    						String encoded_name = Utils.encodeListItem(name, BOOKSHELF_SEPERATOR);
+    						String encoded_name = Convert.encodeListItem(name, BOOKSHELF_SEPERATOR);
     						// If box is checked, then we just append to list
     						if (cb.isChecked()) {
     							if (mCurrText == null || mCurrText.isEmpty()) {
@@ -188,7 +188,7 @@ public class BookshelfDialogFragment extends DialogFragment {
     							}
     						} else {
     							// Get the underlying list
-    							ArrayList<String> shelves = Utils.decodeList(mCurrList, BOOKSHELF_SEPERATOR);
+    							ArrayList<String> shelves = Convert.decodeList(mCurrList, BOOKSHELF_SEPERATOR);
     							// Start a new list
 								StringBuilder newList = new StringBuilder();
 								StringBuilder newText = new StringBuilder();
@@ -197,11 +197,11 @@ public class BookshelfDialogFragment extends DialogFragment {
     								if (s != null && !s.isEmpty()) {
     									// If item in underlying list does not match...
     									if (!s.equalsIgnoreCase(name)) {
-    										// Encode item
-    										String item = Utils.encodeListItem(s, BOOKSHELF_SEPERATOR);
+    										// Convert item
+    										String item = Convert.encodeListItem(s, BOOKSHELF_SEPERATOR);
     										// Append to list (or set to only element if list empty)
     										if (newList.length() == 0) {
-    											newList.append(Utils.encodeListItem(s, BOOKSHELF_SEPERATOR));
+    											newList.append(Convert.encodeListItem(s, BOOKSHELF_SEPERATOR));
     											newText.append(s);
     										} else {
     											newList.append(BOOKSHELF_SEPERATOR).append(item);

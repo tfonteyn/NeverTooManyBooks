@@ -20,15 +20,6 @@
 
 package com.eleybourn.bookcatalogue.goodreads;
 
-import java.util.ArrayList;
-
-import net.philipwarner.taskqueue.BindableItem;
-import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
-import net.philipwarner.taskqueue.ContextDialogItem;
-import net.philipwarner.taskqueue.Event;
-import net.philipwarner.taskqueue.Listeners.EventActions;
-import net.philipwarner.taskqueue.Listeners.OnEventChangeListener;
-import net.philipwarner.taskqueue.QueueManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -43,10 +34,20 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.HintManager.HintOwner;
-import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
+
+import net.philipwarner.taskqueue.BindableItem;
+import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
+import net.philipwarner.taskqueue.ContextDialogItem;
+import net.philipwarner.taskqueue.Event;
+import net.philipwarner.taskqueue.Listeners.EventActions;
+import net.philipwarner.taskqueue.Listeners.OnEventChangeListener;
+import net.philipwarner.taskqueue.QueueManager;
+
+import java.util.ArrayList;
 
 /**
  * Activity to display all Events in the QueueManager.
@@ -109,7 +110,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 		if (savedInstanceState == null)
 			HintManager.displayHint(this, R.string.hint_background_task_events, null);
 
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	}
 
 	/**
@@ -136,7 +137,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	protected void onResume() {
 		super.onResume();
 		refreshData();
-		Utils.initBackground(this);
+		BCBackground.init(this);
 	} 
 
 	/**

@@ -168,4 +168,25 @@ public class PartialDatePickerFragment extends DialogFragment {
 		}
 	};
 
+	/**
+	 * @param current	Current date (may be null)
+	 */
+	public void setDate(Object current) {
+		String dateString = current == null ? "" : current.toString();
+
+		// get the current date
+		Integer yyyy = null;
+		Integer mm = null;
+		Integer dd = null;
+		try {
+			String[] dateAndTime = dateString.split(" ");
+			String[] date = dateAndTime[0].split("-");
+			yyyy = Integer.parseInt(date[0]);
+			mm = Integer.parseInt(date[1]);
+			dd = Integer.parseInt(date[2]);
+		} catch (Exception ignore) {
+		}
+
+		setDate(yyyy, mm, dd);
+	}
 }

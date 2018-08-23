@@ -1,8 +1,5 @@
 package com.eleybourn.bookcatalogue;
 
-import java.util.ArrayList;
-import java.util.Date;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,9 +11,14 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Class for representing read-only book details.
@@ -224,8 +226,8 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 
 		if (hasDate) {
 			try {
-				Date d = Utils.parseDate(date);
-				date = Utils.toPrettyDate(d);
+				Date d = DateUtils.parseDate(date);
+				date = DateUtils.toPrettyDate(d);
 			} catch (Exception e) {
 				// Ignore; just use what we have
 			}
@@ -254,7 +256,7 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 	 */
 	private void showLoanedInfo(Long rowId) {
 		String personLoanedTo = mDbHelper.fetchLoanByBook(rowId);
-		TextView textView = (TextView) getView().findViewById(R.id.who);
+		TextView textView = getView().findViewById(R.id.who);
 		if (personLoanedTo != null) {
 			textView.setVisibility(View.VISIBLE);
 			String resultText = getString(R.string.book_details_readonly_loaned_to, personLoanedTo);
@@ -270,7 +272,7 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 	 */
 	private void showReadStatus(BookData book) {
 		if (FieldVisibility.isVisible(CatalogueDBAdapter.KEY_READ)) {
-			ImageView image = (ImageView) getView().findViewById(R.id.read);
+			ImageView image = getView().findViewById(R.id.read);
 			if (book.isRead()) {
 				image.setVisibility(View.VISIBLE);
 				image.setImageResource(R.drawable.btn_check_buttonless_on);
@@ -278,7 +280,7 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 				image.setVisibility(View.GONE);				
 			}
 		} else {
-			ImageView image = (ImageView) getView().findViewById(R.id.read);
+			ImageView image = getView().findViewById(R.id.read);
 			image.setVisibility(View.GONE);			
 		}
 	}
@@ -338,7 +340,7 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 		 */
 		public String format(Field f, String source) {
 			try {
-				boolean val = Utils.stringToBoolean(source, false);
+				boolean val = Convert.toBoolean(source, false);
 				return BookCatalogueApp.getResourceString( val ? R.string.yes : R.string.no);				
 			} catch (Exception e) {
 				return source;
@@ -350,7 +352,7 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 		 */
 		public String extract(Field f, String source) {
 			try {
-				return Utils.stringToBoolean(source, false) ? "1" : "0";				
+				return Convert.toBoolean(source, false) ? "1" : "0";
 			} catch (Exception e) {
 				return source;
 			}

@@ -19,8 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 
@@ -28,6 +26,8 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
+
+import java.util.ArrayList;
 
 /**
  * Class to manage the message that is displayed when the application is upgraded.
@@ -41,6 +41,9 @@ import com.eleybourn.bookcatalogue.R;
  * @author pjw
  */
 public class UpgradeMessageManager {
+	private UpgradeMessageManager() {
+	}
+
 	private final static String PREF_LAST_MESSAGE = "UpgradeMessages.LastMessage";
 
 	// New messages go here in order of increasing version ID.

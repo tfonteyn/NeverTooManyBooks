@@ -1,7 +1,5 @@
 package com.eleybourn.bookcatalogue.utils;
 
-import java.io.IOException;
-
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -9,7 +7,11 @@ import android.media.MediaPlayer;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 
+import java.io.IOException;
+
 public class SoundManager {
+	private SoundManager() {
+	}
 
 	public static final String TAG = "SoundManager";
 	public static final String PREF_BEEP_IF_SCANNED_ISBN_INVALID = TAG + "." + "BeepIfScannedIsbnInvalid";

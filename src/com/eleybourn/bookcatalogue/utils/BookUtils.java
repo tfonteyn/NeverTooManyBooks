@@ -19,8 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
-import java.io.File;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -36,12 +34,17 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
+import java.io.File;
+
 /**
  * Class to implement common Book functions
  * 
  * @author pjw
  */
 public class BookUtils {
+	private BookUtils() {
+	}
+
 	/**
 	 * Open a new book editing activity with fields copied from saved book.
 	 * Saved book (original of duplicating) is defined by its row _id in database.
@@ -51,10 +54,11 @@ public class BookUtils {
 		if (rowId == null || rowId == 0) {
 			Toast.makeText(activity, R.string.this_option_is_not_available_until_the_book_is_saved, Toast.LENGTH_LONG).show();
 		}
+
 		Intent i = new Intent(activity, BookEdit.class);
 		Bundle book = new Bundle();
-		Cursor thisBook = db.fetchBookById(rowId);
 		try {
+            Cursor thisBook = db.fetchBookById(rowId);
 			thisBook.moveToFirst();
 			book.putString(CatalogueDBAdapter.KEY_TITLE, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_TITLE)));
 			book.putString(CatalogueDBAdapter.KEY_ISBN, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_ISBN)));

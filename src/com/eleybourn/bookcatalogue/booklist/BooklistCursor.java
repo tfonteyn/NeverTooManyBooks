@@ -25,7 +25,6 @@ import android.database.sqlite.SQLiteQuery;
 
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 import com.eleybourn.bookcatalogue.utils.TrackedCursor;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Cursor object that makes the underlying BooklistBuilder available to users of the Cursor, as
@@ -42,12 +41,6 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
 	private static Integer mBooklistCursorIdCounter = 0;
 	/** ID of this cursor */
 	private final long mId;
-
-	/** Utils object; we need an instance for cover retrieval because it uses a DB connection
-	 * that we do not want to make static. This instance is used by BookMultitypeListHandler.
-	 */
-	private Utils mUtils = null;
-
 
 	/**
 	 * Constructor
@@ -66,15 +59,6 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
 		}
 		// Save builder.
 		mBuilder = builder;
-	}
-
-	/**
-	 * Get/create the Utils object for accessing covers.
-	 */
-	public Utils getUtils() {
-		if (mUtils == null)
-			mUtils = new Utils();
-		return mUtils;
 	}
 
 	/**
@@ -101,9 +85,7 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
 	}
 
 	/**
-	 * Get the number of levels in the book list.
-	 *
-	 * @return
+	 * @return Get the number of levels in the book list.
 	 */
 	public int numLevels() {
 		return mBuilder.numLevels();
@@ -111,8 +93,6 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
 
 	@Override
 	public void close() {
-		if (mUtils != null)
-			mUtils.close();
 		super.close();
 	}
 	/*

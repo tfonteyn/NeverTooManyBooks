@@ -37,6 +37,7 @@ import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
@@ -44,11 +45,13 @@ import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
 import com.eleybourn.bookcatalogue.database.SerializationUtils;
 import com.eleybourn.bookcatalogue.database.SqlStatementManager;
+import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.TrackedCursor;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.ViewUtils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -179,12 +182,11 @@ public class CatalogueDBAdapter {
 	//public static final String COLLATION = " Collate UNICODE ";
 	public static final String COLLATION = " Collate LOCALIZED "; // NOTE: Important to have start/end spaces!
 
-	public static final String[] EMPTY_STRNG_ARRAY = new String[] {};
+	private static final String[] EMPTY_STRNG_ARRAY = new String[] {};
 
 	private static DatabaseHelper mDbHelper;
 	private static SynchronizedDb mDb;
-	/** Instance of Utils created if necessary */
-	private Utils mUtils = null;
+
 	/** Flag indicating close() has been called */
 	private boolean mCloseWasCalled = false;
 
@@ -602,12 +604,12 @@ public class CatalogueDBAdapter {
 //						+ " LEFT OUTER JOIN " + DB_TB_SERIES + " s ON (s." + KEY_ROWID + "=w." + KEY_SERIES_ID + ") ";
 
 	//TODO: Update database version RELEASE: Update database version
-	public static final int DATABASE_VERSION = 82;
+	static final int DATABASE_VERSION = 82;
 
 	private TableInfo mBooksInfo = null;
 
 	/** Static Factory object to create the custom cursor */
-	public static final CursorFactory mTrackedCursorFactory = new CursorFactory() {
+	static final CursorFactory mTrackedCursorFactory = new CursorFactory() {
 			@Override
 			public Cursor newCursor(
 					SQLiteDatabase db,
@@ -634,7 +636,7 @@ public class CatalogueDBAdapter {
 		/**
 		 * @return a boolean indicating if this was a new install
 		 */
-		public boolean isNewInstall() {
+        boolean isNewInstall() {
 			return mDbWasCreated;
 		}
 
@@ -667,11 +669,8 @@ public class CatalogueDBAdapter {
 			createTriggers(sdb);
 		}
 
-
 		/**
 		 * Create the database triggers. Currently only one, and the implementation needs refinining!
-		 *
-		 * @param db
 		 */
 		private void createTriggers(SynchronizedDb db) {
 			String name = "books_tg_reset_goodreads";
@@ -1648,8 +1647,6 @@ public class CatalogueDBAdapter {
 	 * the books table to avoid future collisions.
 	 * 
 	 * This routine renames all files, if they exist.
-	 *
-	 * @param db
 	 */
 	private static void renameIdFilesToHash(SynchronizedDb db) {
 		String sql = "select " + KEY_ROWID + ", " + DOM_BOOK_UUID + " from " + DB_TB_BOOKS + " Order by " + KEY_ROWID;
@@ -1722,20 +1719,27 @@ public class CatalogueDBAdapter {
 
 	private static class InstanceRef extends WeakReference<CatalogueDBAdapter> {
 		private final Exception mCreationException;
-		public InstanceRef(CatalogueDBAdapter r) {
+		InstanceRef(CatalogueDBAdapter r) {
 			super(r);
 			mCreationException = new RuntimeException();
 		}
-		public Exception getCreationException() {
+		Exception getCreationException() {
 			return mCreationException;
 		}		
 	}
+
 	private static final ArrayList< InstanceRef > mInstances = new ArrayList<>();
+
+    /**
+     * DEBUG only
+     */
 	private static void addInstance(CatalogueDBAdapter db) {
-		if (BuildConfig.DEBUG) {
-			mInstances.add(new InstanceRef(db));		
-		}
+		mInstances.add(new InstanceRef(db));
 	}
+
+    /**
+     * DEBUG only
+     */
 	private static void removeInstance(CatalogueDBAdapter db) {
 		ArrayList< InstanceRef > toDelete = new ArrayList<>();
 		for( InstanceRef ref: mInstances) {
@@ -1775,11 +1779,11 @@ public class CatalogueDBAdapter {
 	 * @param ctx the Context within which to work
 	 */
 	public CatalogueDBAdapter(Context ctx) {
-		synchronized(mInstanceCount) {
-			mInstanceCount++;
-			if (BuildConfig.DEBUG) {
+		if (BuildConfig.DEBUG) {
+			synchronized(mInstanceCount) {
+				mInstanceCount++;
 				System.out.println("CatDBA instances: " + mInstanceCount);
-				addInstance(this);
+				//addInstance(this); FIXME this crashes ? ...
 			}
 		}
 
@@ -1811,17 +1815,7 @@ public class CatalogueDBAdapter {
 		return this;
 	}
 
-	/**
-	 * Get a Utils instance; create if necessary.
-	 * 
-	 * @return	Utils instance
-	 */
-	public Utils getUtils() {
-		if (mUtils == null)
-			mUtils = new Utils();
-		return mUtils;
-	}
-	
+
 	/**
 	 * Generic function to close the database
 	 */
@@ -1830,15 +1824,15 @@ public class CatalogueDBAdapter {
 		if (!mCloseWasCalled) {
 			mCloseWasCalled = true;
 
-			try { if (mStatements != null) mStatements.close(); } catch (Exception e) { Logger.logError(e); }
-			//try { mDbHelper.close(); } catch (Exception e) { Logger.logError(e); }
-			try { if (mUtils != null) mUtils.close(); } catch (Exception e) { Logger.logError(e); }
+            if (mStatements != null) {
+                mStatements.close();
+            }
 
-			synchronized(mInstanceCount) {
-				mInstanceCount--;
-				if (BuildConfig.DEBUG) {
+			if (BuildConfig.DEBUG) {
+				synchronized(mInstanceCount) {
+					mInstanceCount--;
 					System.out.println("CatDBA instances: " + mInstanceCount);
-					removeInstance(this);
+					//removeInstance(this); FIXME: something wrong with the addInstance
 				}
 			}
 		}
@@ -1975,7 +1969,7 @@ public class CatalogueDBAdapter {
 		Bitmap image = null;
 		try {
 			File file = fetchThumbnailByUuid(uuid);
-			image = Utils.fetchFileIntoImageView(file, destView, maxWidth, maxHeight, exact );
+			image = ViewUtils.fetchFileIntoImageView(file, destView, maxWidth, maxHeight, exact );
 		} catch (IllegalArgumentException e) {
 			Logger.logError(e);
 		}
@@ -2127,7 +2121,7 @@ public class CatalogueDBAdapter {
 		if (sinceDate == null) {
 			sinceClause = ""; 
 		} else {
-			sinceClause = " Where b." + DOM_LAST_UPDATE_DATE + " > '" + Utils.toSqlDateTime(sinceDate) + "' ";
+			sinceClause = " Where b." + DOM_LAST_UPDATE_DATE + " > '" + DateUtils.toSqlDateTime(sinceDate) + "' ";
 		}
 
 		String sql = "SELECT DISTINCT " +
@@ -2878,9 +2872,7 @@ public class CatalogueDBAdapter {
 
 		String where = "";
 		String[] names = processAuthorName(name);
-		if (bookshelf.isEmpty()) {
-			// do nothing
-		} else {
+		if (!bookshelf.isEmpty()) {
 			where += authorOnBookshelfSql(bookshelf, "a." + KEY_ROWID, false);
 		}
 		if (where != null && !where.isEmpty())
@@ -2909,9 +2901,7 @@ public class CatalogueDBAdapter {
 
 		String where = "";
 		String[] names = processAuthorName(name);
-		if (bookshelf.isEmpty()) {
-			// do nothing
-		} else {
+		if (!bookshelf.isEmpty()) {
 			where += authorOnBookshelfSql(bookshelf, "a." + KEY_ROWID, false);
 		}
 		if (!where.isEmpty())
@@ -3287,9 +3277,7 @@ public class CatalogueDBAdapter {
 		String where = "";
 		String baWhere = "";
 		searchText = encodeString(searchText);
-		if (bookshelf.isEmpty()) {
-			// do nothing
-		} else {
+		if (!bookshelf.isEmpty()) {
 			where += " AND " + this.authorOnBookshelfSql(bookshelf, "a." + KEY_ROWID, false);
 		}
 		if (firstOnly) {
@@ -3605,7 +3593,7 @@ public class CatalogueDBAdapter {
 			 * KEY_RATING, KEY_READ, KEY_NOTES, KEY_LOCATION, KEY_READ_START, KEY_READ_END, KEY_SIGNED, & DATE_ADDED
 			 */
 			if (!values.containsKey(KEY_DATE_ADDED))
-				values.putString(KEY_DATE_ADDED, Utils.toSqlDateTime(new Date()));
+				values.putString(KEY_DATE_ADDED, DateUtils.toSqlDateTime(new Date()));
 
 			// Make sure we have an author
 			ArrayList<Author> authors = values.getAuthorList();
@@ -3618,7 +3606,7 @@ public class CatalogueDBAdapter {
 			}
 
 			if (!initialValues.containsKey(DOM_LAST_UPDATE_DATE.name))
-				initialValues.put(DOM_LAST_UPDATE_DATE.name, Utils.toSqlDateTime(new Date()));
+				initialValues.put(DOM_LAST_UPDATE_DATE.name, DateUtils.toSqlDateTime(new Date()));
 
 			// ALWAYS set the INSTANCE_UPDATE_DATE; this is used for backups
 			//initialValues.put(DOM_INSTANCE_UPDATE_DATE.name, Utils.toSqlDateTime(Calendar.getInstance().getTime()));
@@ -3627,7 +3615,7 @@ public class CatalogueDBAdapter {
 
 			String bookshelf = values.getBookshelfList();
 			if (bookshelf != null && !bookshelf.trim().isEmpty()) {
-				createBookshelfBooks(rowId, Utils.decodeList(bookshelf, BookEditFields.BOOKSHELF_SEPERATOR), false);
+				createBookshelfBooks(rowId, Convert.decodeList(bookshelf, BookEditFields.BOOKSHELF_SEPERATOR), false);
 			}
 
 			createBookAuthors(rowId, authors, false);
@@ -3737,9 +3725,7 @@ public class CatalogueDBAdapter {
 
 		return result;
 	}
-	
-	
-	
+
 	/**
 	 * Update the anthology title in the database
 	 * 
@@ -4183,7 +4169,7 @@ public class CatalogueDBAdapter {
 	 * @return true if the note was successfully updated, false otherwise
 	 */
 	public boolean updateBook(long rowId, BookData values, int flags) {
-		boolean success = true;
+		boolean success;
 
 		try {
 			// Make sure we have the target table details
@@ -4201,14 +4187,14 @@ public class CatalogueDBAdapter {
 
 			// We may be just updating series, or author lists but we still update the last_update_date.
 			if ((flags & BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT) == 0 || !args.containsKey(DOM_LAST_UPDATE_DATE.name))
-				args.put(DOM_LAST_UPDATE_DATE.name, Utils.toSqlDateTime(Calendar.getInstance().getTime()));
+				args.put(DOM_LAST_UPDATE_DATE.name, DateUtils.toSqlDateTime(Calendar.getInstance().getTime()));
 			// ALWAYS set the INSTANCE_UPDATE_DATE; this is used for backups
 			//args.put(DOM_INSTANCE_UPDATE_DATE.name, Utils.toSqlDateTime(Calendar.getInstance().getTime()));
 			success = mDb.update(DB_TB_BOOKS, args, KEY_ROWID + "=" + rowId, null) > 0;
 
 			String bookshelf = values.getBookshelfList();
 			if (bookshelf != null && !bookshelf.trim().isEmpty()) {
-				createBookshelfBooks(rowId, Utils.decodeList(bookshelf, BookEditFields.BOOKSHELF_SEPERATOR), false);
+				createBookshelfBooks(rowId, Convert.decodeList(bookshelf, BookEditFields.BOOKSHELF_SEPERATOR), false);
 			}
 
 			if (values.containsKey(CatalogueDBAdapter.KEY_AUTHOR_ARRAY)) {
@@ -4385,7 +4371,7 @@ public class CatalogueDBAdapter {
 					}					
 				} catch (Exception e) {
 					Logger.logError(e);
-					throw new RuntimeException("Error adding series '" + s.name + "' {" + seriesIdTxt + "} to book " + bookId + ": " + e.getMessage(), e);					
+					throw new RuntimeException("Error adding series '" + (s == null ? "" : s.name) + "' {" + seriesIdTxt + "} to book " + bookId + ": " + e.getMessage(), e);
 				}
 			}
 		}		
@@ -4413,8 +4399,6 @@ public class CatalogueDBAdapter {
 
 	/**
 	 * Utility routine to set a book as in need of backup if any ancillary data has changed.
-	 *
-	 * @param bookId
 	 */
 	private void setBookDirty(long bookId) {
 		// Mark specific book as dirty
@@ -4425,8 +4409,6 @@ public class CatalogueDBAdapter {
 	
 	/**
 	 * Utility routine to set all books referencing a given author as dirty.
-	 *
-	 * @param authorId
 	 */
 	private void setBooksDirtyByAuthor(long authorId) {
 		// Mark all related books based on anthology author as dirty
@@ -4495,8 +4477,6 @@ public class CatalogueDBAdapter {
 
 	/**
 	 * Add or update the passed author, depending whether a.id == 0.
-	 *
-	 * @param a
 	 */
 	private void addOrUpdateAuthor(Author a) {
 		if (a.id != 0) {
@@ -4581,8 +4561,6 @@ public class CatalogueDBAdapter {
 
 	/**
 	 * Add or update the passed series, depending whether s.id == 0.
-	 *
-	 * @param s
 	 */
 	private void addOrUpdateSeries(Series s) {
 		if (s.id != 0) {
@@ -4798,7 +4776,9 @@ public class CatalogueDBAdapter {
 		}
 
 		if (uuid != null && !uuid.isEmpty()) {
-			getUtils().eraseCachedBookCover(uuid);
+            try(CoversDbHelper coversDbHelper = CoversDbHelper.getInstance()) {
+                coversDbHelper.eraseCachedBookCover(uuid);
+            }
 		}
 
 		return success;
@@ -4864,7 +4844,7 @@ public class CatalogueDBAdapter {
 					String editTable,
 					SQLiteQuery query) 
 			{
-				return new BooksCursor(db, masterQuery, editTable, query, mSynchronizer);
+				return new BooksCursor(masterQuery, editTable, query, mSynchronizer);
 			}
 	};
 
@@ -6087,12 +6067,12 @@ public class CatalogueDBAdapter {
 	 * DEBUG ONLY; used when tracking a bug in android 2.1, but kept because
 	 * there are still non-fatal anomalies.
 	 */
-	public static int printReferenceCount(String msg) {
-		if (mDb != null) {
-			return SynchronizedDb.printRefCount(msg, mDb.getUnderlyingDatabase());
-		} else {
-			return 0;
+	public static void printReferenceCount(String msg) {
+		if (BuildConfig.DEBUG) {
+			if (mDb != null) {
+                SynchronizedDb.printRefCount(msg, mDb.getUnderlyingDatabase());
+            }
 		}
-	}
+    }
 }
 

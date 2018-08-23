@@ -19,8 +19,6 @@
  */
 package com.eleybourn.bookcatalogue;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
@@ -32,11 +30,13 @@ import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.Fields.AfterFieldChangeListener;
 import com.eleybourn.bookcatalogue.Fields.Field;
+import com.eleybourn.bookcatalogue.amazon.AmazonUtils;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.Logger;
-import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.util.ArrayList;
 
 /**
  * Based class for all fragments that appear in the BookEdit activity
@@ -183,13 +183,13 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
 			case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
 			{
 				String author = getAuthorFromBook();
-				Utils.openAmazonSearchPage(getActivity(), author, null);
+				AmazonUtils.openAmazonSearchPage(getActivity(), author, null);
 				return true;
 			}
 			case R.id.MENU_AMAZON_BOOKS_IN_SERIES:
 			{
 				String series = getSeriesFromBook();
-				Utils.openAmazonSearchPage(getActivity(), null, series);
+				AmazonUtils.openAmazonSearchPage(getActivity(), null, series);
 				return true;
 			}
 			
@@ -197,7 +197,7 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
 			{
 				String author = getAuthorFromBook();
 				String series = getSeriesFromBook();
-				Utils.openAmazonSearchPage(getActivity(), author, series);
+				AmazonUtils.openAmazonSearchPage(getActivity(), author, series);
 				return true;
 			}
 			}

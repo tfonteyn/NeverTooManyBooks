@@ -20,7 +20,7 @@
 package com.eleybourn.bookcatalogue.datamanager;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.Convert;
 
 /**
  * Validator to apply a default value and validate as Boolean
@@ -56,7 +56,7 @@ public class BooleanValidator extends DefaultFieldValidator {
 				v = (((Integer)o) != 0);
 			} else {
 				String s = o.toString();
-				v = Utils.stringToBoolean(s, true);
+				v = Convert.toBoolean(s, true);
 			}
 			data.putBoolean(datum, v);
 			return;

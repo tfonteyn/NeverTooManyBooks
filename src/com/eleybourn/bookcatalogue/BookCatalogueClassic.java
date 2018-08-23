@@ -65,6 +65,7 @@ import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
+import com.eleybourn.bookcatalogue.utils.ViewUtils;
 import com.eleybourn.bookcatalogue.widgets.FastScrollExpandableListView;
 
 import net.philipwarner.taskqueue.QueueManager;
@@ -110,11 +111,6 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	private ArrayList<Integer> currentGroup = new ArrayList<>();
 	private Long mLoadingGroups = 0L;
 	private boolean collapsed = false;
-
-	/** Utils object; we need an instance for cover retrieval because it uses a DB connection
-	 * that we do not want to make static.
-	 */
-	private Utils mUtils = new Utils();
 
 	private SimpleTaskQueue mTaskQueue = null;
 
@@ -244,7 +240,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 */
 	private void bookshelf() {
 		// Setup the Bookshelf Spinner 
-		mBookshelfText = (Spinner) findViewById(R.id.bookshelf_name);
+		mBookshelfText = findViewById(R.id.bookshelf_name);
 		spinnerAdapter = new ArrayAdapter<>(this, R.layout.spinner_frontpage);
 		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mBookshelfText.setAdapter(spinnerAdapter);
@@ -299,7 +295,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			}
 		});
 		
-		ImageView mBookshelfDown = (ImageView) findViewById(R.id.bookshelf_down);
+		ImageView mBookshelfDown = findViewById(R.id.bookshelf_down);
 		mBookshelfDown.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -308,7 +304,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			}
 		});
 		
-		TextView mBookshelfNum = (TextView) findViewById(R.id.bookshelf_num);
+		TextView mBookshelfNum = findViewById(R.id.bookshelf_num);
 		mBookshelfNum.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -328,16 +324,16 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 * method call is made to bind a child view.
 	 */
 	private abstract class ViewManager {
-		protected int mGroupIdColumnIndex;
-		protected int mLayout = -1;			// Top level resource I
-		protected int mChildLayout = -1;	// Child resource ID
-		protected Cursor mCursor = null;	// Top level cursor
-		protected String[] mFrom = null;	// Source fields for top level resource
-		protected int[] mTo = null;			// Dest field resource IDs for top level
+		int mGroupIdColumnIndex;
+		int mLayout = -1;			// Top level resource I
+		int mChildLayout = -1;	// Child resource ID
+		Cursor mCursor = null;	// Top level cursor
+		String[] mFrom = null;	// Source fields for top level resource
+		int[] mTo = null;			// Dest field resource IDs for top level
 		// Methods to 'get' list/view related items
 		public int getLayout() { return mLayout; }
 
-		public int getLayoutChild() { return mChildLayout; }
+		int getLayoutChild() { return mChildLayout; }
 
 		public Cursor getCursor() {
 			if (mCursor == null) {
@@ -364,7 +360,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		 */
 		public abstract SQLiteCursor getChildrenCursor(Cursor groupCursor);
 
-		public BasicBookListAdapter newAdapter(Context context) {
+		BasicBookListAdapter newAdapter(Context context) {
 			return new BasicBookListAdapter(context);
 		}
 
@@ -421,7 +417,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			 */
 			private int[] mFromCols = null;
 			private final int[] mToIds;
-			public BasicBookListAdapter(Context context) {
+			BasicBookListAdapter(Context context) {
 				super(context, ViewManager.this.getCursor(), ViewManager.this.getLayout(), ViewManager.this.getLayoutChild());
 
 				mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -492,7 +488,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			 */
 			private void initViewInfo(View v, TextViewInfo info, int id, String setting) {
 				info.show = mPrefs.getBoolean(setting, true);
-				info.view = (TextView) v.findViewById(id);
+				info.view = v.findViewById(id);
 				if (!info.show) {
 					if (info.view != null)
 						info.view.setVisibility(View.GONE);
@@ -507,7 +503,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			 */
 			private void initViewInfo(View v, ImageViewInfo info, int id, String setting) {
 				info.show = mPrefs.getBoolean(setting, true);
-				info.view = (ImageView) v.findViewById(id);
+				info.view = v.findViewById(id);
 				if (!info.show) {
 					info.view.setVisibility(View.GONE);
 				} else {
@@ -555,7 +551,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 
 				if (holder.image.show) {
 					//CatalogueDBAdapter.fetchThumbnailIntoImageView(cursor.getId(),holder.image.view, LIST_THUMBNAIL_SIZE, LIST_THUMBNAIL_SIZE, true, mTaskQueue);
-					mUtils.fetchBookCoverIntoImageView(holder.image.view, LIST_THUMBNAIL_SIZE, LIST_THUMBNAIL_SIZE, true, rowView.getBookUuid(), 
+					ViewUtils.fetchBookCoverIntoImageView(holder.image.view, LIST_THUMBNAIL_SIZE, LIST_THUMBNAIL_SIZE, true, rowView.getBookUuid(),
 														BooklistPreferencesActivity.isThumbnailCacheEnabled(), BooklistPreferencesActivity.isBackgroundThumbnailsEnabled());
 				}
 
@@ -1020,7 +1016,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		
 		gotoCurrentGroup();
 		/* Add number to bookshelf */
-		TextView mBookshelfNumView = (TextView) findViewById(R.id.bookshelf_num);
+		TextView mBookshelfNumView = findViewById(R.id.bookshelf_num);
 		try {
 			mBookshelfNumView.setText(BookCatalogueApp.getResourceString(R.string.brackets,mDbHelper.countBooks(bookshelf)));
 		} catch (IllegalStateException e) {
@@ -1703,12 +1699,6 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				mTaskQueue.finish();
 			} catch (Exception ignored) {}
             mTaskQueue = null;
-		}
-		if (mUtils != null) {
-			try {
-				mUtils.close();
-			} catch (Exception ignored) {}
-            mUtils = null;
 		}
 		super.onDestroy();
 	} 

@@ -168,7 +168,7 @@ public class DbSync {
 		/**
 		 * Release a shared lock. If no more locks in thread, remove from list.
 		 */
-		public void releaseSharedLock() {
+		void releaseSharedLock() {
 			final Thread t = Thread.currentThread();
 			//System.out.println(t.getName() + " releasing SHARED lock");
 			mLock.lock();
@@ -326,7 +326,6 @@ public class DbSync {
 					} finally {
 						if (l != null) {
 							l.unlock();
-							l = null;
 						}
 					}				
 				} while (true);
@@ -353,7 +352,7 @@ public class DbSync {
 		 * @param helper	DBHelper to open underlying database
 		 * @param sync		Synchronizer to use
 		 */
-		public SynchronizedDb(final GenericOpenHelper helper, Synchronizer sync) {
+		SynchronizedDb(final GenericOpenHelper helper, Synchronizer sync) {
 			mSync = sync;
 			mDb = openWithRetries(new DbOpener() {
 				@Override
@@ -378,14 +377,10 @@ public class DbSync {
 		}
 
 		/** Factory object to create the custom cursor. Can not be static because it needs mSync */
-		public final SynchronizedCursorFactory mCursorFactory = new SynchronizedCursorFactory();
+		final SynchronizedCursorFactory mCursorFactory = new SynchronizedCursorFactory();
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
-		 *
-		 * @param sql
-		 * @param selectionArgs
-		 * @return
 		 */
 		public SynchronizedCursor rawQuery(String sql, String [] selectionArgs) {
 			return rawQueryWithFactory(mCursorFactory, sql, selectionArgs,"");
@@ -393,9 +388,6 @@ public class DbSync {
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
-		 *
-		 * @param sql
-		 * @return
 		 */
 		public SynchronizedCursor rawQuery(String sql) {
 			return rawQuery(sql, CatalogueDBAdapter.EMPTY_STRING_ARRAY);
@@ -403,14 +395,8 @@ public class DbSync {
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
-		 *
-		 * @param factory
-		 * @param sql
-		 * @param selectionArgs
-		 * @param editTable
-		 * @return
 		 */
-		public SynchronizedCursor rawQueryWithFactory(SynchronizedCursorFactory factory, String sql, String [] selectionArgs, String editTable) {
+		SynchronizedCursor rawQueryWithFactory(SynchronizedCursorFactory factory, String sql, String[] selectionArgs, String editTable) {
 			SyncLock l = null;
 			if (mTxLock == null)
 				l = mSync.getSharedLock();
@@ -425,9 +411,6 @@ public class DbSync {
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
-		 *
-		 * @param sql
-		 * @return
 		 */
 		public void execSQL(String sql) {
 			if (mTxLock != null) {
@@ -446,15 +429,6 @@ public class DbSync {
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
-		 *
-		 * @param table
-		 * @param columns
-		 * @param selection
-		 * @param selectionArgs
-		 * @param groupBy
-		 * @param having
-		 * @param orderBy
-		 * @return
 		 */
 		public Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
 			SyncLock l = null;
@@ -472,12 +446,6 @@ public class DbSync {
 		/**
 		 * Locking-aware wrapper for underlying database method; actually
 		 * calls insertOrThrow since this method also throws exceptions
-		 *
-		 * @param table
-		 * @param nullColumnHack
-		 * @param values
-		 *
-		 * @return
 		 */
 		public long insert(String table, String nullColumnHack, ContentValues values) {
 			SyncLock l = null;
@@ -497,12 +465,6 @@ public class DbSync {
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
-		 *
-		 * @param table
-		 * @param values
-		 * @param whereClause
-		 * @param whereArgs
-		 * @return
 		 */
 		public int update(String table, ContentValues values, String whereClause, String[] whereArgs) {
 			SyncLock l = null;
@@ -522,12 +484,6 @@ public class DbSync {
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
-		 *
-		 * @param table
-		 * @param whereClause
-		 * @param whereArgs
-		 *
-		 * @return
 		 */
 		public int delete(String table, String whereClause, String[] whereArgs) {
 			SyncLock l = null;
@@ -547,12 +503,6 @@ public class DbSync {
 
 		/**
 		 * Wrapper for underlying database method. It is recommended that custom cursors subclass SynchronizedCursor.
-		 *
-		 * @param cursorFactory
-		 * @param sql
-		 * @param selectionArgs
-		 * @param editTable
-		 * @return
 		 */
 		public Cursor rawQueryWithFactory(SQLiteDatabase.CursorFactory cursorFactory, String sql, String[] selectionArgs, String editTable) {
 			SyncLock l = null;
@@ -568,9 +518,6 @@ public class DbSync {
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
-		 *
-		 * @param sql
-		 * @return
 		 */
 		public SynchronizedStatement compileStatement(String sql) {
 			SyncLock l = null;
@@ -607,7 +554,7 @@ public class DbSync {
 		 * 
 		 * @param isUpdate	Indicates if updates will be done in TX
 		 *
-		 * @return
+		 * @return the lock
 		 */
 		public SyncLock beginTransaction(boolean isUpdate) {
 			SyncLock l;
@@ -670,7 +617,9 @@ public class DbSync {
 		public boolean isOpen() {
 			return mDb.isOpen();
 		}
-
+        public void close() {
+		    mDb.close();
+        }
 		/**
 		 * @return the underlying synchronizer object.
 		 */
@@ -687,28 +636,29 @@ public class DbSync {
 		 * @return		Number of current references
 		 */
 		public static int printRefCount(String msg, SQLiteDatabase db) {
-			System.gc();
-			Field f;
-			try {
-				f = SQLiteClosable.class.getDeclaredField("mReferenceCount");
-				f.setAccessible(true);
-				int refs = (Integer) f.get(db); //IllegalAccessException
-				if (msg != null) {
-					if (BuildConfig.DEBUG) {
-						System.out.println("DBRefs (" + msg + "): " + refs);
-						//if (refs < 100) {
-						//	System.out.println("DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");
-						//} else if (refs < 1001) {
-						//	System.out.println("DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 1000)!");
-						//} else {
-						//	System.out.println("DBRefs (" + msg + "): " + refs);
-						//}
-					}
-				}
-				return refs;
-			} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
-				Logger.logError(e);
-			}
+            if (BuildConfig.DEBUG) {
+                System.gc();
+                Field f;
+                try {
+                    f = SQLiteClosable.class.getDeclaredField("mReferenceCount");
+                    f.setAccessible(true);
+                    int refs = (Integer) f.get(db); //IllegalAccessException
+                    if (msg != null) {
+                            System.out.println("DBRefs (" + msg + "): " + refs);
+                            //if (refs < 100) {
+                            //	System.out.println("DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");
+                            //} else if (refs < 1001) {
+                            //	System.out.println("DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 1000)!");
+                            //} else {
+                            //	System.out.println("DBRefs (" + msg + "): " + refs);
+                            //}
+
+                    }
+                    return refs;
+                } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
+                    Logger.logError(e);
+                }
+            }
 			return 0;			
 		}
 	}
@@ -740,6 +690,7 @@ public class DbSync {
 		/**
 		 * Wrapper for underlying method on SQLiteStatement.
 		 */
+		@SuppressWarnings("unused")
 		public void bindDouble(final int index, final double value) {
 			mStatement.bindDouble(index, value);
 		}

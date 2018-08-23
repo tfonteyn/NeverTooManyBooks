@@ -19,7 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.debug;
 
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import org.acra.ACRA;
 
@@ -45,7 +45,7 @@ public class Tracker {
 		}
 		
 		public String getInfo() {
-			return Utils.toSqlDateTime(date) + ": " + activityClass + " " + action + " " + state;
+			return DateUtils.toSqlDateTime(date) + ": " + activityClass + " " + action + " " + state;
 		}
 	}
 	
