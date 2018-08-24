@@ -33,7 +33,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
-import com.eleybourn.bookcatalogue.compat.BookCatalogueListActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueListActivity;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
 
 import java.util.ArrayList;

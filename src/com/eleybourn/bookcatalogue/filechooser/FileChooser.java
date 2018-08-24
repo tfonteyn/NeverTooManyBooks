@@ -31,7 +31,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.compat.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.PathChangedListener;
 import com.eleybourn.bookcatalogue.filechooser.FileLister.FileListerListener;

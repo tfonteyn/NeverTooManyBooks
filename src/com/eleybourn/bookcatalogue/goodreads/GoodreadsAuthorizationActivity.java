@@ -25,7 +25,7 @@ import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.BcQueueManager;
 import com.eleybourn.bookcatalogue.StartupActivity;
-import com.eleybourn.bookcatalogue.compat.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 
 import net.philipwarner.taskqueue.QueueManager;
 

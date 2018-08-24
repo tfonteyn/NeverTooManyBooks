@@ -25,7 +25,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.eleybourn.bookcatalogue.compat.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.utils.Logger;
 
 public class BookshelfEdit extends BookCatalogueActivity {

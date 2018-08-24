@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.compat;
+package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -22,7 +22,7 @@ import java.util.Locale;
  * 
  * @author pjw
  */
-public class BookCatalogueActivity extends Activity {
+abstract public class BookCatalogueActivity extends Activity {
     /**
      * NEWKIND: add new supported themes here and in R.array.supported_themes,
      * the string-array order must match the THEMES order

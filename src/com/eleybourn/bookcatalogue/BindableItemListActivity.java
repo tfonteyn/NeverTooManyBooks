@@ -29,7 +29,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
-import com.eleybourn.bookcatalogue.compat.BookCatalogueListActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueListActivity;
 
 import net.philipwarner.taskqueue.BindableItemCursorAdapter;
 import net.philipwarner.taskqueue.BindableItemCursorAdapter.BindableItemBinder;

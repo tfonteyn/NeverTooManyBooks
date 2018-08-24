@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.compat.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 
 public abstract class CropMonitoredActivity extends BookCatalogueActivity {
 

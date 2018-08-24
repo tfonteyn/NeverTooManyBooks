@@ -169,8 +169,6 @@
             android:label="@string/update_fields" />
         <activity android:name=".cropper.CropCropImage" />
         <activity android:name=".filechooser.BackupChooser" />
-        <activity android:name=".compat.BookCatalogueActivity" />
-        <activity android:name=".compat.BookCatalogueListActivity" />
 
         <!--
             LibraryThing

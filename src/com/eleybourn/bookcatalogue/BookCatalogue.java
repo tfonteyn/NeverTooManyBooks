@@ -3,7 +3,7 @@ package com.eleybourn.bookcatalogue;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.compat.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 
 /**
  * This is a placeholder class to deal with the surprising number of old shortcuts that
