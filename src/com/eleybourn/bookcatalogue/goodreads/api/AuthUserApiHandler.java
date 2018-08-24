@@ -20,11 +20,11 @@
 
 package com.eleybourn.bookcatalogue.goodreads.api;
 
-import org.apache.http.client.methods.HttpPost;
-
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.XmlHandler;
+
+import org.apache.http.client.methods.HttpPost;
 
 import static com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.GOODREADS_API_ROOT;
 
@@ -37,8 +37,6 @@ public class AuthUserApiHandler extends ApiHandler {
 
 	/**
 	 * Constructor. Setup the filters.
-	 * 
-	 * @param manager
 	 */
 	public AuthUserApiHandler(GoodreadsManager manager) {
 		super(manager);

@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.goodreads;
 
-import net.philipwarner.taskqueue.QueueManager;
 import android.content.Context;
 import android.content.Intent;
 
@@ -29,6 +28,8 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+
+import net.philipwarner.taskqueue.QueueManager;
 
 /**
  * Simple class to run in background and verify goodreads credentials then
@@ -57,21 +58,22 @@ public class GoodreadsAuthorizationResultCheck extends GenericTask {
 	    try {
 		    grMgr.handleAuthentication();		    	
 		    if (grMgr.hasValidCredentials())
-				BookCatalogueApp.showNotification(R.id.NOTIFICATION, 
-										c.getString(R.string.authorized), 
-										c.getString(R.string.goodreads_auth_successful), i);
+				BookCatalogueApp.showNotification(R.id.NOTIFICATION,
+						c.getString(R.string.authorized),
+						c.getString(R.string.goodreads_auth_successful), i);
 			else
 				BookCatalogueApp.showNotification(R.id.NOTIFICATION, 
-										c.getString(R.string.not_authorized), 
-										c.getString(R.string.goodreads_auth_failed), i);
+						c.getString(R.string.not_authorized),
+						c.getString(R.string.goodreads_auth_failed), i);
 	    } catch (NotAuthorizedException e) {
 	    	BookCatalogueApp.showNotification(R.id.NOTIFICATION, 
-										c.getString(R.string.not_authorized), 
-										c.getString(R.string.goodreads_auth_failed), i);
+						c.getString(R.string.not_authorized),
+						c.getString(R.string.goodreads_auth_failed), i);
 	    } catch (Exception e) {
 	    	BookCatalogueApp.showNotification(R.id.NOTIFICATION, 
-										c.getString(R.string.not_authorized), 
-										c.getString(R.string.goodreads_auth_error) + " " + c.getString(R.string.if_the_problem_persists), i);		    	
+						c.getString(R.string.not_authorized),
+						c.getString(R.string.goodreads_auth_error)
+						+ " " + c.getString(R.string.if_the_problem_persists), i);
 	    }
 
 		return true;

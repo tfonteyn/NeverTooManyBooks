@@ -128,7 +128,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 	 */
 	private final boolean mSignRequest;
 	
-	public ShowBookApiHandler(GoodreadsManager manager, boolean signRequest) {
+	ShowBookApiHandler(GoodreadsManager manager, boolean signRequest) {
 		super(manager);
 		mSignRequest = signRequest;
 		// Build the XML filters needed to get the data we're interested in.
@@ -396,7 +396,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 	/**
 	 * Setup filters to process the XML parts we care about.
 	 */
-	protected void buildFilters() {
+	private void buildFilters() {
 		/*
 		   Stuff we care about
 

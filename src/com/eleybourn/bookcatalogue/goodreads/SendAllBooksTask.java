@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.goodreads;
 
-import net.philipwarner.taskqueue.QueueManager;
 import android.content.Context;
 
 import com.eleybourn.bookcatalogue.BcQueueManager;
@@ -35,6 +34,8 @@ import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuth
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.ExportDisposition;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import net.philipwarner.taskqueue.QueueManager;
 
 /**
  * Background task class to send all books in the database to goodreads.
@@ -84,16 +85,12 @@ public class SendAllBooksTask extends GenericTask {
 
 	/**
 	 * Do the mean of the task. Deal with restarts by using mLastId as starting point.
-	 *
-	 * @param qmanager
-	 * @param context
-	 * @return
 	 */
-	private boolean sendAllBooks(QueueManager qmanager, Context context) throws NotAuthorizedException {
+	private boolean sendAllBooks(QueueManager queueManager, Context context) throws NotAuthorizedException {
 		//int lastSave = mCount;
 		boolean needsRetryReset = true;
 
-		// ENHANCE: Work out a way of checking if GR site is up
+		// TODO: Work out a way of checking if GR site is up
 		//if (!Utils.hostIsAvailable(context, "www.goodreads.com"))
 		//	return false;
 
@@ -139,7 +136,7 @@ public class SendAllBooksTask extends GenericTask {
 				switch(disposition) {
 				case error:
 					this.setException(exportException);
-					qmanager.saveTask(this);
+					queueManager.saveTask(this);
 					return false;
 				case sent:
 					// Record the change
@@ -158,7 +155,7 @@ public class SendAllBooksTask extends GenericTask {
 					// Only wait 5 mins on network errors.
 					if (getRetryDelay() > 300)
 						setRetryDelay(300);						
-					qmanager.saveTask(this);
+					queueManager.saveTask(this);
 					return false;
 				}
 
@@ -177,10 +174,10 @@ public class SendAllBooksTask extends GenericTask {
 				//	qmanager.saveTask(this);
 				//	lastSave = mCount;
 				//}
-				qmanager.saveTask(this);
+				queueManager.saveTask(this);
 
 				if (this.isAborting()) {
-					qmanager.saveTask(this);
+					queueManager.saveTask(this);
 					return false;
 				}
 			}

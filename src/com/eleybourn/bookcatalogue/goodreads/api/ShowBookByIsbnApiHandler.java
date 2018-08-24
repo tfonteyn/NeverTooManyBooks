@@ -20,14 +20,6 @@
 
 package com.eleybourn.bookcatalogue.goodreads.api;
 
-import java.io.IOException;
-
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
-
-import org.apache.http.client.methods.HttpGet;
-
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -37,6 +29,14 @@ import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.BookNot
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NetworkException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+
+import org.apache.http.client.methods.HttpGet;
+
+import java.io.IOException;
+
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
 
 import static com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.GOODREADS_API_ROOT;
 
@@ -56,12 +56,11 @@ public class ShowBookByIsbnApiHandler extends ShowBookApiHandler {
 	/**
 	 * Perform a search and handle the results.
 	 *
-	 * @param isbn
-	 * @param fetchThumbnail
-	 *
 	 * @return	the array of GoodreadsWork objects.
 	 */
-	public Bundle get(String isbn, boolean fetchThumbnail) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
+	public Bundle get(String isbn, boolean fetchThumbnail) throws
+			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+			NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 		if (isbn == null)
 			throw new RuntimeException("Null ISBN specified in search");
 		isbn = isbn.trim();

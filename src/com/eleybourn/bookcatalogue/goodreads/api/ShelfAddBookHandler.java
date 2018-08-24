@@ -21,6 +21,18 @@
 package com.eleybourn.bookcatalogue.goodreads.api;
 
 
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NetworkException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.ElementContext;
+import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.XmlHandler;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,18 +40,6 @@ import java.util.List;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
-
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NetworkException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
-import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.ElementContext;
-import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.XmlHandler;
 
 import static com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.GOODREADS_API_ROOT;
 
@@ -137,7 +137,8 @@ public class ShelfAddBookHandler extends ApiHandler {
 			</shelf>
 		 */
 		// We only care about review-id:
-		XmlFilter.buildFilter(mRootFilter, "shelf", "review-id").setEndAction(mHandleReviewId);
+		XmlFilter.buildFilter(mRootFilter, "shelf", "review-id")
+				.setEndAction(mHandleReviewId);
 	}
 
 	private final XmlHandler mHandleReviewId = new XmlHandler() {

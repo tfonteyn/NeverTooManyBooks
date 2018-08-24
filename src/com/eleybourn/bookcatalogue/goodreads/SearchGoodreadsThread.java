@@ -20,14 +20,14 @@
 
 package com.eleybourn.bookcatalogue.goodreads;
 
-import java.util.ArrayList;
-
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.SearchManager;
 import com.eleybourn.bookcatalogue.SearchThread;
 import com.eleybourn.bookcatalogue.TaskManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.utils.Logger;
+
+import java.util.ArrayList;
 
 /**
  * SearchManager for goodreads.
@@ -38,12 +38,6 @@ public class SearchGoodreadsThread extends SearchThread {
 
 	/**
 	 * Constructor.
-	 *
-	 * @param manager
-	 * @param author
-	 * @param title
-	 * @param isbn
-	 * @param fetchThumbnail
 	 */
 	public SearchGoodreadsThread(TaskManager manager,
 			String author, String title, String isbn, boolean fetchThumbnail) {

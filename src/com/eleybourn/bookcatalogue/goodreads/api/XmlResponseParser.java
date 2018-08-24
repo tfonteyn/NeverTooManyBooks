@@ -20,13 +20,13 @@
 
 package com.eleybourn.bookcatalogue.goodreads.api;
 
-import java.util.ArrayList;
+import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.ElementContext;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.ElementContext;
+import java.util.ArrayList;
 
 /**
  * Base class for parsing the output any web request that returns an XML response. NOTE: this does
@@ -39,9 +39,9 @@ import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.ElementContext;
  */
 public class XmlResponseParser extends DefaultHandler {
 	/** Temporary storage for inter-tag text */
-    final StringBuilder m_builder = new StringBuilder();
+    private final StringBuilder mBuilder = new StringBuilder();
 	/** Stack of parsed tags giving context to the XML parser */
-    final ArrayList<ElementContext> m_parents = new ArrayList<>();
+    private final ArrayList<ElementContext> mParents = new ArrayList<>();
 
 	/**
 	 * Constructor. Requires a filter tree.
@@ -52,7 +52,7 @@ public class XmlResponseParser extends DefaultHandler {
 		// Build the root context and add to hierarchy.
 		ElementContext ctx = new ElementContext(null, null, null, null, null);
 		ctx.filter = rootFilter;
-		m_parents.add(ctx);
+		mParents.add(ctx);
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class XmlResponseParser extends DefaultHandler {
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		super.characters(ch, start, length);
-		m_builder.append(ch, start, length);
+		mBuilder.append(ch, start, length);
 	}
 
 	/**
@@ -72,11 +72,11 @@ public class XmlResponseParser extends DefaultHandler {
 		super.startElement(uri, localName, name, attributes);
 
 		// Get the current context (ie. the enclosing tag)
-		ElementContext currElement = m_parents.get(m_parents.size()-1);
+		ElementContext currElement = mParents.get(mParents.size()-1);
 		// Get the active filter for the outer context, if present
 		XmlFilter currFilter = currElement.filter;
 		// Create a new context for this new tag saving the current inter-tag text for later
-		ElementContext ctx = new ElementContext(uri, localName, name, attributes, m_builder.toString());
+		ElementContext ctx = new ElementContext(uri, localName, name, attributes, mBuilder.toString());
 
 		// If there is an active filter, then see if the new tag is of any interest
 		if (currFilter != null) {
@@ -89,9 +89,9 @@ public class XmlResponseParser extends DefaultHandler {
 				filter.processStart(ctx);
 		}
 		// Add the new tag to the context hierarchy and reset 
-		m_parents.add(ctx);
+		mParents.add(ctx);
 		// Reset the inter-tag text storage.
-		m_builder.setLength(0);
+		mBuilder.setLength(0);
 	}
 
 	/**
@@ -102,14 +102,14 @@ public class XmlResponseParser extends DefaultHandler {
 		super.endElement(uri, localName, name);
 
 		// Get out current context from the hierarchy and pop from stack
-		ElementContext thisElement = m_parents.remove(m_parents.size()-1);
+		ElementContext thisElement = mParents.remove(mParents.size()-1);
 		// Minor paranoia. Make sure name matches. Total waste of time, right?
 		if (!thisElement.localName.equals(localName)) {
 			throw new RuntimeException("End element '" + localName + "' does not match start element '" + thisElement.localName + "'");
 		}
 		
 		// Save the text that appeared inside this tag (but not inside inner tags)
-		thisElement.body = m_builder.toString();
+		thisElement.body = mBuilder.toString();
 
 		// If there is an active filter in this context, then tell it the tag is finished.
 		if (thisElement.filter != null) {
@@ -117,7 +117,7 @@ public class XmlResponseParser extends DefaultHandler {
 		}
 
 		// Reset the inter-tag text and and append the previously saved 'pre-text'.
-		m_builder.setLength(0);
-		m_builder.append(thisElement.preText);
+		mBuilder.setLength(0);
+		mBuilder.append(thisElement.preText);
 	}		
 }

@@ -20,12 +20,12 @@
 
 package com.eleybourn.bookcatalogue.goodreads.api;
 
+import org.xml.sax.Attributes;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
-
-import org.xml.sax.Attributes;
 
 /**
  * A class to help parsing Sax Xml output. For goodreads XML output, 90% of the XML can be 
@@ -110,9 +110,6 @@ public class XmlFilter {
 	/**
 	 * Find a sub-filter for the passed context.
 	 * Currently just used local_name from the context.
-	 *
-	 * @param context
-	 * @return
 	 */
 	public XmlFilter getSubFilter(ElementContext context) {
 		return getSubFilter(context.localName);
@@ -132,8 +129,6 @@ public class XmlFilter {
 	}
 	/**
 	 * Called when associated tag is started.
-	 *
-	 * @param context
 	 */
 	public void processStart(ElementContext context) {
 		if (mStartAction != null) {
@@ -143,8 +138,6 @@ public class XmlFilter {
 	}
 	/**
 	 * Called when associated tag is finished.
-	 *
-	 * @param context
 	 */
 	public void processEnd(ElementContext context) {
 		if (mEndAction != null) {

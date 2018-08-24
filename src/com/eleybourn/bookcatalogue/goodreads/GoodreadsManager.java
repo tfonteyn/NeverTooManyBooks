@@ -363,11 +363,10 @@ public class GoodreadsManager {
 	 * Utility routine called to sign a request and submit it then pass it off to a parser.
 	 *
 	 * @author Philip Warner
-	 * @throws NotAuthorizedException
-	 * @throws BookNotFoundException
-	 * @throws NetworkException
 	 */
-	public HttpResponse execute(HttpUriRequest request, DefaultHandler requestHandler, boolean requiresSignature) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, NetworkException {
+	public HttpResponse execute(HttpUriRequest request, DefaultHandler requestHandler, boolean requiresSignature) throws
+			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+			IOException, NotAuthorizedException, BookNotFoundException, NetworkException {
 
 		// Get a new client
 		HttpClient httpClient = newHttpClient();
@@ -410,7 +409,9 @@ public class GoodreadsManager {
 	 *
 	 * @author Philip Warner
 	 */
-	public String executeRaw(HttpUriRequest request) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException, NotAuthorizedException, BookNotFoundException, NetworkException {
+	public String executeRaw(HttpUriRequest request) throws
+			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+			IOException, NotAuthorizedException, BookNotFoundException, NetworkException {
 
 		// Get a new client
 		HttpClient httpClient = newHttpClient();
@@ -461,7 +462,8 @@ public class GoodreadsManager {
 	 *
 	 * @author Philip Warner
 	 */
-	private boolean parseResponse(HttpResponse response, DefaultHandler requestHandler) throws IllegalStateException, IOException {
+	private boolean parseResponse(HttpResponse response, DefaultHandler requestHandler) throws
+			IllegalStateException, IOException {
 		boolean parseOk = false;
 
 		// Setup the parser
@@ -536,7 +538,9 @@ public class GoodreadsManager {
 	/**
 	 * Wrapper to call ISBN->ID API
 	 */
-	public long isbnToId(String isbn) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, NetworkException, IOException {
+	public long isbnToId(String isbn) throws
+			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+			NotAuthorizedException, BookNotFoundException, NetworkException, IOException {
 		if (m_isbnToId == null)
 			m_isbnToId = new IsbnToId(this);
 		return m_isbnToId.isbnToId(isbn);
@@ -566,7 +570,9 @@ public class GoodreadsManager {
 		}
 	}
 
-	private GoodreadsBookshelves getShelves() throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, NetworkException, IOException {
+	private GoodreadsBookshelves getShelves() throws
+			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+			NotAuthorizedException, BookNotFoundException, NetworkException, IOException {
 		if (mBookshelfList == null) {
 			Hashtable<String, GoodreadsBookshelf> list = new Hashtable<>();
 			BookshelfListApiHandler h = new BookshelfListApiHandler(this);
@@ -574,7 +580,7 @@ public class GoodreadsManager {
 			while(true) {
 				Bundle result = h.run(page);
 				ArrayList<Bundle> shelves = result.getParcelableArrayList(BookshelfListFieldNames.SHELVES);
-				if (shelves.isEmpty())
+				if (shelves == null || shelves.isEmpty())
 					break;
 
 				for(Bundle b: shelves) {
@@ -597,7 +603,9 @@ public class GoodreadsManager {
 	/**
 	 * Wrapper to call API to add book to shelf
 	 */
-    private long addBookToShelf(String shelfName, long grBookId) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, NetworkException, IOException {
+    private long addBookToShelf(String shelfName, long grBookId) throws
+			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+			NotAuthorizedException, BookNotFoundException, NetworkException, IOException {
 		if (m_addBookHandler == null)
 			m_addBookHandler = new ShelfAddBookHandler(this);
 		return m_addBookHandler.add(shelfName, grBookId);
@@ -605,14 +613,18 @@ public class GoodreadsManager {
 	/**
 	 * Wrapper to call API to remove a book from a shelf
 	 */
-    private void removeBookFromShelf(String shelfName, long grBookId) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, NetworkException, IOException {
+    private void removeBookFromShelf(String shelfName, long grBookId) throws
+			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+			NotAuthorizedException, BookNotFoundException, NetworkException, IOException {
 		if (m_addBookHandler == null)
 			m_addBookHandler = new ShelfAddBookHandler(this);
 		m_addBookHandler.remove(shelfName, grBookId);
 	}
 
 	private ReviewUpdateHandler mReviewUpdater = null;
-	private void updateReview(long reviewId, boolean isRead, String readAt, String review, int rating) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
+	private void updateReview(long reviewId, boolean isRead, String readAt, String review, int rating) throws
+			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+			NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 		if (mReviewUpdater == null) {
 			mReviewUpdater = new ReviewUpdateHandler(this);
 		}
@@ -627,7 +639,9 @@ public class GoodreadsManager {
 	 *
 	 * @return			Disposition of book
 	 */
-	public ExportDisposition sendOneBook(CatalogueDBAdapter dbHelper, BooksRowView books) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, IOException, NetworkException, BookNotFoundException {
+	public ExportDisposition sendOneBook(CatalogueDBAdapter dbHelper, BooksRowView books) throws
+			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+			NotAuthorizedException, IOException, NetworkException, BookNotFoundException {
 		long bookId = books.getId();
 		long grId;
 		long reviewId = 0;
@@ -813,7 +827,9 @@ public class GoodreadsManager {
 	 * 
 	 * @return	Array of GoodreadsWork objects
 	 */
-	public ArrayList<GoodreadsWork> search(String query) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
+	public ArrayList<GoodreadsWork> search(String query) throws
+			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+			NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 
 		if (!query.isEmpty()) {
 			SearchBooksApiHandler searcher = new SearchBooksApiHandler(this);
@@ -831,7 +847,9 @@ public class GoodreadsManager {
 	 *
 	 * @return	Array of GoodreadsWork objects
 	 */
-	public Bundle getBookById(long bookId) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
+	public Bundle getBookById(long bookId) throws
+			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+			NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 		if (bookId != 0) {
 			ShowBookByIdApiHandler api = new ShowBookByIdApiHandler(this);
 			// Run the search
@@ -848,7 +866,9 @@ public class GoodreadsManager {
 	 * @return	Array of GoodreadsWork objects
 
 	 */
-	public Bundle getBookByIsbn(String isbn) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
+	public Bundle getBookByIsbn(String isbn) throws
+			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+			NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 		if (isbn != null && isbn.length() > 0) {
 			ShowBookByIsbnApiHandler api = new ShowBookByIsbnApiHandler(this);
 			// Run the search

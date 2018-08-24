@@ -20,12 +20,12 @@
 
 package com.eleybourn.bookcatalogue.goodreads.api;
 
-import java.util.ArrayList;
-
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.XmlHandler;
+
+import java.util.ArrayList;
 
 /**
  * Class layered on top of XmlFilter to implement a simple set of XML filters to extract 
@@ -90,10 +90,12 @@ public class SimpleXmlFilter {
 			if (parent == null)
 				throw new RuntimeException("Parent can not be null");
 
-			mFilter = XmlFilter.buildFilter(root, tags);
 			this.parent = parent;
-			mFilter.setStartAction(mHandleStart, this);
-			mFilter.setEndAction(mHandleFinish, this);
+			mFilter = XmlFilter.buildFilter(root, tags);
+			if (mFilter != null) {
+				mFilter.setStartAction(mHandleStart, this);
+				mFilter.setEndAction(mHandleFinish, this);
+			}
 		}
 
 		public void addArrayItem(Bundle b) {
@@ -137,7 +139,7 @@ public class SimpleXmlFilter {
 		public boolean isArray() {
 			return mIsArray;
 		}
-		public void setArray(String name, boolean isArray) {
+		void setArray(String name, boolean isArray) {
 			mIsArray = isArray;
 			mArrayName = name;
 		}
@@ -145,7 +147,7 @@ public class SimpleXmlFilter {
 		public boolean isArrayItem() {
 			return mIsArrayItem;
 		}
-		public void setArrayItem(boolean isArrayItem) {
+		void setArrayItem(boolean isArrayItem) {
 			mIsArrayItem = isArrayItem;
 		}
 	}
@@ -161,13 +163,11 @@ public class SimpleXmlFilter {
 	}
 	
 	public SimpleXmlFilter isArray(String arrayName) {
-		BuilderContext c = mContexts.get(mContexts.size()-1);
-		c.setArray(arrayName, true);
+		mContexts.get(mContexts.size()-1).setArray(arrayName, true);
 		return this;
 	}
 	public SimpleXmlFilter isArrayItem() {
-		BuilderContext c = mContexts.get(mContexts.size()-1);
-		c.setArrayItem(true);
+		mContexts.get(mContexts.size()-1).setArrayItem(true);
 		return this;
 	}
 

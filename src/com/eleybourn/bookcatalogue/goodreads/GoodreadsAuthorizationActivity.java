@@ -20,13 +20,14 @@
 
 package com.eleybourn.bookcatalogue.goodreads;
 
-import net.philipwarner.taskqueue.QueueManager;
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.BcQueueManager;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.compat.BookCatalogueActivity;
+
+import net.philipwarner.taskqueue.QueueManager;
 
 /**
  * Trivial Activity to handle the callback URI; while using a broadcast receiver would be nicer, 
@@ -49,9 +50,9 @@ public class GoodreadsAuthorizationActivity extends BookCatalogueActivity {
 			// GoodReads does not set the verifier...but we may as well check for it.
 			// The verifier was added in API version 1.0A, and GoodReads seems to 
 			// implement 1.0.
-		    String verifier = uri.getQueryParameter("oauth_verifier");  
-		    if (verifier == null)
-		    	verifier = "";
+
+		    //String verifier = uri.getQueryParameter("oauth_verifier");
+
 		    // Handle the auth response by passing it off to a background task to check.
 		    GoodreadsAuthorizationResultCheck task = new GoodreadsAuthorizationResultCheck();
 		    QueueManager.getQueueManager().enqueueTask(task, BcQueueManager.QUEUE_SMALL_JOBS, 0);

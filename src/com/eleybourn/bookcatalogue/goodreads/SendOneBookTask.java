@@ -20,9 +20,7 @@
 
 package com.eleybourn.bookcatalogue.goodreads;
 
-import net.philipwarner.taskqueue.QueueManager;
 import android.content.Context;
-import android.database.Cursor;
 
 import com.eleybourn.bookcatalogue.BcQueueManager;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -36,6 +34,8 @@ import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuth
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.ExportDisposition;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import net.philipwarner.taskqueue.QueueManager;
 
 /**
  * Task to send a single books details to goodreads.
@@ -74,10 +74,6 @@ public class SendOneBookTask extends GenericTask {
 
 	/**
 	 * Perform the main task
-	 *
-	 * @param qmanager
-	 * @param context
-	 * @return
 	 */
 	private boolean sendBook(QueueManager qmanager, Context context) throws NotAuthorizedException {
 		
@@ -106,7 +102,6 @@ public class SendOneBookTask extends GenericTask {
 		// Open the cursor for the book
 		final BooksCursor books = dbHelper.getBookForGoodreadsCursor(m_bookId);
 		final BooksRowView book = books.getRowView();
-		Cursor shelves = null;
 
 		try {
 			while (books.moveToNext()) {
@@ -147,21 +142,10 @@ public class SendOneBookTask extends GenericTask {
 			}
 
 		} finally {
-			if (books != null)
 				try {
 					books.close();
-				} catch (Exception e)
-				{
-					// Ignore failures, but log them
+				} catch (Exception e) {
 					Logger.logError(e, "Failed to close GoodReads books cursor");
-				}
-			if (shelves != null)
-				try {
-					shelves.close();
-				} catch (Exception e)
-				{
-					// Ignore failures, but log them
-					Logger.logError(e, "Failed to close GoodReads book bookshelves cursor");
 				}
 			try {
 				dbHelper.close();				

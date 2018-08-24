@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.goodreads;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -170,7 +171,8 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 			mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		}
 		
-		public View getView(int position, View convertView, ViewGroup parent) {
+		@NonNull
+		public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 			ListHolder holder;
 			if(convertView == null) {
 				// Not recycling
@@ -213,7 +215,6 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 					holder.title.setText(holder.work.title);					
 				}
 			}
-
 
 			return convertView;
 		}

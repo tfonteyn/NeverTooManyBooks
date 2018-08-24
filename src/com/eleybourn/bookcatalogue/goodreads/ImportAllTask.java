@@ -127,18 +127,12 @@ public class ImportAllTask extends GenericTask {
 			}
 			return ok;
 		} finally {
-			if (db != null)
-				db.close();
+			db.close();
 		}
 	}
 
 	/**
 	 * Repeatedly request review pages until we are done.
-	 *
-	 * @param qMgr
-	 * @param db
-	 *
-	 * @return
 	 */
 	private boolean processReviews(QueueManager qMgr, CatalogueDBAdapter db) {
 		GoodreadsManager gr = new GoodreadsManager();
@@ -183,7 +177,7 @@ public class ImportAllTask extends GenericTask {
 			// Get the reviews array and process it
 			ArrayList<Bundle> reviews = books.getParcelableArrayList(ListReviewsFieldNames.REVIEWS);
 
-			if (reviews.size() == 0)
+			if (reviews == null || reviews.size() == 0)
 				break;
 
 			for(Bundle review: reviews) {
@@ -222,9 +216,6 @@ public class ImportAllTask extends GenericTask {
 
 	/**
 	 * Process one review (book).
-	 *
-	 * @param db
-	 * @param review
 	 */
 	private void processReview(CatalogueDBAdapter db, Bundle review) {
 		long grId = review.getLong(ListReviewsFieldNames.GR_BOOK_ID);
@@ -298,9 +289,6 @@ public class ImportAllTask extends GenericTask {
 
 	/**
 	 * Extract a list of ISBNs from the bundle
-	 *
-	 * @param review
-	 * @return
 	 */
 	private ArrayList<String> extractIsbns(Bundle review) {
 		ArrayList<String> isbns = new ArrayList<>();
@@ -318,10 +306,6 @@ public class ImportAllTask extends GenericTask {
 
 	/**
 	 * Update the book using the GR data
-	 *
-	 * @param db
-	 * @param rv
-	 * @param review
 	 */
 	private void updateBook(CatalogueDBAdapter db, BooksRowView rv, Bundle review) {
 		// Get last date book was sent to GR (may be null)
@@ -344,9 +328,6 @@ public class ImportAllTask extends GenericTask {
 
 	/**
 	 * Create a new book
-	 *
-	 * @param db
-	 * @param review
 	 */
 	private void createBook(CatalogueDBAdapter db, Bundle review) {
 		BookData book = buildBundle(db, null, review);
@@ -355,7 +336,7 @@ public class ImportAllTask extends GenericTask {
 			String uuid = db.getBookUuid(id);
 			File thumb = CatalogueDBAdapter.getTempThumbnail();
 			File real = CatalogueDBAdapter.fetchThumbnailByUuid(uuid);
-			thumb.renameTo(real);			
+			thumb.renameTo(real);
 		}
 		//db.setGoodreadsSyncDate(id);
 	}
@@ -363,11 +344,6 @@ public class ImportAllTask extends GenericTask {
 	/**
 	 * Build a book bundle based on the goodreads 'review' data. Some data is just copied
 	 * while other data is processed (eg. dates) and other are combined (authors & series).
-	 *
-	 * @param db
-	 * @param rv
-	 * @param review
-	 * @return
 	 */
 	private BookData buildBundle(CatalogueDBAdapter db, BooksRowView rv, Bundle review) {
 		BookData book = new BookData();
@@ -415,8 +391,12 @@ public class ImportAllTask extends GenericTask {
         	book.putString(CatalogueDBAdapter.KEY_DATE_PUBLISHED, pubDate);
         
         ArrayList<Bundle> grAuthors = review.getParcelableArrayList(ListReviewsFieldNames.AUTHORS);
-        ArrayList<Author> authors;
+        if (grAuthors == null) {
+        	Logger.logError("grAuthors was null");
+        	return book;
+		}
 
+        ArrayList<Author> authors;
         if (rv == null) {
         	// It's a new book. Start a clean list.
         	authors = new ArrayList<>();
@@ -477,6 +457,10 @@ public class ImportAllTask extends GenericTask {
         // Process any bookshelves
         if (review.containsKey(ListReviewsFieldNames.SHELVES)) {
         	ArrayList<Bundle> shelves = review.getParcelableArrayList(ListReviewsFieldNames.SHELVES);
+        	if (shelves == null) {
+        		Logger.logError("shelves was null");
+        		return book;
+			}
         	StringBuilder shelfNames = null;
         	for(Bundle sb: shelves) {
         		String shelf = translateBookshelf(db, sb.getString(ListReviewsFieldNames.SHELF));
@@ -506,11 +490,6 @@ public class ImportAllTask extends GenericTask {
 	 * attempt to translate as appropriate and will not add the date if it cannot
 	 * be parsed.
 	 *
-	 * @param source
-	 * @param sourceField
-	 * @param dest
-	 * @param destField
-	 *
 	 * @Return reformatted sql date, or null if not able to parse
 	 */
 	private String addDateIfValid(Bundle source, String sourceField, BookData dest, String destField) {
@@ -532,11 +511,6 @@ public class ImportAllTask extends GenericTask {
 
 	/**
 	 * Utility to copy a non-blank string to the book bundle.
-	 *
-	 * @param source
-	 * @param sourceField
-	 * @param dest
-	 * @param destField
 	 */
 	private void addStringIfNonBlank(Bundle source, String sourceField, BookData dest, String destField) {
 		if (source.containsKey(sourceField)) {
@@ -548,11 +522,6 @@ public class ImportAllTask extends GenericTask {
 	}
 	/**
 	 * Utility to copy a Long value to the book bundle.
-	 *
-	 * @param source
-	 * @param sourceField
-	 * @param dest
-	 * @param destField
 	 */
 	private void addLongIfPresent(Bundle source, String sourceField, BookData dest, String destField) {
 		if (source.containsKey(sourceField)) {
@@ -562,11 +531,6 @@ public class ImportAllTask extends GenericTask {
 	}
 	/**
 	 * Utility to copy a Double value to the book bundle.
-	 *
-	 * @param source
-	 * @param sourceField
-	 * @param dest
-	 * @param destField
 	 */
 	private Double addDoubleIfPresent(Bundle source, String sourceField, BookData dest, String destField) {
 		if (source.containsKey(sourceField)) {

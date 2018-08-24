@@ -20,13 +20,10 @@
 
 package com.eleybourn.bookcatalogue.goodreads.api;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NetworkException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -36,10 +33,13 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NetworkException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
 
 import static com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.GOODREADS_API_ROOT;
 
@@ -48,9 +48,10 @@ import static com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.GOODREADS_A
  * 
  * @author Philip Warner
  */
+@SuppressWarnings("unused")
 public class OwnedBookCreateHandler extends ApiHandler {
 
-	public static class InvalidIsbnException extends RuntimeException {
+	private static class InvalidIsbnException extends RuntimeException {
 		private static final long serialVersionUID = 2652418388349622089L;
 	}
 

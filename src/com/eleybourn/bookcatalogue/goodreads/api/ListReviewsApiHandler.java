@@ -140,12 +140,6 @@ public class ListReviewsApiHandler extends ApiHandler {
 		buildFilters();
 	}
 
-	/**
-	 *
-	 * @param page
-	 * @param perPage
-	 * @return
-	 */
 	public Bundle run(int page, int perPage)
 			throws OAuthMessageSignerException, OAuthExpectationFailedException,
 					OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException 

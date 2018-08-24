@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue.goodreads;
 
-import java.lang.ref.WeakReference;
-
 import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.R;
@@ -29,6 +27,8 @@ import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Class to store the 'work' data returned via a goodreads search. It also creates a background task
@@ -69,7 +69,6 @@ public class GoodreadsWork {
 				// Make sure our view is still associated with us
 				if (ViewTagger.getTag(v, R.id.TAG_GOODREADS_WORK).equals(this)) {
 					v.setImageBitmap( Utils.getBitmapFromBytes(imageBytes) );
-					//System.out.println("Work(" + mId + ") set image on view " + v.toString() + " to " +  ((GetImageTask)task).getDescription());
 				}
 			}						
 		}

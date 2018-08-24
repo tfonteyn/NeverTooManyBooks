@@ -37,6 +37,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.HintManager.HintOwner;
+import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import net.philipwarner.taskqueue.BindableItem;
@@ -127,7 +128,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	 */
 	protected void updateHeader() {
 		TextView head = this.findViewById(R.id.events_found);
-		head.setText(m_cursor.getCount() + " Events found");		
+		head.setText(getResources().getString(R.string.events_found,m_cursor.getCount()));
 	}
 
 	/**
@@ -167,10 +168,14 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 		final Event event = ViewTagger.getTag(v, R.id.TAG_EVENT);
 		final ArrayList<ContextDialogItem> items = new ArrayList<>();
 
+		if (event == null) {
+			Logger.logError("event was null");
+			return;
+		}
 		event.addContextMenuItems(this, parent, v, position, id, items, m_db);
 
 		if (items.size() > 0) {
-			showContextDialogue("Select an Action", items);
+			showContextDialogue(R.string.select_an_action, items);
 		}		
 	}
 	
@@ -245,9 +250,6 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 
 	/**
 	 * Utility routine to start this activity on behalf of the passed activity.
-	 *
-	 * @param from
-	 * @param taskId
 	 */
 	public static void start(Activity from, long taskId) {
 		Intent i = new Intent(from, GoodreadsExportFailuresActivity.class);

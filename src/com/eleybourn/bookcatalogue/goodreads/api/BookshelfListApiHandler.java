@@ -61,7 +61,6 @@ public class BookshelfListApiHandler extends ApiHandler {
 	 */
 	public static final class BookshelfListFieldNames {
 		public static final String SHELVES = "shelves";
-		public static final String SHELF = "shelf";
 		public static final String START = "start";
 		public static final String END = "end";
 		public static final String TOTAL = "total";
@@ -80,11 +79,6 @@ public class BookshelfListApiHandler extends ApiHandler {
 		buildFilters();
 	}
 
-	/**
-	 *
-	 * @param page
-	 * @return
-	 */
 	public Bundle run(int page)
 			throws OAuthMessageSignerException, OAuthExpectationFailedException,
 					OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException 

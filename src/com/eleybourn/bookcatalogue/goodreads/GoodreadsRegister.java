@@ -83,8 +83,7 @@ public class GoodreadsRegister extends BookCatalogueActivity {
 			public void onClick(View v) {
 				String url = res.getString(R.string.goodreads_url);
 				Uri uri = Uri.parse(url);
-				Intent loadweb = new Intent(Intent.ACTION_VIEW, uri);
-				startActivity(loadweb); 
+				startActivity(new Intent(Intent.ACTION_VIEW, uri));
 				return;
 			}
 		});

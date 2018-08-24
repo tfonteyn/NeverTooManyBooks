@@ -20,20 +20,20 @@
 
 package com.eleybourn.bookcatalogue.goodreads.api;
 
-import java.io.IOException;
-
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
-
-import org.apache.http.client.methods.HttpGet;
-
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NetworkException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+
+import org.apache.http.client.methods.HttpGet;
+
+import java.io.IOException;
+
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
 
 import static com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.GOODREADS_API_ROOT;
 
@@ -51,12 +51,11 @@ public class ShowBookByIdApiHandler extends ShowBookApiHandler {
 	/**
 	 * Perform a search and handle the results.
 	 *
-	 * @param workId
-	 * @param fetchThumbnail
-	 *
 	 * @return	the array of GoodreadsWork objects.
 	 */
-	public Bundle get(long workId, boolean fetchThumbnail) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
+	public Bundle get(long workId, boolean fetchThumbnail) throws
+			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+			NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 		// Setup API call
 		final String urlBase = GOODREADS_API_ROOT + "/book/show/%1$s.xml?key=%2$s";
 		final String url = String.format(urlBase, workId, mManager.getDeveloperKey());

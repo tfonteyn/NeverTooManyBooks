@@ -20,16 +20,6 @@
 
 package com.eleybourn.bookcatalogue.goodreads;
 
-import java.text.DateFormat;
-import java.util.ArrayList;
-
-import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
-import net.philipwarner.taskqueue.ContextDialogItem;
-import net.philipwarner.taskqueue.QueueManager;
-import net.philipwarner.taskqueue.RunnableTask;
-import net.philipwarner.taskqueue.Task;
-import net.philipwarner.taskqueue.TasksCursor;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +32,16 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
+
+import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
+import net.philipwarner.taskqueue.ContextDialogItem;
+import net.philipwarner.taskqueue.QueueManager;
+import net.philipwarner.taskqueue.RunnableTask;
+import net.philipwarner.taskqueue.Task;
+import net.philipwarner.taskqueue.TasksCursor;
+
+import java.text.DateFormat;
+import java.util.ArrayList;
 
 /**
  * Base class for tasks in BookCatalogue. This builds and populates simple
@@ -100,12 +100,16 @@ public abstract class GenericTask extends RunnableTask {
 	}
 
 	/**
-	 * Bin task details to passed View
+	 * Bind task details to passed View
 	 */
 	@Override
 	public boolean bindView(View view, Context context, BindableItemSQLiteCursor bindableCursor, Object appInfo) {
 		TaskHolder holder = ViewTagger.getTag(view, R.id.TAG_TASK_HOLDER);
 		TasksCursor cursor = (TasksCursor)bindableCursor;
+
+		if(holder == null) {
+			return false;
+		}
 
 		// Update task info binding
 		holder.task = this;
