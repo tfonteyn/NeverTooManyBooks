@@ -20,12 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.util.ArrayList;
-
-import net.philipwarner.taskqueue.BindableItemCursorAdapter;
-import net.philipwarner.taskqueue.BindableItemCursorAdapter.BindableItemBinder;
-import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
-import net.philipwarner.taskqueue.ContextDialogItem;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -36,6 +30,13 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
 import com.eleybourn.bookcatalogue.compat.BookCatalogueListActivity;
+
+import net.philipwarner.taskqueue.BindableItemCursorAdapter;
+import net.philipwarner.taskqueue.BindableItemCursorAdapter.BindableItemBinder;
+import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
+import net.philipwarner.taskqueue.ContextDialogItem;
+
+import java.util.ArrayList;
 
 /**
  * NOTE!!!!!
@@ -126,6 +127,17 @@ public abstract class BindableItemListActivity extends BookCatalogueListActivity
     public boolean onListItemLongClick(AdapterView<?> parent, View v, int position, long id) { return false; }
 
 	//public abstract void bindListItem(View view, Context context, TasksCursor cursor) ;
+
+
+	/**
+	 * Utility routine to display an array of ContextDialogItems in an alert.
+	 *
+	 * @param title		Title of Alert
+	 * @param items		Items to display
+	 */
+	protected void showContextDialogue(int title, ArrayList<ContextDialogItem> items) {
+		showContextDialogue(getResources().getString(title), items);
+	}
 
 	/**
 	 * Utility routine to display an array of ContextDialogItems in an alert.
