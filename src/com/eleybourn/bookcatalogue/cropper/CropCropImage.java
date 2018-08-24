@@ -16,13 +16,6 @@
 
 package com.eleybourn.bookcatalogue.cropper;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.concurrent.CountDownLatch;
-
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -50,6 +43,13 @@ import android.widget.Toast;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.utils.Logger;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.concurrent.CountDownLatch;
+
 /**
  * The activity can crop specific region of interest from an image.
  */
@@ -69,10 +69,12 @@ public class CropCropImage extends CropMonitoredActivity {
 	// scale the output to fit it (or just crop it).
 	private int mOutputX, mOutputY;
 	private boolean mScale;
+
+	//Flag
 	private boolean mScaleUp = true;
 	// Flag indicating if default crop rect is whole image
 	private boolean mCropWholeImage = false;
-
+	// Flag
 	private boolean mDoFaceDetection = false;
 
 	boolean mWaitingToPick; // Whether we are wait the user to pick a face.
@@ -86,8 +88,6 @@ public class CropCropImage extends CropMonitoredActivity {
 	CropHighlightView mCrop;
 
 	private CropIImage mImage;
-
-	private String mImagePath;
 
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -113,17 +113,17 @@ public class CropCropImage extends CropMonitoredActivity {
 				mAspectY = 1;
 			}
 
-			mImagePath = extras.getString("image-path");
+			String imagePath = extras.getString("image-path");
 
 			// Use the "output" parameter if present, otherwise overwrite
 			// existing file
 			String imgUri = extras.getString("output");
 			if (imgUri == null)
-				imgUri = mImagePath;
+				imgUri = imagePath;
 
 			mSaveUri = getImageUri(imgUri);
 
-			mBitmap = getBitmap(mImagePath);
+			mBitmap = getBitmap(imagePath);
 
 			mAspectX = extras.getInt("aspectX");
 			mAspectY = extras.getInt("aspectY");
@@ -323,18 +323,15 @@ public class CropCropImage extends CropMonitoredActivity {
 
 	private void saveOutput(Bitmap croppedImage) {
 		if (mSaveUri != null) {
-			OutputStream outputStream = null;
-			try {
-				outputStream = mContentResolver.openOutputStream(mSaveUri);
+			try (OutputStream outputStream = mContentResolver.openOutputStream(mSaveUri)){
 				if (outputStream != null) {
 					croppedImage.compress(mOutputFormat, 75, outputStream);
 				}
 			} catch (IOException ex) {
 				// TODO: report error to caller
 				Logger.logError(ex, "Error while saving image");
-			} finally {
-				CropUtil.closeSilently(outputStream);
 			}
+
 			Bundle extras = new Bundle();
 			setResult(RESULT_OK,
 					new Intent(mSaveUri.toString()).putExtras(extras));
@@ -459,8 +456,9 @@ public class CropCropImage extends CropMonitoredActivity {
 				cropHeight = height;
 			} else {
 				// make the default size about 4/5 of the width or height
-				cropWidth = Math.min(width, height);// XXXX * 4 / 5;
-				cropHeight = cropWidth;
+                int dv = Math.min(width, height);// XXXX * 4 / 5;
+				cropWidth = dv;
+				cropHeight = dv;
 			}
 
 			// Even though we may be set to 'crop-whole-image', we need to obey

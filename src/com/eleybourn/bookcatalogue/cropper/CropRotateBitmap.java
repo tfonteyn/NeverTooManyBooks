@@ -24,14 +24,12 @@ public class CropRotateBitmap {
 	private Bitmap mBitmap;
 	private int mRotation;
 
-	public CropRotateBitmap(Bitmap bitmap) {
-		mBitmap = bitmap;
-		mRotation = 0;
+	CropRotateBitmap() {
 	}
 
-	public CropRotateBitmap(Bitmap bitmap, int rotation) {
+	CropRotateBitmap(Bitmap bitmap) {
 		mBitmap = bitmap;
-		mRotation = rotation % 360;
+		mRotation = 0;
 	}
 
 	public void setRotation(int rotation) {
@@ -66,7 +64,7 @@ public class CropRotateBitmap {
 		return matrix;
 	}
 
-	public boolean isOrientationChanged() {
+	private boolean isOrientationChanged() {
 		return (mRotation / 90) % 2 != 0;
 	}
 

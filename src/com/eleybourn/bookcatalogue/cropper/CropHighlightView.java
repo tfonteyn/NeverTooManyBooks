@@ -261,7 +261,7 @@ class CropHighlightView {
 	}
 
 	// Grows the cropping rectange by (dx, dy) in image space.
-	void moveBy(float dx, float dy) {
+	private void moveBy(float dx, float dy) {
 		Rect invalRect = new Rect(mDrawRect);
 
 		mCropRect.offset(dx, dy);
@@ -280,7 +280,7 @@ class CropHighlightView {
 	}
 
 	// Grows the cropping rectange by (dx, dy) in image space.
-	void growBy(float dx, float dy) {
+	private void growBy(float dx, float dy) {
 		if (mMaintainAspectRatio) {
 			if (dx != 0) {
 				dy = dx / mInitialAspectRatio;

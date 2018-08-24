@@ -28,7 +28,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 
-abstract class CropImageViewTouchBase extends ImageView {
+abstract class CropImageViewTouchBase extends android.support.v7.widget.AppCompatImageView {
 
 	/** Maximum upscaling for a viewed image */
 	private static final float SCALE_LIMIT_MAX = Float.MAX_VALUE;
@@ -52,7 +52,7 @@ abstract class CropImageViewTouchBase extends ImageView {
 	// to the full size image.
 	protected final Matrix mSuppMatrix = new Matrix();
 
-	// This is the final matrix which is computed as the concatentation
+	// This is the final matrix which is computed as the concatenation
 	// of the base matrix and the supplementary matrix.
 	private final Matrix mDisplayMatrix = new Matrix();
 
@@ -60,31 +60,24 @@ abstract class CropImageViewTouchBase extends ImageView {
 	private final float[] mMatrixValues = new float[9];
 
 	// The current bitmap being displayed.
-	final protected CropRotateBitmap mBitmapDisplayed = new CropRotateBitmap(
-			null);
+	final protected CropRotateBitmap mBitmapDisplayed = new CropRotateBitmap();
 
-	int mThisWidth = -1, mThisHeight = -1;
+	int mThisWidth = -1;
+	int mThisHeight = -1;
 
 	float mMaxZoom;
 
 	int mScrollY;
-
 	int mScrollX;
 
 	int mLeft;
-
 	int mRight;
-
 	int mTop;
-
 	int mBottom;
 
 	int mPaddingTop;
-
 	int mPaddingBottom;
-
 	int mPaddingLeft;
-
 	int mPaddingRight;
 
 	// ImageViewTouchBase will pass a Bitmap to the Recycler if it has finished

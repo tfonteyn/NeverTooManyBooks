@@ -1,7 +1,5 @@
 package com.eleybourn.bookcatalogue.cropper;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -10,7 +8,12 @@ import android.view.MotionEvent;
 
 import com.eleybourn.bookcatalogue.utils.Logger;
 
+import java.util.ArrayList;
+
 public class CropImageView extends CropImageViewTouchBase {
+
+	private static final boolean ENSURE_VISIBLE = true;
+
 	final ArrayList<CropHighlightView> mHighlightViews = new ArrayList<>();
 	CropHighlightView mMotionHighlightView = null;
 	float mLastX, mLastY;
@@ -158,7 +161,7 @@ public class CropImageView extends CropImageViewTouchBase {
 				mLastX = event.getX();
 				mLastY = event.getY();
 
-				if (true) {
+				if (ENSURE_VISIBLE) {
 					// This section of code is optional. It has some user
 					// benefit in that moving the crop rectangle against
 					// the edge of the screen causes scrolling but it means

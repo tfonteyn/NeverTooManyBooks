@@ -16,16 +16,12 @@ package com.eleybourn.bookcatalogue.cropper;
  * limitations under the License.
  */
 
-import java.io.Closeable;
-
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.os.Handler;
-import android.os.ParcelFileDescriptor;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -147,15 +143,8 @@ public class CropUtil {
 
 	/**
 	 * Creates a centered bitmap of the desired size. Recycles the input.
-	 *
-	 * @param source
 	 */
-	public static Bitmap extractMiniThumb(Bitmap source, int width, int height) {
-		return CropUtil.extractMiniThumb(source, width, height, true);
-	}
-
-	public static Bitmap extractMiniThumb(Bitmap source, int width, int height,
-			boolean recycle) {
+	public static Bitmap extractMiniThumb(Bitmap source, int width, int height, boolean recycle) {
 		if (source == null) {
 			return null;
 		}
@@ -205,26 +194,6 @@ public class CropUtil {
 		return -1;
 	}
 
-	public static void closeSilently(Closeable c) {
-		if (c == null)
-			return;
-		try {
-			c.close();
-		} catch (Throwable t) {
-			// do nothing
-		}
-	}
-
-	public static void closeSilently(ParcelFileDescriptor c) {
-		if (c == null)
-			return;
-		try {
-			c.close();
-		} catch (Throwable t) {
-			// do nothing
-		}
-	}
-
 	/**
 	 * Make a bitmap from a given Uri.
 	 */
@@ -256,12 +225,6 @@ public class CropUtil {
 			};
 		}
 		return sNullOnClickListener;
-	}
-
-	public static void Assert(boolean cond) {
-		if (!cond) {
-			throw new AssertionError();
-		}
 	}
 
 	private static class BackgroundJob extends
@@ -322,10 +285,5 @@ public class CropUtil {
 		ProgressDialog dialog = ProgressDialog.show(activity, title, message,
 				true, false);
 		new Thread(new BackgroundJob(activity, job, dialog, handler)).start();
-	}
-
-	// Returns Options that set the purgeable flag for Bitmap decode.
-	public static BitmapFactory.Options createNativeAllocOptions() {
-		return new BitmapFactory.Options();
 	}
 }

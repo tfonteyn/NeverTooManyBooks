@@ -16,12 +16,13 @@
 
 package com.eleybourn.bookcatalogue.cropper;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
+
 import java.io.FileDescriptor;
 import java.util.Iterator;
 import java.util.WeakHashMap;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 /**
  * This class provides several utilities to cancel bitmap decoding.
@@ -44,8 +45,8 @@ public class CropBitmapManager {
 	}
 
 	private static class ThreadStatus {
-		public State mState = State.ALLOW;
-		public BitmapFactory.Options mOptions;
+		State mState = State.ALLOW;
+		BitmapFactory.Options mOptions;
 
 		@Override
 		public String toString() {
@@ -77,6 +78,7 @@ public class CropBitmapManager {
 			mWeakCollection.remove(t);
 		}
 
+		@NonNull
 		public Iterator<Thread> iterator() {
 			return mWeakCollection.keySet().iterator();
 		}

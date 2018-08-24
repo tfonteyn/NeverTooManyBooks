@@ -24,6 +24,7 @@ import java.util.concurrent.ExecutionException;
  * simply override the <code>execute()</code> function to provide an
  * implementation of <code>Cancelable</code>.
  */
+@SuppressWarnings("unused")
 public abstract class CropBaseCancelable<T> implements CropCancelable<T> {
 
 	/**
