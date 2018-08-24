@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,7 +93,8 @@ public class Properties implements Iterable<Property> {
 		}
 	}
 
-	@Override
+	@NonNull
+    @Override
 	public Iterator<Property> iterator() {
 		return mList.iterator();
 	}

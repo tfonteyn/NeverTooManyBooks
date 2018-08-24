@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -501,8 +502,9 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
                 super(context, textViewResourceId, items);
         }
 
+        @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         	// Get the view; if not defined, load it.
             View v = convertView;
             if (v == null) {

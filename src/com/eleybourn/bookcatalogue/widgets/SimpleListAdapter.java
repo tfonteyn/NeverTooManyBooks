@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.widgets;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -159,8 +160,9 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 		int getViewId();
 	}
 
-	@Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+	@NonNull
+    @Override
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         // Get the object, if not null, do some processing
         final T o = this.getItem(position);
 

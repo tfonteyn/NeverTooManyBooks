@@ -466,7 +466,7 @@ public class TouchListView extends ListView {
 			v.setImageBitmap(bm);
 			mDragBitmap = bm;
 
-		mWindowManager = (WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
+			mWindowManager = (WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
 			mWindowManager.addView(v, mWindowParams);
 			mDragView = v;
 	}

@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
@@ -424,7 +425,8 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
 	 *
 	 * @return
 	 */
-	public Iterator<BooklistStyle> iterator() {
+	@NonNull
+    public Iterator<BooklistStyle> iterator() {
 		return mList.iterator();
 	}
 

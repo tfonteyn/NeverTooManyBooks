@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.utils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 
@@ -48,7 +49,8 @@ public class AlertDialogUtils {
 			this.name = name;
 			this.handler = handler;
 		}
-		@Override
+		@NonNull
+        @Override
 		public String toString() {
 			return name;
 		}

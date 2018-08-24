@@ -707,7 +707,7 @@ public class Utils {
 	}
 	*/
 
-	/**
+	/*
 	 * Check if phone can connect to a specific host.
 	 * Does not work....
 	 * 

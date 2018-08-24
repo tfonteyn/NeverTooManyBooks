@@ -38,9 +38,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
-import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.BookshelfDialogFragment;
@@ -75,6 +75,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 	public static final int TAB_EDIT = 0;
 	public static final int TAB_EDIT_NOTES = 1;
 	public static final int TAB_EDIT_FRIENDS = 2;
+
 	private String added_genre = "";
 	private String added_series = "";
 	private String added_title = "";

@@ -24,6 +24,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -204,7 +205,8 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 		}
 		
 		/** Return the associated string */
-		public String toString() {
+		@NonNull
+        public String toString() {
 			return mString;
 		}
 		/** Get the ID */

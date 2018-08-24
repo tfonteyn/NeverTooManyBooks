@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import android.os.Handler;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.utils.Logger;
 /**
@@ -248,7 +249,8 @@ public class MessageSwitch<T,U> {
 		 * 
 		 * Side-effect: removes invalid listeners
 		 */
-		@Override
+		@NonNull
+        @Override
 		public Iterator<T> iterator() {
 			ArrayList<T> list = new ArrayList<>();
 			ArrayList<WeakReference<T>> toRemove = null;

@@ -133,7 +133,7 @@ public class Bookshelf extends BookCatalogueListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, INSERT_ID, 0, R.string.menu_insert_bs)
-			.setIcon(R.drawable.ic_action_bookshelf_add)
+			.setIcon(android.R.drawable.ic_menu_add)
 			.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		return true;
 	}

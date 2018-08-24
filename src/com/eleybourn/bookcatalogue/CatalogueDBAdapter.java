@@ -33,6 +33,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQuery;
 import android.graphics.Bitmap;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
@@ -5467,6 +5468,7 @@ public class CatalogueDBAdapter {
 			return mColumns.get(lcName);
 		}
 		
+		@NonNull
 		@Override
 		public Iterator<ColumnInfo> iterator() {
 			return mColumns.values().iterator();

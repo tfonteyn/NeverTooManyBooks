@@ -27,7 +27,6 @@
 			android:layout_height="wrap_content"
 			android:paddingLeft="0sp">
 
-			com.eleybourn.bookcatalogue.widgets.CapitalizedTextView
 			<TextView
 			    android:textAllCaps="true"
 				android:layout_width="wrap_content" 

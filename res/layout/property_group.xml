@@ -5,7 +5,6 @@
     android:gravity="top"
     android:orientation="vertical" >
 
-    <!-- com.eleybourn.bookcatalogue.widgets.CapitalizedTextView -->
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"

@@ -310,7 +310,6 @@
                 style="@style/main_menu_header_divider"
                 />
 
-            <!-- com.eleybourn.bookcatalogue.widgets.SafeSpannedTextView -->
             <TextView
                 android:id="@+id/description"
                 android:layout_width="match_parent"

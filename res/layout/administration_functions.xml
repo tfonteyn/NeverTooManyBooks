@@ -14,7 +14,6 @@
 
         <!-- PREFERENCES Header -->
 
-        <!-- com.eleybourn.bookcatalogue.widgets.CapitalizedTextView -->
         <TextView
             android:textAllCaps="true"
             style="@style/prefs_header"
@@ -62,7 +61,6 @@
 
         <!-- DATA IMPORT/EXPORT -->
 
-        <!-- com.eleybourn.bookcatalogue.widgets.CapitalizedTextView -->
         <TextView
             android:textAllCaps="true"
             style="@style/prefs_header"
@@ -120,7 +118,6 @@
 
         <!-- CREDENTIALS HEADING -->
 
-        <!-- com.eleybourn.bookcatalogue.widgets.CapitalizedTextView -->
         <TextView
             android:textAllCaps="true"
             style="@style/prefs_header"
@@ -142,7 +139,6 @@
 
         <!-- ADVANCED OPTIONS Header -->
 
-        <!-- com.eleybourn.bookcatalogue.widgets.CapitalizedTextView -->
         <TextView
             android:textAllCaps="true"
             style="@style/prefs_header"

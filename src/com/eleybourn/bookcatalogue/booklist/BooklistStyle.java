@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.support.annotation.NonNull;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -516,7 +518,8 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
 	/**
      * Iterable support
      */
-	@Override
+	@NonNull
+    @Override
 	public Iterator<BooklistGroup> iterator() {
 		return mGroups.iterator();
 	}
