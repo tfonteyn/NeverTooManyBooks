@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.datamanager;
 
 import android.os.Bundle;
 
+import com.eleybourn.bookcatalogue.datamanager.validators.DataValidator;
 import com.eleybourn.bookcatalogue.utils.Convert;
 
 import java.io.Serializable;

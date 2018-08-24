@@ -24,6 +24,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
 
+import com.eleybourn.bookcatalogue.datamanager.validators.BlankValidator;
+import com.eleybourn.bookcatalogue.datamanager.validators.DataCrossValidator;
+import com.eleybourn.bookcatalogue.datamanager.validators.DataValidator;
+import com.eleybourn.bookcatalogue.datamanager.validators.FloatValidator;
+import com.eleybourn.bookcatalogue.datamanager.validators.IntegerValidator;
+import com.eleybourn.bookcatalogue.datamanager.validators.NonBlankValidator;
+import com.eleybourn.bookcatalogue.datamanager.validators.OrValidator;
+import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.utils.Convert;
 
 import java.io.Serializable;

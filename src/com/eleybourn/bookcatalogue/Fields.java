@@ -41,7 +41,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
-import com.eleybourn.bookcatalogue.datamanager.ValidatorException;
+import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.Logger;
