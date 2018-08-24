@@ -39,7 +39,6 @@ import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.OnTaskFinishListener;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 
 import java.lang.ref.WeakReference;
@@ -119,8 +118,6 @@ public class StartupActivity extends Activity {
 			System.out.println("Startup isTaskRoot() = " + isTaskRoot());
 		}
 
-        StorageUtils.checkPermissions(this);
-
 		mHasBeenCalled = true;
 		mUiThread = Thread.currentThread();
 
@@ -130,7 +127,7 @@ public class StartupActivity extends Activity {
 			public void onCancel(DialogInterface dialog) {
 				// Cancelling the list cancels the activity.
 				StartupActivity.this.finish();
-			}});			
+			}});
 
 		mWasReallyStartup = mIsReallyStartup;
 
@@ -144,7 +141,7 @@ public class StartupActivity extends Activity {
 
 			// Always enqueue it; it will get a DB and check if required...
 			q.enqueue(new RebuildFtsTask());
-			q.enqueue(new AnalyzeDbTask());				
+			q.enqueue(new AnalyzeDbTask());
 
 			// Remove old logs
 			Logger.clearLog();
@@ -266,26 +263,12 @@ public class StartupActivity extends Activity {
 		}
 	}
 	
-	/**
-	 * Start the main book list
-	 */
-	private void doMyBooks() {
-		Intent i = new Intent(this, BooksOnBookshelf.class);
+	private void doMainActivity(Class nextActivityClass) {
+		Intent i = new Intent(this, nextActivityClass);
 		if (mWasReallyStartup)
 			i.putExtra("startup", true);
-		// XXX: This is nasty, now we use fragments, StartupActivity shoud be a FragmenActivity and load the right fragment
+		// FIXME: This is nasty, now we use fragments, StartupActivity shoud be a FragmenActivity and load the right fragment
 		// then we could do away with the whole isRoot/willBeRoot thing
-		i.putExtra("willBeTaskRoot", isTaskRoot());
-		startActivity(i);
-	}
-	
-	/**
-	 * Start the main menu
-	 */
-	private void doMainMenu() {
-		Intent i = new Intent(this, MainMenu.class);
-		if (mWasReallyStartup)
-			i.putExtra("startup", true);
 		i.putExtra("willBeTaskRoot", isTaskRoot());
 		startActivity(i);
 	}
@@ -346,9 +329,9 @@ public class StartupActivity extends Activity {
 		// Handle startup specially.
 		// Check if we really want to start this activity.
 		if (prefs.getStartInMyBook()) {
-			doMyBooks();
-		} else {			
-			doMainMenu();
+			doMainActivity(BooksOnBookshelf.class);
+		} else {
+			doMainActivity(MainMenu.class);
 		}
 
 		if (mExportRequired) {

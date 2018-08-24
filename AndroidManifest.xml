@@ -5,8 +5,8 @@
     android:installLocation="auto"
     android:versionCode="179"
     android:versionName="5.2.2">
-
-    <!-- 2018-08-20: https://developer.android.com/about/dashboards/
+    <!--
+ 2018-08-20: https://developer.android.com/about/dashboards/
         6+      23  ->  66.5%
         5.1+    22  ->  82.6%
         5.0+    21  ->  86.8%
@@ -25,40 +25,53 @@
 
     <application
         android:name=".BookCatalogueApp"
+        android:allowBackup="true"
         android:icon="@drawable/ic_launcher4"
         android:label="@string/app_name"
         android:logo="@drawable/ic_launcher4"
-        android:theme="@android:style/Theme.Material"
-        android:allowBackup="true"
-        >
+        android:theme="@android:style/Theme.Material">
 
         <!-- application developer keys -->
-        <meta-data android:name="bookcatalogue.amazon.appkey" android:value="my_amazon_key" />
-        <meta-data android:name="bookcatalogue.goodreads.dev_key" android:value="my_goodreads_key" />
-        <meta-data android:name="bookcatalogue.goodreads.dev_secret" android:value="my_goodreads_secret" />
+        <meta-data
+            android:name="bookcatalogue.amazon.appkey"
+            android:value="my_amazon_key" />
+        <meta-data
+            android:name="bookcatalogue.goodreads.dev_key"
+            android:value="my_goodreads_key" />
+        <meta-data
+            android:name="bookcatalogue.goodreads.dev_secret"
+            android:value="my_goodreads_secret" />
 
         <provider
             android:name=".SearchSuggestionProvider"
             android:authorities="com.eleybourn.bookcatalogue.SearchSuggestionProvider" />
 
         <activity
-            android:name=".BookCatalogueClassic"
-            android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-        </activity>
+            android:name="org.acra.CrashReportDialog"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.Dialog" />
 
         <!-- .BookCatalogue is now just a forwarder to .StartupActivity. -->
         <activity
             android:name=".BookCatalogue"
             android:label="@string/app_name" />
+
+        <!--
+            Yet another new application entry point :(
+            This allows us on Android 6+ to force the user to grant the needed permissions
+            without which the app is useless.
+            It will forward to .StartupActivity when granted
+        -->
+        <activity android:name=".StartupWithSplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <!--
             The StartupActivity activity is just a forwarder to the users chosen first screen; does not 
 			rebuild on orientation changes so progress dialogs are easier 
@@ -74,37 +87,30 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name="org.acra.CrashReportDialog"
-            android:excludeFromRecents="true"
-            android:finishOnTaskLaunch="true"
-            android:launchMode="singleInstance"
-            android:theme="@android:style/Theme.Dialog" />
+            android:name=".BookCatalogueClassic"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
 
         <!--
-             The StartupActivity activity is just a forwarder to the users chosen first screen, which could
-			 be the  MainMenu Activity. So in theory it is OK to make is singleInstance  
+             The .StartupActivity activity is just a forwarder to the users chosen first screen, which could
+			 be the .MainMenu or the .BooksOnBookshelf Activity. So in theory it is OK to make is singleInstance
+			    android:launchMode="singleInstance"
         -->
         <activity
             android:name=".MainMenu"
             android:label="@string/app_name" />
-        <!-- android:launchMode="singleInstance" -->
-        <activity android:name=".BookEdit" />
-        <activity
-            android:name=".BookISBNSearch"
-            android:label="@string/title_isbn_search" />
-        <activity android:name=".booklist.BooklistPreferencesActivity" />
-        <activity android:name=".booklist.BooklistStyleGroupsActivity" />
-        <activity
-            android:name=".booklist.BooklistStylePropertiesActivity"
-            android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".booklist.BooklistStylesActivity" />
-        <activity
-            android:name=".Bookshelf"
-            android:label="@string/menu_bookshelf" />
-        <activity
-            android:name=".BookshelfEdit"
-            android:label="@string/title_edit_bs" />
+
         <activity
             android:name=".BooksOnBookshelf"
             android:label="@string/my_books">
@@ -118,10 +124,64 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+
+        <!--
+            all non-startup activities
+         -->
+        <activity
+            android:name=".Bookshelf"
+            android:label="@string/menu_bookshelf" />
+        <activity
+            android:name=".BookshelfEdit"
+            android:label="@string/title_edit_bs" />
+
+        <activity android:name=".BookEdit" />
+        <activity
+            android:name=".BookISBNSearch"
+            android:label="@string/title_isbn_search" />
+
+        <activity android:name=".booklist.BooklistPreferencesActivity" />
+        <activity android:name=".booklist.BooklistStyleGroupsActivity" />
+        <activity
+            android:name=".booklist.BooklistStylePropertiesActivity"
+            android:windowSoftInputMode="stateHidden" />
+
+        <activity android:name=".SearchCatalogue" />
+
+        <!--
+            Admin/prefs etc....
+        -->
+        <activity android:name=".TaskListActivity" />
         <activity android:name=".AdministrationAbout" />
         <activity android:name=".AdministrationDonate" />
         <activity android:name=".AdministrationFunctions" />
+        <activity android:name=".Help" />
 
+        <activity android:name=".booklist.BooklistStylesActivity" />
+        <activity
+            android:name=".FieldVisibility"
+            android:label="@string/menu_manage_fields" />
+        <activity android:name=".OtherPreferences" />
+        <activity android:name=".EditAuthorList" />
+        <activity android:name=".EditSeriesList" />
+        <activity
+            android:name=".UpdateFromInternet"
+            android:label="@string/update_fields" />
+        <activity android:name=".cropper.CropCropImage" />
+        <activity android:name=".filechooser.BackupChooser" />
+        <activity android:name=".compat.BookCatalogueActivity" />
+        <activity android:name=".compat.BookCatalogueListActivity" />
+
+        <!--
+            LibraryThing
+        -->
+        <activity
+            android:name=".AdministrationLibraryThing"
+            android:label="@string/library_thing" />
+
+        <!--
+            Goodreads
+        -->
         <activity
             android:name=".goodreads.GoodreadsRegister"
             android:label="@string/goodreads"
@@ -200,28 +260,14 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".AdministrationLibraryThing"
-            android:label="@string/library_thing" />
+
         <activity android:name=".goodreads.GoodreadsSearchCriteria" />
         <activity android:name=".goodreads.GoodreadsSearchResults" />
         <activity android:name=".goodreads.GoodreadsExportFailuresActivity" />
-        <activity android:name=".SearchCatalogue" />
-        <activity android:name=".TaskListActivity" />
-        <activity android:name=".Help" />
-        <activity
-            android:name=".FieldVisibility"
-            android:label="@string/menu_manage_fields" />
-        <activity android:name=".OtherPreferences" />
-        <activity android:name=".EditAuthorList" />
-        <activity android:name=".EditSeriesList" />
-        <activity
-            android:name=".UpdateFromInternet"
-            android:label="@string/update_fields" />
-        <activity android:name=".cropper.CropCropImage" />
-        <activity android:name="com.eleybourn.bookcatalogue.filechooser.BackupChooser" />
-        <activity android:name=".compat.BookCatalogueActivity" />
-        <activity android:name=".compat.BookCatalogueListActivity" />
+
+        <!--
+            Android Studio will add new ones below
+        -->
     </application>
 
 </manifest>

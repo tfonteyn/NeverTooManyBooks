@@ -26,5 +26,4 @@ public class BookCatalogue extends BookCatalogueActivity {
 		startActivity(i);
 		finish();
 	}
-
 }
