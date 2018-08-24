@@ -20,10 +20,10 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.nio.channels.ClosedByInterruptException;
-
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 import com.eleybourn.bookcatalogue.utils.Logger;
+
+import java.nio.channels.ClosedByInterruptException;
 
 /**
  * Base class for handling tasks in background while displaying a ProgressDialog.
@@ -102,7 +102,7 @@ abstract public class ManagedTask extends Thread {
 	 * 
 	 * @param message	Message to display
 	 */
-	public void doToast(String message) {
+	void doToast(String message) {
 		mManager.doToast(message);
 	}
 

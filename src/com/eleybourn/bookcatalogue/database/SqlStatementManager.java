@@ -20,46 +20,29 @@
 
 package com.eleybourn.bookcatalogue.database;
 
-import java.util.Hashtable;
-
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
+
+import java.util.Hashtable;
 
 /**
  * Utility class to manage the construction and closure of persisted SQLiteStatement obejcts.
  * 
  * @author Philip Warner
  */
-public class SqlStatementManager {
+public class SqlStatementManager implements AutoCloseable {
 	private final Hashtable<String, SynchronizedStatement> mStatements;
 	private final SynchronizedDb mDb;
-	
+
+	public SqlStatementManager() {
+		this(null);
+	}
+
 	public SqlStatementManager(SynchronizedDb db) {
 		mDb = db;
 		mStatements = new Hashtable<>();
 	}
-	public SqlStatementManager() {
-		mDb = null;
-		mStatements = new Hashtable<>();
-	}
-	
-	public SynchronizedStatement add(final SynchronizedDb db, final String name, final String sql) {
-		SynchronizedStatement stmt = db.compileStatement(sql);
-		SynchronizedStatement old = mStatements.get(name);
-		mStatements.put(name, stmt);
-		if (old != null)
-			old.close();
-		return stmt;
-	}
-	
-	public SynchronizedStatement addOrGet(final SynchronizedDb db, final String name, final String sql) {
-		SynchronizedStatement stmt = mStatements.get(name);
-		if (stmt == null) {
-			stmt = this.add(db, name, sql);
-		}
-		return stmt;
-	}
-	
+
 	public SynchronizedStatement get(final String name) {
 		return mStatements.get(name);
 	}
@@ -69,11 +52,28 @@ public class SqlStatementManager {
 			throw new RuntimeException("Database not set when SqlStatementManager created");
 		return add(mDb, name, sql);
 	}
-	
+
+	public SynchronizedStatement add(final SynchronizedDb db, final String name, final String sql) {
+		SynchronizedStatement stmt = db.compileStatement(sql);
+		SynchronizedStatement old = mStatements.get(name);
+		mStatements.put(name, stmt);
+		if (old != null)
+			old.close();
+		return stmt;
+	}
+
 	public SynchronizedStatement addOrGet(String name, String sql) {
 		if (mDb == null)
 			throw new RuntimeException("Database not set when SqlStatementManager created");
 		return addOrGet(mDb, name, sql);
+	}
+
+	public SynchronizedStatement addOrGet(final SynchronizedDb db, final String name, final String sql) {
+		SynchronizedStatement stmt = mStatements.get(name);
+		if (stmt == null) {
+			stmt = add(db, name, sql);
+		}
+		return stmt;
 	}
 	
 	public void close() {

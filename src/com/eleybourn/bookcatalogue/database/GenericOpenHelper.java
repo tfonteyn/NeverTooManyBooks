@@ -89,7 +89,7 @@ public abstract class GenericOpenHelper {
      * @param version number of the database (starting at 1); if the database is older,
      *     {@link #onUpgrade} will be used to upgrade the database
      */
-    public GenericOpenHelper(String dbFilePath, CursorFactory factory, int version) {
+    GenericOpenHelper(String dbFilePath, CursorFactory factory, int version) {
         if (version < 1) throw new IllegalArgumentException("Version must be >= 1, was " + version);
 
         mDbFilePath = dbFilePath;

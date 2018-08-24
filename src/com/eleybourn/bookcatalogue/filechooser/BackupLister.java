@@ -1,15 +1,15 @@
 package com.eleybourn.bookcatalogue.filechooser;
 
+import com.eleybourn.bookcatalogue.backup.BackupManager;
+import com.eleybourn.bookcatalogue.backup.BackupReader;
+import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
+import com.eleybourn.bookcatalogue.utils.Logger;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
-
-import com.eleybourn.bookcatalogue.backup.BackupManager;
-import com.eleybourn.bookcatalogue.backup.BackupReader;
-import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
-import com.eleybourn.bookcatalogue.utils.Logger;
 
 /**
  * Object to provide a FileLister specific to archive files.
@@ -22,10 +22,8 @@ public class BackupLister extends FileLister {
 
 	/**
 	 * Constructor
-	 *
-	 * @param root
 	 */
-	public BackupLister(File root) {
+	BackupLister(File root) {
 		super(root);
 	}
 

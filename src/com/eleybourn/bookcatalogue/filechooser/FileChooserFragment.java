@@ -129,9 +129,9 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 		if (savedInstanceState == null) {
 			mRootPath = new File(getArguments().getString(ARG_ROOT_PATH));
 			String fileName = getArguments().getString(ARG_FILE_NAME);
-			EditText et = getView().findViewById(R.id.file_name);
+			EditText et = root.findViewById(R.id.file_name);
 			et.setText(fileName);
-			((TextView) getView().findViewById(R.id.path)).setText(mRootPath.getAbsolutePath());
+			((TextView) root.findViewById(R.id.path)).setText(mRootPath.getAbsolutePath());
 			tellActivityPathChanged();
 		} else {
 			mRootPath = new File(savedInstanceState.getString(ARG_ROOT_PATH));

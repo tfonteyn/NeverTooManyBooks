@@ -20,6 +20,9 @@
 
 package com.eleybourn.bookcatalogue.database;
 
+import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
+import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,9 +30,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map.Entry;
-
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 
 /**
  * Utilities and classes to make defining databases a little easier and provide synchronization across threads.
@@ -75,9 +75,9 @@ public class DbUtils {
 	 */
 	public static class JoinContext {
 		/** Last table added to join */
-		TableDefinition currentTable;
+		TableDefinition mCurrentTable;
 		/** Text of join statement */
-		final StringBuilder sql;
+		final StringBuilder mSql;
 
 		/**
 		 * Constructor.
@@ -85,8 +85,8 @@ public class DbUtils {
 		 * @param table		Table that starts join
 		 */
 		public JoinContext(TableDefinition table) {
-			currentTable = table;
-			sql = new StringBuilder();
+			mCurrentTable = table;
+			mSql = new StringBuilder();
 		}
 		/**
 		 * Add a new table to the join, connecting it to previous table using foreign keys 
@@ -96,9 +96,9 @@ public class DbUtils {
 		 * @return			Join object (for chaining)
 		 */
 		public JoinContext join(TableDefinition to) {
-			sql.append(currentTable.join(to));
-			sql.append('\n');
-			currentTable = to;
+			mSql.append(mCurrentTable.join(to));
+			mSql.append('\n');
+			mCurrentTable = to;
 			return this;
 		}
 		/**
@@ -110,9 +110,9 @@ public class DbUtils {
 		 * @return			Join object (for chaining)
 		 */
 		public JoinContext join(TableDefinition from, TableDefinition to) {
-			sql.append(from.join(to));
-			sql.append('\n');
-			currentTable = to;
+			mSql.append(from.join(to));
+			mSql.append('\n');
+			mCurrentTable = to;
 			return this;
 		}
 		/**
@@ -123,7 +123,7 @@ public class DbUtils {
 		 * @return			Join object (for chaining)
 		 */
 		public JoinContext leftOuterJoin(TableDefinition to) {
-			sql.append(" left outer ");
+			mSql.append(" left outer ");
 			return join(to);
 		}
 		/**
@@ -135,7 +135,7 @@ public class DbUtils {
 		 * @return			Join object (for chaining)
 		 */
 		public JoinContext leftOuterJoin(TableDefinition from, TableDefinition to) {
-			sql.append(" left outer ");
+			mSql.append(" left outer ");
 			return join(from, to);
 		}
 		/**
@@ -144,7 +144,7 @@ public class DbUtils {
 		 * @return			Join object (for chaining)
 		 */
 		public JoinContext start() {
-			sql.append(currentTable.getName()).append(" ").append(currentTable.getAlias());
+			mSql.append(mCurrentTable.getName()).append(" ").append(mCurrentTable.getAlias());
 			return this;
 		}
 		/**
@@ -156,7 +156,7 @@ public class DbUtils {
 		 * @return			Join object (for chaining)
 		 */
 		public JoinContext append(String sql) {
-			this.sql.append(sql);
+			this.mSql.append(sql);
 			return this;
 		}
 		/**
@@ -164,7 +164,7 @@ public class DbUtils {
 		 */
 		@Override
 		public String toString() {
-			return sql.toString();
+			return mSql.toString();
 		}
 	}
 
@@ -264,7 +264,7 @@ public class DbUtils {
 		/**
 		 * @return indexes on this table.
 		 */
-		public Collection<IndexDefinition> getIndexes() {
+		Collection<IndexDefinition> getIndexes() {
 			return mIndexes.values();
 		}
 		

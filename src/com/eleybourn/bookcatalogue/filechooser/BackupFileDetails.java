@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupInfo;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
@@ -34,17 +33,13 @@ public class BackupFileDetails implements FileDetails {
 
 	/**
 	 * Constructor
-	 *
-	 * @param file
 	 */
-	public BackupFileDetails(File file) {
+	BackupFileDetails(File file) {
 		mFile = file;
 	}
 
 	/**
 	 * Accessor
-	 *
-	 * @param info
 	 */
 	public void setInfo(BackupInfo info) {
 		mInfo = info;
@@ -77,31 +72,30 @@ public class BackupFileDetails implements FileDetails {
 		TextView date = target.findViewById(R.id.date);
 		ImageView image = target.findViewById(R.id.icon);
 		TextView details = target.findViewById(R.id.details);
-		
+
+        Resources res = c.getResources();
 		// For directories, hide the extra data
 		if (mFile.isDirectory()) {
 			date.setVisibility(View.GONE);
 			details.setVisibility(View.GONE);
-			image.setImageDrawable(c.getResources().getDrawable(R.drawable.ic_closed_folder));
+			image.setImageDrawable(res.getDrawable(R.drawable.ic_closed_folder));
 		} else {
 			// Display date and backup details
-			image.setImageDrawable(c.getResources().getDrawable(R.drawable.ic_archive));
+            image.setImageDrawable(res.getDrawable(R.drawable.ic_archive));
 			date.setVisibility(View.VISIBLE);
+			String formattedFleSize = Convert.formatFileSize(mFile.length());
 			if (mInfo != null) {
-				details.setVisibility(View.VISIBLE);
-				Resources res = BookCatalogueApp.getAppContext().getResources();
 				String books = res.getQuantityString(R.plurals.n_books, mInfo.getBookCount(), mInfo.getBookCount());
-				String s;
 				if (mInfo.hasCoverCount()) {
 					String covers = res.getQuantityString(R.plurals.n_covers, mInfo.getCoverCount(), mInfo.getCoverCount());
-					s = res.getString(R.string.a_comma_b, books, covers);
+                    details.setText(res.getString(R.string.a_comma_b, books, covers));
 				} else {
-					s = books;
+                    details.setText(books);
 				}
-				details.setText(s);	
-				date.setText(Convert.formatFileSize(mFile.length()) + ",  " + DateFormat.getDateTimeInstance().format(mInfo.getCreateDate()));
+    			date.setText(res.getString(R.string.a_comma_b, formattedFleSize, DateFormat.getDateTimeInstance().format(mInfo.getCreateDate())));
+                details.setVisibility(View.VISIBLE);
 			} else {
-				date.setText(Convert.formatFileSize(mFile.length()) + ",  " + DateFormat.getDateTimeInstance().format(new Date(mFile.lastModified())));
+				date.setText(res.getString(R.string.a_comma_b, formattedFleSize,DateFormat.getDateTimeInstance().format(new Date(mFile.lastModified()))));
 				details.setVisibility(View.GONE);
 			}
 		}

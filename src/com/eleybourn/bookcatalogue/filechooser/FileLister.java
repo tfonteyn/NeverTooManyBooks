@@ -1,11 +1,5 @@
 package com.eleybourn.bookcatalogue.filechooser;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
 import android.app.Activity;
 
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
@@ -13,14 +7,20 @@ import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
 /**
  * Partially implements a FragmentTask to build a list of files in the background.
  * 
  * @author pjw
  */
 public abstract class FileLister implements FragmentTask {
-	protected ArrayList<FileDetails> dirs;
-	protected final File mRoot;
+	private ArrayList<FileDetails> dirs;
+	private final File mRoot;
 
 	/**
 	 * Interface for the creating activity to allow the resulting list to be returned.
@@ -33,10 +33,8 @@ public abstract class FileLister implements FragmentTask {
 
 	/**
 	 * Constructor
-	 *
-	 * @param root
 	 */
-	public FileLister(File root) {
+	FileLister(File root) {
 		mRoot = root;
 	}
 
