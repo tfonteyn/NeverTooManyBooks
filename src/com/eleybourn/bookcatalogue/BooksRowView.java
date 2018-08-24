@@ -193,6 +193,7 @@ public class BooksRowView {
 	}
 
 	private int mDatePublishedCol = -2;
+	@SuppressWarnings("unused")
 	public final String getDatePublished() {
 		if (mDatePublishedCol < 0) {
 			mDatePublishedCol = mCursor.getColumnIndex(CatalogueDBAdapter.KEY_DATE_PUBLISHED);

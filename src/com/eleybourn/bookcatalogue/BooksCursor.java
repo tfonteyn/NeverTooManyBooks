@@ -24,7 +24,7 @@ import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
 
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
-import com.eleybourn.bookcatalogue.utils.TrackedCursor;
+import com.eleybourn.bookcatalogue.database.TrackedCursor;
 
 import java.util.Hashtable;
 
@@ -38,7 +38,7 @@ import java.util.Hashtable;
  * @author Philip Warner
  *
  */
-public class BooksCursor extends TrackedCursor {
+public class BooksCursor extends TrackedCursor implements AutoCloseable {
 
 	/** Hashmap of selected book IDs */
 	private final Hashtable<Long,Boolean> m_selections = new Hashtable<>();
@@ -94,9 +94,9 @@ public class BooksCursor extends TrackedCursor {
 
 //	/**
 //	 * Snapshot cursor to use with this cursor.
-//	 * 
+//	 *
 //	 * NOT IMPLEMENTED: Android 1.6 SQLite interface does not support getting column types.
-//	 * 
+//	 *
 //	 * @author Philip Warner
 //	 */
 //	public static class BooksSnapshotCursor extends CursorSnapshotCursor {
@@ -105,7 +105,7 @@ public class BooksCursor extends TrackedCursor {
 //		public BooksSnapshotCursor(SQLiteCursor source) {
 //			super(source);
 //		}
-//		
+//
 //		public BooksRowView getRowView() {
 //			if (mView == null)
 //				mView = new BooksRowView(this);

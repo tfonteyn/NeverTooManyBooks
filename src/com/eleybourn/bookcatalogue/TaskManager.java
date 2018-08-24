@@ -197,7 +197,7 @@ public class TaskManager {
 	 * Constructor.
 	 * 
 	 */
-	TaskManager() {
+    public TaskManager() {
 	}
 
 	/**
@@ -446,7 +446,7 @@ public class TaskManager {
 	/**
 	 * Cancel all tasks and close dialogs then cleanup; if no tasks running, just close dialogs and cleanup
 	 */
-	protected void close() {
+	public void close() {
 		if (BuildConfig.DEBUG) {
 			System.out.println("DBG: Task Manager close requested");
 		}

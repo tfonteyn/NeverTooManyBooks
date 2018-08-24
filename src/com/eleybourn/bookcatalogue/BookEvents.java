@@ -35,6 +35,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.goodreads.SendOneBookTask;
+import com.eleybourn.bookcatalogue.utils.BcQueueManager;
 import com.eleybourn.bookcatalogue.utils.HintManager.HintOwner;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 

@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 
+import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExportFailuresActivity;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;

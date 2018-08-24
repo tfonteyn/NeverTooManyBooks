@@ -34,6 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.UpdateFromInternet.FieldUsages.Usages;
+import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.Logger;

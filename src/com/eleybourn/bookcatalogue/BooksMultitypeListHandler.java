@@ -46,6 +46,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogMenuItem;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NetworkException;
 import com.eleybourn.bookcatalogue.goodreads.SendOneBookTask;
+import com.eleybourn.bookcatalogue.utils.BcQueueManager;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;

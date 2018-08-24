@@ -25,7 +25,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.Author;
-import com.eleybourn.bookcatalogue.BcQueueManager;
+import com.eleybourn.bookcatalogue.utils.BcQueueManager;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookData;
 import com.eleybourn.bookcatalogue.BookEditFields;

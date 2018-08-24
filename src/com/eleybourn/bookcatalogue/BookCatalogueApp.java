@@ -38,6 +38,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.TypedValue;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
+import com.eleybourn.bookcatalogue.database.CollationCaseSensitive;
+import com.eleybourn.bookcatalogue.utils.BcQueueManager;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Terminator;
 

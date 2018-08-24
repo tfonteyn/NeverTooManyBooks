@@ -29,7 +29,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.BindableItemListActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
