@@ -115,47 +115,6 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 
 	private SimpleTaskQueue mTaskQueue = null;
 
-	/* Side-step a bug in HONEYCOMB. It seems that startManagingCursor() in honeycomb causes
-	 * child-list cursors for ExpanadableList objects to be closed prematurely. So we seem to have
-	 * to roll our own...see http://osdir.com/ml/Android-Developers/2011-03/msg02605.html.
-	 */
-	private ArrayList<Cursor> mManagedCursors = new ArrayList<>();
-	@Override
-	public void startManagingCursor(Cursor c)
-	{
-		synchronized(mManagedCursors) {
-			if (!mManagedCursors.contains(c))
-				mManagedCursors.add(c);
-		}
-	}
-
-	@Override
-	public void stopManagingCursor(Cursor c)
-	{
-		synchronized(mManagedCursors) {
-			try {
-				mManagedCursors.remove(c);
-			} catch (Exception e) {
-				// Don;t really care if it's called more than once.
-			}
-		}
-	}
-
-	private void destroyManagedCursors()
-	{
-		synchronized(mManagedCursors) {
-			for (Cursor c : mManagedCursors) {
-				try {
-					c.close();
-				} catch (Exception e) {
-					// Don;t really care if it's called more than once or fails.
-				}
-			}
-			mManagedCursors.clear();
-		}
-	}
-
-	private String justAdded = "";
 	private String search_query = "";
 	// These are the states that get saved onPause
 	private static final String STATE_SORT = "state_sort"; 
@@ -353,7 +312,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		 * 
 		 * @return	column number
 		 */
-		abstract public int getSectionNameColum();
+		abstract public int getSectionNameColumn();
 
 		/**
 		 * Get a cursor to retrieve list of children; must be a database cursor
@@ -608,7 +567,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				String[] sections = new String[count];
 				c.moveToFirst();
 				// Get the column number from the cursor column we use for sections.
-				int sectionCol = ViewManager.this.getSectionNameColum();
+				int sectionCol = ViewManager.this.getSectionNameColumn();
 				// Populate the sections
 				for(int i = 0; i < count; i++) {
 					sections[i] = c.getString(sectionCol);
@@ -670,7 +629,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return mCursor;
 		}
 		@Override
-		public int getSectionNameColum() {
+		public int getSectionNameColumn() {
 			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
 		}
 	}
@@ -701,7 +660,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return mCursor;
 		}
 		@Override
-		public int getSectionNameColum() {
+		public int getSectionNameColumn() {
 			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_AUTHOR_FORMATTED);
 		}
 	}
@@ -732,7 +691,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return mCursor;
 		}
 		@Override
-		public int getSectionNameColum() {
+		public int getSectionNameColumn() {
 			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 		}
 	}
@@ -763,7 +722,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return mCursor;
 		}
 		@Override
-		public int getSectionNameColum() {
+		public int getSectionNameColumn() {
 			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_AUTHOR_FORMATTED);
 		}
 	}
@@ -793,7 +752,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return mCursor;
 		}
 		@Override
-		public int getSectionNameColum() {
+		public int getSectionNameColumn() {
 			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_SERIES_NAME);
 		}
 	}
@@ -818,7 +777,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return mCursor;
 		}
 		@Override
-		public int getSectionNameColum() {
+		public int getSectionNameColumn() {
 			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
 		}
 	}
@@ -843,7 +802,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return mCursor;
 		}
 		@Override
-		public int getSectionNameColum() {
+		public int getSectionNameColumn() {
 			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
 		}
 	}
@@ -878,7 +837,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return mCursor;
 		}
 		@Override
-		public int getSectionNameColum() {
+		public int getSectionNameColumn() {
 			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
 		}
 	}
@@ -913,7 +872,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return mCursor;
 		}
 		@Override
-		public int getSectionNameColum() {
+		public int getSectionNameColumn() {
 			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
 		}
 	}
@@ -1610,9 +1569,9 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			try {
 				// Use the ADDED_* fields if present.
 				if (intent != null && intent.hasExtra(BookEdit.ADDED_HAS_INFO)) {
+					String justAdded;
 					switch (sort) {
 						case SORT_TITLE:
-                            String justAdded;
                         {
 							justAdded = intent.getStringExtra(BookEdit.ADDED_TITLE);
 							int position = mDbHelper.fetchBookPositionByTitle(justAdded, bookshelf);

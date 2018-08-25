@@ -36,8 +36,6 @@ import android.widget.Toast;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueListActivity;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
 
-import java.util.ArrayList;
-
 /*
  * A book catalogue application that integrates with Google Books.
  */
@@ -47,46 +45,6 @@ public class Bookshelf extends BookCatalogueListActivity {
 	private CatalogueDBAdapter mDbHelper;
 	private static final int INSERT_ID = Menu.FIRST;
 	private static final int DELETE_ID = Menu.FIRST + 1;
-
-	/* Side-step a bug in HONEYCOMB. It seems that startManagingCursor() in honeycomb causes
-	 * child-list cursors for ExpandableList objects to be closed prematurely. So we seem to have
-	 * to roll our own...see http://osdir.com/ml/Android-Developers/2011-03/msg02605.html.
-	 */
-	private ArrayList<Cursor> mManagedCursors = new ArrayList<>();
-	@Override
-	public void startManagingCursor(Cursor c)
-	{
-		synchronized(mManagedCursors) {
-			if (!mManagedCursors.contains(c))
-				mManagedCursors.add(c);
-		}
-	}
-
-	@Override
-	public void stopManagingCursor(Cursor c)
-	{
-		synchronized(mManagedCursors) {
-			try {
-				mManagedCursors.remove(c);
-			} catch (Exception e) {
-				// Don;t really care if it's called more than once.
-			}
-		}
-	}
-
-	private void destroyManagedCursors()
-	{
-		synchronized(mManagedCursors) {
-			for (Cursor c : mManagedCursors) {
-				try {
-					c.close();
-				} catch (Exception e) {
-					// Don;t really care if it's called more than once or fails.
-				}
-			}
-			mManagedCursors.clear();
-		}
-	}
 
 	/** Called when the activity is first created. */
 	@Override
@@ -116,6 +74,7 @@ public class Bookshelf extends BookCatalogueListActivity {
 		
 		// Get all of the rows from the database and create the item list
 		Cursor BookshelfCursor = mDbHelper.fetchAllBookshelves();
+        //FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
 		startManagingCursor(BookshelfCursor);
 
 		// Create an array to specify the fields we want to display in the list
@@ -125,6 +84,7 @@ public class Bookshelf extends BookCatalogueListActivity {
 		int[] to = new int[]{R.id.row_bookshelf};
 		
 		// Now create a simple cursor adapter and set it to display
+		//FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
 		SimpleCursorAdapter books = new SimpleCursorAdapter(this, layout, BookshelfCursor, from, to);
 		setListAdapter(books);
 	}
@@ -191,7 +151,6 @@ public class Bookshelf extends BookCatalogueListActivity {
 	
 	@Override
 	protected void onDestroy() {
-		destroyManagedCursors();
 		super.onDestroy();
 		mDbHelper.close();
 	}

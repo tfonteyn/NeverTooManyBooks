@@ -42,6 +42,8 @@ public class MultitypeListAdapter extends CursorAdapter implements SectionIndexe
 	private final LayoutInflater mInflater;
 	private final MultitypeListHandler mHandler;
 
+	//FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
+
 	MultitypeListAdapter(Context context, Cursor c, MultitypeListHandler handler) {
 		super(context, c);
 		mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
