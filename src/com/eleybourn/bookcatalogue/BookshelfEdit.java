@@ -96,11 +96,6 @@ public class BookshelfEdit extends BookCatalogueActivity {
 	}
 	
 	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-	
-	@Override
 	protected void onResume() {
 		super.onResume();
 		populateFields();

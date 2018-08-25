@@ -53,7 +53,7 @@ public abstract class CropBaseCancelable<T> implements CropCancelable<T> {
 	private CropCancelable<?> mCurrentTask;
 	private Thread mThread;
 
-	protected abstract T execute() throws Exception;
+	protected abstract T execute();
 
 	protected synchronized void interruptNow() {
 		if (isInStates(STATE_CANCELING | STATE_EXECUTING)) {
@@ -101,7 +101,7 @@ public abstract class CropBaseCancelable<T> implements CropCancelable<T> {
 		}
 		try {
 			mResult = execute();
-		} catch (CancellationException | InterruptedException e) {
+		} catch (CancellationException  e) {
 			mState = STATE_CANCELED;
 		} catch (Throwable error) {
 			synchronized (this) {

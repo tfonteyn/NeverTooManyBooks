@@ -237,7 +237,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 			// If the search is dirty, make sure idle timer is running and update UI
 			if (mSearchDirty) {
 				TextView booksFound = SearchCatalogue.this.findViewById(R.id.books_found);
-				booksFound.setText("(waiting for idle)");
+				booksFound.setText(getResources().getString(R.string.waiting_for_idle));
 				startIdleTimer(); // (if not started)				
 			}
 		}

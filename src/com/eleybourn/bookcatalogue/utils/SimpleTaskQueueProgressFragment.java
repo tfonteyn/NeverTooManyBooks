@@ -222,7 +222,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
 	 */
 	public interface FragmentTask {
 		/** Run the task in it's own thread */
-        void run(SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) throws Exception;
+        void run(SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext);
 		/** Called in UI thread after task complete  TODO*/
         void onFinish(SimpleTaskQueueProgressFragment fragment, Exception exception);
 	}

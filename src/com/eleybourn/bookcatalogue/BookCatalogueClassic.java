@@ -575,7 +575,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 					if (sort == SORT_SERIES || series.isEmpty()) {
 						holder.series.view.setText("");						
 					} else {
-						holder.series.view.setText("[" + series + "]");						
+						holder.series.view.setText(getResources().getString(R.string.brackets, series));
 					}					
 				}
 

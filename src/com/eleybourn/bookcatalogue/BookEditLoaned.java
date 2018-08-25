@@ -113,12 +113,6 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
 		}
 	}
 	
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-	}
-
-
 	/**
 	 * Display the loan to page. It is slightly different to the existing loan page
 	 */
