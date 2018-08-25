@@ -19,7 +19,7 @@
  */
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.Menu;
@@ -70,7 +70,7 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
 		ArrayList<String> getPublishers();
 	}
 
-	/** A link to the BookEditManager for this fragment (the activity) */
+	/** A link to the {@link BookEditManager} for this fragment (the activity) */
 	protected BookEditManager mEditManager;
 	/** Database instance */
 	protected CatalogueDBAdapter mDbHelper;
@@ -82,14 +82,14 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
 	}
 
 	@Override
-	public void onAttach(Activity a) {
-		super.onAttach(a);
+	public void onAttach(Context context) {
+		super.onAttach(context);
 
-		if (! (a instanceof BookEditManager))
-			throw new RuntimeException("Activity " + a.getClass().getSimpleName() + " must implement BookEditManager");
+		if (! (context instanceof BookEditManager))
+			throw new RuntimeException("Activity " + context.getClass().getSimpleName() + " must implement BookEditManager");
 		
-		mEditManager = (BookEditManager)a;
-		mDbHelper = new CatalogueDBAdapter(a);
+		mEditManager = (BookEditManager)context;
+		mDbHelper = new CatalogueDBAdapter(context);
 		mDbHelper.open();
 	}
 
@@ -107,7 +107,7 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
 		super.onCreateOptionsMenu(menu, inflater);
 		//menu.clear();
 		final Long currRow = mEditManager.getBookData().getRowId();
-		if (currRow != null && currRow != 0) {
+		if (currRow != 0) {
 			MenuItem delete = menu.add(0, DELETE_ID, 0, R.string.menu_delete);
 			delete.setIcon(android.R.drawable.ic_menu_delete);
 
@@ -233,7 +233,7 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
 
 	/**
 	 * Called to load data from the BookData object when needed.
-	 * 
+	 *
 	 * @param book			BookData to load from
 	 * @param setAllDone	Flag indicating setAll() has already been called on the mFields object
 	 */
@@ -301,7 +301,8 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
 	 *
 	 * @return The resulting visibility setting value (VISIBLE or GONE)
 	 */
-	protected int showHideField(boolean hideIfEmpty, int resId, int...relatedFields) {
+	@SuppressWarnings("UnusedReturnValue")
+    protected int showHideField(boolean hideIfEmpty, int resId, int...relatedFields) {
 		// Get the base view
 		final View v = getView().findViewById(resId);
 		int visibility;
@@ -330,7 +331,7 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
 			}
 		}
 		return visibility;
-	}	
+	}
 
 	/**
 	 * Hides unused fields if they have not any useful data. Checks all text fields
