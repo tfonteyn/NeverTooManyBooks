@@ -85,22 +85,21 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
 	public BooklistStyles() {
 		mPreferredStyleNames = new HashSet<>();
 		mPreferredStyleList = new ArrayList<>();
-		getPreferredStyleNames(mPreferredStyleNames, mPreferredStyleList);
+		getPreferredStyleNames(mPreferredStyleNames);
 	}
 
 	/**
 	 * Fill in the passed objects with the canonical names of the preferred styles
 	 * from user preferences.
+	 *  @param hash        Hashtable of names
 	 *
-	 * @param hash		Hashtable of names
-	 * @param list
 	 */
-	private static void getPreferredStyleNames(HashSet<String> hash, ArrayList<String> list) {
+	private static void getPreferredStyleNames(HashSet<String> hash) {
 
 		BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
 		String itemStr = prefs.getString(PREF_MENU_ITEMS, null);
 		if (itemStr != null && !itemStr.equals("")) {
-			list = Convert.decodeList(itemStr, '|');
+			ArrayList<String> list = Convert.decodeList(itemStr, '|');
 			for(int i = 0; i < list.size(); i++) {
 				String name = list.get(i);
 				if (name != null && !name.isEmpty() && !hash.contains(name))

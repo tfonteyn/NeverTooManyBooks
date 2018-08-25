@@ -1,8 +1,8 @@
 package com.eleybourn.bookcatalogue.baseactivity;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -13,29 +13,21 @@ import com.eleybourn.bookcatalogue.R;
 import java.util.Locale;
 
 /**
- * Class introduced to reduce the future pain when we remove sherlock (once we no longer 
- * support Android 2.x), and potentially to make it easier to support two versions.
- * 
- * This activity inherits from SherlockActivity which is just a subclass of
- * the compatibility library Activity which should be fairly compatible with
- * Activity in API 11+.
- * 
+ * Base class for all (most) Activity's
+ *
  * @author pjw
  */
-abstract public class BookCatalogueActivity extends Activity {
+abstract public class BookCatalogueActivity extends AppCompatActivity {
     /**
      * NEWKIND: add new supported themes here and in R.array.supported_themes,
      * the string-array order must match the THEMES order
      * The preferences choice will be build according to the string-array list/order.
      */
     protected static final int DEFAULT_THEME = 0;
+
     protected static final int[] THEMES = {
-            R.style.AppThemeMaterial,
-            R.style.AppThemeMaterialLight,
-            R.style.AppThemeHolo,
-            R.style.AppThemeHoloLight,
-            R.style.AppThemeDeviceDefault,
-            R.style.AppThemeDeviceDefaultLight
+            R.style.ThemeDark,
+            R.style.ThemeLight
     };
 
     /** Last locale used so; cached so we can check if it has genuinely changed */
@@ -46,16 +38,20 @@ abstract public class BookCatalogueActivity extends Activity {
     /** when a locale or theme is changed, a restart of the activity is needed */
     private boolean mReloadOnResume = false;
 
-	@Override
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 
         setTheme(THEMES[mLastTheme]);
         super.onCreate(savedInstanceState);
 
-        ActionBar bar = getActionBar();
+        ActionBar bar = getSupportActionBar();
         if (bar != null) {
-        	// Show home, use logo (bigger) and show title
-        	bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO | ActionBar.DISPLAY_SHOW_TITLE);
+            /** TODO: using {@link android.support.v7.app.ActionBar} we need to set this explicitly, why ?*/
+            bar.setIcon(BookCatalogueApp.getAppContext().getApplicationInfo().icon);
+            //bar.setDisplayUseLogoEnabled(true);
+
+            bar.setDisplayShowTitleEnabled(true);
+            bar.setDisplayShowHomeEnabled(true);
         	// Don't display the 'back' decoration if we are not at the top
     		bar.setDisplayHomeAsUpEnabled(! (this.isTaskRoot() || getIntent().getBooleanExtra("willBeTaskRoot", false) ) );
         }

@@ -26,7 +26,7 @@ public class BookCataloguePreferences {
 	public static final String PREF_CROP_FRAME_WHOLE_IMAGE = "App.CropFrameWholeImage";
 	/** Force list construction to compatible mode (compatible with Android 1.6) */
 	public static final String PREF_BOOKLIST_GENERATION_MODE = "App.BooklistGenerationMode";
-	/** Is book info opened in read-only mode. Default is false (opened in edit mode) */
+	/** Is book info opened in read-only mode. */
 	public static final String PREF_OPEN_BOOK_READ_ONLY = "App.OpenBookReadOnly";
 	/** Last full backup date */
 	public static final String PREF_LAST_BACKUP_DATE = "Backup.LastDate";

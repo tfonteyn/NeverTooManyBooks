@@ -19,10 +19,10 @@
  */
 package com.eleybourn.bookcatalogue.dialogs;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 
 /**
  * Fragment wrapper for the PartialDatePicker dialog
@@ -65,7 +65,7 @@ public class TextFieldEditorFragment extends DialogFragment {
 	 * Ensure activity supports event
 	 */
 	@Override
-	public void onAttach(Activity a) {
+	public void onAttach(Context a) {
 		super.onAttach(a);
 
 		if (! (a instanceof OnTextFieldEditorListener))

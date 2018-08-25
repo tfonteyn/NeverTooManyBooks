@@ -23,12 +23,13 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 
-abstract class CropImageViewTouchBase extends android.support.v7.widget.AppCompatImageView {
+abstract class CropImageViewTouchBase extends AppCompatImageView {
 
 	/** Maximum upscaling for a viewed image */
 	private static final float SCALE_LIMIT_MAX = Float.MAX_VALUE;
@@ -38,7 +39,7 @@ abstract class CropImageViewTouchBase extends android.support.v7.widget.AppCompa
 
 	// This is the base transformation which is used to show the image
 	// initially. The current computation for this shows the image in
-	// it's entirety, letterboxing as needed. One could choose to
+	// it's entirety, letter boxing as needed. One could choose to
 	// show the image as cropped instead.
 	//
 	// This matrix is recomputed when we go from the thumbnail image to

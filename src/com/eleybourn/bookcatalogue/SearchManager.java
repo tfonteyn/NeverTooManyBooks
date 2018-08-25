@@ -420,7 +420,7 @@ public class SearchManager implements TaskManagerListener {
 
 		if (authors != null && !authors.isEmpty()) {
 			// Decode the collected author names and convert to an ArrayList
-			ArrayList<Author> aa = Convert.decodeList(authors, '|', false);
+			ArrayList<Author> aa = (ArrayList<Author>) Convert.decodeList(authors, '|', false);
 			mBookData.putSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, aa);			
 		}
 
@@ -631,7 +631,7 @@ public class SearchManager implements TaskManagerListener {
 	protected static class TaskSwitch extends MessageSwitch<SearchListener, SearchController> {}
 
     private static final TaskSwitch mMessageSwitch = new TaskSwitch();
-	protected static final TaskSwitch getMessageSwitch() { return mMessageSwitch; }
+	protected static TaskSwitch getMessageSwitch() { return mMessageSwitch; }
 
 	private final long mMessageSenderId = mMessageSwitch.createSender(mController);
 	public long getSenderId() { return mMessageSenderId; }

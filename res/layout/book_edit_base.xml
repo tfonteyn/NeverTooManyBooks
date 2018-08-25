@@ -2,8 +2,24 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical" >
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tabpanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        />
+
+    <LinearLayout
+        android:id="@+id/fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/buttons"
+        android:layout_below="@+id/tabpanel"
+        android:gravity="fill"
+        android:orientation="horizontal" />
 
     <LinearLayout
         android:id="@+id/buttons"
@@ -30,13 +46,6 @@
             style="?android:attr/buttonBarButtonStyle" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/fragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/buttons"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical" >
-    </LinearLayout>
+
 
 </RelativeLayout>

@@ -17,6 +17,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 
 public class BCBackground {
     private BCBackground() {
@@ -49,11 +50,26 @@ public class BCBackground {
      * Set the background based on user preferences
      */
     public static void init(Activity a) {
+        if (BuildConfig.DEBUG) {
+            System.out.println("BCBackground.init(Activity)");
+        }
         init(a,false);
     }
+
     public static void init(Fragment f) {
+        if (BuildConfig.DEBUG) {
+            System.out.println("BCBackground.init(Fragment)");
+        }
         init(f.getActivity(), false);
     }
+
+    public static void init(android.support.v4.app.Fragment f) {
+        if (BuildConfig.DEBUG) {
+            System.out.println("BCBackground.init(android.support.v4.app.Fragment)");
+        }
+        init(f.getActivity(), false);
+    }
+
     public static void init(Activity a, boolean bright) {
         View root = a.findViewById(R.id.root);
         init(root,bright);

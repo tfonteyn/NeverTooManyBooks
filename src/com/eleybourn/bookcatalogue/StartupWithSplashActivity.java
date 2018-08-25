@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue;
 
+import android.Manifest;
 import android.os.Bundle;
 
 public class StartupWithSplashActivity extends SplashPermissionsActivity {
@@ -19,5 +20,19 @@ public class StartupWithSplashActivity extends SplashPermissionsActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splashscreen);
+    }
+
+    /**
+     * Minimally needed.
+     * - WRITE_EXTERNAL_STORAGE
+     *
+     * Other permissions fail gracefully.
+     * - READ_CONTACTS
+     *
+     * @return
+     */
+    @Override
+    protected String[] getRequiredPermissions() {
+        return new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
     }
 }

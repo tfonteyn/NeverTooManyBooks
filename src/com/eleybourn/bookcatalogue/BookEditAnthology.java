@@ -61,7 +61,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 	private AutoCompleteTextView mAuthorText;
 	private String bookAuthor;
 	private String bookTitle;
-	private Button mAdd = (Button) getView().findViewById(R.id.row_add);
+	private Button mAdd;
 	private CheckBox mSame;
 	private Integer mEditPosition = null;
 	int anthology_num = CatalogueDBAdapter.ANTHOLOGY_NO;
@@ -124,6 +124,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 		}
 		mTitleText = getView().findViewById(R.id.add_title);
 
+		mAdd = getView().findViewById(R.id.row_add);
 		mAdd.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				try {

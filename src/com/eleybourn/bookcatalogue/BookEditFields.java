@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.SQLException;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -88,51 +89,54 @@ public class BookEditFields extends BookDetailsAbstract
 	 * Display the edit fields page
 	 */
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.edit_book, container, false);
 	}
 
 	public void onActivityCreated(Bundle savedInstanceState) {
 		Tracker.enterOnActivityCreated(this);
-		double t0 = System.currentTimeMillis();
+		double t0 = 0;
 		double t1 = 0;
-		double t2 = 0;
 
 		try {
-			t1 = System.currentTimeMillis();
+			if (BuildConfig.DEBUG) {
+				t0 = System.currentTimeMillis();
+			}
 			super.onActivityCreated(savedInstanceState);
-			t2 = System.currentTimeMillis();
+			if (BuildConfig.DEBUG) {
+				t1 = System.currentTimeMillis();
+			}
 			
 			if (savedInstanceState != null) {
 				mEditManager.setDirty(savedInstanceState.getBoolean("Dirty"));
 			}
 
 			//Set click listener on Author field
-			View v = getView().findViewById(R.id.author); //Reusable view for setting listeners
-			v.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Intent i = new Intent(getActivity(), EditAuthorList.class);
-					i.putExtra(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, mEditManager.getBookData().getAuthorList());
-					i.putExtra(CatalogueDBAdapter.KEY_ROWID, mEditManager.getBookData().getRowId());
-					i.putExtra("title_label", CatalogueDBAdapter.KEY_TITLE);
-					i.putExtra("title", mFields.getField(R.id.title).getValue().toString());
-					startActivityForResult(i, ACTIVITY_EDIT_AUTHORS);
-				}
+			getView().findViewById(R.id.author)
+                .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                            Intent i = new Intent(getActivity(), EditAuthorList.class);
+                            i.putExtra(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, mEditManager.getBookData().getAuthorList());
+                            i.putExtra(CatalogueDBAdapter.KEY_ROWID, mEditManager.getBookData().getRowId());
+                            i.putExtra("title_label", CatalogueDBAdapter.KEY_TITLE);
+                            i.putExtra("title", mFields.getField(R.id.title).getValue().toString());
+                            startActivityForResult(i, ACTIVITY_EDIT_AUTHORS);
+                    }
 			});
 			
 			//Set click listener on Series field
-			v = getView().findViewById(R.id.series);
-			v.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Intent i = new Intent(getActivity(), EditSeriesList.class);
-					i.putExtra(CatalogueDBAdapter.KEY_SERIES_ARRAY, mEditManager.getBookData().getSeriesList());
-					i.putExtra(CatalogueDBAdapter.KEY_ROWID, mEditManager.getBookData().getRowId());
-					i.putExtra("title_label", CatalogueDBAdapter.KEY_TITLE);
-					i.putExtra("title", mFields.getField(R.id.title).getValue().toString());
-					startActivityForResult(i, ACTIVITY_EDIT_SERIES);
-				}
+			getView().findViewById(R.id.series)
+			    .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(getActivity(), EditSeriesList.class);
+                        i.putExtra(CatalogueDBAdapter.KEY_SERIES_ARRAY, mEditManager.getBookData().getSeriesList());
+                        i.putExtra(CatalogueDBAdapter.KEY_ROWID, mEditManager.getBookData().getRowId());
+                        i.putExtra("title_label", CatalogueDBAdapter.KEY_TITLE);
+                        i.putExtra("title", mFields.getField(R.id.title).getValue().toString());
+                        startActivityForResult(i, ACTIVITY_EDIT_SERIES);
+				    }
 			});
 			
 			ArrayAdapter<String> publisher_adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getPublishers());
@@ -221,7 +225,7 @@ public class BookEditFields extends BookDetailsAbstract
 
 		if (BuildConfig.DEBUG) {
 			double tn = System.currentTimeMillis();
-			System.out.println("BEF oAC(super): " + (t2 - t1));
+			System.out.println("BEF oAC(super): " + (t1 - t0));
 			System.out.println("BEF oAC: " + (tn - t0));
 		}
 
@@ -230,16 +234,16 @@ public class BookEditFields extends BookDetailsAbstract
 	private void showDescriptionDialog() {
 		Object o = mFields.getField(R.id.description).getValue();
 		String description = (o == null? null : o.toString());
-		TextFieldEditorFragment dlg = TextFieldEditorFragment.newInstance(R.id.description, R.string.description, description);
-		dlg.show(getFragmentManager(), null);
+		TextFieldEditorFragment.newInstance(R.id.description, R.string.description, description)
+		    .show(getFragmentManager(), null);
 	}
 
 	private void showDatePublishedDialog() {
-		PartialDatePickerFragment frag = PartialDatePickerFragment.newInstance();
-		frag.setDate(mFields.getField(R.id.date_published).getValue());
-		frag.setTitle(R.string.date_published);
-		frag.setDialogId(R.id.date_published); // Set to the destination field ID
-		frag.show(getFragmentManager(), null);
+		PartialDatePickerFragment.newInstance()
+		    .setDate(mFields.getField(R.id.date_published).getValue())
+		    .setTitle(R.string.date_published)
+		    .setDialogId(R.id.date_published) /** Set to the destination field ID */
+		    .show(getFragmentManager(), null);
 	}
 
 	/**
@@ -320,7 +324,6 @@ public class BookEditFields extends BookDetailsAbstract
 		cb.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				mEditManager.setShowAnthology(cb.isChecked());
-				//saveState(new DoAnthologyAction(cb.isChecked()));
 			}
 		});
 	}
@@ -370,14 +373,13 @@ public class BookEditFields extends BookDetailsAbstract
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
+	public void onSaveInstanceState(@NonNull Bundle outState) {
 		Tracker.enterOnSaveInstanceState(this);
 
 		super.onSaveInstanceState(outState);
 
 		Tracker.exitOnSaveInstanceState(this);
 	}
-
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {

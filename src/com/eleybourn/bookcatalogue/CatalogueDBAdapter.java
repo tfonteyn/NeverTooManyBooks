@@ -4660,7 +4660,6 @@ public class CatalogueDBAdapter {
 		
 		try {
 			mPurgeAuthorsStmt.execute();
-			success = success && true;
 		} catch (Exception e) {
 			Logger.logError(e, "Failed to purge Authors");
 			success = false;
@@ -4700,7 +4699,6 @@ public class CatalogueDBAdapter {
 		// Delete series entries with no Book_Series
 		try {
 			mPurgeSeriesStmt.execute();
-			success = success && true;
 		} catch (Exception e) {
 			Logger.logError(e, "Failed to purge Book Authors");
 			success = false;

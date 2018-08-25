@@ -103,6 +103,12 @@ public class Tracker {
 	public static void exitOnSaveInstanceState(Object a) {
 		handleEvent(a,"OnSaveInstanceState", States.Exit);
 	}
+	public static void enterFunction(Object a, String name) {
+        handleEvent(a,name, States.Enter);
+    }
+    public static void exitFunction(Object a, String name) {
+        handleEvent(a,name, States.Exit);
+    }
 
 	public static void handleEvent(Object o, String name, States type) {
 		Event e = new Event(o, name, type);

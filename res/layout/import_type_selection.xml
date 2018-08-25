@@ -15,7 +15,7 @@
             android:id="@+id/import_books_blurb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="15dp"
+            android:paddingBottom="@dimen/padding_border_triple"
             android:text="@string/import_books_blurb"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 

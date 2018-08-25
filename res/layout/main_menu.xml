@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:paddingStart="@dimen/padding_border_double"
         android:paddingEnd="@dimen/padding_border_double"
-        android:paddingTop="15dp"
+        android:paddingTop="@dimen/padding_border_triple"
         tools:ignore="UselessParent">
 
         <LinearLayout

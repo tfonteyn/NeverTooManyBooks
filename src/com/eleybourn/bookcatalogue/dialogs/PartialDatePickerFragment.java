@@ -19,10 +19,10 @@
  */
 package com.eleybourn.bookcatalogue.dialogs;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 
 /**
  * Fragment wrapper for the PartialDatePicker dialog
@@ -64,7 +64,7 @@ public class PartialDatePickerFragment extends DialogFragment {
 	 * Check the activity supports the interface
 	 */
 	@Override
-	public void onAttach(Activity a) {
+	public void onAttach(Context a) {
 		super.onAttach(a);
 
 		if (! (a instanceof OnPartialDatePickerListener))
@@ -98,8 +98,9 @@ public class PartialDatePickerFragment extends DialogFragment {
         return editor;
     }
 
-	public void setDialogId(int id) {
+	public PartialDatePickerFragment setDialogId(int id) {
 		mDialogId = id;
+		return this;
 	}
 
 	public int getDialogId() {
@@ -107,16 +108,17 @@ public class PartialDatePickerFragment extends DialogFragment {
 	}
 
 	/** Accessor. Update dialog if available. */
-	public void setTitle(int title) {
+	public PartialDatePickerFragment setTitle(int title) {
 		mTitleId = title;
 		PartialDatePicker d = (PartialDatePicker)getDialog();
 		if (d != null) {
 			d.setTitle(mTitleId);		
 		}
+		return this;
 	}
 
 	/** Accessor. Update dialog if available. */
-	public void setDate(Integer year, Integer month, Integer day) {
+	public PartialDatePickerFragment setDate(Integer year, Integer month, Integer day) {
     	mYear = year;
     	mMonth = month;
     	mDay = day;
@@ -124,6 +126,7 @@ public class PartialDatePickerFragment extends DialogFragment {
 		if (d != null) {
 			d.setDate(mYear, mMonth, mDay);		
 		}
+		return this;
 	}
 
 	@Override 
@@ -171,7 +174,7 @@ public class PartialDatePickerFragment extends DialogFragment {
 	/**
 	 * @param current	Current date (may be null)
 	 */
-	public void setDate(Object current) {
+	public PartialDatePickerFragment setDate(Object current) {
 		String dateString = current == null ? "" : current.toString();
 
 		// get the current date
@@ -188,5 +191,6 @@ public class PartialDatePickerFragment extends DialogFragment {
 		}
 
 		setDate(yyyy, mm, dd);
+		return this;
 	}
 }

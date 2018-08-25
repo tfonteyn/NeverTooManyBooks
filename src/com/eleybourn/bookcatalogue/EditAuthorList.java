@@ -70,7 +70,9 @@ public class EditAuthorList extends EditObjectList<Author> {
 		super.onCreate(savedInstanceState);
 		try {
 			// Setup autocomplete for author name
-			ArrayAdapter<String> author_adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, mDbHelper.getAllAuthors());
+			ArrayAdapter<String> author_adapter = new ArrayAdapter<>(this,
+					android.R.layout.simple_dropdown_item_1line,
+					mDbHelper.getAllAuthors());
 			((AutoCompleteTextView)this.findViewById(R.id.author)).setAdapter(author_adapter);
 		} catch (Exception e) {
 			Logger.logError(e);

@@ -1224,7 +1224,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		// MenuHandler handles the 'standard' items, we just handle local items.
-//		if (mMenuHandler == null || !mMenuHandler.onMenuItemSelected(this, featureId, item)) {
+//		if (mMenuHandler == null || !mMenuHandler.onOptionsItemSelected(this, featureId, item)) {
 //			switch(item.getItemId()) {
 //			case SORT_BY_AUTHOR_COLLAPSED:
 //				expandAll();
@@ -1573,7 +1573,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	public boolean onChildClick(ExpandableListView l, View v, int position, int childPosition, long id) {
 		boolean result = super.onChildClick(l, v, position, childPosition, id);
 		adjustCurrentGroup(position, 1, true, false);
-		BookEdit.openBook(this, id, null, null);
+		BookEdit.openBook(this, id);
 		return result;
 	}
 	

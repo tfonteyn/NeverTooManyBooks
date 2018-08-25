@@ -105,8 +105,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/padding_border"
-                android:paddingEnd="15dp"
-                android:paddingStart="15dp"
+                android:paddingEnd="@dimen/padding_border_triple"
+                android:paddingStart="@dimen/padding_border_triple"
                 android:text="@string/translators_blurb"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -123,8 +123,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/padding_border"
-                android:paddingEnd="15dp"
-                android:paddingStart="15dp"
+                android:paddingEnd="@dimen/padding_border_triple"
+                android:paddingStart="@dimen/padding_border_triple"
                 android:text="@string/hint_amazon_links_blurb"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </LinearLayout>

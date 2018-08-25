@@ -20,14 +20,14 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.io.Serializable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.io.Serializable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class to hold book-related series data. Used in lists and import/export.
@@ -40,6 +40,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 	public String 	name;
 	public String	num;
 
+	@SuppressWarnings("")
 	private final Pattern mPattern = Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
 
 	public Series(String name) {

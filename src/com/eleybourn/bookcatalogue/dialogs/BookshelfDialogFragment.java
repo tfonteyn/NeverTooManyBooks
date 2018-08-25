@@ -19,11 +19,12 @@
  */
 package com.eleybourn.bookcatalogue.dialogs;
 
-import android.app.Activity;
-import android.app.DialogFragment;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -89,7 +90,7 @@ public class BookshelfDialogFragment extends DialogFragment {
 	 * Ensure activity supports event
 	 */
 	@Override
-	public void onAttach(Activity a) {
+	public void onAttach(Context a) {
 		super.onAttach(a);
 
 		if (! (a instanceof OnBookshelfCheckChangeListener))
@@ -98,7 +99,7 @@ public class BookshelfDialogFragment extends DialogFragment {
 	}
 
 	@Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.bookshelf_dialog, null);
     }
 

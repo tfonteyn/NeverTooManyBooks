@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
@@ -32,6 +31,7 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -53,6 +53,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BooksMultitypeListHandler.BooklistChangeListener;
+import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder.BookRowInfo;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
@@ -61,7 +62,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStylePropertiesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
-import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.database.TrackedCursor;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
@@ -75,7 +76,6 @@ import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.database.TrackedCursor;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
@@ -202,7 +202,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 				searchTextView.setVisibility(View.GONE);
 			} else {
 				searchTextView.setVisibility(View.VISIBLE);
-				searchTextView.setText(getString(R.string.search) + ": " + mSearchText);
+				searchTextView.setText(getString(R.string.search_with_text, mSearchText));
 			}
 
 			// We want context menus to be available
@@ -668,7 +668,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 						// Without this call some positioning may be off by one row (see above).
 						final int newPos = best.listPosition;
 						getListView().post(new Runnable() {
-								@TargetApi(8)
 								@Override
 								public void run() {
 									lv.smoothScrollToPosition(newPos);
@@ -720,11 +719,14 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 			}}
 		);
 
-		if (mCurrentStyle == null)
-			this.getActionBar().setSubtitle("");
-		else
-			this.getActionBar().setSubtitle(mCurrentStyle.getDisplayName());
-			
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+            if (mCurrentStyle == null)
+                actionBar.setSubtitle("");
+            else
+                actionBar.setSubtitle(mCurrentStyle.getDisplayName());
+        }
+
 		// Close old list
 		if (oldList != null) {
 			if (mList.getBuilder() != oldList.getBuilder())
@@ -1033,13 +1035,14 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 		
 		return super.onPrepareOptionsMenu(menu);
 	}
-	/**
+
+    /**
 	 * This will be called when a menu item is selected. A large switch statement to
 	 * call the appropriate functions (or other activities) 
 	 */
 	@Override
-	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		if (mMenuHandler != null && !mMenuHandler.onMenuItemSelected(this, item)) {
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (mMenuHandler != null && !mMenuHandler.onOptionsItemSelected(this, item)) {
 			switch(item.getItemId()) {
 
 			case MNU_SORT:
@@ -1108,7 +1111,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 			}			
 		}
 		
-		return super.onMenuItemSelected(featureId, item);
+		return super.onOptionsItemSelected(item);
 	}
 
 	/**

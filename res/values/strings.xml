@@ -1025,14 +1025,11 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="title_reorder">a|A|an|An|the|The</string>
     <string name="preferred_theme">Preferred Interface Theme</string>
     <string name="events_found">%1$d Events found</string>
+    <string name="search_with_text">Search: %1$s</string>
     <string name="single_string" translatable="false">%1s</string> <!-- needed for string based ItemEntries properties -->
     <string-array name="supported_themes">
-        <item>Material</item>
-        <item>Material Light</item>
-        <item>Holo</item>
-        <item>Holo Light</item>
-        <item>Default</item>
-        <item>Default Light</item>
+        <item>Dark</item>
+        <item>Light</item>
     </string-array>
     <!-- End: Added/Updated in [Next Version] -->
 

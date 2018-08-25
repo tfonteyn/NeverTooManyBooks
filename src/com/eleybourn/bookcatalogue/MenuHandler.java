@@ -140,7 +140,7 @@ public class MenuHandler {
 	 * 
 	 * @return		True, if handled
 	 */
-	public boolean onMenuItemSelected(Activity a, MenuItem item) {
+	public boolean onOptionsItemSelected(Activity a, MenuItem item) {
 		switch(item.getItemId()) {
 		case MNU_ITM_ADD_BOOK_MANUAL:
 			createBook(a);

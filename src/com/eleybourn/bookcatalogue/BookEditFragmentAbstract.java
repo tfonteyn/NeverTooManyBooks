@@ -20,8 +20,8 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -78,7 +78,7 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.setHasOptionsMenu(true);	
+		this.setHasOptionsMenu(true);
 	}
 
 	@Override
