@@ -57,24 +57,30 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
 		Uri baseUri = null;
 		String display_name = null;
 		try {
-			Class<?> c = Class.forName("android.provider.ContactsContract$Contacts");
-			baseUri = (Uri) c.getField("CONTENT_URI").get(baseUri);
-			display_name = (String) c.getField("DISPLAY_NAME").get(display_name);
-		} catch (Exception e) {
 			try {
-				Class<?> c = Class.forName("android.provider.Contacts$People");
+				Class<?> c = Class.forName("android.provider.ContactsContract$Contacts");
 				baseUri = (Uri) c.getField("CONTENT_URI").get(baseUri);
 				display_name = (String) c.getField("DISPLAY_NAME").get(display_name);
-			} catch (Exception e2) {
-				Logger.logError(e);
+			} catch (Exception e) {
+				try {
+					Class<?> c = Class.forName("android.provider.Contacts$People");
+					baseUri = (Uri) c.getField("CONTENT_URI").get(baseUri);
+					display_name = (String) c.getField("DISPLAY_NAME").get(display_name);
+				} catch (Exception e2) {
+					Logger.logError(e);
+				}
 			}
+			Cursor contactsCursor = getActivity().getContentResolver().query(baseUri, null, null, null, null);
+			while (contactsCursor.moveToNext()) {
+				String name = contactsCursor.getString(contactsCursor.getColumnIndex(display_name));
+				friend_list.add(name);
+			}
+			contactsCursor.close();
+		} catch (SecurityException e) {
+		    //TODO: change this class to request permissions and allow a new call to getFriends
+		    // silently fail. The user can still type a friends name manually
+			Logger.logError("READ_CONTACTS permission needed");
 		}
-		Cursor contactsCursor = getActivity().getContentResolver().query(baseUri, null, null, null, null);
-		while (contactsCursor.moveToNext()) {
-			String name = contactsCursor.getString(contactsCursor.getColumnIndex(display_name));
-			friend_list.add(name);
-		}
-		contactsCursor.close();
 		return friend_list;
 	}
 
