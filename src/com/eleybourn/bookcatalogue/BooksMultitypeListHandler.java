@@ -135,7 +135,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 	 * 
 	 * @param rowView	Points to the current row in the cursor.
 	 *
-	 * @return
+	 * @return a 'Holder' object for the row pointed to by rowView.
 	 */
 	private BooklistHolder newHolder(BooklistRowView rowView) {
 		final int k = rowView.getKind();
@@ -588,25 +588,21 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 		 */
 		@Override
 		public void onFinish(Exception e) {
-			try {
-				synchronized(mHolder) {
-					if (mHolder.extrasTask != this) {
-						return;
-					}
+            synchronized(mHolder) {
+                if (mHolder.extrasTask != this) {
+                    return;
+                }
 
-					if ( (mFlags & BooklistStyle.EXTRAS_BOOKSHELVES) != 0)
-						mHolder.shelves.setText(mShelves);
-					if ( (mFlags & BooklistStyle.EXTRAS_AUTHOR) != 0)
-						mHolder.author.setText(mAuthor);
-					if ( (mFlags & BooklistStyle.EXTRAS_LOCATION) != 0)
-						mHolder.location.setText(mLocation);
-					if ( (mFlags & BooklistStyle.EXTRAS_PUBLISHER) != 0)
-						mHolder.publisher.setText(mPublisher);
-				}
-			} finally {
-			}
-		}
-
+                if ( (mFlags & BooklistStyle.EXTRAS_BOOKSHELVES) != 0)
+                    mHolder.shelves.setText(mShelves);
+                if ( (mFlags & BooklistStyle.EXTRAS_AUTHOR) != 0)
+                    mHolder.author.setText(mAuthor);
+                if ( (mFlags & BooklistStyle.EXTRAS_LOCATION) != 0)
+                    mHolder.location.setText(mLocation);
+                if ( (mFlags & BooklistStyle.EXTRAS_PUBLISHER) != 0)
+                    mHolder.publisher.setText(mPublisher);
+            }
+        }
 	}
 
 	/**
@@ -622,7 +618,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 		/** String ID to use when data is blank */
 		private int mNoDataId;
 		/** Index of related data column */
-		private int mColIndex = -1;
+		private int mColIndex;
 
 		/**
 		 * Constructor

@@ -475,15 +475,12 @@ public class BooklistRowView {
 
 
 	/**
-	 * Function used for long clic local menu in order to propose, or not, the possibility to mark as read.
+	 * Function used for long click local menu in order to propose, or not, the possibility to mark as read.
 	 * @return true if and only if this book has the read status.
 	 */
 	public boolean isRead() {
 		//
-		int index =mCursor.getColumnIndex(CatalogueDBAdapter.KEY_READ);
-		if (index>=0) {
-			return 0!=mCursor.getInt(index);
-		}
-		return false;
+		int index = mCursor.getColumnIndex(CatalogueDBAdapter.KEY_READ);
+		return index >= 0 && 0 != mCursor.getInt(index);
 	}
 }
