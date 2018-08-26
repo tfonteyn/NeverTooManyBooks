@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -21,7 +22,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:contentDescription="@string/up_folder"
-            android:src="@drawable/ic_closed_folder_back"
+            app:srcCompat="@drawable/ic_closed_folder_back"
             android:text="@string/add" />
 
         <ImageView
@@ -33,7 +34,7 @@
             android:layout_gravity="center_vertical"
             android:contentDescription="@string/up_folder"
             android:gravity="center_vertical"
-            android:src="@android:drawable/ic_menu_add"
+            app:srcCompat="@android:drawable/ic_menu_add"
             android:text="@string/add"
             android:visibility="gone" />
 

@@ -19,12 +19,9 @@
  */
 package com.eleybourn.bookcatalogue.filechooser;
 
-import java.io.File;
-import java.util.ArrayList;
-
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -36,6 +33,9 @@ import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.PathChangedListener;
 import com.eleybourn.bookcatalogue.filechooser.FileLister.FileListerListener;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
+
+import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Base class for an Activity to perform file browsing functions consistent with
@@ -90,12 +90,12 @@ public abstract class FileChooser extends BookCatalogueActivity implements
 		}
 
 		// Get and display the fragment
-		FragmentManager fragmentManager = getFragmentManager();
+		FragmentManager fragmentManager = getSupportFragmentManager();
 		if (findViewById(R.id.browser_fragment) != null && fragmentManager.findFragmentById(R.id.browser_fragment) == null) {
 			// Create the browser
 			FileChooserFragment frag = getChooserFragment();
 			// frag.setArguments(getIntent().getExtras());
-			getFragmentManager().beginTransaction().replace(R.id.browser_fragment, frag).commit();
+			getSupportFragmentManager().beginTransaction().replace(R.id.browser_fragment, frag).commit();
 		}
 
 		// Handle 'Cancel' button
@@ -150,7 +150,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
 	 * Local handler for 'Open'. Perform basic validation, and pass on.
 	 */
 	private void handleOpen() {
-		Fragment frag = getFragmentManager().findFragmentById(R.id.browser_fragment);
+		Fragment frag = getSupportFragmentManager().findFragmentById(R.id.browser_fragment);
 		if (frag instanceof FileChooserFragment) {
 			FileChooserFragment bf = (FileChooserFragment) frag;
 			File file = bf.getSelectedFile();
@@ -166,7 +166,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
 	 * Local handler for 'Save'. Perform basic validation, and pass on.
 	 */
 	private void handleSave() {
-		Fragment frag = getFragmentManager().findFragmentById(R.id.browser_fragment);
+		Fragment frag = getSupportFragmentManager().findFragmentById(R.id.browser_fragment);
 		if (frag instanceof FileChooserFragment) {
 			FileChooserFragment bf = (FileChooserFragment) frag;
 			File file = bf.getSelectedFile();
@@ -183,7 +183,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
 	 */
 	@Override
 	public void onGotFileList(File root, ArrayList<FileDetails> list) {
-		FragmentManager fragmentManager = getFragmentManager();
+		FragmentManager fragmentManager = getSupportFragmentManager();
 		Fragment frag = fragmentManager.findFragmentById(R.id.browser_fragment);
 		if (frag != null && frag instanceof FileListerListener) {
 			((FileListerListener) frag).onGotFileList(root, list);

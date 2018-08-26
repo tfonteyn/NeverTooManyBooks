@@ -6,7 +6,7 @@
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingStart">@dimen/padding_prefs_item</item>
+        <item name="paddingStart">@dimen/padding_prefs_item</item>
         <item name="android:drawablePadding">20dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
@@ -16,7 +16,7 @@
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">@dimen/padding_border</item>
-        <item name="android:paddingStart">@dimen/padding_border</item>
+        <item name="paddingStart">@dimen/padding_border</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
@@ -25,7 +25,7 @@
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingStart">@dimen/padding_border</item>
+        <item name="paddingStart">@dimen/padding_border</item>
         <item name="android:paddingTop">@dimen/padding_border_triple</item>
         <item name="android:drawablePadding">20dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
@@ -58,7 +58,7 @@
         <item name="android:textIsSelectable">true</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">@dimen/padding_book_details_info</item>
+        <item name="paddingStart">@dimen/padding_book_details_info</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
@@ -134,8 +134,8 @@
         <!-- <item name="android:background">#40000000</item> -->
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">@dimen/padding_border</item>
-        <item name="android:paddingEnd">@dimen/padding_border_double</item>
+        <item name="paddingStart">@dimen/padding_border</item>
+        <item name="paddingEnd">@dimen/padding_border_double</item>
         <item name="android:gravity">top</item>
     </style>
 
@@ -148,8 +148,8 @@
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingBottom">@dimen/padding_border</item>
-        <item name="android:paddingStart">@dimen/padding_border_triple</item>
-        <item name="android:paddingEnd">@dimen/padding_border_triple</item>
+        <item name="paddingStart">@dimen/padding_border_triple</item>
+        <item name="paddingEnd">@dimen/padding_border_triple</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:textColor">@color/link_blue</item>
     </style>

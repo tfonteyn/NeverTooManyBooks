@@ -20,11 +20,11 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
@@ -454,7 +454,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
 	 *
 	 * @param a
 	 */
-	public static void startEditActivity(Activity a) {
+	public static void startEditActivity(AppCompatActivity a) {
 		Intent i = new Intent(a, BooklistStylesActivity.class);
 		a.startActivityForResult(i, UniqueId.ACTIVITY_BOOKLIST_STYLES);			
 	}

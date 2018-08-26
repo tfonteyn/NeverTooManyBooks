@@ -20,13 +20,13 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
@@ -587,7 +587,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	/**
 	 * Start the archiving activity
 	 */
-	public static void backupCatalogue(Activity a) {
+	public static void backupCatalogue(AppCompatActivity a) {
 		Intent i = new Intent(a, BackupChooser.class);
 		i.putExtra(BackupChooser.EXTRA_MODE, BackupChooser.EXTRA_MODE_SAVE_AS);
 		a.startActivity(i);

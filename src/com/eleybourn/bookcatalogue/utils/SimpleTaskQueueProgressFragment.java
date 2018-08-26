@@ -21,12 +21,13 @@ package com.eleybourn.bookcatalogue.utils;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -206,11 +207,11 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
 	 * @param message	Message to display
 	 * @param task		Task to run
 	 */
-	public static SimpleTaskQueueProgressFragment runTaskWithProgress(final Activity context, int message,
-			FragmentTask task, boolean isIndeterminate, int taskId) {
+	public static SimpleTaskQueueProgressFragment runTaskWithProgress(final FragmentActivity context, int message,
+																	  FragmentTask task, boolean isIndeterminate, int taskId) {
 		SimpleTaskQueueProgressFragment frag = SimpleTaskQueueProgressFragment.newInstance(message, isIndeterminate, taskId);
 		frag.enqueue(task);
-		frag.show(context.getFragmentManager(), null);
+		frag.show(context.getSupportFragmentManager(), null);
 		return frag;
 	}
 

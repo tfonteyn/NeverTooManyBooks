@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,43 +20,43 @@ import java.util.Set;
  * Origin:
  *    https://github.com/pcess/tutorials/tree/master/SplashPermissions
  *
- * This {@link Activity} functions as a base class for a splash screen. This
+ * This {@link AppCompatActivity} functions as a base class for a splash screen. This
  * class will function differently on pre- and post-Android 6.0 devices,
  * although in both cases, the {@link #getNextActivityClass()} method must be
  * overridden, since {@link #getNextActivityClass()} returns the
- * {@link Activity} to start once the splash screen times out.
+ * {@link AppCompatActivity} to start once the splash screen times out.
  * <p>
- * On pre-Android 6.0 devices, this {@link Activity} will display a
+ * On pre-Android 6.0 devices, this {@link AppCompatActivity} will display a
  * random color for {@link #getTimeoutMillis()} milliseconds, before
- * starting the {@link Activity} specified by {@link #getNextActivityClass()}.
+ * starting the {@link AppCompatActivity} specified by {@link #getNextActivityClass()}.
  * <p>
  * On post-Android 6.0 devices, this app will additionally force the user to
  * grant all of the currently ungranted app permissions before timing out and
- * starting the next {@link Activity} specified by
+ * starting the next {@link AppCompatActivity} specified by
  * {@link #getNextActivityClass()} (see
  * <a href="http://developer.android.com/training/permissions/requesting.html">
  * Requesting Android Permissions</a>). In pre-Android 6.0 devices, app
  * permissions were granted during installation and could not be revoked.
  * However, since Android 6.0, users can revoke app permissions after
- * installation. This {@link Activity} will gather all of the required app
+ * installation. This {@link AppCompatActivity} will gather all of the required app
  * permissions from the manifest, and check that this app has been granted all
  * of those permissions. The user will then be forced to granted all ungranted
  * permissions before continuing. Note, however, that the user may still revoke
- * permissions while the app is running, and this {@link Activity} does nothing
+ * permissions while the app is running, and this {@link AppCompatActivity} does nothing
  * to protect your app from such occurrences. Specifically, this
- * {@link Activity} only does a check at start up.
+ * {@link AppCompatActivity} only does a check at start up.
  * <p>
  * You can change the timeout duration (in milliseconds) and the permissions
  * required by your app by extending this class and overriding
  * {@link #getTimeoutMillis()} and {@link #getRequiredPermissions()} methods.
  */
 
-abstract public class SplashPermissionsActivity extends Activity {
+abstract public class SplashPermissionsActivity extends AppCompatActivity {
 
     /** The result code used when requesting permissions */
     private static final int PERMISSIONS_REQUEST = 1234;
 
-    /** The time when this {@link Activity} was created */
+    /** The time when this {@link AppCompatActivity} was created */
     private long startTimeMillis = 0;
 
     /**
@@ -102,7 +103,7 @@ abstract public class SplashPermissionsActivity extends Activity {
     }
 
      /**
-     * After the timeout, start the {@link Activity} as specified by
+     * After the timeout, start the {@link AppCompatActivity} as specified by
      * {@link #getNextActivityClass()}, and remove the splash screen.
      */
     private void startNextActivity() {

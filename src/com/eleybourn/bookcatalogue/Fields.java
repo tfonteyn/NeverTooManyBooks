@@ -20,11 +20,11 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -136,8 +136,8 @@ public class Fields extends ArrayList<Fields.Field> {
 		View findViewById(int id);
 	}
 	private class ActivityContext implements FieldsContext {
-		private final WeakReference<Activity> mActivity;
-		ActivityContext(Activity a) {
+		private final WeakReference<AppCompatActivity> mActivity;
+		ActivityContext(AppCompatActivity a) {
 			mActivity = new WeakReference<>(a);
 		}
 		@Override
@@ -185,7 +185,7 @@ public class Fields extends ArrayList<Fields.Field> {
 	 * @param a 	The parent activity which contains all Views this object
 	 * 				will manage.
 	 */
-	Fields(android.app.Activity a) {
+	Fields(AppCompatActivity a) {
 		super();
 		mContext = new ActivityContext(a);
 		mPrefs = a.getSharedPreferences("bookCatalogue", android.content.Context.MODE_PRIVATE);

@@ -1,8 +1,8 @@
 package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.os.Bundle;
-import android.app.ActionBar;
-import android.app.Activity;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -17,7 +17,7 @@ import java.util.Locale;
  *
  * @author pjw
  */
-abstract public class BookCatalogueActivity extends Activity {
+abstract public class BookCatalogueActivity extends AppCompatActivity {
     /**
      * NEWKIND: add new supported themes here and in R.array.supported_themes,
      * the string-array order must match the THEMES order
@@ -44,7 +44,7 @@ abstract public class BookCatalogueActivity extends Activity {
         setTheme(THEMES[mLastTheme]);
         super.onCreate(savedInstanceState);
 
-        ActionBar bar = getActionBar();
+        ActionBar bar = getSupportActionBar();
         if (bar != null) {
             bar.setIcon(BookCatalogueApp.getAppContext().getApplicationInfo().icon);
             //bar.setDisplayUseLogoEnabled(true);

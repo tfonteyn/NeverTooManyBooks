@@ -1,10 +1,10 @@
 package com.eleybourn.bookcatalogue.dialogs;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
+import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -103,7 +103,7 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
     	try {
     		if (v.getId() == R.id.advanced_row) {
     			ExportAdvancedDialogFragment frag = ExportAdvancedDialogFragment.newInstance(1, mFile);
-    			frag.show(getActivity().getFragmentManager(), null);
+    			frag.show(getActivity().getSupportFragmentManager(), null);
     		} else {
         		OnExportTypeSelectionDialogResultListener a = (OnExportTypeSelectionDialogResultListener)getActivity();
         		if (a != null) {

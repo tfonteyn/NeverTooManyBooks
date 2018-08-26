@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
@@ -30,6 +28,8 @@ import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
@@ -54,7 +54,7 @@ import java.lang.ref.WeakReference;
  * 
  * @author Philip Warner
  */
-public class StartupActivity extends Activity {
+public class StartupActivity extends AppCompatActivity {
 	private static final String TAG = "StartupActivity";
 	/** Flag to indicate FTS rebuild is required at startup */
 	private static final String PREF_FTS_REBUILD_REQUIRED = TAG + ".FtsRebuildRequired";

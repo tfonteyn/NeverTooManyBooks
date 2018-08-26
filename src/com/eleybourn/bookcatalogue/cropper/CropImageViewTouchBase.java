@@ -23,12 +23,13 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 
-abstract class CropImageViewTouchBase extends ImageView {
+abstract class CropImageViewTouchBase extends AppCompatImageView {
 
 	/** Maximum upscaling for a viewed image */
 	private static final float SCALE_LIMIT_MAX = Float.MAX_VALUE;

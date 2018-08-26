@@ -20,13 +20,14 @@
 
 package com.eleybourn.bookcatalogue.dialogs;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.app.AlertDialog;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -55,7 +56,7 @@ public class StandardDialogs {
 	/**
 	 * Show a dialog asking if unsaved edits should be ignored. Finish if so.
 	 */
-	public static void showConfirmUnsavedEditsDialog(final Activity a, final Runnable r){
+	public static void showConfirmUnsavedEditsDialog(final AppCompatActivity a, final Runnable r){
 		AlertDialog.Builder dialog = new AlertDialog.Builder(a);
 
 		dialog.setTitle(R.string.details_have_changed);
@@ -234,7 +235,7 @@ public class StandardDialogs {
 	 * Display a dialog warning the user that goodreads authentication is required; gives them
 	 * the options: 'request now', 'more info' or 'cancel'.
 	 */
-	public static void goodreadsAuthAlert(final Activity context) {
+	public static void goodreadsAuthAlert(final FragmentActivity context) {
 		// Get the title		
 		final AlertDialog alertDialog = new AlertDialog.Builder(context).setTitle(R.string.authorize_access).setMessage(R.string.goodreads_action_cannot_blah_blah).create();
 

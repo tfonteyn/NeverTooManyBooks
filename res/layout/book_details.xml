@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
@@ -34,7 +35,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_gravity="top|end"
                     android:scaleType="fitXY"
-                    android:src="@drawable/btn_check_buttonless_on"
+                    app:srcCompat="@drawable/btn_check_buttonless_on"
                     android:visibility="visible"
                     tools:ignore="ContentDescription" />
 
@@ -156,7 +157,7 @@
                     android:background="@color/background_thumb"
                     android:padding="@dimen/padding_border"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_launcher2"
+                    app:srcCompat="@drawable/ic_launcher2"
                     tools:ignore="ContentDescription" />
             </RelativeLayout>
         </LinearLayout>

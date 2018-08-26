@@ -1,7 +1,6 @@
 package com.eleybourn.bookcatalogue.utils;
 
-import android.app.Activity;
-import android.app.Fragment;
+import android.app.ListActivity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -10,6 +9,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ListView;
 
@@ -48,27 +49,36 @@ public class BCBackground {
     /*
      * Set the background based on user preferences
      */
-    public static void init(Activity a) {
+    public static void init(AppCompatActivity a) {
         if (BuildConfig.DEBUG) {
-            System.out.println("BCBackground.init(Activity)");
+            System.out.println("BCBackground.init(AppCompatActivity)");
         }
-        init(a,false);
+        privateInit(a.findViewById(R.id.root),false);
+    }
+
+    public static void init(ListActivity a) {
+        if (BuildConfig.DEBUG) {
+            System.out.println("BCBackground.init(ListActivity)");
+        }
+        privateInit(a.findViewById(R.id.root),false);
     }
 
     public static void init(Fragment f) {
         if (BuildConfig.DEBUG) {
             System.out.println("BCBackground.init(Fragment)");
         }
-        init(f.getActivity(), false);
+        privateInit(f.getActivity().findViewById(R.id.root), false);
     }
 
-    public static void init(Activity a, boolean bright) {
-        View root = a.findViewById(R.id.root);
-        init(root,bright);
+    public static void init(AppCompatActivity a, boolean bright) {
+        if (BuildConfig.DEBUG) {
+            System.out.println("BCBackground.init(AppCompatActivity)");
+        }
+        privateInit(a.findViewById(R.id.root),bright);
     }
 
     //FIXME
-    public static void init(View root, boolean bright) {
+    private static void privateInit(View root, boolean bright) {
         if (BACKGROUND_ALLOWED) {
             try {
                 if (BookCatalogueApp.isBackgroundImageDisabled()) {

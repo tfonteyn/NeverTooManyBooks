@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/row"
     android:layout_width="match_parent"
@@ -92,7 +93,7 @@
             android:id="@+id/row_read_image_view"
             android:layout_width="30dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/btn_check_buttonless_off"
+            app:srcCompat="@drawable/btn_check_buttonless_off"
             android:visibility="gone"
             tools:ignore="ContentDescription" />
 

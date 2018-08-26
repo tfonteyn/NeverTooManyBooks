@@ -19,9 +19,10 @@
  */
 package com.eleybourn.bookcatalogue;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -122,9 +123,8 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
 		//tweet.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
 		if(this instanceof BookDetailsReadOnly){
-			menu.add(0, EDIT_OPTIONS_ID, 0, R.string.edit_book)
-				.setIcon(android.R.drawable.ic_menu_edit)
-				.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+			MenuItemCompat.setShowAsAction(menu.add(0, EDIT_OPTIONS_ID, 0, R.string.edit_book)
+				.setIcon(android.R.drawable.ic_menu_edit), MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
 		boolean hasAuthor = mEditManager.getBookData().getAuthorList().size() > 0;

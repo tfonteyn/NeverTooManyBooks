@@ -25,7 +25,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.SharedPreferences.Editor;
-import android.app.Dialog;
+import android.support.v7.app.AppCompatDialog;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.View;

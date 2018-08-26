@@ -22,7 +22,7 @@ package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -156,7 +156,7 @@ public abstract class BindableItemListActivity extends BookCatalogueListActivity
 			    	itemArray[item].handler.run();
 			    }
 			});
-			AlertDialog alert = builder.create();	
+			AlertDialog alert = builder.create();
 			alert.show();
 		}		
 	}

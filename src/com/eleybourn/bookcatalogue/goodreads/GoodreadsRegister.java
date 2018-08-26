@@ -20,12 +20,12 @@
 
 package com.eleybourn.bookcatalogue.goodreads;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -120,7 +120,7 @@ public class GoodreadsRegister extends BookCatalogueActivity {
 	/**
 	 * Called by button click to start a non-UI-thread task to do the work.
 	 */
-	public static void requestAuthorizationInBackground(final Activity activity) {
+	public static void requestAuthorizationInBackground(final FragmentActivity activity) {
 		FragmentTask task = new FragmentTask() {
 			private int mMessage = 0;
 

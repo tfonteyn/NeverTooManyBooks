@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.DialogInterface;
@@ -31,7 +30,9 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.app.ActionBar;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -656,7 +657,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                                }
         );
 
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             if (mCurrentStyle == null)
                 actionBar.setSubtitle("");
@@ -924,15 +925,13 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 
         mMenuHandler.addCreateBookSubMenu(menu);
 
-        mMenuHandler.addItem(menu, MNU_SORT, R.string.sort_and_style_ellipsis, android.R.drawable.ic_menu_sort_alphabetically)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        MenuItemCompat.setShowAsAction(mMenuHandler.addItem(menu, MNU_SORT, R.string.sort_and_style_ellipsis, android.R.drawable.ic_menu_sort_alphabetically), MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         mMenuHandler.addItem(menu, MNU_EXPAND, R.string.menu_expand_all, R.drawable.ic_menu_expand);
 
         mMenuHandler.addItem(menu, MNU_COLLAPSE, R.string.menu_collapse_all, R.drawable.ic_menu_collapse);
 
-        mMenuHandler.addSearchItem(menu)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        MenuItemCompat.setShowAsAction(mMenuHandler.addSearchItem(menu), MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         if (GoodreadsManager.hasCredentials()) {
             mMenuHandler.addItem(menu, MNU_GOODREADS, R.string.goodreads, R.drawable.ic_menu_gr_logo);

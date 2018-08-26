@@ -19,7 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.filechooser;
 
-import android.app.DialogFragment;
+import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -123,7 +123,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 	@Override
 	public void onOpen(File file) {
 		ImportTypeSelectionDialogFragment frag = ImportTypeSelectionDialogFragment.newInstance(DIALOG_OPEN_IMPORT_TYPE, file);
-		frag.show(getFragmentManager(), null);
+		frag.show(getSupportFragmentManager(), null);
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 	@Override
 	public void onSave(File file) {
 		ExportTypeSelectionDialogFragment frag = ExportTypeSelectionDialogFragment.newInstance(DIALOG_OPEN_IMPORT_TYPE, file);
-		frag.show(getFragmentManager(), null);
+		frag.show(getSupportFragmentManager(), null);
 	}
 
 	@Override
@@ -145,7 +145,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 						+ "\n\n" + getString(R.string.if_the_problem_persists);
 
 				MessageDialogFragment frag = MessageDialogFragment.newInstance(0, R.string.backup_to_archive, msg, R.string.ok, 0, 0);
-				frag.show(getFragmentManager(), null);
+				frag.show(getSupportFragmentManager(), null);
 				// Just return; user may want to try again
 				return;
 			}
@@ -156,7 +156,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 			// Show a helpful message
 			String msg = getString(R.string.archive_complete_details, mBackupFile.getParent(), mBackupFile.getName(), Convert.formatFileSize(mBackupFile.length()));
 			MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_SAVE, R.string.backup_to_archive, msg, R.string.ok, 0, 0);
-			frag.show(getFragmentManager(), null);
+			frag.show(getSupportFragmentManager(), null);
 
 		} else if (taskId == TASK_ID_OPEN) {
 			if (!success) {
@@ -165,7 +165,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 						+ "\n\n" + getString(R.string.if_the_problem_persists);
 
 				MessageDialogFragment frag = MessageDialogFragment.newInstance(0, R.string.import_from_archive, msg, R.string.ok, 0, 0);
-				frag.show(getFragmentManager(), null);
+				frag.show(getSupportFragmentManager(), null);
 				// Just return; user may want to try again
 				return;
 			}
@@ -175,7 +175,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 			}
 
 			MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_OPEN, R.string.import_from_archive, R.string.import_complete, R.string.ok, 0, 0);
-			frag.show(getFragmentManager(), null);
+			frag.show(getSupportFragmentManager(), null);
 
 		}
 	}

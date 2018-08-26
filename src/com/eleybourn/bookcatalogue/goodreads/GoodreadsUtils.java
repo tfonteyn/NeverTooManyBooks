@@ -1,22 +1,22 @@
 package com.eleybourn.bookcatalogue.goodreads;
 
-import net.philipwarner.taskqueue.QueueManager;
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import com.eleybourn.bookcatalogue.utils.BcQueueManager;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.utils.BcQueueManager;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTaskAbstract;
+
+import net.philipwarner.taskqueue.QueueManager;
 
 public class GoodreadsUtils {
 	/**
@@ -155,7 +155,7 @@ public class GoodreadsUtils {
 	/**
 	 * Start a background task that exports all books to goodreads.
 	 */
-	private static void sendToGoodreads(final Activity context, final boolean updatesOnly) {
+	private static void sendToGoodreads(final FragmentActivity context, final boolean updatesOnly) {
 		FragmentTask task = new FragmentTaskAbstract() {
 			@Override
 			public void run(SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
@@ -210,7 +210,7 @@ public class GoodreadsUtils {
 			public void onFinish(final SimpleTaskQueueProgressFragment fragment, Exception exception) {
 				switch (getState()) {
 					case 0:
-						final Activity context = fragment.getActivity();
+						final FragmentActivity context = fragment.getActivity();
 						if (context != null) {
 							// Get the title
 							final AlertDialog alertDialog = new AlertDialog.Builder(context).setTitle(R.string.send_books_to_goodreads).setMessage(R.string.send_books_to_goodreads_blurb).create();

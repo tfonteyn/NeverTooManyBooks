@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
 import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -35,6 +34,7 @@ import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
@@ -507,7 +507,7 @@ public class BookCatalogueApp extends Application {
 //		return i;
 //	}
 
-	public static void startPreferencesActivity(Activity a) {
+	public static void startPreferencesActivity(AppCompatActivity a) {
 		Intent i = new Intent(a, BooklistPreferencesActivity.class);
 		a.startActivity(i);
 	}

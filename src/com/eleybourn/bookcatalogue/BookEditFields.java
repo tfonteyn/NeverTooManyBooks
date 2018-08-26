@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.view.MenuItemCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -428,7 +429,7 @@ public class BookEditFields extends BookDetailsAbstract
         if (thumbVisible) {
             MenuItem thumbOptions = menu.add(0, BookEditFragmentAbstract.THUMBNAIL_OPTIONS_ID, 0, R.string.cover_options_cc_ellipsis);
             thumbOptions.setIcon(android.R.drawable.ic_menu_camera);
-            thumbOptions.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            MenuItemCompat.setShowAsAction(thumbOptions, MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
         super.onCreateOptionsMenu(menu, inflater);
     }

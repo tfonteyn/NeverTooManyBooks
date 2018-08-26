@@ -16,7 +16,6 @@
 
 package com.eleybourn.bookcatalogue.cropper;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -35,6 +34,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.StatFs;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -541,11 +541,11 @@ public class CropCropImage extends CropMonitoredActivity {
 	public static final int NO_STORAGE_ERROR = -1;
 	public static final int CANNOT_STAT_ERROR = -2;
 
-	public static void showStorageToast(Activity activity) {
+	public static void showStorageToast(AppCompatActivity activity) {
 		showStorageToast(activity, calculatePicturesRemaining());
 	}
 
-	public static void showStorageToast(Activity activity, int remaining) {
+	public static void showStorageToast(AppCompatActivity activity, int remaining) {
 		String noStorageText = null;
 
 		if (remaining == NO_STORAGE_ERROR) {
