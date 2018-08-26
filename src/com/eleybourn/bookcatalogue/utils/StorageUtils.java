@@ -66,8 +66,6 @@ public class StorageUtils {
 	private static final String NOMEDIA_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + ".nomedia";
 
 
-	private static boolean mSharedDirExists;
-
 	public static String getErrorLog() {
 		return ERRORLOG_FILE_PATH;
 	}
@@ -103,7 +101,8 @@ public class StorageUtils {
 
         // * A .nomedia file will be created which will stop the thumbnails showing up in the gallery (thanks Brandon)
         try {
-            new File(NOMEDIA_FILE_PATH).createNewFile();
+			//noinspection ResultOfMethodCallIgnored
+			new File(NOMEDIA_FILE_PATH).createNewFile();
         } catch (IOException e) {
             Logger.logError(e,"Failed to create .media file: " + NOMEDIA_FILE_PATH);
         }
@@ -116,7 +115,7 @@ public class StorageUtils {
         initSharedDirectories();
 
         if (BuildConfig.DEBUG) {
-        	System.out.println("Accessing file: " + EXTERNAL_FILE_PATH + File.separator + fileName);
+        	System.out.println("StorageUtils.getFile: Accessing file: " + EXTERNAL_FILE_PATH + File.separator + fileName);
 		}
         return new File(EXTERNAL_FILE_PATH + File.separator + fileName);
     }
@@ -132,7 +131,7 @@ public class StorageUtils {
 
     /**
      * full path, without trailing File.separator !
-     * @return
+     * @return the path
      */
     public static String getSharedDirectoryPath() {
         return EXTERNAL_FILE_PATH;
@@ -228,7 +227,7 @@ public class StorageUtils {
 	 * of all CSV files.
 	 */
 	public static ArrayList<File> findExportFiles() {
-		//StringBuilder info = new StringBuilder();
+		StringBuilder info = new StringBuilder();
 
 		ArrayList<File> files = new ArrayList<>();
 		Pattern mountPointPat = Pattern.compile("^\\s*[^\\s]+\\s+([^\\s]+)");
@@ -245,22 +244,30 @@ public class StorageUtils {
 
 		ArrayList<File> dirs = new ArrayList<>();
 
-		//info.append("Getting mounted file systems\n");
+		if (BuildConfig.DEBUG) {
+			info.append("Getting mounted file systems\n");
+		}
 		// Scan all mounted file systems
 		try {
 			in = new BufferedReader(new InputStreamReader(new FileInputStream("/proc/mounts")),1024);
 			String line;
 			while ((line = in.readLine()) != null) {
-				//info.append("   checking " + line + "\n");
+				if( BuildConfig.DEBUG) {
+					info.append("   checking ").append(line).append("\n");
+				}
 				Matcher m = mountPointPat.matcher(line);
 				// Get the mount point
 				if (m.find()) {
 					// See if it has a bookCatalogue directory
 					File dir = new File(m.group(1) + File.separator + DIRECTORY_NAME);
-					//info.append("       matched " + dir.getAbsolutePath() + "\n");
+					if( BuildConfig.DEBUG) {
+						info.append("       matched ").append(dir.getAbsolutePath()).append("\n");
+					}
 					dirs.add(dir);
 				} else {
-					//info.append("       NO match\n");
+					if (BuildConfig.DEBUG) {
+						info.append("       NO match\n");
+					}
 				}
 			}
 		} catch (IOException e) {
@@ -273,24 +280,35 @@ public class StorageUtils {
 		}
 
 		// Sometimes (Android 6?) the /proc/mount search seems to fail, so we revert to environment vars
-		//info.append("Found " + dirs.size() + " directories\n");
+        if (BuildConfig.DEBUG) {
+		    info.append("Found " + dirs.size() + " directories\n");
+        }
+
 		try {
 			String loc1 = System.getenv("EXTERNAL_STORAGE");
 			if (loc1 != null) {
 				File dir = new File(loc1 + File.separator + DIRECTORY_NAME);
 				dirs.add(dir);
-				//info.append("Loc1 added " + dir.getAbsolutePath() + "\n");
+				if (BuildConfig.DEBUG) {
+					info.append("Loc1 added ").append(dir.getAbsolutePath()).append("\n");
+				}
 			} else {
-				//info.append("Loc1 ignored: " + loc1 + "\n");
+				if (BuildConfig.DEBUG) {
+					info.append("Loc1 was null\n");
+				}
 			}
 
 			String loc2 = System.getenv("SECONDARY_STORAGE");
 			if (loc2 != null && !loc2.equals(loc1)) {
 				File dir = new File(loc2 + File.separator + DIRECTORY_NAME);
 				dirs.add(dir);
-				//info.append("Loc2 added " + dir.getAbsolutePath() + "\n");
+				if (BuildConfig.DEBUG) {
+					info.append("Loc2 added ").append(dir.getAbsolutePath()).append("\n");
+				}
 			} else {
-				//info.append("Loc2 ignored: " + loc2 + "\n");
+				if (BuildConfig.DEBUG) {
+					info.append("Loc2 ignored: ").append(loc2).append("\n");
+				}
 			}
 		} catch (Exception e) {
 			Logger.logError(e, "Failed to get external storage from environment variables");
@@ -298,39 +316,53 @@ public class StorageUtils {
 
 		HashSet<String> paths = new HashSet<>();
 
-		//info.append("Looking for files in directories\n");
+		if (BuildConfig.DEBUG) {
+			info.append("Looking for files in directories\n");
+		}
 		for(File dir: dirs) {
 			try {
 				if (dir.exists()) {
 					// Scan for csv files
 					File[] csvFiles = dir.listFiles(csvFilter);
 					if (csvFiles != null) {
-						//info.append("    found " + csvFiles.length + " in " + dir.getAbsolutePath() + "\n");
+						if (BuildConfig.DEBUG) {
+							info.append("    found ").append(csvFiles.length).append(" in ").append(dir.getAbsolutePath()).append("\n");
+						}
 						for (File f : csvFiles) {
 							if (BuildConfig.DEBUG) {
-								System.out.println("Found: " + f.getAbsolutePath());
+								info.append("Found: ").append(f.getAbsolutePath());
 							}
 							final String cp = f.getCanonicalPath();
 							if (paths.contains(cp)) {
-								//info.append("        already present as " + cp + "\n");								
+								if (BuildConfig.DEBUG) {
+									info.append("        already present as ").append(cp).append("\n");
+								}
 							} else {
 								files.add(f);
 								paths.add(cp);
-								//info.append("        added as " + cp + "\n");																
+								if (BuildConfig.DEBUG) {
+									info.append("        added as ").append(cp).append("\n");
+								}
 							}
 						}
 					} else {
-						//info.append("    null returned by listFiles() in " + dir.getAbsolutePath() + "\n");
+						if (BuildConfig.DEBUG) {
+							info.append("    null returned by listFiles() in ").append(dir.getAbsolutePath()).append("\n");
+						}
 					}
 				} else {
-					//info.append("    " + dir.getAbsolutePath() + " does not exist\n");
+					if (BuildConfig.DEBUG) {
+						info.append("    ").append(dir.getAbsolutePath()).append(" does not exist\n");
+					}
 				}
 			} catch (Exception e) {
 				Logger.logError(e, "Failed to read directory " + dir.getAbsolutePath());
 			}
 		}
 
-		//Logger.logError(new RuntimeException("INFO"), info.toString());
+		if (BuildConfig.DEBUG) {
+			Logger.logError(new RuntimeException("INFO"), info.toString());
+		}
 
 		// Sort descending based on modified date
 		Collections.sort(files, new FileDateComparator(-1));
@@ -382,7 +414,7 @@ public class StorageUtils {
 			PackageInfo appInfo = manager.getPackageInfo( context.getPackageName(), 0);
 			message.append("App: ").append(appInfo.packageName).append("\n")
 				.append("Version: ").append(appInfo.versionName).append(" (").append(appInfo.versionCode).append(")\n");
-		} catch (Exception e1) {
+		} catch (Exception ignore) {
 			// Not much we can do inside error logger...
 		}
         
@@ -429,6 +461,8 @@ public class StorageUtils {
 		message.append("\n");
 
         message.append("Details:\n\n").append(context.getString(R.string.debug_body).toUpperCase()).append("\n\n");
+
+        Logger.logError(new RuntimeException("DEBUG"), message.toString());
 
 		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, message.toString());
 		//has to be an ArrayList
