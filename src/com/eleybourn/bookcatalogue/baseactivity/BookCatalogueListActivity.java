@@ -11,6 +11,8 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
  * It is very tempting to take the code from 'ListActivity' and base this class off of
  * BookCatalogueActivity, but currently there is little value in doing go.
  *
+ * FIXME: ListActivity seems to cause several issues when mixing with android support libs; online advice favours "get rid of it" ... TODO....
+ *
  * @author pjw
  */
 abstract public class BookCatalogueListActivity extends ListActivity {
