@@ -47,7 +47,7 @@
         <EditText
             android:id="@+id/series_num"
             android:layout_width="150sp"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:hint="@string/series_num"
             android:singleLine="true"

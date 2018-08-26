@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="match_parent"
     android:focusableInTouchMode="true"
     tools:ignore="DuplicateIds"
     android:orientation="vertical" >
@@ -287,7 +287,7 @@
             <CheckBox
                 android:id="@+id/anthology"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:nextFocusDown="@+id/description"
                 android:text="@string/is_anthology" />

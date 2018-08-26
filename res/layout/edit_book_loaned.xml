@@ -27,7 +27,7 @@
         <Button
             android:id="@+id/confirm"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:paddingTop="@dimen/padding_border"
             android:text="@string/returned"
             android:width="150sp" />

@@ -30,7 +30,7 @@
         <Button
             android:id="@+id/confirm"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_below="@+id/hide_hint_checkbox"
             android:layout_centerHorizontal="true"
             android:paddingLeft="60dp"

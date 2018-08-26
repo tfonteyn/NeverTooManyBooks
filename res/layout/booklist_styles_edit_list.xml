@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/list_wrapper"
     android:layout_width="match_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingStart="@dimen/padding_border"
     android:paddingEnd="@dimen/padding_border">
@@ -28,7 +28,7 @@
         <Button
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:text="@string/cancel"
             android:visibility="gone"
             android:width="150sp"
@@ -37,7 +37,7 @@
         <Button
             android:id="@+id/confirm"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:text="@string/save"
             android:visibility="gone"
             android:width="150sp"
@@ -48,7 +48,7 @@
     <LinearLayout
         android:id="@+id/body"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="match_parent"
         android:layout_above="@+id/bottom_buttons"
         android:layout_below="@+id/top_buttons"
         android:gravity="top"
@@ -58,7 +58,7 @@
             xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
             android:id="@+id/android:list"
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:fadingEdge="none"
             android:textSize="16sp"
             tlv:grabber="@+id/grabber"
