@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -38,267 +38,290 @@ import java.util.Locale;
 
 /**
  * Activity to display the 'Other Preferences' dialog and maintain the preferences.
- * 
+ *
  * @author Philip Warner
  */
 public class OtherPreferences extends PreferencesBase {
 
-	/** Camera image rotation property values */
-	private static final ItemEntries<Integer> mRotationListItems = new ItemEntries<Integer>()
-			.add(null, R.string.use_default_setting)
-			.add(0, R.string.no)
-			.add(90, R.string.menu_rotate_thumb_cw)
-			.add(-90, R.string.menu_rotate_thumb_ccw)
-			.add(180, R.string.menu_rotate_thumb_180);
+    /**
+     * BookList Compatibility mode property values
+     */
+    public static final int BOOKLIST_GENERATE_OLD_STYLE = 1;
+    public static final int BOOKLIST_GENERATE_FLAT_TRIGGER = 2;
+    public static final int BOOKLIST_GENERATE_NESTED_TRIGGER = 3;
+    public static final int BOOKLIST_GENERATE_AUTOMATIC = 4;
+    /**
+     * Camera image rotation property values
+     */
+    private static final ItemEntries<Integer> mRotationListItems = new ItemEntries<Integer>()
+            .add(null, R.string.use_default_setting)
+            .add(0, R.string.no)
+            .add(90, R.string.menu_rotate_thumb_cw)
+            .add(-90, R.string.menu_rotate_thumb_ccw)
+            .add(180, R.string.menu_rotate_thumb_180);
+    /**
+     * List of supported locales
+     */
+    private static final ItemEntries<String> mLocalesListItems = getLocalesListItems();
+    /**
+     * List of supported themes
+     */
+    private static final ItemEntries<Integer> mAppThemeItems = getThemeListItems();
+    /**
+     * Booklist Compatibility mode property values
+     */
+    private static final ItemEntries<Integer> mListGenerationOptionsListItems = new ItemEntries<Integer>()
+            .add(null, R.string.use_default_setting)
+            .add(BOOKLIST_GENERATE_OLD_STYLE, R.string.force_compatibility_mode)
+            .add(BOOKLIST_GENERATE_FLAT_TRIGGER, R.string.force_enhanced_compatibility_mode)
+            .add(BOOKLIST_GENERATE_NESTED_TRIGGER, R.string.force_fully_featured)
+            .add(BOOKLIST_GENERATE_AUTOMATIC, R.string.automatically_use_recommended_option);
 
-	/** List of supported locales */
-	private static final ItemEntries<String> mInterfaceLanguageListItems = getLanguageListItems();
+    /**
+     * Preferred Scanner property values
+     */
+    private static final ItemEntries<Integer> mScannerListItems = new ItemEntries<Integer>()
+            .add(null, R.string.use_default_setting)
+            .add(ScannerManager.SCANNER_ZXING_COMPATIBLE, R.string.zxing_compatible_scanner)
+            .add(ScannerManager.SCANNER_ZXING, R.string.zxing_scanner)
+            .add(ScannerManager.SCANNER_PIC2SHOP, R.string.pic2shop_scanner);
 
-	/** List of supported themes */
-	private static final ItemEntries<Integer> mAppThemeItems = getThemeListItems();
+    /**
+     * Build the complete list of all preferences
+     */
+    private static final Properties mProperties = new Properties()
 
-    /** Booklist Compatibility mode property values */
-	public static final int BOOKLIST_GENERATE_OLD_STYLE = 1;
-	public static final int BOOKLIST_GENERATE_FLAT_TRIGGER = 2;
-	public static final int BOOKLIST_GENERATE_NESTED_TRIGGER = 3;
-	public static final int BOOKLIST_GENERATE_AUTOMATIC = 4;
-	/** Booklist Compatibility mode property values */
-	private static final ItemEntries<Integer> mListGenerationOptionsListItems = new ItemEntries<Integer>()
-			.add(null, R.string.use_default_setting)
-			.add(BOOKLIST_GENERATE_OLD_STYLE, R.string.force_compatibility_mode)
-			.add(BOOKLIST_GENERATE_FLAT_TRIGGER, R.string.force_enhanced_compatibility_mode)
-			.add(BOOKLIST_GENERATE_NESTED_TRIGGER, R.string.force_fully_featured)
-			.add(BOOKLIST_GENERATE_AUTOMATIC, R.string.automatically_use_recommended_option)
-			;
+            /* *****************************************************************************
+             * GRP_USER_INTERFACE:
+             ******************************************************************************/
+            .add(new BooleanProperty(BookCataloguePreferences.PREF_START_IN_MY_BOOKS)
+                    .setDefaultValue(false)
+                    .setPreferenceKey(BookCataloguePreferences.PREF_START_IN_MY_BOOKS)
+                    .setGlobal(true)
+                    .setWeight(0)
+                    .setNameResourceId(R.string.start_in_my_books)
+                    .setGroup(PropertyGroup.GRP_USER_INTERFACE))
 
-	/** Preferred Scanner property values */
-	private static final ItemEntries<Integer> mScannerListItems = new ItemEntries<Integer>()
-			.add(null, R.string.use_default_setting)
-			.add(ScannerManager.SCANNER_ZXING_COMPATIBLE, R.string.zxing_compatible_scanner)
-			.add(ScannerManager.SCANNER_ZXING, R.string.zxing_scanner)
-			.add(ScannerManager.SCANNER_PIC2SHOP, R.string.pic2shop_scanner);
-	
-	private static final Properties mProperties = new Properties()
+            /*
+             * Enabling/disabling read-only mode when opening book. If enabled book
+             * is opened in read-only mode (editing through menu), else in edit mode.
+             */
+            .add(new BooleanProperty(BookCataloguePreferences.PREF_OPEN_BOOK_READ_ONLY)
+                    .setDefaultValue(true)
+                    .setPreferenceKey(BookCataloguePreferences.PREF_OPEN_BOOK_READ_ONLY)
+                    .setGlobal(true)
+                    .setNameResourceId(R.string.prefs_global_opening_book_mode)
+                    .setGroup(PropertyGroup.GRP_USER_INTERFACE))
 
-	.add(new BooleanProperty(BookCataloguePreferences.PREF_START_IN_MY_BOOKS)
-		.setDefaultValue(false)
-		.setPreferenceKey(BookCataloguePreferences.PREF_START_IN_MY_BOOKS)
-		.setGlobal(true)
-		.setWeight(0)
-		.setNameResourceId(R.string.start_in_my_books)
-		.setGroup(PropertyGroup.GRP_USER_INTERFACE))	
-	
-		/*
-		 * Enabling/disabling read-only mode when opening book. If enabled book
-		 * is opened in read-only mode (editing through menu), else in edit mode.
-		 */
-	.add(new BooleanProperty(BookCataloguePreferences.PREF_OPEN_BOOK_READ_ONLY)
-            .setDefaultValue(true)
-            .setPreferenceKey(BookCataloguePreferences.PREF_OPEN_BOOK_READ_ONLY)
-            .setGlobal(true)
-            .setNameResourceId(R.string.prefs_global_opening_book_mode)
-            .setGroup(PropertyGroup.GRP_USER_INTERFACE))
-		
-	.add(new BooleanProperty(BookCataloguePreferences.PREF_CROP_FRAME_WHOLE_IMAGE)
-            .setDefaultValue(false)
-            .setPreferenceKey(BookCataloguePreferences.PREF_CROP_FRAME_WHOLE_IMAGE)
-            .setGlobal(true)
-            .setNameResourceId(R.string.default_crop_frame_is_whole_image)
-            .setGroup(PropertyGroup.GRP_THUMBNAILS))
+            .add(new BooleanProperty(BookCataloguePreferences.PREF_INCLUDE_CLASSIC_MY_BOOKS)
+                    .setDefaultValue(false)
+                    .setPreferenceKey(BookCataloguePreferences.PREF_INCLUDE_CLASSIC_MY_BOOKS)
+                    .setGlobal(true)
+                    .setWeight(100)
+                    .setNameResourceId(R.string.include_classic_catalogue_view)
+                    .setGroup(PropertyGroup.GRP_USER_INTERFACE))
 
-	.add(new BooleanProperty(BookCataloguePreferences.PREF_INCLUDE_CLASSIC_MY_BOOKS)
-            .setDefaultValue(false)
-            .setPreferenceKey(BookCataloguePreferences.PREF_INCLUDE_CLASSIC_MY_BOOKS)
-            .setGlobal(true)
-            .setWeight(100)
-            .setNameResourceId(R.string.include_classic_catalogue_view)
-            .setGroup(PropertyGroup.GRP_USER_INTERFACE))
+            .add(new BooleanProperty(BookCataloguePreferences.PREF_DISABLE_BACKGROUND_IMAGE)
+                    .setDefaultValue(false)
+                    .setPreferenceKey(BookCataloguePreferences.PREF_DISABLE_BACKGROUND_IMAGE)
+                    .setGlobal(true)
+                    .setWeight(200)
+                    .setNameResourceId(R.string.disable_background_image)
+                    .setGroup(PropertyGroup.GRP_USER_INTERFACE))
 
-	.add(new BooleanProperty(BookCataloguePreferences.PREF_DISABLE_BACKGROUND_IMAGE)
-		.setDefaultValue(false)
-		.setPreferenceKey(BookCataloguePreferences.PREF_DISABLE_BACKGROUND_IMAGE)
-		.setGlobal(true)
-		.setWeight(200)
-		.setNameResourceId(R.string.disable_background_image)
-		.setGroup(PropertyGroup.GRP_USER_INTERFACE) )
+            .add(new StringListProperty(mLocalesListItems, BookCataloguePreferences.PREF_APP_LOCALE,
+                    PropertyGroup.GRP_USER_INTERFACE, R.string.preferred_interface_language)
+                    .setDefaultValue(null)
+                    .setPreferenceKey(BookCataloguePreferences.PREF_APP_LOCALE)
+                    .setGlobal(true)
+                    .setWeight(200)
+                    .setGroup(PropertyGroup.GRP_USER_INTERFACE))
 
-    .add(new StringListProperty(mInterfaceLanguageListItems, BookCataloguePreferences.PREF_APP_LOCALE,
-            PropertyGroup.GRP_USER_INTERFACE, R.string.preferred_interface_language)
-            .setDefaultValue(null)
-            .setPreferenceKey(BookCataloguePreferences.PREF_APP_LOCALE)
-            .setGlobal(true)
-            .setWeight(200)
-            .setGroup(PropertyGroup.GRP_USER_INTERFACE))
+            .add(new IntegerListProperty(mAppThemeItems, BookCataloguePreferences.PREF_APP_THEME,
+                    PropertyGroup.GRP_USER_INTERFACE, R.string.preferred_theme)
+                    .setDefaultValue(DEFAULT_THEME)
+                    .setPreferenceKey(BookCataloguePreferences.PREF_APP_THEME)
+                    .setGlobal(true)
+                    .setWeight(200)
+                    .setGroup(PropertyGroup.GRP_USER_INTERFACE))
 
-	.add(new IntegerListProperty(mAppThemeItems, BookCataloguePreferences.PREF_APP_THEME,
-            PropertyGroup.GRP_USER_INTERFACE, R.string.preferred_theme)
-			.setDefaultValue(DEFAULT_THEME)
-			.setPreferenceKey(BookCataloguePreferences.PREF_APP_THEME)
-			.setGlobal(true)
-			.setWeight(200)
-			.setGroup(PropertyGroup.GRP_USER_INTERFACE))
+            /* *****************************************************************************
+             * GRP_SCANNER:
+             ******************************************************************************/
+
+            .add(new BooleanProperty(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_INVALID)
+                    .setDefaultValue(true)
+                    .setPreferenceKey(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_INVALID)
+                    .setGlobal(true)
+                    .setWeight(300)
+                    .setNameResourceId(R.string.beep_if_scanned_isbn_invalid)
+                    .setGroup(PropertyGroup.GRP_SCANNER))
+
+            .add(new BooleanProperty(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_VALID)
+                    .setDefaultValue(false)
+                    .setPreferenceKey(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_VALID)
+                    .setGlobal(true)
+                    .setWeight(300)
+                    .setNameResourceId(R.string.beep_if_scanned_isbn_valid)
+                    .setGroup(PropertyGroup.GRP_SCANNER))
+
+            .add(new IntegerListProperty(mScannerListItems, ScannerManager.PREF_PREFERRED_SCANNER)
+                    .setDefaultValue(ScannerManager.SCANNER_ZXING_COMPATIBLE)
+                    .setPreferenceKey(ScannerManager.PREF_PREFERRED_SCANNER)
+                    .setGlobal(true)
+                    .setNameResourceId(R.string.preferred_scanner)
+                    .setGroup(PropertyGroup.GRP_SCANNER))
+
+            /* *****************************************************************************
+             * GRP_THUMBNAILS:
+             ******************************************************************************/
+
+            .add(new BooleanProperty(BookCataloguePreferences.PREF_CROP_FRAME_WHOLE_IMAGE)
+                    .setDefaultValue(false)
+                    .setPreferenceKey(BookCataloguePreferences.PREF_CROP_FRAME_WHOLE_IMAGE)
+                    .setGlobal(true)
+                    .setNameResourceId(R.string.default_crop_frame_is_whole_image)
+                    .setGroup(PropertyGroup.GRP_THUMBNAILS))
+
+            .add(new IntegerListProperty(mRotationListItems, BookCataloguePreferences.PREF_AUTOROTATE_CAMERA_IMAGES)
+                    .setDefaultValue(90)
+                    .setPreferenceKey(BookCataloguePreferences.PREF_AUTOROTATE_CAMERA_IMAGES)
+                    .setGlobal(true)
+                    .setNameResourceId(R.string.auto_rotate_camera_images)
+                    .setGroup(PropertyGroup.GRP_THUMBNAILS))
+
+            .add(new BooleanProperty(BookCataloguePreferences.PREF_USE_EXTERNAL_IMAGE_CROPPER)
+                    .setDefaultValue(false)
+                    .setPreferenceKey(BookCataloguePreferences.PREF_USE_EXTERNAL_IMAGE_CROPPER)
+                    .setGlobal(true)
+                    .setNameResourceId(R.string.use_external_image_cropper)
+                    .setGroup(PropertyGroup.GRP_THUMBNAILS))
+
+            /* *****************************************************************************
+             * GRP_ADVANCED_OPTIONS:
+             ******************************************************************************/
+
+            // Book list compatibility mode setting
+            .add(new IntegerListProperty(mListGenerationOptionsListItems, BookCataloguePreferences.PREF_BOOKLIST_GENERATION_MODE)
+                    .setDefaultValue(BOOKLIST_GENERATE_AUTOMATIC)
+                    .setPreferenceKey(BookCataloguePreferences.PREF_BOOKLIST_GENERATION_MODE)
+                    .setGlobal(true)
+                    .setNameResourceId(R.string.booklist_generation)
+                    .setGroup(PropertyGroup.GRP_ADVANCED_OPTIONS));
 
 
-    .add(new BooleanProperty(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_INVALID)
-            .setDefaultValue(true)
-            .setPreferenceKey(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_INVALID)
-            .setGlobal(true)
-            .setWeight(300)
-            .setNameResourceId(R.string.beep_if_scanned_isbn_invalid)
-            .setGroup(PropertyGroup.GRP_SCANNER))
+    /**
+     * Listener for Locale changes; update list and maybe reload
+     */
+    private final BookCatalogueApp.OnLocaleChangedListener mLocaleListener = new BookCatalogueApp.OnLocaleChangedListener() {
+        @Override
+        public void onLocaleChanged() {
+            updateLocalesListItems();
+            updateLocaleIfChanged();
+            restartActivityIfNeeded();
+        }
+    };
 
-	.add(new BooleanProperty(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_VALID)
-		.setDefaultValue(false)
-		.setPreferenceKey(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_VALID)
-		.setGlobal(true)
-		.setWeight(300)
-		.setNameResourceId(R.string.beep_if_scanned_isbn_valid)
-		.setGroup(PropertyGroup.GRP_SCANNER) )
+    /**
+     * Get the value of Book list compatibility mode setting
+     */
+    public static int getBooklistCompatibleMode() {
+        IntegerListProperty prop = (IntegerListProperty) mProperties.get(BookCataloguePreferences.PREF_BOOKLIST_GENERATION_MODE);
+        return prop.getResolvedValue();
+    }
 
-	.add(new IntegerListProperty( mScannerListItems, ScannerManager.PREF_PREFERRED_SCANNER)
-		.setDefaultValue(ScannerManager.SCANNER_ZXING_COMPATIBLE)
-		.setPreferenceKey(ScannerManager.PREF_PREFERRED_SCANNER)
-		.setGlobal(true)
-		.setNameResourceId(R.string.preferred_scanner)
-		.setGroup(PropertyGroup.GRP_SCANNER) )
+    /**
+     * Format the list of locales (languages)
+     *
+     * @return List of preference items
+     */
+    private static ItemEntries<String> getLocalesListItems() {
+        ItemEntries<String> items = new ItemEntries<>();
 
+        Locale l = BookCatalogueApp.getSystemLocal();
+        items.add("", R.string.preferred_language_x, BookCatalogueApp.getResourceString(R.string.system_locale), l.getDisplayLanguage());
 
-		
-	.add(new IntegerListProperty( mRotationListItems, BookCataloguePreferences.PREF_AUTOROTATE_CAMERA_IMAGES)
-		.setDefaultValue(90)
-		.setPreferenceKey(BookCataloguePreferences.PREF_AUTOROTATE_CAMERA_IMAGES)
-		.setGlobal(true)
-		.setNameResourceId(R.string.auto_rotate_camera_images)
-		.setGroup(PropertyGroup.GRP_THUMBNAILS) )
+        for (String loc : BookCatalogueApp.getSupportedLocales()) {
+            l = BookCatalogueApp.localeFromName(loc);
+            items.add(loc, R.string.preferred_language_x, l.getDisplayLanguage(l), l.getDisplayLanguage());
+        }
+        return items;
+    }
 
-	.add (new BooleanProperty(BookCataloguePreferences.PREF_USE_EXTERNAL_IMAGE_CROPPER)
-		.setDefaultValue(false)
-		.setPreferenceKey(BookCataloguePreferences.PREF_USE_EXTERNAL_IMAGE_CROPPER)
-		.setGlobal(true)
-		.setNameResourceId(R.string.use_external_image_cropper)
-		.setGroup(PropertyGroup.GRP_THUMBNAILS))		
+    /**
+     * Format the list of themes
+     *
+     * @return List of preference themes
+     */
+    private static ItemEntries<Integer> getThemeListItems() {
+        ItemEntries<Integer> items = new ItemEntries<>();
 
-	// Book list compatibility mode setting
-	.add (new IntegerListProperty(mListGenerationOptionsListItems, BookCataloguePreferences.PREF_BOOKLIST_GENERATION_MODE)
-		.setDefaultValue(BOOKLIST_GENERATE_AUTOMATIC)
-		.setPreferenceKey(BookCataloguePreferences.PREF_BOOKLIST_GENERATION_MODE)
-		.setGlobal(true)
-		.setNameResourceId(R.string.booklist_generation)
-		.setGroup(PropertyGroup.GRP_ADVANCED_OPTIONS))		
-	;
+        String[] themeList = BookCatalogueApp.getResourceStringArray(R.array.supported_themes);
+        for (int i = 0; i < themeList.length; i++) {
+            items.add(i, R.string.single_string, themeList[i]);
+        }
+        return items;
+    }
 
-	/**
-	 * Get the value of Book list compatibility mode setting
-	 */
-	public static int getBooklistCompatibleMode() {
-		IntegerListProperty prop = (IntegerListProperty) mProperties.get(BookCataloguePreferences.PREF_BOOKLIST_GENERATION_MODE);
-		return prop.getResolvedValue();
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Make sure the names are correct
+        updateLocalesListItems();
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		// Make sure the names are correct
-		updateLanguageListItems();
+        setTitle(R.string.other_preferences);
+        BCBackground.init(this);
+    }
 
-		setTitle(R.string.other_preferences);
-		BCBackground.init(this);
-	}
+    @Override
+    public void onPause() {
+        // Don't bother listening since we check for locale changes in onResume of super class
+        BookCatalogueApp.unregisterOnLocaleChangedListener(mLocaleListener);
+        super.onPause();
+    }
 
-	@Override
-	public void onPause() {
-		// Don't bother listening since we check for locale changes in onResume of super class
-		BookCatalogueApp.unregisterOnLocaleChangedListener(mLocaleListener);
-		super.onPause();
-	}
+    /**
+     * Fix background
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Listen for locale changes (this activity CAN change it)
+        BookCatalogueApp.registerOnLocaleChangedListener(mLocaleListener);
+        BCBackground.init(this);
+    }
 
-	/**
-	 * Fix background
-	 */
-	@Override 
-	public void onResume() {
-		super.onResume();
-		// Listen for locale changes (this activity CAN change it)
-		BookCatalogueApp.registerOnLocaleChangedListener(mLocaleListener);
-		BCBackground.init(this);
-	}
+    /**
+     * Display current preferences and set handlers to catch changes.
+     */
+    public void setupViews(final BookCataloguePreferences prefs, Properties globalProps) {
+        // Add the locally constructed properties
+        for (Property p : mProperties)
+            globalProps.add(p);
+    }
 
-	/**
-	 * Display current preferences and set handlers to catch changes.
-	 */
-	public void setupViews(final BookCataloguePreferences prefs, Properties globalProps) {
-		// Add the locally constructed properties
-		for(Property p: mProperties)
-			globalProps.add(p);
-	}
+    @Override
+    public int getLayout() {
+        return R.layout.other_preferences;
+    }
 
-	@Override
-	public int getLayout() {
-		return R.layout.other_preferences;
-	}
-
-	/**
-	 * Format the list of languages
-	 *
-	 * @return  List of preference items
-	 */
-	private static ItemEntries<String> getLanguageListItems() {
-		ItemEntries<String> items = new ItemEntries<>();
-
-		Locale l = BookCatalogueApp.getSystemLocal();
-		items.add("", R.string.preferred_language_x, BookCatalogueApp.getResourceString(R.string.system_locale), l.getDisplayLanguage());
-
-		for(String loc: BookCatalogueApp.getSupportedLocales()) {
-			l = BookCatalogueApp.localeFromName(loc);
-			items.add(loc, R.string.preferred_language_x, l.getDisplayLanguage(l), l.getDisplayLanguage());
-		}
-		return items;
-	}
-
-	/**
-	 * Format the list of themes
-	 *
-	 * @return  List of preference themes
-	 */
-	private static ItemEntries<Integer> getThemeListItems() {
-		ItemEntries<Integer> items = new ItemEntries<>();
-
-		String[] themeList = BookCatalogueApp.getResourceStringArray(R.array.supported_themes);
-		for (int i=0; i < themeList.length; i++) {
-			items.add(i, R.string.single_string, themeList[i]);
-		}
-		return items;
-	}
-
-	/**
-	 * Listener for Locale changes; update list and maybe reload
-	 */
-	private final BookCatalogueApp.OnLocaleChangedListener mLocaleListener = new BookCatalogueApp.OnLocaleChangedListener() {
-		@Override
-		public void onLocaleChanged() {
-			updateLanguageListItems();
-			updateLocaleIfChanged();
-			restartActivityIfNeeded();
-		}
-	};
-
-	/**
-	 * Utility routine to adjust the strings used in displaying a language list.
-	 */
-	private void updateLanguageListItems() {
-		for(ListProperty.ItemEntry<String> item: mInterfaceLanguageListItems) {
-			String loc = item.getValue();
-			String name;
-			String lang;
-			if (loc.isEmpty()) {
-				name = getString(R.string.system_locale);
-				lang = BookCatalogueApp.getSystemLocal().getDisplayLanguage();
-			} else {
-				Locale l = BookCatalogueApp.localeFromName(loc);
-				name = l.getDisplayLanguage(l);
-				lang = l.getDisplayLanguage();
-			}
-			item.setString(R.string.preferred_language_x, name, lang);
-		}
-	}
+    /**
+     * Utility routine to adjust the strings used in displaying a language list.
+     */
+    private void updateLocalesListItems() {
+        for (ListProperty.ItemEntry<String> item : mLocalesListItems) {
+            String loc = item.getValue();
+            String name;
+            String lang;
+            if (loc.isEmpty()) {
+                name = getString(R.string.system_locale);
+                lang = BookCatalogueApp.getSystemLocal().getDisplayLanguage();
+            } else {
+                Locale l = BookCatalogueApp.localeFromName(loc);
+                name = l.getDisplayLanguage(l);
+                lang = l.getDisplayLanguage();
+            }
+            item.setString(R.string.preferred_language_x, name, lang);
+        }
+    }
 }
