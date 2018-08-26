@@ -23,9 +23,9 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:gravity="end"
-        android:paddingStart="@dimen/padding_border"
         android:paddingEnd="@dimen/padding_border"
-        android:src="@drawable/down"
+        android:paddingStart="@dimen/padding_border"
+        android:src="@android:drawable/arrow_down_float"
         tools:ignore="ContentDescription" />
 
     <ImageView
@@ -38,9 +38,9 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:gravity="end"
-        android:paddingStart="@dimen/padding_border"
         android:paddingEnd="@dimen/padding_border"
-        android:src="@drawable/up"
+        android:paddingStart="@dimen/padding_border"
+        android:src="@android:drawable/arrow_up_float"
         tools:ignore="ContentDescription" />
 
     <TextView
