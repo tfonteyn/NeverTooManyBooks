@@ -39,14 +39,15 @@ import com.eleybourn.bookcatalogue.utils.BCBackground;
 /*
  * A book catalogue application that integrates with Google Books.
  */
-public class Bookshelf extends BookCatalogueListActivity {
+public class Bookshelf extends BookCatalogueListActivity
+		//implements LoaderManager.LoaderCallbacks<Cursor>
+		{
 	private static final int ACTIVITY_CREATE=0;
 	private static final int ACTIVITY_EDIT=1;
 	private CatalogueDBAdapter mDbHelper;
 	private static final int INSERT_ID = Menu.FIRST;
 	private static final int DELETE_ID = Menu.FIRST + 1;
 
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -59,10 +60,7 @@ public class Bookshelf extends BookCatalogueListActivity {
 		BCBackground.init(this);
 	}
 	
-	/**
-	 * Fix background
-	 */
-	@Override 
+	@Override
 	public void onResume() {
 		super.onResume();
 		BCBackground.init(this);
@@ -73,9 +71,11 @@ public class Bookshelf extends BookCatalogueListActivity {
 		int layout = R.layout.row_bookshelf;
 		
 		// Get all of the rows from the database and create the item list
-		Cursor BookshelfCursor = mDbHelper.fetchAllBookshelves();
         //FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
-		startManagingCursor(BookshelfCursor);
+        //FIXME Use the new {@link android.content.CursorLoader} class with {@link LoaderManager} instead
+
+        Cursor bookshelfCursor = mDbHelper.fetchAllBookshelves();
+        startManagingCursor(bookshelfCursor);
 
 		// Create an array to specify the fields we want to display in the list
 		String[] from = new String[]{CatalogueDBAdapter.KEY_BOOKSHELF, CatalogueDBAdapter.KEY_ROWID};
@@ -85,7 +85,7 @@ public class Bookshelf extends BookCatalogueListActivity {
 		
 		// Now create a simple cursor adapter and set it to display
 		//FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
-		SimpleCursorAdapter books = new SimpleCursorAdapter(this, layout, BookshelfCursor, from, to);
+		SimpleCursorAdapter books = new SimpleCursorAdapter(this, layout, bookshelfCursor, from, to);
 		setListAdapter(books);
 	}
 	
@@ -155,4 +155,21 @@ public class Bookshelf extends BookCatalogueListActivity {
 		mDbHelper.close();
 	}
 
+	/*
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        CursorLoader loader = new CursorLoader(this);
+
+        return loader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+    }
+    */
 }
