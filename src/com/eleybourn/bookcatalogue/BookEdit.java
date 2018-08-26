@@ -22,13 +22,13 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
+import android.app.ActionBar;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -86,7 +86,7 @@ public class BookEdit extends BookCatalogueActivity implements
             BookEditAnthology.class
     };
 
-	private String added_genre = "";
+    private String added_genre = "";
 	private String added_series = "";
 	private String added_title = "";
 	private String added_author = "";
@@ -142,13 +142,22 @@ public class BookEdit extends BookCatalogueActivity implements
             mTabLayout.setVisibility(View.GONE);
             findViewById(R.id.buttons).setVisibility(View.GONE);
 		} else {
-            TabLayout.Tab details;
+            ArrayList<TabLayout.Tab> mAllTabs = new ArrayList<>();
             try {
-                details = mTabLayout.newTab().setText(R.string.details).setTag(mTabClasses[TAB_EDIT].newInstance());
-                mTabLayout.addTab(details);
-                mTabLayout.addTab(mTabLayout.newTab().setText(R.string.notes).setTag(mTabClasses[TAB_EDIT_NOTES].newInstance()));
-                if (isExistingBook) {
-                    mTabLayout.addTab(mTabLayout.newTab().setText(R.string.loan).setTag(mTabClasses[TAB_EDIT_FRIENDS].newInstance()));
+            	TabLayout.Tab t;
+
+            	t = mTabLayout.newTab().setText(R.string.details).setTag(mTabClasses[TAB_EDIT].newInstance());
+                mTabLayout.addTab(t);
+				mAllTabs.add(t);
+
+				t = mTabLayout.newTab().setText(R.string.notes).setTag(mTabClasses[TAB_EDIT_NOTES].newInstance());
+                mTabLayout.addTab(t);
+				mAllTabs.add(t);
+
+				if (isExistingBook) {
+                    t = mTabLayout.newTab().setText(R.string.loan).setTag(mTabClasses[TAB_EDIT_FRIENDS].newInstance());
+					mTabLayout.addTab(t);
+					mAllTabs.add(t);
 
                     boolean isAnthology = (mBookData.getRowId() > 0) && (mBookData.getInt(BookData.KEY_ANTHOLOGY) != 0);
                     setShowAnthology(isAnthology);
@@ -159,8 +168,14 @@ public class BookEdit extends BookCatalogueActivity implements
 
             mTabLayout.addOnTabSelectedListener(new TabListener());
 
-            // and show the first tab & the tab layout itself
-            showTab(details);
+			if (extras != null && extras.containsKey(TAB)) {
+				int i = extras.getInt(TAB);
+				if (mAllTabs.size() > i) {
+					showTab(mAllTabs.get(i));
+				}
+			} else {
+				showTab(mAllTabs.get(TAB_EDIT));
+			}
             mTabLayout.setVisibility(View.VISIBLE);
 
             findViewById(R.id.buttons).setVisibility(View.VISIBLE);
@@ -230,7 +245,7 @@ public class BookEdit extends BookCatalogueActivity implements
     }
 
     private void showTab(Fragment fragment) {
-		getSupportFragmentManager()
+		getFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment, fragment)
                 .commit();
@@ -486,7 +501,7 @@ public class BookEdit extends BookCatalogueActivity implements
 		if (mRowId != id) {
 			mRowId = id;
 			loadBookData(id, null);
-			Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
+			Fragment frag = getFragmentManager().findFragmentById(R.id.fragment);
 			if (frag instanceof DataEditor) {
 				((DataEditor) frag).reloadData(mBookData);
 			}
@@ -528,7 +543,7 @@ public class BookEdit extends BookCatalogueActivity implements
 	 * @param nextStep   The next step to be executed on success/failure.
 	 */
 	private void saveState(final PostSaveAction nextStep) {
-        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
+        Fragment frag = getFragmentManager().findFragmentById(R.id.fragment);
         if (frag instanceof DataEditor) {
             ((DataEditor) frag).saveAllEdits(mBookData);
         }
@@ -681,7 +696,7 @@ public class BookEdit extends BookCatalogueActivity implements
 	 * 
 	 */
 	private void setActivityTitle() {
-		ActionBar bar = getSupportActionBar();
+		ActionBar bar = getActionBar();
 		if (bar != null) {
             if (mIsReadOnly && mList != null) {
                 bar.setTitle(mBookData.getString(CatalogueDBAdapter.KEY_TITLE));
@@ -793,7 +808,7 @@ public class BookEdit extends BookCatalogueActivity implements
 	 */
 	@Override
 	public void onPartialDatePickerSet(int dialogId, PartialDatePickerFragment dialog, Integer year, Integer month, Integer day) {
-		Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
+		Fragment frag = getFragmentManager().findFragmentById(R.id.fragment);
 		if (frag instanceof OnPartialDatePickerListener) {
 			((OnPartialDatePickerListener) frag).onPartialDatePickerSet(dialogId, dialog, year, month, day);
 		} else {
@@ -810,7 +825,7 @@ public class BookEdit extends BookCatalogueActivity implements
 	 */
 	@Override
 	public void onPartialDatePickerCancel(int dialogId, PartialDatePickerFragment dialog) {
-		Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
+		Fragment frag = getFragmentManager().findFragmentById(R.id.fragment);
 		if (frag instanceof OnPartialDatePickerListener) {
 			((OnPartialDatePickerListener) frag).onPartialDatePickerCancel(dialogId, dialog);
 		} else {
@@ -828,7 +843,7 @@ public class BookEdit extends BookCatalogueActivity implements
 	 */
 	@Override
 	public void onTextFieldEditorSave(int dialogId, TextFieldEditorFragment dialog, String newText) {
-		Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
+		Fragment frag = getFragmentManager().findFragmentById(R.id.fragment);
 		if (frag instanceof OnTextFieldEditorListener) {
 			((OnTextFieldEditorListener) frag).onTextFieldEditorSave(dialogId, dialog, newText);
 		} else {
@@ -845,7 +860,7 @@ public class BookEdit extends BookCatalogueActivity implements
 	 */
 	@Override
 	public void onTextFieldEditorCancel(int dialogId, TextFieldEditorFragment dialog) {
-		Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
+		Fragment frag = getFragmentManager().findFragmentById(R.id.fragment);
 		if (frag instanceof OnTextFieldEditorListener) {
 			((OnTextFieldEditorListener) frag).onTextFieldEditorCancel(dialogId, dialog);
 		} else {
@@ -864,7 +879,7 @@ public class BookEdit extends BookCatalogueActivity implements
 	public void onBookshelfCheckChanged(int dialogId, BookshelfDialogFragment dialog, boolean checked, String shelf,
 			String textList, String encodedList) {
 
-		Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
+		Fragment frag = getFragmentManager().findFragmentById(R.id.fragment);
 		if (frag instanceof OnBookshelfCheckChangeListener) {
 			((OnBookshelfCheckChangeListener) frag).onBookshelfCheckChanged(dialogId, dialog, checked, shelf, textList, encodedList);
 		} else {

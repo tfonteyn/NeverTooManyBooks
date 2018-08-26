@@ -20,7 +20,7 @@ abstract public class BookCatalogueListActivity extends ListActivity {
 
         ActionBar bar = getActionBar();
         if (bar != null) {
-            /** TODO: see {@link BookCatalogueListActivity#onCreate} */
+            /* TODO: see {@link BookCatalogueListActivity#onCreate} */
             bar.setIcon(BookCatalogueApp.getAppContext().getApplicationInfo().icon);
             //bar.setDisplayUseLogoEnabled(true);
 

@@ -17,9 +17,9 @@
     <string name="confirm_add">Boek toevoegen</string>
     <string name="confirm_update">Bijwerken</string>
     <string name="nobooks">Er staan geen boeken op deze boekenplank. Voeg er een paar toe via het menu onderaan dit scherm.</string>
-    <string name="menu_sort_by_author_expanded">Alles uitklappen</string>
+    <string name="menu_expand_all">Alles uitklappen</string>
     <string name="menu_sort_by">Sorteren op</string>
-    <string name="menu_sort_by_author_collapsed">Alles inklappen</string>
+    <string name="menu_collapse_all">Alles inklappen</string>
     <string name="search">Zoeken</string>
     <string name="cancel">Annuleren</string>
     <string name="confirm_save">Boek opslaan</string>

@@ -294,7 +294,7 @@ public class BookEditFields extends BookDetailsAbstract
             if (currShelf.isEmpty()) {
                 currShelf = mDbHelper.getBookshelfName(1);
             }
-            String encoded_shelf = Convert.encodeListItem(currShelf, BOOKSHELF_SEPERATOR);
+            String encoded_shelf = Convert.encodeListItem(currShelf, BOOKSHELF_SEPARATOR);
             Field fe = mFields.getField(R.id.bookshelf);
             fe.setValue(currShelf);
             book.setBookshelfList(encoded_shelf);

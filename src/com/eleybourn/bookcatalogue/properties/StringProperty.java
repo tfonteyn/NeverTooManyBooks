@@ -37,6 +37,7 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
  * 
  * @author Philip Warner
  */
+@SuppressWarnings("unused")
 public class StringProperty extends ValuePropertyWithGlobalDefault<String> implements StringValue {
 	/** Flag indicating value must be non-blabnk */
 	private boolean mRequireNonBlank = false;

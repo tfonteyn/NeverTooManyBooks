@@ -87,7 +87,6 @@ public class Utils {
 	//public static final boolean USE_LT = true;
 	//public static final boolean USE_BARCODE = false;
 
-
 	/**
 	 * Given a URL, get an image and save to a file, optionally appending a suffix to the file.
 	 * 
@@ -437,7 +436,7 @@ public class Utils {
     			String filespec = files.get(i);
 	    		File file = new File(filespec);
 	    		if (file.exists()) {
-		    	    BitmapFactory.decodeFile( filespec, opt );
+					BitmapFactory.decodeFile( filespec, opt );
 		    	    // If no size info, assume file bad and skip
 		    	    if ( opt.outHeight > 0 && opt.outWidth > 0 ) {
 		    	    	long size = opt.outHeight * opt.outWidth;
@@ -779,5 +778,12 @@ public class Utils {
 	    return buffer;
 	}
 
+	@SuppressWarnings("unused")
+	public static void printStackTrace() {
+        StackTraceElement[] all = Thread.currentThread().getStackTrace();
+        for (StackTraceElement element : all) {
+            System.out.println(element.toString());
+        }
+    }
 }
 

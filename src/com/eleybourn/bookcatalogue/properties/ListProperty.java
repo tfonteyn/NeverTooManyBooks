@@ -37,6 +37,7 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * Implement a generic list-of-values property.
@@ -50,11 +51,13 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 	protected ItemEntries<T> mList;
 
 	/** Accessor */
+	@SuppressWarnings("WeakerAccess")
 	public ItemEntries<T> getListItems() {
 		return mList;
 	}
 
-    public ListProperty(ItemEntries<T> list, String uniqueId, PropertyGroup group, int nameResourceId, T value, String defaultPref, T defaultValue) {
+    @SuppressWarnings("WeakerAccess")
+	public ListProperty(ItemEntries<T> list, String uniqueId, PropertyGroup group, int nameResourceId, T value, String defaultPref, T defaultValue) {
 		super(uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
 		mList = list;
 	}
@@ -257,7 +260,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 			public void onClick(View v) {
 				dialog.dismiss();
 				Holder<T> h = ViewTagger.getTag(v, R.id.TAG_HOLDER);
-				set(h.item.value);
+				set(Objects.requireNonNull(h).item.value);
 				setValueInView(h.baseView, h.item);
 			}
 		};

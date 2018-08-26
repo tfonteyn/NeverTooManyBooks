@@ -417,7 +417,8 @@ public class CoversDbHelper implements AutoCloseable  {
         if (bytes != null) {
             try {
                 bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            } catch (Exception ignore) {
+            } catch (Exception e) {
+            	Logger.logError(e,"");
             }
         }
 

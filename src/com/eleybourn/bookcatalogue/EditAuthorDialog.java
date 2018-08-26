@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.app.Dialog;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,7 +40,7 @@ public class EditAuthorDialog {
 	}
 
 	public void editAuthor(final Author author) {
-		final Dialog dialog = new Dialog(mContext);
+		final Dialog dialog = new AppCompatDialog(mContext);
 		dialog.setContentView(R.layout.edit_author);
 		dialog.setTitle(R.string.edit_author_details);
 		EditText familyView = dialog.findViewById(R.id.family_name);

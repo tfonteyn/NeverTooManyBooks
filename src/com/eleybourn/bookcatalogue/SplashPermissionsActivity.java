@@ -9,8 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -162,7 +160,7 @@ abstract public class SplashPermissionsActivity extends Activity {
         if (missing.length == 0) {
             startNextActivity();
         } else {
-            ActivityCompat.requestPermissions(this, missing, PERMISSIONS_REQUEST);
+           // Activity.requestPermissions(this, missing, PERMISSIONS_REQUEST);
             //TODO: when going to API 23+, use native call
             //requestPermissions(ungrantedPermissions, PERMISSIONS_REQUEST);
         }
@@ -180,9 +178,9 @@ abstract public class SplashPermissionsActivity extends Activity {
 
         for (Iterator<String> i = permissions.iterator(); i.hasNext(); ) {
             //TODO: when going to API 23+, use native call
-            if (ContextCompat.checkSelfPermission(this, i.next()) == PackageManager.PERMISSION_GRANTED) {
-                i.remove();
-            }
+//            if (Context.checkSelfPermission(this, i.next()) == PackageManager.PERMISSION_GRANTED) {
+//                i.remove();
+//            }
         }
         return permissions.toArray(new String[permissions.size()]);
     }

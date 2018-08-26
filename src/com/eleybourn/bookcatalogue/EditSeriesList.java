@@ -26,6 +26,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.app.Dialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -120,7 +121,7 @@ public class EditSeriesList extends EditObjectList<Series> {
 	}
 	
 	private void editSeries(final Series series) {
-		final Dialog dialog = new Dialog(this);
+		final Dialog dialog = new AppCompatDialog(this);
 		dialog.setContentView(R.layout.edit_book_series);
 		dialog.setTitle(R.string.edit_book_series);
 

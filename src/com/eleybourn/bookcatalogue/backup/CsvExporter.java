@@ -197,8 +197,8 @@ public class CsvExporter implements Exporter {
 						StringBuilder bookshelves_id_text = new StringBuilder();
 						StringBuilder bookshelves_name_text = new StringBuilder();
 						while (bookshelves.moveToNext()) {
-							bookshelves_id_text.append(bookshelves.getString(bookshelves.getColumnIndex(CatalogueDBAdapter.KEY_ROWID))).append(BookEditFields.BOOKSHELF_SEPERATOR);
-							bookshelves_name_text.append(Convert.encodeListItem(bookshelves.getString(bookshelves.getColumnIndex(CatalogueDBAdapter.KEY_BOOKSHELF)), BookEditFields.BOOKSHELF_SEPERATOR)).append(BookEditFields.BOOKSHELF_SEPERATOR);
+							bookshelves_id_text.append(bookshelves.getString(bookshelves.getColumnIndex(CatalogueDBAdapter.KEY_ROWID))).append(BookEditFields.BOOKSHELF_SEPARATOR);
+							bookshelves_name_text.append(Convert.encodeListItem(bookshelves.getString(bookshelves.getColumnIndex(CatalogueDBAdapter.KEY_BOOKSHELF)), BookEditFields.BOOKSHELF_SEPARATOR)).append(BookEditFields.BOOKSHELF_SEPARATOR);
 						}
 						bookshelves.close();
 

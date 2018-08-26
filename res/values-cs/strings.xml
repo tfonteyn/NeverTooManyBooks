@@ -16,9 +16,9 @@
 <string name="confirm_add">Přidat knihu</string>
 <string name="confirm_update">Upravit</string>
 <string name="nobooks">V této knihovně nemáte v současnosti žádnou knihu. Pro přidání knihy použijte menu ve spodní části obrazovky.</string>
-<string name="menu_sort_by_author_expanded">Rozbalit vše</string>
+<string name="menu_expand_all">Rozbalit vše</string>
 <string name="menu_sort_by">Seřadit podle</string>
-<string name="menu_sort_by_author_collapsed">Sbalit vše</string>
+<string name="menu_collapse_all">Sbalit vše</string>
     <string name="search">Hledat</string>
 <string name="cancel">Zrušit</string>
 <string name="confirm_save">Uložit knihu</string>

@@ -17,9 +17,9 @@
     <string name="confirm_add">Προσθήκη Βιβλίου</string>
     <string name="confirm_update">Ενημέρωση</string>
     <string name="nobooks">Δεν υπάρχουν βιβλία σε αυτό το ράφι. Παρακαλούμε προσθέστε μερικά με το μενού στο κάτω μέρος της οθόνης.</string>
-    <string name="menu_sort_by_author_expanded">Επέκταση Όλων</string>
+    <string name="menu_expand_all">Επέκταση Όλων</string>
     <string name="menu_sort_by">Ταξινόμηση κατα</string>
-    <string name="menu_sort_by_author_collapsed">Απόκρυψη Όλων</string>
+    <string name="menu_collapse_all">Απόκρυψη Όλων</string>
     <string name="search">Αναζήτηση</string>
     <string name="cancel">Ακύρωση</string>
     <string name="confirm_save">Αποθήκευση</string>

@@ -17,9 +17,9 @@
     <string name="confirm_add">Добавить книгу</string>
     <string name="confirm_update">Обновить</string>
     <string name="nobooks">На этой полке нет книг. Пожалуйста, добавьте книги, используя меню в нижней части этого экрана.</string>
-    <string name="menu_sort_by_author_expanded">Развернуть всё</string>
+    <string name="menu_expand_all">Развернуть всё</string>
     <string name="menu_sort_by">Отсортировать по</string>
-    <string name="menu_sort_by_author_collapsed">Свернуть всё</string>
+    <string name="menu_collapse_all">Свернуть всё</string>
     <string name="search">Поиск</string>
     <string name="cancel">Отмена</string>
     <string name="confirm_save">Сохранить книгу</string>

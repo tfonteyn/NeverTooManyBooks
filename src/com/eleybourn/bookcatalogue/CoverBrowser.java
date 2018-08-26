@@ -20,9 +20,6 @@
 
  package com.eleybourn.bookcatalogue;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -32,6 +29,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.app.Dialog;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -52,6 +50,9 @@ import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import com.eleybourn.bookcatalogue.utils.ViewUtils;
+
+import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Class to display and manage a cover image browser in a dialog.
@@ -318,7 +319,7 @@ public class CoverBrowser {
 		mImageFetcher.enqueue(edTask);
 
 		// Setup the basic dialog
-		mDialog = new Dialog(mContext);
+		mDialog = new AppCompatDialog(mContext);
 		mDialog.setContentView(R.layout.select_edition_cover);
 		mDialog.setTitle(R.string.finding_editions);
 
@@ -414,27 +415,24 @@ public class CoverBrowser {
     	final LibraryThingManager mLibraryThing = new LibraryThingManager(mContext);
 
     	private boolean isGood(File f) {
-    		boolean ok = true;
-   
-	    	if (!f.exists() || f.length() == 0) {
-	    		ok = false;
-	    	} else {
-	    		try {
-		    		// Just read the image files to get file size
-		    		BitmapFactory.Options opt = new BitmapFactory.Options();
-		    		opt.inJustDecodeBounds = true;
-		    	    BitmapFactory.decodeFile( f.getAbsolutePath(), opt );
-		    	    // If too small, it's no good
-		    	    if ( opt.outHeight < 8 || opt.outWidth < 8 ) {
-		    	    	ok = false;
-		    	    }
-	    		} catch (Exception e) {
-	    			// Failed to decode; probably not an image
-	    			ok = false;
-	    			Logger.logError(e, "Unable to decode thumbnail");
-	    		}
-	    	}
-			try {
+    		boolean ok = false;
+
+            if (f.exists() && f.length() != 0) {
+                try {
+                    // Just read the image files to get file size
+                    BitmapFactory.Options opt = new BitmapFactory.Options();
+                    opt.inJustDecodeBounds = true;
+                    BitmapFactory.decodeFile( f.getAbsolutePath(), opt );
+                    // If too small, it's no good
+                    ok = (opt.outHeight >= 8 && opt.outWidth >= 8 );
+                } catch (Exception e) {
+                    // Failed to decode; probably not an image
+                    ok = false;
+                    Logger.logError(e, "Unable to decode thumbnail");
+                }
+            }
+
+            try {
 				if (!ok && f.exists()) {
 					f.delete();
 				}

@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -51,7 +52,7 @@ import java.util.List;
  */
 public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 
-    public static final Character BOOKSHELF_SEPERATOR = ',';
+    public static final Character BOOKSHELF_SEPARATOR = ',';
 
     // Target size of a thumbnail in edit dialog and zoom dialog (bbox dim)
     protected static final int MAX_EDIT_THUMBNAIL_SIZE = 256;
@@ -398,15 +399,9 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
             if (inChannel != null) {
                 inChannel.close();
             }
-            if (outChannel != null) {
-                outChannel.close();
-            }
-            if (fis != null) {
-                fis.close();
-            }
-            if (fos != null) {
-                fos.close();
-            }
+            outChannel.close();
+            fis.close();
+            fos.close();
         }
     }
 
@@ -490,7 +485,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
     }
 
     /**
-     * Get the File object for the cover of the book we are editing. If the boo
+     * Get the File object for the cover of the book we are editing. If the book
      * is new, return the standard temp file.
      */
     protected File getCoverFile(Long rowId) {
@@ -727,7 +722,8 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
      */
     private void showZoomedThumb(Long rowId) {
         // Create dialog and set layout
-        final Dialog dialog = new Dialog(getActivity());
+        Context c = getActivity();
+        final Dialog dialog = new Dialog(c);
         dialog.setContentView(R.layout.zoom_thumb_dialog);
 
         // Check if we have a file and/or it is valid
@@ -737,9 +733,9 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
             dialog.setTitle(getResources().getString(R.string.cover_not_set));
         } else {
 
-            BitmapFactory.Options opt = new BitmapFactory.Options();
-            opt.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(thumbFile.getAbsolutePath(), opt);
+			BitmapFactory.Options opt = new BitmapFactory.Options();
+			opt.inJustDecodeBounds = true;
+			BitmapFactory.decodeFile(thumbFile.getAbsolutePath(), opt);
 
             // If no size info, assume file bad and return appropriate icon
             if (opt.outHeight <= 0 || opt.outWidth <= 0) {

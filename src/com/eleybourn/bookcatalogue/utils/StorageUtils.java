@@ -115,6 +115,9 @@ public class StorageUtils {
 	public static File getFile(String fileName) {
         initSharedDirectories();
 
+        if (BuildConfig.DEBUG) {
+        	System.out.println("Accessing file: " + EXTERNAL_FILE_PATH + File.separator + fileName);
+		}
         return new File(EXTERNAL_FILE_PATH + File.separator + fileName);
     }
 

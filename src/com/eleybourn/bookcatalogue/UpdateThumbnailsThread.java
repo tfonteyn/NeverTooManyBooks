@@ -23,11 +23,10 @@ package com.eleybourn.bookcatalogue;
 import android.database.Cursor;
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.UpdateFromInternet.FieldUsage;
-import com.eleybourn.bookcatalogue.UpdateFromInternet.FieldUsages;
-import com.eleybourn.bookcatalogue.UpdateFromInternet.FieldUsages.Usages;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.FieldUsage;
+import com.eleybourn.bookcatalogue.utils.FieldUsages;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
@@ -303,10 +302,10 @@ public class UpdateThumbnailsThread extends ManagedTask {
 				if (usage.fieldName.equals(CatalogueDBAdapter.KEY_THUMBNAIL)) {
 					File downloadedFile = CatalogueDBAdapter.getTempThumbnail();
 					boolean copyThumb = false;
-					if (usage.usage == Usages.COPY_IF_BLANK) {
+					if (usage.usage == FieldUsages.Usages.COPY_IF_BLANK) {
 						File file = CatalogueDBAdapter.fetchThumbnailByUuid(bookUuid);
 						copyThumb = (!file.exists() || file.length() == 0);
-					} else if (usage.usage == Usages.OVERWRITE) {
+					} else if (usage.usage == FieldUsages.Usages.OVERWRITE) {
 						copyThumb = true;
 					}
 					if (copyThumb) {

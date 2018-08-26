@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.app.Dialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -44,7 +45,7 @@ public class EditFormatDialog {
 	}
 
 	public void edit(final String origFormat) {
-		final Dialog dialog = new Dialog(mContext);
+		final Dialog dialog = new AppCompatDialog(mContext);
 		dialog.setContentView(R.layout.edit_format);
 		dialog.setTitle(R.string.edit_format_name);
 

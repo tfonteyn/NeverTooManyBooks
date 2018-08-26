@@ -3615,7 +3615,7 @@ public class CatalogueDBAdapter {
 
 			String bookshelf = values.getBookshelfList();
 			if (bookshelf != null && !bookshelf.trim().isEmpty()) {
-				createBookshelfBooks(rowId, Convert.decodeList(bookshelf, BookEditFields.BOOKSHELF_SEPERATOR), false);
+				createBookshelfBooks(rowId, Convert.decodeList(bookshelf, BookEditFields.BOOKSHELF_SEPARATOR), false);
 			}
 
 			createBookAuthors(rowId, authors, false);
@@ -3677,7 +3677,7 @@ public class CatalogueDBAdapter {
 		}
 
 		//Insert the new ones
-		//String[] bookshelves = bookshelf.split(BookEditFields.BOOKSHELF_SEPERATOR.toString());
+		//String[] bookshelves = bookshelf.split(BookEditFields.BOOKSHELF_SEPARATOR.toString());
 		for (int i = 0; i < bookshelves.size(); i++) {
 			String name = bookshelves.get(i).trim();
 			if (name.isEmpty()) {
@@ -4194,7 +4194,7 @@ public class CatalogueDBAdapter {
 
 			String bookshelf = values.getBookshelfList();
 			if (bookshelf != null && !bookshelf.trim().isEmpty()) {
-				createBookshelfBooks(rowId, Convert.decodeList(bookshelf, BookEditFields.BOOKSHELF_SEPERATOR), false);
+				createBookshelfBooks(rowId, Convert.decodeList(bookshelf, BookEditFields.BOOKSHELF_SEPARATOR), false);
 			}
 
 			if (values.containsKey(CatalogueDBAdapter.KEY_AUTHOR_ARRAY)) {

@@ -114,7 +114,7 @@ public class BookData extends DataManager {
 	/** Accessor. Return a formatted list of books. */
 	public String getBookshelfText() {
 		String list = getBookshelfList();
-		ArrayList<String> items = Convert.decodeList(list, BookDetailsAbstract.BOOKSHELF_SEPERATOR);
+		ArrayList<String> items = Convert.decodeList(list, BookDetailsAbstract.BOOKSHELF_SEPARATOR);
 		if (items.size() == 0)
 			return "";
 
@@ -139,11 +139,11 @@ public class BookData extends DataManager {
 			StringBuilder bookshelves_list = new StringBuilder();
 			while (bookshelves.moveToNext()) {
 				String name = bookshelves.getString(bookshelves.getColumnIndex(CatalogueDBAdapter.KEY_BOOKSHELF));
-				String encoded_name = Convert.encodeListItem(name, BookDetailsAbstract.BOOKSHELF_SEPERATOR);
+				String encoded_name = Convert.encodeListItem(name, BookDetailsAbstract.BOOKSHELF_SEPARATOR);
 				if (bookshelves_list.length() == 0) {
 					bookshelves_list.append(encoded_name);
 				} else {
-					bookshelves_list.append(BookDetailsAbstract.BOOKSHELF_SEPERATOR).append(encoded_name);
+					bookshelves_list.append(BookDetailsAbstract.BOOKSHELF_SEPARATOR).append(encoded_name);
 				}
 			}
 			return bookshelves_list.toString();

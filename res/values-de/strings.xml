@@ -16,9 +16,9 @@
 <string name="confirm_add">Buch hinzufügen</string>
 <string name="confirm_update">Aktualisieren</string>
 <string name="nobooks">Es befinden sich keine Bücher im Bücherregal. Bitte fügen Sie Bücher über das Menü am unteren Bildschirmrand hinzu.</string>
-<string name="menu_sort_by_author_expanded">Alles ausklappen</string>
+<string name="menu_expand_all">Alles ausklappen</string>
 <string name="menu_sort_by">Sortieren nach</string>
-<string name="menu_sort_by_author_collapsed">Alles einklappen</string>
+<string name="menu_collapse_all">Alles einklappen</string>
     <string name="search">Suche</string>
 <string name="cancel">Abbrechen</string>
 <string name="confirm_save">Buch speichern</string>

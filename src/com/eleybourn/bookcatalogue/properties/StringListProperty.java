@@ -30,18 +30,22 @@ import com.eleybourn.bookcatalogue.R;
  */
 public class StringListProperty extends ListProperty<String> implements Property.StringValue {
 
-	public StringListProperty(ItemEntries<String> list, String uniqueId, PropertyGroup group, int nameResourceId, String value, String defaultPref, String defaultValue) {
+    @SuppressWarnings("unused")
+    public StringListProperty(ItemEntries<String> list, String uniqueId, PropertyGroup group, int nameResourceId, String value, String defaultPref, String defaultValue) {
 		super(list, uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
 	}
+    @SuppressWarnings("unused")
 	public StringListProperty(ItemEntries<String> list, String uniqueId, PropertyGroup group, int nameResourceId, String value, String defaultValue) {
 		super(list, uniqueId, group, nameResourceId, value, null, defaultValue);
 	}
+    @SuppressWarnings("unused")
 	public StringListProperty(ItemEntries<String> list, String uniqueId, PropertyGroup group, int nameResourceId, String value) {
 		super(list, uniqueId, group, nameResourceId, value, null, value);
 	}
 	public StringListProperty(ItemEntries<String> list, String uniqueId, PropertyGroup group, int nameResourceId) {
 		super(list, uniqueId, group, nameResourceId, null, null, null);
 	}
+    @SuppressWarnings("unused")
 	public StringListProperty(ItemEntries<String> list, String uniqueId) {
 		super(list, uniqueId, PropertyGroup.GRP_GENERAL, R.string.unknown, null, null, null);
 	}

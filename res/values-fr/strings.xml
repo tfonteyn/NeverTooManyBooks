@@ -118,9 +118,9 @@
     <string name="confirm_add">Ajouter le livre ?</string>
     <string name="confirm_update">Mettre à jour</string>
     <string name="nobooks">Il n\'y a pas de livre dans cette biblothèque. Veuillez en ajouter par le menu en bas de cet écran.</string>
-    <string name="menu_sort_by_author_expanded">Tout étendre</string>
+    <string name="menu_expand_all">Tout étendre</string>
     <string name="menu_sort_by">Trier par</string>
-    <string name="menu_sort_by_author_collapsed">Tout réduire</string>
+    <string name="menu_collapse_all">Tout réduire</string>
     <string name="search">Recherche</string>
     <string name="cancel">Annuler</string>
     <string name="confirm_save">Sauvegarder le livre</string>

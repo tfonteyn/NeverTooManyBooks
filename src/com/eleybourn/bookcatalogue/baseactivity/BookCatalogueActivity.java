@@ -1,8 +1,8 @@
 package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.app.ActionBar;
+import android.app.Activity;
 import android.view.MenuItem;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -17,7 +17,7 @@ import java.util.Locale;
  *
  * @author pjw
  */
-abstract public class BookCatalogueActivity extends AppCompatActivity {
+abstract public class BookCatalogueActivity extends Activity {
     /**
      * NEWKIND: add new supported themes here and in R.array.supported_themes,
      * the string-array order must match the THEMES order
@@ -44,9 +44,8 @@ abstract public class BookCatalogueActivity extends AppCompatActivity {
         setTheme(THEMES[mLastTheme]);
         super.onCreate(savedInstanceState);
 
-        ActionBar bar = getSupportActionBar();
+        ActionBar bar = getActionBar();
         if (bar != null) {
-            /** TODO: using {@link android.support.v7.app.ActionBar} we need to set this explicitly, why ?*/
             bar.setIcon(BookCatalogueApp.getAppContext().getApplicationInfo().icon);
             //bar.setDisplayUseLogoEnabled(true);
 

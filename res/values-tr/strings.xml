@@ -16,9 +16,9 @@
     <string name="confirm_add">Kitap ekle</string>
     <string name="confirm_update">Güncelle</string>
     <string name="nobooks">Bu kitaplıkta hiç kitap yok. Lütfen ekranın alt kısmındaki bölümü kullanarak kitap ekleyin.</string>
-    <string name="menu_sort_by_author_expanded">Hepsini göster</string>
+    <string name="menu_expand_all">Hepsini göster</string>
     <string name="menu_sort_by">Sırala</string>
-    <string name="menu_sort_by_author_collapsed">Hepsini gizle</string>
+    <string name="menu_collapse_all">Hepsini gizle</string>
     <string name="search">Ara</string>
     <string name="cancel">Vazgeç</string>
     <string name="confirm_save">Kitabı kaydet</string>    

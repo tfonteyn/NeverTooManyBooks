@@ -20,9 +20,9 @@
 
 package com.eleybourn.bookcatalogue.baseactivity;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;

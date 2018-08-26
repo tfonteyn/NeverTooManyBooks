@@ -168,7 +168,8 @@ public class CropCropImage extends CropMonitoredActivity {
 		try {
 			in = mContentResolver.openInputStream(uri);
 			return BitmapFactory.decodeStream(in);
-		} catch (FileNotFoundException ignored) {
+		} catch (FileNotFoundException e) {
+			Logger.logError(e);
 		}
 		return null;
 	}

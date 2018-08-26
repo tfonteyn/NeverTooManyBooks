@@ -17,9 +17,9 @@
 	<string name="confirm_add">Añadir libro</string>
 	<string name="confirm_update">Actualizar</string>
 	<string name="nobooks">No hay libros en esta biblioteca. Añada alguno utilizando el menú al pie de esta pantalla.</string>
-	<string name="menu_sort_by_author_expanded">Expandir todo</string>
+	<string name="menu_expand_all">Expandir todo</string>
 	<string name="menu_sort_by">Ordenar por</string>
-	<string name="menu_sort_by_author_collapsed">Comprimir todo</string>
+	<string name="menu_collapse_all">Comprimir todo</string>
     <string name="search">Buscar</string>
 	<string name="cancel">Cancelar</string>
 	<string name="confirm_save">Guardar libro</string>

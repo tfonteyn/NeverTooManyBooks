@@ -16,9 +16,9 @@
 <string name="confirm_add">Dodaj!</string>
 <string name="confirm_update">Aktualizuj</string>
 <string name="nobooks">Na tej półce nie ma książek. Dodaj jakąś przy pomocy menu na dole ekranu.</string>
-<string name="menu_sort_by_author_expanded">Rozwiń wszystko</string>
+<string name="menu_expand_all">Rozwiń wszystko</string>
 <string name="menu_sort_by">Sortuj wg</string>
-<string name="menu_sort_by_author_collapsed">Zwiń wszystko</string>
+<string name="menu_collapse_all">Zwiń wszystko</string>
     <string name="search">Szukaj</string>
 <string name="cancel">Anuluj</string>
 <string name="confirm_save">Zapisz książkę</string>

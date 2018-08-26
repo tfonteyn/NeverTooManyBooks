@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.AlertDialog;
 import android.app.ExpandableListActivity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -30,6 +29,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.app.AlertDialog;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -1161,7 +1161,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		mMenuHandler = new MenuHandler();
 // RELEASE: RE-ENABLE THESE!
 //		mMenuHandler.init(menu);
-//		mMenuHandler.addCreateBookItems(menu);
+//		mMenuHandler.addCreateBookSubMenu(menu);
 //
 //		if (collapsed == true || currentGroup.size() == 0) {
 //			mMenuHandler.addItem(menu, SORT_BY_AUTHOR_COLLAPSED, R.string.menu_sort_by_author_expanded, R.drawable.ic_menu_expand);

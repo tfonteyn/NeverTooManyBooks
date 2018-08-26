@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.SharedPreferences.Editor;
+import android.app.Dialog;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.View;
@@ -111,7 +112,7 @@ public class HintManager {
 		}
 
 		// Build the hint dialog
-		final Dialog dialog = new Dialog(context);
+		final Dialog dialog = new AppCompatDialog(context);
 		dialog.setContentView(R.layout.hint_dialogue);
 		
 		// Get the various Views

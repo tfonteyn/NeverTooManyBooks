@@ -20,12 +20,10 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.util.LinkedHashMap;
-
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -33,10 +31,11 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.eleybourn.bookcatalogue.UpdateFromInternet.FieldUsages.Usages;
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.utils.FieldUsage;
+import com.eleybourn.bookcatalogue.utils.FieldUsages;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
@@ -46,23 +45,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
 	private long mUpdateSenderId = 0;
 	private SharedPreferences mPrefs = null;
 
-	/**
-	 * Class to manage a collection of fields and the rules for importing them.
-	 * Inherits from LinkedHashMap to guarantee iteration order.
-	 * 
-	 * @author Philip Warner
-	 */
-	static public class FieldUsages extends LinkedHashMap<String,FieldUsage>  {
-		private static final long serialVersionUID = 1L;
 
-		public enum Usages { COPY_IF_BLANK, ADD_EXTRA, OVERWRITE }
-
-		public FieldUsage put(FieldUsage usage) {
-			this.put(usage.fieldName, usage);
-			return usage;
-		}
-
-	}
 	private FieldUsages mFieldUsages = new FieldUsages();
 
 	/**
@@ -81,21 +64,6 @@ public class UpdateFromInternet extends ActivityWithTasks {
 			Logger.logError(e);
 		}
 	}
-	
-	public class FieldUsage {
-		final String fieldName;
-		final int stringId;
-		Usages usage;
-		boolean selected;
-		final boolean canAppend;
-		FieldUsage(String name, int id, Usages usage, boolean canAppend) {
-			this.fieldName = name;
-			this.stringId = id;
-			this.usage = usage;
-			this.selected = true;
-			this.canAppend = canAppend;
-		}
-	}
 
 	/**
 	 * Add a FieldUsage if the specified field has not been hidden by the user.
@@ -105,30 +73,30 @@ public class UpdateFromInternet extends ActivityWithTasks {
 	 * @param stringId	ID of field label string
 	 * @param usage		Usage to apply.
 	 */
-	private void addIfVisible(String field, String visField, int stringId, Usages usage, boolean canAppend) {
+	private void addIfVisible(String field, String visField, int stringId, FieldUsages.Usages usage, boolean canAppend) {
 		if (visField == null || visField.trim().isEmpty())
 			visField = field;
 		if (mPrefs.getBoolean(FieldVisibility.prefix + visField, true))
-			mFieldUsages.put(new FieldUsage(field, stringId, usage, canAppend));		
+			mFieldUsages.put(new FieldUsage(field, stringId, usage, canAppend));
 	}
 	/**
 	 * This function builds the manage field visibility by adding onClick events
 	 * to each field checkbox
 	 */
 	public void setupFields() {
-		addIfVisible(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, CatalogueDBAdapter.KEY_AUTHOR_ID, R.string.author, Usages.ADD_EXTRA, true);
-		addIfVisible(CatalogueDBAdapter.KEY_TITLE, null, R.string.title, Usages.COPY_IF_BLANK, false);
-		addIfVisible(CatalogueDBAdapter.KEY_ISBN, null, R.string.isbn, Usages.COPY_IF_BLANK, false);
-		addIfVisible(CatalogueDBAdapter.KEY_THUMBNAIL, null, R.string.thumbnail, Usages.COPY_IF_BLANK, false);
-		addIfVisible(CatalogueDBAdapter.KEY_SERIES_ARRAY, CatalogueDBAdapter.KEY_SERIES_NAME, R.string.series, Usages.ADD_EXTRA, true);
-		addIfVisible(CatalogueDBAdapter.KEY_PUBLISHER, null, R.string.publisher, Usages.COPY_IF_BLANK, false);
-		addIfVisible(CatalogueDBAdapter.KEY_DATE_PUBLISHED, null, R.string.date_published, Usages.COPY_IF_BLANK, false);
-		addIfVisible(CatalogueDBAdapter.KEY_PAGES, null, R.string.pages, Usages.COPY_IF_BLANK, false);
-		addIfVisible(CatalogueDBAdapter.KEY_LIST_PRICE, null, R.string.list_price, Usages.COPY_IF_BLANK, false);
-		addIfVisible(CatalogueDBAdapter.KEY_FORMAT, null, R.string.format, Usages.COPY_IF_BLANK, false);
-		addIfVisible(CatalogueDBAdapter.KEY_DESCRIPTION, null, R.string.description, Usages.COPY_IF_BLANK, false);
-		addIfVisible(CatalogueDBAdapter.KEY_GENRE, null, R.string.genre, Usages.COPY_IF_BLANK, false);
-		addIfVisible(DatabaseDefinitions.DOM_LANGUAGE.name, null, R.string.language, Usages.COPY_IF_BLANK, false);
+		addIfVisible(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, CatalogueDBAdapter.KEY_AUTHOR_ID, R.string.author, FieldUsages.Usages.ADD_EXTRA, true);
+		addIfVisible(CatalogueDBAdapter.KEY_TITLE, null, R.string.title, FieldUsages.Usages.COPY_IF_BLANK, false);
+		addIfVisible(CatalogueDBAdapter.KEY_ISBN, null, R.string.isbn, FieldUsages.Usages.COPY_IF_BLANK, false);
+		addIfVisible(CatalogueDBAdapter.KEY_THUMBNAIL, null, R.string.thumbnail, FieldUsages.Usages.COPY_IF_BLANK, false);
+		addIfVisible(CatalogueDBAdapter.KEY_SERIES_ARRAY, CatalogueDBAdapter.KEY_SERIES_NAME, R.string.series, FieldUsages.Usages.ADD_EXTRA, true);
+		addIfVisible(CatalogueDBAdapter.KEY_PUBLISHER, null, R.string.publisher, FieldUsages.Usages.COPY_IF_BLANK, false);
+		addIfVisible(CatalogueDBAdapter.KEY_DATE_PUBLISHED, null, R.string.date_published, FieldUsages.Usages.COPY_IF_BLANK, false);
+		addIfVisible(CatalogueDBAdapter.KEY_PAGES, null, R.string.pages, FieldUsages.Usages.COPY_IF_BLANK, false);
+		addIfVisible(CatalogueDBAdapter.KEY_LIST_PRICE, null, R.string.list_price, FieldUsages.Usages.COPY_IF_BLANK, false);
+		addIfVisible(CatalogueDBAdapter.KEY_FORMAT, null, R.string.format, FieldUsages.Usages.COPY_IF_BLANK, false);
+		addIfVisible(CatalogueDBAdapter.KEY_DESCRIPTION, null, R.string.description, FieldUsages.Usages.COPY_IF_BLANK, false);
+		addIfVisible(CatalogueDBAdapter.KEY_GENRE, null, R.string.genre, FieldUsages.Usages.COPY_IF_BLANK, false);
+		addIfVisible(DatabaseDefinitions.DOM_LANGUAGE.name, null, R.string.language, FieldUsages.Usages.COPY_IF_BLANK, false);
 
 		// Display the list of fields
 		LinearLayout parent = findViewById(R.id.manage_fields_scrollview);
@@ -234,7 +202,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
 					alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
 					alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternet.this.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
-							mFieldUsages.get(CatalogueDBAdapter.KEY_THUMBNAIL).usage = Usages.OVERWRITE;
+							mFieldUsages.get(CatalogueDBAdapter.KEY_THUMBNAIL).usage = FieldUsages.Usages.OVERWRITE;
 							startUpdate();
 							return;
 						}
@@ -247,7 +215,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
 					});
 					alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, UpdateFromInternet.this.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
-							mFieldUsages.get(CatalogueDBAdapter.KEY_THUMBNAIL).usage = Usages.COPY_IF_BLANK;
+							mFieldUsages.get(CatalogueDBAdapter.KEY_THUMBNAIL).usage = FieldUsages.Usages.COPY_IF_BLANK;
 							startUpdate();
 							return;
 						}
