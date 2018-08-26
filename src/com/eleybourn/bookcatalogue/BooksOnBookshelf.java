@@ -30,7 +30,6 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -129,7 +128,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     /**
      * Currently selected list style
      */
-    BooklistStyle mCurrentStyle = null;
+    private BooklistStyle mCurrentStyle = null;
     /**
      * Currently selected bookshelf
      */
@@ -252,7 +251,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             // Extract the sort type from the bundle. getInt will return 0 if there is no attribute
             // sort (which is exactly what we want)
             try {
-                BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+                BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
                 // Restore bookshelf and position
                 mCurrentBookshelf = prefs.getString(PREF_BOOKSHELF, mCurrentBookshelf);
                 mTopRow = prefs.getInt(PREF_TOP_ROW, 0);
@@ -369,7 +368,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         // If it's a book, edit it.
         if (mList.getRowView().getKind() == RowKinds.ROW_KIND_BOOK) {
             BookEdit.openBook(this, mList.getRowView().getBookId(), mList.getBuilder(), position);
-//			boolean isReadOnly = BookCatalogueApp.getAppPreferences()
+//			boolean isReadOnly = BookCatalogueApp.getPrefs()
 //					.getBoolean(BookCataloguePreferences.PREF_OPEN_BOOK_READ_ONLY, false);
 //			if (isReadOnly){
 //				BookEdit.viewBook(this, mList.getRowView().getBookId());
@@ -725,11 +724,11 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             // Make sure we have a style chosen
             BooklistStyles styles = BooklistStyles.getAllStyles(mDb);
             if (mCurrentStyle == null) {
-                String prefStyle = BookCatalogueApp.getAppPreferences().getString(BookCataloguePreferences.PREF_BOOKLIST_STYLE, getString(R.string.sort_author_series));
+                String prefStyle = BookCatalogueApp.getPrefs().getBookListStyle(getString(R.string.sort_author_series));
                 mCurrentStyle = styles.findCanonical(prefStyle);
                 if (mCurrentStyle == null)
                     mCurrentStyle = styles.get(0);
-                BookCatalogueApp.getAppPreferences().setString(BookCataloguePreferences.PREF_BOOKLIST_STYLE, mCurrentStyle.getCanonicalName());
+                BookCatalogueApp.getPrefs().setString(BookCataloguePreferences.PREF_BOOKLIST_STYLE, mCurrentStyle.getCanonicalName());
             }
 
             // get a new builder and add the required extra domains
@@ -762,7 +761,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         if (mIsDead)
             return;
 
-        final Editor ed = BookCatalogueApp.getAppPreferences().edit();
+        final Editor ed = BookCatalogueApp.getPrefs().edit();
 
         // Save position in list
         if (mListHasBeenLoaded) {
@@ -889,7 +888,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 if (!new_bookshelf.equalsIgnoreCase(mCurrentBookshelf)) {
                     mCurrentBookshelf = new_bookshelf;
                     // save the current bookshelf into the preferences
-                    BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+                    BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
                     SharedPreferences.Editor ed = prefs.edit();
                     ed.putString(PREF_BOOKSHELF, mCurrentBookshelf);
                     ed.commit();
@@ -925,13 +924,15 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 
         mMenuHandler.addCreateBookSubMenu(menu);
 
-        MenuItemCompat.setShowAsAction(mMenuHandler.addItem(menu, MNU_SORT, R.string.sort_and_style_ellipsis, android.R.drawable.ic_menu_sort_alphabetically), MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        mMenuHandler.addItem(menu, MNU_SORT, R.string.sort_and_style_ellipsis, android.R.drawable.ic_menu_sort_alphabetically)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         mMenuHandler.addItem(menu, MNU_EXPAND, R.string.menu_expand_all, R.drawable.ic_menu_expand);
 
         mMenuHandler.addItem(menu, MNU_COLLAPSE, R.string.menu_collapse_all, R.drawable.ic_menu_collapse);
 
-        MenuItemCompat.setShowAsAction(mMenuHandler.addSearchItem(menu), MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        mMenuHandler.addSearchItem(menu)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         if (GoodreadsManager.hasCredentials()) {
             mMenuHandler.addItem(menu, MNU_GOODREADS, R.string.goodreads, R.drawable.ic_menu_gr_logo);
@@ -1130,7 +1131,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         String styleName;
 
         if (mCurrentStyle == null) {
-            BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+            BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
             styleName = prefs.getString(PREF_LIST_STYLE, "");
         } else {
             styleName = mCurrentStyle.getCanonicalName();
@@ -1231,7 +1232,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     /**
      * Start the BooklistPreferences Activity
      */
-    public void doEditStyle() {
+    private void doEditStyle() {
         Intent i = new Intent(this, BooklistStylePropertiesActivity.class);
         i.putExtra(BooklistStylePropertiesActivity.KEY_STYLE, mCurrentStyle);
         i.putExtra(BooklistStylePropertiesActivity.KEY_SAVE_TO_DATABASE, false);

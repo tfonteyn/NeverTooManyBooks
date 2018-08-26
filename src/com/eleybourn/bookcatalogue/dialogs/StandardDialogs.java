@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.dialogs;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,7 +28,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -56,7 +56,7 @@ public class StandardDialogs {
 	/**
 	 * Show a dialog asking if unsaved edits should be ignored. Finish if so.
 	 */
-	public static void showConfirmUnsavedEditsDialog(final AppCompatActivity a, final Runnable r){
+	public static void showConfirmUnsavedEditsDialog(final Activity a, final Runnable r){
 		AlertDialog.Builder dialog = new AlertDialog.Builder(a);
 
 		dialog.setTitle(R.string.details_have_changed);

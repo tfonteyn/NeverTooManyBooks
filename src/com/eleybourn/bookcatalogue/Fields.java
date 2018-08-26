@@ -20,11 +20,11 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -115,8 +115,8 @@ import java.util.Iterator;
  */
 public class Fields extends ArrayList<Fields.Field> {
 	// Used for date parsing
-	static final java.text.SimpleDateFormat mDateSqlSdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
-	static final java.text.DateFormat mDateDispSdf = java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM);
+	private static final java.text.SimpleDateFormat mDateSqlSdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+	private static final java.text.DateFormat mDateDispSdf = java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM);
 
 	// Java likes this
 	public static final long serialVersionUID = 1L;
@@ -136,8 +136,8 @@ public class Fields extends ArrayList<Fields.Field> {
 		View findViewById(int id);
 	}
 	private class ActivityContext implements FieldsContext {
-		private final WeakReference<AppCompatActivity> mActivity;
-		ActivityContext(AppCompatActivity a) {
+		private final WeakReference<Activity> mActivity;
+		ActivityContext(Activity a) {
 			mActivity = new WeakReference<>(a);
 		}
 		@Override
@@ -185,7 +185,7 @@ public class Fields extends ArrayList<Fields.Field> {
 	 * @param a 	The parent activity which contains all Views this object
 	 * 				will manage.
 	 */
-	Fields(AppCompatActivity a) {
+	Fields(Activity a) {
 		super();
 		mContext = new ActivityContext(a);
 		mPrefs = a.getSharedPreferences("bookCatalogue", android.content.Context.MODE_PRIVATE);
@@ -221,7 +221,7 @@ public class Fields extends ArrayList<Fields.Field> {
 	 * 
 	 * @throws ParseException		If parse failed.
 	 */
-	static Date parseDate(String s) throws ParseException {
+	private static Date parseDate(String s) throws ParseException {
 		Date d;
 		try {
 			// Parse as SQL/ANSI date
@@ -944,7 +944,7 @@ public class Fields extends ArrayList<Fields.Field> {
 			// Lookup the view
 			final View view = c.findViewById(id);
 			if (view != null) {
-				visible = BookCatalogueApp.getAppPreferences().getBoolean(FieldVisibility.prefix + group, true);
+				visible = BookCatalogueApp.getPrefs().getBoolean(FieldVisibility.prefix + group, true);
 				if (visible) {
 					view.setVisibility(View.VISIBLE);					
 				} else {

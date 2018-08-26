@@ -100,14 +100,14 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
 	 */
 	@Override
 	protected String getGlobalDefault() {
-		return BookCatalogueApp.getAppPreferences().getString(getPreferenceKey(), getDefaultValue());
+		return BookCatalogueApp.getPrefs().getString(getPreferenceKey(), getDefaultValue());
 	}
 	/**
 	 * Set underlying preferences value
 	 */
 	@Override
 	protected StringProperty setGlobalDefault(String value) {
-		BookCatalogueApp.getAppPreferences().setString(getPreferenceKey(), value);	
+		BookCatalogueApp.getPrefs().setString(getPreferenceKey(), value);
 		return this;
 	}
 

@@ -86,7 +86,7 @@ public class SimpleTaskQueue {
 		/**
 		 * Method called in queue thread to perform the background task.
 		 */
-		void run(SimpleTaskContext taskContext) throws Exception;
+		void run(SimpleTaskContext taskContext);
 		/**
 		 * Method called in UI thread after the background task has finished.
 		 */

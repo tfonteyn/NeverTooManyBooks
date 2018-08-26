@@ -93,7 +93,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 	 */
 	@Override
 	protected FileChooserFragment getChooserFragment() {
-		BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 		String lastBackup = prefs.getString(BookCataloguePreferences.PREF_LAST_BACKUP_FILE, StorageUtils.getSharedDirectory().getAbsolutePath());
 		return FileChooserFragment.newInstance(lastBackup, getDefaultFileName());
 	}
@@ -224,7 +224,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 				return;
 			default:
 				if (settings.dateFrom == null) {
-					String lastBackup = BookCatalogueApp.getAppPreferences().getString(BookCataloguePreferences.PREF_LAST_BACKUP_DATE, null);
+					String lastBackup = BookCatalogueApp.getPrefs().getString(BookCataloguePreferences.PREF_LAST_BACKUP_DATE, null);
 					if (lastBackup != null && !lastBackup.isEmpty()) {
 						try {
 							settings.dateFrom = DateUtils.parseDate(lastBackup);

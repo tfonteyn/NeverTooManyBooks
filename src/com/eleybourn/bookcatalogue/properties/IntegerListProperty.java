@@ -49,11 +49,11 @@ public class IntegerListProperty extends ListProperty<Integer> implements Intege
 
 	@Override
 	protected Integer getGlobalDefault() {
-		return BookCatalogueApp.getAppPreferences().getInt(getPreferenceKey(), getDefaultValue());
+		return BookCatalogueApp.getPrefs().getInt(getPreferenceKey(), getDefaultValue());
 	}
 	@Override
 	protected IntegerListProperty setGlobalDefault(Integer value) {
-		BookCatalogueApp.getAppPreferences().setInt(getPreferenceKey(), value);	
+		BookCatalogueApp.getPrefs().setInt(getPreferenceKey(), value);
 		return this;
 	}
 

@@ -16,6 +16,7 @@
 
 package com.eleybourn.bookcatalogue.cropper;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -34,7 +35,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.StatFs;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -75,7 +75,7 @@ public class CropCropImage extends CropMonitoredActivity {
 	// Flag indicating if default crop rect is whole image
 	private boolean mCropWholeImage = false;
 	// Flag
-	private boolean mDoFaceDetection = false;
+	private final boolean DO_FACE_DETECTION = false;
 
 	boolean mWaitingToPick; // Whether we are wait the user to pick a face.
 	boolean mSaving; // Whether the "save" button is already clicked.
@@ -168,8 +168,7 @@ public class CropCropImage extends CropMonitoredActivity {
 		try {
 			in = mContentResolver.openInputStream(uri);
 			return BitmapFactory.decodeStream(in);
-		} catch (FileNotFoundException e) {
-			Logger.logError(e);
+		} catch (FileNotFoundException ignored) {
 		}
 		return null;
 	}
@@ -502,7 +501,7 @@ public class CropCropImage extends CropMonitoredActivity {
 			Bitmap faceBitmap = prepareBitmap();
 
 			mScale = 1.0F / mScale;
-			if (faceBitmap != null && mDoFaceDetection) {
+			if (faceBitmap != null && DO_FACE_DETECTION) {
 				FaceDetector detector = new FaceDetector(faceBitmap.getWidth(),
 						faceBitmap.getHeight(), mFaces.length);
 				mNumFaces = detector.findFaces(faceBitmap, mFaces);
@@ -541,11 +540,11 @@ public class CropCropImage extends CropMonitoredActivity {
 	public static final int NO_STORAGE_ERROR = -1;
 	public static final int CANNOT_STAT_ERROR = -2;
 
-	public static void showStorageToast(AppCompatActivity activity) {
+	public static void showStorageToast(Activity activity) {
 		showStorageToast(activity, calculatePicturesRemaining());
 	}
 
-	public static void showStorageToast(AppCompatActivity activity, int remaining) {
+	public static void showStorageToast(Activity activity, int remaining) {
 		String noStorageText = null;
 
 		if (remaining == NO_STORAGE_ERROR) {

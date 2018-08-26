@@ -158,7 +158,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
                         Bitmap x = (Bitmap) intent.getExtras().get("data");
                         if (x != null && x.getWidth() > 0 && x.getHeight() > 0) {
                             Matrix m = new Matrix();
-                            m.postRotate(BookCatalogueApp.getAppPreferences().getInt(BookCataloguePreferences.PREF_AUTOROTATE_CAMERA_IMAGES, 90));
+                            m.postRotate(BookCatalogueApp.getPrefs().getInt(BookCataloguePreferences.PREF_AUTOROTATE_CAMERA_IMAGES, 90));
                             x = Bitmap.createBitmap(x, 0, 0, x.getWidth(), x.getHeight(), m, true);
                             // Create a file to copy the thumbnail into
                             FileOutputStream f;
@@ -406,9 +406,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
     }
 
     private void cropCoverImage(File thumbFile) {
-        String prefName = BookCataloguePreferences.PREF_USE_EXTERNAL_IMAGE_CROPPER;
-        boolean useExt = BookCatalogueApp.getAppPreferences().getBoolean(prefName, false);
-        if (useExt) {
+        if (BookCatalogueApp.getPrefs().getUseExternalImageCropper()) {
             cropCoverImageExternal(thumbFile);
         } else {
             cropCoverImageInternal(thumbFile);
@@ -420,9 +418,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
         // here you have to pass absolute path to your file
         crop_intent.putExtra("image-path", thumbFile.getAbsolutePath());
         crop_intent.putExtra("scale", true);
-
-        String prefName = BookCataloguePreferences.PREF_CROP_FRAME_WHOLE_IMAGE;
-        crop_intent.putExtra("whole-image", BookCatalogueApp.getAppPreferences().getBoolean(prefName, false));
+        crop_intent.putExtra("whole-image", BookCatalogueApp.getPrefs().getPrefCropFrameWholeImage());
         // Get and set the output file spec, and make sure it does not already exist.
         File cropped = this.getCroppedImageFileName();
         if (cropped.exists()) {

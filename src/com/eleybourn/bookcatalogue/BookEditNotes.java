@@ -52,7 +52,7 @@ public class BookEditNotes extends BookEditFragmentAbstract implements OnPartial
 	 *
 	 * @return The list
 	 */
-	protected ArrayList<String> getLocations() {
+	private ArrayList<String> getLocations() {
 		ArrayList<String> location_list = new ArrayList<>();
 		Cursor location_cur = mDbHelper.fetchAllLocations();
 		try {

@@ -72,7 +72,7 @@ public class FieldVisibility extends BookCatalogueActivity {
 	 * This function builds the manage field visibility by adding onClick events
 	 * to each field checkbox
 	 */
-	public void setupFields() {
+	private void setupFields() {
 		// The fields to show/hide
 		String[] fields = {
 		        CatalogueDBAdapter.KEY_AUTHOR_ID, CatalogueDBAdapter.KEY_TITLE, "thumbnail",
@@ -156,6 +156,6 @@ public class FieldVisibility extends BookCatalogueActivity {
 	}
 
 	public static boolean isVisible(String fieldName) {
-		return BookCatalogueApp.getAppPreferences().getBoolean(prefix + fieldName, true);
+		return BookCatalogueApp.getPrefs().getBoolean(prefix + fieldName, true);
 	}
 }

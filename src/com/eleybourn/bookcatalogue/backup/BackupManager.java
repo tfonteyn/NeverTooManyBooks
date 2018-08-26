@@ -182,7 +182,7 @@ public class BackupManager {
 				}
 				fragment.setSuccess(mBackupOk);
 				if (mBackupOk) {
-					BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+					BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 					if ( (backupFlags == Exporter.EXPORT_ALL)) {
 						prefs.setString(BookCataloguePreferences.PREF_LAST_BACKUP_DATE, mBackupDate);
 					}

@@ -14,7 +14,7 @@ import java.util.LinkedHashMap;
 public class FieldUsages extends LinkedHashMap<String,FieldUsage> {
     private static final long serialVersionUID = 1L;
 
-    public enum Usages { COPY_IF_BLANK, ADD_EXTRA, OVERWRITE };
+    public enum Usages { COPY_IF_BLANK, ADD_EXTRA, OVERWRITE }
 
     public FieldUsage put(FieldUsage usage) {
         this.put(usage.fieldName, usage);

@@ -52,11 +52,11 @@ public class StringListProperty extends ListProperty<String> implements Property
 
 	@Override
 	protected String getGlobalDefault() {
-		return BookCatalogueApp.getAppPreferences().getString(getPreferenceKey(), getDefaultValue());
+		return BookCatalogueApp.getPrefs().getString(getPreferenceKey(), getDefaultValue());
 	}
 	@Override
 	protected StringListProperty setGlobalDefault(String value) {
-		BookCatalogueApp.getAppPreferences().setString(getPreferenceKey(), value);
+		BookCatalogueApp.getPrefs().setString(getPreferenceKey(), value);
 		return this;
 	}
 

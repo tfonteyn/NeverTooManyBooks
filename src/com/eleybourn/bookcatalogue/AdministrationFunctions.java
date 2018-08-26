@@ -20,13 +20,13 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
@@ -105,7 +105,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	 * 4. The application version and link details
 	 * 5. The link to paypal for donation
 	 */
-	public void setupAdmin() {
+	private void setupAdmin() {
 		/* Bookshelf Link */
 		View bookshelf = findViewById(R.id.bookshelf_label);
 		// Make line flash when clicked.
@@ -410,7 +410,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	 * 
 	 * return void
 	 */
-	public void exportData() {
+	private void exportData() {
 		ExportThread thread = new ExportThread(getTaskManager());
 		thread.start();
 	}
@@ -498,7 +498,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 		}
 	}
 
-	public void onExportFinished(ExportThread task) {
+	private void onExportFinished(ExportThread task) {
 		if (task.isCancelled()) {
 			if (finish_after)
 				finish();
@@ -587,7 +587,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	/**
 	 * Start the archiving activity
 	 */
-	public static void backupCatalogue(AppCompatActivity a) {
+	public static void backupCatalogue(Activity a) {
 		Intent i = new Intent(a, BackupChooser.class);
 		i.putExtra(BackupChooser.EXTRA_MODE, BackupChooser.EXTRA_MODE_SAVE_AS);
 		a.startActivity(i);

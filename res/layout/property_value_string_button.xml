@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     style="@style/propertyValue">
 
@@ -34,10 +35,10 @@
         android:paddingEnd="@dimen/padding_border"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    <View
+     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        />
-
+        android:src="?android:attr/dividerHorizontal"
+        tools:ignore="ContentDescription" />
 </RelativeLayout>

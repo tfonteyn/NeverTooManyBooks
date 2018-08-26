@@ -31,12 +31,12 @@ import org.xml.sax.helpers.DefaultHandler;
 public class SearchWikipediaHandler extends DefaultHandler {
 	//private StringBuilder builder;
 	public String id = "";
-	public int count = 0;
-	public final String[] link = {"", ""};
+	private int count = 0;
+	private final String[] link = {"", ""};
 	private boolean entry = false;
 	
-	public static final String UL = "ul";
-	public static final String LINK = "A";
+	private static final String UL = "ul";
+	private static final String LINK = "A";
 	
 	public String[] getLinks(){
 		return link;

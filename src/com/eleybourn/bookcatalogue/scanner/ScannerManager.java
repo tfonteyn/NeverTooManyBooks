@@ -80,7 +80,7 @@ public class ScannerManager {
 	 */
 	public static Scanner getScanner() {
 		// Find out what the user prefers if any
-		int prefScanner = BookCatalogueApp.getAppPreferences().getInt( PREF_PREFERRED_SCANNER, SCANNER_ZXING_COMPATIBLE);
+		int prefScanner = BookCatalogueApp.getPrefs().getInt( PREF_PREFERRED_SCANNER, SCANNER_ZXING_COMPATIBLE);
 
 		// See if preferred one is present, if so return a new instance
 		ScannerFactory psf = myScannerFactories.get(prefScanner);

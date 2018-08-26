@@ -2,6 +2,13 @@
 <resources>
     <style name="ThemeDefault" parent="@style/ThemeDark" />
 
+    <style name="ThemeInvisible"  parent="@style/Theme.AppCompat">
+        <item  name="android:windowBackground">@android:color/transparent</item>
+        <item name="background">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
     <style name="ThemeDark" parent="@style/Theme.AppCompat" />
     <style name="ThemeLight" parent="@style/Theme.AppCompat.Light" />
     <!--

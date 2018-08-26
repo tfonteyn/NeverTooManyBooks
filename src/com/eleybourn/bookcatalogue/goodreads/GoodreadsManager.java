@@ -182,7 +182,7 @@ public class GoodreadsManager {
 		m_accessSecret = "";
 		m_hasValidCredentials = false;
 		// Get the stored token values from prefs, and setup the consumer if present
-		BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 		prefs.setString(ACCESS_TOKEN, "");
 		prefs.setString(ACCESS_SECRET, "");
 	}
@@ -199,7 +199,7 @@ public class GoodreadsManager {
 			return true;
 
 		// Get the stored token values from prefs, and setup the consumer if present
-		BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 
 		m_accessToken = prefs.getString(ACCESS_TOKEN, "");
 		m_accessSecret = prefs.getString(ACCESS_SECRET, "");
@@ -239,7 +239,7 @@ public class GoodreadsManager {
 	 */
 	private boolean validateCredentials() {
 		// Get the stored token values from prefs, and setup the consumer
-		BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 
 		m_accessToken = prefs.getString(ACCESS_TOKEN, "");
 		m_accessSecret = prefs.getString(ACCESS_SECRET, "");
@@ -296,7 +296,7 @@ public class GoodreadsManager {
 			authUrl = "http://" + authUrl;
 
 		// Save the token; this object may well be destroyed before the web page has returned.
-		BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 		SharedPreferences.Editor ed = prefs.edit();
 		ed.putString(REQUEST_TOKEN, m_consumer.getToken());
 		ed.putString(REQUEST_SECRET, m_consumer.getTokenSecret());
@@ -315,7 +315,7 @@ public class GoodreadsManager {
 	 */
 	public void handleAuthentication() throws NotAuthorizedException {
 		// Get the saved request tokens.
-		BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 		String tokenString = prefs.getString(REQUEST_TOKEN, "");
 		String secretString = prefs.getString(REQUEST_SECRET, "");
 
@@ -904,7 +904,7 @@ public class GoodreadsManager {
 	 * @return	Last date
 	 */
 	public static Date getLastSyncDate() {
-		String last = BookCatalogueApp.getAppPreferences().getString(LAST_SYNC_DATE,null);
+		String last = BookCatalogueApp.getPrefs().getString(LAST_SYNC_DATE,null);
 		if (last == null || last.isEmpty()) {
 			return null;
 		} else {
@@ -924,9 +924,9 @@ public class GoodreadsManager {
 	 */
 	public static void setLastSyncDate(Date d) {
 		if (d == null) {
-			BookCatalogueApp.getAppPreferences().setString(LAST_SYNC_DATE,null);			
+			BookCatalogueApp.getPrefs().setString(LAST_SYNC_DATE,null);
 		} else {
-			BookCatalogueApp.getAppPreferences().setString(LAST_SYNC_DATE, DateUtils.toSqlDateTime(d));
+			BookCatalogueApp.getPrefs().setString(LAST_SYNC_DATE, DateUtils.toSqlDateTime(d));
 		}
 	}
 }

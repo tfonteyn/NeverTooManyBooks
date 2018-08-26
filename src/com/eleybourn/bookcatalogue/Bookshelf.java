@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -93,8 +92,9 @@ public class Bookshelf extends BookCatalogueListActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		MenuItemCompat.setShowAsAction(menu.add(0, INSERT_ID, 0, R.string.menu_insert_bs)
-			.setIcon(android.R.drawable.ic_menu_add), MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		MenuItem item = menu.add(0, INSERT_ID, 0, R.string.menu_insert_bs);
+		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		item.setIcon(android.R.drawable.ic_menu_add);
 		return true;
 	}
 	

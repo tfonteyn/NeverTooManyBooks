@@ -153,11 +153,11 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
 
 	@Override
 	protected Boolean getGlobalDefault() {
-		return BookCatalogueApp.getAppPreferences().getBoolean(getPreferenceKey(), getDefaultValue());
+		return BookCatalogueApp.getPrefs().getBoolean(getPreferenceKey(), getDefaultValue());
 	}
 	@Override
 	protected BooleanProperty setGlobalDefault(Boolean value) {
-		BookCatalogueApp.getAppPreferences().setBoolean(getPreferenceKey(), value);
+		BookCatalogueApp.getPrefs().setBoolean(getPreferenceKey(), value);
 		return this;
 	}
 

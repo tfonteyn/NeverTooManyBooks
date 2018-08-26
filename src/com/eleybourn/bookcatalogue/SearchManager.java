@@ -59,15 +59,15 @@ public class SearchManager implements TaskManagerListener {
 	public static final int SEARCH_ALL = SEARCH_GOOGLE | SEARCH_AMAZON | SEARCH_LIBRARY_THING | SEARCH_GOODREADS;
 	
 	// ENHANCE: Allow user to change the default search data priority
-	public static final int[] mDefaultSearchOrder = new int[] {SEARCH_AMAZON, SEARCH_GOODREADS, SEARCH_GOOGLE, SEARCH_LIBRARY_THING};
+	private static final int[] mDefaultSearchOrder = new int[] {SEARCH_AMAZON, SEARCH_GOODREADS, SEARCH_GOOGLE, SEARCH_LIBRARY_THING};
 	// ENHANCE: Allow user to change the default search data priority
-	public static final int[] mDefaultReliabilityOrder = new int[] {SEARCH_GOODREADS, SEARCH_AMAZON, SEARCH_GOOGLE, SEARCH_LIBRARY_THING};
+	private static final int[] mDefaultReliabilityOrder = new int[] {SEARCH_GOODREADS, SEARCH_AMAZON, SEARCH_GOOGLE, SEARCH_LIBRARY_THING};
 
 	/** Flags applicable to *current* search */
-	int mSearchFlags;
+	private int mSearchFlags;
 
 	// TaskManager for threads; may have other threads tham the ones this object creates.
-	TaskManager mTaskManager;
+	private TaskManager mTaskManager;
 	// Accumulated book data
 	private Bundle mBookData = null;
 	// Flag indicating searches will be non-concurrent title/author found via ASIN
@@ -419,8 +419,7 @@ public class SearchManager implements TaskManagerListener {
 		}
 
 		if (authors != null && !authors.isEmpty()) {
-			// Decode the collected author names and convert to an ArrayList
-			ArrayList<Author> aa = (ArrayList<Author>) Convert.decodeList(authors, '|', false);
+			ArrayList<Author> aa = Convert.decodeList(authors, '|', false);
 			mBookData.putSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, aa);			
 		}
 
@@ -457,7 +456,6 @@ public class SearchManager implements TaskManagerListener {
 		} catch (Exception ignored) {}
 
 		if (series != null && !series.isEmpty()) {
-			// Decode the collected series names and convert to an ArrayList
 			try {
 				ArrayList<Series> sa = Convert.decodeList(series, '|', false);
 				mBookData.putSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY, sa);

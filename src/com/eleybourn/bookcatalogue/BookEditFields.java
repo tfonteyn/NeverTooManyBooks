@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.view.MenuItemCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -66,8 +65,8 @@ import java.util.ArrayList;
 public class BookEditFields extends BookDetailsAbstract
         implements OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
 
-    public static final int ACTIVITY_EDIT_AUTHORS = 1000;
-    public static final int ACTIVITY_EDIT_SERIES = 1001;
+    private static final int ACTIVITY_EDIT_AUTHORS = 1000;
+    private static final int ACTIVITY_EDIT_SERIES = 1001;
 
     /**
      * Display the edit fields page
@@ -291,7 +290,7 @@ public class BookEditFields extends BookDetailsAbstract
         final BookData book = mEditManager.getBookData();
         final String list = book.getBookshelfList();
         if (list == null || list.isEmpty()) {
-            String currShelf = BookCatalogueApp.getAppPreferences().getString(BooksOnBookshelf.PREF_BOOKSHELF, "");
+            String currShelf = BookCatalogueApp.getPrefs().getString(BooksOnBookshelf.PREF_BOOKSHELF, "");
             if (currShelf.isEmpty()) {
                 currShelf = mDbHelper.getBookshelfName(1);
             }
@@ -425,11 +424,11 @@ public class BookEditFields extends BookDetailsAbstract
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        boolean thumbVisible = BookCatalogueApp.getAppPreferences().getBoolean(FieldVisibility.prefix + "thumbnail", true);
+        boolean thumbVisible = BookCatalogueApp.getPrefs().getBoolean(FieldVisibility.prefix + "thumbnail", true);
         if (thumbVisible) {
             MenuItem thumbOptions = menu.add(0, BookEditFragmentAbstract.THUMBNAIL_OPTIONS_ID, 0, R.string.cover_options_cc_ellipsis);
             thumbOptions.setIcon(android.R.drawable.ic_menu_camera);
-            MenuItemCompat.setShowAsAction(thumbOptions, MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            thumbOptions.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
         super.onCreateOptionsMenu(menu, inflater);
     }

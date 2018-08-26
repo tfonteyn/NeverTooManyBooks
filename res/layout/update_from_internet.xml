@@ -48,7 +48,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/cancel"
-            style="?android:attr/buttonBarButtonStyle"/>
+            style="?android:attr/buttonBarNegativeButtonStyle"/>
 
         <Button
             android:id="@+id/confirm"

@@ -20,9 +20,6 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -39,6 +36,10 @@ import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.Logger;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Objects;
+
 /**
  * Activity to edit the groups associated with a style (include/exclude and/or move up/down)
  * 
@@ -50,10 +51,7 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 	public static final String KEY_SAVE_TO_DATABASE = "StyleEditor.SaveToDb";
 	private static final String KEY_GROUPS = "StyleEditor.Groups";
 
-	/** Indicated this activity was called without an existing style */
-	private boolean mIsNew;
-
-    /** Copy of the style we are editing */
+	/** Copy of the style we are editing */
 	private BooklistStyle mStyle;
 	/** Copy of flag passed by calling activity to indicate changes made here should be saved on exit */
 	private boolean mSaveToDb = true;
@@ -81,7 +79,7 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 		/** Whether this groups is present in the style */
 		boolean present;
 		/** Constructor */
-		public GroupWrapper(BooklistGroup group, boolean present) {
+		GroupWrapper(BooklistGroup group, boolean present) {
 			this.group = group;
 			this.present = present;
 		}
@@ -97,8 +95,9 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 			if (i.hasExtra(KEY_SAVE_TO_DATABASE))
 				mSaveToDb = i.getBooleanExtra(KEY_SAVE_TO_DATABASE, true);
 
-			mIsNew = (mStyle == null);
-			if (mIsNew)
+			/* Indicated this activity was called without an existing style */
+			boolean isNew = (mStyle == null);
+			if (isNew)
 				mStyle = new BooklistStyle("");
 
 			// Build an array list with the groups from the style, and record that they are present in mGroups.
@@ -120,7 +119,7 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 			// Init the subclass now it has the array it expects
 			super.onCreate(savedInstanceState);
 
-			if (mIsNew)
+			if (isNew)
 				this.setTitle(getString(R.string.add_style));
 			else if (mStyle.getRowId() == 0)
 				this.setTitle(getString(R.string.clone_style_colon_name, mStyle.getDisplayName()));
@@ -175,7 +174,7 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 				@Override
 				public void onClick(View v) {
 					Holder h = ViewTagger.getTag(v, R.id.TAG_HOLDER);
-					h.wrapper.present = !h.wrapper.present;
+					Objects.requireNonNull(h).wrapper.present = !h.wrapper.present;
 					if (h.wrapper.present) {
 						h.present.setImageResource(R.drawable.btn_check_clipped);
 					} else {

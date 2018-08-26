@@ -73,8 +73,6 @@ public class CoverBrowser {
 	private final String mIsbn;
 	// Calling context
 	private Context mContext;
-	// Libary Thing
-	private LibraryThingManager mLibraryThing;
 	// Calculated size for preview images
 	private final int mPreviewSize;
 	// List of all editions for the given ISBN
@@ -83,8 +81,6 @@ public class CoverBrowser {
 	private FileManager mFileManager;
 	// The Dialog
 	private Dialog mDialog = null;
-	// Adapted to queue/display images
-	private CoverImageAdapter mAdapter = null;
 	/** Indicates a 'shutdown()' has been requested */
 	private boolean mShutdown = false;
 
@@ -299,7 +295,7 @@ public class CoverBrowser {
 	 */
 	public void showEditionCovers() {
 
-		mLibraryThing = new LibraryThingManager(mContext);
+		LibraryThingManager mLibraryThing = new LibraryThingManager(mContext);
 		if (!mLibraryThing.isAvailable()) {
 			StandardDialogs.needLibraryThingAlert(mContext, true, "cover_browser");
 			return;
@@ -352,7 +348,7 @@ public class CoverBrowser {
 
 
 		// Use our custom adapter to load images
-		mAdapter = new CoverImageAdapter();
+		CoverImageAdapter mAdapter = new CoverImageAdapter();
 		gallery.setAdapter(mAdapter);
 
 		// When the gallery is clicked, load the switcher

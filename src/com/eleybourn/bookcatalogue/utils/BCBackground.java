@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.utils;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ListView;
 
@@ -49,9 +49,9 @@ public class BCBackground {
     /*
      * Set the background based on user preferences
      */
-    public static void init(AppCompatActivity a) {
+    public static void init(Activity a) {
         if (BuildConfig.DEBUG) {
-            System.out.println("BCBackground.init(AppCompatActivity)");
+            System.out.println("BCBackground.init(Activity)");
         }
         privateInit(a.findViewById(R.id.root),false);
     }
@@ -70,9 +70,9 @@ public class BCBackground {
         privateInit(f.getActivity().findViewById(R.id.root), false);
     }
 
-    public static void init(AppCompatActivity a, boolean bright) {
+    public static void init(Activity a, boolean bright) {
         if (BuildConfig.DEBUG) {
-            System.out.println("BCBackground.init(AppCompatActivity)");
+            System.out.println("BCBackground.init(Activity)");
         }
         privateInit(a.findViewById(R.id.root),bright);
     }
@@ -81,7 +81,7 @@ public class BCBackground {
     private static void privateInit(View root, boolean bright) {
         if (BACKGROUND_ALLOWED) {
             try {
-                if (BookCatalogueApp.isBackgroundImageDisabled()) {
+                if (BookCatalogueApp.getPrefs().getDisableBackgroundImage()) {
                     final int backgroundColor = BookCatalogueApp.getBackgroundColor();
                     if (BuildConfig.DEBUG) {
                         System.out.println("init: 0x" + Integer.toHexString(backgroundColor));
@@ -115,7 +115,7 @@ public class BCBackground {
         if (BACKGROUND_ALLOWED) {
             Drawable d = null;
             try {
-                if (!BookCatalogueApp.isBackgroundImageDisabled()) {
+                if (BookCatalogueApp.getPrefs().getDisableBackgroundImage()) {
                     d = makeTiledBackground(false);
                 }
             } catch (Exception e) {

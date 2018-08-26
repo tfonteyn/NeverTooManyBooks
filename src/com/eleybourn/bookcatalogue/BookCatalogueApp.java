@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -34,7 +35,6 @@ import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
@@ -175,7 +175,7 @@ public class BookCatalogueApp extends Application {
 			// Save the original locale
 			mInitialLocale = Locale.getDefault();
 			// See if user has set a preference
-			String prefLocale = getAppPreferences().getString(BookCataloguePreferences.PREF_APP_LOCALE, null);
+			String prefLocale = getPrefs().getString(BookCataloguePreferences.PREF_APP_LOCALE, null);
 			//prefLocale = "ru";
 			// If we have a preference, set it
 			if (prefLocale != null && !prefLocale.isEmpty()) {
@@ -220,7 +220,7 @@ public class BookCatalogueApp extends Application {
 		@Override
 		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 			if (key.equals(BookCataloguePreferences.PREF_APP_LOCALE)) {
-				String prefLocale = getAppPreferences().getString(BookCataloguePreferences.PREF_APP_LOCALE, null);
+				String prefLocale = getPrefs().getString(BookCataloguePreferences.PREF_APP_LOCALE, null);
 				//prefLocale = "ru";
 				// If we have a preference, set it
 				if (prefLocale != null && !prefLocale.isEmpty()) {
@@ -402,15 +402,11 @@ public class BookCatalogueApp extends Application {
 
 	/**
 	 * Utility routine to return as BookCataloguePreferences object.
-	 *
+	 *TODO: don't new this.. use a singleton
 	 * @return	Application preferences object.
 	 */
-	public static BookCataloguePreferences getAppPreferences() {
+	public static BookCataloguePreferences getPrefs() {
 		return new BookCataloguePreferences();
-	}
-
-	public static boolean isBackgroundImageDisabled() {
-		return getAppPreferences().getBoolean(BookCataloguePreferences.PREF_DISABLE_BACKGROUND_IMAGE, false);
 	}
 
 	public static int getBackgroundColor() {
@@ -496,7 +492,7 @@ public class BookCatalogueApp extends Application {
 //	 * @return	Intent for preference-based startup activity.
 //	 */
 //	public Intent getStartupIntent() {
-//		BookCataloguePreferences prefs = getAppPreferences();
+//		BookCataloguePreferences prefs = getPrefs();
 //
 //		Intent i;
 //		if (prefs.getStartInMyBook()) {
@@ -507,7 +503,7 @@ public class BookCatalogueApp extends Application {
 //		return i;
 //	}
 
-	public static void startPreferencesActivity(AppCompatActivity a) {
+	public static void startPreferencesActivity(Activity a) {
 		Intent i = new Intent(a, BooklistPreferencesActivity.class);
 		a.startActivity(i);
 	}

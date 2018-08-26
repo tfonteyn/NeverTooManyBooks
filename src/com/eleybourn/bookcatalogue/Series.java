@@ -40,7 +40,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 	public String 	name;
 	public String	num;
 
-	@SuppressWarnings("")
+	@SuppressWarnings({"FieldCanBeLocal"})
 	private final Pattern mPattern = Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
 
 	public Series(String name) {
@@ -192,7 +192,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 	 * @param 	position	Position name to cleanup
 	 * @return
 	 */
-	public static String cleanupSeriesPosition(String position) {
+	private static String cleanupSeriesPosition(String position) {
 		if (position == null)
 			return "";
 		position = position.trim();

@@ -46,7 +46,7 @@ abstract public class SearchThread extends ManagedTask {
 	 * @param title			Title to search for
 	 * @param isbn			ISBN to search for.
 	 */
-	public SearchThread(TaskManager manager, String author, String title, String isbn, boolean fetchThumbnail) {
+	protected SearchThread(TaskManager manager, String author, String title, String isbn, boolean fetchThumbnail) {
 		super(manager);
 		mAuthor = author;
 		mTitle = title;

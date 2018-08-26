@@ -40,16 +40,16 @@ import com.eleybourn.bookcatalogue.utils.Logger;
 public abstract class PreferencesBase extends BookCatalogueActivity {
 
 	/** Get the layout of the subclass */
-	public abstract int getLayout();
+	protected abstract int getLayout();
 	/** Setup the views in the layout */
-	public abstract void setupViews(BookCataloguePreferences prefs, Properties globalProps);
+	protected abstract void setupViews(BookCataloguePreferences prefs, Properties globalProps);
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
 			setContentView(this.getLayout());
-			final BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+			final BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 
 			Properties globalProps = new Properties();
 			setupViews(prefs, globalProps);

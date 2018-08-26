@@ -81,7 +81,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
 	 * 4. The application version and link details
 	 * 5. The link to paypal for donation
 	 */
-	public void setupAdmin() {
+	private void setupAdmin() {
 		/* Version Number */
 		TextView release = findViewById(R.id.version);
 		PackageManager manager = this.getPackageManager();

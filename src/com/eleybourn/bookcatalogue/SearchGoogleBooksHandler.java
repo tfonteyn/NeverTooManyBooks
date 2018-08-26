@@ -120,14 +120,14 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class SearchGoogleBooksHandler extends DefaultHandler {
 	private StringBuilder builder;
-	public String id = "";
-	public int count = 0;
+	private String id = "";
+	private int count = 0;
 	private boolean entry = false;
 	private boolean done = false;
 	
-	public static final String ID = "id";
-	public static final String TOTALRESULTS = "totalResults";
-	public static final String ENTRY = "entry";
+	private static final String ID = "id";
+	private static final String TOTALRESULTS = "totalResults";
+	private static final String ENTRY = "entry";
 	
 	/**
 	 * Return the id of the first book found

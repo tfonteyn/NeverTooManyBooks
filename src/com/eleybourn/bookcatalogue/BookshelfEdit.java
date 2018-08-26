@@ -32,8 +32,7 @@ public class BookshelfEdit extends BookCatalogueActivity {
 
 	private EditText mBookshelfText;
 	private Button mConfirmButton;
-	private Button mCancelButton;
-	private Long mRowId;
+    private Long mRowId;
 	private CatalogueDBAdapter mDbHelper;
 	
 	@Override
@@ -44,33 +43,32 @@ public class BookshelfEdit extends BookCatalogueActivity {
 			mDbHelper.open();
 			
 			setContentView(R.layout.edit_bookshelf);
-			
-			mBookshelfText = findViewById(R.id.bookshelf);
-			mConfirmButton = findViewById(R.id.confirm);
-			mCancelButton = findViewById(R.id.cancel);
-			
+
 			mRowId = savedInstanceState != null ? savedInstanceState.getLong(CatalogueDBAdapter.KEY_ROWID) : null;
 			if (mRowId == null) {
 				Bundle extras = getIntent().getExtras();
 				mRowId = extras != null ? extras.getLong(CatalogueDBAdapter.KEY_ROWID) : null;
 			}
-			populateFields();
-			
-			mConfirmButton.setOnClickListener(new View.OnClickListener() {
+
+            mConfirmButton = findViewById(R.id.confirm);
+            mConfirmButton.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
 					saveState();
 					setResult(RESULT_OK);
 					finish();
 				}
 			});
-			
-			mCancelButton.setOnClickListener(new View.OnClickListener() {
+
+            findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
 					setResult(RESULT_OK);
 					finish();
 				}
 			});
-			
+
+            mBookshelfText = findViewById(R.id.bookshelf);
+            populateFields();
+
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -90,8 +88,7 @@ public class BookshelfEdit extends BookCatalogueActivity {
 		super.onSaveInstanceState(outState);
 		try {
 			outState.putLong(CatalogueDBAdapter.KEY_ROWID, mRowId);
-		} catch (Exception e) {
-			//do nothing
+		} catch (Exception ignore) {
 		}
 	}
 	

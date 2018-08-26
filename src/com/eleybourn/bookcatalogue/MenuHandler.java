@@ -20,9 +20,8 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -56,7 +55,7 @@ public class MenuHandler {
      * @param id  The id of the book to edit
      * @param tab Which tab to open first
      */
-    public static void editBook(AppCompatActivity a, long id, int tab) {
+    public static void editBook(Activity a, long id, int tab) {
         Intent i = new Intent(a, BookEdit.class);
         i.putExtra(CatalogueDBAdapter.KEY_ROWID, id);
         i.putExtra(BookEdit.TAB, tab);
@@ -103,8 +102,7 @@ public class MenuHandler {
         SubMenu addMenu = menu.addSubMenu(0, MNU_ADD_BOOK, mSort++, BookCatalogueApp.getResourceString(R.string.menu_insert) + "...");
 
         addMenu.setIcon(android.R.drawable.ic_menu_add);
-        //addMenu.setIcon(R.drawable.ic_action_book_add);
-        MenuItemCompat.setShowAsAction(addMenu.getItem(), MenuItem.SHOW_AS_ACTION_ALWAYS);
+        addMenu.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         {
             if (Utils.USE_BARCODE) {
                 addMenu.add(0, MNU_ITM_ADD_BOOK_BARCODE, mSort++, R.string.scan_barcode_isbn)
@@ -162,7 +160,7 @@ public class MenuHandler {
      *
      * @return True, if handled
      */
-    public boolean onOptionsItemSelected(AppCompatActivity a, MenuItem item) {
+    public boolean onOptionsItemSelected(Activity a, MenuItem item) {
         switch (item.getItemId()) {
             case MNU_ITM_ADD_BOOK_MANUAL:
                 createBook(a);
@@ -202,7 +200,7 @@ public class MenuHandler {
     /**
      * Load the BookEdit Activity
      */
-    private void createBook(AppCompatActivity a) {
+    private void createBook(Activity a) {
         Intent i = new Intent(a, BookEdit.class);
         a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_MANUALLY);
     }
@@ -210,7 +208,7 @@ public class MenuHandler {
     /**
      * Load the Search by ISBN Activity
      */
-    private void createBookISBN(AppCompatActivity a, String by) {
+    private void createBookISBN(Activity a, String by) {
         Intent i = new Intent(a, BookISBNSearch.class);
         i.putExtra(BookISBNSearch.BY, by);
         a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_ISBN);
@@ -219,7 +217,7 @@ public class MenuHandler {
     /**
      * Load the Search by ISBN Activity to begin scanning.
      */
-    private void createBookScan(AppCompatActivity a) {
+    private void createBookScan(Activity a) {
         Intent i = new Intent(a, BookISBNSearch.class);
         i.putExtra(BookISBNSearch.BY, "scan");
         a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_SCAN);
@@ -228,7 +226,7 @@ public class MenuHandler {
     /**
      * Load the Admin Activity
      */
-    private void adminPage(AppCompatActivity a) {
+    private void adminPage(Activity a) {
         Intent i = new Intent(BookCatalogueApp.getAppContext(), AdministrationFunctions.class);
         i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
         a.startActivityForResult(i, UniqueId.ACTIVITY_ADMIN);
@@ -237,7 +235,7 @@ public class MenuHandler {
     /**
      * Load the Bookshelves Activity
      */
-    private void bookshelvesPage(AppCompatActivity a) {
+    private void bookshelvesPage(Activity a) {
         Intent i = new Intent(BookCatalogueApp.getAppContext(), Bookshelf.class);
         i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
         a.startActivityForResult(i, UniqueId.ACTIVITY_BOOKSHELF);
@@ -246,7 +244,7 @@ public class MenuHandler {
     /**
      * Load the About Activity
      */
-    private void aboutPage(AppCompatActivity a) {
+    private void aboutPage(Activity a) {
         Intent i = new Intent(BookCatalogueApp.getAppContext(), AdministrationAbout.class);
         i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
         a.startActivityForResult(i, UniqueId.ACTIVITY_ABOUT);
@@ -255,7 +253,7 @@ public class MenuHandler {
     /**
      * Load the Donate Activity
      */
-    private void donatePage(AppCompatActivity a) {
+    private void donatePage(Activity a) {
         Intent i = new Intent(BookCatalogueApp.getAppContext(), AdministrationDonate.class);
         i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
         a.startActivityForResult(i, UniqueId.ACTIVITY_DONATE);
@@ -264,7 +262,7 @@ public class MenuHandler {
     /**
      * Load the Main Menu Activity
      */
-    private void helpPage(AppCompatActivity a) {
+    private void helpPage(Activity a) {
         Intent i = new Intent(BookCatalogueApp.getAppContext(), Help.class);
         i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
         a.startActivityForResult(i, UniqueId.ACTIVITY_HELP);

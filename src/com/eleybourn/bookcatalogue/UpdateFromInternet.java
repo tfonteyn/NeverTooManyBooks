@@ -83,7 +83,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
 	 * This function builds the manage field visibility by adding onClick events
 	 * to each field checkbox
 	 */
-	public void setupFields() {
+	private void setupFields() {
 		addIfVisible(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, CatalogueDBAdapter.KEY_AUTHOR_ID, R.string.author, FieldUsages.Usages.ADD_EXTRA, true);
 		addIfVisible(CatalogueDBAdapter.KEY_TITLE, null, R.string.title, FieldUsages.Usages.COPY_IF_BLANK, false);
 		addIfVisible(CatalogueDBAdapter.KEY_ISBN, null, R.string.isbn, FieldUsages.Usages.COPY_IF_BLANK, false);
@@ -261,7 +261,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
 		t.start();	
 	}
 
-	final ManagedTask.TaskListener mThumbnailsHandler = new ManagedTask.TaskListener() {
+	private final ManagedTask.TaskListener mThumbnailsHandler = new ManagedTask.TaskListener() {
 		@Override
 		public void onTaskFinished(ManagedTask t) {
 			mUpdateSenderId = 0;

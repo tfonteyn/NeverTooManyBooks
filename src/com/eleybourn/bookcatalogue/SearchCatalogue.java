@@ -57,7 +57,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 	/** Timer object for background idle searches */
 	private Timer mTimer;
 	/** Handle inter-thread messages */
-    final Handler m_handler = new Handler();
+    private final Handler m_handler = new Handler();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -93,7 +93,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 	}
 
 	/** start the idle timer */
-    public void startIdleTimer()
+	private void startIdleTimer()
     {
     	// Synchronize since this is relevant to more than 1 thread.
     	synchronized(SearchCatalogue.this) {

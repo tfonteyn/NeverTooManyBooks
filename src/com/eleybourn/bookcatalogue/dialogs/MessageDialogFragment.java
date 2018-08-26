@@ -1,10 +1,10 @@
 package com.eleybourn.bookcatalogue.dialogs;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.support.v4.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -60,11 +60,11 @@ public class MessageDialogFragment extends DialogFragment {
 	 * Ensure activity supports event
 	 */
 	@Override
-	public void onAttach(Activity a) {
-		super.onAttach(a);
+	public void onAttach(Context context) {
+		super.onAttach(context);
 
-		if (! (a instanceof OnMessageDialogResultListener))
-			throw new RuntimeException("Activity " + a.getClass().getSimpleName() + " must implement OnMessageDialogResultListener");
+		if (! (context instanceof OnMessageDialogResultListener))
+			throw new RuntimeException("Activity " + context.getClass().getSimpleName() + " must implement OnMessageDialogResultListener");
 		
 	}
 

@@ -56,7 +56,7 @@ public class MainMenu extends BookCatalogueActivity {
         super.onCreate(savedInstanceState);
 
         // Get the preferences and extras.
-        BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+        BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
         Bundle extras = this.getIntent().getExtras();
 
         // Handle startup specially.
@@ -75,7 +75,7 @@ public class MainMenu extends BookCatalogueActivity {
 
         // Display/hide the 'classic' my books item
         int classicVis;
-        if (prefs.getBoolean(BookCataloguePreferences.PREF_INCLUDE_CLASSIC_MY_BOOKS, false))
+        if (prefs.getIncludeClassicMyBook())
             classicVis = View.VISIBLE;
         else
             classicVis = View.GONE;

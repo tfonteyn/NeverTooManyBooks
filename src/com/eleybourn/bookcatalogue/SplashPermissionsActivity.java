@@ -9,6 +9,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import java.util.Collections;
@@ -31,7 +33,7 @@ import java.util.Set;
  * starting the {@link AppCompatActivity} specified by {@link #getNextActivityClass()}.
  * <p>
  * On post-Android 6.0 devices, this app will additionally force the user to
- * grant all of the currently ungranted app permissions before timing out and
+ * grant all of the currently missing app permissions before timing out and
  * starting the next {@link AppCompatActivity} specified by
  * {@link #getNextActivityClass()} (see
  * <a href="http://developer.android.com/training/permissions/requesting.html">
@@ -40,7 +42,7 @@ import java.util.Set;
  * However, since Android 6.0, users can revoke app permissions after
  * installation. This {@link AppCompatActivity} will gather all of the required app
  * permissions from the manifest, and check that this app has been granted all
- * of those permissions. The user will then be forced to granted all ungranted
+ * of those permissions. The user will then be forced to granted all missing
  * permissions before continuing. Note, however, that the user may still revoke
  * permissions while the app is running, and this {@link AppCompatActivity} does nothing
  * to protect your app from such occurrences. Specifically, this
@@ -161,16 +163,16 @@ abstract public class SplashPermissionsActivity extends AppCompatActivity {
         if (missing.length == 0) {
             startNextActivity();
         } else {
-           // Activity.requestPermissions(this, missing, PERMISSIONS_REQUEST);
+            ActivityCompat.requestPermissions(this, missing, PERMISSIONS_REQUEST);
             //TODO: when going to API 23+, use native call
-            //requestPermissions(ungrantedPermissions, PERMISSIONS_REQUEST);
+            //requestPermissions(missing, PERMISSIONS_REQUEST);
         }
     }
 
     /**
      * Convert the array of required permissions to a {@link Set} to remove
      * redundant elements. Then remove already granted permissions, and return
-     * an array of ungranted permissions.
+     * an array of missing permissions.
      */
     private String[] requiredPermissionsStillNeeded() {
 
@@ -179,9 +181,9 @@ abstract public class SplashPermissionsActivity extends AppCompatActivity {
 
         for (Iterator<String> i = permissions.iterator(); i.hasNext(); ) {
             //TODO: when going to API 23+, use native call
-//            if (Context.checkSelfPermission(this, i.next()) == PackageManager.PERMISSION_GRANTED) {
-//                i.remove();
-//            }
+            if (ContextCompat.checkSelfPermission(this, i.next()) == PackageManager.PERMISSION_GRANTED) {
+                i.remove();
+            }
         }
         return permissions.toArray(new String[permissions.size()]);
     }

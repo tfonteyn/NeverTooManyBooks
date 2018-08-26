@@ -121,7 +121,7 @@ public class UpgradeMessageManager {
 
 		// See if we have a saved version id. If not, it's either a new install, or 
 		// an older install.
-		BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 
 		long lastVersion = prefs.getInt(PREF_LAST_MESSAGE, 0);
 		if (lastVersion == 0) {
@@ -165,7 +165,7 @@ public class UpgradeMessageManager {
 	}
 	
 	public static void setMessageAcknowledged() {
-		BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 		try {
 			Context c = BookCatalogueApp.getAppContext();
 			int currVersion = c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionCode;

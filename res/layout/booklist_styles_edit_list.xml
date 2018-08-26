@@ -32,7 +32,7 @@
             android:text="@string/cancel"
             android:visibility="gone"
             android:width="150sp"
-            style="?android:attr/buttonBarButtonStyle"/>
+            style="?android:attr/buttonBarNegativeButtonStyle"/>
 
         <Button
             android:id="@+id/confirm"

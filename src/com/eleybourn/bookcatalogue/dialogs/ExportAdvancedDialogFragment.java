@@ -1,9 +1,9 @@
 package com.eleybourn.bookcatalogue.dialogs;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.support.v4.app.DialogFragment;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -53,11 +53,11 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
 	 * Ensure activity supports event
 	 */
 	@Override
-	public void onAttach(Activity a) {
-		super.onAttach(a);
+	public void onAttach(Context context) {
+		super.onAttach(context);
 
-		if (! (a instanceof OnExportTypeSelectionDialogResultListener))
-			throw new RuntimeException("Activity " + a.getClass().getSimpleName() + " must implement OnExportTypeSelectionDialogResultListener");
+		if (! (context instanceof OnExportTypeSelectionDialogResultListener))
+			throw new RuntimeException("Activity " + context.getClass().getSimpleName() + " must implement OnExportTypeSelectionDialogResultListener");
 		
 	}
 

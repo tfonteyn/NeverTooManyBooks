@@ -103,10 +103,10 @@ public class BookISBNSearch extends ActivityWithTasks {
 	private Intent mLastBookIntent = null;
 
 	// Object managing current search.
-	long mSearchManagerId = 0;
+	private long mSearchManagerId = 0;
 
 	// A list of author names we have already searched for in this session
-	final ArrayList<String> mAuthorNames = new ArrayList<>();
+	private final ArrayList<String> mAuthorNames = new ArrayList<>();
 
 	/**
 	 * Called when the activity is first created. This function will search the interwebs for
@@ -468,7 +468,7 @@ public class BookISBNSearch extends ActivityWithTasks {
 	 *
 	 * @param isbn The ISBN to search
 	 */
-	protected void go(String isbn, String author, String title) {
+	private void go(String isbn, String author, String title) {
 		//System.out.println(mId + " GO: isbn=" + isbn + ", author=" + author + ", title=" + title);
 
 		// Save the details because we will do some async processing or an alert

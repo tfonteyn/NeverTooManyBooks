@@ -20,11 +20,11 @@
 
 package com.eleybourn.bookcatalogue;
 
-import java.util.ArrayList;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import java.util.ArrayList;
 
 /** 
  * An XML handler for the Wikipedia entry return 
@@ -40,16 +40,16 @@ public class SearchWikipediaEntryHandler extends DefaultHandler {
 	private int div = 0;
 	private int entrydiv = 0;
 	private String this_title = "";
-	public ArrayList<String> titles = new ArrayList<>();
+	private ArrayList<String> titles = new ArrayList<>();
 	
-	public static final String DIV = "div";
-	public static final String LIST1 = "ul";
-	public static final String LIST2 = "ol";
-	public static final String ENTRY = "li";
-	public static final String LINK1 = "a"; //optional
-	public static final String LINK2 = "i"; //optional
-	public static final String LINK3 = "b"; //optional
-	public static final String TOC_TABLE = "table";
+	private static final String DIV = "div";
+	private static final String LIST1 = "ul";
+	private static final String LIST2 = "ol";
+	private static final String ENTRY = "li";
+	private static final String LINK1 = "a"; //optional
+	private static final String LINK2 = "i"; //optional
+	private static final String LINK3 = "b"; //optional
+	private static final String TOC_TABLE = "table";
 	
 	public ArrayList<String> getList(){
 		return titles;

@@ -22,8 +22,6 @@ package com.eleybourn.bookcatalogue.utils;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.SharedPreferences.Editor;
 import android.support.v7.app.AppCompatDialog;
 import android.text.method.LinkMovementMethod;
@@ -114,23 +112,20 @@ public class HintManager {
 		// Build the hint dialog
 		final Dialog dialog = new AppCompatDialog(context);
 		dialog.setContentView(R.layout.hint_dialogue);
-		
-		// Get the various Views
-		final TextView msg = dialog.findViewById(R.id.hint);
-		final CheckBox cb = dialog.findViewById(R.id.hide_hint_checkbox); // new CheckBox(context);
-		final Button ok = dialog.findViewById(R.id.confirm);
+        dialog.setTitle(R.string.hint);
 
-		// Setup the views
-		String hintText = BookCatalogueApp.getAppContext().getResources().getString(stringId, args);
-		msg.setText(Utils.linkifyHtml(hintText, Linkify.ALL));
-		// Automatically start a browser (or whatever)
+		// Setup the message
+        final TextView msg = dialog.findViewById(R.id.hint);
+        String hintText = BookCatalogueApp.getAppContext().getResources().getString(stringId, args);
+        msg.setText(Utils.linkifyHtml(hintText, Linkify.ALL));
+        //msg.setText(Html.fromHtml(hintText)); //stringId);
+        //Linkify.addLinks(msg, Linkify.ALL);
+
+        // Automatically start a browser (or whatever)
 		msg.setMovementMethod(LinkMovementMethod.getInstance());
 
-		//msg.setText(Html.fromHtml(hintText)); //stringId);
-		//Linkify.addLinks(msg, Linkify.ALL);
-
-		dialog.setTitle(R.string.hint);
-
+        final Button ok = dialog.findViewById(R.id.confirm);
+        final CheckBox cb = dialog.findViewById(R.id.hide_hint_checkbox);
 		// Handle the 'OK' click
 		ok.setOnClickListener(new OnClickListener() {
 			@Override
@@ -140,14 +135,6 @@ public class HintManager {
 				if (cb.isChecked()) {
 					h.setVisibility(false);
 				}
-			}
-		});
-
-		dialog.setOnDismissListener(new OnDismissListener() {
-			@Override
-			public void onDismiss(DialogInterface dialog) {
-				if (postRun != null)
-					postRun.run();
 			}
 		});
 
@@ -238,7 +225,7 @@ public class HintManager {
 		 * @param visible	Flag indicating future visibility
 		 */
 		public void setVisibility(boolean visible) {
-			BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+			BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 			Editor ed = prefs.edit();
 			String name = getFullPrefName();
 			ed.putBoolean(name, visible);
@@ -251,7 +238,7 @@ public class HintManager {
 		boolean shouldBeShown() {
 			if (hasBeenDisplayed())
 				return false;
-			BookCataloguePreferences prefs = BookCatalogueApp.getAppPreferences();
+			BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 			return prefs.getBoolean(getFullPrefName(), true);
 		}
 

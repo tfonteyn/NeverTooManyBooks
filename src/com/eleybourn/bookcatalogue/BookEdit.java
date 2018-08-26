@@ -29,7 +29,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -313,7 +312,7 @@ public class BookEdit extends BookCatalogueActivity implements
 	 * Listener to handle 'fling' events; we could handle others but need to be
 	 * careful about possible clicks and scrolling.
 	 */
-	GestureDetector.SimpleOnGestureListener mGestureListener = new GestureDetector.SimpleOnGestureListener() {
+	private GestureDetector.SimpleOnGestureListener mGestureListener = new GestureDetector.SimpleOnGestureListener() {
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 			if (mList == null)
@@ -468,7 +467,7 @@ public class BookEdit extends BookCatalogueActivity implements
 	private void finishAndSendIntent() {
 		Intent i = new Intent();
 		i.putExtra(CatalogueDBAdapter.KEY_ROWID, mBookData.getRowId());
-		setResult(AppCompatActivity.RESULT_OK, i);
+		setResult(Activity.RESULT_OK, i);
 		finish();		
 	}
 
@@ -916,9 +915,7 @@ public class BookEdit extends BookCatalogueActivity implements
     }
 
     /**
-     * Open book for viewing in edit or read-only mode. The mode depends on
-     * {@link BookCataloguePreferences#PREF_OPEN_BOOK_READ_ONLY} preference
-     * option. If it set book opened in read-only mode otherwise in edit mode (default).
+     * Open book for viewing in edit or read-only mode.
      *
      * @param a
      *            current activity from which we start
@@ -932,8 +929,7 @@ public class BookEdit extends BookCatalogueActivity implements
      *            read-only view.
      */
     public static void openBook(Activity a, long id, BooklistBuilder builder, Integer position) {
-        boolean isReadOnly = BookCatalogueApp.getAppPreferences().getBoolean(BookCataloguePreferences.PREF_OPEN_BOOK_READ_ONLY, true);
-        if (isReadOnly) {
+        if (BookCatalogueApp.getPrefs().getOpenBookReadOnly()) {
             // Make a flattened copy of the list of books, if available
             String listTable = null;
             if (builder != null) {

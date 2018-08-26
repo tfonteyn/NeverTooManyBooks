@@ -64,7 +64,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 	private Button mAdd;
 	private CheckBox mSame;
 	private Integer mEditPosition = null;
-	int anthology_num = CatalogueDBAdapter.ANTHOLOGY_NO;
+	private int anthology_num = CatalogueDBAdapter.ANTHOLOGY_NO;
 	private ArrayList<AnthologyTitle> mList;
 	
 	private static final int DELETE_ID = Menu.FIRST;
@@ -92,7 +92,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 	 * 2. Setup the "Add Title" fields
 	 * 3. Populate the "Title List" - @see fillAnthology();
 	 */
-	public void loadPage() {
+	private void loadPage() {
 		
 		BookData book = mEditManager.getBookData();
 		bookAuthor = book.getString(CatalogueDBAdapter.KEY_AUTHOR_FORMATTED);
@@ -168,7 +168,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 	/**
 	 * Populate the bookEditAnthology view
 	 */
-	public void fillAnthology() {
+	private void fillAnthology() {
 
 		// Get all of the rows from the database and create the item list
 		mList = mEditManager.getBookData().getAnthologyTitles(); // mDbHelper.getBookAnthologyTitleList(mEditManager.getBookData().getRowId());
@@ -194,7 +194,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 		return (ListView) getView().findViewById(android.R.id.list);
 	}
 
-	public class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle> {
+	protected class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle> {
 		boolean series = false;
 		
 		/**
@@ -230,7 +230,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 	/**
 	 * Scroll to the current group
 	 */
-	public void gotoTitle(int id) {
+	private void gotoTitle(int id) {
 		try {
 			ListView view = this.getListView();
 			view.setSelection(id);
@@ -240,7 +240,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 		return;
 	}
 	
-	public void searchWikipedia() {
+	private void searchWikipedia() {
 		String basepath = "http://en.wikipedia.org";
 		String pathAuthor = bookAuthor.replace(" ", "+");
 		pathAuthor = pathAuthor.replace(",", "");

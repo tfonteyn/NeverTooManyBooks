@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.utils;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -267,7 +268,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
 		}
 
 		@Override
-		public void run(SimpleTaskContext taskContext) throws Exception {
+		public void run(SimpleTaskContext taskContext) {
 			try {
 				mInnerTask.run(SimpleTaskQueueProgressFragment.this, taskContext);				
 			} catch (Exception e) {
@@ -372,14 +373,14 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
 	 * Ensure activity supports event
 	 */
 	@Override
-	public void onAttach(Activity a) {
-		super.onAttach(a);
+	public void onAttach(Context context) {
+		super.onAttach(context);
 
 		synchronized(this) {
 			if (mMessages != null) {
 				for(String message: mMessages) {
 					if (message != null && !message.isEmpty())
-						Toast.makeText(a, message, Toast.LENGTH_LONG).show();
+						Toast.makeText(context, message, Toast.LENGTH_LONG).show();
 				}
 				mMessages.clear();
 			}			

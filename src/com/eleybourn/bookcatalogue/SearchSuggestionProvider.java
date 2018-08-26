@@ -29,14 +29,14 @@ import android.net.Uri;
  *
  */
 public class SearchSuggestionProvider extends SearchRecentSuggestionsProvider {
-	public final static String AUTHORITY = "com.eleybourn.bookcatalogue.SearchSuggestionProvider";
-	public final static int MODE = DATABASE_MODE_QUERIES;
+	private final static String AUTHORITY = "com.eleybourn.bookcatalogue.SearchSuggestionProvider";
+	private final static int MODE = DATABASE_MODE_QUERIES;
 	
 	public SearchSuggestionProvider() {
 		setupSuggestions(AUTHORITY, MODE);
 	}
 	
-	CatalogueDBAdapter mDbHelper = null;
+	private CatalogueDBAdapter mDbHelper = null;
 	
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {

@@ -49,8 +49,6 @@ import static com.eleybourn.bookcatalogue.BookDetailsAbstract.BOOKSHELF_SEPARATO
 public class BookshelfDialogFragment extends DialogFragment {
 	/** ID passed by caller. Can be 0, will be passed back in event */
 	private int mDialogId;
-	/** Book ID */
-	private Long mRowId;
 	/** Current display text for bookshelf list */
 	private String mCurrText;
 	/** Current encoded list of bookshelves */
@@ -119,7 +117,8 @@ public class BookshelfDialogFragment extends DialogFragment {
 		// Grab the args
 		final Bundle args = getArguments();
     	mDialogId = args.getInt("dialogId");
-		mRowId = args.getLong("rowId");
+		/* Book ID */
+		Long mRowId = args.getLong("rowId");
 		// Retrieve dynamic values
     	if (savedInstanceState != null && savedInstanceState.containsKey("text")) { 
         	mCurrText = savedInstanceState.getString("text");

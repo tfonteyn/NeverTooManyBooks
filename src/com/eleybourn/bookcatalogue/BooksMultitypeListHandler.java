@@ -20,9 +20,9 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -999,7 +999,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 	 * 
 	 * @return			True, if handled.
 	 */
-	public boolean onContextItemSelected(CatalogueDBAdapter db, BooklistRowView rowView, final AppCompatActivity context, final CatalogueDBAdapter dba, final int itemId) {
+	public boolean onContextItemSelected(CatalogueDBAdapter db, BooklistRowView rowView, final Activity context, final CatalogueDBAdapter dba, final int itemId) {
 		switch(itemId) {
 
 		case R.id.MENU_DELETE_BOOK:

@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -123,8 +122,9 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
 		//tweet.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
 		if(this instanceof BookDetailsReadOnly){
-			MenuItemCompat.setShowAsAction(menu.add(0, EDIT_OPTIONS_ID, 0, R.string.edit_book)
-				.setIcon(android.R.drawable.ic_menu_edit), MenuItem.SHOW_AS_ACTION_IF_ROOM);
+			MenuItem item = menu.add(0, EDIT_OPTIONS_ID, 0, R.string.edit_book);
+			item.setIcon(android.R.drawable.ic_menu_edit);
+			item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
 		boolean hasAuthor = mEditManager.getBookData().getAuthorList().size() > 0;
@@ -302,7 +302,7 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
 	 * @return The resulting visibility setting value (VISIBLE or GONE)
 	 */
 	@SuppressWarnings("UnusedReturnValue")
-    protected int showHideField(boolean hideIfEmpty, int resId, int...relatedFields) {
+	private int showHideField(boolean hideIfEmpty, int resId, int... relatedFields) {
 		// Get the base view
 		final View v = getView().findViewById(resId);
 		int visibility;

@@ -44,7 +44,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  * @author Evan Leybourn
  */
 public class Help extends BookCatalogueActivity {
-	public Resources res;
+	private Resources res;
 	private CatalogueDBAdapter mDbHelper;
 
 	/**

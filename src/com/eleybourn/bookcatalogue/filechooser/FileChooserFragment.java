@@ -19,10 +19,10 @@
  */
 package com.eleybourn.bookcatalogue.filechooser;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -101,14 +101,14 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 	 * Ensure activity supports event
 	 */
 	@Override
-	public void onAttach(Activity a) {
-		super.onAttach(a);
-		if (! (PathChangedListener.class.isInstance(a)) )
-			throw new RuntimeException("Class " + a.getClass().getSimpleName() + " must implement " + PathChangedListener.class.getSimpleName());
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		if (! (PathChangedListener.class.isInstance(context)) )
+			throw new RuntimeException("Class " + context.getClass().getSimpleName() + " must implement " + PathChangedListener.class.getSimpleName());
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.file_chooser, container, false);
 	}
 
@@ -165,7 +165,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 	 * Save our root path and list
 	 */
 	@Override
-	public void onSaveInstanceState(Bundle state) {
+	public void onSaveInstanceState(@NonNull Bundle state) {
 		super.onSaveInstanceState(state);
 		state.putString(ARG_ROOT_PATH, mRootPath.getAbsolutePath());
 		state.putParcelableArrayList(ARG_LIST, mList);

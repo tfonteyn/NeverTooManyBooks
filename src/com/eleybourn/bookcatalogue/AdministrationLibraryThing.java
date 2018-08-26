@@ -75,7 +75,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 		BCBackground.init(this);
 	}
 
-	public void setupAdmin() {
+	private void setupAdmin() {
 		/* LT Reg Link */
 		TextView register = findViewById(R.id.register_url);
 		register.setOnClickListener(new OnClickListener() {

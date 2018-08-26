@@ -164,7 +164,7 @@ public class BooksRowView {
 	}
 
 	private int mSignedCol = -2;
-	public final int getSigned() {
+	private int getSigned() {
 		if (mSignedCol < 0) {
 			mSignedCol = mCursor.getColumnIndex(CatalogueDBAdapter.KEY_SIGNED);
 			if (mSignedCol < 0)
@@ -243,7 +243,7 @@ public class BooksRowView {
 		return mCursor.getString(mSeriesCol);
 	}
 	
-	public String getString(final int position) {
+	private String getString(final int position) {
 		if (mCursor.isNull(position))
 			return null;
 		else

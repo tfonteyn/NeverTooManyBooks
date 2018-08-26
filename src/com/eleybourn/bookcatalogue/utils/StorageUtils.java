@@ -197,7 +197,7 @@ public class StorageUtils {
 	 * 
 	 * @author Philip Warner
 	 */
-	public static class FileDateComparator implements Comparator<File> {
+	static class FileDateComparator implements Comparator<File> {
 		/** Ascending is >= 0, Descending is < 0. */
 		private final int mDirection;
 		/**
@@ -431,7 +431,7 @@ public class StorageUtils {
 
 		// Scanners installed
 		try {
-	        message.append("Pref. Scanner: ").append(BookCatalogueApp.getAppPreferences().getInt(ScannerManager.PREF_PREFERRED_SCANNER, -1)).append("\n");
+	        message.append("Pref. Scanner: ").append(BookCatalogueApp.getPrefs().getInt(ScannerManager.PREF_PREFERRED_SCANNER, -1)).append("\n");
 	        String[] scanners = new String[] { ZxingScanner.ACTION, Scan.ACTION, Scan.Pro.ACTION};
 	        for(String scanner:  scanners) {
 	            message.append("Scanner [").append(scanner).append("]:\n");
