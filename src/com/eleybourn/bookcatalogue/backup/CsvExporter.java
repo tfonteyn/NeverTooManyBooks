@@ -29,8 +29,8 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.BufferedWriter;
@@ -198,16 +198,16 @@ public class CsvExporter implements Exporter {
 						StringBuilder bookshelves_name_text = new StringBuilder();
 						while (bookshelves.moveToNext()) {
 							bookshelves_id_text.append(bookshelves.getString(bookshelves.getColumnIndex(CatalogueDBAdapter.KEY_ROWID))).append(BookEditFields.BOOKSHELF_SEPARATOR);
-							bookshelves_name_text.append(Convert.encodeListItem(bookshelves.getString(bookshelves.getColumnIndex(CatalogueDBAdapter.KEY_BOOKSHELF)), BookEditFields.BOOKSHELF_SEPARATOR)).append(BookEditFields.BOOKSHELF_SEPARATOR);
+							bookshelves_name_text.append(ArrayUtils.encodeListItem(bookshelves.getString(bookshelves.getColumnIndex(CatalogueDBAdapter.KEY_BOOKSHELF)), BookEditFields.BOOKSHELF_SEPARATOR)).append(BookEditFields.BOOKSHELF_SEPARATOR);
 						}
 						bookshelves.close();
 
-						String authorDetails = Convert.encodeList( db.getBookAuthorList(id), '|' );
+						String authorDetails = ArrayUtils.getAuthorUtils().encodeList( db.getBookAuthorList(id), '|' );
 						// Sanity check: ensure author is non-blank. This HAPPENS. Probably due to constraint failures.
 						if (authorDetails == null || authorDetails.trim().isEmpty())
 							authorDetails = AUTHOR + ", " + UNKNOWN;
 
-						String seriesDetails = Convert.encodeList( db.getBookSeriesList(id), '|' );
+						String seriesDetails = ArrayUtils.getSeriesUtils().encodeList( db.getBookSeriesList(id), '|' );
 
 						row.setLength(0);
 						row.append("\"").append(formatCell(id)).append("\",");

@@ -33,7 +33,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.database.SerializationUtils;
 import com.eleybourn.bookcatalogue.database.SerializationUtils.DeserializationException;
-import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -96,7 +96,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
 	private static void getPreferredStyleNames(HashSet<String> hash) {
 		String itemStr = BookCataloguePreferences.getString(PREF_MENU_ITEMS, null);
 		if (itemStr != null && !itemStr.equals("")) {
-			ArrayList<String> list = Convert.decodeList(itemStr, '|');
+			ArrayList<String> list = ArrayUtils.decodeList(itemStr, '|');
 			for(int i = 0; i < list.size(); i++) {
 				String name = list.get(i);
 				if (name != null && !name.isEmpty() && !hash.contains(name))
@@ -299,7 +299,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
 		String itemStr = BookCataloguePreferences.getString(PREF_MENU_ITEMS, null);
 		if (itemStr != null && !itemStr.isEmpty()) {
 			// Break it up and process in order
-			ArrayList<String> list = Convert.decodeList(itemStr, '|');
+			ArrayList<String> list = ArrayUtils.decodeList(itemStr, '|');
 			if (list != null) {
 				for(String n: list) {
 					// Add any exiting style that is preferred
@@ -416,7 +416,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
 			if (s.isPreferred()) {
 				if (items.length() > 0)
 					items.append("|");
-				items.append(Convert.encodeListItem(s.getCanonicalName(), '|'));
+				items.append(ArrayUtils.encodeListItem(s.getCanonicalName(), '|'));
 			}
 		}
 		Editor e = BookCataloguePreferences.edit();

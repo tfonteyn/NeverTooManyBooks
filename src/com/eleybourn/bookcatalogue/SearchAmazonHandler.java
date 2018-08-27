@@ -23,7 +23,7 @@ package com.eleybourn.bookcatalogue;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -269,7 +269,7 @@ public class SearchAmazonHandler extends DefaultHandler {
 		if (mFetchThumbnail && mThumbnailUrl.length() > 0) {
 			String filename = Utils.saveThumbnailFromUrl(mThumbnailUrl, "_AM");
 			if (filename.length() > 0)
-				Convert.appendOrAdd(mBookData, "__thumbnail", filename);
+				ArrayUtils.appendOrAdd(mBookData, "__thumbnail", filename);
 		}		
 	}
 
@@ -310,7 +310,7 @@ public class SearchAmazonHandler extends DefaultHandler {
 				mInListPrice = false;
 			} else if (entry) {
 				if (localName.equalsIgnoreCase(AUTHOR)){
-					Convert.appendOrAdd(mBookData, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, mBuilder.toString());
+					ArrayUtils.appendOrAdd(mBookData, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, mBuilder.toString());
 				} else if (localName.equalsIgnoreCase(TITLE)){
 					addIfNotPresent(CatalogueDBAdapter.KEY_TITLE);
 				} else if (localName.equalsIgnoreCase(ISBN) || localName.equalsIgnoreCase(EISBN)){

@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.Author;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.BcQueueManager;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookData;
@@ -36,7 +37,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
 import com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames;
-import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -465,7 +465,7 @@ public class ImportAllTask extends GenericTask {
         	for(Bundle sb: shelves) {
         		String shelf = translateBookshelf(db, sb.getString(ListReviewsFieldNames.SHELF));
         		if (shelf != null && !shelf.isEmpty()) {
-        			shelf = Convert.encodeListItem(shelf, BookEditFields.BOOKSHELF_SEPARATOR);
+        			shelf = ArrayUtils.encodeListItem(shelf, BookEditFields.BOOKSHELF_SEPARATOR);
         			if (shelfNames == null)
 		        		shelfNames = new StringBuilder(shelf);
         			else

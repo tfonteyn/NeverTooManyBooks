@@ -22,7 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.xml.sax.Attributes;
@@ -156,7 +156,7 @@ public class SearchGoogleBooksEntryHandler extends DefaultHandler {
 				}
 			}
 		} else if (localName.equalsIgnoreCase(AUTHOR)){
-			Convert.appendOrAdd(mValues, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, builder.toString());
+			ArrayUtils.appendOrAdd(mValues, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, builder.toString());
 		} else if (localName.equalsIgnoreCase(PUBLISHER)){
 			addIfNotPresent(CatalogueDBAdapter.KEY_PUBLISHER);
 		} else if (localName.equalsIgnoreCase(DATE_PUBLISHED)){
@@ -190,7 +190,7 @@ public class SearchGoogleBooksEntryHandler extends DefaultHandler {
 				String thumbnail = attributes.getValue("", "href");
 				String filename = Utils.saveThumbnailFromUrl(thumbnail, "_GB");
 				if (filename.length() > 0)
-					Convert.appendOrAdd(mValues, THUMBNAIL_KEY, filename);
+					ArrayUtils.appendOrAdd(mValues, THUMBNAIL_KEY, filename);
 			}
 		}
 	}

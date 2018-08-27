@@ -25,6 +25,7 @@ import android.os.Bundle;
 import com.eleybourn.bookcatalogue.datamanager.DataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -114,7 +115,7 @@ public class BookData extends DataManager {
 	/** Accessor. Return a formatted list of books. */
 	public String getBookshelfText() {
 		String list = getBookshelfList();
-		ArrayList<String> items = Convert.decodeList(list, BookDetailsAbstract.BOOKSHELF_SEPARATOR);
+		ArrayList<String> items = ArrayUtils.decodeList(list, BookDetailsAbstract.BOOKSHELF_SEPARATOR);
 		if (items.size() == 0)
 			return "";
 
@@ -139,7 +140,7 @@ public class BookData extends DataManager {
 			StringBuilder bookshelves_list = new StringBuilder();
 			while (bookshelves.moveToNext()) {
 				String name = bookshelves.getString(bookshelves.getColumnIndex(CatalogueDBAdapter.KEY_BOOKSHELF));
-				String encoded_name = Convert.encodeListItem(name, BookDetailsAbstract.BOOKSHELF_SEPARATOR);
+				String encoded_name = ArrayUtils.encodeListItem(name, BookDetailsAbstract.BOOKSHELF_SEPARATOR);
 				if (bookshelves_list.length() == 0) {
 					bookshelves_list.append(encoded_name);
 				} else {

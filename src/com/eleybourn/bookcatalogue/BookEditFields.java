@@ -54,6 +54,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickListener;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEditorListener;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -294,7 +295,7 @@ public class BookEditFields extends BookDetailsAbstract
             if (currShelf.isEmpty()) {
                 currShelf = mDbHelper.getBookshelfName(1);
             }
-            String encoded_shelf = Convert.encodeListItem(currShelf, BOOKSHELF_SEPARATOR);
+            String encoded_shelf = ArrayUtils.encodeListItem(currShelf, BOOKSHELF_SEPARATOR);
             Field fe = mFields.getField(R.id.bookshelf);
             fe.setValue(currShelf);
             book.setBookshelfList(encoded_shelf);

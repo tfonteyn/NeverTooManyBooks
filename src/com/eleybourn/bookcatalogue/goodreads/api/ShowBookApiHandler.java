@@ -31,7 +31,7 @@ import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.Network
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.XmlHandler;
-import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -184,7 +184,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             if (bestImage != null) {
     			String filename = Utils.saveThumbnailFromUrl(bestImage, "_GR");
     			if (filename.length() > 0)
-					Convert.appendOrAdd(mBook, "__thumbnail", filename);
+					ArrayUtils.appendOrAdd(mBook, "__thumbnail", filename);
             }
         }
 
@@ -230,10 +230,10 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     	//public static final String BOOK_URL = "__url";
 
         if (mAuthors != null && mAuthors.size() > 0)
-			mBook.putString(CatalogueDBAdapter.KEY_AUTHOR_DETAILS, Convert.encodeList(mAuthors, '|'));
+			mBook.putString(CatalogueDBAdapter.KEY_AUTHOR_DETAILS, ArrayUtils.getAuthorUtils().encodeList(mAuthors, '|'));
 
         if (mSeries != null && mSeries.size() > 0)
-			mBook.putString(CatalogueDBAdapter.KEY_SERIES_DETAILS, Convert.encodeList(mSeries, '|'));
+			mBook.putString(CatalogueDBAdapter.KEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(mSeries, '|'));
 
         if (mShelves != null && mShelves.size() > 0)
         	mBook.putStringArrayList(SHELVES, mShelves);

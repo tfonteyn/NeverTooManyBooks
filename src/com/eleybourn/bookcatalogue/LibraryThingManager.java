@@ -24,7 +24,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -496,7 +496,7 @@ public class LibraryThingManager {
 		 * @param key	Key for data to add
 		 */
 		private void appendOrAdd(String key) {
-			Convert.appendOrAdd(mBookData, key, mBuilder.toString());
+			ArrayUtils.appendOrAdd(mBookData, key, mBuilder.toString());
 		}
 
 		@Override
@@ -544,7 +544,7 @@ public class LibraryThingManager {
 
 			} else if (localName.equalsIgnoreCase(AUTHOR)) {
 				// Add the author
-				Convert.appendOrAdd(mBookData, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, mBuilder.toString());
+				ArrayUtils.appendOrAdd(mBookData, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, mBuilder.toString());
 
 			} else if (localName.equalsIgnoreCase(FACT)) {
 				// Process the FACT according to the active FIELD type.
@@ -616,7 +616,7 @@ public class LibraryThingManager {
 		// Save it with an _LT suffix
 		String filename = Utils.saveThumbnailFromUrl(url, "_LT_" + size + "_" + isbn);
 		if (filename.length() > 0 && bookData != null)
-			Convert.appendOrAdd(bookData, "__thumbnail", filename);
+			ArrayUtils.appendOrAdd(bookData, "__thumbnail", filename);
 		return filename;
 	}
 	

@@ -63,6 +63,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStylePropertiesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.TrackedCursor;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
@@ -72,7 +73,6 @@ import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
@@ -1146,11 +1146,11 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      */
     private void doSortMenu(final boolean showAll) {
         LayoutInflater inf = this.getLayoutInflater();
-        View root = inf.inflate(R.layout.booklist_style_menu, null);
-        RadioGroup group = root.findViewById(R.id.radio_buttons);
-        LinearLayout main = root.findViewById(R.id.menu);
+        View v = inf.inflate(R.layout.booklist_style_menu, null);
+        RadioGroup group = v.findViewById(R.id.radio_buttons);
+        LinearLayout main = v.findViewById(R.id.menu);
 
-        final AlertDialog sortDialog = new AlertDialog.Builder(this).setView(root).create();
+        final AlertDialog sortDialog = new AlertDialog.Builder(this).setView(v).create();
         sortDialog.setTitle(R.string.select_style);
         sortDialog.show();
 

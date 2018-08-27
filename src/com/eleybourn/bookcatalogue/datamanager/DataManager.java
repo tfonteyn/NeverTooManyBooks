@@ -32,6 +32,7 @@ import com.eleybourn.bookcatalogue.datamanager.validators.IntegerValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.NonBlankValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.OrValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Convert;
 
 import java.io.Serializable;
@@ -450,7 +451,7 @@ public class DataManager {
 	 * Append a string to a list value in this collection
 	 */
 	public void appendOrAdd(String key, String value) {
-		String s = Convert.encodeListItem(value, '|');
+		String s = ArrayUtils.encodeListItem(value, '|');
 		if (!containsKey(key) || getString(key).isEmpty()) {
 			putString(key, s);
 		} else {

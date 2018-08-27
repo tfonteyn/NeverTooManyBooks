@@ -426,7 +426,7 @@ public class Utils {
     		int bestFile = -1;
 
     		// Parse the list
-    		ArrayList<String> files = Convert.decodeList(result.getString("__thumbnail"), '|');
+    		ArrayList<String> files = ArrayUtils.decodeList(result.getString("__thumbnail"), '|');
 
     		// Just read the image files to get file size
     		BitmapFactory.Options opt = new BitmapFactory.Options();

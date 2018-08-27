@@ -25,6 +25,7 @@ import android.os.Bundle;
 import com.eleybourn.bookcatalogue.TaskManager.TaskManagerListener;
 import com.eleybourn.bookcatalogue.goodreads.SearchGoodreadsThread;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
@@ -419,7 +420,7 @@ public class SearchManager implements TaskManagerListener {
 		}
 
 		if (authors != null && !authors.isEmpty()) {
-			ArrayList<Author> aa = Convert.decodeList(authors, '|', false);
+			ArrayList<Author> aa = ArrayUtils.getAuthorUtils().decodeList(authors, '|', false);
 			mBookData.putSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, aa);			
 		}
 
@@ -457,7 +458,7 @@ public class SearchManager implements TaskManagerListener {
 
 		if (series != null && !series.isEmpty()) {
 			try {
-				ArrayList<Series> sa = Convert.decodeList(series, '|', false);
+				ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList(series, '|', false);
 				mBookData.putSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY, sa);
 			} catch (Exception e) {
 				Logger.logError(e);

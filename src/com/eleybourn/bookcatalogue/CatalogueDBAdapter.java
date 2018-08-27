@@ -46,7 +46,7 @@ import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
 import com.eleybourn.bookcatalogue.database.SerializationUtils;
 import com.eleybourn.bookcatalogue.database.SqlStatementManager;
-import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -3619,7 +3619,7 @@ public class CatalogueDBAdapter {
 
 			String bookshelf = values.getBookshelfList();
 			if (bookshelf != null && !bookshelf.trim().isEmpty()) {
-				createBookshelfBooks(rowId, Convert.decodeList(bookshelf, BookEditFields.BOOKSHELF_SEPARATOR), false);
+				createBookshelfBooks(rowId, ArrayUtils.decodeList(bookshelf, BookEditFields.BOOKSHELF_SEPARATOR), false);
 			}
 
 			createBookAuthors(rowId, authors, false);
@@ -4198,7 +4198,7 @@ public class CatalogueDBAdapter {
 
 			String bookshelf = values.getBookshelfList();
 			if (bookshelf != null && !bookshelf.trim().isEmpty()) {
-				createBookshelfBooks(rowId, Convert.decodeList(bookshelf, BookEditFields.BOOKSHELF_SEPARATOR), false);
+				createBookshelfBooks(rowId, ArrayUtils.decodeList(bookshelf, BookEditFields.BOOKSHELF_SEPARATOR), false);
 			}
 
 			if (values.containsKey(CatalogueDBAdapter.KEY_AUTHOR_ARRAY)) {

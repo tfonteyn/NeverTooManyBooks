@@ -23,7 +23,7 @@ package com.eleybourn.bookcatalogue;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.Series.SeriesDetails;
-import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
@@ -79,12 +79,12 @@ abstract public class SearchThread extends ManagedTask {
 				if (details != null && !details.name.isEmpty()) {
 					ArrayList<Series> sl;
 					if (mBookData.containsKey(CatalogueDBAdapter.KEY_SERIES_DETAILS)) {
-						sl = Convert.decodeList(mBookData.getString(CatalogueDBAdapter.KEY_SERIES_DETAILS), '|', false);
+						sl = ArrayUtils.getSeriesUtils().decodeList(mBookData.getString(CatalogueDBAdapter.KEY_SERIES_DETAILS), '|', false);
 					} else {
 						sl = new ArrayList<>();
 					}
 					sl.add(new Series(details.name, details.position));
-					mBookData.putString(CatalogueDBAdapter.KEY_SERIES_DETAILS, Convert.encodeList(sl, '|'));
+					mBookData.putString(CatalogueDBAdapter.KEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(sl, '|'));
 					mBookData.putString(CatalogueDBAdapter.KEY_TITLE, thisTitle.substring(0, details.startChar-1));
 				}
 			}

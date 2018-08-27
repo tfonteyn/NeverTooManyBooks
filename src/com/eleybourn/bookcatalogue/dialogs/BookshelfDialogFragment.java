@@ -35,7 +35,7 @@ import android.widget.LinearLayout;
 
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 
 import java.util.ArrayList;
 
@@ -163,7 +163,7 @@ public class BookshelfDialogFragment extends DialogFragment {
     				final CheckBox cb = new CheckBox(getActivity());
     				boolean checked = false;
     				String db_bookshelf = bookshelves_for_book.getString(bookshelves_for_book.getColumnIndex(CatalogueDBAdapter.KEY_BOOKSHELF)).trim();
-    				String db_encoded_bookshelf = Convert.encodeListItem(db_bookshelf, BOOKSHELF_SEPARATOR);
+    				String db_encoded_bookshelf = ArrayUtils.encodeListItem(db_bookshelf, BOOKSHELF_SEPARATOR);
     				if (shelves.contains(BOOKSHELF_SEPARATOR + db_encoded_bookshelf + BOOKSHELF_SEPARATOR)) {
     					checked = true;
     				}
@@ -176,7 +176,7 @@ public class BookshelfDialogFragment extends DialogFragment {
     					public void onClick(View v) {
     						String hint = cb.getHint() + "";
     						String name = hint.trim();
-    						String encoded_name = Convert.encodeListItem(name, BOOKSHELF_SEPARATOR);
+    						String encoded_name = ArrayUtils.encodeListItem(name, BOOKSHELF_SEPARATOR);
     						// If box is checked, then we just append to list
     						if (cb.isChecked()) {
     							if (mCurrText == null || mCurrText.isEmpty()) {
@@ -188,7 +188,7 @@ public class BookshelfDialogFragment extends DialogFragment {
     							}
     						} else {
     							// Get the underlying list
-    							ArrayList<String> shelves = Convert.decodeList(mCurrList, BOOKSHELF_SEPARATOR);
+    							ArrayList<String> shelves = ArrayUtils.decodeList(mCurrList, BOOKSHELF_SEPARATOR);
     							// Start a new list
 								StringBuilder newList = new StringBuilder();
 								StringBuilder newText = new StringBuilder();
@@ -198,10 +198,10 @@ public class BookshelfDialogFragment extends DialogFragment {
     									// If item in underlying list does not match...
     									if (!s.equalsIgnoreCase(name)) {
     										// Convert item
-    										String item = Convert.encodeListItem(s, BOOKSHELF_SEPARATOR);
+    										String item = ArrayUtils.encodeListItem(s, BOOKSHELF_SEPARATOR);
     										// Append to list (or set to only element if list empty)
     										if (newList.length() == 0) {
-    											newList.append(Convert.encodeListItem(s, BOOKSHELF_SEPARATOR));
+    											newList.append(ArrayUtils.encodeListItem(s, BOOKSHELF_SEPARATOR));
     											newText.append(s);
     										} else {
     											newList.append(BOOKSHELF_SEPARATOR).append(item);
