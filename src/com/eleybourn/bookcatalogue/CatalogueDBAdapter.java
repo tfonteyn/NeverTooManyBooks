@@ -113,6 +113,8 @@ public class CatalogueDBAdapter {
 	/** Debug counter */
 	private static Integer mInstanceCount = 0;
 
+	private Context mContext;
+
 	private SqlStatementManager mStatements;
 
 	/** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync */
@@ -1787,8 +1789,10 @@ public class CatalogueDBAdapter {
 			}
 		}
 
+        mContext = ctx;
+
         if (mDbHelper == null)
-			mDbHelper = new DatabaseHelper(ctx);
+			mDbHelper = new DatabaseHelper(mContext);
 	}
 	
 	/**
@@ -2525,9 +2529,9 @@ public class CatalogueDBAdapter {
 	/**
 	 * Return a Cursor over the list of all books in the database by genre
 	 *
-	 * @param date
-	 * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-	 * @param search_term
+	 * @param date          date published
+	 * @param bookshelf     The bookshelf to search within. Can be the string "All Books"
+	 * @param search_term   text to search for
 	 *
 	 * @return Cursor over all books
 	 */
@@ -2870,10 +2874,10 @@ public class CatalogueDBAdapter {
 	 */
 	public int fetchAuthorPositionByGivenName(String name, String bookshelf) {
 
-		String where = "";
+		String where = null;
 		String[] names = processAuthorName(name);
 		if (!bookshelf.isEmpty()) {
-			where += authorOnBookshelfSql(bookshelf, "a." + KEY_ROWID, false);
+			where = authorOnBookshelfSql(bookshelf, "a." + KEY_ROWID, false);
 		}
 		if (where != null && !where.isEmpty())
 			where = " and " + where;
@@ -3445,7 +3449,7 @@ public class CatalogueDBAdapter {
 	public class AnthologyTitleExistsException extends RuntimeException {
 		private static final long serialVersionUID = -9052087086134217566L;
 
-		public AnthologyTitleExistsException() {
+		AnthologyTitleExistsException() {
 			super("Anthology title already exists");
 		}
 	}
@@ -4774,7 +4778,7 @@ public class CatalogueDBAdapter {
 		}
 
 		if (uuid != null && !uuid.isEmpty()) {
-            try(CoversDbHelper coversDbHelper = CoversDbHelper.getInstance()) {
+            try(CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(mContext)) {
                 coversDbHelper.eraseCachedBookCover(uuid);
             }
 		}

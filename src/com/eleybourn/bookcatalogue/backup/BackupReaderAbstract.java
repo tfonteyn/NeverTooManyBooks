@@ -152,7 +152,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
 				}
 			}
 		}
-		cover.saveToDirectory(StorageUtils.getSharedDirectory());
+		cover.saveToDirectory(StorageUtils.getSharedStorage());
 		curr.setLastModified(covDate.getTime());
 	}
 

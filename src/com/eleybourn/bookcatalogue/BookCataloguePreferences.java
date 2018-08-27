@@ -85,7 +85,7 @@ public class BookCataloguePreferences {
 	}
 
 	public static String getLastBackupFile() {
-		return getString(PREF_LAST_BACKUP_FILE, StorageUtils.getSharedDirectory().getAbsolutePath());
+		return getString(PREF_LAST_BACKUP_FILE, StorageUtils.getSharedStorage().getAbsolutePath());
 	}
 	public static String getLastBackupDate() {
 		return getString(PREF_LAST_BACKUP_DATE,null);

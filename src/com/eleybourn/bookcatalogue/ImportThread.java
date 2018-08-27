@@ -42,7 +42,7 @@ public class ImportThread extends ManagedTask {
 		mDbHelper.open();
 
 		mCoverFinder = new LocalCoverFinder(mFile.getParent(),
-				StorageUtils.getSharedDirectory().getAbsolutePath());
+				StorageUtils.getSharedStorage().getAbsolutePath());
 
 		//getMessageSwitch().addListener(getSenderId(), taskHandler, false);
 		//Debug.startMethodTracing();

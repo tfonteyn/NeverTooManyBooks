@@ -39,6 +39,7 @@ import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.OnTaskFinishListener;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 
 import java.lang.ref.WeakReference;
@@ -136,6 +137,10 @@ public class StartupActivity extends AppCompatActivity {
 			mStartupActivity = new WeakReference<>(this);
 
 			updateProgress("Starting");
+
+			// at this point the user will have granted us STORAGE permission,
+			// so make sure we have our directories ready
+			StorageUtils.initSharedDirectories();
 
 			SimpleTaskQueue q = getQueue();
 
@@ -403,7 +408,7 @@ public class StartupActivity extends AppCompatActivity {
 			// Analyze DB
 			db.analyzeDb();
 			if (BooklistPreferencesActivity.isThumbnailCacheEnabled()) {
-                try(CoversDbHelper coversDbHelper = CoversDbHelper.getInstance()) {
+                try(CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(StartupActivity.this)) {
                     coversDbHelper.analyze();
                 }
 			}

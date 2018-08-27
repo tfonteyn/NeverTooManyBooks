@@ -61,13 +61,12 @@ public class ViewUtils {
 
         //* Get the original file so we can use the modification date, path etc */
         File coverFile = CatalogueDBAdapter.fetchThumbnailByUuid(hash);
-
         Bitmap bm = null;
         boolean cacheWasChecked = false;
 
         /* If we want to check the cache, AND we don't have cache building happening, then check it. */
         if (checkCache && !GetThumbnailTask.hasActiveTasks() && !ThumbnailCacheWriterTask.hasActiveTasks()) {
-            try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance()) {
+            try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(destView.getContext())) {
                 bm = coversDbHelper.fetchCachedImageIntoImageView(coverFile, destView, hash, maxWidth, maxHeight);
             }
             cacheWasChecked = true;
@@ -88,7 +87,7 @@ public class ViewUtils {
         // If we get here, the image is not in the cache but the original exists. See if we can queue it.
         if (allowBackground) {
             destView.setImageBitmap(null);
-            GetThumbnailTask.getThumbnail(hash, destView, maxWidth, maxHeight, cacheWasChecked);
+            GetThumbnailTask.getThumbnail(destView.getContext(), hash, destView, maxWidth, maxHeight, cacheWasChecked);
             return null;
         }
 

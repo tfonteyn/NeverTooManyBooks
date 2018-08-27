@@ -72,10 +72,9 @@ public class StorageUtils {
 	 * Make sure the external shared directory exists
      * Logs failures themselves, but does NOT fail function
      *
-     * TODO: reduce calls to this!
-     *
+     * Only called from StartupActivity, after permissions have been granted.
 	 */
-	private static void initSharedDirectories() {
+	public static void initSharedDirectories() {
 	    File rootDir = new File(EXTERNAL_FILE_PATH);
 	    // quick return
         if (rootDir.exists() && rootDir.isDirectory())
@@ -97,8 +96,6 @@ public class StorageUtils {
 	 * Get a File, don't check on existence or creation
 	 */
 	public static File getFile(String fileName) {
-        initSharedDirectories();
-
         if (BuildConfig.DEBUG) {
         	System.out.println("StorageUtils.getFile: Accessing file: " + EXTERNAL_FILE_PATH + File.separator + fileName);
 		}
@@ -108,9 +105,7 @@ public class StorageUtils {
 	/**
 	 * @return the shared root Directory object, create if needed
 	 */
-	public static File getSharedDirectory() {
-        initSharedDirectories();
-
+	public static File getSharedStorage() {
         return new File(EXTERNAL_FILE_PATH);
 	}
 
@@ -118,7 +113,7 @@ public class StorageUtils {
      * full path, without trailing File.separator !
      * @return the path
      */
-    public static String getSharedDirectoryPath() {
+    public static String getSharedStoragePath() {
         return EXTERNAL_FILE_PATH;
     }
 
@@ -128,8 +123,6 @@ public class StorageUtils {
      * @return the file
      */
     public static File getTempImageFile(String fileName) {
-        initSharedDirectories();
-
         return getFile(TEMP_IMAGE_FILE_PATH + File.separator + fileName);
     }
 
@@ -137,8 +130,6 @@ public class StorageUtils {
      * @return the temp image directory
      */
 	public static File getTempImageDirectory() {
-        initSharedDirectories();
-
         return new File(TEMP_IMAGE_FILE_PATH);
 	}
 
@@ -382,7 +373,7 @@ public class StorageUtils {
 	 */
 	public static void cleanupFiles() {
 		if (sdCardWritable()) {
-	        File dir = getSharedDirectory();
+	        File dir = getSharedStorage();
 	        for (String name : dir.list()) {
 	        	boolean purge = false;
 	        	for(String prefix : mPurgeableFilePrefixes)
@@ -413,7 +404,7 @@ public class StorageUtils {
 
 		long totalSize = 0;
 
-		File dir = getSharedDirectory();
+		File dir = getSharedStorage();
         for (String name : dir.list()) {
         	boolean purge = false;
         	for(String prefix : mPurgeableFilePrefixes)

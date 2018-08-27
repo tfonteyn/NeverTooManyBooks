@@ -167,7 +167,7 @@ Logger.logError(new RuntimeException("DEBUG"), message.toString());
         ArrayList<String> files = new ArrayList<>();
 
         // Find all files of interest to send
-        File dir = StorageUtils.getSharedDirectory();
+        File dir = StorageUtils.getSharedStorage();
         try {
             for (String name : dir.list()) {
                 boolean send = false;

@@ -347,21 +347,6 @@ public class DbSync {
 		}
 
 		/**
-		 * Constructor.
-		 * 
-		 * @param helper	DBHelper to open underlying database
-		 * @param sync		Synchronizer to use
-		 */
-		SynchronizedDb(final GenericOpenHelper helper, Synchronizer sync) {
-			mSync = sync;
-			mDb = openWithRetries(new DbOpener() {
-				@Override
-				public SQLiteDatabase open() {
-					return helper.getWritableDatabase();
-				}});			
-		}
-		
-		/**
 		 * Factory for Synchronized Cursor objects. This can be subclassed by other
 		 * Cursor implementations.
 		 * 

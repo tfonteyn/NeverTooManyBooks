@@ -595,7 +595,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
     private void invalidateCachedThumbnail() {
         final Long rowId = mEditManager.getBookData().getRowId();
         if (rowId != 0) {
-            try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance()) {
+            try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(this.getContext())) {
                 coversDbHelper.deleteBookCover(mDbHelper.getBookUuid(rowId));
             } catch (Exception e) {
                 Logger.logError(e, "Error cleaning up cached cover images");

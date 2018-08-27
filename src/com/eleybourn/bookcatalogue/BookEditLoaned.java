@@ -187,7 +187,5 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
 	protected void onLoadBookDetails(BookData book, boolean setAllDone) {
 		if (!setAllDone)
 			mFields.setAll(book);
-		// TODO Auto-generated method stub
-		
 	}
 }

@@ -345,7 +345,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 			v.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					try(CoversDbHelper coversDbHelper = CoversDbHelper.getInstance()) {
+					try(CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(AdministrationFunctions.this)) {
 						coversDbHelper.eraseCoverCache();
 					}
 					return;

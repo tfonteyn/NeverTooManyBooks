@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
@@ -49,13 +50,14 @@ public class ThumbnailCacheWriterTask implements SimpleTask {
 	/**
 	 * Queue the passed bitmap to be compressed and written to the database, will be recycled if
 	 * flag is set.
-	 * 
+	 *
+	 * @param  context		context to use for database access
 	 * @param cacheId		Cache ID to use
 	 * @param source		Raw bitmap to store
 	 * @param canRecycle	Indicates bitmap should be recycled after use
 	 */
-	public static void writeToCache(String cacheId, Bitmap source, boolean canRecycle) {
-		ThumbnailCacheWriterTask t = new ThumbnailCacheWriterTask(cacheId, source, canRecycle);
+	public static void writeToCache(Context context, String cacheId, Bitmap source, boolean canRecycle) {
+		ThumbnailCacheWriterTask t = new ThumbnailCacheWriterTask(context, cacheId, source, canRecycle);
 		mQueue.enqueue(t);
 	}
 
@@ -68,6 +70,7 @@ public class ThumbnailCacheWriterTask implements SimpleTask {
 
 	// ******** INSTANCE Data ******** //
 
+	private Context mContext;
 	/** Cache ID of this object */
 	private String mCacheId;
 	/** Indicates if Bitmap can be recycled when no longer needed */
@@ -83,7 +86,8 @@ public class ThumbnailCacheWriterTask implements SimpleTask {
 	 * @param source		Raw bitmap to store
 	 * @param canRecycle	Indicates bitmap should be recycled after use
 	 */
-	private ThumbnailCacheWriterTask(String cacheId, Bitmap source, boolean canRecycle) {
+	private ThumbnailCacheWriterTask(Context context, String cacheId, Bitmap source, boolean canRecycle) {
+		mContext = context;
 		mCacheId = cacheId;
 		mBitmap = source;
 		mCanRecycle = canRecycle;
@@ -98,7 +102,7 @@ public class ThumbnailCacheWriterTask implements SimpleTask {
 			// Was probably recycled by rapid scrolling of view
 			mBitmap = null;
 		} else {
-            try(CoversDbHelper coversDbHelper = CoversDbHelper.getInstance()) {
+            try(CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(mContext)) {
                 coversDbHelper.saveFile(mBitmap, mCacheId);
             }
 			if (mCanRecycle) {

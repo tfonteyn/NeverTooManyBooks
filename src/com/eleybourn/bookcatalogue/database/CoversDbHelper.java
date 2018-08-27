@@ -21,10 +21,12 @@
 package com.eleybourn.bookcatalogue.database;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQuery;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -39,8 +41,8 @@ import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.DbUtils.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
-import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -91,10 +93,10 @@ public class CoversDbHelper implements AutoCloseable  {
 			}
 	};
 
-	private static class CoversHelper extends GenericOpenHelper {
+	private static class CoversHelper extends SQLiteOpenHelper {
 
-		CoversHelper(String dbFilePath, CursorFactory factory, int version) {
-			super(dbFilePath, factory, version);
+		CoversHelper(Context context, String dbFilePath, CursorFactory factory, int version) {
+			super(context, dbFilePath, factory, version);
 		}
 
 		/**
@@ -141,20 +143,22 @@ public class CoversDbHelper implements AutoCloseable  {
      *
      * or call close() yourself ... but if you forget, you might waste resources
 	 */
-	public static CoversDbHelper getInstance() {
+	public static CoversDbHelper getInstance(Context context) {
 	    if (mInstance == null) {
-            mInstance = new CoversDbHelper();
+            mInstance = new CoversDbHelper(context);
         }
 		return mInstance;
 	}
 
 	/**
-	 * Constructor. Fill in required fields. This is NOT based on SQLiteOpenHelper so does not need a context.
+	 * Constructor. Fill in required fields.
 	 */
-    private CoversDbHelper() {
+    private CoversDbHelper(Context context) {
 		if (mSharedDb == null) {
-            GenericOpenHelper mHelper = new CoversHelper(StorageUtils.getSharedDirectoryPath(),
-                    mTrackedCursorFactory, COVERS_DATABASE_VERSION);
+			SQLiteOpenHelper mHelper = new CoversHelper(context,
+                    StorageUtils.getFile(COVERS_DATABASE_NAME).getAbsolutePath(),
+                    mTrackedCursorFactory,
+					COVERS_DATABASE_VERSION);
 
             // Try to connect.
             try {
