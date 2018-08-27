@@ -1,7 +1,5 @@
 package com.eleybourn.bookcatalogue.utils;
 
-import android.support.annotation.NonNull;
-
 /**
  * <p>Encodes and decodes to and from Base64 notation.</p>
  * <p>Homepage: <a href="http://iharder.net/base64">http://iharder.net/base64</a>.</p>
@@ -149,7 +147,7 @@ import android.support.annotation.NonNull;
  * @author rob@iharder.net
  * @version 2.3.7
  */
-@SuppressWarnings("CaughtExceptionImmediatelyRethrown")
+@SuppressWarnings("all")
 public class Base64
 {
     
@@ -1815,7 +1813,7 @@ public class Base64
          * @since 1.3
          */
         @Override
-        public int read(@NonNull byte[] dest, int off, int len )
+        public int read(byte[] dest, int off, int len )
         throws java.io.IOException {
             int i;
             int b;
@@ -1980,7 +1978,7 @@ public class Base64
          * @since 1.3
          */
         @Override
-        public void write(@NonNull byte[] theBytes, int off, int len )
+        public void write(byte[] theBytes, int off, int len )
         throws java.io.IOException {
             // Encoding suspended?
             if( suspendEncoding ) {
