@@ -23,7 +23,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS"/> <!-- TODO: add check to BookEditLoan page -->
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
 
     <application
         android:name=".BookCatalogueApp"
