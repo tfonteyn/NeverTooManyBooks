@@ -8,7 +8,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="paddingStart">@dimen/padding_prefs_item</item>
         <item name="android:drawablePadding">20dp</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
     <!-- Style for headers in preferences lists -->

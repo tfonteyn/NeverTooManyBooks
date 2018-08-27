@@ -34,13 +34,13 @@ import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.properties.Properties;
 import com.eleybourn.bookcatalogue.properties.Property.ValidationException;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.StringProperty;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 /**
@@ -170,13 +170,15 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
 		public View getView(LayoutInflater inflater) {
 			View v = inflater.inflate(R.layout.property_value_string_button, null);
 			ViewTagger.setTag(v, R.id.TAG_PROPERTY, this);
+
 			final TextView name = v.findViewById(R.id.name);
-			final TextView value = v.findViewById(R.id.value);
-			final Button btn = v.findViewById(R.id.edit_button);
 			name.setText(getName());
+
+			final TextView value = v.findViewById(R.id.value);
 			value.setHint(getName());
 			value.setText(get());
 
+			final View btn = v.findViewById(R.id.edit_button);
 			btn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {

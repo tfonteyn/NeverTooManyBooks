@@ -1,15 +1,16 @@
 package com.eleybourn.bookcatalogue;
 
-import java.io.File;
-import java.net.URL;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.io.File;
+import java.net.URL;
+import java.util.Objects;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 // ENHANCE: Get editions via: http://books.google.com/books/feeds/volumes?q=editions:ISBN0380014300
 
@@ -20,7 +21,7 @@ public class GoogleBooksManager {
 		try {
 			searchGoogle(isbn, "", "", b, true);
 			if (b.containsKey(SearchGoogleBooksEntryHandler.THUMBNAIL_KEY)) {
-				File f = new File(b.getString(SearchGoogleBooksEntryHandler.THUMBNAIL_KEY));
+				File f = new File(Objects.requireNonNull(b.getString(SearchGoogleBooksEntryHandler.THUMBNAIL_KEY)));
 				File newName = new File(f.getAbsolutePath() + "_" + isbn);
 				f.renameTo(newName);
 				return newName;

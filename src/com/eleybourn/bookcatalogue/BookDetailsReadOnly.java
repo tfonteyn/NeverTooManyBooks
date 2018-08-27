@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,7 @@ import java.util.Date;
 public class BookDetailsReadOnly extends BookDetailsAbstract {
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Tracker.enterOnCreateView(this);
 		final View rootView = inflater.inflate(R.layout.book_details, null);
 		Tracker.exitOnCreateView(this);

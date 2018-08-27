@@ -483,9 +483,7 @@ public class CsvImporter {
 			} else {
 				// This is just a raw string; no escape or quote active.
 				// Ignore leading space.
-				if ((c == ' ' || c == '\t') && bld.length() == 0 ) {
-					// Skip leading white space
-				} else {
+				if ((c != ' ' && c != '\t') || bld.length() != 0) {
 					switch(c){
 						case QUOTE_CHAR:
 							if (bld.length() > 0) {
@@ -499,7 +497,7 @@ public class CsvImporter {
 							if (fullEscaping)
 								inEsc = true;
 							else
-								bld.append(c);						
+								bld.append(c);
 							break;
 						case SEPARATOR:
 							// Add this field and reset it.

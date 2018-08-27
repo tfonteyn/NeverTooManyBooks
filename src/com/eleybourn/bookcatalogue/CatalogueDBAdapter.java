@@ -4796,7 +4796,7 @@ public class CatalogueDBAdapter {
 		//String sql = "UPDATE " + DB_TB_BOOKS + " SET " + KEY_BOOKSHELF + "=1 WHERE " + KEY_BOOKSHELF + "='" + rowId + "'";
 		//mDb.execSQL(sql);
 		deleteSuccess = mDb.delete(DB_TB_BOOK_BOOKSHELF_WEAK, KEY_BOOKSHELF + "=" + bookshelfId, null) > 0;
-		deleteSuccess = mDb.delete(DB_TB_BOOKSHELF, KEY_ROWID + "=" + bookshelfId, null) > 0;
+		deleteSuccess = deleteSuccess && mDb.delete(DB_TB_BOOKSHELF, KEY_ROWID + "=" + bookshelfId, null) > 0;
 		return deleteSuccess;
 	}
 	

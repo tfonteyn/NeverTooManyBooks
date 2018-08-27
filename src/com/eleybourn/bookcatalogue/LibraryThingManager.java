@@ -463,7 +463,7 @@ public class LibraryThingManager {
 	 * @author Philip Warner
 	 */
 	private class SearchLibraryThingEntryHandler extends DefaultHandler  {
-		private Bundle mBookData = null;
+		private Bundle mBookData;
 		private StringBuilder mBuilder = new StringBuilder();
 		
 		private FieldTypes mFieldType = FieldTypes.OTHER;
@@ -663,7 +663,7 @@ public class LibraryThingManager {
 	 */
 	static private class SearchLibraryThingEditionHandler extends DefaultHandler  {
 		private StringBuilder mBuilder = new StringBuilder();
-		private ArrayList<String> mEditions = new ArrayList<>();
+		private ArrayList<String> mEditions;
 
 		SearchLibraryThingEditionHandler(ArrayList<String> editions) {
 			mEditions = editions;

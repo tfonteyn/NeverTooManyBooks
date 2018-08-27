@@ -11,6 +11,7 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.app.AppCompatDialog;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
@@ -26,9 +27,9 @@ import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.cropper.CropCropImage;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.HintManager;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewUtils;
@@ -719,7 +720,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
     private void showZoomedThumb(Long rowId) {
         // Create dialog and set layout
         Context c = getActivity();
-        final Dialog dialog = new Dialog(c);
+        final Dialog dialog = new AppCompatDialog(c);
         dialog.setContentView(R.layout.zoom_thumb_dialog);
 
         // Check if we have a file and/or it is valid

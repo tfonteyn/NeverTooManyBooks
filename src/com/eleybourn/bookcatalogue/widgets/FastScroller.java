@@ -149,7 +149,7 @@ public class FastScroller {
     }
     private boolean mChangedBounds;
     
-    public FastScroller(Context context, AbsListView listView) {
+    FastScroller(Context context, AbsListView listView) {
         mList = listView;
         int overlaySize;
         // Determine the overlay size based on 3xLargeTextSize; if 
@@ -463,7 +463,6 @@ public class FastScroller {
 				else
 					mSectionTextV1 = null;					
 			} else {
-				sectionIndex = -1;
 				mSectionTextV1 = null;
 			}
 		}

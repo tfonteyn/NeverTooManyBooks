@@ -30,7 +30,8 @@
         android:layout_alignParentStart="true"
         android:layout_toStartOf="@id/frame"
         android:paddingTop="@dimen/padding_border"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:text="some name" />
 
     <TextView
         android:id="@+id/value"
@@ -39,9 +40,10 @@
         android:layout_alignParentStart="true"
         android:layout_below="@id/name"
         android:layout_toStartOf="@id/frame"
-        android:paddingStart="@dimen/padding_border"
         android:paddingEnd="@dimen/padding_border"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:paddingStart="@dimen/padding_border"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        tools:text="some value" />
 
      <ImageView
         android:layout_width="match_parent"

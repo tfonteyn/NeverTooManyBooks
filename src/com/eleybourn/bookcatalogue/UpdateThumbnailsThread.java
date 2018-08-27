@@ -62,7 +62,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
 	private FieldUsages mCurrFieldUsages;
 
 	// Active search manager
-	private SearchManager mSearchManager = null;
+	private SearchManager mSearchManager;
 
 	// DB connection
 	protected CatalogueDBAdapter mDbHelper;

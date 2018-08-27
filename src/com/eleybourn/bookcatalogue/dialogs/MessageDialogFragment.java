@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
@@ -71,7 +72,8 @@ public class MessageDialogFragment extends DialogFragment {
 	/**
 	 * Create the underlying dialog
 	 */
-    @Override
+    @NonNull
+	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
     	mDialogId = getArguments().getInt("dialogId");
         int title = getArguments().getInt("titleId");

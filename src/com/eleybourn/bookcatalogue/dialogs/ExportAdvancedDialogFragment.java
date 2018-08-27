@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -99,7 +100,8 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
 	/**
 	 * Create the underlying dialog
 	 */
-    @Override
+    @NonNull
+	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
     	mDialogId = getArguments().getInt("dialogId");
     	mFile = new File(getArguments().getString("fileSpec"));

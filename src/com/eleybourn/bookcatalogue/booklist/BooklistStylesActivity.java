@@ -41,6 +41,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Activity to edit the list of styles and enable/disable their presence in the
@@ -153,7 +154,7 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 				@Override
 				public void onClick(View v) {
 					Holder h = ViewTagger.getTag(v, R.id.TAG_HOLDER);
-					boolean newPref = !h.style.isPreferred();
+					boolean newPref = !Objects.requireNonNull(h).style.isPreferred();
 					h.style.setPreferred(newPref);
 					if (newPref) {
 						h.preferred.setImageResource(R.drawable.btn_check_clipped);
