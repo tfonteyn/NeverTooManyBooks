@@ -1,25 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     style="@style/propertyValue">
 
-    <Button
-        android:id="@+id/edit_button"
+    <FrameLayout
+        android:id="@+id/frame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
         android:layout_centerVertical="true"
-        android:text="@string/edit"
-        style="?android:attr/buttonStyleSmall"/>
+        android:paddingEnd="@dimen/padding_border"
+        android:paddingStart="@dimen/padding_border">
+        <ImageView
+            android:id="@+id/edit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:hint="@string/edit"
+            app:srcCompat="@android:drawable/ic_menu_edit"
+            tools:ignore="ContentDescription" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_toStartOf="@id/edit_button"
+        android:layout_toStartOf="@id/frame"
         android:paddingTop="@dimen/padding_border"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -29,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_below="@id/name"
-        android:layout_toStartOf="@id/edit_button"
+        android:layout_toStartOf="@id/frame"
         android:paddingStart="@dimen/padding_border"
         android:paddingEnd="@dimen/padding_border"
         android:textAppearance="?android:attr/textAppearanceSmall" />
