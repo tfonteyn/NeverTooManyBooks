@@ -20,10 +20,14 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,9 +37,9 @@ import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
-import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
 
@@ -47,6 +51,12 @@ import java.util.ArrayList;
  */
 public class BookEditLoaned extends BookEditFragmentAbstract {
 
+    private static final String[] PROJECTION =  {
+                    ContactsContract.Contacts._ID,
+                    ContactsContract.Contacts.LOOKUP_KEY,
+                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY
+    };
+
 	/**
 	 * Return a list of friends from your contact list. 
 	 * This is for the autoComplete textView
@@ -55,37 +65,42 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
 	 */
 	protected ArrayList<String> getFriends() {
 		ArrayList<String> friend_list = new ArrayList<>();
-		Uri baseUri = null;
-		String display_name = null;
-		try {
-			try {
-				Class<?> c = Class.forName("android.provider.ContactsContract$Contacts");
-				baseUri = (Uri) c.getField("CONTENT_URI").get(baseUri);
-				display_name = (String) c.getField("DISPLAY_NAME").get(display_name);
-			} catch (Exception e) {
-				try {
-					Class<?> c = Class.forName("android.provider.Contacts$People");
-					baseUri = (Uri) c.getField("CONTENT_URI").get(baseUri);
-					display_name = (String) c.getField("DISPLAY_NAME").get(display_name);
-				} catch (Exception e2) {
-					Logger.logError(e);
-				}
-			}
-			Cursor contactsCursor = getActivity().getContentResolver().query(baseUri, null, null, null, null);
-			while (contactsCursor.moveToNext()) {
-				String name = contactsCursor.getString(contactsCursor.getColumnIndex(display_name));
-				friend_list.add(name);
-			}
-			contactsCursor.close();
-		} catch (SecurityException e) {
-		    //TODO: change this class to request permissions and allow a new call to getFriends
-		    // silently fail. The user can still type a friends name manually
-			Logger.logError("READ_CONTACTS permission needed");
+
+		// bail out silently
+		if (ContextCompat.checkSelfPermission(this.getContext(),
+				Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+			// ask the user to access contact.
+			ActivityCompat.requestPermissions(this.getActivity(),
+                    new String[] {Manifest.permission.READ_CONTACTS}, 0);
+			// while they decide... bail out silently, then can click the btn again afterwards.
+			// Also no need to setup a listener for the requestCode=0
+			return friend_list;
 		}
+
+        Cursor contactsCursor = getActivity().getContentResolver()
+                .query(ContactsContract.Contacts.CONTENT_URI, PROJECTION,
+                        null, null, null);
+        while (contactsCursor.moveToNext()) {
+            String name = contactsCursor.getString
+                    (contactsCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
+            friend_list.add(name);
+        }
+        contactsCursor.close();
 		return friend_list;
 	}
 
-	@Override
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 0) {
+            if (ContextCompat.checkSelfPermission(this.getContext(),
+                    Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+                //FIXME: this needs more work... we need to tell the adapter to reload the list.
+            }
+        }
+    }
+
+    @Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.edit_book_loan_base, container, false);
 	}
@@ -125,8 +140,8 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
 
 		AutoCompleteTextView mUserText = sv.findViewById(R.id.loan_to_who);
 		try {
-			ArrayAdapter<String> series_adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, getFriends());
-			mUserText.setAdapter(series_adapter);
+			ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, getFriends());
+			mUserText.setAdapter(adapter);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
