@@ -78,7 +78,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/signed" />
+                android:text="@string/signed"
+                />
 
             <View
                 android:layout_width="match_parent"
@@ -102,12 +103,12 @@
 
                 <Button
                     android:id="@+id/read_start"
-                    style="@style/dataEntryButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentEnd="true"
-                    android:layout_below="@+id/read_start_heading" />
+                    android:layout_below="@+id/read_start_heading"
+                    style="@style/dataEntryButtonStyle"/>
             </RelativeLayout>
 
             <View
@@ -132,12 +133,12 @@
 
                 <Button
                     android:id="@+id/read_end"
-                    style="@style/dataEntryButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentEnd="true"
-                    android:layout_below="@+id/read_end_heading" />
+                    android:layout_below="@+id/read_end_heading"
+                    style="@style/dataEntryButtonStyle" />
             </RelativeLayout>
 
             <View

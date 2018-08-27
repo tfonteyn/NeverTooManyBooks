@@ -32,7 +32,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/confirm_add_bs"
-            style="?android:attr/buttonBarButtonStyle"/>
+            style="?android:attr/buttonBarPositiveButtonStyle"/>
     </LinearLayout>
 
 </LinearLayout>

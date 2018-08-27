@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:focusable="false"
-        android:text="" />
+        android:text=""/>
 
     <LinearLayout
         android:layout_width="0dip"
@@ -53,12 +53,11 @@
 
     <Button
         android:id="@+id/retry"
-        style="?android:attr/buttonStyleSmall"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:focusable="false"
-        android:text="@string/retry"
-        android:textSize="10sp" />
+        android:text="@string/retry" />
 
 </LinearLayout>

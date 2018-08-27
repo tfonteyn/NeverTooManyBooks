@@ -35,7 +35,8 @@
                 android:layout_alignParentTop="true"
                 android:checked="true"
                 android:text=""
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
 
             <TextView
                 android:id="@+id/book_details"
@@ -74,7 +75,8 @@
                 android:layout_alignParentTop="true"
                 android:checked="true"
                 android:text=""
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
 
             <TextView
                 android:id="@+id/cover_images"
@@ -115,7 +117,8 @@
                 android:checked="true"
                 android:text=""
                 android:enabled="false"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
 
             <TextView
                 android:id="@+id/preferences"
@@ -183,7 +186,6 @@
 
             <Button
                 android:id="@+id/date_button"
-                style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -223,7 +225,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/ok"
-                style="?android:attr/buttonBarButtonStyle" />
+                style="?android:attr/buttonBarPositiveButtonStyle" />
 
         </LinearLayout>
 

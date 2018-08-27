@@ -23,11 +23,11 @@
 
         <Button
             android:id="@+id/cleanup"
-            style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="false"
-            android:text="@string/cleanup_old_tasks" />
+            android:text="@string/cleanup_old_tasks"
+            style="?android:attr/buttonStyleSmall"/>
     </LinearLayout>
     <!--
  	<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" 

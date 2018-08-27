@@ -45,7 +45,8 @@
             android:id="@+id/add"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="@string/add" />
+            android:text="@string/add"
+             />
     </LinearLayout>
 
     <com.eleybourn.bookcatalogue.widgets.TouchListView
@@ -92,7 +93,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/save"
-            style="?android:attr/buttonBarButtonStyle" />
+            style="?android:attr/buttonBarPositiveButtonStyle" />
     </LinearLayout>
 
 </RelativeLayout>

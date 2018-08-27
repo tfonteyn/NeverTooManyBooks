@@ -44,13 +44,13 @@
 
                 <Button
                     android:id="@+id/author"
-                    style="@style/dataEntryButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentEnd="true"
                     android:layout_below="@+id/heading"
-                    android:nextFocusDown="@+id/title" />
+                    android:nextFocusDown="@+id/title"
+                    style="@style/dataEntryButtonStyle" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -107,13 +107,13 @@
 
                 <Button
                     android:id="@+id/series"
-                    style="@style/dataEntryButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentEnd="true"
                     android:layout_below="@+id/heading"
-                    android:nextFocusDown="@+id/publisher" />
+                    android:nextFocusDown="@+id/publisher"
+                    style="@style/dataEntryButtonStyle" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -149,13 +149,13 @@
 
                 <Button
                     android:id="@+id/date_published"
-                    style="@style/dataEntryButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentEnd="true"
                     android:layout_below="@+id/date_published_heading"
-                    android:nextFocusDown="@+id/bookshelf" />
+                    android:nextFocusDown="@+id/bookshelf"
+                    style="@style/dataEntryButtonStyle" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -170,13 +170,13 @@
 
                 <Button
                     android:id="@+id/bookshelf"
-                    style="@style/dataEntryButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentEnd="true"
                     android:layout_below="@+id/heading"
-                    android:nextFocusDown="@+id/pages" />
+                    android:nextFocusDown="@+id/pages"
+                    style="@style/dataEntryButtonStyle"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -302,7 +302,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:nextFocusDown="@+id/description"
-                android:text="@string/is_anthology" />
+                android:text="@string/is_anthology"/>
 
             <TextView
                 android:id="@+id/descriptionLabel"

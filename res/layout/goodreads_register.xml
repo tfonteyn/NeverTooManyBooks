@@ -46,7 +46,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="@string/authorize_access" />
+            android:text="@string/authorize_access"
+            />
 
         <!-- BLURB 3 -->
 

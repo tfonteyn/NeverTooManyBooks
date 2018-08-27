@@ -125,7 +125,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:text="@string/allow_asin" />
+                android:text="@string/allow_asin"
+                />
 
             <Button
                 android:id="@+id/search"

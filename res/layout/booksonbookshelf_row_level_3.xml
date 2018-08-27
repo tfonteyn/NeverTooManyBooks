@@ -28,11 +28,11 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textStyle="bold" />
 
-        <View
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_height="1sp"
-            android:paddingBottom="2dp"
-            android:paddingTop="2dp" />
+            android:layout_height="wrap_content"
+            android:src="?android:attr/dividerHorizontal"
+            tools:ignore="ContentDescription" />
     </LinearLayout>
 
 </LinearLayout>

@@ -305,7 +305,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:nextFocusDown="@+id/description"
-                android:text="@string/is_anthology" />
+                android:text="@string/is_anthology"
+                />
 
             <TextView
                 android:id="@+id/descriptionLabel"

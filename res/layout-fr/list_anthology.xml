@@ -23,7 +23,7 @@
         android:paddingBottom="@dimen/padding_border_double"
         android:paddingTop="@dimen/padding_border_double"
         android:text="@string/same_author"
-        android:textSize="16sp" />
+         />
 
     <Button
         android:id="@+id/row_add"

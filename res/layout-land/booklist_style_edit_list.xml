@@ -23,27 +23,26 @@
         android:layout_alignParentBottom="true"
         android:gravity="bottom"
         android:orientation="horizontal"
-        android:padding="@dimen/padding_border" >
+        android:padding="@dimen/padding_border"
+        style="?android:attr/buttonBarStyle">
 
         <Button
             android:id="@+id/cancel"
-            style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"
             android:layout_weight="1"
             android:text="@string/cancel"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            style="?android:attr/buttonBarNegativeButtonStyle" />
 
         <Button
             android:id="@+id/confirm"
-            style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|start"
             android:layout_weight="1"
             android:text="@string/save"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            style="?android:attr/buttonBarPositiveButtonStyle" />
 
     </LinearLayout>
 

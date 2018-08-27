@@ -16,8 +16,8 @@
             android:layout_gravity="center_horizontal"
             android:paddingLeft="40dp"
             android:paddingRight="40dp"
-            android:text="@string/ok" >
-        </Button>
+            android:text="@string/ok"
+             />
     </LinearLayout>
 
 </ScrollView>

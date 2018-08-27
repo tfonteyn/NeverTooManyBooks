@@ -39,7 +39,8 @@
                     android:id="@+id/plus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="+" />
+                    android:text="+"
+                    />
 
                 <EditText
                     android:id="@+id/year"
@@ -54,7 +55,8 @@
                     android:id="@+id/minus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="-" />
+                    android:text="-"
+                    />
             </LinearLayout>
 
             <LinearLayout
@@ -75,7 +77,8 @@
                     android:id="@+id/plusMonth"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="+" />
+                    android:text="+"
+                    />
 
                 <Spinner
                     android:id="@+id/month"
@@ -87,7 +90,8 @@
                     android:id="@+id/minusMonth"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="-" />
+                    android:text="-"
+                    />
             </LinearLayout>
 
             <LinearLayout
@@ -107,7 +111,8 @@
                     android:id="@+id/plusDay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="+" />
+                    android:text="+"
+                    />
 
                 <Spinner
                     android:id="@+id/day"
@@ -119,7 +124,8 @@
                     android:id="@+id/minusDay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="-" />
+                    android:text="-"
+                    />
             </LinearLayout>
         </LinearLayout>
 
@@ -133,19 +139,19 @@
 
             <Button
                 android:id="@+id/cancel"
-                style="?android:attr/buttonStyleSmall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/cancel" />
+                android:text="@string/cancel"
+                 />
 
             <Button
                 android:id="@+id/ok"
-                style="?android:attr/buttonStyleSmall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/ok" />
+                android:text="@string/ok"
+                />
         </LinearLayout>
     </LinearLayout>
 

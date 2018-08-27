@@ -63,7 +63,7 @@ public class StringListProperty extends ListProperty<String> implements Property
 	@Override
 	public StringListProperty set(Property p) {
 		if (! (p instanceof StringValue) )
-			throw new RuntimeException("Can not find a compatible interface for integer parameter");
+			throw new RuntimeException("Can not find a compatible interface for string parameter");
         StringValue v = (StringValue) p;
 		set(v.get());
 		return this;

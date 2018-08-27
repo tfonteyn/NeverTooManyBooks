@@ -41,12 +41,7 @@
             android:layout_gravity="center_vertical|end"
             android:layout_weight="10"
             android:text="@string/save"
-            style="?android:attr/buttonBarButtonStyle" />
-        <!--
-    	    style="?android:attr/buttonStyleSmall"
-		    android:textAppearance="?android:attr/textAppearanceSmall" 
-
-        -->
+            style="?android:attr/buttonBarPositiveButtonStyle" />
 
     </LinearLayout>
 

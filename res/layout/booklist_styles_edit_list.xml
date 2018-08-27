@@ -41,7 +41,7 @@
             android:text="@string/save"
             android:visibility="gone"
             android:width="150sp"
-            style="?android:attr/buttonBarButtonStyle"/>
+            style="?android:attr/buttonBarPositiveButtonStyle"/>
 
     </LinearLayout>
 

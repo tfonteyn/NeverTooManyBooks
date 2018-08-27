@@ -44,6 +44,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/confirm_add"
-            android:width="150sp" />
+            />
     </LinearLayout>
 

@@ -50,7 +50,6 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 	/** List of valid values */
 	protected ItemEntries<T> mList;
 
-	/** Accessor */
 	@SuppressWarnings("WeakerAccess")
 	public ItemEntries<T> getListItems() {
 		return mList;
