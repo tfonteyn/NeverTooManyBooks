@@ -28,7 +28,7 @@ import android.view.View.OnClickListener;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * 

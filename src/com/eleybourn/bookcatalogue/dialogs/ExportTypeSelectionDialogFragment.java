@@ -10,7 +10,7 @@ import android.view.View.OnClickListener;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.Exporter;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.io.File;
 import java.util.Date;

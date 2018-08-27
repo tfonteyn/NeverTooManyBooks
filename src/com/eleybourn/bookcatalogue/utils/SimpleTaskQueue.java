@@ -24,6 +24,7 @@ import android.os.Handler;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
 import java.util.Stack;

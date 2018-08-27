@@ -32,7 +32,7 @@ import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.BufferedReader;
@@ -245,7 +245,7 @@ public class CsvImporter {
 				}
 				
 				
-				// Make sure we have bookself_text if we imported bookshelf
+				// Make sure we have bookshelf_text if we imported bookshelf
 				if (values.containsKey(CatalogueDBAdapter.KEY_BOOKSHELF) && !values.containsKey("bookshelf_text")) {
 					values.setBookshelfList(values.getString(CatalogueDBAdapter.KEY_BOOKSHELF));
 				}
@@ -257,7 +257,7 @@ public class CsvImporter {
 						// Always import empty IDs...even if they are duplicates.
 						Long id = db.createBook(values, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
 						values.putString(CatalogueDBAdapter.KEY_ROWID, id.toString());
-						// Would be nice to import a cover, but with no ID/UUID thats not possible
+						// Would be nice to import a cover, but with no ID/UUID that is not possible
 						//mImportCreated++;
 					} else {
 						boolean exists;

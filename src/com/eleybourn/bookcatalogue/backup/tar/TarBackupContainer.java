@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 import com.eleybourn.bookcatalogue.backup.BackupContainer;
 import com.eleybourn.bookcatalogue.backup.BackupReader;
 import com.eleybourn.bookcatalogue.backup.BackupWriter;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Class to handle TAR archive storage.

@@ -55,7 +55,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickLi
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEditorListener;
 import com.eleybourn.bookcatalogue.utils.Convert;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewUtils;
 
@@ -225,7 +225,7 @@ public class BookEditFields extends BookDetailsAbstract
         PartialDatePickerFragment.newInstance()
                 .setDate(mFields.getField(R.id.date_published).getValue())
                 .setTitle(R.string.date_published)
-                .setDialogId(R.id.date_published) /** Set to the destination field ID */
+                .setDialogId(R.id.date_published) /* Set to the destination field ID */
                 .show(getFragmentManager(), null);
     }
 
@@ -290,7 +290,7 @@ public class BookEditFields extends BookDetailsAbstract
         final BookData book = mEditManager.getBookData();
         final String list = book.getBookshelfList();
         if (list == null || list.isEmpty()) {
-            String currShelf = BookCatalogueApp.getPrefs().getString(BooksOnBookshelf.PREF_BOOKSHELF, "");
+            String currShelf = BookCataloguePreferences.getString(BooksOnBookshelf.PREF_BOOKSHELF, "");
             if (currShelf.isEmpty()) {
                 currShelf = mDbHelper.getBookshelfName(1);
             }
@@ -424,7 +424,7 @@ public class BookEditFields extends BookDetailsAbstract
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        boolean thumbVisible = BookCatalogueApp.getPrefs().getBoolean(FieldVisibility.prefix + "thumbnail", true);
+        boolean thumbVisible = BookCataloguePreferences.getBoolean(FieldVisibility.prefix + "thumbnail", true);
         if (thumbVisible) {
             MenuItem thumbOptions = menu.add(0, BookEditFragmentAbstract.THUMBNAIL_OPTIONS_ID, 0, R.string.cover_options_cc_ellipsis);
             thumbOptions.setIcon(android.R.drawable.ic_menu_camera);

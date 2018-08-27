@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.booklist;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.PreferencesBase;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
@@ -36,7 +35,7 @@ import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.ValuePropertyWithGlobalDefault;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Activity to manage the preferences associate with Book lists (and the BooksOnBookshelf activity).
@@ -159,7 +158,7 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 	 * Setup each component of the layout using the passed preferences
 	 */
 	@Override
-	public void setupViews(BookCataloguePreferences prefs, Properties globalProps) {
+	protected void setupViews(Properties globalProps) {
 		/*
 		 * This activity predominantly shows 'Property' objects; we build that collection here.
 		 */

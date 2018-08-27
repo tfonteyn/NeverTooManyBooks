@@ -72,7 +72,7 @@ import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
@@ -251,11 +251,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             // Extract the sort type from the bundle. getInt will return 0 if there is no attribute
             // sort (which is exactly what we want)
             try {
-                BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
                 // Restore bookshelf and position
-                mCurrentBookshelf = prefs.getString(PREF_BOOKSHELF, mCurrentBookshelf);
-                mTopRow = prefs.getInt(PREF_TOP_ROW, 0);
-                mTopRowTop = prefs.getInt(PREF_TOP_ROW_TOP, 0);
+                mCurrentBookshelf = BookCataloguePreferences.getString(PREF_BOOKSHELF, mCurrentBookshelf);
+                mTopRow = BookCataloguePreferences.getInt(PREF_TOP_ROW, 0);
+                mTopRowTop = BookCataloguePreferences.getInt(PREF_TOP_ROW_TOP, 0);
             } catch (Exception e) {
                 Logger.logError(e);
             }
@@ -724,11 +723,11 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             // Make sure we have a style chosen
             BooklistStyles styles = BooklistStyles.getAllStyles(mDb);
             if (mCurrentStyle == null) {
-                String prefStyle = BookCatalogueApp.getPrefs().getBookListStyle(getString(R.string.sort_author_series));
+                String prefStyle = BookCataloguePreferences.getBookListStyle(getString(R.string.sort_author_series));
                 mCurrentStyle = styles.findCanonical(prefStyle);
                 if (mCurrentStyle == null)
                     mCurrentStyle = styles.get(0);
-                BookCatalogueApp.getPrefs().setString(BookCataloguePreferences.PREF_BOOKLIST_STYLE, mCurrentStyle.getCanonicalName());
+                BookCataloguePreferences.setString(BookCataloguePreferences.PREF_BOOKLIST_STYLE, mCurrentStyle.getCanonicalName());
             }
 
             // get a new builder and add the required extra domains
@@ -761,7 +760,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         if (mIsDead)
             return;
 
-        final Editor ed = BookCatalogueApp.getPrefs().edit();
+        final Editor ed = BookCataloguePreferences.edit();
 
         // Save position in list
         if (mListHasBeenLoaded) {
@@ -888,8 +887,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 if (!new_bookshelf.equalsIgnoreCase(mCurrentBookshelf)) {
                     mCurrentBookshelf = new_bookshelf;
                     // save the current bookshelf into the preferences
-                    BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
-                    SharedPreferences.Editor ed = prefs.edit();
+                    SharedPreferences.Editor ed = BookCataloguePreferences.edit();
                     ed.putString(PREF_BOOKSHELF, mCurrentBookshelf);
                     ed.commit();
                     setupList(true);
@@ -918,7 +916,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem item;
         mMenuHandler = new MenuHandler();
         mMenuHandler.init(menu);
 
@@ -1131,8 +1128,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         String styleName;
 
         if (mCurrentStyle == null) {
-            BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
-            styleName = prefs.getString(PREF_LIST_STYLE, "");
+            styleName = BookCataloguePreferences.getString(PREF_LIST_STYLE, "");
         } else {
             styleName = mCurrentStyle.getCanonicalName();
         }

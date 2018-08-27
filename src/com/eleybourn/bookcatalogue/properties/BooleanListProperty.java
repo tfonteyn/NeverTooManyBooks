@@ -20,7 +20,7 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.properties.Property.BooleanValue;
 
@@ -39,26 +39,30 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
 	public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId, String defaultPref) {
 		super(list, uniqueId, group, nameResourceId, null, defaultPref, false);
 	}
+	@SuppressWarnings("unused")
 	public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId, Boolean value, Boolean defaultValue) {
 		super(list, uniqueId, group, nameResourceId, value, null, defaultValue);
 	}
+	@SuppressWarnings("unused")
 	public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId, Boolean value) {
 		super(list, uniqueId, group, nameResourceId, value, null, false);
 	}
+	@SuppressWarnings("unused")
 	public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId) {
 		super(list, uniqueId, group, nameResourceId, null, null, false);
 	}
+	@SuppressWarnings("unused")
 	public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId) {
 		super(list, uniqueId, PropertyGroup.GRP_GENERAL, R.string.unknown, null, null, null);
 	}
 
 	@Override
 	protected Boolean getGlobalDefault() {
-		return BookCatalogueApp.getPrefs().getBoolean(getPreferenceKey(), getDefaultValue());
+		return BookCataloguePreferences.getBoolean(getPreferenceKey(), getDefaultValue());
 	}
 	@Override
 	protected BooleanListProperty setGlobalDefault(Boolean value) {
-		BookCatalogueApp.getPrefs().setBoolean(getPreferenceKey(), value);
+		BookCataloguePreferences.setBoolean(getPreferenceKey(), value);
 		return this;
 	}
 

@@ -11,7 +11,7 @@ import com.amazon.device.associates.LinkService;
 import com.amazon.device.associates.OpenSearchPageRequest;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

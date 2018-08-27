@@ -28,8 +28,6 @@ public class StartupWithSplashActivity extends SplashPermissionsActivity {
      *
      * Other permissions fail gracefully.
      * - READ_CONTACTS
-     *
-     * @return
      */
     @Override
     protected String[] getRequiredPermissions() {

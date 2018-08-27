@@ -19,10 +19,9 @@
  */
 package com.eleybourn.bookcatalogue.filechooser;
 
-import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
@@ -37,10 +36,9 @@ import com.eleybourn.bookcatalogue.dialogs.MessageDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.MessageDialogFragment.OnMessageDialogResultListener;
 import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 import java.util.Date;
@@ -93,8 +91,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 	 */
 	@Override
 	protected FileChooserFragment getChooserFragment() {
-		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
-		String lastBackup = prefs.getString(BookCataloguePreferences.PREF_LAST_BACKUP_FILE, StorageUtils.getSharedDirectory().getAbsolutePath());
+		String lastBackup = BookCataloguePreferences.getLastBackupFile();
 		return FileChooserFragment.newInstance(lastBackup, getDefaultFileName());
 	}
 
@@ -224,7 +221,7 @@ public class BackupChooser extends FileChooser implements OnMessageDialogResultL
 				return;
 			default:
 				if (settings.dateFrom == null) {
-					String lastBackup = BookCatalogueApp.getPrefs().getString(BookCataloguePreferences.PREF_LAST_BACKUP_DATE, null);
+					String lastBackup = BookCataloguePreferences.getLastBackupDate();
 					if (lastBackup != null && !lastBackup.isEmpty()) {
 						try {
 							settings.dateFrom = DateUtils.parseDate(lastBackup);

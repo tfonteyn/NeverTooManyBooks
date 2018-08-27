@@ -41,7 +41,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;

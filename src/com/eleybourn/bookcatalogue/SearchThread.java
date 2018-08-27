@@ -24,7 +24,7 @@ import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.Series.SeriesDetails;
 import com.eleybourn.bookcatalogue.utils.Convert;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
 

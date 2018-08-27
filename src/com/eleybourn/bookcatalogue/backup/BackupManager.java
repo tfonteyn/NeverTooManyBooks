@@ -19,7 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
@@ -28,7 +27,7 @@ import com.eleybourn.bookcatalogue.backup.BackupWriter.BackupWriterListener;
 import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
@@ -182,11 +181,10 @@ public class BackupManager {
 				}
 				fragment.setSuccess(mBackupOk);
 				if (mBackupOk) {
-					BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 					if ( (backupFlags == Exporter.EXPORT_ALL)) {
-						prefs.setString(BookCataloguePreferences.PREF_LAST_BACKUP_DATE, mBackupDate);
+						BookCataloguePreferences.setLastBackupDate(mBackupDate);
 					}
-					prefs.setString(BookCataloguePreferences.PREF_LAST_BACKUP_FILE, resultingFile.getAbsolutePath());
+					BookCataloguePreferences.setLastBackupFile(resultingFile.getAbsolutePath());
 				}
 			}
 

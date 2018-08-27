@@ -1,25 +1,11 @@
 package com.eleybourn.bookcatalogue.utils;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.scanner.ScannerManager;
-import com.eleybourn.bookcatalogue.scanner.ZxingScanner;
-import com.eleybourn.bookcatalogue.scanner.pic2shop.Scan;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -36,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,7 +40,7 @@ public class StorageUtils {
     private static final String DATABASE_NAME = "book_catalogue";
 
     // our root directory to be created on the 'external storage'
-    private static final String DIRECTORY_NAME = "bookCatalogue";
+    public static final String DIRECTORY_NAME = "bookCatalogue";
 
 	// directories
 	private static final String EXTERNAL_FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + DIRECTORY_NAME;
@@ -386,124 +371,11 @@ public class StorageUtils {
 		}		
 	}
 
-	private static final String[] mPurgeableFilePrefixes = new String[]{DIRECTORY_NAME + "DbUpgrade", DIRECTORY_NAME + "DbExport", "error.log", "tmp"};
-	private static final String[] mDebugFilePrefixes = new String[]{DIRECTORY_NAME + "DbUpgrade", DIRECTORY_NAME + "DbExport", "error.log", "export.csv"};
-
-	/**
-	 * Collect and send com.eleybourn.bookcatalogue.debug info to a support email address. 
-	 * 
-	 * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MAILING LIST OR FORUM!
-	 */
-	public static void sendDebugInfo(Context context, CatalogueDBAdapter dbHelper) {
-		// Create a temp DB copy.
-		String tmpFileName = DIRECTORY_NAME + "DbExport-tmp.db";
-		dbHelper.backupDbFile(tmpFileName);
-		File dbFile = getFile(tmpFileName);
-		dbFile.deleteOnExit();
-		// setup the mail message
-		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
-		emailIntent.setType("plain/text");
-		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, context.getString(R.string.debug_email).split(";"));
-		String subject = "[" + context.getString(R.string.app_name) + "] " + context.getString(R.string.debug_subject);
-		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
-		StringBuilder message = new StringBuilder();
-
-        try {
-        	// Get app info
-            PackageManager manager = context.getPackageManager(); 
-			PackageInfo appInfo = manager.getPackageInfo( context.getPackageName(), 0);
-			message.append("App: ").append(appInfo.packageName).append("\n")
-				.append("Version: ").append(appInfo.versionName).append(" (").append(appInfo.versionCode).append(")\n");
-		} catch (Exception ignore) {
-			// Not much we can do inside error logger...
-		}
-        
-        
-        message.append("SDK: ").append(Build.VERSION.RELEASE).append(" (").append(Build.VERSION.SDK_INT).append(" ").append(Build.TAGS).append(")\n")
-			.append("Phone Model: ").append(Build.MODEL).append("\n")
-			.append("Phone Manufacturer: ").append(Build.MANUFACTURER).append("\n")
-			.append("Phone Device: ").append(Build.DEVICE).append("\n")
-			.append("Phone Product: ").append(Build.PRODUCT).append("\n")
-			.append("Phone Brand: ").append(Build.BRAND).append("\n")
-			.append("Phone ID: ").append(Build.ID).append("\n")
-			.append("Signed-By: ").append(BookCatalogueApp.signedBy(context)).append("\n")
-			.append("\nHistory:\n").append(Tracker.getEventsInfo()).append("\n");
-
-		// Scanners installed
-		try {
-	        message.append("Pref. Scanner: ").append(BookCatalogueApp.getPrefs().getInt(ScannerManager.PREF_PREFERRED_SCANNER, -1)).append("\n");
-	        String[] scanners = new String[] { ZxingScanner.ACTION, Scan.ACTION, Scan.Pro.ACTION};
-	        for(String scanner:  scanners) {
-	            message.append("Scanner [").append(scanner).append("]:\n");
-	            final Intent mainIntent = new Intent(scanner, null);
-	            final List<ResolveInfo> resolved = context.getPackageManager().queryIntentActivities( mainIntent, 0);
-	            if (resolved.size() > 0) {
-		            for(ResolveInfo r: resolved) {
-		            	message.append("    ");
-		            	// Could be activity or service...
-		            	if (r.activityInfo != null) {
-		            		message.append(r.activityInfo.packageName);
-		            	} else if (r.serviceInfo != null) {
-		            		message.append(r.serviceInfo.packageName);
-		            	} else {
-		            		message.append("UNKNOWN");
-		            	}
-		                message.append(" (priority ").append(r.priority).append(", preference ").append(r.preferredOrder).append(", match ").append(r.match).append(", default=").append(r.isDefault).append(")\n");
-		            }
-	            } else {
-            		message.append("    No packages found\n");
-	            }
-	        }			
-		} catch (Exception e) {
-			// Don't lose the other debug info if scanner data dies for some reason
-	        message.append("Scanner failure: ").append(e.getMessage()).append("\n");
-		}
-		message.append("\n");
-
-        message.append("Details:\n\n").append(context.getString(R.string.debug_body).toUpperCase()).append("\n\n");
-
-        Logger.logError(new RuntimeException("DEBUG"), message.toString());
-
-		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, message.toString());
-		//has to be an ArrayList
-		ArrayList<Uri> uris = new ArrayList<>();
-		//convert from paths to Android friendly Parcelable Uri's
-		ArrayList<String> files = new ArrayList<>();
-		
-		// Find all files of interest to send
-		File dir = getSharedDirectory();
-		try {
-			for (String name : dir.list()) {
-				boolean send = false;
-				for(String prefix : mDebugFilePrefixes)
-					if (name.startsWith(prefix)) {
-						send = true;
-						break;
-					}
-				if (send)
-					files.add(name);
-			}
-			
-			// Build the attachment list
-			for (String file : files)
-			{
-				File fileIn = getFile(file);
-				if (fileIn.exists() && fileIn.length() > 0) {
-					Uri u = Uri.fromFile(fileIn);
-					uris.add(u);
-				}
-			}
-	
-			// We used to only send it if there are any files to send, but later versions added 
-			// useful debugging info. So now we always send.
-			emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-			context.startActivity(Intent.createChooser(emailIntent, "Send mail..."));        	
-
-		} catch (NullPointerException e) {
-			Logger.logError(e);
-			Toast.makeText(context, R.string.export_failed_sdcard, Toast.LENGTH_LONG).show();
-		}
-	}
+	private static final String[] mPurgeableFilePrefixes = new String[] {
+			DIRECTORY_NAME + "DbUpgrade",
+			DIRECTORY_NAME + "DbExport",
+			"error.log",
+			"tmp"};
 
 	/**
 	 * Cleanup any purgeable files.

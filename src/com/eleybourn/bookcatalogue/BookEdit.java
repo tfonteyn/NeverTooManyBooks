@@ -50,7 +50,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEditorListener;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -929,7 +929,7 @@ public class BookEdit extends BookCatalogueActivity implements
      *            read-only view.
      */
     public static void openBook(Activity a, long id, BooklistBuilder builder, Integer position) {
-        if (BookCatalogueApp.getPrefs().getOpenBookReadOnly()) {
+        if (BookCataloguePreferences.getOpenBookReadOnly()) {
             // Make a flattened copy of the list of books, if available
             String listTable = null;
             if (builder != null) {

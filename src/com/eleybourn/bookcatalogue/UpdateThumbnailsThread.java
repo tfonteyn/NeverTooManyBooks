@@ -246,9 +246,6 @@ public class UpdateThumbnailsThread extends ManagedTask {
 
 	/**
 	 * Called in the main thread for this object when a search has completed.
-	 *
-	 * @param bookData
-	 * @param cancelled
 	 */
 	private boolean handleSearchFinished(Bundle bookData, boolean cancelled) {
 		if (BuildConfig.DEBUG) {

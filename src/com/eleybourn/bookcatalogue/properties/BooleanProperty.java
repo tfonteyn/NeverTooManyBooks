@@ -26,10 +26,12 @@ import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.properties.Property.BooleanValue;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
+
+import java.util.Objects;
 
 /**
  * Extends ValuePropertyWithGlobalDefault to create a trinary value (or nullable boolean?) with 
@@ -41,24 +43,31 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
  */
 public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> implements BooleanValue {
 
+	@SuppressWarnings("unused")
 	public BooleanProperty(String uniqueId, PropertyGroup group, int nameResourceId, Boolean value, String preferenceKey, Boolean defaultValue) {
 		super(uniqueId, group, nameResourceId, value, preferenceKey, defaultValue);
 	}
+	@SuppressWarnings("unused")
 	public BooleanProperty(String uniqueId, PropertyGroup group, int nameResourceId, String defaultPref) {
 		super(uniqueId, group, nameResourceId, null, defaultPref, false);
 	}
+	@SuppressWarnings("unused")
 	public BooleanProperty(String uniqueId, PropertyGroup group, int nameResourceId, String preferenceKey, Boolean defaultValue) {
 		super(uniqueId, group, nameResourceId, null, preferenceKey, defaultValue);
 	}
+	@SuppressWarnings("unused")
 	public BooleanProperty(String uniqueId, PropertyGroup group, int nameResourceId, Boolean value, Boolean defaultValue) {
 		super(uniqueId, group, nameResourceId, value, null, defaultValue);
 	}
+	@SuppressWarnings("unused")
 	public BooleanProperty(String uniqueId, PropertyGroup group, int nameResourceId, Boolean value) {
 		super(uniqueId, group, nameResourceId, value, null, false);
 	}
+	@SuppressWarnings("unused")
 	public BooleanProperty(String uniqueId, PropertyGroup group, int nameResourceId) {
 		super(uniqueId, group, nameResourceId, false, null, false);
 	}
+	@SuppressWarnings("unused")
 	public BooleanProperty(String uniqueId) {
 		super(uniqueId, PropertyGroup.GRP_GENERAL, R.string.unknown, false, null, false);
 	}
@@ -110,7 +119,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
 
 	private void handleClick(View v) {
 		Holder h = ViewTagger.getTag(v, R.id.TAG_PROPERTY);
-		Boolean b = h.p.get();
+		Boolean b = Objects.requireNonNull(h).p.get();
 		// Cycle through three values: 'null', 'true', 'false'. If the value is 'global' omit 'null'.
 		if (b == null) {
 			b = true;
@@ -153,11 +162,11 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
 
 	@Override
 	protected Boolean getGlobalDefault() {
-		return BookCatalogueApp.getPrefs().getBoolean(getPreferenceKey(), getDefaultValue());
+		return BookCataloguePreferences.getBoolean(getPreferenceKey(), getDefaultValue());
 	}
 	@Override
 	protected BooleanProperty setGlobalDefault(Boolean value) {
-		BookCatalogueApp.getPrefs().setBoolean(getPreferenceKey(), value);
+		BookCataloguePreferences.setBoolean(getPreferenceKey(), value);
 		return this;
 	}
 

@@ -34,7 +34,7 @@ import android.text.Html;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.OnTaskFinishListener;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
@@ -100,12 +100,12 @@ public class StartupActivity extends AppCompatActivity {
 
 	/** Set the flag to indicate an FTS rebuild is required */
 	public static void scheduleFtsRebuild() {
-		BookCatalogueApp.getPrefs().setBoolean(PREF_FTS_REBUILD_REQUIRED, true);
+		BookCataloguePreferences.setBoolean(PREF_FTS_REBUILD_REQUIRED, true);
 	}
 
 	/** Set the flag to indicate an FTS rebuild is required */
 	public static void scheduleAuthorSeriesFixup() {
-		BookCatalogueApp.getPrefs().setBoolean(PREF_AUTHOR_SERIES_FIXUP_REQUIRED, true);
+		BookCataloguePreferences.setBoolean(PREF_AUTHOR_SERIES_FIXUP_REQUIRED, true);
 	}
 	
 	private static WeakReference<StartupActivity> mStartupActivity = null;
@@ -274,11 +274,10 @@ public class StartupActivity extends AppCompatActivity {
 	}
 
 	private void stage3Startup() {
-		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
-		int opened = prefs.getInt(STATE_OPENED, BACKUP_PROMPT_WAIT);
-		int startCount = prefs.getInt(PREF_START_COUNT, 0) + 1;
+		int opened = BookCataloguePreferences.getInt(STATE_OPENED, BACKUP_PROMPT_WAIT);
+		int startCount = BookCataloguePreferences.getInt(PREF_START_COUNT, 0) + 1;
 
-		Editor ed = prefs.edit();
+		Editor ed = BookCataloguePreferences.edit();
 		if (opened == 0) {
 			ed.putInt(STATE_OPENED, BACKUP_PROMPT_WAIT);
 		} else {
@@ -324,11 +323,8 @@ public class StartupActivity extends AppCompatActivity {
 	 * Start whatever activity the user expects
 	 */
 	private void stage4Startup() {
-		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
-
-		// Handle startup specially.
-		// Check if we really want to start this activity.
-		if (prefs.getStartInMyBook()) {
+		// Handle startup specially, Check if we really want to start this activity.
+		if (BookCataloguePreferences.getStartInMyBook()) {
 			doMainActivity(BooksOnBookshelf.class);
 		} else {
 			doMainActivity(MainMenu.class);
@@ -384,11 +380,10 @@ public class StartupActivity extends AppCompatActivity {
 		public void run(SimpleTaskContext taskContext) {
 			// Get a DB to make sure the FTS rebuild flag is set appropriately
 			CatalogueDBAdapter db = taskContext.getDb();
-			BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
-			if (prefs.getBoolean(PREF_FTS_REBUILD_REQUIRED, false)) {
+			if (BookCataloguePreferences.getBoolean(PREF_FTS_REBUILD_REQUIRED, false)) {
 				updateProgress(getString(R.string.rebuilding_search_index));
 				db.rebuildFts();
-				prefs.setBoolean(PREF_FTS_REBUILD_REQUIRED, false);					
+				BookCataloguePreferences.setBoolean(PREF_FTS_REBUILD_REQUIRED, false);
 			}
 		}
 
@@ -403,7 +398,6 @@ public class StartupActivity extends AppCompatActivity {
 		public void run(SimpleTaskContext taskContext) {
 
 			CatalogueDBAdapter db = taskContext.getDb();
-			BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 
 			updateProgress(getString(R.string.optimizing_databases));
 			// Analyze DB
@@ -414,9 +408,9 @@ public class StartupActivity extends AppCompatActivity {
                 }
 			}
 			
-			if (prefs.getBoolean(PREF_AUTHOR_SERIES_FIXUP_REQUIRED, false)) {
+			if (BookCataloguePreferences.getBoolean(PREF_AUTHOR_SERIES_FIXUP_REQUIRED, false)) {
 				db.fixupAuthorsAndSeries();
-				prefs.setBoolean(PREF_AUTHOR_SERIES_FIXUP_REQUIRED, false);
+				BookCataloguePreferences.setBoolean(PREF_AUTHOR_SERIES_FIXUP_REQUIRED, false);
 			}
 		}
 

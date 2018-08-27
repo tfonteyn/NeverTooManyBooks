@@ -27,9 +27,9 @@ import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteQuery;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.OtherPreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistAuthorGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistSeriesGroup;
@@ -43,7 +43,7 @@ import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
 import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition.TableTypes;
 import com.eleybourn.bookcatalogue.database.SqlStatementManager;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -154,6 +154,15 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_SERIE
  * @author Philip Warner
  */
 public class BooklistBuilder {
+
+    /**
+     * BookList Compatibility mode property values
+     */
+    public static final int BOOKLIST_GENERATE_OLD_STYLE = 1;
+    public static final int BOOKLIST_GENERATE_FLAT_TRIGGER = 2;
+    public static final int BOOKLIST_GENERATE_NESTED_TRIGGER = 3;
+    public static final int BOOKLIST_GENERATE_AUTOMATIC = 4;
+
     /**
      * Convenience expression for the SQL which gets formatted author names in 'Last, Given' form
      */
@@ -538,25 +547,25 @@ public class BooklistBuilder {
             boolean hasGroupBOOKSHELF = false;
 
             // We can not use triggers to fill in headings in API < 8 since SQLite 3.5.9 is broken
-            // Allow for the user preferences to override in case another build is borken.
-            final int listMode = OtherPreferences.getBooklistCompatibleMode();
+            // Allow for the user preferences to override in case another build is broken.
+            final int listMode = BookCataloguePreferences.getInt(BookCataloguePreferences.PREF_BOOKLIST_GENERATION_MODE, BooklistBuilder.BOOKLIST_GENERATE_AUTOMATIC);
             boolean useTriggers;
             boolean flatTriggers = false;
             // Based on the users choice, decide how the list will be generated.
             switch (listMode) {
 
-                case OtherPreferences.BOOKLIST_GENERATE_OLD_STYLE:
+                case BOOKLIST_GENERATE_OLD_STYLE:
                     useTriggers = false;
                     break;
-                case OtherPreferences.BOOKLIST_GENERATE_AUTOMATIC:
+                case BOOKLIST_GENERATE_AUTOMATIC:
                     useTriggers = true;
                     break;
-                case OtherPreferences.BOOKLIST_GENERATE_FLAT_TRIGGER:
+                case BOOKLIST_GENERATE_FLAT_TRIGGER:
                     useTriggers = true;
                     flatTriggers = true;
                     break;
 
-                case OtherPreferences.BOOKLIST_GENERATE_NESTED_TRIGGER:
+                case BOOKLIST_GENERATE_NESTED_TRIGGER:
                     useTriggers = true;
                     flatTriggers = false;
                     break;

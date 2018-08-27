@@ -5,7 +5,9 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.io.IOException;
 
@@ -19,7 +21,7 @@ public class SoundManager {
 
 	public static void beepLow() {
 		try {
-			if (BookCatalogueApp.getPrefs().getBoolean(PREF_BEEP_IF_SCANNED_ISBN_INVALID, true)) {
+			if (BookCataloguePreferences.getBoolean(PREF_BEEP_IF_SCANNED_ISBN_INVALID, true)) {
 				MediaPlayer player = initPlayer();
 				AssetFileDescriptor file = BookCatalogueApp.getAppContext().getResources().openRawResourceFd(R.raw.beep_low);
 				playFile(player, file);
@@ -32,7 +34,7 @@ public class SoundManager {
 	
 	public static void beepHigh() {
 		try {
-			if (BookCatalogueApp.getPrefs().getBoolean(PREF_BEEP_IF_SCANNED_ISBN_VALID, false)) {
+			if (BookCataloguePreferences.getBoolean(PREF_BEEP_IF_SCANNED_ISBN_VALID, false)) {
 				MediaPlayer player = initPlayer();
 				AssetFileDescriptor file = BookCatalogueApp.getAppContext().getResources().openRawResourceFd(R.raw.beep_high);
 				playFile(player, file);

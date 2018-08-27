@@ -22,7 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch.Message;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
 
@@ -238,8 +238,6 @@ public class TaskManager {
 
 	/**
 	 * Called when the onTaskFinished message is received by the listener object.
-	 *
-	 * @param task
 	 */
 	private void onTaskFinished(ManagedTask task) {
 		boolean doClose;
@@ -303,8 +301,6 @@ public class TaskManager {
 	 * Update the base progress message. Used (generally) by the ActivityWuthTasks to 
 	 * display some text above the task info. Set to blank to ensure ProgressDialog will
 	 * be removed.
-	 *
-	 * @param message
 	 */
 	public void doProgress(String message) {
 		mBaseMessage = message;
@@ -415,9 +411,6 @@ public class TaskManager {
 
 	/**
 	 * Set the maximum value for progress for the passed task.
-	 *
-	 * @param task
-	 * @param max
 	 */
 	public void setMax(ManagedTask task, int max) {
 		TaskInfo t = getTaskInfo(task);
@@ -430,9 +423,6 @@ public class TaskManager {
 
 	/**
 	 * Set the count value for progress for the passed task.
-	 *
-	 * @param task
-	 * @param count
 	 */
 	public void setCount(ManagedTask task, int count) {
 		TaskInfo t = getTaskInfo(task);

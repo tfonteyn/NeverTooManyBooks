@@ -385,9 +385,6 @@ public class DataManager {
 
 	/**
 	 * Check if the underlying data contains the specified key.
-	 *
-	 * @param key
-	 * @return
 	 */
 	public boolean containsKey(String key) {
 		Datum datum = mData.get(key);
@@ -451,9 +448,6 @@ public class DataManager {
 	
 	/**
 	 * Append a string to a list value in this collection
-	 *
-	 * @param key
-	 * @param value
 	 */
 	public void appendOrAdd(String key, String value) {
 		String s = Convert.encodeListItem(value, '|');

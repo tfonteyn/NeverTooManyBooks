@@ -28,7 +28,7 @@ import com.eleybourn.bookcatalogue.cropper.CropCropImage;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.HintManager;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewUtils;
@@ -158,7 +158,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
                         Bitmap x = (Bitmap) intent.getExtras().get("data");
                         if (x != null && x.getWidth() > 0 && x.getHeight() > 0) {
                             Matrix m = new Matrix();
-                            m.postRotate(BookCatalogueApp.getPrefs().getInt(BookCataloguePreferences.PREF_AUTOROTATE_CAMERA_IMAGES, 90));
+                            m.postRotate(BookCataloguePreferences.getAutoRotateCameraImagesInDegrees());
                             x = Bitmap.createBitmap(x, 0, 0, x.getWidth(), x.getHeight(), m, true);
                             // Create a file to copy the thumbnail into
                             FileOutputStream f;
@@ -406,7 +406,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
     }
 
     private void cropCoverImage(File thumbFile) {
-        if (BookCatalogueApp.getPrefs().getUseExternalImageCropper()) {
+        if (BookCataloguePreferences.getUseExternalImageCropper()) {
             cropCoverImageExternal(thumbFile);
         } else {
             cropCoverImageInternal(thumbFile);
@@ -418,7 +418,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
         // here you have to pass absolute path to your file
         crop_intent.putExtra("image-path", thumbFile.getAbsolutePath());
         crop_intent.putExtra("scale", true);
-        crop_intent.putExtra("whole-image", BookCatalogueApp.getPrefs().getPrefCropFrameWholeImage());
+        crop_intent.putExtra("whole-image", BookCataloguePreferences.getCropFrameWholeImage());
         // Get and set the output file spec, and make sure it does not already exist.
         File cropped = this.getCroppedImageFileName();
         if (cropped.exists()) {

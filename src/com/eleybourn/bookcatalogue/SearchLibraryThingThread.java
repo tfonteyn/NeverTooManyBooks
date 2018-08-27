@@ -1,6 +1,6 @@
 package com.eleybourn.bookcatalogue;
 
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 
 public class SearchLibraryThingThread extends SearchThread {

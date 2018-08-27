@@ -44,7 +44,7 @@ import android.widget.ViewSwitcher.ViewFactory;
 
 import com.eleybourn.bookcatalogue.LibraryThingManager.ImageSizes;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
@@ -443,8 +443,7 @@ public class CoverBrowser {
 		 * 
 		 * @param isbn	ISBN of file
 		 * @param size	Size of image required.
-		 *
-		 * @return
+
 		 */
 		public String download(String isbn, ImageSizes size) {
 		    String filespec;

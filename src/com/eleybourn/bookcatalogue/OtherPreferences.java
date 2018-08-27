@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
 
+import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.properties.BooleanProperty;
 import com.eleybourn.bookcatalogue.properties.IntegerListProperty;
 import com.eleybourn.bookcatalogue.properties.ListProperty;
@@ -44,13 +45,6 @@ import java.util.Locale;
 public class OtherPreferences extends PreferencesBase {
 
     /**
-     * BookList Compatibility mode property values
-     */
-    public static final int BOOKLIST_GENERATE_OLD_STYLE = 1;
-    public static final int BOOKLIST_GENERATE_FLAT_TRIGGER = 2;
-    public static final int BOOKLIST_GENERATE_NESTED_TRIGGER = 3;
-    public static final int BOOKLIST_GENERATE_AUTOMATIC = 4;
-    /**
      * Camera image rotation property values
      */
     private static final ItemEntries<Integer> mRotationListItems = new ItemEntries<Integer>()
@@ -72,10 +66,10 @@ public class OtherPreferences extends PreferencesBase {
      */
     private static final ItemEntries<Integer> mListGenerationOptionsListItems = new ItemEntries<Integer>()
             .add(null, R.string.use_default_setting)
-            .add(BOOKLIST_GENERATE_OLD_STYLE, R.string.force_compatibility_mode)
-            .add(BOOKLIST_GENERATE_FLAT_TRIGGER, R.string.force_enhanced_compatibility_mode)
-            .add(BOOKLIST_GENERATE_NESTED_TRIGGER, R.string.force_fully_featured)
-            .add(BOOKLIST_GENERATE_AUTOMATIC, R.string.automatically_use_recommended_option);
+            .add(BooklistBuilder.BOOKLIST_GENERATE_OLD_STYLE, R.string.force_compatibility_mode)
+            .add(BooklistBuilder.BOOKLIST_GENERATE_FLAT_TRIGGER, R.string.force_enhanced_compatibility_mode)
+            .add(BooklistBuilder.BOOKLIST_GENERATE_NESTED_TRIGGER, R.string.force_fully_featured)
+            .add(BooklistBuilder.BOOKLIST_GENERATE_AUTOMATIC, R.string.automatically_use_recommended_option);
 
     /**
      * Preferred Scanner property values
@@ -203,7 +197,7 @@ public class OtherPreferences extends PreferencesBase {
 
             // Book list compatibility mode setting
             .add(new IntegerListProperty(mListGenerationOptionsListItems, BookCataloguePreferences.PREF_BOOKLIST_GENERATION_MODE)
-                    .setDefaultValue(BOOKLIST_GENERATE_AUTOMATIC)
+                    .setDefaultValue(BooklistBuilder.BOOKLIST_GENERATE_AUTOMATIC)
                     .setPreferenceKey(BookCataloguePreferences.PREF_BOOKLIST_GENERATION_MODE)
                     .setGlobal(true)
                     .setNameResourceId(R.string.booklist_generation)
@@ -222,15 +216,7 @@ public class OtherPreferences extends PreferencesBase {
         }
     };
 
-    /**
-     * Get the value of Book list compatibility mode setting
-     */
-    public static int getBooklistCompatibleMode() {
-        IntegerListProperty prop = (IntegerListProperty) mProperties.get(BookCataloguePreferences.PREF_BOOKLIST_GENERATION_MODE);
-        return prop.getResolvedValue();
-    }
-
-    /**
+     /**
      * Format the list of locales (languages)
      *
      * @return List of preference items
@@ -294,14 +280,15 @@ public class OtherPreferences extends PreferencesBase {
     /**
      * Display current preferences and set handlers to catch changes.
      */
-    public void setupViews(final BookCataloguePreferences prefs, Properties globalProps) {
+    @Override
+    protected void setupViews(Properties globalProps) {
         // Add the locally constructed properties
         for (Property p : mProperties)
             globalProps.add(p);
     }
 
     @Override
-    public int getLayout() {
+    protected int getLayout() {
         return R.layout.other_preferences;
     }
 

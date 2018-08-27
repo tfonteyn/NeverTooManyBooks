@@ -19,6 +19,18 @@
  */
 package com.eleybourn.bookcatalogue.backup.tar;
 
+import android.content.SharedPreferences;
+
+import com.eleybourn.bookcatalogue.backup.BackupContainer;
+import com.eleybourn.bookcatalogue.backup.BackupInfo;
+import com.eleybourn.bookcatalogue.backup.BackupUtils;
+import com.eleybourn.bookcatalogue.backup.BackupWriterAbstract;
+import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
+import com.eleybourn.bookcatalogue.database.SerializationUtils;
+
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,18 +40,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
-
-import android.content.SharedPreferences;
-
-import com.eleybourn.bookcatalogue.backup.BackupContainer;
-import com.eleybourn.bookcatalogue.backup.BackupInfo;
-import com.eleybourn.bookcatalogue.backup.BackupUtils;
-import com.eleybourn.bookcatalogue.backup.BackupWriterAbstract;
-import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.database.SerializationUtils;
 
 /**
  * Implementation of TAR-specific writer functions
@@ -55,7 +55,6 @@ public class TarBackupWriter extends BackupWriterAbstract {
 	 * Constructor
 	 * 
 	 * @param container		Parent
-	 * @throws IOException
 	 */
 	TarBackupWriter(TarBackupContainer container) throws IOException {
 		mContainer = container;
@@ -64,9 +63,6 @@ public class TarBackupWriter extends BackupWriterAbstract {
 		mOutput = new TarArchiveOutputStream(out);
 	}
 
-	/** 
-	 * Accessor
-	 */
 	@Override
 	public BackupContainer getContainer() {
 		return mContainer;
@@ -142,8 +138,6 @@ public class TarBackupWriter extends BackupWriterAbstract {
 	 * Utility routine to send the contents of a stream to the current archive entry
 	 * 
 	 * @param in			Stream to be saved
-	 *
-	 * @throws IOException
 	 */
 	private void streamToArchive(InputStream in) throws IOException {
 		try {
@@ -172,8 +166,6 @@ public class TarBackupWriter extends BackupWriterAbstract {
 	 * 
 	 * @param name		name of "file" in archive
 	 * @param bytes		bytes to write
-	 *
-	 * @throws IOException
 	 */
 	private void bytesToArchive(String name, byte[] bytes) throws IOException {
 		TarArchiveEntry entry = new TarArchiveEntry(name);
@@ -183,9 +175,6 @@ public class TarBackupWriter extends BackupWriterAbstract {
 		streamToArchive(in);
 	}
 
-	/**
-	 * Cleanup
-	 */
 	@Override
 	public void close() throws IOException {
 		super.close();

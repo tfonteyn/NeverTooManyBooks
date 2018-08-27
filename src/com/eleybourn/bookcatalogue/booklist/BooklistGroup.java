@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.booklist;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle.CompoundKey;
 import com.eleybourn.bookcatalogue.database.DbUtils.DomainDefinition;
@@ -38,7 +37,31 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.*;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_AUTHOR;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_BOOK;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_DAY_ADDED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_DAY_READ;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_FORMAT;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_GENRE;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_LANGUAGE;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_LOANED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_LOCATION;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_MAX;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_MONTH_ADDED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_MONTH_PUBLISHED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_MONTH_READ;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_PUBLISHER;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_RATING;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_READ_AND_UNREAD;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_SERIES;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_TITLE_LETTER;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_UPDATE_DAY;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_UPDATE_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_UPDATE_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_ADDED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_PUBLISHED;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_READ;
 /**
  * Class representing a single level in the booklist hierarchy.
  * 
@@ -46,6 +69,10 @@ import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.*;
  */
 public class BooklistGroup implements Serializable {
 	private static final long serialVersionUID = 1012206875683862714L;
+
+	static final String PREF_SHOW_ALL_AUTHORS = "APP.ShowAllAuthors";
+	static final String PREF_SHOW_ALL_SERIES = "APP.ShowAllSeries";
+	static final String PREF_DISPLAY_FIRST_THEN_LAST_NAMES = "APP.DisplayFirstThenLast";
 
 	/**
 	 * Static definitions of the kinds of rows that can be displayed and summarized.
@@ -240,7 +267,7 @@ public class BooklistGroup implements Serializable {
                     PropertyGroup.GRP_SERIES,
                     R.string.books_in_multiple_series,
                     null,
-                    BookCataloguePreferences.PREF_SHOW_ALL_SERIES,
+                    PREF_SHOW_ALL_SERIES,
                     false);
 			mAllSeries.setHint(R.string.hint_series_book_may_appear_more_than_once);
 		}
@@ -319,14 +346,14 @@ public class BooklistGroup implements Serializable {
 					"AllAuthors",
 					PropertyGroup.GRP_AUTHOR,
 					R.string.books_with_multiple_authors,
-					BookCataloguePreferences.PREF_SHOW_ALL_AUTHORS);
+					PREF_SHOW_ALL_AUTHORS);
 			mAllAuthors.setHint(R.string.hint_authors_book_may_appear_more_than_once);
 
 			mGivenName = new BooleanListProperty(mGivenNameFirstItems,
 					"GivenName",
 					PropertyGroup.GRP_AUTHOR,
 					R.string.format_of_author_names,
-					BookCataloguePreferences.PREF_DISPLAY_FIRST_THEN_LAST_NAMES);
+					PREF_DISPLAY_FIRST_THEN_LAST_NAMES);
 		}
 
 		/**

@@ -225,8 +225,7 @@ public class HintManager {
 		 * @param visible	Flag indicating future visibility
 		 */
 		public void setVisibility(boolean visible) {
-			BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
-			Editor ed = prefs.edit();
+			Editor ed = BookCataloguePreferences.edit();
 			String name = getFullPrefName();
 			ed.putBoolean(name, visible);
 			ed.commit();
@@ -236,10 +235,7 @@ public class HintManager {
 		 * Check if this hint should be shown
 		 */
 		boolean shouldBeShown() {
-			if (hasBeenDisplayed())
-				return false;
-			BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
-			return prefs.getBoolean(getFullPrefName(), true);
+			return !hasBeenDisplayed() && BookCataloguePreferences.getBoolean(getFullPrefName(), true);
 		}
 
 		boolean hasBeenDisplayed() {

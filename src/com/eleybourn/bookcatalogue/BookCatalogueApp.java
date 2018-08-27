@@ -29,9 +29,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
@@ -39,8 +37,9 @@ import android.util.TypedValue;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CollationCaseSensitive;
+import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.utils.BcQueueManager;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Terminator;
 
 import org.acra.ACRA;
@@ -51,7 +50,6 @@ import org.acra.collector.CrashReportData;
 import org.acra.sender.ReportSenderException;
 
 import java.lang.ref.WeakReference;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Locale;
@@ -175,7 +173,7 @@ public class BookCatalogueApp extends Application {
 			// Save the original locale
 			mInitialLocale = Locale.getDefault();
 			// See if user has set a preference
-			String prefLocale = getPrefs().getString(BookCataloguePreferences.PREF_APP_LOCALE, null);
+			String prefLocale = BookCataloguePreferences.getLocale();
 			//prefLocale = "ru";
 			// If we have a preference, set it
 			if (prefLocale != null && !prefLocale.isEmpty()) {
@@ -194,7 +192,7 @@ public class BookCatalogueApp extends Application {
 		ACRA.getErrorReporter().setReportSender(bcSender);
 
         // Save the app signer
-		ACRA.getErrorReporter().putCustomData("Signed-By", signedBy(this));
+		ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
 
         // Create the notifier
     	mNotifier = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
@@ -206,7 +204,6 @@ public class BookCatalogueApp extends Application {
 		super.onCreate();
 
 		// Watch the preferences and handle changes as necessary
-		//BookCataloguePreferences ap = getPreferences();
 		SharedPreferences p = BookCataloguePreferences.getSharedPreferences();
 		p.registerOnSharedPreferenceChangeListener(mPrefsListener);
 	}
@@ -219,19 +216,20 @@ public class BookCatalogueApp extends Application {
 	private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
 		@Override
 		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-			if (key.equals(BookCataloguePreferences.PREF_APP_LOCALE)) {
-				String prefLocale = getPrefs().getString(BookCataloguePreferences.PREF_APP_LOCALE, null);
-				//prefLocale = "ru";
-				// If we have a preference, set it
-				if (prefLocale != null && !prefLocale.isEmpty()) {
-					mPreferredLocale = localeFromName(prefLocale);
-				} else {
-					mPreferredLocale = getSystemLocal();
-				}
-				applyPreferredLocaleIfNecessary(getBaseContext().getResources());
-				notifyLocaleChanged();
-
-			}
+			switch (key) {
+                case BookCataloguePreferences.PREF_APP_LOCALE:
+                    String prefLocale = BookCataloguePreferences.getLocale();
+                    if (prefLocale != null && !prefLocale.isEmpty()) {
+                        mPreferredLocale = localeFromName(prefLocale);
+                    } else {
+                        mPreferredLocale = getSystemLocal();
+                    }
+                    applyPreferredLocaleIfNecessary(getBaseContext().getResources());
+                    notifyLocaleChanged();
+                    break;
+                default:
+                    break;
+            }
 		}
 	};
 
@@ -401,14 +399,9 @@ public class BookCatalogueApp extends Application {
 	}
 
 	/**
-	 * Utility routine to return as BookCataloguePreferences object.
-	 *TODO: don't new this.. use a singleton
-	 * @return	Application preferences object.
+	 * should be removed together with BCBackground ?
 	 */
-	public static BookCataloguePreferences getPrefs() {
-		return new BookCataloguePreferences();
-	}
-
+	@Deprecated
 	public static int getBackgroundColor() {
 
 		TypedValue tv = new TypedValue();
@@ -492,10 +485,8 @@ public class BookCatalogueApp extends Application {
 //	 * @return	Intent for preference-based startup activity.
 //	 */
 //	public Intent getStartupIntent() {
-//		BookCataloguePreferences prefs = getPrefs();
-//
 //		Intent i;
-//		if (prefs.getStartInMyBook()) {
+//		if (BookCataloguePreferences.getStartInMyBook()) {
 //			i = new Intent(this, BookCatalogue.class);
 //		} else {
 //			i = new Intent(this, MainMenu.class);
@@ -595,58 +586,4 @@ public class BookCatalogueApp extends Application {
     	return mInitialLocale;
     }
 
-    /**
-     * Return the MD5 hash of the public key that signed this app, or a useful
-     * text message if an error or other problem occurred.
-     *
-     * No longer caching as only needed at a crash anyhow
-     */
-    public static String signedBy(Context context) {
-        StringBuilder signedBy = new StringBuilder();
-
-        try {
-            // Get app info
-            PackageManager manager = context.getPackageManager();
-            PackageInfo appInfo = manager.getPackageInfo( context.getPackageName(), PackageManager.GET_SIGNATURES);
-
-            // Each sig is a PK of the signer:
-            //     https://groups.google.com/forum/?fromgroups=#!topic/android-developers/fPtdt6zDzns
-            for(Signature sig: appInfo.signatures) {
-                if (sig != null) {
-                    final MessageDigest sha1 = MessageDigest.getInstance("MD5");
-                    final byte[] publicKey = sha1.digest(sig.toByteArray());
-                    // Turn the hex bytes into a more traditional MD5 string representation.
-                    final StringBuilder hexString = new StringBuilder();
-                    boolean first = true;
-                    for (byte aPublicKey : publicKey) {
-                        if (!first) {
-                            hexString.append(":");
-                        } else {
-                            first = false;
-                        }
-                        String byteString = Integer.toHexString(0xFF & aPublicKey);
-                        if (byteString.length() == 1)
-                            hexString.append("0");
-                        hexString.append(byteString);
-                    }
-                    String fingerprint = hexString.toString();
-
-                    // Append as needed (theoretically could have more than one sig */
-                    if (signedBy.length() == 0)
-                        signedBy.append(fingerprint);
-                    else
-                        signedBy.append("/").append(fingerprint);
-                }
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            // Default if package not found...kind of unlikely
-            return "NOPACKAGE";
-
-        } catch (Exception e) {
-            // Default if we die
-            return e.getMessage();
-        }
-
-        return signedBy.toString();
-    }
 }

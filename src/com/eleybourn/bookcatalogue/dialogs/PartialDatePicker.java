@@ -387,7 +387,6 @@ public class PartialDatePicker extends AlertDialog {
 
 	/**
 	 * Handle changes to the MONTH field
-	 * @param pos
 	 */
 	private void handleMonth(Integer pos) {
 		// See if we got a valid month
@@ -410,8 +409,6 @@ public class PartialDatePicker extends AlertDialog {
 
 	/**
 	 * Handle changes to the DAY spinner
-	 * 
-	 * @param pos
 	 */
 	private void handleDay(Integer pos) {
 		boolean isSelected = (pos != null && pos > 0);

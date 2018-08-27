@@ -26,6 +26,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
 
@@ -119,11 +120,8 @@ public class UpgradeMessageManager {
 		// Builder for message
 		StringBuilder message = new StringBuilder();
 
-		// See if we have a saved version id. If not, it's either a new install, or 
-		// an older install.
-		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
-
-		long lastVersion = prefs.getInt(PREF_LAST_MESSAGE, 0);
+		// See if we have a saved version id. If not, it's either a new install, or  an older install.
+		long lastVersion = BookCataloguePreferences.getInt(PREF_LAST_MESSAGE, 0);
 		if (lastVersion == 0) {
 			// It's either a new install, or an install using old database-based message system
 
@@ -165,12 +163,11 @@ public class UpgradeMessageManager {
 	}
 	
 	public static void setMessageAcknowledged() {
-		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 		try {
 			Context c = BookCatalogueApp.getAppContext();
 			int currVersion = c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionCode;
 
-			prefs.setInt(PREF_LAST_MESSAGE, currVersion);
+			BookCataloguePreferences.setInt(PREF_LAST_MESSAGE, currVersion);
 		} catch (NameNotFoundException e) {
 			Logger.logError(e, "Failed to get package version code");
 		}		

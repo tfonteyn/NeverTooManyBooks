@@ -22,14 +22,6 @@ package com.eleybourn.bookcatalogue.booklist;
 
 import android.support.annotation.NonNull;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
@@ -44,6 +36,14 @@ import com.eleybourn.bookcatalogue.properties.Properties;
 import com.eleybourn.bookcatalogue.properties.Property;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.StringProperty;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 /**
  * Represents a specific style of book list (eg. authors/series). Individual BooklistGroup objects
@@ -209,8 +209,6 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
 
 	/**
 	 * Constructor for system-defined styles.
-	 *
-	 * @param stringId
 	 */
 	BooklistStyle(int stringId) {
 		mNameStringId = stringId;
@@ -221,8 +219,6 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
 
 	/**
 	 * Constructor for user-defined styles.
-	 *
-	 * @param name
 	 */
 	BooklistStyle(String name) {
 		initProperties();

@@ -33,7 +33,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity {
     /** Last locale used so; cached so we can check if it has genuinely changed */
     private Locale mLastLocale = BookCatalogueApp.getPreferredLocale();
     /** same for Theme */
-    private int mLastTheme = BookCatalogueApp.getPrefs().getInt(BookCataloguePreferences.PREF_APP_THEME, DEFAULT_THEME);
+    private int mLastTheme = BookCataloguePreferences.getTheme(DEFAULT_THEME);
 
     /** when a locale or theme is changed, a restart of the activity is needed */
     private boolean mReloadOnResume = false;
@@ -99,7 +99,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity {
      * Reload this activity if theme has changed.
      */
     protected void updateThemeIfChanged() {
-        int current = BookCatalogueApp.getPrefs().getInt(BookCataloguePreferences.PREF_APP_THEME, DEFAULT_THEME);
+        int current = BookCataloguePreferences.getInt(BookCataloguePreferences.PREF_APP_THEME, DEFAULT_THEME);
         if (mLastTheme != current) {
             mLastTheme = current;
             setTheme(THEMES[mLastTheme]);

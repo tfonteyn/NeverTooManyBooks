@@ -20,10 +20,10 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
-import java.util.Hashtable;
-
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
+
+import java.util.Hashtable;
 
 /**
  * Class used to manage groups of properties in the UI
@@ -76,11 +76,8 @@ public class PropertyGroup {
 
 		/**
 		 * Add the passed group
-		 *
-		 * @param g
-		 * @return
 		 */
-		public PropertyGroup addGroup(PropertyGroup g) {
+		PropertyGroup addGroup(PropertyGroup g) {
 			if (this.containsKey(g.id) && (this.get(g.id) != g))
 				throw new RuntimeException("Duplicate PropertyGroup ID " + g.id);
 
@@ -89,14 +86,8 @@ public class PropertyGroup {
 		}
 		/**
 		 * Construct and add a group based on parameters 
-		 *
-		 * @param id
-		 * @param nameId
-		 * @param weight
-		 *
-		 * @return
 		 */
-		public PropertyGroup addGroup(int id, int nameId, int weight) {
+		PropertyGroup addGroup(int id, int nameId, int weight) {
 			PropertyGroup g = new PropertyGroup(id, nameId, weight);
 			addGroup(g);
 			return g;
@@ -132,10 +123,6 @@ public class PropertyGroup {
 
 	/**
 	 * Compare two groups for sorting purposes 
-	 *
-	 * @param lhs
-	 * @param rhs
-	 * @return
 	 */
 	public static int compare(PropertyGroup lhs, PropertyGroup rhs) {
 		// Compare weights

@@ -28,7 +28,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 /**
  * Switchboard class for disconnecting listener instances from task instances. Maintains
  * separate lists and each 'sender' queue maintains a last-message for re-transmission

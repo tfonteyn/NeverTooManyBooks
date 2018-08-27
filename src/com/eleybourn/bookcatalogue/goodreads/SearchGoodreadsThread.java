@@ -25,7 +25,7 @@ import com.eleybourn.bookcatalogue.SearchManager;
 import com.eleybourn.bookcatalogue.SearchThread;
 import com.eleybourn.bookcatalogue.TaskManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
 

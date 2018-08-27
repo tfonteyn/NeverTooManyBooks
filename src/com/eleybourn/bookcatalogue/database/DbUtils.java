@@ -615,9 +615,6 @@ public class DbUtils {
 
 		/**
 		 * Static method to drop the passed table, if it exists.
-		 *
-		 * @param db
-		 * @param name
 		 */
 		public static void drop(SynchronizedDb db, String name) {
 			db.execSQL("Drop Table If Exists " + name);
@@ -625,9 +622,6 @@ public class DbUtils {
 
 		/**
 		 * Drop this table from the passed DB.
-		 *
-		 * @param db
-		 * @return
 		 */
 		public TableDefinition drop(SynchronizedDb db) {
 			drop(db, mName);

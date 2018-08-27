@@ -68,10 +68,7 @@ public class MenuHandler {
         menu.clear();
     }
 
-    /**
-     * see {@link #addItem(Menu, int, int)}
-     */
-    public MenuItem addItem(Menu menu, int id, int stringId) {
+     public MenuItem addItem(Menu menu, int id, int stringId) {
         return addItem(menu,id,stringId,0);
     }
 

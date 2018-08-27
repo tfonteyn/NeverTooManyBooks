@@ -21,7 +21,7 @@
 package com.eleybourn.bookcatalogue;
 
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.nio.channels.ClosedByInterruptException;
 

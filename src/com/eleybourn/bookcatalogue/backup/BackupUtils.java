@@ -41,7 +41,7 @@ import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.goodreads.api.XmlFilter.XmlHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.XmlResponseParser;
 import com.eleybourn.bookcatalogue.utils.Base64;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Utility functions for backup/restore code

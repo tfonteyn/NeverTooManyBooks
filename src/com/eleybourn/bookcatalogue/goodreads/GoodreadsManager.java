@@ -44,7 +44,7 @@ import com.eleybourn.bookcatalogue.goodreads.api.ShowBookByIdApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.ShowBookByIsbnApiHandler;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -182,9 +182,8 @@ public class GoodreadsManager {
 		m_accessSecret = "";
 		m_hasValidCredentials = false;
 		// Get the stored token values from prefs, and setup the consumer if present
-		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
-		prefs.setString(ACCESS_TOKEN, "");
-		prefs.setString(ACCESS_SECRET, "");
+		BookCataloguePreferences.setString(ACCESS_TOKEN, "");
+		BookCataloguePreferences.setString(ACCESS_SECRET, "");
 	}
 
 	/**
@@ -199,10 +198,9 @@ public class GoodreadsManager {
 			return true;
 
 		// Get the stored token values from prefs, and setup the consumer if present
-		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 
-		m_accessToken = prefs.getString(ACCESS_TOKEN, "");
-		m_accessSecret = prefs.getString(ACCESS_SECRET, "");
+		m_accessToken = BookCataloguePreferences.getString(ACCESS_TOKEN, "");
+		m_accessSecret = BookCataloguePreferences.getString(ACCESS_SECRET, "");
 
 		return m_accessToken != null && m_accessSecret != null && 
 				!m_accessToken.isEmpty() && !m_accessSecret.isEmpty();
@@ -239,10 +237,8 @@ public class GoodreadsManager {
 	 */
 	private boolean validateCredentials() {
 		// Get the stored token values from prefs, and setup the consumer
-		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
-
-		m_accessToken = prefs.getString(ACCESS_TOKEN, "");
-		m_accessSecret = prefs.getString(ACCESS_SECRET, "");
+		m_accessToken = BookCataloguePreferences.getString(ACCESS_TOKEN, "");
+		m_accessSecret = BookCataloguePreferences.getString(ACCESS_SECRET, "");
 
 		m_consumer.setTokenWithSecret(m_accessToken, m_accessSecret);
 		
@@ -296,8 +292,7 @@ public class GoodreadsManager {
 			authUrl = "http://" + authUrl;
 
 		// Save the token; this object may well be destroyed before the web page has returned.
-		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
-		SharedPreferences.Editor ed = prefs.edit();
+		SharedPreferences.Editor ed = BookCataloguePreferences.edit();
 		ed.putString(REQUEST_TOKEN, m_consumer.getToken());
 		ed.putString(REQUEST_SECRET, m_consumer.getTokenSecret());
 		ed.commit();
@@ -315,9 +310,8 @@ public class GoodreadsManager {
 	 */
 	public void handleAuthentication() throws NotAuthorizedException {
 		// Get the saved request tokens.
-		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
-		String tokenString = prefs.getString(REQUEST_TOKEN, "");
-		String secretString = prefs.getString(REQUEST_SECRET, "");
+		String tokenString = BookCataloguePreferences.getString(REQUEST_TOKEN, "");
+		String secretString = BookCataloguePreferences.getString(REQUEST_SECRET, "");
 
 		if (tokenString.isEmpty() || secretString.isEmpty())
 			throw new RuntimeException("Expected a request token to be stored in preferences; none found");
@@ -339,7 +333,7 @@ public class GoodreadsManager {
 		m_accessToken = m_consumer.getToken();
 		m_accessSecret = m_consumer.getTokenSecret();
 
-		SharedPreferences.Editor ed = prefs.edit();
+		SharedPreferences.Editor ed = BookCataloguePreferences.edit();
 		ed.putString(ACCESS_TOKEN, m_accessToken);
 		ed.putString(ACCESS_SECRET, m_accessSecret);
 		ed.commit();
@@ -904,7 +898,7 @@ public class GoodreadsManager {
 	 * @return	Last date
 	 */
 	public static Date getLastSyncDate() {
-		String last = BookCatalogueApp.getPrefs().getString(LAST_SYNC_DATE,null);
+		String last = BookCataloguePreferences.getString(LAST_SYNC_DATE,null);
 		if (last == null || last.isEmpty()) {
 			return null;
 		} else {
@@ -924,9 +918,9 @@ public class GoodreadsManager {
 	 */
 	public static void setLastSyncDate(Date d) {
 		if (d == null) {
-			BookCatalogueApp.getPrefs().setString(LAST_SYNC_DATE,null);
+			BookCataloguePreferences.setString(LAST_SYNC_DATE,null);
 		} else {
-			BookCatalogueApp.getPrefs().setString(LAST_SYNC_DATE, DateUtils.toSqlDateTime(d));
+			BookCataloguePreferences.setString(LAST_SYNC_DATE, DateUtils.toSqlDateTime(d));
 		}
 	}
 }

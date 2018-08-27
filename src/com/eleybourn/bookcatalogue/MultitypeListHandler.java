@@ -50,22 +50,12 @@ public interface MultitypeListHandler {
 
 		/**
 		 * Use the passed rowContext to fill in the actual details for the current row.
-		 *
-		 * @param rowContext
-		 * @param v
-		 * @param level
 		 */
 		public abstract void set(T rowContext, View v, int level);
 
 		/**
 		 * Use  the passed rowContext to determine the kind of View that is required and return a new
 		 * view.
-		 *
-		 * @param rowContext
-		 * @param inflater
-		 * @param parent
-		 * @param level
-		 * @return
 		 */
 		public abstract View newView(T rowContext, LayoutInflater inflater, ViewGroup parent, int level);
 	}
@@ -82,8 +72,6 @@ public interface MultitypeListHandler {
 
 	/**
 	 * Get the total number of view types that can be returned.
-	 *
-	 * @return
 	 */
     int getViewTypeCount();
 	

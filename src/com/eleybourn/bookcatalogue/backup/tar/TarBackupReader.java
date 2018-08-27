@@ -19,17 +19,17 @@
  */
 package com.eleybourn.bookcatalogue.backup.tar;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-
 import com.eleybourn.bookcatalogue.backup.BackupContainer;
 import com.eleybourn.bookcatalogue.backup.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.BackupReaderAbstract;
 import com.eleybourn.bookcatalogue.backup.ReaderEntity;
 import com.eleybourn.bookcatalogue.backup.ReaderEntity.BackupEntityType;
+
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+
+import java.io.FileInputStream;
+import java.io.IOException;
 
 /**
  * Implementation of TAR-specific reader functions
@@ -50,8 +50,6 @@ public class TarBackupReader extends BackupReaderAbstract {
 	 * Constructor
 	 * 
 	 * @param container		Parent 
-	 *
-	 * @throws IOException
 	 */
 	TarBackupReader(TarBackupContainer container) throws IOException {
 		mContainer = container;

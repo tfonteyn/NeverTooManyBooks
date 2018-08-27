@@ -31,7 +31,7 @@ import android.widget.LinearLayout;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * 
@@ -156,6 +156,6 @@ public class FieldVisibility extends BookCatalogueActivity {
 	}
 
 	public static boolean isVisible(String fieldName) {
-		return BookCatalogueApp.getPrefs().getBoolean(prefix + fieldName, true);
+		return BookCataloguePreferences.getBoolean(prefix + fieldName, true);
 	}
 }

@@ -155,7 +155,6 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 	 * Try to extract a series from a book title.
 	 * 
 	 * @param 	title	Book title to parse
-	 * @return
 	 */
 	public static SeriesDetails findSeries(String title) {
 		SeriesDetails details = null;
@@ -190,7 +189,6 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 	 * Try to cleanup a series position number by removing superfluous text.
 	 * 
 	 * @param 	position	Position name to cleanup
-	 * @return
 	 */
 	private static String cleanupSeriesPosition(String position) {
 		if (position == null)

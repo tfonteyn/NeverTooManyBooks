@@ -112,10 +112,6 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 	/**
 	 * Copy a specified source file into the default cover location for a new file.
 	 * DO NO OVERWRITE EXISTING FILES.
-	 *
-	 * @param orig
-	 * @param newUuid
-	 * @throws IOException
 	 */
 	private void copyFileToCoverImageIfMissing(File orig, String newUuid) throws IOException {
 		// Nothing to copy?
@@ -162,9 +158,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 	/**
 	 * Rename/move a specified source file into the default cover location for a new file.
 	 * DO NO OVERWRITE EXISTING FILES.
-	 *
-	 * @param orig
-	 * @param newUuid
+
 	 */
 	private void renameFileToCoverImageIfMissing(File orig, String newUuid) {
 		// Nothing to copy?
@@ -218,8 +212,6 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 	/**
 	 * Copy the UUID-based cover from its current location to the correct location in shared 
 	 * storage, if it exists.
-	 *
-	 * @param uuid
 	 */
 	private void copyCoverImageIfMissing(String uuid) throws IOException {
 		File orig = findExternalCover(uuid);

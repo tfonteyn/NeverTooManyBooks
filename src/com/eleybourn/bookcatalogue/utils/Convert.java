@@ -93,10 +93,6 @@ public class Convert {
     /**
      * Passed date components build a (partial) SQL format date string.
      *
-     * @param year
-     * @param month
-     * @param day
-     *
      * @return		Formatted date, eg. '2011-11-01' or '2011-11'
      */
     public static String buildPartialDate(Integer year, Integer month, Integer day) {

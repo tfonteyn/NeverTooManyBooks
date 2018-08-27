@@ -3,7 +3,7 @@ package com.eleybourn.bookcatalogue;
 import android.net.ParseException;
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.xml.sax.SAXException;

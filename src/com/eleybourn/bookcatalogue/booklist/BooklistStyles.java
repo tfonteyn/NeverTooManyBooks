@@ -26,7 +26,6 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
@@ -95,9 +94,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
 	 *
 	 */
 	private static void getPreferredStyleNames(HashSet<String> hash) {
-
-		BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
-		String itemStr = prefs.getString(PREF_MENU_ITEMS, null);
+		String itemStr = BookCataloguePreferences.getString(PREF_MENU_ITEMS, null);
 		if (itemStr != null && !itemStr.equals("")) {
 			ArrayList<String> list = Convert.decodeList(itemStr, '|');
 			for(int i = 0; i < list.size(); i++) {
@@ -106,7 +103,6 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
 					hash.add(name);
 			}
 		}
-
 	}
 
 	/**
@@ -300,7 +296,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
 		BooklistStyles styles = new BooklistStyles();
 
 		// Get the user preference
-		String itemStr = BookCatalogueApp.getPrefs().getString(PREF_MENU_ITEMS, null);
+		String itemStr = BookCataloguePreferences.getString(PREF_MENU_ITEMS, null);
 		if (itemStr != null && !itemStr.isEmpty()) {
 			// Break it up and process in order
 			ArrayList<String> list = Convert.decodeList(itemStr, '|');
@@ -423,7 +419,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
 				items.append(Convert.encodeListItem(s.getCanonicalName(), '|'));
 			}
 		}
-		Editor e = BookCatalogueApp.getPrefs().edit();
+		Editor e = BookCataloguePreferences.edit();
 		e.putString(PREF_MENU_ITEMS, items.toString());
 		e.commit();
 	}

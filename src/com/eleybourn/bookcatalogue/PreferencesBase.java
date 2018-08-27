@@ -30,7 +30,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.properties.Properties;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Base class to display simple preference-based options to the user.
@@ -42,17 +42,16 @@ public abstract class PreferencesBase extends BookCatalogueActivity {
 	/** Get the layout of the subclass */
 	protected abstract int getLayout();
 	/** Setup the views in the layout */
-	protected abstract void setupViews(BookCataloguePreferences prefs, Properties globalProps);
+	protected abstract void setupViews(Properties globalProps);
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
 			setContentView(this.getLayout());
-			final BookCataloguePreferences prefs = BookCatalogueApp.getPrefs();
 
 			Properties globalProps = new Properties();
-			setupViews(prefs, globalProps);
+			setupViews(globalProps);
 
 			ViewGroup styleProps = findViewById(R.id.dynamic_properties);
 			globalProps.buildView(getLayoutInflater(), styleProps);
@@ -66,19 +65,18 @@ public abstract class PreferencesBase extends BookCatalogueActivity {
 	/**
 	 * Utility routine to setup a checkbox based on a preference.
 	 * 
-	 * @param prefs		Preferences to use
 	 * @param cbId		CheckBox ID from XML file
 	 * @param viewId	Containing ViewGroup from XML file (for clicking and highlighting)
 	 * @param key		Preferences key associated with this CheckBox
 	 */
-	protected void addBooleanPreference(final BookCataloguePreferences prefs, final int cbId, int viewId, final String key, final boolean defaultValue) {
+	protected void addBooleanPreference(final int cbId, int viewId, final String key, final boolean defaultValue) {
 		// Setup the checkbox
 		CheckBox checkbox = this.findViewById(cbId);
-		checkbox.setChecked(prefs.getBoolean(key, defaultValue));
+		checkbox.setChecked(BookCataloguePreferences.getBoolean(key, defaultValue));
 		checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				prefs.setBoolean(key, isChecked);
+				BookCataloguePreferences.setBoolean(key, isChecked);
 			}});
 
 		// Allow clicking of entire row.
@@ -89,14 +87,14 @@ public abstract class PreferencesBase extends BookCatalogueActivity {
 			@Override
 			public void onClick(View v) {
 				CheckBox cb = v.findViewById(cbId);
-				cb.setChecked(!prefs.getBoolean(key, defaultValue));
+				cb.setChecked(!BookCataloguePreferences.getBoolean(key, defaultValue));
 			}});
 	}
 
 	/**
 	 * Add an item that has a creator-define click event
 	 * */
-	public void addClickablePref(final BookCataloguePreferences prefs, final int viewId, final OnClickListener listener) {
+	public void addClickablePref(final int viewId, final OnClickListener listener) {
 		View view = findViewById(viewId);
 		// Make line flash when clicked.
 		view.setBackgroundResource(android.R.drawable.list_selector_background);

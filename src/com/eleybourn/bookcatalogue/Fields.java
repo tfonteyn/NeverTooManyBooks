@@ -44,7 +44,7 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.Convert;
-import com.eleybourn.bookcatalogue.utils.Logger;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.lang.ref.WeakReference;
 import java.text.ParseException;
@@ -944,7 +944,7 @@ public class Fields extends ArrayList<Fields.Field> {
 			// Lookup the view
 			final View view = c.findViewById(id);
 			if (view != null) {
-				visible = BookCatalogueApp.getPrefs().getBoolean(FieldVisibility.prefix + group, true);
+				visible = BookCataloguePreferences.getBoolean(FieldVisibility.prefix + group, true);
 				if (visible) {
 					view.setVisibility(View.VISIBLE);					
 				} else {
@@ -1076,9 +1076,6 @@ public class Fields extends ArrayList<Fields.Field> {
 
 		/**
 		 * Utility function to call the formatters extract() method if present, or just return the raw value.
-		 * 
-		 * @param s
-		 * @return
 		 */
 		public String extract(String s) {
 			if (formatter == null)
@@ -1089,8 +1086,6 @@ public class Fields extends ArrayList<Fields.Field> {
 		/**
 		 * Set the value of this field from the passed cursor. Useful for getting access to 
 		 * raw data values from the database.
-		 *
-		 * @param c
 		 */
 		public void set(Cursor c) {
 			if (!column.isEmpty() && !doNoFetch) {
@@ -1105,8 +1100,6 @@ public class Fields extends ArrayList<Fields.Field> {
 		/**
 		 * Set the value of this field from the passed Bundle. Useful for getting access to 
 		 * raw data values from a saved data bundle.
-		 *
-		 * @param b
 		 */
 		public void set(Bundle b) {
 			if (!column.isEmpty() && !doNoFetch) {
@@ -1121,8 +1114,6 @@ public class Fields extends ArrayList<Fields.Field> {
 		/**
 		 * Set the value of this field from the passed Bundle. Useful for getting access to 
 		 * raw data values from a saved data bundle.
-		 *
-		 * @param data
 		 */
 		public void set(DataManager data) {
 			if (!column.isEmpty() && !doNoFetch) {
@@ -1159,9 +1150,6 @@ public class Fields extends ArrayList<Fields.Field> {
 
 	/**
 	 * Provides access to the underlying arrays get() method.
-	 * 
-	 * @param index
-	 * @return
 	 */
 	public Field getItem(int index) {
 		return super.get(index);
