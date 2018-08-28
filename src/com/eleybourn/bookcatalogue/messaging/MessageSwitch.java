@@ -19,16 +19,16 @@
  */
 package com.eleybourn.bookcatalogue.messaging;
 
+import android.os.Handler;
+import android.support.annotation.NonNull;
+
+import com.eleybourn.bookcatalogue.debug.Logger;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import android.os.Handler;
-import android.support.annotation.NonNull;
-
-import com.eleybourn.bookcatalogue.debug.Logger;
 /**
  * Switchboard class for disconnecting listener instances from task instances. Maintains
  * separate lists and each 'sender' queue maintains a last-message for re-transmission
@@ -186,9 +186,12 @@ public class MessageSwitch<T,U> {
 	 *
 	 * @param <U>	Arbitrary class that will be responsible for the message
 	 */
-	private interface MessageSender<U> {
+	private interface MessageSender<U> extends AutoCloseable{
 		long getId();
+
+		@Override
 		void close();
+
 		U getController();
 	}
 

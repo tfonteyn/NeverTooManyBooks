@@ -1,8 +1,29 @@
+/*
+ * @copyright 2012 Philip Warner
+ * @license GNU General Public License
+ *
+ * This file is part of Book Catalogue.
+ *
+ * Book Catalogue is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Book Catalogue is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.eleybourn.bookcatalogue.utils;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.Author;
+import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.Series;
 
 import java.util.ArrayList;
@@ -167,6 +188,79 @@ public class ArrayUtils<T> {
             });
         }
         return mSeriesUtils;
+    }
+    /**
+     * Utility routine to get an author list from the intent extras
+     *
+     * @param b		Bundle with author list
+     * @return		List of authors
+     */
+    @SuppressWarnings("unchecked")
+    public static ArrayList<Author> getAuthorsFromBundle(Bundle b) {
+        return (ArrayList<Author>) b.getSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY);
+    }
+
+    /**
+     * Utility routine to get a series list from the intent extras
+     *
+     * @param b		Bundle with series list
+
+     * @return		List of series
+     */
+    @SuppressWarnings("unchecked")
+    public
+    static ArrayList<Series> getSeriesFromBundle(Bundle b) {
+        return (ArrayList<Series>) b.getSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY);
+    }
+
+    /**
+     * Utility routine to get the list from the passed bundle. Added to reduce lint warnings...
+     *
+     * @param b		Bundle containing list
+     * @param key   element to get
+     *
+     * @return		List
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> ArrayList<T> getListFromBundle(Bundle b, String key) {
+        return (ArrayList<T>) b.getSerializable(key);
+    }
+
+    /**
+     * Utility routine to get the series from the passed intent. Added to reduce lint warnings...
+     *
+     * @param i		Intent containing list
+     *
+     * @return		List
+     */
+    @SuppressWarnings("unchecked")
+    public static ArrayList<Author> getAuthorFromIntentExtras(Intent i) {
+        return (ArrayList<Author>) i.getSerializableExtra(CatalogueDBAdapter.KEY_AUTHOR_ARRAY);
+    }
+
+    /**
+     * Utility routine to get the series from the passed intent. Added to reduce lint warnings...
+     *
+     * @param i		Intent containing list
+     *
+     * @return		List
+     */
+    @SuppressWarnings("unchecked")
+    public static ArrayList<Series> getSeriesFromIntentExtras(Intent i) {
+        return (ArrayList<Series>) i.getSerializableExtra(CatalogueDBAdapter.KEY_SERIES_ARRAY);
+    }
+
+    /**
+     * Utility routine to get the list from the passed intent. Added to reduce lint warnings...
+     *
+     * @param i		Intent containing list
+     * @param key   element to get
+     *
+     * @return		List
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> ArrayList<T> getListFromIntentExtras(Intent i, String key) {
+        return (ArrayList<T>) i.getSerializableExtra(key);
     }
 
     private T get(String source) {

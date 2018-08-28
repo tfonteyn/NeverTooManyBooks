@@ -42,7 +42,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher.ViewFactory;
 
-import com.eleybourn.bookcatalogue.LibraryThingManager.ImageSizes;
+import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
+import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
+import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager.ImageSizes;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;

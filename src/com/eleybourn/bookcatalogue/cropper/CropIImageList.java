@@ -16,12 +16,12 @@
 
 package com.eleybourn.bookcatalogue.cropper;
 
-import java.io.IOException;
-import java.util.HashMap;
-
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.os.Parcelable;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 //
 // ImageList and Image classes have one-to-one correspondence.

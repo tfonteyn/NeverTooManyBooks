@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -156,7 +157,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 	 * 
 	 * @param 	title	Book title to parse
 	 */
-	public static SeriesDetails findSeries(String title) {
+	public static SeriesDetails findSeries(@NonNull String title) {
 		SeriesDetails details = null;
 		int last = title.lastIndexOf("(");
 		if (last >= 1) { // We want a title that does not START with a bracket!

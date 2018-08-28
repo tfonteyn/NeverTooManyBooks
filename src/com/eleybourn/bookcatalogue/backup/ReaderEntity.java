@@ -28,7 +28,7 @@ import java.util.Date;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.database.SerializationUtils.DeserializationException;
+import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
 
 /**
  * Interface provided by every entity read from a backup file.

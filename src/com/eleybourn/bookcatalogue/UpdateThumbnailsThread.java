@@ -24,10 +24,14 @@ import android.database.Cursor;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.searches.SearchManager;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.FieldUsage;
 import com.eleybourn.bookcatalogue.utils.FieldUsages;
+import com.eleybourn.bookcatalogue.utils.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.utils.TaskManager;
 
 import java.io.File;
 import java.io.Serializable;
@@ -155,21 +159,23 @@ public class UpdateThumbnailsThread extends ManagedTask {
 								case CatalogueDBAdapter.KEY_AUTHOR_ARRAY:
 									// We should never have a book with no authors, but lets be paranoid
 									if (mOrigData.containsKey(usage.fieldName)) {
-										ArrayList<Author> origAuthors = (ArrayList<Author>) mOrigData.getSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY);
+										ArrayList<Author> origAuthors = ArrayUtils.getAuthorsFromBundle(mOrigData);
 										if (origAuthors == null || origAuthors.size() == 0)
 											mCurrFieldUsages.put(usage);
 									}
 									break;
 								case CatalogueDBAdapter.KEY_SERIES_ARRAY:
 									if (mOrigData.containsKey(usage.fieldName)) {
-                                        ArrayList<Series> origSeries = (ArrayList<Series>) mOrigData.getSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY);
+                                        ArrayList<Series> origSeries =  ArrayUtils.getSeriesFromBundle(mOrigData);
 										if (origSeries == null || origSeries.size() == 0)
 											mCurrFieldUsages.put(usage);
 									}
 									break;
 								default:
 									// If the original was blank, add to list
-									if (!mOrigData.containsKey(usage.fieldName) || mOrigData.getString(usage.fieldName) == null || mOrigData.getString(usage.fieldName).isEmpty())
+									if (!mOrigData.containsKey(usage.fieldName)
+											|| mOrigData.getString(usage.fieldName) == null
+											|| mOrigData.getString(usage.fieldName).isEmpty())
 										mCurrFieldUsages.put(usage);
 									break;
 							}
@@ -321,21 +327,23 @@ public class UpdateThumbnailsThread extends ManagedTask {
 						switch (usage.fieldName) {
 							case CatalogueDBAdapter.KEY_AUTHOR_ARRAY:
 								if (origData.containsKey(usage.fieldName)) {
-									ArrayList<Author> origAuthors = (ArrayList<Author>) origData.getSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY);
+									ArrayList<Author> origAuthors = ArrayUtils.getAuthorsFromBundle(origData);
 									if (origAuthors != null && origAuthors.size() > 0)
 										newData.remove(usage.fieldName);
 								}
 								break;
 							case CatalogueDBAdapter.KEY_SERIES_ARRAY:
 								if (origData.containsKey(usage.fieldName)) {
-                                    ArrayList<Series> origSeries = (ArrayList<Series>) origData.getSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY);
+                                    ArrayList<Series> origSeries = ArrayUtils.getSeriesFromBundle(origData);
 									if (origSeries != null && origSeries.size() > 0)
 										newData.remove(usage.fieldName);
 								}
 								break;
 							default:
 								// If the original was non-blank, erase from list
-								if (origData.containsKey(usage.fieldName) && origData.getString(usage.fieldName) != null && !origData.getString(usage.fieldName).isEmpty()) {
+								if (origData.containsKey(usage.fieldName)
+                                        && origData.getString(usage.fieldName) != null
+                                        && !origData.getString(usage.fieldName).isEmpty()) {
 									newData.remove(usage.fieldName);
 								}
 								break;
@@ -374,7 +382,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
 		ArrayList<T> newList = null;
 		// Get the list from the original, if present. 
 		if (origData.containsKey(key)) {
-			origList = (ArrayList<T>) origData.getSerializable(key);
+			origList = ArrayUtils.getListFromBundle(origData, key);
 		}
 		// Otherwise an empty list
 		if (origList == null)
@@ -382,7 +390,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
 
 		// Get from the new data
 		if (newData.containsKey(key)) {
-			newList = (ArrayList<T>)newData.getSerializable(key);
+			newList =  ArrayUtils.getListFromBundle(newData, key);
 		}
 		if (newList == null)
 			newList = new ArrayList<>();

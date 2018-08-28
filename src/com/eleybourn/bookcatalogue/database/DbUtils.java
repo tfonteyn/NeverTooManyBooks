@@ -173,7 +173,7 @@ public class DbUtils {
 	 * 
 	 * @author Philip Warner
 	 */
-	public static class TableDefinition {
+	public static class TableDefinition implements AutoCloseable {
 		public enum TableTypes { Standard, Temporary, FTS3, FTS4 }
 
         /** Table name */
@@ -208,6 +208,7 @@ public class DbUtils {
 		/**
 		 * Remove all references and resources used by this table.
 		 */
+		@Override
 		public void close() {
 			mDomains.clear();
 			mDomainCheck.clear();
