@@ -37,6 +37,7 @@ import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.LockTypes;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
+import java.io.Closeable;
 import java.lang.reflect.Field;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -258,7 +259,7 @@ public class DbSync {
 	 * 
 	 * @author Philip Warner
 	 */
-	public static class SynchronizedDb {
+	public static class SynchronizedDb implements Closeable {
 		/** Underlying database */
 		final SQLiteDatabase mDb;
 		/** Sync object to use */
@@ -602,6 +603,8 @@ public class DbSync {
 		public boolean isOpen() {
 			return mDb.isOpen();
 		}
+
+		@Override
         public void close() {
 		    mDb.close();
         }
@@ -615,12 +618,12 @@ public class DbSync {
 		/**
 		 * Utility routine, purely for debugging ref count issues (mainly Android 2.1)
 		 * 
-		 * @param msg	Message to display (relating to context)
-		 * @param db	Database object
-		 * 
+		 * @param msg    Message to display (relating to context)
+		 * @param db    Database object
+		 *
 		 * @return		Number of current references
 		 */
-		public static int printRefCount(String msg, SQLiteDatabase db) {
+		public static void printRefCount(String msg, SQLiteDatabase db) {
             if (BuildConfig.DEBUG) {
                 System.gc();
                 Field f;
@@ -639,12 +642,10 @@ public class DbSync {
                             //}
 
                     }
-                    return refs;
-                } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
+				} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
                     Logger.logError(e);
                 }
             }
-			return 0;			
 		}
 	}
 	
@@ -653,7 +654,7 @@ public class DbSync {
 	 *
 	 * @author Philip Warner
 	 */
-	public static class SynchronizedStatement {
+	public static class SynchronizedStatement implements Closeable {
 		/** Synchronizer from database */
 		final Synchronizer mSync;
 		/** Underlying statement */
@@ -712,6 +713,7 @@ public class DbSync {
 		/**
 		 * Wrapper for underlying method on SQLiteStatement.
 		 */
+		@Override
 		public void close() {
 			mIsClosed = true;
 			mStatement.close();

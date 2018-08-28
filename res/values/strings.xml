@@ -1020,16 +1020,17 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- End: Added/Updated in 5.2.2 -->
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
-    <string name="menu_mark_as_read">Mark as read</string>
-    <string name="menu_mark_as_unread">Mark as unread</string>
     <string name="generic_task_info" translatable="false">Task ID %1$d, Queued at %2$s</string>
     <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
+    <string name="a_bracket_b_bracket" translatable="false">%1$s (%2$s)</string>
+    <string name="single_string" translatable="false">%1s</string> <!-- needed for string based ItemEntries properties -->
+    <string name="menu_mark_as_read">Mark as read</string>
+    <string name="menu_mark_as_unread">Mark as unread</string>
     <string name="title_reorder">a|A|an|An|the|The</string>
     <string name="preferred_theme">Preferred Interface Theme</string>
     <string name="events_found">%1$d Events found</string>
     <string name="search_with_text">Search: %1$s</string>
     <string name="waiting_for_idle">(waiting for idle)</string>
-    <string name="single_string" translatable="false">%1s</string> <!-- needed for string based ItemEntries properties -->
     <string name="app_permissions_info">
         <![CDATA[
             <p>To function we need permissions....\n
@@ -1046,7 +1047,6 @@ and you can edit the book via the options menu using the menu button or overflow
         <item>Dark</item>
         <item>Light</item>
     </string-array>
-
 
 
 

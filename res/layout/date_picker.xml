@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-    android:scrollbars="vertical" >
+    android:scrollbars="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,7 +12,7 @@
         android:layout_gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingLeft="@dimen/padding_border_double"
-        android:paddingRight="@dimen/padding_border_double" >
+        android:paddingRight="@dimen/padding_border_double">
 
         <LinearLayout
             android:id="@+id/dateSelector"
@@ -40,7 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="+"
-                    />
+                    tools:ignore="HardcodedText" />
 
                 <EditText
                     android:id="@+id/year"
@@ -49,14 +48,15 @@
                     android:inputType="number"
                     android:minEms="3"
                     android:text="2000"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    tools:ignore="HardcodedText,LabelFor" />
 
                 <Button
                     android:id="@+id/minus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="-"
-                    />
+                    tools:ignore="HardcodedText" />
             </LinearLayout>
 
             <LinearLayout
@@ -78,7 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="+"
-                    />
+                    tools:ignore="HardcodedText" />
 
                 <Spinner
                     android:id="@+id/month"
@@ -91,7 +91,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="-"
-                    />
+                    tools:ignore="HardcodedText" />
             </LinearLayout>
 
             <LinearLayout
@@ -112,7 +112,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="+"
-                    />
+                    tools:ignore="HardcodedText" />
 
                 <Spinner
                     android:id="@+id/day"
@@ -125,33 +125,34 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="-"
-                    />
+                    tools:ignore="HardcodedText" />
             </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/buttons"
+            style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="bottom"
             android:orientation="horizontal"
-            android:paddingTop="@dimen/padding_border_double" >
+            android:paddingTop="@dimen/padding_border_double">
 
             <Button
                 android:id="@+id/cancel"
+                style="?android:attr/buttonBarNegativeButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/cancel"
-                 />
+                android:text="@string/cancel" />
 
             <Button
                 android:id="@+id/ok"
+                style="?android:attr/buttonBarPositiveButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/ok"
-                />
+                android:text="@string/ok" />
         </LinearLayout>
     </LinearLayout>
 

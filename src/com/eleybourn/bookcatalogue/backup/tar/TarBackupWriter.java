@@ -26,7 +26,7 @@ import com.eleybourn.bookcatalogue.backup.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.BackupUtils;
 import com.eleybourn.bookcatalogue.backup.BackupWriterAbstract;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.database.SerializationUtils;
+import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;

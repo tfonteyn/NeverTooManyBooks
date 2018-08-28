@@ -35,13 +35,13 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.AdministrationLibraryThing;
+import com.eleybourn.bookcatalogue.searches.librarything.AdministrationLibraryThing;
 import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.LibraryThingManager;
+import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegister;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegister;
 import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.debug.Logger;

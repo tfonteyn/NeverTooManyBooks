@@ -153,7 +153,7 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_SERIE
  *
  * @author Philip Warner
  */
-public class BooklistBuilder {
+public class BooklistBuilder implements AutoCloseable {
 
     /**
      * BookList Compatibility mode property values
@@ -2069,6 +2069,7 @@ public class BooklistBuilder {
     /**
      * Close the builder.
      */
+    @Override
     public void close() {
         cleanup(false);
     }

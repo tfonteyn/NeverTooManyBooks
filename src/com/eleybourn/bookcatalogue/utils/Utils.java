@@ -35,10 +35,8 @@ import android.text.util.Linkify;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.LibraryThingManager;
 import com.eleybourn.bookcatalogue.Series;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -680,14 +678,6 @@ public class Utils {
 			String s = "unknown";
 			try { s = e.getMessage(); } catch (Exception ignored) {}
             Logger.logError(e, s);
-		}
-	}
-
-    public static void showLtAlertIfNecessary(Context context, boolean always, String suffix) {
-		if (USE_LT) {
-			LibraryThingManager ltm = new LibraryThingManager(context);
-			if (!ltm.isAvailable())
-				StandardDialogs.needLibraryThingAlert(context, always, suffix);		
 		}
 	}
 

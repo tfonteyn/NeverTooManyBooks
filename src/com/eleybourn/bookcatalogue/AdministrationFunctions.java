@@ -39,11 +39,13 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogFileItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickListener;
 import com.eleybourn.bookcatalogue.filechooser.BackupChooser;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegister;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegister;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
+import com.eleybourn.bookcatalogue.searches.librarything.AdministrationLibraryThing;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;

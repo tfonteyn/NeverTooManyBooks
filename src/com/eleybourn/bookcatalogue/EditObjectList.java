@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
 
@@ -216,11 +217,11 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 			// Ask the subclass to setup the list; we need this before 
 			// building the adapter.
 			if (savedInstanceState != null && mKey != null && savedInstanceState.containsKey(mKey)) {
-				mList = (ArrayList<T>) savedInstanceState.getSerializable(mKey);
+				mList = ArrayUtils.getListFromBundle(savedInstanceState, mKey);
 			}
 
 			if (mList == null) {
-				mList = (ArrayList<T>) getIntent().getSerializableExtra(mKey);
+				mList = ArrayUtils.getListFromIntentExtras(getIntent(), mKey);
 
 				if (mList == null)
 					mList = getList();

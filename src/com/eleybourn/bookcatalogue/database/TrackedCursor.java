@@ -118,6 +118,8 @@ public class TrackedCursor extends SynchronizedCursor  {
 	/**
 	 * Finalizer that does sanity check. Setting a break here can catch the exact moment that
 	 * a cursor is deleted before being closed.
+	 *
+	 * Note this is not guaranteed to be called by the JVM !
 	 */
 	@Override
 	public void finalize() {

@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -19,61 +19,71 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 /**
  * Public interface for any backup archive reader.
- * 
+ *
  * @author pjw
  */
-public interface BackupReader {
-	
-	/**
-	 * Interface for processes doing a restore operation; allows for progress indications
-	 * 
-	 * @author pjw
-	 */
-    interface BackupReaderListener {
-		/** Set the end point for the progress */
-		void setMax(int max);
-		/** Advance progress by 'delta' */
-		void step(String message, int delta);
-		/** Check if operation is cancelled */
-		boolean isCancelled();
-	}
+public interface BackupReader extends Closeable {
 
-	/**
-	 * Perform a restore of the database; a convenience method to loop through 
-	 * all entities in the backup and restore them based on the entity type.
-	 * 
-	 * See BackupReaderAbstract for a default implementation.
-	 * 
-	 * @param listener		Listener to receive progress information.
-	 */
-	void restore(BackupReaderListener listener, int importFlags) throws IOException;
-	
-	/**
-	 * Read the next ReaderEntity from the backup.
-	 * 
-	 * Currently, backup files are read sequentially.
-	 * 
-	 * @return	The next entity, or null if at end
-	 */
+    /**
+     * Perform a restore of the database; a convenience method to loop through
+     * all entities in the backup and restore them based on the entity type.
+     * <p>
+     * See BackupReaderAbstract for a default implementation.
+     *
+     * @param listener Listener to receive progress information.
+     */
+    void restore(BackupReaderListener listener, int importFlags) throws IOException;
+
+    /**
+     * Read the next ReaderEntity from the backup.
+     * <p>
+     * Currently, backup files are read sequentially.
+     *
+     * @return The next entity, or null if at end
+     */
     ReaderEntity nextEntity() throws IOException;
-	
-	/**
-	 * Close the reader
-	 */
+
+    /**
+     * Close the reader
+     */
+    @Override
     void close() throws IOException;
-	
-	/**
-	 * @return the associated BackupContainer
-	 */
-	BackupContainer getContainer();
-	
-	/**
-	 * @return the INFO object read from the backup
-	 */
+
+    /**
+     * @return the associated BackupContainer
+     */
+    BackupContainer getContainer();
+
+    /**
+     * @return the INFO object read from the backup
+     */
     BackupInfo getInfo();
+
+    /**
+     * Interface for processes doing a restore operation; allows for progress indications
+     *
+     * @author pjw
+     */
+    interface BackupReaderListener {
+        /**
+         * Set the end point for the progress
+         */
+        void setMax(int max);
+
+        /**
+         * Advance progress by 'delta'
+         */
+        void step(String message, int delta);
+
+        /**
+         * Check if operation is cancelled
+         */
+        boolean isCancelled();
+    }
 
 }

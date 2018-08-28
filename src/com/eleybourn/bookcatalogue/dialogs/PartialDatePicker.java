@@ -205,7 +205,7 @@ public class PartialDatePicker extends AlertDialog {
 				if (mYear != null) {
 					mYearView.setText((++mYear).toString());
 				} else {
-					mYearView.setText(Calendar.getInstance().get(Calendar.YEAR) + "");
+					mYearView.setText(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
 				}
 			}}
 		);
@@ -223,7 +223,7 @@ public class PartialDatePicker extends AlertDialog {
 						mYearView.setText((--mYear).toString());
 					}
 				} else {
-					mYearView.setText(Calendar.getInstance().get(Calendar.YEAR) + "");
+					mYearView.setText(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
 				}
 			}}
 		);

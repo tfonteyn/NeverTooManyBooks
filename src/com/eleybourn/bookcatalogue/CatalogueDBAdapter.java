@@ -44,7 +44,7 @@ import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
-import com.eleybourn.bookcatalogue.database.SerializationUtils;
+import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.database.SqlStatementManager;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -109,7 +109,7 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_SERIE
  * ENHANCE: Use date_added to add 'Recent Acquisitions' virtual shelf; need to resolve how this may relate to date_purchased and 'I own this book'...
  * 
  */
-public class CatalogueDBAdapter {
+public class CatalogueDBAdapter implements AutoCloseable {
 	/** Debug counter */
 	private static Integer mInstanceCount = 0;
 
@@ -1823,6 +1823,7 @@ public class CatalogueDBAdapter {
 	/**
 	 * Generic function to close the database
 	 */
+	@Override
 	public void close() {
 
 		if (!mCloseWasCalled) {

@@ -374,7 +374,7 @@ public class BookEditFields extends BookDetailsAbstract
             switch (requestCode) {
                 case ACTIVITY_EDIT_AUTHORS:
                     if (resultCode == Activity.RESULT_OK && intent.hasExtra(CatalogueDBAdapter.KEY_AUTHOR_ARRAY)) {
-                        mEditManager.getBookData().setAuthorList((ArrayList<Author>) intent.getSerializableExtra(CatalogueDBAdapter.KEY_AUTHOR_ARRAY));
+                        mEditManager.getBookData().setAuthorList(ArrayUtils.getAuthorFromIntentExtras(intent));
                         mEditManager.setDirty(true);
                     } else {
                         // Even though the dialog was terminated, some authors MAY have been updated/added.
@@ -388,7 +388,7 @@ public class BookEditFields extends BookDetailsAbstract
                     mEditManager.setDirty(oldDirty);
                 case ACTIVITY_EDIT_SERIES:
                     if (resultCode == Activity.RESULT_OK && intent.hasExtra(CatalogueDBAdapter.KEY_SERIES_ARRAY)) {
-                        mEditManager.getBookData().setSeriesList((ArrayList<Series>) intent.getSerializableExtra(CatalogueDBAdapter.KEY_SERIES_ARRAY));
+                        mEditManager.getBookData().setSeriesList(ArrayUtils.getSeriesFromIntentExtras(intent));
                         populateSeriesListField();
                         mEditManager.setDirty(true);
                     }

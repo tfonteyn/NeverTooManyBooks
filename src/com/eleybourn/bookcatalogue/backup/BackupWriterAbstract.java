@@ -337,6 +337,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 	/**
 	 * Cleanup
 	 */
+	@Override
 	public void close() throws IOException {
 		mDbHelper.close();
 	}

@@ -30,11 +30,11 @@ import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.ManagedTask;
+import com.eleybourn.bookcatalogue.utils.ManagedTask;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.TaskManager;
-import com.eleybourn.bookcatalogue.TaskManager.TaskManagerController;
-import com.eleybourn.bookcatalogue.TaskManager.TaskManagerListener;
+import com.eleybourn.bookcatalogue.utils.TaskManager;
+import com.eleybourn.bookcatalogue.utils.TaskManager.TaskManagerController;
+import com.eleybourn.bookcatalogue.utils.TaskManager.TaskManagerListener;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.debug.Tracker.States;
 import com.eleybourn.bookcatalogue.debug.Logger;

@@ -76,6 +76,7 @@ public class FlattenedBooklist implements AutoCloseable {
 	/**
 	 * Release resource-consuming stuff
 	 */
+	@Override
 	public void close() {
 		mStatements.close();
 	}

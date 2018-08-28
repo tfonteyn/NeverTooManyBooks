@@ -26,8 +26,8 @@ import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.database.SerializationUtils.DeserializationException;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
@@ -153,8 +153,8 @@ public abstract class BackupReaderAbstract implements BackupReader {
 			}
 		}
 		cover.saveToDirectory(StorageUtils.getSharedStorage());
-		curr.setLastModified(covDate.getTime());
-	}
+        curr.setLastModified(covDate.getTime());
+    }
 
 	/**
 	 * Restore the app preferences
@@ -184,6 +184,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
 	/**
 	 * Close the reader
 	 */
+	@Override
 	public void close() throws IOException {
 		mDbHelper.close();
 	}

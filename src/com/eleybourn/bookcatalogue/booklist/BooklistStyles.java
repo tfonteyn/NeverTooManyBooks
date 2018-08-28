@@ -31,8 +31,8 @@ import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
-import com.eleybourn.bookcatalogue.database.SerializationUtils;
-import com.eleybourn.bookcatalogue.database.SerializationUtils.DeserializationException;
+import com.eleybourn.bookcatalogue.utils.SerializationUtils;
+import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 
 import java.util.ArrayList;

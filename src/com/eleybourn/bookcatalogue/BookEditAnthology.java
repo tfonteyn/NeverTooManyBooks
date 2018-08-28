@@ -45,6 +45,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter.AnthologyTitleExistsException;
+import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaEntryHandler;
+import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaHandler;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;

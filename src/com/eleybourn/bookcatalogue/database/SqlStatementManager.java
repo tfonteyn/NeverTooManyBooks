@@ -34,7 +34,7 @@ public class SqlStatementManager implements AutoCloseable {
 	private final Hashtable<String, SynchronizedStatement> mStatements;
 	private final SynchronizedDb mDb;
 
-	public SqlStatementManager() {
+	SqlStatementManager() {
 		this(null);
 	}
 
@@ -68,14 +68,15 @@ public class SqlStatementManager implements AutoCloseable {
 		return addOrGet(mDb, name, sql);
 	}
 
-	public SynchronizedStatement addOrGet(final SynchronizedDb db, final String name, final String sql) {
+	private SynchronizedStatement addOrGet(final SynchronizedDb db, final String name, final String sql) {
 		SynchronizedStatement stmt = mStatements.get(name);
 		if (stmt == null) {
 			stmt = add(db, name, sql);
 		}
 		return stmt;
 	}
-	
+
+	@Override
 	public void close() {
 		synchronized(mStatements) {
 			for(SynchronizedStatement s : mStatements.values()) {
