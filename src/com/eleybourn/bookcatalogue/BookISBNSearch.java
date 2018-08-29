@@ -143,10 +143,7 @@ public class BookISBNSearch extends ActivityWithTasks {
         Tracker.enterOnCreate(this);
         try {
 
-            /*
-             *  {@link #getLayoutId()} has to check mIbn/mBy for the correct id to use,
-             *   so we need these BEFORE calling super.OnCreate
-             */
+            // Must do this before super.onCreate as getLayoutId() needs them
             Bundle extras = getIntent().getExtras();
             mIsbn = extras.getString(ISBN);
             mBy = extras.getString(BY);
@@ -155,8 +152,6 @@ public class BookISBNSearch extends ActivityWithTasks {
 
             if (savedInstanceState != null)
                 mSearchManagerId = savedInstanceState.getLong("SearchManagerId");
-
-            //System.out.println("BookISBNSearch OnCreate SIS=" + (savedInstanceState == null? "N" : "Y"));
 
             //do we have a network connection?
             boolean network_available = Utils.isNetworkAvailable(this);
@@ -170,8 +165,6 @@ public class BookISBNSearch extends ActivityWithTasks {
 
             mDbHelper = new CatalogueDBAdapter(this);
             mDbHelper.open();
-
-
 
             if (savedInstanceState != null) {
                 if (savedInstanceState.containsKey("mScannerStarted")) {
@@ -226,6 +219,7 @@ public class BookISBNSearch extends ActivityWithTasks {
                 if (onCreateByScan(savedInstanceState)) {
                     return;
                 }
+
             }
         } finally {
             Tracker.exitOnCreate(this);
@@ -233,15 +227,156 @@ public class BookISBNSearch extends ActivityWithTasks {
     }
 
     private void onCreateWithISBN() {
+        //System.out.println(mId + " OnCreate got ISBN");
         //ISBN has been passed by another component
-
+        setContentView(R.layout.isbn_search);
         mIsbnText = findViewById(R.id.isbn);
         mIsbnText.setText(mIsbn);
         go(mIsbn, "", "");
     }
 
+    private boolean onCreateByScan(Bundle savedInstanceState) {
+        // System.out.println(mId + " OnCreate BY SCAN");
+        // Use the scanner to get ISBNs
+        mMode = MODE_SCAN;
+        setContentView(R.layout.isbn_scan);
+        mIsbnText = findViewById(R.id.isbn);
+
+        /*
+         * Use the preferred barcode scanner to search for a isbn
+         * Prompt users to install the application if they do not have it installed.
+         */
+        try {
+            // Start the scanner IF this is a real 'first time' call.
+            if (savedInstanceState == null) {
+                startScannerActivity();
+            } else {
+                // It's a saved state, so see if we have an ISBN
+                if (savedInstanceState.containsKey(ISBN)) {
+                    go(savedInstanceState.getString(ISBN), "", "");
+                }
+            }
+        } catch (SecurityException e) {
+            AlertDialog alertDialog = new AlertDialog.Builder(BookISBNSearch.this)
+                    .setMessage(R.string.bad_scanner)
+                    .setTitle(R.string.install_scan_title)
+                    .setIcon(android.R.drawable.ic_menu_info_details)
+                    .create();
+
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
+                    /* text hardcoded as a it is a product name */
+                    "ZXing",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent marketIntent = new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse("market://details?id=com.google.zxing.client.android"));
+                            startActivity(marketIntent);
+                            finish();
+                        }
+                    });
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
+                    getResources().getString(android.R.string.cancel),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //do nothing
+                            finish();
+                        }
+                    });
+            // Prevent the activity result from closing this activity.
+            mDisplayingAlert = true;
+            alertDialog.show();
+            return true;
+        } catch (ActivityNotFoundException e) {
+            // Verify - this can be a dangerous operation
+            AlertDialog alertDialog = new AlertDialog.Builder(BookISBNSearch.this)
+                    .setMessage(R.string.install_scan)
+                    .setTitle(R.string.install_scan_title)
+                    .setIcon(android.R.drawable.ic_menu_info_details)
+                    .create();
+
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
+                    /* text hardcoded as a it is a product name */
+                    "pic2shop",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //TODO?
+                            Intent marketIntent = new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse("market://details?id=com.visionsmarts.pic2shop"));
+                            startActivity(marketIntent);
+                            finish();
+                        }
+                    });
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,
+                    /* text hardcoded as a it is a product name */
+                    "ZXing",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent marketIntent = new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse("market://details?id=com.google.zxing.client.android"));
+                            startActivity(marketIntent);
+                            finish();
+                        }
+                    });
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
+                    getResources().getString(android.R.string.cancel),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //do nothing
+                            finish();
+                        }
+                    });
+            // Prevent the activity result from closing this activity.
+            mDisplayingAlert = true;
+            alertDialog.show();
+            return true;
+        }
+        return false;
+    }
+
+    private void onCreateByName() {
+        Button mConfirmButton;// System.out.println(mId + " OnCreate BY NAME");
+        setContentView(R.layout.name_search);
+        this.setTitle(R.string.search_hint);
+
+        this.initAuthorList();
+
+        mTitleText = findViewById(R.id.title);
+        mConfirmButton = findViewById(R.id.search);
+
+        mConfirmButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                String mAuthor = mAuthorText.getText().toString();
+                String mTitle = mTitleText.getText().toString();
+
+                ArrayAdapter<String> adapter = mAuthorAdapter;
+                if (adapter.getPosition(mAuthor) < 0) {
+                    // Based on code from filipeximenes we also need to update the adapter here in
+                    // case no author or book is added, but we still want to see 'recent' entries.
+                    if (!mAuthor.trim().isEmpty()) {
+                        boolean found = false;
+                        for (String s : mAuthorNames) {
+                            if (s.equalsIgnoreCase(mAuthor)) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found) {
+                            // Keep a list of names as typed to use when we recreate list
+                            mAuthorNames.add(mAuthor);
+                            // Add to adapter, in case search produces no results
+                            adapter.add(mAuthor);
+                        }
+                    }
+                }
+                go("", mAuthor, mTitle);
+            }
+        });
+    }
+
     private void onCreateByISBN() {
-        Button mConfirmButton;
+        Button mConfirmButton;// System.out.println(mId + " OnCreate BY ISBN");
+        setContentView(R.layout.isbn_search);
         mIsbnText = findViewById(R.id.isbn);
         mConfirmButton = findViewById(R.id.search);
 
@@ -364,142 +499,6 @@ public class BookISBNSearch extends ActivityWithTasks {
             }
         });
     }
-
-    private boolean onCreateByScan(Bundle savedInstanceState) {
-        // Use the scanner to get ISBNs
-        mMode = MODE_SCAN;
-        mIsbnText = findViewById(R.id.isbn);
-
-        /*
-         * Use the preferred barcode scanner to search for a isbn
-         * Prompt users to install the application if they do not have it installed.
-         */
-        try {
-            // Start the scanner IF this is a real 'first time' call.
-            if (savedInstanceState == null) {
-                startScannerActivity();
-            } else {
-                // It's a saved state, so see if we have an ISBN
-                if (savedInstanceState.containsKey(ISBN)) {
-                    go(savedInstanceState.getString(ISBN), "", "");
-                }
-            }
-        } catch (SecurityException e) {
-            AlertDialog alertDialog = new AlertDialog.Builder(BookISBNSearch.this)
-                    .setMessage(R.string.bad_scanner)
-                    .setTitle(R.string.install_scan_title)
-                    .setIcon(android.R.drawable.ic_menu_info_details)
-                    .create();
-
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                    /* text hardcoded as a it is a product name */
-                    "ZXing",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent marketIntent = new Intent(Intent.ACTION_VIEW,
-                                    Uri.parse("market://details?id=com.google.zxing.client.android"));
-                            startActivity(marketIntent);
-                            finish();
-                        }
-                    });
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                    getResources().getString(android.R.string.cancel),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            //do nothing
-                            finish();
-                        }
-                    });
-            // Prevent the activity result from closing this activity.
-            mDisplayingAlert = true;
-            alertDialog.show();
-            return true;
-        } catch (ActivityNotFoundException e) {
-            // Verify - this can be a dangerous operation
-            AlertDialog alertDialog = new AlertDialog.Builder(BookISBNSearch.this)
-                    .setMessage(R.string.install_scan)
-                    .setTitle(R.string.install_scan_title)
-                    .setIcon(android.R.drawable.ic_menu_info_details)
-                    .create();
-
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                    /* text hardcoded as a it is a product name */
-                    "pic2shop",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            //TODO?
-                            Intent marketIntent = new Intent(Intent.ACTION_VIEW,
-                                    Uri.parse("market://details?id=com.visionsmarts.pic2shop"));
-                            startActivity(marketIntent);
-                            finish();
-                        }
-                    });
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,
-                    /* text hardcoded as a it is a product name */
-                    "ZXing",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent marketIntent = new Intent(Intent.ACTION_VIEW,
-                                    Uri.parse("market://details?id=com.google.zxing.client.android"));
-                            startActivity(marketIntent);
-                            finish();
-                        }
-                    });
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                    getResources().getString(android.R.string.cancel),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            //do nothing
-                            finish();
-                        }
-                    });
-            // Prevent the activity result from closing this activity.
-            mDisplayingAlert = true;
-            alertDialog.show();
-            return true;
-        }
-        return false;
-    }
-
-    private void onCreateByName() {
-        Button mConfirmButton;
-        this.setTitle(R.string.search_hint);
-        this.initAuthorList();
-
-        mTitleText = findViewById(R.id.title);
-        mConfirmButton = findViewById(R.id.search);
-
-        mConfirmButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                String mAuthor = mAuthorText.getText().toString();
-                String mTitle = mTitleText.getText().toString();
-
-                ArrayAdapter<String> adapter = mAuthorAdapter;
-                if (adapter.getPosition(mAuthor) < 0) {
-                    // Based on code from filipeximenes we also need to update the adapter here in
-                    // case no author or book is added, but we still want to see 'recent' entries.
-                    if (!mAuthor.trim().isEmpty()) {
-                        boolean found = false;
-                        for (String s : mAuthorNames) {
-                            if (s.equalsIgnoreCase(mAuthor)) {
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        if (!found) {
-                            // Keep a list of names as typed to use when we recreate list
-                            mAuthorNames.add(mAuthor);
-                            // Add to adapter, in case search produces no results
-                            adapter.add(mAuthor);
-                        }
-                    }
-                }
-                go("", mAuthor, mTitle);
-            }
-        });
-    }
-
 
 	/* - MAJOR DATABASE ISSUES FOR THIS TO WORK!!!
 	protected void checkISBN(final String isbn) {
@@ -818,8 +817,10 @@ public class BookISBNSearch extends ActivityWithTasks {
                         go(contents, "", "");
                     } else {
                         // Scanner Cancelled/failed. Exit if no dialog present.
-                        this.setResult((mLastBookIntent != null) ? RESULT_OK : RESULT_CANCELED, mLastBookIntent);
-
+                        if (mLastBookIntent != null)
+                            this.setResult(RESULT_OK, mLastBookIntent);
+                        else
+                            this.setResult(RESULT_CANCELED, mLastBookIntent);
                         if (!mDisplayingAlert)
                             finish();
                     }

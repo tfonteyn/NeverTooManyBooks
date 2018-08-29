@@ -65,7 +65,6 @@ public class UpdateFromInternet extends ActivityWithTasks {
         try {
             super.onCreate(savedInstanceState);
             LibraryThingManager.showLtAlertIfNecessary(this, false, "update_from_internet");
-
             mPrefs = getSharedPreferences("bookCatalogue", android.content.Context.MODE_PRIVATE);
             setupFields();
         } catch (Exception e) {
