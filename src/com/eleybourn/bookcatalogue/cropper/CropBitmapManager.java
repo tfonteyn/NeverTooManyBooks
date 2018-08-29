@@ -117,7 +117,7 @@ public class CropBitmapManager {
 		return status != null ? status.mOptions : null;
 	}
 
-	synchronized void removeDecodingOptions(Thread t) {
+	private synchronized void removeDecodingOptions(Thread t) {
 		ThreadStatus status = mThreadStatus.get(t);
 		status.mOptions = null;
 	}

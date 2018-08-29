@@ -53,6 +53,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * 
  * @author Philip Warner
  */
+@SuppressWarnings("unused")
 public class SimpleTaskQueue {
 	// Execution queue
 	private final BlockingStack<SimpleTaskWrapper> mQueue = new BlockingStack<>();

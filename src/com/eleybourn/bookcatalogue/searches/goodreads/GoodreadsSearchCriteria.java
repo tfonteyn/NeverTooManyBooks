@@ -50,13 +50,17 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
 	private long mBookId = 0;
 
 	@Override
+	protected int getLayoutId(){
+		return R.layout.goodreads_search_criteria;
+	}
+
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		// Setup DB and layout.
 		mDbHelper = new CatalogueDBAdapter(this);
 		mDbHelper.open();
-		setContentView(R.layout.goodreads_search_criteria);
 
 		// Initial value; try to build from passed book, if available.
 		String criteria = "";

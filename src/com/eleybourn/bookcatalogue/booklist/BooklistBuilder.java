@@ -412,7 +412,7 @@ public class BooklistBuilder implements AutoCloseable {
     }
 
     /**
-     * Utility function to retrun a glob expression to get the 'year' from a text date field in a standard way.
+     * Utility function to return a glob expression to get the 'year' from a text date field in a standard way.
      * <p>
      * Just look for 4 leading numbers. We don't care about anything else.
      *
@@ -432,7 +432,7 @@ public class BooklistBuilder implements AutoCloseable {
     }
 
     /**
-     * Utility function to retrun a glob expression to get the 'month' from a text date field in a standard way.
+     * Utility function to return a glob expression to get the 'month' from a text date field in a standard way.
      * <p>
      * Just look for 4 leading numbers followed by 2 or 1 digit. We don't care about anything else.
      *
@@ -455,7 +455,7 @@ public class BooklistBuilder implements AutoCloseable {
     }
 
     /**
-     * Utility function to retrun a glob expression to get the 'day' from a text date field in a standard way.
+     * Utility function to return a glob expression to get the 'day' from a text date field in a standard way.
      * <p>
      * Just look for 4 leading numbers followed by 2 or 1 digit, and then 1 or two digits. We don't care about anything else.
      *
@@ -548,7 +548,9 @@ public class BooklistBuilder implements AutoCloseable {
 
             // We can not use triggers to fill in headings in API < 8 since SQLite 3.5.9 is broken
             // Allow for the user preferences to override in case another build is broken.
-            final int listMode = BookCataloguePreferences.getInt(BookCataloguePreferences.PREF_BOOKLIST_GENERATION_MODE, BooklistBuilder.BOOKLIST_GENERATE_AUTOMATIC);
+            final int listMode = BookCataloguePreferences.getInt(
+                    BookCataloguePreferences.PREF_BOOKLIST_GENERATION_MODE,
+                    BooklistBuilder.BOOKLIST_GENERATE_AUTOMATIC);
             boolean useTriggers;
             boolean flatTriggers = false;
             // Based on the users choice, decide how the list will be generated.

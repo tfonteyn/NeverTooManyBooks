@@ -60,6 +60,11 @@ public class SearchCatalogue extends BookCatalogueActivity {
     private final Handler m_handler = new Handler();
 
 	@Override
+	protected int getLayoutId(){
+		return R.layout.search_catalogue_criteria;
+	}
+
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -67,8 +72,6 @@ public class SearchCatalogue extends BookCatalogueActivity {
 		mDbHelper = new CatalogueDBAdapter(this);
 		mDbHelper.open();
 
-		setContentView(R.layout.search_catalogue_criteria);
-		
 		View layout = this.findViewById(R.id.layout_root);
 		EditText criteria = this.findViewById(R.id.criteria);
 		EditText author = this.findViewById(R.id.author);

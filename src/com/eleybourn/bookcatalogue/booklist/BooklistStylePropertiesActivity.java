@@ -65,11 +65,13 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
 	private Properties mProperties;
 
 	@Override
+	protected int getLayoutId(){
+		return R.layout.booklist_style_properties;
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		// Set the view and handle the save/cancel buttons.
-		this.setContentView(R.layout.booklist_style_properties);
 
 		Button save = findViewById(R.id.confirm);
 		save.setOnClickListener(new OnClickListener() {

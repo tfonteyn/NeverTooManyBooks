@@ -60,6 +60,11 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 	private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("gr-covers");
 
 	@Override
+	protected int getLayoutId() {
+		return R.layout.goodreads_work_list;
+	}
+
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -70,7 +75,6 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 		// Basic setup
 		mDbHelper = new CatalogueDBAdapter(this);
 		mDbHelper.open();
-		setContentView(R.layout.goodreads_work_list);
 
 		// Look for search criteria
 		Bundle extras = this.getIntent().getExtras();

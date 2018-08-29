@@ -35,7 +35,7 @@ public class ZxingScanner implements Scanner {
 	 * @return true if present
 	 */
 	public static boolean isIntentAvailable(boolean mustBeZxing) {
-		return isIntentAvailable(BookCatalogueApp.getAppContext(), ACTION, mustBeZxing ? PACKAGE : null);
+		return isIntentAvailable(BookCatalogueApp.getAppContext(), mustBeZxing ? PACKAGE : null);
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class ZxingScanner implements Scanner {
 	 * 
 	 * @return true if present
 	 */
-	private static boolean isIntentAvailable(Context ctx, String action, String packageName) {
+	private static boolean isIntentAvailable(Context ctx, String packageName) {
 		Intent test = new Intent(ACTION);
 		if (packageName != null && !packageName.isEmpty()) {
 			test.setPackage(packageName);
@@ -68,7 +68,7 @@ public class ZxingScanner implements Scanner {
 	 */
 	@Override
 	public String getBarcode(Intent intent) {
-		return intent.getStringExtra("SCAN_RESULT");
+		return intent.getStringExtra(Scanner.SCAN_RESULT);
 	}
 
 }

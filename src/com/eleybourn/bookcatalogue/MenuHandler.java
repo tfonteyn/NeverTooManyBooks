@@ -36,41 +36,34 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  */
 public class MenuHandler {
     public static final int FIRST = Menu.FIRST + 13;
-    private static final int MNU_ADD_BOOK = Menu.FIRST + 1;
-    private static final int MNU_ITM_ADD_BOOK_MANUAL = Menu.FIRST + 2;
-    private static final int MNU_ITM_ADD_BOOK_BARCODE = Menu.FIRST + 3;
-    private static final int MNU_ITM_ADD_BOOK_ISBN = Menu.FIRST + 4;
-    private static final int MNU_ITM_ADD_BOOK_NAMES = Menu.FIRST + 5;
-    private static final int MNU_ITM_HELP = Menu.FIRST + 7;
-    private static final int MNU_ITM_ADMIN = Menu.FIRST + 8;
-    private static final int MNU_ITM_SEARCH = Menu.FIRST + 9;
-    private static final int MNU_ITM_ABOUT = Menu.FIRST + 10;
-    private static final int MNU_ITM_DONATE = Menu.FIRST + 11;
-    private static final int MNU_ITM_BOOKSHELVES = Menu.FIRST + 12;
+    private static final int MENU_ADD_BOOK = Menu.FIRST + 1;
+    private static final int MENU_ITEM_ADD_BOOK_MANUAL = Menu.FIRST + 2;
+    private static final int MENU_ITEM_ADD_BOOK_BARCODE = Menu.FIRST + 3;
+    private static final int MENU_ITEM_ADD_BOOK_ISBN = Menu.FIRST + 4;
+    private static final int MENU_ITEM_ADD_BOOK_NAMES = Menu.FIRST + 5;
+    private static final int MENU_ITEM_SEARCH = Menu.FIRST + 6;
+
+    /**
+     * Construct & init.
+     */
+    public MenuHandler(Menu menu) {
+        init(menu);
+    }
+
     private int mSort = 0;
 
     /**
-     * Load the EditBook activity based on the provided id. Also open to the provided tab
-     *
-     * @param id  The id of the book to edit
-     * @param tab Which tab to open first
+     * Called by the constructor.
+     * Allows re-using the MenuHandler
      */
-    public static void editBook(Activity a, long id, int tab) {
-        Intent i = new Intent(a, BookEdit.class);
-        i.putExtra(CatalogueDBAdapter.KEY_ROWID, id);
-        i.putExtra(BookEdit.TAB, tab);
-        a.startActivityForResult(i, UniqueId.ACTIVITY_EDIT_BOOK);
-        return;
-    }
-
     public void init(Menu menu) {
         mSort = 0;
         menu.clear();
     }
 
-     public MenuItem addItem(Menu menu, int id, int stringId) {
-        return addItem(menu,id,stringId,0);
-    }
+//    public MenuItem addItem(Menu menu, int id, int stringId) {
+//        return addItem(menu, id, stringId, 0);
+//    }
 
     /**
      * Add a custom menu item.
@@ -91,62 +84,41 @@ public class MenuHandler {
     }
 
     /**
+     * Add the default 'search' menu item
+     *
+     * @param menu	root menu
+     */
+    public MenuItem addSearchItem(Menu menu) {
+        MenuItem search = menu.add(0, MENU_ITEM_SEARCH, mSort++, R.string.menu_search);
+        search.setIcon(android.R.drawable.ic_menu_search);
+        return search;
+    }
+    /**
      * Add menu and submenu for book creation.
      *
      * @param menu Root menu
      */
     public void addCreateBookSubMenu(Menu menu) {
-        SubMenu addMenu = menu.addSubMenu(0, MNU_ADD_BOOK, mSort++, BookCatalogueApp.getResourceString(R.string.menu_insert) + "...");
+        SubMenu addMenu = menu.addSubMenu(0, MENU_ADD_BOOK,
+                mSort++,
+                BookCatalogueApp.getResourceString(R.string.menu_insert) + "&hellip;");
 
         addMenu.setIcon(android.R.drawable.ic_menu_add);
         addMenu.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         {
             if (Utils.USE_BARCODE) {
-                addMenu.add(0, MNU_ITM_ADD_BOOK_BARCODE, mSort++, R.string.scan_barcode_isbn)
+                addMenu.add(0, MENU_ITEM_ADD_BOOK_BARCODE, mSort++, R.string.scan_barcode_isbn)
                         .setIcon(R.drawable.ic_menu_insert_barcode);
             }
-            addMenu.add(0, MNU_ITM_ADD_BOOK_ISBN, mSort++, R.string.enter_isbn)
+            addMenu.add(0, MENU_ITEM_ADD_BOOK_ISBN, mSort++, R.string.enter_isbn)
                     .setIcon(android.R.drawable.ic_menu_zoom);
 
-            addMenu.add(0, MNU_ITM_ADD_BOOK_NAMES, mSort++, R.string.search_internet)
+            addMenu.add(0, MENU_ITEM_ADD_BOOK_NAMES, mSort++, R.string.search_internet)
                     .setIcon(android.R.drawable.ic_menu_zoom);
 
-            addMenu.add(0, MNU_ITM_ADD_BOOK_MANUAL, mSort++, R.string.add_manually)
+            addMenu.add(0, MENU_ITEM_ADD_BOOK_MANUAL, mSort++, R.string.add_manually)
                     .setIcon(android.R.drawable.ic_menu_add);
         }
-    }
-
-    /**
-     * Add the default 'help & admin' menu item
-     *
-     * @param menu root menu
-     */
-    public void addCreateHelpAndAdminItems(Menu menu) {
-
-        menu.add(0, MNU_ITM_BOOKSHELVES, mSort++, BookCatalogueApp.getResourceString(R.string.menu_bookshelf))
-                .setIcon(R.drawable.ic_menu_bookshelves);
-
-        menu.add(0, MNU_ITM_HELP, mSort++, BookCatalogueApp.getResourceString(R.string.help))
-                .setIcon(android.R.drawable.ic_menu_help);
-
-        menu.add(0, MNU_ITM_ADMIN, mSort++, BookCatalogueApp.getResourceString(R.string.menu_administration))
-                .setIcon(android.R.drawable.ic_menu_manage);
-
-        menu.add(0, MNU_ITM_ABOUT, mSort++, BookCatalogueApp.getResourceString(R.string.about_label))
-                .setIcon(android.R.drawable.ic_menu_info_details);
-
-        menu.add(0, MNU_ITM_DONATE, mSort++, BookCatalogueApp.getResourceString(R.string.donate_label))
-                .setIcon(R.drawable.ic_menu_donate);
-    }
-
-    /**
-     * Add the default 'search' menu item
-     *
-     * @param menu root menu
-     */
-    public MenuItem addSearchItem(Menu menu) {
-        return menu.add(0, MNU_ITM_SEARCH, mSort++, R.string.menu_search)
-                .setIcon(android.R.drawable.ic_menu_search);
     }
 
     /**
@@ -159,47 +131,32 @@ public class MenuHandler {
      */
     public boolean onOptionsItemSelected(Activity a, MenuItem item) {
         switch (item.getItemId()) {
-            case MNU_ITM_ADD_BOOK_MANUAL:
-                createBook(a);
-                return true;
-            case MNU_ITM_ADD_BOOK_ISBN:
-                createBookISBN(a, "isbn");
-                return true;
-            case MNU_ITM_ADD_BOOK_BARCODE:
+            case MENU_ITEM_ADD_BOOK_BARCODE:
                 createBookScan(a);
                 return true;
-            case MNU_ITM_ADD_BOOK_NAMES:
-                createBookISBN(a, "name");
+            case MENU_ITEM_ADD_BOOK_ISBN:
+                createBookISBN(a, BookISBNSearch.BY_ISBN);
                 return true;
-            case MNU_ITM_HELP:
-                helpPage(a);
+            case MENU_ITEM_ADD_BOOK_NAMES:
+                createBookISBN(a, BookISBNSearch.BY_NAME);
                 return true;
-            case MNU_ITM_ADMIN:
-                adminPage(a);
+            case MENU_ITEM_ADD_BOOK_MANUAL:
+                createBook(a);
                 return true;
-            case MNU_ITM_DONATE:
-                donatePage(a);
-                return true;
-            case MNU_ITM_ABOUT:
-                aboutPage(a);
-                return true;
-            case MNU_ITM_BOOKSHELVES:
-                bookshelvesPage(a);
-                return true;
-            case MNU_ITM_SEARCH:
+            case MENU_ITEM_SEARCH:
                 a.onSearchRequested();
                 return true;
         }
-
         return false;
     }
 
     /**
-     * Load the BookEdit Activity
+     * Load the Search by ISBN Activity to begin scanning.
      */
-    private void createBook(Activity a) {
-        Intent i = new Intent(a, BookEdit.class);
-        a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_MANUALLY);
+    private void createBookScan(Activity a) {
+        Intent i = new Intent(a, BookISBNSearch.class);
+        i.putExtra(BookISBNSearch.BY, BookISBNSearch.BY_SCAN);
+        a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_SCAN);
     }
 
     /**
@@ -212,56 +169,24 @@ public class MenuHandler {
     }
 
     /**
-     * Load the Search by ISBN Activity to begin scanning.
+     * Load the BookEdit Activity
      */
-    private void createBookScan(Activity a) {
-        Intent i = new Intent(a, BookISBNSearch.class);
-        i.putExtra(BookISBNSearch.BY, "scan");
-        a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_SCAN);
+    private void createBook(Activity a) {
+        Intent i = new Intent(a, BookEdit.class);
+        a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_MANUALLY);
     }
 
-    /**
-     * Load the Admin Activity
-     */
-    private void adminPage(Activity a) {
-        Intent i = new Intent(BookCatalogueApp.getAppContext(), AdministrationFunctions.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-        a.startActivityForResult(i, UniqueId.ACTIVITY_ADMIN);
-    }
-
-    /**
-     * Load the Bookshelves Activity
-     */
-    private void bookshelvesPage(Activity a) {
-        Intent i = new Intent(BookCatalogueApp.getAppContext(), Bookshelf.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-        a.startActivityForResult(i, UniqueId.ACTIVITY_BOOKSHELF);
-    }
-
-    /**
-     * Load the About Activity
-     */
-    private void aboutPage(Activity a) {
-        Intent i = new Intent(BookCatalogueApp.getAppContext(), AdministrationAbout.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-        a.startActivityForResult(i, UniqueId.ACTIVITY_ABOUT);
-    }
-
-    /**
-     * Load the Donate Activity
-     */
-    private void donatePage(Activity a) {
-        Intent i = new Intent(BookCatalogueApp.getAppContext(), AdministrationDonate.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-        a.startActivityForResult(i, UniqueId.ACTIVITY_DONATE);
-    }
-
-    /**
-     * Load the Main Menu Activity
-     */
-    private void helpPage(Activity a) {
-        Intent i = new Intent(BookCatalogueApp.getAppContext(), Help.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-        a.startActivityForResult(i, UniqueId.ACTIVITY_HELP);
-    }
+//    /**
+//     * Load the EditBook activity based on the provided id. Also open to the provided tab
+//     *
+//     * @param id  The id of the book to edit
+//     * @param tab Which tab to open first
+//     */
+//    public static void editBook(Activity a, long id, int tab) {
+//        Intent i = new Intent(a, BookEdit.class);
+//        i.putExtra(CatalogueDBAdapter.KEY_ROWID, id);
+//        i.putExtra(BookEdit.TAB, tab);
+//        a.startActivityForResult(i, UniqueId.ACTIVITY_EDIT_BOOK);
+//        return;
+//    }
 }

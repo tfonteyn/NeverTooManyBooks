@@ -52,6 +52,11 @@ import java.util.ArrayList;
 public class MainMenu extends BookCatalogueActivity {
 
     @Override
+    protected int getLayoutId(){
+        return R.layout.main_menu;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -68,7 +73,6 @@ public class MainMenu extends BookCatalogueActivity {
         }
 
         // If we get here, we're meant to be in this activity.
-        setContentView(R.layout.main_menu);
         setTitle(R.string.app_name);
 
         // Display/hide the 'classic' my books item
@@ -109,10 +113,6 @@ public class MainMenu extends BookCatalogueActivity {
     public void onResume() {
         super.onResume();
 
-        if (BuildConfig.DEBUG) {
-            CatalogueDBAdapter.dumpInstances();
-        }
-
         View grItem = findViewById(R.id.goodreads_label);
         if (GoodreadsManager.hasCredentials()) {
             grItem.setVisibility(View.VISIBLE);
@@ -125,6 +125,7 @@ public class MainMenu extends BookCatalogueActivity {
          * there are still non-fatal anomalies.
          */
         if (BuildConfig.DEBUG) {
+            CatalogueDBAdapter.dumpInstances();
             CatalogueDBAdapter.printReferenceCount("MainMenu resumed");
         }
     }

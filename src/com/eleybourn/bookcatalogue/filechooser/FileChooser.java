@@ -72,13 +72,13 @@ public abstract class FileChooser extends BookCatalogueActivity implements
 	/** Create the fragment we display */
 	protected abstract FileChooserFragment getChooserFragment();
 
-	/**
-	 * Initialize this activity
-	 */
+	@Override
+	protected int getLayoutId(){
+		return R.layout.file_chooser_base;
+	}
+
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		this.setContentView(R.layout.file_chooser_base);
 
 		// Determine the dialog type
 		Bundle extras = getIntent().getExtras();

@@ -19,15 +19,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        style="?android:attr/buttonBarStyle">
 
         <Button
             android:id="@+id/cleanup"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="false"
             android:text="@string/cleanup_old_tasks"
-            style="?android:attr/buttonStyleSmall"/>
+            style="?android:attr/buttonBarButtonStyle"/>
     </LinearLayout>
     <!--
  	<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" 

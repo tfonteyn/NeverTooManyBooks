@@ -41,7 +41,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 import android.widget.ExpandableListView.OnGroupCollapseListener;
@@ -57,12 +56,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.scanner.Scanner;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
 import com.eleybourn.bookcatalogue.searches.goodreads.SendOneBookTask;
 import com.eleybourn.bookcatalogue.utils.BcQueueManager;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
@@ -1158,20 +1158,22 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		mMenuHandler = new MenuHandler();
-// RELEASE: RE-ENABLE THESE!
-//		mMenuHandler.init(menu);
-//		mMenuHandler.addCreateBookSubMenu(menu);
-//
-//		if (collapsed == true || currentGroup.size() == 0) {
-//			mMenuHandler.addItem(menu, SORT_BY_AUTHOR_COLLAPSED, R.string.menu_sort_by_author_expanded, R.drawable.ic_menu_expand);
-//		} else {
-//			mMenuHandler.addItem(menu, SORT_BY_AUTHOR_EXPANDED, R.string.menu_sort_by_author_collapsed, R.drawable.ic_menu_collapse);
-//		}
-//		mMenuHandler.addItem(menu, SORT_BY, R.string.menu_sort_by, android.R.drawable.ic_menu_sort_alphabetically);
-//
-//		mMenuHandler.addCreateHelpAndAdminItems(menu);
-//		mMenuHandler.addSearchItem(menu);
+		mMenuHandler = new MenuHandler(menu);
+
+		// RELEASE: RE-ENABLE THESE!
+		//FIXME: original code had this block commented out.
+		{
+			mMenuHandler.addCreateBookSubMenu(menu);
+
+			if (collapsed || currentGroup.size() == 0) {
+				mMenuHandler.addItem(menu, SORT_BY_AUTHOR_COLLAPSED, R.string.menu_expand_all, R.drawable.ic_menu_expand);
+			} else {
+				mMenuHandler.addItem(menu, SORT_BY_AUTHOR_EXPANDED, R.string.menu_collapse_all, R.drawable.ic_menu_collapse);
+			}
+			mMenuHandler.addItem(menu, SORT_BY, R.string.menu_sort_by, android.R.drawable.ic_menu_sort_alphabetically);
+
+			mMenuHandler.addSearchItem(menu);
+		}
 
 		return super.onPrepareOptionsMenu(menu);
 	}
@@ -1331,53 +1333,53 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			saveCurrentGroup();
 	}
 	
-	/**
-	 * Expand all Groups
-	 */
-	public void expandAll() {
-		ExpandableListView view = this.getExpandableListView();
-		ExpandableListAdapter ad = view.getExpandableListAdapter();
-		int numAuthors = ad.getGroupCount();
-		currentGroup = new ArrayList<>();
-		int i = 0;
-		while (i < numAuthors) {
-			adjustCurrentGroup(i, 1, false, false);
-			view.expandGroup(i);
-			i++;
-		}
-		collapsed = false;
-	}
+//	/**
+//	 * Expand all Groups
+//	 */
+//	public void expandAll() {
+//		ExpandableListView view = this.getExpandableListView();
+//		ExpandableListAdapter ad = view.getExpandableListAdapter();
+//		int numAuthors = ad.getGroupCount();
+//		currentGroup = new ArrayList<>();
+//		int i = 0;
+//		while (i < numAuthors) {
+//			adjustCurrentGroup(i, 1, false, false);
+//			view.expandGroup(i);
+//			i++;
+//		}
+//		collapsed = false;
+//	}
 	
-	/**
-	 * Collapse all Author Groups. Passes directly to collapseAll(boolean clearCurrent)
-	 */
-	public void collapseAll() {
-		collapseAll(true);
-	}
+//	/**
+//	 * Collapse all Author Groups. Passes directly to collapseAll(boolean clearCurrent)
+//	 */
+//	public void collapseAll() {
+//		collapseAll(true);
+//	}
 	
-	/**
-	 * Collapse all Author Groups
-	 * 
-	 * @param clearCurrent - Also clear the currentGroup ArrayList
-	 */
-	public void collapseAll(boolean clearCurrent) {
-		// there is no current group anymore
-		ExpandableListView view = this.getExpandableListView();
-		ExpandableListAdapter ad = view.getExpandableListAdapter();
-		int numAuthors = ad.getGroupCount();
-		int i = 0;
-		while (i < numAuthors) {
-			view.collapseGroup(i);
-			//if (!expand) {
-			//	break;
-			//}
-			i++;
-		}
-		if (clearCurrent) {
-			currentGroup = new ArrayList<>();
-		}
-		collapsed = true;
-	}
+//	/**
+//	 * Collapse all Author Groups
+//	 *
+//	 * @param clearCurrent - Also clear the currentGroup ArrayList
+//	 */
+//	public void collapseAll(boolean clearCurrent) {
+//		// there is no current group anymore
+//		ExpandableListView view = this.getExpandableListView();
+//		ExpandableListAdapter ad = view.getExpandableListAdapter();
+//		int numAuthors = ad.getGroupCount();
+//		int i = 0;
+//		while (i < numAuthors) {
+//			view.collapseGroup(i);
+//			//if (!expand) {
+//			//	break;
+//			//}
+//			i++;
+//		}
+//		if (clearCurrent) {
+//			currentGroup = new ArrayList<>();
+//		}
+//		collapsed = true;
+//	}
 	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -1546,7 +1548,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		switch(requestCode) {
 		case UniqueId.ACTIVITY_CREATE_BOOK_SCAN:
 			try {
-				String contents = intent.getStringExtra("SCAN_RESULT");
+				String contents = intent.getStringExtra(Scanner.SCAN_RESULT);
 				// Handle the possibility of null/empty scanned string
 				if (contents != null && !contents.isEmpty()) {
 					Toast.makeText(this, R.string.isbn_found, Toast.LENGTH_LONG).show();

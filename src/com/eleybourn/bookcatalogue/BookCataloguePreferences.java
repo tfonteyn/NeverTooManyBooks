@@ -22,28 +22,32 @@ public class BookCataloguePreferences {
     }
 
 	/** Name to use for global preferences; non-global should be moved to appropriate Activity code */
+
+	// old style prefs without the TAG="App" prefix
 	public static final String PREF_START_IN_MY_BOOKS = "start_in_my_books";
-	public static final String PREF_INCLUDE_CLASSIC_MY_BOOKS = "App.includeClassicView";
-	public static final String PREF_DISABLE_BACKGROUND_IMAGE = "App.DisableBackgroundImage";
-	public static final String PREF_USE_EXTERNAL_IMAGE_CROPPER = "App.UseExternalImageCropper";
-	public static final String PREF_CROP_FRAME_WHOLE_IMAGE = "App.CropFrameWholeImage";
-	/** Degrees by which to rotate images automatically */
-	public static final String PREF_AUTOROTATE_CAMERA_IMAGES = "App.AutorotateCameraImages";
-	/** Is book info opened in read-only mode. */
-	public static final String PREF_OPEN_BOOK_READ_ONLY = "App.OpenBookReadOnly";
 	/** Last full backup date */
 	private static final String PREF_LAST_BACKUP_DATE = "Backup.LastDate";
 	/** Last full backup file path */
 	private static final String PREF_LAST_BACKUP_FILE = "Backup.LastFile";
-	/** Preferred interface locale */
-	public static final String PREF_APP_LOCALE = "App.Locale";
-	/** Theme */
-	public static final String PREF_APP_THEME = "App.Theme";
-
-	/** Force list construction to compatible mode (compatible with Android 1.6) */
-	public static final String PREF_BOOKLIST_GENERATION_MODE = "App.BooklistGenerationMode";
-
 	public static final String PREF_BOOKLIST_STYLE = "APP.BooklistStyle";
+
+	// All new prefs should start with TAG
+	public static final String TAG = "App";
+	public static final String PREF_INCLUDE_CLASSIC_MY_BOOKS = TAG + ".includeClassicView";
+	public static final String PREF_DISABLE_BACKGROUND_IMAGE = TAG + ".DisableBackgroundImage";
+	public static final String PREF_USE_EXTERNAL_IMAGE_CROPPER = TAG + ".UseExternalImageCropper";
+	public static final String PREF_CROP_FRAME_WHOLE_IMAGE = TAG + ".CropFrameWholeImage";
+	/** Degrees by which to rotate images automatically */
+	public static final String PREF_AUTOROTATE_CAMERA_IMAGES = TAG + ".AutorotateCameraImages";
+	/** Is book info opened in read-only mode. */
+	public static final String PREF_OPEN_BOOK_READ_ONLY = TAG + ".OpenBookReadOnly";
+	/** Preferred interface locale */
+	public static final String PREF_APP_LOCALE = TAG + ".Locale";
+	/** Theme */
+	public static final String PREF_APP_THEME = TAG + ".Theme";
+	/** Force list construction to compatible mode (compatible with Android 1.6) */
+	public static final String PREF_BOOKLIST_GENERATION_MODE = TAG + ".BooklistGenerationMode";
+
 
 
 	/**********************************************************************

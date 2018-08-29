@@ -198,6 +198,10 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 			}});
 	}
 
+	protected int getLayoutId() {
+		return mBaseViewId;
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -205,9 +209,6 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 			// Setup the DB
 			mDbHelper = new CatalogueDBAdapter(this);
 			mDbHelper.open();
-
-			// Set the view
-			setContentView(mBaseViewId);
 
 			// Add handlers for 'Save', 'Cancel' and 'Add'
 			setupListener(R.id.confirm, mSaveListener);

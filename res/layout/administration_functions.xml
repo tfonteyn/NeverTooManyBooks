@@ -1,180 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <include
+        layout="@layout/inc_toolbar_frame"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingStart="@dimen/padding_border"
-        android:paddingEnd="@dimen/padding_border">
+        android:layout_height="wrap_content" />
 
-        <!-- PREFERENCES Header -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <TextView
-            android:textAllCaps="true"
-            style="@style/prefs_header"
-            android:text="@string/preferences" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border">
 
-        <!-- BOOKSHELVES -->
+            <!-- GENERAL -->
 
-        <TextView
-            android:id="@+id/bookshelf_label"
-            style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_shelves"
-            android:text="@string/menu_bookshelf" />
+            <TextView
+                style="@style/prefs_header"
+                android:text="@string/general"
+                android:textAllCaps="true" />
 
-        <!-- FIELDS -->
+            <TextView
+                android:id="@+id/bookshelf_label"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_manage"
+                android:text="@string/menu_bookshelf" />
 
-        <TextView
-            android:id="@+id/fields_label"
-            style="@style/prefs_item"
-            android:drawableStart="@android:drawable/ic_menu_agenda"
-            android:text="@string/menu_manage_fields" />
+            <TextView
+                android:id="@+id/fields_label"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_view"
+                android:text="@string/menu_manage_fields" />
 
-        <!-- BOOK LIST PREFS -->
+            <TextView
+                android:id="@+id/edit_styles_label"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_edit"
+                android:text="@string/edit_book_list_styles" />
 
-        <TextView
-            android:id="@+id/booklist_preferences_label"
-            style="@style/prefs_item"
-            android:drawableStart="@android:drawable/ic_menu_manage"
-            android:text="@string/booklist_preferences" />
+            <!-- DATA IMPORT/EXPORT -->
 
-        <!-- Edit Styles -->
+            <TextView
+                style="@style/prefs_header"
+                android:text="@string/data_import_export"
+                android:textAllCaps="true" />
 
-        <TextView
-            android:id="@+id/edit_styles_label"
-            style="@style/prefs_item"
-            android:drawableStart="@android:drawable/ic_menu_manage"
-            android:text="@string/edit_book_list_styles" />
+            <TextView
+                android:id="@+id/backup_catalogue_label"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_save"
+                android:text="@string/backup_to_archive" />
 
-        <!-- OTHER PREFS -->
+            <TextView
+                android:id="@+id/restore_catalogue_label"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_upload"
+                android:text="@string/import_from_archive" />
 
-        <TextView
-            android:id="@+id/other_prefs_label"
-            style="@style/prefs_item"
-            android:drawableStart="@android:drawable/ic_menu_manage"
-            android:text="@string/other_preferences" />
+            <TextView
+                android:id="@+id/export_label"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_save"
+                android:text="@string/export_to_csv" />
 
-        <!-- DATA IMPORT/EXPORT -->
+            <TextView
+                android:id="@+id/import_label"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_upload"
+                android:text="@string/import_from_csv" />
 
-        <TextView
-            android:textAllCaps="true"
-            style="@style/prefs_header"
-            android:text="@string/data_import_export" />
+            <!-- FIELD UPDATES -->
 
-        <TextView
-            android:id="@+id/backup_catalogue_label"
-            style="@style/prefs_item"
-            android:drawableStart="@android:drawable/ic_menu_save"
-            android:text="@string/backup_to_archive" />
+            <TextView
+                style="@style/prefs_header"
+                android:text="@string/internet_update_fields"
+                android:textAllCaps="true" />
 
-        <TextView
-            android:id="@+id/restore_catalogue_label"
-            style="@style/prefs_item"
-            android:drawableStart="@android:drawable/ic_menu_upload"
-            android:text="@string/import_from_archive" />
+            <TextView
+                android:id="@+id/update_internet_label"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_gallery"
+                android:text="@string/update_fields" />
 
-        <TextView
-            android:id="@+id/export_label"
-            style="@style/prefs_item"
-            android:drawableStart="@android:drawable/ic_menu_save"
-            android:text="@string/export_to_csv" />
+            <TextView
+                android:id="@+id/sync_with_goodreads_label"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_rotate"
+                android:text="@string/sync_with_goodreads" />
 
-        <TextView
-            android:id="@+id/import_label"
-            style="@style/prefs_item"
-            android:drawableStart="@android:drawable/ic_menu_upload"
-            android:text="@string/import_from_csv" />
+            <TextView
+                android:id="@+id/import_all_from_goodreads_label"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_upload"
+                android:text="@string/import_all_from_goodreads" />
 
-        <!-- UPDATE FIELDS -->
+            <TextView
+                android:id="@+id/send_books_to_goodreads_label"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_send"
+                android:text="@string/send_books_to_goodreads" />
 
-        <TextView
-            android:id="@+id/thumb_label"
-            style="@style/prefs_item"
-            android:drawableStart="@android:drawable/ic_menu_gallery"
-            android:text="@string/update_fields" />
+            <!-- CREDENTIALS -->
 
-        <TextView
-            android:id="@+id/sync_with_goodreads_label"
-            style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_refresh"
-            android:text="@string/sync_with_goodreads" />
+            <TextView
+                style="@style/prefs_header"
+                android:text="@string/credentials"
+                android:textAllCaps="true" />
 
-        <TextView
-            android:id="@+id/import_all_from_goodreads_label"
-            style="@style/prefs_item"
-            android:drawableStart="@android:drawable/ic_menu_upload"
-            android:text="@string/import_all_from_goodreads" />
+            <TextView
+                android:id="@+id/goodreads_auth"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_manage"
+                android:text="@string/goodreads" />
 
-        <TextView
-            android:id="@+id/send_books_to_goodreads_label"
-            style="@style/prefs_item"
-            android:drawableStart="@android:drawable/ic_menu_send"
-            android:text="@string/send_books_to_goodreads" />
+            <TextView
+                android:id="@+id/librarything_auth"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_manage"
+                android:text="@string/library_thing" />
 
-        <!-- CREDENTIALS HEADING -->
+            <!-- ADVANCED OPTIONS Header -->
 
-        <TextView
-            android:textAllCaps="true"
-            style="@style/prefs_header"
-            android:text="@string/credentials" />
+            <TextView
+                style="@style/prefs_header"
+                android:text="@string/advanced_options"
+                android:textAllCaps="true" />
 
-        <!-- GOODREADS CREDENTIALS -->
+            <TextView
+                android:id="@+id/background_tasks_label"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_recent_history"
+                android:text="@string/background_tasks" />
 
-        <TextView
-            android:id="@+id/goodreads_auth"
-            style="@style/prefs_item"
-            android:drawableStart="@drawable/ic_menu_gr_logo"
-            android:text="@string/goodreads" />
+            <TextView
+                android:id="@+id/reset_hints_label"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_agenda"
+                android:text="@string/reset_hints" />
 
-        <TextView
-            android:id="@+id/librarything_auth"
-            style="@style/prefs_item"
-            android:drawableStart="@android:drawable/ic_menu_gallery"
-            android:text="@string/library_thing" />
+            <TextView
+                android:id="@+id/erase_cover_cache_label"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_close_clear_cancel"
+                android:text="@string/erase_cover_cache" />
 
-        <!-- ADVANCED OPTIONS Header -->
+            <TextView
+                android:id="@+id/backup_label"
+                style="@style/prefs_item"
+                android:drawableStart="@android:drawable/ic_menu_send"
+                android:text="@string/copy_database" />
+        </LinearLayout>
 
-        <TextView
-            android:textAllCaps="true"
-            style="@style/prefs_header"
-            android:text="@string/advanced_options" />
-
-        <!-- BACKGROUND TASKS -->
-
-        <TextView
-            android:id="@+id/background_tasks_label"
-            style="@style/prefs_item"
-            android:drawableStart="@android:drawable/ic_menu_recent_history"
-            android:text="@string/background_tasks" />
-
-        <!-- RESET HINTS -->
-
-        <TextView
-            android:id="@+id/reset_hints_label"
-            style="@style/prefs_item"
-            android:drawableStart="@android:drawable/ic_menu_agenda"
-            android:text="@string/reset_hints" />
-
-        <!-- ERASE COVER CACHE -->
-
-        <TextView
-            android:id="@+id/erase_cover_cache_label"
-            style="@style/prefs_item"
-            android:drawableStart="@android:drawable/ic_menu_close_clear_cancel"
-            android:text="@string/erase_cover_cache" />
-
-        <!-- BACKUP DATABASE (DEBUG ONLY!) -->
-
-        <TextView
-            android:id="@+id/backup_label"
-            style="@style/prefs_item"
-            android:drawableStart="@android:drawable/ic_menu_send"
-            android:text="@string/copy_database" />
-    </LinearLayout>
-
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

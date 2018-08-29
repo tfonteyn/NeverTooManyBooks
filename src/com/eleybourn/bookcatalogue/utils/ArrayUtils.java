@@ -35,7 +35,6 @@ public class ArrayUtils<T> {
     private static ArrayUtils<Series> mSeriesUtils = null;
     private Factory<T> mFactory;
 
-    @SuppressWarnings("unused")
     private ArrayUtils() {
     }
 

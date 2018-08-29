@@ -30,6 +30,7 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -69,8 +70,6 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogMenuItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickListener;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
@@ -112,11 +111,13 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      * Preference name
      */
     private final static String PREF_LIST_STYLE = TAG + ".LIST_STYLE";
-    private static final int MNU_SORT = MenuHandler.FIRST + 1;
-    private static final int MNU_EXPAND = MenuHandler.FIRST + 2;
-    private static final int MNU_COLLAPSE = MenuHandler.FIRST + 3;
-    private static final int MNU_EDIT_STYLE = MenuHandler.FIRST + 4;
-    private static final int MNU_GOODREADS = MenuHandler.FIRST + 5;
+    /**
+     * Menu id
+     */
+    private static final int MENU_SORT = MenuHandler.FIRST + 1;
+    private static final int MENU_EXPAND = MenuHandler.FIRST + 2;
+    private static final int MENU_COLLAPSE = MenuHandler.FIRST + 3;
+
     /**
      * Counter for com.eleybourn.bookcatalogue.debug purposes
      */
@@ -186,22 +187,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      */
     private int mRebuildState;
 
-//	/**
-//	 * Build the context menu.
-//	 */
-//	@Override
-//	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-//		super.onCreateContextMenu(menu, v, menuInfo);
-//		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-//
-//		try {
-//			// Just move the cursor and call the handler to do the work.
-//			mList.moveToPosition(info.position);
-//			mListHandler.onCreateContextMenu(mList.getRowView(), menu);
-//		} catch (NullPointerException e) {
-//			Logger.logError(e);
-//		}
-//	}
     /**
      * Total number of books in current list
      */
@@ -232,18 +217,26 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     }
 
     @Override
+    protected int getLayoutId(){
+        return R.layout.booksonbookshelf;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         try {
             super.onCreate(savedInstanceState);
-            setTitle(R.string.my_books);
+            //setTitle(R.string.my_books);
+            setTitle(R.string.app_name);
 
-            if (savedInstanceState == null)
-                // Get preferred booklist state to use from preferences; default to always expanded (MUCH faster than 'preserve' with lots of books)
+            if (savedInstanceState == null) {
+                // Get preferred booklist state to use from preferences;
+                // default to always expanded (MUCH faster than 'preserve' with lots of books)
                 mRebuildState = BooklistPreferencesActivity.getRebuildState();
-            else
+            } else {
                 // Always preserve state when rebuilding/recreating etc
                 mRebuildState = BooklistPreferencesActivity.BOOKLISTS_STATE_PRESERVED;
+            }
 
             mDb = new CatalogueDBAdapter(this);
             mDb.open();
@@ -255,62 +248,21 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 mCurrentBookshelf = BookCataloguePreferences.getString(PREF_BOOKSHELF, mCurrentBookshelf);
                 mTopRow = BookCataloguePreferences.getInt(PREF_TOP_ROW, 0);
                 mTopRowTop = BookCataloguePreferences.getInt(PREF_TOP_ROW_TOP, 0);
-            } catch (Exception e) {
-                Logger.logError(e);
+            } catch (Exception ignore) {
+                Logger.logError(ignore);
             }
+
 
             // Restore view style
             refreshStyle();
 
             // This sets the search capability to local (application) search
             setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
-            setContentView(R.layout.booksonbookshelf);
 
-            Intent intent = getIntent();
-            if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-                // Return the search results instead of all books (for the bookshelf)
-                mSearchText = intent.getStringExtra(SearchManager.QUERY).trim();
-            } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-                // Handle a suggestions click (because the suggestions all use ACTION_VIEW)
-                mSearchText = intent.getDataString();
-            }
-            if (mSearchText == null || mSearchText.equals(".")) {
-                mSearchText = "";
-            }
-
-            TextView searchTextView = findViewById(R.id.search_text);
-            if (mSearchText.isEmpty()) {
-                searchTextView.setVisibility(View.GONE);
-            } else {
-                searchTextView.setVisibility(View.VISIBLE);
-                searchTextView.setText(getString(R.string.search_with_text, mSearchText));
-            }
+            setupSearch();
 
             // We want context menus to be available
-            getListView().setOnItemLongClickListener(new OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                    mList.moveToPosition(position);
-                    ArrayList<SimpleDialogItem> menu = new ArrayList<>();
-                    mListHandler.buildContextMenu(mList.getRowView(), menu);
-                    if (menu.size() > 0) {
-                        StandardDialogs.selectItemDialog(getLayoutInflater(), null, menu, null, new SimpleDialogOnClickListener() {
-                            @Override
-                            public void onClick(SimpleDialogItem item) {
-                                mList.moveToPosition(position);
-                                int id = ((SimpleDialogMenuItem) item).getItemId();
-                                mListHandler.onContextItemSelected(mDb, mList.getRowView(), BooksOnBookshelf.this, mDb, id);
-
-                                // If data changed, we need to update display
-                                if (id == R.id.MENU_MARK_AS_UNREAD || id == R.id.MENU_MARK_AS_READ) {
-                                    setupList(true);
-                                }
-                            }
-                        });
-                    }
-                    return true;
-                }
-            });
+            makeContextMenusAvailable();
 
             // use the custom fast scroller (the ListView in the XML is our custom version).
             getListView().setFastScrollEnabled(true);
@@ -318,8 +270,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             // Handle item click events
             getListView().setOnItemClickListener(new OnItemClickListener() {
                 @Override
-                public void onItemClick(AdapterView<?> arg0, View view, int position, long rowId) {
-                    handleItemClick(arg0, view, position, rowId);
+                public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+                    handleItemClick(parent, view, position, rowId);
                 }
             });
 
@@ -346,6 +298,86 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         }
     }
 
+    private void setupSearch() {
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            // Return the search results instead of all books (for the bookshelf)
+            mSearchText = intent.getStringExtra(SearchManager.QUERY).trim();
+        } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            // Handle a suggestions click (because the suggestions all use ACTION_VIEW)
+            mSearchText = intent.getDataString();
+        }
+        if (mSearchText == null || mSearchText.equals(".")) {
+            mSearchText = "";
+        }
+
+        TextView searchTextView = findViewById(R.id.search_text);
+        if (mSearchText.isEmpty()) {
+            searchTextView.setVisibility(View.GONE);
+        } else {
+            searchTextView.setVisibility(View.VISIBLE);
+            searchTextView.setText(getString(R.string.search_with_text, mSearchText));
+        }
+    }
+
+    private void makeContextMenusAvailable() {
+        getListView().setOnItemLongClickListener(new OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                mList.moveToPosition(position);
+                ArrayList<SimpleDialogItem> menu = new ArrayList<>();
+                mListHandler.buildContextMenu(mList.getRowView(), menu);
+                if (menu.size() > 0) {
+                    StandardDialogs.selectItemDialog(getLayoutInflater(), null, menu, null, new SimpleDialogOnClickListener() {
+                        @Override
+                        public void onClick(SimpleDialogItem item) {
+                            mList.moveToPosition(position);
+                            int id = ((SimpleDialogMenuItem) item).getItemId();
+                            mListHandler.onContextItemSelected(mDb, mList.getRowView(), BooksOnBookshelf.this, mDb, id);
+
+                            // If data changed, we need to update display
+                            if (id == R.id.MENU_MARK_AS_UNREAD || id == R.id.MENU_MARK_AS_READ) {
+                                setupList(true);
+                            }
+                        }
+                    });
+                }
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        // close drawer when item is tapped
+        getDrawerLayout().closeDrawers();
+
+        switch (menuItem.getItemId()) {
+            case R.id.nav_search:
+                startActivity(new Intent(this, SearchCatalogue.class));
+                return true;
+            case R.id.nav_booklist_prefs:
+                startActivity(new Intent(this, BooklistPreferencesActivity.class));
+                return true;
+            case R.id.nav_other_prefs:
+                startActivity(new Intent(this, OtherPreferences.class));
+                return true;
+            case R.id.nav_admin:
+                startActivity(new Intent(this, AdministrationFunctions.class));
+                return true;
+            case R.id.nav_about:
+                startActivity(new Intent(this, AdministrationAbout.class));
+                return true;
+            case R.id.nav_help:
+                startActivity(new Intent(this, Help.class));
+                return true;
+            case R.id.nav_donate:
+                startActivity(new Intent(this, AdministrationDonate.class));
+                break;
+        }
+        return super.onNavigationItemSelected(menuItem);
+    }
+
     /**
      * Support routine now that this activity is no longer a ListActivity
      */
@@ -356,26 +388,20 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     /**
      * Handle a list item being clicked.
      *
-     * @param arg0     Parent adapter
-     * @param view     Row View that was clicked
-     * @param position Position of view in listView
-     * @param rowId    _id field from cursor
+     * @param parent    Parent adapter
+     * @param view      Row View that was clicked
+     * @param position  Position of view in listView
+     * @param rowId     _id field from cursor
      */
-    private void handleItemClick(AdapterView<?> arg0, View view, int position, long rowId) {
+    private void handleItemClick(AdapterView<?> parent, View view, int position, long rowId) {
         // Move the cursor to the position
         mList.moveToPosition(position);
+
         // If it's a book, edit it.
         if (mList.getRowView().getKind() == RowKinds.ROW_KIND_BOOK) {
             BookEdit.openBook(this, mList.getRowView().getBookId(), mList.getBuilder(), position);
-//			boolean isReadOnly = BookCatalogueApp.getPrefs()
-//					.getBoolean(BookCataloguePreferences.PREF_OPEN_BOOK_READ_ONLY, false);
-//			if (isReadOnly){
-//				BookEdit.viewBook(this, mList.getRowView().getBookId());
-//			} else {
-//				BookEdit.editBook(this, mList.getRowView().getBookId(), BookEdit.TAB_EDIT);
-//			}
         } else {
-            // If it's leve1, expand/collapse. Technically, we could expand/collapse any level
+            // If it's level, expand/collapse. Technically, we could expand/collapse any level
             // but storing and recovering the view becomes unmanageable.
             if (mList.getRowView().getLevel() == 1) {
                 mList.getBuilder().toggleExpandNode(mList.getRowView().getAbsolutePosition());
@@ -463,7 +489,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         //
         Objects.requireNonNull(root, "Sanity Check Fail: Root view not found; isFinishing() = " + isFinishing());
         Objects.requireNonNull(header, "Sanity Check Fail: Header view not found; isFinishing() = " + isFinishing());
-        Objects.requireNonNull(getResources() == null, "Sanity Check Fail: getResources() returned null; isFinishing() = " + isFinishing());
+        Objects.requireNonNull(getResources(), "Sanity Check Fail: getResources() returned null; isFinishing() = " + isFinishing());
 
         BCBackground.init(root, lv, header);
     }
@@ -657,10 +683,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            if (mCurrentStyle == null)
-                actionBar.setSubtitle("");
-            else
-                actionBar.setSubtitle(mCurrentStyle.getDisplayName());
+            //TODO: move this to the bookshelf spinner ? more space in there
+            actionBar.setSubtitle(mCurrentStyle == null ? "" : mCurrentStyle.getDisplayName());
         }
 
         // Close old list
@@ -826,9 +850,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         mAdapter = null;
         mBookshelfSpinner = null;
         mBookshelfAdapter = null;
-        synchronized (mInstanceCount) {
-            mInstanceCount--;
-            if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
+            synchronized (mInstanceCount) {
+                mInstanceCount--;
+
                 System.out.println("BoB instances: " + mInstanceCount);
             }
         }
@@ -916,26 +941,19 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        mMenuHandler = new MenuHandler();
-        mMenuHandler.init(menu);
+        mMenuHandler = new MenuHandler(menu);
 
         mMenuHandler.addCreateBookSubMenu(menu);
 
-        mMenuHandler.addItem(menu, MNU_SORT, R.string.sort_and_style_ellipsis, android.R.drawable.ic_menu_sort_alphabetically)
+        mMenuHandler.addItem(menu, MENU_SORT, R.string.sort_and_style_ellipsis,
+                android.R.drawable.ic_menu_sort_alphabetically)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
-        mMenuHandler.addItem(menu, MNU_EXPAND, R.string.menu_expand_all, R.drawable.ic_menu_expand);
+        mMenuHandler.addItem(menu, MENU_EXPAND, R.string.menu_expand_all,
+                R.drawable.ic_menu_expand);
 
-        mMenuHandler.addItem(menu, MNU_COLLAPSE, R.string.menu_collapse_all, R.drawable.ic_menu_collapse);
-
-        mMenuHandler.addSearchItem(menu)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-
-        if (GoodreadsManager.hasCredentials()) {
-            mMenuHandler.addItem(menu, MNU_GOODREADS, R.string.goodreads, R.drawable.ic_menu_gr_logo);
-        }
-
-        mMenuHandler.addCreateHelpAndAdminItems(menu);
+        mMenuHandler.addItem(menu, MENU_COLLAPSE, R.string.menu_collapse_all,
+                R.drawable.ic_menu_collapse);
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -949,7 +967,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         if (mMenuHandler != null && !mMenuHandler.onOptionsItemSelected(this, item)) {
             switch (item.getItemId()) {
 
-                case MNU_SORT:
+                case MENU_SORT:
                     HintManager.displayHint(this, R.string.hint_booklist_style_menu, new Runnable() {
                         @Override
                         public void run() {
@@ -958,11 +976,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     });
                     return true;
 
-                case MNU_EDIT_STYLE:
-                    doEditStyle();
-                    return true;
-
-                case MNU_EXPAND: {
+                case MENU_EXPAND: {
                     // It is possible that the list will be empty, if so, ignore
                     if (getListView().getChildCount() != 0) {
                         int oldAbsPos = mListHandler.getAbsolutePosition(getListView().getChildAt(0));
@@ -974,7 +988,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     }
                     break;
                 }
-                case MNU_COLLAPSE: {
+                case MENU_COLLAPSE: {
                     // It is possible that the list will be empty, if so, ignore
                     if (getListView().getChildCount() != 0) {
                         int oldAbsPos = mListHandler.getAbsolutePosition(getListView().getChildAt(0));
@@ -985,31 +999,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     }
                     break;
                 }
-                case MNU_GOODREADS: {
-                    GoodreadsUtils.showGoodreadsOptions(this);
-                    break;
-                }
-			/*
-			case INSERT_ID:
-				createBook();
-				return true;
-			case INSERT_ISBN_ID:
-				createBookISBN("isbn");
-				return true;
-			case INSERT_BARCODE_ID:
-				createBookScan();
-				return true;
-			case ADMIN:
-				// Start the Main Menu, not just the Admin page
-				mainMenuPage();
-				return true;
-			case SEARCH:
-				onSearchRequested();
-				return true;
-			case INSERT_NAME_ID:
-				createBookISBN("name");
-				return true;
-			*/
             }
         }
 
@@ -1223,16 +1212,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         view.setText(stringId);
         view.setOnClickListener(listener);
         parent.addView(view);
-    }
-
-    /**
-     * Start the BooklistPreferences Activity
-     */
-    private void doEditStyle() {
-        Intent i = new Intent(this, BooklistStylePropertiesActivity.class);
-        i.putExtra(BooklistStylePropertiesActivity.KEY_STYLE, mCurrentStyle);
-        i.putExtra(BooklistStylePropertiesActivity.KEY_SAVE_TO_DATABASE, false);
-        startActivityForResult(i, UniqueId.ACTIVITY_BOOKLIST_STYLE_PROPERTIES);
     }
 
     @Override

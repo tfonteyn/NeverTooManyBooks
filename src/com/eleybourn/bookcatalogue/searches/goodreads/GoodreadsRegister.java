@@ -49,15 +49,16 @@ import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.Fragmen
  */
 public class GoodreadsRegister extends BookCatalogueActivity {
 
-	/**
-	 * Called when the activity is first created. 
-	 */
+	@Override
+	protected int getLayoutId(){
+		return R.layout.goodreads_register;
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
 			setTitle(R.string.goodreads);
-			setContentView(R.layout.goodreads_register);
 			setupViews();
 			BCBackground.init(this);
 		} catch (Exception e) {

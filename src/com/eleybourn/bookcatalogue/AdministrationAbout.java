@@ -49,6 +49,10 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  */
 public class AdministrationAbout extends BookCatalogueActivity {
 
+	@Override
+	protected int getLayoutId(){
+		return R.layout.administration_about;
+	}
 	/**
 	 * Called when the activity is first created. 
 	 */
@@ -57,8 +61,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
 		try {
 			super.onCreate(savedInstanceState);
  			setTitle(R.string.app_name);
-			setContentView(R.layout.administration_about);
-			setupAdmin();
+			setupPage();
 			BCBackground.init(this);
 		} catch (Exception e) {
 			Logger.logError(e);
@@ -81,7 +84,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
 	 * 4. The application version and link details
 	 * 5. The link to paypal for donation
 	 */
-	private void setupAdmin() {
+	private void setupPage() {
 		/* Version Number */
 		TextView release = findViewById(R.id.version);
 		PackageManager manager = this.getPackageManager();

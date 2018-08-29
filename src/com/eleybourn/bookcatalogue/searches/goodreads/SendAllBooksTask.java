@@ -211,8 +211,7 @@ public class SendAllBooksTask extends GenericTask {
 	 */
 	@Override 
 	public String getDescription() {
-		String base = super.getDescription();
-		return base + " (" + BookCatalogueApp.getResourceString(R.string.x_of_y, mCount, mTotalBooks);
+		return super.getDescription() + " (" + BookCatalogueApp.getResourceString(R.string.x_of_y, mCount, mTotalBooks) + ")";
 	}
 
 	@Override

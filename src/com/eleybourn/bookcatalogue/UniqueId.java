@@ -1,5 +1,8 @@
 package com.eleybourn.bookcatalogue;
 
+/**
+ * Codes used for startActivityForResult / onActivityResult
+ */
 public class UniqueId {
 	public static final int ACTIVITY_CREATE_BOOK_MANUALLY = 1;
 	public static final int ACTIVITY_CREATE_BOOK_ISBN = 2;
@@ -20,9 +23,9 @@ public class UniqueId {
 	public static final int ACTIVITY_DONATE = 17;
 	public static final int ACTIVITY_BOOKSHELF = 18;
 	public static final int ACTIVITY_VIEW_BOOK = 19;
+	public static final int ACTIVITY_DUPLICATE_BOOK = 20;
 
-	public static final int DIALOG_PROGRESS_DETERMINATE = 19;
-	public static final int DIALOG_PROGRESS_INDETERMINATE = 20;
+	public static final int DIALOG_PROGRESS_DETERMINATE = 101;
+	public static final int DIALOG_PROGRESS_INDETERMINATE = 102;
 	
-	public static final int ACTIVITY_DUPLICATE_BOOK = 21;
 }

@@ -48,9 +48,11 @@ public class Help extends BookCatalogueActivity {
 	private Resources res;
 	private CatalogueDBAdapter mDbHelper;
 
-	/**
-	 * Called when the activity is first created. 
-	 */
+	@Override
+	protected int getLayoutId(){
+		return R.layout.administration_help;
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -60,7 +62,6 @@ public class Help extends BookCatalogueActivity {
 			mDbHelper = new CatalogueDBAdapter(this);
 			mDbHelper.open();
 			
-			setContentView(R.layout.help);
 			res = getResources();
 			
 			TextView webinstructions = findViewById(R.id.helpinstructions);

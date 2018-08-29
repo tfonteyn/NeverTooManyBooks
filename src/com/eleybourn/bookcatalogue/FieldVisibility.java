@@ -42,16 +42,17 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  */
 public class FieldVisibility extends BookCatalogueActivity {
 	public final static String prefix = "field_visibility_";
-	
-	/**
-	 * Called when the activity is first created. 
-	 */
+
+	@Override
+	protected int getLayoutId(){
+		return R.layout.field_visibility;
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
 			setTitle(R.string.menu_manage_fields);
-			setContentView(R.layout.field_visibility);
 			setupFields();
 			BCBackground.init(this);
 		} catch (Exception e) {

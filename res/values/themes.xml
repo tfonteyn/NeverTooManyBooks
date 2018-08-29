@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- generic name for use in manifest only -->
     <style name="ThemeDefault" parent="@style/ThemeDark" />
 
     <style name="ThemeInvisible"  parent="@style/Theme.AppCompat">
@@ -9,10 +10,11 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="ThemeDark" parent="@style/Theme.AppCompat" />
-    <style name="ThemeLight" parent="@style/Theme.AppCompat.Light" />
+    <!-- System wide theme customizing goes into these -->
+    <style name="ThemeDark" parent="@style/Theme.AppCompat.NoActionBar" />
+    <style name="ThemeLight" parent="@style/Theme.AppCompat.Light.NoActionBar" />
     <!--
-    <style name="ThemeDark" parent="@android:style/Theme.Material" />
-    <style name="ThemeLight" parent="@android:style/Theme.Material.Light" />
+    <style name="ThemeDark" parent="@android:style/Theme.Material.NoActionBar" />
+    <style name="ThemeLight" parent="@android:style/Theme.Material.Light.NoActionBar" />
     -->
 </resources>

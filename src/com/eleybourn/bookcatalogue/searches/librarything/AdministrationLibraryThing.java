@@ -51,16 +51,17 @@ import java.io.File;
  */
 public class AdministrationLibraryThing extends BookCatalogueActivity {
 
-	/**
-	 * Called when the activity is first created. 
-	 */
+	@Override
+	protected int getLayoutId(){
+		return R.layout.administration_librarything;
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
 			setTitle(R.string.library_thing);
-			setContentView(R.layout.administration_librarything);
-			setupAdmin();
+			setupPage();
 			BCBackground.init(this);
 		} catch (Exception e) {
 			Logger.logError(e);
@@ -76,7 +77,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 		BCBackground.init(this);
 	}
 
-	private void setupAdmin() {
+	private void setupPage() {
 		/* LT Reg Link */
 		TextView register = findViewById(R.id.register_url);
 		register.setOnClickListener(new OnClickListener() {

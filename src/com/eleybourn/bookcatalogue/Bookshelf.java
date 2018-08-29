@@ -1,7 +1,7 @@
 /*
  * @copyright 2010 Evan Leybourn
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -40,101 +40,104 @@ import com.eleybourn.bookcatalogue.utils.BCBackground;
  * A book catalogue application that integrates with Google Books.
  */
 public class Bookshelf extends BookCatalogueListActivity
-		//implements LoaderManager.LoaderCallbacks<Cursor>
-		{
-	private static final int ACTIVITY_CREATE=0;
-	private static final int ACTIVITY_EDIT=1;
-	private CatalogueDBAdapter mDbHelper;
-	private static final int INSERT_ID = Menu.FIRST;
-	private static final int DELETE_ID = Menu.FIRST + 1;
+        //implements LoaderManager.LoaderCallbacks<Cursor>
+{
+    private static final int ACTIVITY_CREATE = 0;
+    private static final int ACTIVITY_EDIT = 1;
+    private static final int INSERT_ID = Menu.FIRST;
+    private static final int DELETE_ID = Menu.FIRST + 1;
+    private CatalogueDBAdapter mDbHelper;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setTitle(R.string.title_manage_bs);
-		setContentView(R.layout.list_bookshelves);
-		mDbHelper = new CatalogueDBAdapter(this);
-		mDbHelper.open();
-		fillBookshelves();
-		registerForContextMenu(getListView());
-		BCBackground.init(this);
-	}
-	
-	@Override
-	public void onResume() {
-		super.onResume();
-		BCBackground.init(this);
-	}
+    protected int getLayoutId() {
+        return R.layout.list_bookshelves;
+    }
 
-	private void fillBookshelves() {
-		// base the layout and the query on the sort order
-		int layout = R.layout.row_bookshelf;
-		
-		// Get all of the rows from the database and create the item list
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setTitle(R.string.title_manage_bs);
+        mDbHelper = new CatalogueDBAdapter(this);
+        mDbHelper.open();
+        fillBookshelves();
+        registerForContextMenu(getListView());
+        BCBackground.init(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BCBackground.init(this);
+    }
+
+    private void fillBookshelves() {
+        // base the layout and the query on the sort order
+        int layout = R.layout.row_bookshelf;
+
+        // Get all of the rows from the database and create the item list
         //FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
         //FIXME Use the new {@link android.content.CursorLoader} class with {@link LoaderManager} instead
 
         Cursor bookshelfCursor = mDbHelper.fetchAllBookshelves();
         startManagingCursor(bookshelfCursor);
 
-		// Create an array to specify the fields we want to display in the list
-		String[] from = new String[]{CatalogueDBAdapter.KEY_BOOKSHELF, CatalogueDBAdapter.KEY_ROWID};
-		
-		// and an array of the fields we want to bind those fields to (in this case just text1)
-		int[] to = new int[]{R.id.row_bookshelf};
-		
-		// Now create a simple cursor adapter and set it to display
-		//FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
-		SimpleCursorAdapter books = new SimpleCursorAdapter(this, layout, bookshelfCursor, from, to);
-		setListAdapter(books);
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		MenuItem item = menu.add(0, INSERT_ID, 0, R.string.menu_insert_bs);
-		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-		item.setIcon(android.R.drawable.ic_menu_add);
-		return true;
-	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch(item.getItemId()) {
-		case INSERT_ID:
-			createBookshelf();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-	
-    @Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, DELETE_ID, 0, R.string.menu_delete_bs);
-	}
+        // Create an array to specify the fields we want to display in the list
+        String[] from = new String[]{CatalogueDBAdapter.KEY_BOOKSHELF, CatalogueDBAdapter.KEY_ROWID};
+
+        // and an array of the fields we want to bind those fields to (in this case just text1)
+        int[] to = new int[]{R.id.row_bookshelf};
+
+        // Now create a simple cursor adapter and set it to display
+        //FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
+        SimpleCursorAdapter books = new SimpleCursorAdapter(this, layout, bookshelfCursor, from, to);
+        setListAdapter(books);
+    }
 
     @Override
-	public boolean onContextItemSelected(android.view.MenuItem item) {
-		switch(item.getItemId()) {
-    	case DELETE_ID:
-			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-    		if (info.id == 1) {
-    			Toast.makeText(this, R.string.delete_1st_bs, Toast.LENGTH_LONG).show();
-    		} else {
-    			mDbHelper.deleteBookshelf(info.id);
-    			fillBookshelves();
-    		}
-   			return true;
-		}
-		return super.onContextItemSelected(item);
-	}
-	
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        MenuItem item = menu.add(0, INSERT_ID, 0, R.string.menu_insert_bs);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        item.setIcon(android.R.drawable.ic_menu_add);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case INSERT_ID:
+                createBookshelf();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.add(0, DELETE_ID, 0, R.string.menu_delete_bs);
+    }
+
+    @Override
+    public boolean onContextItemSelected(android.view.MenuItem item) {
+        switch (item.getItemId()) {
+            case DELETE_ID:
+                AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+                if (info.id == 1) {
+                    Toast.makeText(this, R.string.delete_1st_bs, Toast.LENGTH_LONG).show();
+                } else {
+                    mDbHelper.deleteBookshelf(info.id);
+                    fillBookshelves();
+                }
+                return true;
+        }
+        return super.onContextItemSelected(item);
+    }
+
     private void createBookshelf() {
         Intent i = new Intent(this, BookshelfEdit.class);
         startActivityForResult(i, ACTIVITY_CREATE);
     }
-    
+
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
@@ -148,12 +151,12 @@ public class Bookshelf extends BookCatalogueListActivity
         super.onActivityResult(requestCode, resultCode, intent);
         fillBookshelves();
     }
-	
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		mDbHelper.close();
-	}
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mDbHelper.close();
+    }
 
 	/*
     @Override

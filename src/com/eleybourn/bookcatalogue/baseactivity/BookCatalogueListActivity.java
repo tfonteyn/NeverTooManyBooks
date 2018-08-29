@@ -43,6 +43,11 @@ import com.eleybourn.bookcatalogue.R;
 abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
 
     @Override
+    protected int getLayoutId() {
+        return R.layout.list_activity;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
@@ -193,8 +198,6 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
         if (mList != null) {
             return;
         }
-        setContentView(R.layout.list_activity);
-
     }
 
     private AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {

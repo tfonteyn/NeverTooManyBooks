@@ -34,7 +34,12 @@ public class BookshelfEdit extends BookCatalogueActivity {
 	private Button mConfirmButton;
     private Long mRowId;
 	private CatalogueDBAdapter mDbHelper;
-	
+
+	@Override
+	protected int getLayoutId(){
+		return R.layout.edit_bookshelf;
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
@@ -42,8 +47,6 @@ public class BookshelfEdit extends BookCatalogueActivity {
 			mDbHelper = new CatalogueDBAdapter(this);
 			mDbHelper.open();
 			
-			setContentView(R.layout.edit_bookshelf);
-
 			mRowId = savedInstanceState != null ? savedInstanceState.getLong(CatalogueDBAdapter.KEY_ROWID) : null;
 			if (mRowId == null) {
 				Bundle extras = getIntent().getExtras();

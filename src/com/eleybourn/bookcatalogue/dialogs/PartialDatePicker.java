@@ -98,7 +98,7 @@ public class PartialDatePicker extends AlertDialog {
 	 * @param month			Starting month
 	 * @param day			Starting day
 	 */
-	protected PartialDatePicker(Context context, Integer year, Integer month, Integer day) {
+	private PartialDatePicker(Context context, Integer year, Integer month, Integer day) {
 		super(context);
 
 		mContext = context;
@@ -438,39 +438,37 @@ public class PartialDatePicker extends AlertDialog {
 				Calendar cal = Calendar.getInstance();
 				cal.set(Calendar.YEAR, mYear);
 				cal.set(Calendar.MONTH, mMonth-1);
-				// Add appropriae days
+				// Add appropriate days
 				totalDays = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 			} else {
 				totalDays = 31;
 			}
 		}
 		
-		// If we have a valid total number of days, then update the list
-		if (totalDays != null) {
-			// Don't forget we have a '--' in the adapter
-			if (mDayAdapter.getCount() <= totalDays) {
-				for(int i = mDayAdapter.getCount(); i <= totalDays; i++) {
-					mDayAdapter.add(i + "");
-				}
-			} else {
-				for(int i = mDayAdapter.getCount() - 1; i > totalDays; i--) {
-					mDayAdapter.remove(i + "");
-				}
-			}
+		// Update the list
+		// Don't forget we have a '--' in the adapter
+		if (mDayAdapter.getCount() <= totalDays) {
+            for(int i = mDayAdapter.getCount(); i <= totalDays; i++) {
+                mDayAdapter.add(i + "");
+            }
+        } else {
+            for(int i = mDayAdapter.getCount() - 1; i > totalDays; i--) {
+                mDayAdapter.remove(i + "");
+            }
+        }
 
-			// Ensure selected day is valid
-			if (daySave == null || daySave == 0) {
-				mDaySpinner.setSelection(0);
-			} else {
-				if (daySave > totalDays)
-					daySave = totalDays;
-				mDaySpinner.setSelection(daySave);
-			}
-		}
+		// Ensure selected day is valid
+		if (daySave == null || daySave == 0) {
+            mDaySpinner.setSelection(0);
+        } else {
+            if (daySave > totalDays)
+                daySave = totalDays;
+            mDaySpinner.setSelection(daySave);
+        }
 	}
 
 	/**
-	 * Reorder the views in the dialog to suit the curret locale.
+	 * Reorder the views in the dialog to suit the current locale.
 	 * 
 	 * @param root	Root view
 	 */
@@ -486,8 +484,7 @@ public class PartialDatePicker extends AlertDialog {
         	return;
         }
          
-        /* Default order is {year, month, date} so if that's the order then
-         * do nothing.
+        /* Default order is {year, month, date} so if that's the order then do nothing.
          */
         if ((order[0] == 'y') && (order[1] == 'M')) {
             return;

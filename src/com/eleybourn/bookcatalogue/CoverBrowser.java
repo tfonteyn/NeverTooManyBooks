@@ -325,7 +325,6 @@ public class CoverBrowser {
 		//msgVw.setText(R.string.finding_editions);
 
 		mDialog.show();
-
 	}
 
 	private void showDialogDetails() {

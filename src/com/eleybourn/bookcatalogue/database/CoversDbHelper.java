@@ -123,7 +123,9 @@ public class CoversDbHelper implements AutoCloseable  {
 	private static final DomainDefinition DOM_HEIGHT = new DomainDefinition( "height", "integer", "",  "not null");
 	private static final DomainDefinition DOM_SIZE = new DomainDefinition( "size", "integer", "",  "not null");
 	private static final DomainDefinition DOM_FILENAME = new DomainDefinition( "filename", "text", "", "");
-	private static final TableDefinition TBL_IMAGE = new TableDefinition("image", DOM_ID, DOM_TYPE, DOM_IMAGE, DOM_DATE, DOM_WIDTH, DOM_HEIGHT, DOM_SIZE, DOM_FILENAME );
+
+	private static final TableDefinition TBL_IMAGE = new TableDefinition("image",
+			DOM_ID, DOM_TYPE, DOM_IMAGE, DOM_DATE, DOM_WIDTH, DOM_HEIGHT, DOM_SIZE, DOM_FILENAME );
 	static {
 		TBL_IMAGE
 			.addIndex("id", true, DOM_ID)

@@ -16,9 +16,9 @@
 <string name="confirm_add">Add Book</string>
 <string name="confirm_update">Update</string>
 <string name="nobooks">There are no books in this Bookshelf. Please add some using the menu at the bottom of this screen.</string>
-<string name="menu_sort_by_author_expanded">Expand All</string>
+<string name="menu_expand_all">Expand All</string>
 <string name="menu_sort_by">Sort By</string>
-<string name="menu_sort_by_author_collapsed">Collapse All</string>
+<string name="menu_collapse_all">Collapse All</string>
 <string name="sort_title">Book Catalogue: by Title</string>
 <string name="edit_title">Book Catalogue: Edit Book</string>
 <string name="menu_insert_isbn">Add by ISBN</string>

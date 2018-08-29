@@ -36,12 +36,15 @@ android {
     lintOptions {
         disable 'MissingTranslation'
     }
-    // !!! Commented to use values from the manifest
-//    defaultConfig {
-//        minSdkVersion 7
-//        targetSdkVersion 16
-//        versionCode 169
-//    }
+    defaultConfig {
+        vectorDrawables.useSupportLibrary = true
+
+        // !!! Commented to use values from the manifest
+        // minSdkVersion 7
+        // targetSdkVersion 16
+        // versionCode 169
+        }
+
     packagingOptions {
         exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/LICENSE.txt'

@@ -71,7 +71,7 @@
     <string name="contact1">eleybourn@gmail.com</string>
     <string name="contact2">philip.warner@rhyme.com.au</string>
     <string name="donate_label">Donate</string>
-    <string name="about_label">About this App</string>
+    <string name="about_label">About</string>
     <string name="sortby_author">Sort by Author</string>
     <string name="sortby_title">Sort by Title</string>
     <string name="sortby_series">Sort by Series</string>
@@ -1031,6 +1031,7 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="events_found">%1$d Events found</string>
     <string name="search_with_text">Search: %1$s</string>
     <string name="waiting_for_idle">(waiting for idle)</string>
+    <string name="internet_update_fields">Update Fields</string>
     <string name="app_permissions_info">
         <![CDATA[
             <p>To function we need permissions....\n
@@ -1047,7 +1048,6 @@ and you can edit the book via the options menu using the menu button or overflow
         <item>Dark</item>
         <item>Light</item>
     </string-array>
-
 
 
 </resources>

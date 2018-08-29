@@ -57,6 +57,13 @@ import java.lang.ref.WeakReference;
  */
 public class StartupActivity extends AppCompatActivity {
 	private static final String TAG = "StartupActivity";
+
+	/** FIXME: This is nasty, now we use fragments, StartupActivity should be a FragmenActivity and load the right fragment
+	 * then we could do away with the whole isRoot/willBeRoot thing
+	 * Check usage in the code of this string in the intent extra
+	 */
+	public static final String IS_TASK_ROOT = "willBeTaskRoot";
+
 	/** Flag to indicate FTS rebuild is required at startup */
 	private static final String PREF_FTS_REBUILD_REQUIRED = TAG + ".FtsRebuildRequired";
 	private static final String PREF_AUTHOR_SERIES_FIXUP_REQUIRED = TAG + ".FAuthorSeriesFixupRequired";
@@ -268,16 +275,6 @@ public class StartupActivity extends AppCompatActivity {
 		}
 	}
 	
-	private void doMainActivity(Class nextActivityClass) {
-		Intent i = new Intent(this, nextActivityClass);
-		if (mWasReallyStartup)
-			i.putExtra("startup", true);
-		// FIXME: This is nasty, now we use fragments, StartupActivity shoud be a FragmenActivity and load the right fragment
-		// then we could do away with the whole isRoot/willBeRoot thing
-		i.putExtra("willBeTaskRoot", isTaskRoot());
-		startActivity(i);
-	}
-
 	private void stage3Startup() {
 		int opened = BookCataloguePreferences.getInt(STATE_OPENED, BACKUP_PROMPT_WAIT);
 		int startCount = BookCataloguePreferences.getInt(PREF_START_COUNT, 0) + 1;
@@ -298,16 +295,20 @@ public class StartupActivity extends AppCompatActivity {
 		mExportRequired = false;
 
 		if (opened == 0) {
-
-			AlertDialog alertDialog = new AlertDialog.Builder(this).setMessage(R.string.backup_request).create();
+			AlertDialog alertDialog = new AlertDialog.Builder(this)
+					.setMessage(R.string.backup_request).create();
 			alertDialog.setTitle(R.string.backup_title);
 			alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
-			alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+			alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
+					getResources().getString(android.R.string.cancel)
+					, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					dialog.dismiss();
 				}
 			}); 
-			alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,  "OK", new DialogInterface.OnClickListener() {
+			alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
+					getResources().getString(android.R.string.ok),
+					new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					mExportRequired = true;
 					dialog.dismiss();
@@ -328,7 +329,6 @@ public class StartupActivity extends AppCompatActivity {
 	 * Start whatever activity the user expects
 	 */
 	private void stage4Startup() {
-		// Handle startup specially, Check if we really want to start this activity.
 		if (BookCataloguePreferences.getStartInMyBook()) {
 			doMainActivity(BooksOnBookshelf.class);
 		} else {
@@ -337,14 +337,20 @@ public class StartupActivity extends AppCompatActivity {
 
 		if (mExportRequired) {
 			AdministrationFunctions.backupCatalogue(this);
-//			Intent i = new Intent(this, AdministrationFunctions.class);
-//			i.putExtra(AdministrationFunctions.DOAUTO, "export");
-//			startActivity(i);			
 		}
 
 		// We are done
 		finish();		
 	}
+
+    private void doMainActivity(Class nextActivityClass) {
+        Intent i = new Intent(this, nextActivityClass);
+        if (mWasReallyStartup)
+            i.putExtra("startup", true);
+
+        i.putExtra(IS_TASK_ROOT, isTaskRoot());
+        startActivity(i);
+    }
 
 	/**
 	 * This will display a popup with a provided message to the user. This will be

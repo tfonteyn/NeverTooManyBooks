@@ -65,8 +65,7 @@ import java.util.ArrayList;
  *
  * @author Evan Leybourn
  */
-public class BookEdit extends BookCatalogueActivity implements
-		BookEditFragmentAbstract.BookEditManager,
+public class BookEdit extends BookCatalogueActivity implements BookEditFragmentAbstract.BookEditManager,
 		OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
 	private FlattenedBooklist mList = null;
 	private GestureDetector mGestureDetector;
@@ -107,10 +106,14 @@ public class BookEdit extends BookCatalogueActivity implements
     private TabLayout mTabLayout;
     private TabLayout.Tab mAnthologyTab;
 
+    @Override
+	protected int getLayoutId(){
+		return R.layout.book_edit_base;
+	}
+
     public void onCreate(Bundle savedInstanceState) {
 		Tracker.enterOnCreate(this);
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.book_edit_base);
 
         mDbHelper.open();
 
@@ -627,7 +630,8 @@ public class BookEdit extends BookCatalogueActivity implements
 				setRowId(id);
 				File thumb = CatalogueDBAdapter.getTempThumbnail();
 				File real = CatalogueDBAdapter.fetchThumbnailByUuid(mDbHelper.getBookUuid(mRowId));
-				thumb.renameTo(real);
+                //noinspection ResultOfMethodCallIgnored
+                thumb.renameTo(real);
 			}
 		} else {
 			mDbHelper.updateBook(mRowId, mBookData, 0);
@@ -700,8 +704,10 @@ public class BookEdit extends BookCatalogueActivity implements
 		if (bar != null) {
             if (mIsReadOnly && mList != null) {
                 bar.setTitle(mBookData.getString(CatalogueDBAdapter.KEY_TITLE));
-                bar.setSubtitle(mBookData.getAuthorTextShort() + " ("
-                        + String.format(getResources().getString(R.string.x_of_y), mList.getAbsolutePosition(), mList.getCount()) + ")");
+                bar.setSubtitle(
+                		mBookData.getAuthorTextShort()
+                        + String.format(" (" + getResources().getString(R.string.x_of_y) + ")", mList.getAbsolutePosition(), mList.getCount())
+						);
             } else if (mBookData.getRowId() > 0) {
                 bar.setTitle(mBookData.getString(CatalogueDBAdapter.KEY_TITLE));
                 bar.setSubtitle(mBookData.getAuthorTextShort());

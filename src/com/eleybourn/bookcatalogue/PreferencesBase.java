@@ -21,16 +21,11 @@
 package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
-import com.eleybourn.bookcatalogue.properties.Properties;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.properties.Properties;
 
 /**
  * Base class to display simple preference-based options to the user.
@@ -39,16 +34,13 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  */
 public abstract class PreferencesBase extends BookCatalogueActivity {
 
-	/** Get the layout of the subclass */
-	protected abstract int getLayout();
 	/** Setup the views in the layout */
 	protected abstract void setupViews(Properties globalProps);
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
-			setContentView(this.getLayout());
 
 			Properties globalProps = new Properties();
 			setupViews(globalProps);
@@ -62,42 +54,42 @@ public abstract class PreferencesBase extends BookCatalogueActivity {
 		
 	}
 
-	/**
-	 * Utility routine to setup a checkbox based on a preference.
-	 * 
-	 * @param cbId		CheckBox ID from XML file
-	 * @param viewId	Containing ViewGroup from XML file (for clicking and highlighting)
-	 * @param key		Preferences key associated with this CheckBox
-	 */
-	protected void addBooleanPreference(final int cbId, int viewId, final String key, final boolean defaultValue) {
-		// Setup the checkbox
-		CheckBox checkbox = this.findViewById(cbId);
-		checkbox.setChecked(BookCataloguePreferences.getBoolean(key, defaultValue));
-		checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				BookCataloguePreferences.setBoolean(key, isChecked);
-			}});
-
-		// Allow clicking of entire row.
-		View view = this.findViewById(viewId);
-		// Make line flash when clicked.
-		view.setBackgroundResource(android.R.drawable.list_selector_background);
-		view.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				CheckBox cb = v.findViewById(cbId);
-				cb.setChecked(!BookCataloguePreferences.getBoolean(key, defaultValue));
-			}});
-	}
-
-	/**
-	 * Add an item that has a creator-define click event
-	 * */
-	public void addClickablePref(final int viewId, final OnClickListener listener) {
-		View view = findViewById(viewId);
-		// Make line flash when clicked.
-		view.setBackgroundResource(android.R.drawable.list_selector_background);
-		view.setOnClickListener(listener);
-	}
+//	/**
+//	 * Utility routine to setup a checkbox based on a preference.
+//	 *
+//	 * @param cbId		CheckBox ID from XML file
+//	 * @param viewId	Containing ViewGroup from XML file (for clicking and highlighting)
+//	 * @param key		Preferences key associated with this CheckBox
+//	 */
+//	protected void addBooleanPreference(final int cbId, int viewId, final String key, final boolean defaultValue) {
+//		// Setup the checkbox
+//		CheckBox checkbox = this.findViewById(cbId);
+//		checkbox.setChecked(BookCataloguePreferences.getBoolean(key, defaultValue));
+//		checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+//			@Override
+//			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//				BookCataloguePreferences.setBoolean(key, isChecked);
+//			}});
+//
+//		// Allow clicking of entire row.
+//		View view = this.findViewById(viewId);
+//		// Make line flash when clicked.
+//		view.setBackgroundResource(android.R.drawable.list_selector_background);
+//		view.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				CheckBox cb = v.findViewById(cbId);
+//				cb.setChecked(!BookCataloguePreferences.getBoolean(key, defaultValue));
+//			}});
+//	}
+//
+//	/**
+//	 * Add an item that has a creator-define click event
+//	 * */
+//	public void addClickablePref(final int viewId, final OnClickListener listener) {
+//		View view = findViewById(viewId);
+//		// Make line flash when clicked.
+//		view.setBackgroundResource(android.R.drawable.list_selector_background);
+//		view.setOnClickListener(listener);
+//	}
 }

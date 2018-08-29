@@ -76,11 +76,14 @@ public abstract class BindableItemListActivity extends BookCatalogueListActivity
 	protected abstract BindableItemSQLiteCursor getBindableItemCursor(Bundle savedInstanceState);
 
 	@Override
+	protected int getLayoutId() {
+		return mBaseViewId;
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//try {
-			// Set the view
-			setContentView(mBaseViewId);
 
 			// Add handlers for 'Save' and 'Cancel'
 			//setupListener(R.id.confirm, mSaveListener);

@@ -55,16 +55,17 @@ public class UpdateFromInternet extends ActivityWithTasks {
     private SharedPreferences mPrefs = null;
     private FieldUsages mFieldUsages = new FieldUsages();
 
-    /**
-     * Called when the activity is first created.
-     */
+    @Override
+    protected int getLayoutId() {
+        return R.layout.update_from_internet;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
             LibraryThingManager.showLtAlertIfNecessary(this, false, "update_from_internet");
 
-            setContentView(R.layout.update_from_internet);
             mPrefs = getSharedPreferences("bookCatalogue", android.content.Context.MODE_PRIVATE);
             setupFields();
         } catch (Exception e) {

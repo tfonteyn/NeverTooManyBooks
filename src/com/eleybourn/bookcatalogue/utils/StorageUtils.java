@@ -276,7 +276,7 @@ public class StorageUtils {
 
 		// Sometimes (Android 6?) the /proc/mount search seems to fail, so we revert to environment vars
         if (BuildConfig.DEBUG) {
-		    info.append("Found " + dirs.size() + " directories\n");
+		    info.append("Found ").append(dirs.size()).append(" directories\n");
         }
 
 		try {

@@ -124,6 +124,14 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 	}
 
 	/**
+	 * Return the layout to use for this subclass
+	 */
+	@Override
+	public int getLayoutId() {
+		return R.layout.booklist_preferences;
+	}
+
+	/**
 	 * Build the activity UI
 	 */
 	@Override 
@@ -144,14 +152,6 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 	 */
 	public static int getRebuildState() {
 		return mBooklistStateProperty.get();
-	}
-
-	/**
-	 * Return the layout to use for this subclass
-	 */
-	@Override
-	public int getLayout() {
-		return R.layout.booklist_preferences;
 	}
 
 	/**

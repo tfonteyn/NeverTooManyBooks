@@ -90,6 +90,11 @@ public class CropCropImage extends CropMonitoredActivity {
 	private CropIImage mImage;
 
 	@Override
+	protected int getLayoutId() {
+		return R.layout.cropcropimage;
+	}
+
+	@Override
 	public void onCreate(Bundle icicle) {
 		// Do this first to avoid 'must be first errors'
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -97,8 +102,6 @@ public class CropCropImage extends CropMonitoredActivity {
 		super.onCreate(icicle);
 
 		mContentResolver = getContentResolver();
-
-		setContentView(R.layout.cropcropimage);
 
 		mImageView = findViewById(R.id.image);
 

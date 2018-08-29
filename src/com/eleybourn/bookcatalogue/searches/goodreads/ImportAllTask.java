@@ -336,6 +336,7 @@ public class ImportAllTask extends GenericTask {
 			String uuid = db.getBookUuid(id);
 			File thumb = CatalogueDBAdapter.getTempThumbnail();
 			File real = CatalogueDBAdapter.fetchThumbnailByUuid(uuid);
+			//noinspection ResultOfMethodCallIgnored
 			thumb.renameTo(real);
 		}
 		//db.setGoodreadsSyncDate(id);

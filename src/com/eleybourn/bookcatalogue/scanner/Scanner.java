@@ -9,6 +9,9 @@ import android.content.Intent;
  * @author pjw
  */
 public interface Scanner {
+    /** tag used in intent.getStringExtra */
+    String SCAN_RESULT = "SCAN_RESULT";
+
 	/** Request a scan */
     void startActivityForResult(Activity a, int requestCode);
 	/** Get the barcode from the resulting intent */

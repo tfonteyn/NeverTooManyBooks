@@ -250,6 +250,11 @@ public class OtherPreferences extends PreferencesBase {
     }
 
     @Override
+    protected int getLayoutId() {
+        return R.layout.other_preferences;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Make sure the names are correct
@@ -285,11 +290,6 @@ public class OtherPreferences extends PreferencesBase {
         // Add the locally constructed properties
         for (Property p : mProperties)
             globalProps.add(p);
-    }
-
-    @Override
-    protected int getLayout() {
-        return R.layout.other_preferences;
     }
 
     /**

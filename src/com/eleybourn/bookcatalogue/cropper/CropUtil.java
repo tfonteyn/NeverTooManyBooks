@@ -22,7 +22,6 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.os.Handler;
-import android.view.View;
 import android.view.View.OnClickListener;
 
 /**
@@ -36,26 +35,26 @@ public class CropUtil {
 	private CropUtil() {
 	}
 
-	// Rotates the bitmap by the specified degree.
-	// If a new bitmap is created, the original bitmap is recycled.
-	public static Bitmap rotate(Bitmap b, int degrees) {
-		if (degrees != 0 && b != null) {
-			Matrix m = new Matrix();
-			m.setRotate(degrees, (float) b.getWidth() / 2,
-					(float) b.getHeight() / 2);
-			try {
-				Bitmap b2 = Bitmap.createBitmap(b, 0, 0, b.getWidth(),
-						b.getHeight(), m, true);
-				if (b != b2) {
-					b.recycle();
-					b = b2;
-				}
-			} catch (OutOfMemoryError ex) {
-				// We have no memory to rotate. Return the original bitmap.
-			}
-		}
-		return b;
-	}
+//	// Rotates the bitmap by the specified degree.
+//	// If a new bitmap is created, the original bitmap is recycled.
+//	public static Bitmap rotate(Bitmap b, int degrees) {
+//		if (degrees != 0 && b != null) {
+//			Matrix m = new Matrix();
+//			m.setRotate(degrees, (float) b.getWidth() / 2,
+//					(float) b.getHeight() / 2);
+//			try {
+//				Bitmap b2 = Bitmap.createBitmap(b, 0, 0, b.getWidth(),
+//						b.getHeight(), m, true);
+//				if (b != b2) {
+//					b.recycle();
+//					b = b2;
+//				}
+//			} catch (OutOfMemoryError ex) {
+//				// We have no memory to rotate. Return the original bitmap.
+//			}
+//		}
+//		return b;
+//	}
 
 	/*
 	 * Compute the sample size as a function of minSideLength and
@@ -141,29 +140,29 @@ public class CropUtil {
 		return b2;
 	}
 
-	/**
-	 * Creates a centered bitmap of the desired size. Recycles the input.
-	 */
-	public static Bitmap extractMiniThumb(Bitmap source, int width, int height, boolean recycle) {
-		if (source == null) {
-			return null;
-		}
-
-		float scale;
-		if (source.getWidth() < source.getHeight()) {
-			scale = width / (float) source.getWidth();
-		} else {
-			scale = height / (float) source.getHeight();
-		}
-		Matrix matrix = new Matrix();
-		matrix.setScale(scale, scale);
-		Bitmap miniThumbnail = transform(matrix, source, width, height, false);
-
-		if (recycle && miniThumbnail != source) {
-			source.recycle();
-		}
-		return miniThumbnail;
-	}
+//	/**
+//	 * Creates a centered bitmap of the desired size. Recycles the input.
+//	 */
+//	public static Bitmap extractMiniThumb(Bitmap source, int width, int height, boolean recycle) {
+//		if (source == null) {
+//			return null;
+//		}
+//
+//		float scale;
+//		if (source.getWidth() < source.getHeight()) {
+//			scale = width / (float) source.getWidth();
+//		} else {
+//			scale = height / (float) source.getHeight();
+//		}
+//		Matrix matrix = new Matrix();
+//		matrix.setScale(scale, scale);
+//		Bitmap miniThumbnail = transform(matrix, source, width, height, false);
+//
+//		if (recycle && miniThumbnail != source) {
+//			source.recycle();
+//		}
+//		return miniThumbnail;
+//	}
 
 //	/**
 //	 * Create a video thumbnail for a video. May return null if the video is
@@ -185,14 +184,14 @@ public class CropUtil {
 //		return bitmap;
 //	}
 
-	public static <T> int indexOf(T[] array, T s) {
-		for (int i = 0; i < array.length; i++) {
-			if (array[i].equals(s)) {
-				return i;
-			}
-		}
-		return -1;
-	}
+//	public static <T> int indexOf(T[] array, T s) {
+//		for (int i = 0; i < array.length; i++) {
+//			if (array[i].equals(s)) {
+//				return i;
+//			}
+//		}
+//		return -1;
+//	}
 
 	/**
 	 * Make a bitmap from a given Uri.
@@ -217,15 +216,15 @@ public class CropUtil {
 	// }
 	// }
 
-	public static synchronized OnClickListener getNullOnClickListener() {
-		if (sNullOnClickListener == null) {
-			sNullOnClickListener = new OnClickListener() {
-				public void onClick(View v) {
-				}
-			};
-		}
-		return sNullOnClickListener;
-	}
+//	public static synchronized OnClickListener getNullOnClickListener() {
+//		if (sNullOnClickListener == null) {
+//			sNullOnClickListener = new OnClickListener() {
+//				public void onClick(View v) {
+//				}
+//			};
+//		}
+//		return sNullOnClickListener;
+//	}
 
 	private static class BackgroundJob extends
 			CropMonitoredActivity.LifeCycleAdapter implements Runnable {

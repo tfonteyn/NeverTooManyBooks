@@ -39,7 +39,10 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  * @author Evan Leybourn
  */
 public class AdministrationDonate extends BookCatalogueActivity {
-
+	@Override
+	protected int getLayoutId(){
+		return R.layout.administration_donate;
+	}
 	/**
 	 * Called when the activity is first created. 
 	 */
@@ -48,8 +51,7 @@ public class AdministrationDonate extends BookCatalogueActivity {
 		try {
 			super.onCreate(savedInstanceState);
 			setTitle(R.string.app_name);
-			setContentView(R.layout.administration_donate);
-			setupAdmin();
+			setupPage();
 			BCBackground.init(this);
 		} catch (Exception e) {
 			Logger.logError(e);
@@ -73,7 +75,7 @@ public class AdministrationDonate extends BookCatalogueActivity {
 	 * 4. The application version and link details
 	 * 5. The link to paypal for donation
 	 */
-	public void setupAdmin() {
+	public void setupPage() {
 		OnClickListener payPalClick = new OnClickListener() {
 				@Override
 				public void onClick(View v) {
