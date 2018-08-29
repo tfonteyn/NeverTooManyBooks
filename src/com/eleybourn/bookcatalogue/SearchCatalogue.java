@@ -72,7 +72,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 		mDbHelper = new CatalogueDBAdapter(this);
 		mDbHelper.open();
 
-		View layout = this.findViewById(R.id.layout_root);
+		View layout = this.findViewById(R.id.root);
 		EditText criteria = this.findViewById(R.id.criteria);
 		EditText author = this.findViewById(R.id.author);
 		EditText title = this.findViewById(R.id.title);

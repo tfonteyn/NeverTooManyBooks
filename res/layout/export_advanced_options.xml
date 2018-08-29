@@ -205,29 +205,11 @@
 
         </RelativeLayout>
 
-        <LinearLayout
+        <include
+            android:id="@+id/buttonbar_cancel_ok"
+            layout="@layout/inc_buttonbar_cancel_ok"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="12dp"
-            style="?android:attr/buttonBarStyle">
-
-            <Button
-                android:id="@+id/cancel"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/cancel"
-                style="?android:attr/buttonBarNegativeButtonStyle" />
-
-            <Button
-                android:id="@+id/ok"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/ok"
-                style="?android:attr/buttonBarPositiveButtonStyle" />
-
-        </LinearLayout>
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

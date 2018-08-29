@@ -113,8 +113,6 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	 * Called when user clicks the 'Add' button (if present).
 	 * 
 	 * @param v		The view that was clicked ('add' button).
-	 * 
-	 * @return		True if activity should exit, false to abort exit.
 	 */
 	abstract protected void onAdd(View v);
 

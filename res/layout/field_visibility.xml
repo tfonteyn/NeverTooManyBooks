@@ -1,24 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/manage_fields_scrollview"
+    <include
+        layout="@layout/inc_toolbar_frame"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingStart="@dimen/padding_border"
-        android:paddingEnd="@dimen/padding_border">
+        android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/manage_field_help_text"
-            android:layout_width="wrap_content"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/manage_fields_scrollview"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/padding_border"
-            android:text="@string/manage_fields_help" />
-    </LinearLayout>
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border">
 
-</ScrollView>
+            <TextView
+                android:id="@+id/manage_field_help_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/padding_border"
+                android:text="@string/manage_fields_help" />
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>

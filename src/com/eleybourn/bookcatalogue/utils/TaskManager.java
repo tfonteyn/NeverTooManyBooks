@@ -121,7 +121,6 @@ public class TaskManager implements AutoCloseable {
 	}
 
 	public static class OnFinishedMessage implements Message<TaskManagerListener> {
-
 		@Override
 		public boolean deliver(TaskManagerListener listener) {
 			listener.onFinished();
@@ -223,6 +222,7 @@ public class TaskManager implements AutoCloseable {
 		public void onTaskFinished(ManagedTask t) {
 			TaskManager.this.onTaskFinished(t);
 		}
+
 	};
 
 	/**
@@ -257,8 +257,9 @@ public class TaskManager implements AutoCloseable {
 		updateProgressDialog();
 
 		// Call close() if necessary
-		if (doClose)
-			close();
+		if (doClose) {
+            close();
+        }
 	}
 
 	/**
@@ -438,6 +439,7 @@ public class TaskManager implements AutoCloseable {
 		if (BuildConfig.DEBUG) {
 			System.out.println("DBG: Task Manager close requested");
 		}
+
 		mIsClosing = true;
 		synchronized(mTasks) {
 			for(TaskInfo t : mTasks) {

@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusableInTouchMode="true"
-    tools:ignore="DuplicateIds"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    tools:ignore="DuplicateIds">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:focusableInTouchMode="true"
             android:orientation="vertical"
-            android:padding="@dimen/padding_border_double" >
+            android:padding="@dimen/padding_border_double">
 
             <ImageView
                 android:id="@+id/row_img"
@@ -35,7 +35,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     style="@style/editorFieldHeaderStyle"
@@ -52,7 +52,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     style="@style/editorFieldHeaderStyle"
@@ -71,7 +71,7 @@
                 android:id="@+id/row_isbn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/isbnHeading"
@@ -94,7 +94,7 @@
                 android:id="@+id/row_series"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     style="@style/editorFieldHeaderStyle"
@@ -112,7 +112,7 @@
                 android:id="@+id/row_publisher"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     style="@style/editorFieldHeaderStyle"
@@ -132,7 +132,7 @@
                 android:id="@+id/row_date_published"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/date_published_heading"
@@ -144,8 +144,8 @@
                     style="@style/dataEntryButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
                     android:layout_alignParentEnd="true"
+                    android:layout_alignParentStart="true"
                     android:layout_below="@+id/date_published_heading"
                     android:nextFocusDown="@+id/bookshelf" />
             </RelativeLayout>
@@ -153,7 +153,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     style="@style/editorFieldHeaderStyle"
@@ -171,7 +171,7 @@
                 android:id="@+id/row_pages"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/pages_heading"
@@ -191,7 +191,7 @@
                 android:id="@+id/row_list_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/list_price_heading"
@@ -211,7 +211,7 @@
                 android:id="@+id/row_format"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/heading"
@@ -246,7 +246,7 @@
                 android:id="@+id/row_genre"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/heading"
@@ -267,7 +267,7 @@
                 android:id="@+id/row_language"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/heading"
@@ -291,8 +291,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:nextFocusDown="@+id/description"
-                android:text="@string/is_anthology"
-                />
+                android:text="@string/is_anthology" />
 
             <TextView
                 android:id="@+id/descriptionLabel"
@@ -305,19 +304,18 @@
 
             <View
                 android:id="@+id/header_divider"
+                style="@style/main_menu_header_divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:paddingBottom="2dp"
-                android:paddingTop="2dp"
-                style="@style/main_menu_header_divider"
-                />
+                android:paddingTop="2dp" />
 
             <TextView
                 android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@string/description"
+                android:hint="@string/notset"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
         </LinearLayout>
     </ScrollView>

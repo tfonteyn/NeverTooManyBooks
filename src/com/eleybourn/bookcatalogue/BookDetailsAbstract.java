@@ -40,6 +40,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
@@ -712,32 +713,41 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
         ViewUtils.fetchFileIntoImageView(getCoverFile(rowId), iv, maxWidth, maxHeight, true);
     }
 
+    private int getThemeId() {
+        try {
+            Class<?> wrapper = Context.class;
+            Method method = wrapper.getMethod("getThemeResId");
+            method.setAccessible(true);
+            return (Integer) method.invoke(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     /**
      * Shows zoomed thumbnail in dialog. Closed by click on image area.
      *
      * @param rowId database row id for getting correct file
      */
     private void showZoomedThumb(Long rowId) {
-        // Create dialog and set layout
         Context c = getActivity();
-        final Dialog dialog = new AppCompatDialog(c);
-        dialog.setContentView(R.layout.zoom_thumb_dialog);
 
         // Check if we have a file and/or it is valid
         File thumbFile = getCoverFile(rowId);
-
         if (thumbFile == null || !thumbFile.exists()) {
-            dialog.setTitle(getResources().getString(R.string.cover_not_set));
+            Toast.makeText(c, R.string.cover_not_set, Toast.LENGTH_SHORT).show();
         } else {
-
 			BitmapFactory.Options opt = new BitmapFactory.Options();
 			opt.inJustDecodeBounds = true;
 			BitmapFactory.decodeFile(thumbFile.getAbsolutePath(), opt);
 
             // If no size info, assume file bad and return appropriate icon
             if (opt.outHeight <= 0 || opt.outWidth <= 0) {
-                dialog.setTitle(getResources().getString(R.string.cover_corrupt));
+                Toast.makeText(c, R.string.cover_corrupt, Toast.LENGTH_LONG).show();
             } else {
+                final Dialog dialog = new AppCompatDialog(c);
+                dialog.setContentView(R.layout.zoom_thumb_dialog);
                 dialog.setTitle(getResources().getString(R.string.cover_detail));
                 ImageView cover = new ImageView(getActivity());
                 ViewUtils.fetchFileIntoImageView(thumbFile, cover, mThumbZoomSize, mThumbZoomSize, true);
@@ -751,9 +761,10 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 
                 LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
                 dialog.addContentView(cover, lp);
+                dialog.show();
             }
         }
-        dialog.show();
+
     }
 
     /**

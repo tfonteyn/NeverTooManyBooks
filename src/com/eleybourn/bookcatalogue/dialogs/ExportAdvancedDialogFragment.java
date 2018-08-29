@@ -117,7 +117,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
 				dismiss();
 			}});
 
-		v.findViewById(R.id.ok).setOnClickListener(new OnClickListener() {
+		v.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				handleClick(v);

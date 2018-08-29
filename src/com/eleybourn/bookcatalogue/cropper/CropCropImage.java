@@ -75,6 +75,7 @@ public class CropCropImage extends CropMonitoredActivity {
 	// Flag indicating if default crop rect is whole image
 	private boolean mCropWholeImage = false;
 	// Flag
+	@SuppressWarnings("FieldCanBeLocal")
 	private final boolean DO_FACE_DETECTION = false;
 
 	boolean mWaitingToPick; // Whether we are wait the user to pick a face.
@@ -145,7 +146,7 @@ public class CropCropImage extends CropMonitoredActivity {
 		// Make UI fullscreen.
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-		findViewById(R.id.discard).setOnClickListener(
+		findViewById(R.id.cancel).setOnClickListener(
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						setResult(RESULT_CANCELED);
@@ -153,7 +154,7 @@ public class CropCropImage extends CropMonitoredActivity {
 					}
 				});
 
-		findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
+		findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				onSaveClicked();
 			}
@@ -504,6 +505,7 @@ public class CropCropImage extends CropMonitoredActivity {
 			Bitmap faceBitmap = prepareBitmap();
 
 			mScale = 1.0F / mScale;
+			//noinspection ConstantConditions
 			if (faceBitmap != null && DO_FACE_DETECTION) {
 				FaceDetector detector = new FaceDetector(faceBitmap.getWidth(),
 						faceBitmap.getHeight(), mFaces.length);

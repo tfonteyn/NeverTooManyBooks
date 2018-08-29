@@ -134,9 +134,9 @@
     <string name="bookshelf_label">Bibliothèque : </string>
     <string name="all_books">Tous les livres</string>
     <string name="isbn_found">ISBN scanné. Recherche en cours.</string>
-    <string name="title_isbn_search">Book Catalogue : recherche par ISBN</string>
-    <string name="title_manage_bs">Book Catalogue : gérer les biblothèques</string>
-    <string name="title_edit_bs">Book Catalogue : modifier la bibliothèque</string>
+    <string name="title_isbn_search">recherche par ISBN</string>
+    <string name="title_manage_bs">gérer les biblothèques</string>
+    <string name="title_edit_bs">modifier la bibliothèque</string>
     <string name="search_label">Rechercher des livres</string>
     <string name="search_hint">Rechercher un auteur ou un titre</string>
     <string name="book_not_found">Le livre n\'a pas été trouvé. Il est parfois possible de trouver le code barre à l\'intérieur de la première page de couverture. Sinon merci d\'entrer les détails manuellement.</string>
@@ -783,7 +783,7 @@
     </string>
     <!-- End: Added/Updated in 5.0.8 -->
 
- <!-- Begin: Added/Updated in 5.0.9 -->
+    <!-- Begin: Added/Updated in 5.0.9 -->
     <string name="new_in_509">
 		<![CDATA[
 			<p><b>Nouveau dans la version 5.0.9</b>\n\n
@@ -843,16 +843,14 @@
     <string name="all_books_added_or_updated_since_last_full_backup">Tous les livres ajoutés ou mis à jour depuis la dernière sauvegarde complète</string>
 
     <!-- Short text for 'n books' -->
-    <plurals
-        name="n_books">
+    <plurals name="n_books">
         <item quantity="zero">Aucun livre</item>
         <item quantity="one">%1$s livre</item>
         <item quantity="other">%1$s livres</item>
     </plurals>
 
     <!-- Short text for 'n covers' -->
-    <plurals
-        name="n_covers">
+    <plurals name="n_covers">
         <item quantity="zero">Aucune couverture</item>
         <item quantity="one">%1$s couverture</item>
         <item quantity="other">%1$s couvertures</item>
@@ -887,12 +885,12 @@
 
     <!-- Preference VALUE, displayed in a preference activity -->
     <string name="zxing_scanner">Zxing Scanner</string>
-     <!-- Heading in 'about' dialog -->
+    <!-- Heading in 'about' dialog -->
     <string name="special_thanks_label">Remerciements particuliers </string>
     <!-- Credits in the 'about' dialog -->
 
     <!-- End: Added/Updated in 5.1.0 -->
-     <!-- Begin: Added/Updated in 5.1.1 -->
+    <!-- Begin: Added/Updated in 5.1.1 -->
     <!-- Name of the 'Default' bookshelf, created when app first installed. Needs to be short. -->
     <!-- A hint describing the benefit of folowing the Amazon links -->
     <string name="hint_amazon_links_blurb">&lt;p&gt;Si vous achetez des livres chez amazon en sélectionnant le menu « &lt;i&gt;%1$s&lt;/i&gt; », « &lt;i&gt;%2$s&lt;/i&gt; » ou « &lt;i&gt;%3$s&lt;/i&gt; », une partie du prix d\'achat sera reversée aux développeurs %4$s.&lt;/p&gt;&lt;p&gt;Vous pouvez aussi utiliser le lien sur &lt;a href=""https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29""&gt;notre FAQ&lt;/a&gt;(en anglais) pour vous rendre sur Amazon ou PayPal.&lt;/p&gt;</string>
@@ -905,11 +903,10 @@
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="update_day">Jour de mise à jour</string>
     <!-- Short text for 'n stars' -->
-    <plurals
-    name="n_stars">
-    <item quantity="zero">Aucune étoile</item>
-    <item quantity="one">%1$s étoile</item>
-    <item quantity="other">%1$s étoiles</item>
+    <plurals name="n_stars">
+        <item quantity="zero">Aucune étoile</item>
+        <item quantity="one">%1$s étoile</item>
+        <item quantity="other">%1$s étoiles</item>
     </plurals>
     <string name="new_in_511">
     <![CDATA[
@@ -923,7 +920,7 @@
     </string>
     <!-- End: Added/Updated in 5.1.1 -->
 
-     <!-- Begin: Added/Updated in 5.1.2 -->
+    <!-- Begin: Added/Updated in 5.1.2 -->
     <!-- A heading in the 'about' dialog -->
     <string name="amazon">Amazon</string>
     <!-- The following strings are not in this release, but will be in a future release -->

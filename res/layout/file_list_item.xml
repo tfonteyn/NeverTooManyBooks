@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:ignore="HardcodedText" >
+    tools:ignore="HardcodedText">
 
     <TextView
         android:id="@+id/name"
@@ -13,8 +13,7 @@
         android:layout_alignParentTop="true"
         android:singleLine="false"
         android:text="export.csv"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-          />
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
         android:id="@+id/updated_label"
@@ -24,8 +23,7 @@
         android:layout_below="@+id/name"
         android:layout_marginTop="4dp"
         android:text="@string/updated"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-         />
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <TextView
         android:id="@+id/updated"
@@ -37,8 +35,7 @@
         android:layout_toEndOf="@+id/updated_label"
         android:singleLine="false"
         android:text="Fri, 23 July, 17:54:01 2011"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-         />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/size_label"
@@ -48,8 +45,7 @@
         android:layout_below="@+id/updated_label"
         android:layout_marginTop="4dp"
         android:text="@string/size"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-         />
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <TextView
         android:id="@+id/size"
@@ -61,26 +57,24 @@
         android:layout_toEndOf="@+id/size_label"
         android:singleLine="false"
         android:text="154kb"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-         />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <LinearLayout
         android:id="@+id/path_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/size_label"
         android:layout_marginTop="4sp"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/path_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/in"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-             />
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
             android:id="@+id/path"
@@ -89,14 +83,12 @@
             android:layout_marginStart="2sp"
             android:singleLine="false"
             android:text="/mnt/sdcard/foobar/bookCatalogue/asasd/asd/asd/asd/asd/as/da/sd/asd"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-             />
+            android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@+id/path_info"
-         />
+        android:layout_below="@+id/path_info" />
 
 </RelativeLayout>

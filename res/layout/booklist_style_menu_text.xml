@@ -6,6 +6,4 @@
     android:paddingStart="20dp"
     android:paddingEnd="20dp"
     android:singleLine="false"
-    android:textAppearance="?android:attr/textAppearanceMedium" >
-
-</TextView>
+    android:textAppearance="?android:attr/textAppearanceMedium" />

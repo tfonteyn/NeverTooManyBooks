@@ -1,147 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout_root"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="top"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/header"
+    <include
+        layout="@layout/inc_toolbar_frame"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical"
-        android:paddingLeft="@dimen/padding_border"
-        android:paddingRight="@dimen/padding_border" >
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/original_details"
+            android:id="@+id/header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:layout_alignParentTop="true"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/padding_border"
+            android:paddingRight="@dimen/padding_border">
 
             <LinearLayout
+                android:id="@+id/original_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/search_criteria"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
-
-                <EditText
-                    android:id="@+id/criteria"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dip"
-                    android:layout_weight="1"
-                    android:inputType="textMultiLine"
-                    android:singleLine="false"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    tools:ignore="LabelFor" />
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/search_criteria"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                    <EditText
+                        android:id="@+id/criteria"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dip"
+                        android:layout_weight="1"
+                        android:inputType="textMultiLine"
+                        android:singleLine="false"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        tools:ignore="LabelFor" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/author"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                    <EditText
+                        android:id="@+id/author"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dip"
+                        android:layout_weight="1"
+                        android:inputType="textMultiLine"
+                        android:singleLine="false"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        tools:ignore="LabelFor" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/title"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                    <EditText
+                        android:id="@+id/title"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dip"
+                        android:layout_weight="1"
+                        android:inputType="textMultiLine"
+                        android:singleLine="false"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        tools:ignore="LabelFor" />
+                </LinearLayout>
+
+                <View
+                    style="@style/main_menu_header_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:paddingBottom="2dp" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/author"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
-
-                <EditText
-                    android:id="@+id/author"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dip"
-                    android:layout_weight="1"
-                    android:inputType="textMultiLine"
-                    android:singleLine="false"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    tools:ignore="LabelFor" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/title"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
-
-                <EditText
-                    android:id="@+id/title"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dip"
-                    android:layout_weight="1"
-                    android:inputType="textMultiLine"
-                    android:singleLine="false"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    tools:ignore="LabelFor" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:paddingBottom="2dp"
-                style="@style/main_menu_header_divider"
-                />
-        </LinearLayout>
-
-        <TextView
+            <TextView
                 android:id="@+id/books_found"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/padding_border"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <View
+            <View
+                style="@style/main_menu_header_divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:paddingBottom="2dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/footer"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:paddingBottom="2dp"
-            style="@style/main_menu_header_divider"
-            />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/footer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:paddingLeft="@dimen/padding_border"
-        android:paddingRight="@dimen/padding_border" >
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:paddingBottom="2dp"
-            style="@style/main_menu_header_divider"
-            />
-
-        <Button
-            android:id="@+id/search"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:focusable="false"
-            android:text="@string/show_results" />
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/padding_border"
+            android:paddingRight="@dimen/padding_border">
 
-        <Button
-            android:id="@+id/rebuild"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:focusable="false"
-            android:text="@string/rebuild_fts" />
-    </LinearLayout>
+            <View
+                style="@style/main_menu_header_divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:paddingBottom="2dp" />
 
-</RelativeLayout>
+            <Button
+                android:id="@+id/rebuild"
+                style="?android:attr/buttonBarNeutralButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:focusable="false"
+                android:text="@string/rebuild_fts" />
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                style="?android:attr/buttonBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/cancel"
+                    style="?android:attr/buttonBarNegativeButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center_vertical"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:text="@android:string/cancel" />
+
+                <Button
+                    android:id="@+id/search"
+                    style="?android:attr/buttonBarPositiveButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:text="@android:string/search_go" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+</LinearLayout>

@@ -115,13 +115,13 @@ public class UpdateThumbnailsThread extends ManagedTask {
 				// Copy the fields from the cursor and build a complete set of data for this book.
 				// This only needs to include data that we can fetch (so, for example, bookshelves are ignored).
 				mOrigData = new Bundle();
-				for(int i = 0; i < books.getColumnCount(); i++) {
+				for (int i = 0; i < books.getColumnCount(); i++) {
 					mOrigData.putString(books.getColumnName(i), books.getString(i));
 				}
 				// Get the book ID
 				mCurrId = Convert.getAsLong(mOrigData, CatalogueDBAdapter.KEY_ROWID);
 				// Get the book UUID
-				mCurrUuid = mOrigData.getString( DatabaseDefinitions.DOM_BOOK_UUID.name );
+				mCurrUuid = mOrigData.getString(DatabaseDefinitions.DOM_BOOK_UUID.name);
 				// Get the extra data about the book
 				mOrigData.putSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, mDbHelper.getBookAuthorList(mCurrId));
 				mOrigData.putSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY, mDbHelper.getBookSeriesList(mCurrId));
@@ -138,48 +138,48 @@ public class UpdateThumbnailsThread extends ManagedTask {
 				mCurrFieldUsages = new FieldUsages();
 
 				// See if there is a reason to fetch ANY data by checking which fields this book needs. 
-				for(FieldUsage usage : mRequestedFields.values()) {
+				for (FieldUsage usage : mRequestedFields.values()) {
 					// Not selected, we dont want it
 					if (usage.selected) {
-						switch(usage.usage) {
-						case ADD_EXTRA:
-						case OVERWRITE:
-							// Add and Overwrite mean we always get the data
-							mCurrFieldUsages.put(usage);
-							break;
-						case COPY_IF_BLANK:
-							// Handle special cases
-							// - If it's a thumbnail, then see if it's missing or empty. 
-							switch (usage.fieldName) {
-								case CatalogueDBAdapter.KEY_THUMBNAIL:
-									File file = CatalogueDBAdapter.fetchThumbnailByUuid(mCurrUuid);
-									if (!file.exists() || file.length() == 0)
-										mCurrFieldUsages.put(usage);
-									break;
-								case CatalogueDBAdapter.KEY_AUTHOR_ARRAY:
-									// We should never have a book with no authors, but lets be paranoid
-									if (mOrigData.containsKey(usage.fieldName)) {
-										ArrayList<Author> origAuthors = ArrayUtils.getAuthorsFromBundle(mOrigData);
-										if (origAuthors == null || origAuthors.size() == 0)
+						switch (usage.usage) {
+							case ADD_EXTRA:
+							case OVERWRITE:
+								// Add and Overwrite mean we always get the data
+								mCurrFieldUsages.put(usage);
+								break;
+							case COPY_IF_BLANK:
+								// Handle special cases
+								// - If it's a thumbnail, then see if it's missing or empty.
+								switch (usage.fieldName) {
+									case CatalogueDBAdapter.KEY_THUMBNAIL:
+										File file = CatalogueDBAdapter.fetchThumbnailByUuid(mCurrUuid);
+										if (!file.exists() || file.length() == 0)
 											mCurrFieldUsages.put(usage);
-									}
-									break;
-								case CatalogueDBAdapter.KEY_SERIES_ARRAY:
-									if (mOrigData.containsKey(usage.fieldName)) {
-                                        ArrayList<Series> origSeries =  ArrayUtils.getSeriesFromBundle(mOrigData);
-										if (origSeries == null || origSeries.size() == 0)
+										break;
+									case CatalogueDBAdapter.KEY_AUTHOR_ARRAY:
+										// We should never have a book with no authors, but lets be paranoid
+										if (mOrigData.containsKey(usage.fieldName)) {
+											ArrayList<Author> origAuthors = ArrayUtils.getAuthorsFromBundle(mOrigData);
+											if (origAuthors == null || origAuthors.size() == 0)
+												mCurrFieldUsages.put(usage);
+										}
+										break;
+									case CatalogueDBAdapter.KEY_SERIES_ARRAY:
+										if (mOrigData.containsKey(usage.fieldName)) {
+											ArrayList<Series> origSeries = ArrayUtils.getSeriesFromBundle(mOrigData);
+											if (origSeries == null || origSeries.size() == 0)
+												mCurrFieldUsages.put(usage);
+										}
+										break;
+									default:
+										// If the original was blank, add to list
+										if (!mOrigData.containsKey(usage.fieldName)
+												|| mOrigData.getString(usage.fieldName) == null
+												|| mOrigData.getString(usage.fieldName).isEmpty())
 											mCurrFieldUsages.put(usage);
-									}
-									break;
-								default:
-									// If the original was blank, add to list
-									if (!mOrigData.containsKey(usage.fieldName)
-											|| mOrigData.getString(usage.fieldName) == null
-											|| mOrigData.getString(usage.fieldName).isEmpty())
-										mCurrFieldUsages.put(usage);
-									break;
-							}
-							break;
+										break;
+								}
+								break;
 						}
 					}
 				}
@@ -191,10 +191,11 @@ public class UpdateThumbnailsThread extends ManagedTask {
 					// delete any temporary thumbnails //
 					try {
 						File delthumb = CatalogueDBAdapter.getTempThumbnail();
+						//noinspection ResultOfMethodCallIgnored
 						delthumb.delete();
 					} catch (Exception e) {
 						// do nothing - this is the expected behaviour 
-					}					
+					}
 				}
 
 				// Use this to flag if we actually need a search.
@@ -222,10 +223,9 @@ public class UpdateThumbnailsThread extends ManagedTask {
 					try {
 						mSearchDone.await();
 					} finally {
-						mSearchLock.unlock();					
+						mSearchLock.unlock();
 					}
 				}
-
 			}
 		} finally {
 			// Clean up the cursor

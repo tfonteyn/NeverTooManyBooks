@@ -7,13 +7,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <RelativeLayout
-        android:id="@+id/row_detail"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:ignore="UselessParent">
-
         <ImageView
             android:id="@+id/icon"
             android:layout_width="wrap_content"
@@ -67,6 +60,5 @@
             android:paddingEnd="@dimen/padding_book_details_info"
             android:text="1 Jan, 2011 17:54:32"
             tools:ignore="HardcodedText" />
-    </RelativeLayout>
 
 </RelativeLayout>

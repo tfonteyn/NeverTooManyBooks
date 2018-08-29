@@ -34,9 +34,9 @@
     <string name="bookshelf_label">Bookshelf: </string>
     <string name="all_books">All Books</string>
     <string name="isbn_found">ISBN Scanned. Searching Internet.</string>
-    <string name="title_isbn_search">Book Catalogue: ISBN Search</string>
-    <string name="title_manage_bs">Book Catalogue: Manage Bookshelves</string>
-    <string name="title_edit_bs">Book Catalogue: Edit Bookshelf</string>
+    <string name="title_isbn_search">ISBN Search</string>
+    <string name="title_manage_bs">Manage Bookshelves</string>
+    <string name="title_edit_bs">Edit Bookshelf</string>
     <string name="search_label">Search for Books</string>
     <string name="search_hint">Search Author or Title</string>
     <string name="book_not_found">The scanned book was not found. You can sometimes find the correct barcode on the inside front cover. Otherwise please enter the details manually.</string>
@@ -1020,18 +1020,11 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- End: Added/Updated in 5.2.2 -->
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
-    <string name="generic_task_info" translatable="false">Task ID %1$d, Queued at %2$s</string>
-    <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
-    <string name="a_bracket_b_bracket" translatable="false">%1$s (%2$s)</string>
-    <string name="single_string" translatable="false">%1s</string> <!-- needed for string based ItemEntries properties -->
-    <string name="menu_mark_as_read">Mark as read</string>
-    <string name="menu_mark_as_unread">Mark as unread</string>
-    <string name="title_reorder">a|A|an|An|the|The</string>
-    <string name="preferred_theme">Preferred Interface Theme</string>
-    <string name="events_found">%1$d Events found</string>
-    <string name="search_with_text">Search: %1$s</string>
-    <string name="waiting_for_idle">(waiting for idle)</string>
-    <string name="internet_update_fields">Update Fields</string>
+    <string-array name="supported_themes">
+        <item>Dark</item>
+        <item>Light</item>
+    </string-array>
+    <!-- TODO  need better info here-->
     <string name="app_permissions_info">
         <![CDATA[
             <p>To function we need permissions....\n
@@ -1042,12 +1035,19 @@ and you can edit the book via the options menu using the menu button or overflow
              * Read contacts\n
             </p>
         		]]>
-    </string> <!-- TODO  need better info here-->
+    </string>
+    <string name="generic_task_info" translatable="false">Task ID %1$d, Queued at %2$s</string>
+    <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
+    <string name="a_bracket_b_bracket" translatable="false">%1$s (%2$s)</string>
+    <string name="single_string" translatable="false">%1s</string> <!-- needed for string based ItemEntries properties -->
 
-    <string-array name="supported_themes">
-        <item>Dark</item>
-        <item>Light</item>
-    </string-array>
-
-
+    <string name="menu_mark_as_read">Mark as read</string>
+    <string name="menu_mark_as_unread">Mark as unread</string>
+    <string name="title_reorder">a|A|an|An|the|The</string>
+    <string name="preferred_theme">Preferred Interface Theme</string>
+    <string name="events_found">%1$d Events found</string>
+    <string name="search_with_text">Search: %1$s</string>
+    <string name="waiting_for_idle">(waiting for idle)</string>
+    <string name="internet_update_fields">Update Fields</string>
+    <string name="done">Done</string>
 </resources>

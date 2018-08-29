@@ -362,7 +362,7 @@ public class StartupActivity extends AppCompatActivity {
 		AlertDialog alertDialog = new AlertDialog.Builder(this).setMessage(Html.fromHtml(message)).create();
 		alertDialog.setTitle(R.string.upgrade_title);
 		alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
-		alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.ok), new DialogInterface.OnClickListener() {
+		alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				UpgradeMessageManager.setMessageAcknowledged();
 				stage3Startup();

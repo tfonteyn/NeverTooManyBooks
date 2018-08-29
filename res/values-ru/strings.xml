@@ -33,9 +33,9 @@
     <string name="bookshelf_label">Полка: </string>
     <string name="all_books">Все книги</string>
     <string name="isbn_found">ISBN отсканирован. Поиск в Интернете.</string>
-    <string name="title_isbn_search">Книжный каталог: поиск по ISBN</string>
-    <string name="title_manage_bs">Книжный каталог: управление книжными полками</string>
-    <string name="title_edit_bs">Книжный каталог: редактирование книжной полки</string>
+    <string name="title_isbn_search">поиск по ISBN</string>
+    <string name="title_manage_bs">управление книжными полками</string>
+    <string name="title_edit_bs">редактирование книжной полки</string>
     <string name="search_label">Поиск книг</string>
     <string name="search_hint">Поиск автора или названия</string>
     <string name="book_not_found">Не найдена книга, соответствующая отсканированному штрих-коду. Возможно правильный штрих-код находится внутри книги. Иначе, пожалуйста, введите детализированную информацию о книге вручную.</string>
@@ -340,18 +340,18 @@
     <string name="no_author">(без автора)</string>
     <string name="no_date">(без даты)</string>
 
-    <item name="ACTIVITY_CREATE_BOOK_MANUALLY" type="id"/>
-    <item name="ACTIVITY_CREATE_BOOK_ISBN" type="id"/>
-    <item name="ACTIVITY_CREATE_BOOK_SCAN" type="id"/>
-    <item name="ACTIVITY_EDIT_BOOK" type="id"/>
-    <item name="ACTIVITY_ADMIN" type="id"/>
-    <item name="ACTIVITY_HELP" type="id"/>
-    <item name="ACTIVITY_PREFERENCES" type="id"/>
-    <item name="ACTIVITY_BOOKLIST_STYLE" type="id"/>
-    <item name="ACTIVITY_BOOKLIST_STYLE_PROPERTIES" type="id"/>
-    <item name="ACTIVITY_BOOKLIST_STYLE_GROUPS" type="id"/>
-    <item name="ACTIVITY_BOOKLIST_STYLES" type="id"/>
-    <item name="ACTIVITY_GOODREADS_EXPORT_FAILURES" type="id"/>
+    <item name="ACTIVITY_CREATE_BOOK_MANUALLY" type="id" />
+    <item name="ACTIVITY_CREATE_BOOK_ISBN" type="id" />
+    <item name="ACTIVITY_CREATE_BOOK_SCAN" type="id" />
+    <item name="ACTIVITY_EDIT_BOOK" type="id" />
+    <item name="ACTIVITY_ADMIN" type="id" />
+    <item name="ACTIVITY_HELP" type="id" />
+    <item name="ACTIVITY_PREFERENCES" type="id" />
+    <item name="ACTIVITY_BOOKLIST_STYLE" type="id" />
+    <item name="ACTIVITY_BOOKLIST_STYLE_PROPERTIES" type="id" />
+    <item name="ACTIVITY_BOOKLIST_STYLE_GROUPS" type="id" />
+    <item name="ACTIVITY_BOOKLIST_STYLES" type="id" />
+    <item name="ACTIVITY_GOODREADS_EXPORT_FAILURES" type="id" />
 
     <string name="show_thumbnails">Показывать миниатюры</string>
     <string name="prefer_large_thumbnails">Большие миниатюры предпочтительней</string>
@@ -366,18 +366,18 @@
     <string name="sort_author_year">Автор и год</string>
     <string name="empty_with_brackets">(пусто)</string>
 
-    <item name="MENU_DELETE_BOOK" type="id"/>
-    <item name="MENU_EDIT_BOOK" type="id"/>
-    <item name="MENU_EDIT_BOOK_NOTES" type="id"/>
-    <item name="MENU_EDIT_BOOK_FRIENDS" type="id"/>
-    <item name="MENU_SEND_BOOK_TO_GR" type="id"/>
-    <item name="MENU_EDIT_AUTHOR" type="id"/>
-    <item name="MENU_EDIT_FORMAT" type="id"/>
-    <item name="MENU_DELETE_SERIES" type="id"/>
-    <item name="MENU_EDIT_SERIES" type="id"/>
-    <item name="MENU_DELETE_STYLE" type="id"/>
-    <item name="MENU_EDIT_STYLE" type="id"/>
-    <item name="MENU_CLONE_STYLE" type="id"/>
+    <item name="MENU_DELETE_BOOK" type="id" />
+    <item name="MENU_EDIT_BOOK" type="id" />
+    <item name="MENU_EDIT_BOOK_NOTES" type="id" />
+    <item name="MENU_EDIT_BOOK_FRIENDS" type="id" />
+    <item name="MENU_SEND_BOOK_TO_GR" type="id" />
+    <item name="MENU_EDIT_AUTHOR" type="id" />
+    <item name="MENU_EDIT_FORMAT" type="id" />
+    <item name="MENU_DELETE_SERIES" type="id" />
+    <item name="MENU_EDIT_SERIES" type="id" />
+    <item name="MENU_DELETE_STYLE" type="id" />
+    <item name="MENU_EDIT_STYLE" type="id" />
+    <item name="MENU_CLONE_STYLE" type="id" />
 
     <string name="booklist_preferences">Список книг</string>
     <string name="extra_book_details">Дополнительная информация</string>
@@ -524,7 +524,7 @@
     <string name="edit_format_name">Редактировать имя формата</string>
     <string name="name_can_not_be_blank">Имя не может быть пустым</string>
 
-    <item name="ACTIVITY_ADMIN_FINISH" type="id"/>
+    <item name="ACTIVITY_ADMIN_FINISH" type="id" />
 
     <string name="export_starting_ellipsis">Начало экспорта&#8230;</string>
     <string name="resizing_cover_thumbnails">Изменение размера миниатюр обложек</string>
@@ -641,7 +641,7 @@
 		* Исправление багов\n\n
 		</p>
 		]]></string>
-	
+
     <string name="new_in_500"><![CDATA[
 	<p><b>Новое в версии 5.0.0</b>\n\n
 		* Возможность просмотра книге без редактирования с поддержкой слайдинга! (Смотри \"Другие настройки\") (Силин Коля)\n\n
@@ -657,19 +657,19 @@
 		* Исправление багов\n\n
 		</p>
 		]]></string>
-    
-	<string name="hint_view_only_book_details">
+
+    <string name="hint_view_only_book_details">
 	    При клике на элемент этого листе, вы , если хотите, можете открыть просмотр в режиме без редактирования.
 	    Смотрите "Другие настройки" для детальной настройки.
 	</string>
 
-	<string name="hint_view_only_help">
+    <string name="hint_view_only_help">
 	    Это окно с информацией о книге без возможности редактирования; вы можете потянуть экран вправо или влево,
 	    чтобы перейти на другие книги. Чтобы отредактировать книгу воспользутесь кнопкой меню
 	</string>
-	<string name="details">Детали</string>
-	<string name="loan">Долг</string>
-	<string name="forget_credentials">Убрать credentials</string>
+    <string name="details">Детали</string>
+    <string name="loan">Долг</string>
+    <string name="forget_credentials">Убрать credentials</string>
     <string name="goodreads_auth_blurb_part4">Похоже, что Вы уже авторизовали приложение. Если Вы хотите удалить
     credentials с этого телефона, то воспользуйтесь кнопкой ниже. В этом случае не забудьте деавторизировать приложение на сайте Goodreads.
     \n\nПосле сброса credentials пункт меню Goodreads пропадет из главного меню.</string>
@@ -696,7 +696,7 @@
     <string name="import_failed">Импорт не удался.</string>
     <string name="please_check_sd_writable">Пожалуйста, проверьте что на SD карте достаточно места и возможна запись.</string>
     <string name="please_check_sd_readable">Пожалуйста, проверьте что SD карта доступна.</string>
-    
+
     <string name="new_in_502">
 		<![CDATA[
 			<p><b>Новое в версии 5.0.2</b>\n\n
@@ -712,7 +712,7 @@
 			</p>
 		]]>
     </string>
-	
+
     <string name="language">Язык</string>
     <string name="new_in_504">
 		<![CDATA[
@@ -723,13 +723,13 @@
 			</p>
 		]]>
     </string>
-    
+
     <string name="booklist_generation">Составление списка книг</string>
     <string name="force_compatibility_mode">Режим совместимости</string>
     <string name="force_enhanced_compatibility_mode">Повышенный режим совместимости</string>
     <string name="force_fully_featured">Полная функциональность</string>
     <string name="automatically_use_recommended_option">Автоматически использовать рекомендованный вариант</string>
-    
+
     <string name="new_in_505">
 		<![CDATA[
 			<p><b>Новое в версии 5.0.5</b>\n\n
@@ -746,7 +746,7 @@
 			</p>
 		]]>
     </string>
-    
+
     <string name="new_in_509">
 		<![CDATA[
 			<p><b>Новое в версии 5.0.9</b>\n\n
@@ -756,7 +756,7 @@
 			</p>
 		]]>
     </string>
-    
+
     <string name="import_books_blurb">Книги этого архива будут импортированы. Выберите один из вариантов, чтобы начать импорт, или \'НАЗАД\' для отмены:</string>
     <string name="all_books_blurb">Все книги архива будут импортированы, обновив существующие и добавив новые.</string>
     <string name="new_and_changed_books">Новые и обновленные книги</string>
@@ -765,27 +765,26 @@
     <string name="n_created_m_updated">%1$s создано, %2$s обновлено</string>
     <string name="export_books_blurb">Книги этого архива будут экспортированы. Выберите один из вариантов, чтобы начать экспорт, или \'НАЗАД\' для отмены:</string>
     <string name="covers_progress_incr">%1$s обложек обработано (%2$s не хватает, %3$s пропущено)</string>
-    
+
     <!-- This was deleted in a previous version due to duplicate name; it has since been renamed. In the short term, I just display the simplet message -->
     <!-- The original message was: "ERROR: Import of data (from SDCard) failed. Is the file in the correct place?" -->
     <string name="import_failed_is_location_correct">Импорт не удался.</string>
-    
+
     <string name="export_all_blurb">Все книги, обложки, настройки и пользовательские стили будут экспортированы в архив.</string>
     <string name="export_advanced_blurb">Выберите, что будет экспортировано в архив.</string>
-    
+
     <string name="book_details">Детальное инфо</string>
     <string name="book_details_blurb">Подробная информация о самой книге</string>
     <string name="cover_images">Обложки</string>
     <string name="cover_images_blurb">Обложки для всех выбранных книг. Это сделает экспорт значительно больше.</string>
     <string name="preferences_blurb">Настройки и пользовательские стили</string>
-    
+
     <string name="export_advanced_date_blurb">Опционально укажите дату при выборе книг и/или обложек для экспорта:</string>
-    
+
     <string name="all_books_added_or_updated_since">Все добавленные или обновленные книги с:</string>
     <string name="all_books_added_or_updated_since_last_full_backup">Все добавленные или обновленные книги с последнего бэкапа</string>
 
-    <plurals
-        name="n_books">
+    <plurals name="n_books">
         <item quantity="zero">Нет книг</item>
         <item quantity="one">%1$s книга</item>
         <item quantity="few">%1$s книги</item>
@@ -793,8 +792,7 @@
         <item quantity="other">%1$s книг</item>
     </plurals>
 
-    <plurals
-        name="n_covers">
+    <plurals name="n_covers">
         <item quantity="zero">Нет обложек</item>
         <item quantity="one">%1$s обложка</item>
         <item quantity="few">%1$s обложки</item>
@@ -803,7 +801,7 @@
     </plurals>
 
     <string name="searching_directory_ellipsis">Просмотр папки&#8230;</string>
-    
+
     <string name="new_in_510">
 		<![CDATA[
 			<p><b>Новое в версии 5.1.0</b>\n\n
@@ -817,15 +815,15 @@
 			</p>
 		]]>
     </string>
-    
+
     <string name="amazon_books_in_series">Книги в этой серии</string>
     <string name="amazon_books_by_author">Книги этого автора</string>
     <string name="amazon_books_by_author_in_series">Книги по автору/серии</string>
-    
+
     <string name="hint_book_list">Клик по книге покажет детальную информацию, долгое нажатие на элемент списка покажет остальные действия.</string>
 
     <string name="special_thanks_label">Особые благодарности</string>
-    
+
     <string name="translators_blurb">BookCatalogue это продукт усилий многих людей, и он мог бы и не иметь такого широкого распространения без помощи добровольных переводчиков: Eugenio Davolio, José M. Galdo, Imkal, Gideon van Melle, Emir Sarı, Nick Silin, and Robert Wetzlmayr (если кто-то забыт, пожалуйста, напомните).</string>
 
     <string name="hint_amazon_links_blurb">&lt;p&gt;Если вы покупаете вещи на Amazon после выбора &lt;i&gt;\"%1$s\"&lt;/i&gt;, &lt;i&gt;\"%2$s\"&lt;/i&gt; or &lt;i&gt;\"%3$s\"&lt;/i&gt; элементов меню, часть стоимости заказa будет отослана разработчикам %4$s.&lt;/p&gt;&lt;p&gt; Вы также можете использовать &lt;a href=""https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29""&gt; ссылки нашего FAQ&lt;/a&gt;, чтобы перейти прямо на Amazon или PayPal.&lt;/p&gt;</string>
@@ -835,8 +833,7 @@
     <string name="update_month">Месяц обновления</string>
     <string name="update_day">День обновленияy</string>
 
-    <plurals
-        name="n_stars">
+    <plurals name="n_stars">
         <item quantity="zero">%1$s звезд</item>
         <item quantity="one">%1$s звезда</item>
         <item quantity="two">%1$s звезды</item>

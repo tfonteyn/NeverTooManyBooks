@@ -1,38 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="@dimen/padding_border_double" >
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/bookshelf"
+    <include
+        layout="@layout/inc_toolbar_frame"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/bookshelf"
-        android:inputType="text" />
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        style="?android:attr/buttonBarStyle">
+        android:orientation="vertical"
+        android:padding="@dimen/padding_border_double" >
 
-        <Button
-            android:id="@+id/cancel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/cancel"
-            style="?android:attr/buttonBarNegativeButtonStyle"/>
+        <EditText
+            android:id="@+id/bookshelf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/bookshelf"
+            android:inputType="text" />
 
-        <Button
-            android:id="@+id/confirm"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/confirm_add_bs"
-            style="?android:attr/buttonBarPositiveButtonStyle"/>
+        <include
+            android:id="@+id/buttonbar_cancel_save"
+            layout="@layout/inc_buttonbar_cancel_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
     </LinearLayout>
-
 </LinearLayout>

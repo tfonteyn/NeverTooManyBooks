@@ -72,7 +72,7 @@ public class TextFieldEditor extends AlertDialog {
 		mTextView = root.findViewById(R.id.text);
 
 		// Handle OK
-		root.findViewById(R.id.ok).setOnClickListener(new View.OnClickListener() {
+		root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				mListener.onSaved(TextFieldEditor.this, mTextView.getText().toString());

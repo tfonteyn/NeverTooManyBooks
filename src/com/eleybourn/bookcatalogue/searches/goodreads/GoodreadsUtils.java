@@ -235,7 +235,7 @@ public class GoodreadsUtils {
 							});
 
 							alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-									context.getResources().getString(R.string.cancel),
+									context.getResources().getString(android.R.string.cancel),
 									new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int which) {
 									alertDialog.dismiss();

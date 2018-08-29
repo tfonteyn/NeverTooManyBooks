@@ -44,8 +44,10 @@ import java.util.ArrayList;
  * @author pjw
  */
 public abstract class FileChooser extends BookCatalogueActivity implements
-		SimpleTaskQueueProgressFragment.OnAllTasksFinishedListener, SimpleTaskQueueProgressFragment.OnTaskFinishedListener,
-		FileLister.FileListerListener, PathChangedListener {
+		SimpleTaskQueueProgressFragment.OnAllTasksFinishedListener,
+		SimpleTaskQueueProgressFragment.OnTaskFinishedListener,
+		FileLister.FileListerListener,
+		PathChangedListener {
 
 	/** Flag indicating nature of this activity */
 	private boolean mIsSaveDialog = false;
@@ -91,11 +93,15 @@ public abstract class FileChooser extends BookCatalogueActivity implements
 
 		// Get and display the fragment
 		FragmentManager fragmentManager = getSupportFragmentManager();
-		if (findViewById(R.id.browser_fragment) != null && fragmentManager.findFragmentById(R.id.browser_fragment) == null) {
+		if (findViewById(R.id.browser_fragment) != null
+                && fragmentManager.findFragmentById(R.id.browser_fragment) == null) {
 			// Create the browser
 			FileChooserFragment frag = getChooserFragment();
 			// frag.setArguments(getIntent().getExtras());
-			getSupportFragmentManager().beginTransaction().replace(R.id.browser_fragment, frag).commit();
+			getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.browser_fragment, frag)
+                    .commit();
 		}
 
 		// Handle 'Cancel' button

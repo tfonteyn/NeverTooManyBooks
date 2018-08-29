@@ -33,9 +33,9 @@
     <string name="bookshelf_label">Bookshelf: </string>
     <string name="all_books">All Books</string>
     <string name="isbn_found">ISBN Scanned. Searching Internet.</string>
-    <string name="title_isbn_search">Book Catalogue: ISBN Search</string>
-    <string name="title_manage_bs">Book Catalogue: Manage Bookshelves</string>
-    <string name="title_edit_bs">Book Catalogue: Edit Bookshelf</string>
+    <string name="title_isbn_search">ISBN Search</string>
+    <string name="title_manage_bs">Manage Bookshelves</string>
+    <string name="title_edit_bs">Edit Bookshelf</string>
     <string name="search_label">Search for Books</string>
     <string name="search_hint">Search Author or Title</string>
     <string name="book_not_found">The scanned book was not found. You can sometimes find the correct barcode on the inside front cover. Otherwise please enter the details manually.</string>
@@ -732,7 +732,7 @@ and you can edit the book via the options menu using the menu button or overflow
     </string>
 
     <!-- End: Added/Updated in 5.0.2 -->
-    
+
     <!-- Begin: Added/Updated in 5.0.3 -->
 
     <string name="new_in_503">
@@ -745,9 +745,9 @@ and you can edit the book via the options menu using the menu button or overflow
     </string>
 
     <!-- End: Added/Updated in 5.0.3 -->
-    
+
     <!-- Begin: Added/Updated in 5.0.4 -->
-    
+
     <!-- Short Heading for 'Language' field in book details -->
     <string name="language">Language</string>
     <string name="new_in_504">
@@ -759,7 +759,7 @@ and you can edit the book via the options menu using the menu button or overflow
 			</p>
 		]]>
     </string>
-    
+
     <!-- End: Added/Updated in 5.0.4 -->
 
     <!-- Begin: Added/Updated in 5.0.5 -->
@@ -773,7 +773,7 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="force_fully_featured">Force Fully Featured</string>
     <!-- Default Option listed under "booklist_generation" referring to a conservative way of generating bookslists -->
     <string name="automatically_use_recommended_option">Automatically use recommended option</string>
-    
+
     <string name="new_in_505">
 		<![CDATA[
 			<p><b>New in 5.0.5</b>\n\n
@@ -783,7 +783,7 @@ and you can edit the book via the options menu using the menu button or overflow
 			</p>
 		]]>
     </string>
-    
+
     <!-- End: Added/Updated in 5.0.5 -->
 
     <!-- Begin: Added/Updated in 5.0.8 -->
@@ -796,8 +796,8 @@ and you can edit the book via the options menu using the menu button or overflow
     </string>
     <!-- End: Added/Updated in 5.0.8 -->
 
-	<!--  Note to Translators: don't bother translating strings until they get a version number. They are very much 'draft' versions -->
-    
+    <!--  Note to Translators: don't bother translating strings until they get a version number. They are very much 'draft' versions -->
+
     <!-- Begin: Added/Updated in 5.0.9 -->
     <string name="new_in_509">
 		<![CDATA[
@@ -812,7 +812,7 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- End: Added/Updated in 5.0.9 -->
 
     <!-- Begin: Added/Updated in 5.1.0 -->
-    
+
     <!--  Explanatory text for 'import' dialogue -->
     <string name="import_books_blurb">The books in this archive will be imported. Select on one of two options to start the import, or press \'back\' to cancel:</string>
     <!-- Description of the 'import all books' option -->
@@ -834,7 +834,7 @@ and you can edit the book via the options menu using the menu button or overflow
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="covers_progress_incr">%1$s covers processed (%2$s missing, %3$s skipped)</string>
-    
+
     <!-- Explanatory note for 'export all' option -->
     <string name="export_all_blurb">All books, covers, settings and custom styles will be exported to the archive.</string>
     <!-- Explanatory note for 'advanced export' option -->
@@ -851,26 +851,24 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="cover_images_blurb">Cover images for all selected books. Will make the export much larger.</string>
     <!-- Brief descriptionn -->
     <string name="preferences_blurb">Preferences and user-defined list styles</string>
-    
+
     <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_advanced_date_blurb">Optionally specify a date to use in selecting books and/or covers to export:</string>
-    
+
     <!-- Explanatory note for export date (not yet implemented) -->
     <string name="all_books_added_or_updated_since">All books added or updated since:</string>
     <!-- Explanatory note for export data since last backup -->
     <string name="all_books_added_or_updated_since_last_full_backup">All books added or updated since last full backup</string>
 
     <!-- Short text for 'n books' -->
-    <plurals
-        name="n_books">
+    <plurals name="n_books">
         <item quantity="zero">no books</item>
         <item quantity="one">1 book</item>
         <item quantity="other">%1$s books</item>
     </plurals>
 
     <!-- Short text for 'n covers' -->
-    <plurals
-        name="n_covers">
+    <plurals name="n_covers">
         <item quantity="zero">no covers</item>
         <item quantity="one">1 cover</item>
         <item quantity="other">%1$s covers</item>
@@ -894,14 +892,14 @@ and you can edit the book via the options menu using the menu button or overflow
 			</p>
 		]]>
     </string>
-    
+
     <!-- Menu item -->
     <string name="amazon_books_in_series">Books in this series</string>
     <!-- Menu item -->
     <string name="amazon_books_by_author">Books by this author</string>
     <!-- Menu item -->
     <string name="amazon_books_by_author_in_series">Books by author/series</string>
-    
+
     <!-- Hint text displayed when user enters the book listw -->
     <string name="hint_book_list">Tapping on a book will show you book details, a long-press on an item in the list give you further options.</string>
 
@@ -912,7 +910,7 @@ and you can edit the book via the options menu using the menu button or overflow
 
     <!-- Heading in 'about' dialog -->
     <string name="special_thanks_label">Special Thanks</string>
-    
+
     <!-- Credits in the 'about' dialog -->
     <string name="translators_blurb">BookCatalogue is the product of the efforts of many people, and would not have such wide use without the generous help of our volunteer translators: Eugenio Davolio, José M. Galdo, Imkal, Gideon van Melle, Emir Sarı, Nick Silin, and Robert Wetzlmayr (if we have forgotten someone, please tell us).</string>
 
@@ -928,14 +926,13 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="update_date">Update date</string>
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="update_year">Update Year</string>
-        <!-- Name of the new style grouping (needs to be short). -->
+    <!-- Name of the new style grouping (needs to be short). -->
     <string name="update_month">Update Month</string>
-        <!-- Name of the new style grouping (needs to be short). -->
+    <!-- Name of the new style grouping (needs to be short). -->
     <string name="update_day">Update Day</string>
 
     <!-- Short text for 'n stars' -->
-    <plurals
-        name="n_stars">
+    <plurals name="n_stars">
         <item quantity="zero">%1$s stars</item>
         <item quantity="one">%1$s star</item>
         <item quantity="other">%1$s stars</item>
@@ -957,7 +954,7 @@ and you can edit the book via the options menu using the menu button or overflow
 
     <!-- A heading in the 'about' dialog -->
     <string name="amazon">Amazon</string>
-    
+
     <!-- The following strings are not in this release, but will be in a future release -->
     <!--  Menu Item - will be in the next release -->
 
@@ -968,7 +965,7 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- End: Added/Updated in 5.1.2 -->
 
     <!-- Begin: Added/Updated in 5.1.3 -->
-    
+
     <!-- Preference name (fairly short) for preferred language -->
     <string name="preferred_interface_language">Preferred Interface Language</string>
     <string name="title_reorder">a|A|an|An|the|The</string>
@@ -978,7 +975,7 @@ and you can edit the book via the options menu using the menu button or overflow
 
     <!-- End: Added/Updated in 5.1.3 -->
 
-    <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->    
+    <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
     <!-- End: Added/Updated in [Next Version] -->
 
 </resources>

@@ -146,7 +146,9 @@ public class Terminator {
 					}
 				} else {
 					// Run the available event
-					// TODO: if 'run' blocks, then our Terminator stops terminating! Should probably be another thread. But...not for now.
+					// TODO: if 'run' blocks, then our Terminator stops terminating!
+					// Should probably be another thread.
+					// But...not for now.
 					try {
 						e.runnable.run();
 					} catch(Exception ex) {
@@ -158,10 +160,10 @@ public class Terminator {
 
 		@Override
 		public void onFinish(Exception e) {
-			if (BuildConfig.DEBUG) {
-				System.out.println("Terminator terminating. I'll be back.");
+            System.out.println("Terminator terminating. I'll be back.");
+			if (e != null) {
+				Logger.logError(e);
 			}
 		}
-		
 	}
 }

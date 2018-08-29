@@ -87,8 +87,14 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOKS
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
+ * //Set zooming by default on clicking on image
+ * getView().findViewById(R.id.row_img).setOnClickListener(new OnClickListener() {
  *
  * @author Philip Warner
+ * @Override public void onClick(View v) {
+ * showZoomedThumb(mEditManager.getBookData().getRowId());
+ * }
+ * });
  */
 public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistChangeListener {
     /**
@@ -217,7 +223,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     }
 
     @Override
-    protected int getLayoutId(){
+    protected int getLayoutId() {
         return R.layout.booksonbookshelf;
     }
 
@@ -388,10 +394,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     /**
      * Handle a list item being clicked.
      *
-     * @param parent    Parent adapter
-     * @param view      Row View that was clicked
-     * @param position  Position of view in listView
-     * @param rowId     _id field from cursor
+     * @param parent   Parent adapter
+     * @param view     Row View that was clicked
+     * @param position Position of view in listView
+     * @param rowId    _id field from cursor
      */
     private void handleItemClick(AdapterView<?> parent, View view, int position, long rowId) {
         // Move the cursor to the position
@@ -664,21 +670,23 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             updateListHeader(lvHolder, mTopRow, hasLevel1, hasLevel2, showHeaderFlags);
 
         // Define a scroller to update header detail when top row changes
-        lv.setOnScrollListener(new OnScrollListener() {
-                                   @Override
-                                   public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                                       // TODO: Investigate why BooklistPseudoCursor causes a scroll even when it is closed!
-                                       // Need to check isDead because BooklistPseudoCursor misbehaves when activity terminates and closes cursor
-                                       if (mLastTop != firstVisibleItem && !mIsDead && (showHeaderFlags != 0)) {
-                                           ListViewHolder holder = ViewTagger.getTag(view, R.id.TAG_HOLDER);
-                                           updateListHeader(holder, firstVisibleItem, hasLevel1, hasLevel2, showHeaderFlags);
-                                       }
-                                   }
+        lv.setOnScrollListener(
+                new OnScrollListener() {
+                    @Override
+                    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                        // TODO: Investigate why BooklistPseudoCursor causes a scroll even when it is closed!
+                        // Need to check isDead because BooklistPseudoCursor misbehaves when activity
+                        // terminates and closes cursor
+                        if (mLastTop != firstVisibleItem && !mIsDead && (showHeaderFlags != 0)) {
+                            ListViewHolder holder = ViewTagger.getTag(view, R.id.TAG_HOLDER);
+                            updateListHeader(holder, firstVisibleItem, hasLevel1, hasLevel2, showHeaderFlags);
+                        }
+                    }
 
-                                   @Override
-                                   public void onScrollStateChanged(AbsListView view, int scrollState) {
-                                   }
-                               }
+                    @Override
+                    public void onScrollStateChanged(AbsListView view, int scrollState) {
+                    }
+                }
         );
 
         ActionBar actionBar = getSupportActionBar();

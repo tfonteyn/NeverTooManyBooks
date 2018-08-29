@@ -29,7 +29,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  */
 public class SearchWikipediaHandler extends DefaultHandler {
-	//private StringBuilder builder;
 	public String id = "";
 	private int count = 0;
 	private final String[] link = {"", ""};

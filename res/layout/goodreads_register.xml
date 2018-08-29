@@ -1,83 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
->
-    <LinearLayout
+    android:orientation="vertical">
+
+    <include
+        layout="@layout/inc_toolbar_frame"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingStart="@dimen/padding_border"
-        android:paddingEnd="@dimen/padding_border"
-        >
+        android:layout_height="wrap_content" />
 
-        <!-- BLURB 1 -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
-            android:text="@string/goodreads_auth_blurb_part1"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border">
 
-        <!-- URL -->
+            <!-- BLURB 1 -->
 
-        <TextView
-            android:id="@+id/goodreads_url"
-            android:gravity="center"
-            android:text="@string/goodreads_url"
-            style="@style/link_url" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="20dp"
+                android:text="@string/goodreads_auth_blurb_part1"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <!-- BLURB 2 -->
+            <!-- URL -->
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
-            android:paddingTop="20dp"
-            android:text="@string/goodreads_auth_blurb_part2"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            <TextView
+                android:id="@+id/goodreads_url"
+                style="@style/link_url"
+                android:gravity="center"
+                android:text="@string/goodreads_url" />
 
-        <!-- BUTTON -->
+            <!-- BLURB 2 -->
 
-        <Button
-            android:id="@+id/authorize"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/authorize_access"
-            />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="20dp"
+                android:paddingTop="20dp"
+                android:text="@string/goodreads_auth_blurb_part2"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <!-- BLURB 3 -->
+            <!-- BUTTON -->
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
-            android:paddingTop="20dp"
-            android:text="@string/goodreads_auth_blurb_part3"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-        <!-- BUTTON -->
+            <Button
+                android:id="@+id/authorize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/authorize_access" />
 
-        <TextView
-            android:id="@+id/forget_blurb"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
-            android:paddingTop="20dp"
-            android:text="@string/goodreads_auth_blurb_part4"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            <!-- BLURB 3 -->
 
-        <Button
-            android:id="@+id/forget"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/forget_credentials" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="20dp"
+                android:paddingTop="20dp"
+                android:text="@string/goodreads_auth_blurb_part3"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+            <!-- BUTTON -->
 
-        <!-- BLURB 3 -->
+            <TextView
+                android:id="@+id/forget_blurb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="20dp"
+                android:paddingTop="20dp"
+                android:text="@string/goodreads_auth_blurb_part4"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/forget"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/forget_credentials" />
 
-</ScrollView>
+            <!-- BLURB 3 -->
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>

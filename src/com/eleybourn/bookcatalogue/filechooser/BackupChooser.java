@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -27,6 +27,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.backup.Importer;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.ExportSettings;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.OnExportTypeSelectionDialogResultListener;
@@ -36,7 +37,6 @@ import com.eleybourn.bookcatalogue.dialogs.MessageDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.MessageDialogFragment.OnMessageDialogResultListener;
 import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
 
@@ -45,198 +45,205 @@ import java.util.Date;
 
 /**
  * FileChooser activity to choose an archive file to open/save
- * 
+ *
  * @author pjw
  */
-public class BackupChooser extends FileChooser implements OnMessageDialogResultListener, OnImportTypeSelectionDialogResultListener, OnExportTypeSelectionDialogResultListener {
-	/** The backup file that will be created (if saving) */
-	private File mBackupFile = null;
-	/** Used when saving state */
-	private final static String STATE_BACKUP_FILE = "BackupFileSpec";
-	
-	private static final int TASK_ID_SAVE = 1;
-	private static final int TASK_ID_OPEN = 2;
-	private static final int DIALOG_OPEN_IMPORT_TYPE = 1;
+public class BackupChooser extends FileChooser implements
+        OnMessageDialogResultListener,
+        OnImportTypeSelectionDialogResultListener, OnExportTypeSelectionDialogResultListener {
+    /**
+     * Used when saving state
+     */
+    private final static String STATE_BACKUP_FILE = "BackupFileSpec";
+    private static final int TASK_ID_SAVE = 1;
+    private static final int TASK_ID_OPEN = 2;
+    private static final int DIALOG_OPEN_IMPORT_TYPE = 1;
+    /**
+     * The backup file that will be created (if saving)
+     */
+    private File mBackupFile = null;
 
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		// Set the correct title
-		if (isSaveDialog()) {
-			this.setTitle(R.string.backup_to_archive);
-		} else {
-			this.setTitle(R.string.import_from_archive);			
-		}
+        // Set the correct title
+        if (isSaveDialog()) {
+            this.setTitle(R.string.backup_to_archive);
+        } else {
+            this.setTitle(R.string.import_from_archive);
+        }
 
-		if (savedInstanceState != null && savedInstanceState.containsKey(STATE_BACKUP_FILE)) {
-			mBackupFile = new File(savedInstanceState.getString(STATE_BACKUP_FILE));
-		}
-	
-	}
+        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_BACKUP_FILE)) {
+            mBackupFile = new File(savedInstanceState.getString(STATE_BACKUP_FILE));
+        }
+    }
 
-	/**
-	 * Setup the default file name: blank for 'open', date-based for save
-	 */
-	private String getDefaultFileName() {
-    	if (isSaveDialog()) {
-    		final String sqlDate = DateUtils.toLocalSqlDateOnly(new Date());
-    		return "BookCatalogue-" + sqlDate.replace(" ", "-").replace(":", "") + ".bcbk";
-    	} else {
-    		return "";
-    	}
-	}
+    /**
+     * Setup the default file name: blank for 'open', date-based for save
+     */
+    private String getDefaultFileName() {
+        if (isSaveDialog()) {
+            final String sqlDate = DateUtils.toLocalSqlDateOnly(new Date());
+            return "BookCatalogue-" + sqlDate.replace(" ", "-").replace(":", "") + ".bcbk";
+        } else {
+            return "";
+        }
+    }
 
-	/**
-	 * Create the fragment using the last backup for the path, and the default file name (if saving)
-	 */
-	@Override
-	protected FileChooserFragment getChooserFragment() {
-		String lastBackup = BookCataloguePreferences.getLastBackupFile();
-		return FileChooserFragment.newInstance(lastBackup, getDefaultFileName());
-	}
+    /**
+     * Create the fragment using the last backup for the path, and the default file name (if saving)
+     */
+    @Override
+    protected FileChooserFragment getChooserFragment() {
+        String lastBackup = BookCataloguePreferences.getLastBackupFile();
+        return FileChooserFragment.newInstance(lastBackup, getDefaultFileName());
+    }
 
-	/**
-	 * Get a task suited to building a list of backup files.
-	 */
-	@Override
-	public FileLister getFileLister(File root) {
-		return new BackupLister(root);
-	}
+    /**
+     * Get a task suited to building a list of backup files.
+     */
+    @Override
+    public FileLister getFileLister(File root) {
+        return new BackupLister(root);
+    }
 
-	/**
-	 * Save the state
-	 */
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		// We need the backup file, if set
-		if (mBackupFile != null) {
-			outState.putString(STATE_BACKUP_FILE, mBackupFile.getAbsolutePath());
-		}
-	}
+    /**
+     * Save the state
+     */
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // We need the backup file, if set
+        if (mBackupFile != null) {
+            outState.putString(STATE_BACKUP_FILE, mBackupFile.getAbsolutePath());
+        }
+    }
 
-	/**
-	 * If a file was selected, restore the archive.
-	 */
-	@Override
-	public void onOpen(File file) {
-		ImportTypeSelectionDialogFragment frag = ImportTypeSelectionDialogFragment.newInstance(DIALOG_OPEN_IMPORT_TYPE, file);
-		frag.show(getSupportFragmentManager(), null);
-	}
+    /**
+     * If a file was selected, restore the archive.
+     */
+    @Override
+    public void onOpen(File file) {
+        ImportTypeSelectionDialogFragment frag = ImportTypeSelectionDialogFragment.newInstance(DIALOG_OPEN_IMPORT_TYPE, file);
+        frag.show(getSupportFragmentManager(), null);
+    }
 
-	/**
-	 * If a file was selected, save the archive.
-	 */
-	@Override
-	public void onSave(File file) {
-		ExportTypeSelectionDialogFragment frag = ExportTypeSelectionDialogFragment.newInstance(DIALOG_OPEN_IMPORT_TYPE, file);
-		frag.show(getSupportFragmentManager(), null);
-	}
+    /**
+     * If a file was selected, save the archive.
+     */
+    @Override
+    public void onSave(File file) {
+        ExportTypeSelectionDialogFragment frag = ExportTypeSelectionDialogFragment.newInstance(DIALOG_OPEN_IMPORT_TYPE, file);
+        frag.show(getSupportFragmentManager(), null);
+    }
 
-	@Override
-	public void onTaskFinished(SimpleTaskQueueProgressFragment fragment, int taskId, boolean success, boolean cancelled, FragmentTask task) {
-		// Is it a task we care about?
-		if (taskId == TASK_ID_SAVE) {
-			if (!success) {
-				String msg = getString(R.string.backup_failed)
-						+ " " + getString(R.string.please_check_sd_writable)
-						+ "\n\n" + getString(R.string.if_the_problem_persists);
+    @Override
+    public void onTaskFinished(SimpleTaskQueueProgressFragment fragment, int taskId, boolean success, boolean cancelled, FragmentTask task) {
+        // Is it a task we care about?
+        if (taskId == TASK_ID_SAVE) {
+            if (!success) {
+                String msg = getString(R.string.backup_failed)
+                        + " " + getString(R.string.please_check_sd_writable)
+                        + "\n\n" + getString(R.string.if_the_problem_persists);
 
-				MessageDialogFragment frag = MessageDialogFragment.newInstance(0, R.string.backup_to_archive, msg, R.string.ok, 0, 0);
-				frag.show(getSupportFragmentManager(), null);
-				// Just return; user may want to try again
-				return;
-			}
-			if (cancelled) {
-				// Just return; user may want to try again
-				return;
-			}
-			// Show a helpful message
-			String msg = getString(R.string.archive_complete_details, mBackupFile.getParent(), mBackupFile.getName(), Convert.formatFileSize(mBackupFile.length()));
-			MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_SAVE, R.string.backup_to_archive, msg, R.string.ok, 0, 0);
-			frag.show(getSupportFragmentManager(), null);
+                MessageDialogFragment frag = MessageDialogFragment.newInstance(0,
+                        R.string.backup_to_archive, msg, android.R.string.ok, 0, 0);
+                frag.show(getSupportFragmentManager(), null);
+                // Just return; user may want to try again
+                return;
+            }
+            if (cancelled) {
+                // Just return; user may want to try again
+                return;
+            }
+            // Show a helpful message
+            String msg = getString(R.string.archive_complete_details, mBackupFile.getParent(), mBackupFile.getName(), Convert.formatFileSize(mBackupFile.length()));
+            MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_SAVE,
+                    R.string.backup_to_archive, msg, android.R.string.ok, 0, 0);
+            frag.show(getSupportFragmentManager(), null);
 
-		} else if (taskId == TASK_ID_OPEN) {
-			if (!success) {
-				String msg = getString(R.string.import_failed)
-						+ " " + getString(R.string.please_check_sd_readable)
-						+ "\n\n" + getString(R.string.if_the_problem_persists);
+        } else if (taskId == TASK_ID_OPEN) {
+            if (!success) {
+                String msg = getString(R.string.import_failed)
+                        + " " + getString(R.string.please_check_sd_readable)
+                        + "\n\n" + getString(R.string.if_the_problem_persists);
 
-				MessageDialogFragment frag = MessageDialogFragment.newInstance(0, R.string.import_from_archive, msg, R.string.ok, 0, 0);
-				frag.show(getSupportFragmentManager(), null);
-				// Just return; user may want to try again
-				return;
-			}
-			if (cancelled) {
-				// Just return; user may want to try again
-				return;
-			}
+                MessageDialogFragment frag = MessageDialogFragment.newInstance(0,
+                        R.string.import_from_archive, msg, android.R.string.ok, 0, 0);
+                frag.show(getSupportFragmentManager(), null);
+                // Just return; user may want to try again
+                return;
+            }
+            if (cancelled) {
+                // Just return; user may want to try again
+                return;
+            }
 
-			MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_OPEN, R.string.import_from_archive, R.string.import_complete, R.string.ok, 0, 0);
-			frag.show(getSupportFragmentManager(), null);
+            MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_OPEN,
+                    R.string.import_from_archive, R.string.import_complete, android.R.string.ok, 0, 0);
+            frag.show(getSupportFragmentManager(), null);
 
-		}
-	}
+        }
+    }
 
-	@Override
-	public void onAllTasksFinished(SimpleTaskQueueProgressFragment fragment, int taskId, boolean success, boolean cancelled) {
-		// Nothing to do here; we really only care when backup tasks finish, and there's only ever one task
-	}
+    @Override
+    public void onAllTasksFinished(SimpleTaskQueueProgressFragment fragment, int taskId, boolean success, boolean cancelled) {
+        // Nothing to do here; we really only care when backup tasks finish, and there's only ever one task
+    }
 
-	@Override
-	public void onMessageDialogResult(int dialogId, MessageDialogFragment dialog, int button) {
-		switch(dialogId) {
-		case 0:
-			// Do nothing.
-			// Our dialogs with ID 0 are only 'FYI' type; 
-			break;
-		case TASK_ID_OPEN:
-		case TASK_ID_SAVE:
-			finish();
-			break;
-		}
-	}
+    @Override
+    public void onMessageDialogResult(int dialogId, MessageDialogFragment dialog, int button) {
+        switch (dialogId) {
+            case 0:
+                // Do nothing.
+                // Our dialogs with ID 0 are only 'FYI' type;
+                break;
+            case TASK_ID_OPEN:
+            case TASK_ID_SAVE:
+                finish();
+                break;
+        }
+    }
 
-	@Override
-	public void onImportTypeSelectionDialogResult(int dialogId, ImportTypeSelectionDialogFragment dialog, int rowId, File file) {
-		switch(rowId) {
-		case 0:
-			// Do nothing
-			break;
-		case R.id.all_books_row:
-			BackupManager.restoreCatalogue(this, file, TASK_ID_OPEN, Importer.IMPORT_ALL);
-			break;
-		case R.id.new_and_changed_books_row:
-			BackupManager.restoreCatalogue(this, file, TASK_ID_OPEN, Importer.IMPORT_NEW_OR_UPDATED);
-			break;
-		}
-	}
+    @Override
+    public void onImportTypeSelectionDialogResult(int dialogId, ImportTypeSelectionDialogFragment dialog, int rowId, File file) {
+        switch (rowId) {
+            case 0:
+                // Do nothing
+                break;
+            case R.id.all_books_row:
+                BackupManager.restoreCatalogue(this, file, TASK_ID_OPEN, Importer.IMPORT_ALL);
+                break;
+            case R.id.new_and_changed_books_row:
+                BackupManager.restoreCatalogue(this, file, TASK_ID_OPEN, Importer.IMPORT_NEW_OR_UPDATED);
+                break;
+        }
+    }
 
-	@Override
-	public void onExportTypeSelectionDialogResult(int dialogId, DialogFragment dialog, ExportSettings settings) {
-		switch (settings.options) {
-			case Exporter.EXPORT_ALL:
-				mBackupFile = BackupManager.backupCatalogue(this, settings.file, TASK_ID_SAVE, Exporter.EXPORT_ALL, null);
-				break;
-			case Exporter.EXPORT_NOTHING:
-				return;
-			default:
-				if (settings.dateFrom == null) {
-					String lastBackup = BookCataloguePreferences.getLastBackupDate();
-					if (lastBackup != null && !lastBackup.isEmpty()) {
-						try {
-							settings.dateFrom = DateUtils.parseDate(lastBackup);
-						} catch (Exception e) {
-							// Just ignore; backup everything
-							Logger.logError(e);
-							settings.dateFrom = null;
-						}
-					} else {
-						settings.dateFrom = null;
-					}
-				}
-				mBackupFile = BackupManager.backupCatalogue(this, settings.file, TASK_ID_SAVE, settings.options, settings.dateFrom);
-				break;
-		}
-	}
-
+    @Override
+    public void onExportTypeSelectionDialogResult(int dialogId, DialogFragment dialog, ExportSettings settings) {
+        switch (settings.options) {
+            case Exporter.EXPORT_ALL:
+                mBackupFile = BackupManager.backupCatalogue(this, settings.file, TASK_ID_SAVE, Exporter.EXPORT_ALL, null);
+                break;
+            case Exporter.EXPORT_NOTHING:
+                return;
+            default:
+                if (settings.dateFrom == null) {
+                    String lastBackup = BookCataloguePreferences.getLastBackupDate();
+                    if (lastBackup != null && !lastBackup.isEmpty()) {
+                        try {
+                            settings.dateFrom = DateUtils.parseDate(lastBackup);
+                        } catch (Exception e) {
+                            // Just ignore; backup everything
+                            Logger.logError(e);
+                            settings.dateFrom = null;
+                        }
+                    } else {
+                        settings.dateFrom = null;
+                    }
+                }
+                mBackupFile = BackupManager.backupCatalogue(this, settings.file, TASK_ID_SAVE, settings.options, settings.dateFrom);
+                break;
+        }
+    }
 }

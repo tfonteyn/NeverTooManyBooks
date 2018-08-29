@@ -32,9 +32,9 @@
     <string name="bookshelf_label">Libreria: </string>
     <string name="all_books">Tutti i libri</string>
     <string name="isbn_found">ISBN acquisito. Ricerca in Internet.</string>
-    <string name="title_isbn_search">Book Catalogue: Cerca ISBN</string>
-    <string name="title_manage_bs">Book Catalogue: Gestisci librerie</string>
-    <string name="title_edit_bs">Book Catalogue: Modifica libreria</string>
+    <string name="title_isbn_search">Cerca ISBN</string>
+    <string name="title_manage_bs">Gestisci librerie</string>
+    <string name="title_edit_bs">Modifica libreria</string>
     <string name="search_label">Cerca per libro</string>
     <string name="search_hint">Cerca per autore o titolo</string>
     <string name="book_not_found">Il libro scansionato non è stato trovato. A volte il codice a barre corretto si trova all\'interno della copertina. Altrimenti inserisci i dati manualmente.</string>
@@ -255,7 +255,7 @@
     <item name="TAG_TASK_HOLDER" type="id" />
     <item name="TAG_PROPERTY" type="id" />
     <item name="TAG_DIALOG_ITEM" type="id" />
-    
+
     <string name="my_books">I miei libri</string>
     <string name="my_books_classic">I miei libri (Classico)</string>
     <string name="loan_return_book">Presta, ritorna o modifica libro</string>
@@ -347,18 +347,18 @@
     <string name="sort_author_year">Autore ed Anno</string>
     <string name="empty_with_brackets">(vuoto)</string>
 
-    <item name="MENU_DELETE_BOOK" type="id"/>
-    <item name="MENU_EDIT_BOOK" type="id"/>
-    <item name="MENU_EDIT_BOOK_NOTES" type="id"/>
-    <item name="MENU_EDIT_BOOK_FRIENDS" type="id"/>
-    <item name="MENU_SEND_BOOK_TO_GR" type="id"/>
-    <item name="MENU_EDIT_AUTHOR" type="id"/>
-    <item name="MENU_EDIT_FORMAT" type="id"/>
-    <item name="MENU_DELETE_SERIES" type="id"/>
-    <item name="MENU_EDIT_SERIES" type="id"/>
-    <item name="MENU_DELETE_STYLE" type="id"/>
-    <item name="MENU_EDIT_STYLE" type="id"/>
-    <item name="MENU_CLONE_STYLE" type="id"/>
+    <item name="MENU_DELETE_BOOK" type="id" />
+    <item name="MENU_EDIT_BOOK" type="id" />
+    <item name="MENU_EDIT_BOOK_NOTES" type="id" />
+    <item name="MENU_EDIT_BOOK_FRIENDS" type="id" />
+    <item name="MENU_SEND_BOOK_TO_GR" type="id" />
+    <item name="MENU_EDIT_AUTHOR" type="id" />
+    <item name="MENU_EDIT_FORMAT" type="id" />
+    <item name="MENU_DELETE_SERIES" type="id" />
+    <item name="MENU_EDIT_SERIES" type="id" />
+    <item name="MENU_DELETE_STYLE" type="id" />
+    <item name="MENU_EDIT_STYLE" type="id" />
+    <item name="MENU_CLONE_STYLE" type="id" />
 
     <string name="booklist_preferences">Preferenze Elenchi Libri</string>
     <string name="extra_book_details">Dettagli libro aggiuntivi</string>
@@ -755,7 +755,7 @@
     </string>
 
     <!-- End: Added/Updated in 5.0.2 -->
-    
+
     <!-- Begin: Added/Updated in 5.0.3 -->
 
     <string name="new_in_503">
@@ -768,9 +768,9 @@
     </string>
 
     <!-- End: Added/Updated in 5.0.3 -->
-    
+
     <!-- Begin: Added/Updated in 5.0.4 -->
-    
+
     <!-- Short Heading for 'Language' field in book details -->
     <string name="language">Lingua</string>
     <string name="new_in_504">
@@ -782,7 +782,7 @@
 			</p>
 		]]>
     </string>
-    
+
     <!-- End: Added/Updated in 5.0.4 -->
 
     <!-- Begin: Added/Updated in 5.0.5 -->
@@ -796,7 +796,7 @@
     <string name="force_fully_featured">Forza Utilizzo di Tutte le Funzionalità</string>
     <!-- Default Option listed under "booklist_generation" referring to a conservative way of generating bookslists -->
     <string name="automatically_use_recommended_option">Usa automaticamente le opzioni raccomandate</string>
-    
+
     <string name="new_in_505">
 		<![CDATA[
 			<p><b>Novità nella versione 5.0.5</b>\n\n
@@ -818,7 +818,7 @@
 		]]>
     </string>
     <!-- End: Added/Updated in 5.0.8 -->
-    
+
     <!-- Begin: Added/Updated in 5.0.9 -->
     <string name="new_in_509">
 		<![CDATA[
@@ -833,7 +833,7 @@
     <!-- End: Added/Updated in 5.0.9 -->
 
     <!-- Begin: Added/Updated in 5.1.0 -->
-    
+
     <!--  Explanatory text for 'import' dialogue -->
     <string name="import_books_blurb">I libri di questo archivio saranno importati. Seleziona uno delle due opzioni per avviare l\'importazione, o premi \'back\' per annullare:</string>
     <!-- Description of the 'import all books' option -->
@@ -855,7 +855,7 @@
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="covers_progress_incr">%1$s copertine elaborate (%2$s mancanti, %3$s saltate)</string>
-    
+
     <!-- Explanatory note for 'export all' option -->
     <string name="export_all_blurb">Tutti i libri, copertine, impostazioni e stili personalizzati saranno esportati nell\'archivio.</string>
     <!-- Explanatory note for 'advanced export' option -->
@@ -872,26 +872,24 @@
     <string name="cover_images_blurb">Copertine di tutti i libri selezionati. Ciò renderà l\'esportazione molto più pesante.</string>
     <!-- Brief descriptionn -->
     <string name="preferences_blurb">Preferenze e stili di elencazione personalizzati</string>
-    
+
     <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_advanced_date_blurb">In via opzionale, specifica una data da usare per selezionare libri e/o copertine da esportare:</string>
-    
+
     <!-- Explanatory note for export date (not yet implemented) -->
     <string name="all_books_added_or_updated_since">Tutti i libri aggiunti o aggiornati dopo il giorno:</string>
     <!-- Explanatory note for export data since last backup -->
     <string name="all_books_added_or_updated_since_last_full_backup">Tutti i libri aggiunti o aggiornati dall\'ultimo backup completo</string>
 
     <!-- Short text for 'n books' -->
-    <plurals
-        name="n_books">
+    <plurals name="n_books">
         <item quantity="zero">nessun libro</item>
         <item quantity="one">1 libro</item>
         <item quantity="other">%1$s libri</item>
     </plurals>
 
     <!-- Short text for 'n covers' -->
-    <plurals
-        name="n_covers">
+    <plurals name="n_covers">
         <item quantity="zero">nessuna copertina</item>
         <item quantity="one">1 copertina</item>
         <item quantity="other">%1$s copertine</item>
@@ -914,7 +912,7 @@
 			</p>
 		]]>
     </string>
-    
+
     <!-- End: Added/Updated in 5.1.0 -->
 
     <!-- Begin: Added/Updated in 5.1.1 -->
@@ -927,14 +925,13 @@
     <string name="update_date">Data aggiornamento</string>
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="update_year">Anno</string>
-        <!-- Name of the new style grouping (needs to be short). -->
+    <!-- Name of the new style grouping (needs to be short). -->
     <string name="update_month">Mese</string>
-        <!-- Name of the new style grouping (needs to be short). -->
+    <!-- Name of the new style grouping (needs to be short). -->
     <string name="update_day">Giorno</string>
 
     <!-- Short text for 'n stars' -->
-    <plurals
-        name="n_stars">
+    <plurals name="n_stars">
         <item quantity="zero">%1$s stelle</item>
         <item quantity="one">%1$s stella</item>
         <item quantity="other">%1$s stelle</item>
@@ -957,7 +954,7 @@
 
     <!-- A heading in the 'about' dialog -->
     <string name="amazon">Amazon</string>
-    
+
     <!-- The following strings are not in this release, but will be in a future release -->
     <!--  Menu Item - will be in the next release -->
 
@@ -968,14 +965,14 @@
     <!-- End: Added/Updated in 5.1.2 -->
 
     <!-- Begin: Added/Updated in 5.2.0 -->
-    
+
     <!-- Preference name (fairly short) for preferred language -->
     <string name="preferred_interface_language">Lingua preferita</string>
     <!-- Preference value for a specific language. First arg is name in it's own language, second arg is name in current locale -->
 
     <!-- This is an UPDATED string copied from earlier in the file; "Google Googles" (sic) was removed from the list of scanners -->
     <string name="install_scan">Per scansionare i libri mediante codice a barre ISBN, devi installare una app per la scansione come Barcode Scanner o Pic2shop.</string>
-    
+
     <string name="system_locale">Impostazioni locali di sistema</string>
 
     <!-- Credits in the 'about' dialog -->

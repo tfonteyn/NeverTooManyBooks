@@ -80,9 +80,9 @@ public class BookshelfEdit extends BookCatalogueActivity {
 	private void populateFields() {
 		if (mRowId != null && mRowId > 0) {
 			mBookshelfText.setText(mDbHelper.getBookshelfName(mRowId));
-			mConfirmButton.setText(R.string.confirm_save_bs);
+			mConfirmButton.setText(R.string.save);
 		} else {
-			mConfirmButton.setText(R.string.confirm_add_bs);
+			mConfirmButton.setText(R.string.confirm_add);
 		}
 	}
 	

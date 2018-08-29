@@ -512,13 +512,13 @@ public class BookISBNSearch extends ActivityWithTasks {
 					AlertDialog alertDialog = new AlertDialog.Builder(this).setMessage(R.string.duplicate_alert).create();
 					alertDialog.setTitle(R.string.duplicate_title);
 					alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
-					alertDialog.setButton(this.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+					alertDialog.setButton(this.getResources().getString(android.R.string.ok), new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							go(isbn);
 							return;
 						}
 					});
-					alertDialog.setButton2(this.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+					alertDialog.setButton2(this.getResources().getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							finish();
 							return;
@@ -639,7 +639,7 @@ public class BookISBNSearch extends ActivityWithTasks {
                                     }
                                 });
                         alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                                this.getResources().getString(R.string.cancel),
+                                this.getResources().getString(android.R.string.cancel),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         //do nothing

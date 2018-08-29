@@ -33,9 +33,9 @@
     <string name="bookshelf_label">Ράφι: </string>
     <string name="all_books">Όλα τα βιβλία.</string>
     <string name="isbn_found">ISBN σαρώθηκε. Αναζήτηση στο διαδίκτυο.</string>
-    <string name="title_isbn_search">Book Catalogue: ISBN Αναζήτηση</string>
-    <string name="title_manage_bs">Book Catalogue: Διαχείρηση Ραφιών</string>
-    <string name="title_edit_bs">Book Catalogue: Επεξεργασία ραφιού</string>
+    <string name="title_isbn_search">ISBN Αναζήτηση</string>
+    <string name="title_manage_bs">Διαχείρηση Ραφιών</string>
+    <string name="title_edit_bs">Επεξεργασία ραφιού</string>
     <string name="search_label">Αναζήτηση για βιβλία</string>
     <string name="search_hint">Αναζήτηση συγγραφέα ή τίτλου</string>
     <string name="book_not_found">Το βιβλίο που σαρώθηκε δεν βρέθηκε. Κάποιες φορές το σωστό barcode βρίσκεται στο εσωτερικό του εξωφύλλου. Αλλιώς εισάγετε τις λεπτομέρειες χειροκίνητα.</string>
@@ -860,16 +860,14 @@
     <string name="all_books_added_or_updated_since_last_full_backup">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από το τελευταίο πλήρες αντίγραφο ασφαλείας</string>
 
     <!-- Short text for 'n books' -->
-    <plurals
-        name="n_books">
+    <plurals name="n_books">
         <item quantity="zero">κανένα βιβλίο</item>
         <item quantity="one">1 βιβλίο</item>
         <item quantity="other">%1$s βιβλία</item>
     </plurals>
 
     <!-- Short text for 'n covers' -->
-    <plurals
-        name="n_covers">
+    <plurals name="n_covers">
         <item quantity="zero">κανένα εξώφυλλο</item>
         <item quantity="one">1 εξώφυλλο</item>
         <item quantity="other">%1$s εξώφυλλα</item>
@@ -933,8 +931,7 @@
     <string name="update_day">Ημέρα ενημέρωσης</string>
 
     <!-- Short text for 'n stars' -->
-    <plurals
-        name="n_stars">
+    <plurals name="n_stars">
         <item quantity="zero">%1$s αστέρια</item>
         <item quantity="one">%1$s αστέρι</item>
         <item quantity="other">%1$s αστέρια</item>

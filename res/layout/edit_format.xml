@@ -16,29 +16,10 @@
         android:paddingStart="@dimen/padding_border"
         android:paddingEnd="@dimen/padding_border"/>
 
-    <LinearLayout
-        android:id="@+id/bottom_buttons"
+    <include
+        android:id="@+id/buttonbar_cancel_save"
+        layout="@layout/inc_buttonbar_cancel_save"
         android:layout_width="match_parent"
-        android:layout_height="60sp"
-        android:layout_below="@+id/name"
-        android:orientation="horizontal"
-        style="?android:attr/buttonBarStyle">
-
-        <Button
-            android:id="@+id/cancel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/cancel"
-            style="?android:attr/buttonBarNegativeButtonStyle"/>
-
-        <Button
-            android:id="@+id/confirm"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/save"
-            style="?android:attr/buttonBarPositiveButtonStyle" />
-    </LinearLayout>
+        android:layout_height="wrap_content"/>
 
 </RelativeLayout>

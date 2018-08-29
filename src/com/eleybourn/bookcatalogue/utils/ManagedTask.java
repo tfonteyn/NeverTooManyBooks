@@ -39,25 +39,25 @@ import java.nio.channels.ClosedByInterruptException;
  * @author Philip Warner
  */
 abstract public class ManagedTask extends Thread {
-	// The manager who we will use for progress etc, and who we will inform about our state.
+	/** The manager who we will use for progress etc, and who we will inform about our state. */
 	protected TaskManager mManager;
-	// Flag indicating the main onRun method has completed. Set in call do doFinish() in the UI thread.
+	/** Flag indicating the main onRun method has completed. Set in call do doFinish() in the UI thread. */
 	private boolean mFinished = false;
-	// Indicates the user has requested a cancel. Up to subclass to decice what to do. Set by TaskManager.
+	/** Indicates the user has requested a cancel. Up to subclass to decice what to do. Set by TaskManager. */
 	private boolean mCancelFlg = false;
 
-	//
-	// Called when the task has finished, but *only* if the TaskManager has a context (ie. is
-	// attached to an Activity). If the task manager is *not* attached to an activity, then onFinis()
-	// will be called in the reconnect() call.
-	//
-	// The subclass must return 'true' if it was able to execute all required code in any required
-	// TaskHandler. It does not matter if that code failed or succeeded, only that the Taskhandler 
-	// was executed (if necessary). TaskHandler objects will be cleared by the disconnect() call
-	// and reset by the reconnect() call.
-	//
+	/**
+	 Called when the task has finished, but *only* if the TaskManager has a context (ie. is
+	 attached to an Activity). If the task manager is *not* attached to an activity, then onFinish()
+	 will be called in the reconnect() call.
+
+	 The subclass must return 'true' if it was able to execute all required code in any required
+	 TaskHandler. It does not matter if that code failed or succeeded, only that the Taskhandler
+	 was executed (if necessary). TaskHandler objects will be cleared by the disconnect() call
+	 and reset by the reconnect() call.
+	*/
 	abstract protected void onThreadFinish();
-	// Called to do the main thread work. Can use doProgress() and doToast() to display messages.
+	/** Called to do the main thread work. Can use doProgress() and doToast() to display messages. */
 	abstract protected void onRun() throws InterruptedException, ClosedByInterruptException;
 
 	/**

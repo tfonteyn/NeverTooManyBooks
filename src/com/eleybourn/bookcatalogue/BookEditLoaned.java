@@ -96,6 +96,9 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
             if (ContextCompat.checkSelfPermission(this.getContext(),
                     Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
                 //FIXME: this needs more work... we need to tell the adapter to reload the list.
+				if (BuildConfig.DEBUG) {
+					System.out.println("FIXME: this needs more work... we need to tell the adapter to reload the list.");
+				}
             }
         }
     }
@@ -122,7 +125,6 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
 			} else {
 				loaned(user);
 			}
-			// Setup the background
 			BCBackground.init(this);
 		} finally {
 			Tracker.exitOnCreate(this);			

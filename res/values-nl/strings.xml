@@ -33,9 +33,9 @@
     <string name="bookshelf_label">Boekenplank: </string>
     <string name="all_books">Alle Boeken</string>
     <string name="isbn_found">ISBN gescand. Zoeken op Internet.</string>
-    <string name="title_isbn_search">Book Catalogue: ISBN zoeken</string>
-    <string name="title_manage_bs">Book Catalogue: Boekenplank beheren</string>
-    <string name="title_edit_bs">Book Catalogue: Boekenplank bewerken</string>
+    <string name="title_isbn_search">ISBN zoeken</string>
+    <string name="title_manage_bs">Boekenplank beheren</string>
+    <string name="title_edit_bs">Boekenplank bewerken</string>
     <string name="search_label">Zoeken naar boeken</string>
     <string name="search_hint">zoeken naar auteurs of titels</string>
     <string name="book_not_found">Het gescande boek is niet gevonden. U kunt de juiste streepjescode aan de achterkant van de omslag vinden. Vul anders de gegevens handmatig in.</string>
@@ -350,18 +350,18 @@
     <string name="sort_author_year">Auteur en jaar</string>
     <string name="empty_with_brackets">(leeg)</string>
 
-    <item name="MENU_DELETE_BOOK" type="id"/>
-    <item name="MENU_EDIT_BOOK" type="id"/>
-    <item name="MENU_EDIT_BOOK_NOTES" type="id"/>
-    <item name="MENU_EDIT_BOOK_FRIENDS" type="id"/>
-    <item name="MENU_SEND_BOOK_TO_GR" type="id"/>
-    <item name="MENU_EDIT_AUTHOR" type="id"/>
-    <item name="MENU_EDIT_FORMAT" type="id"/>
-    <item name="MENU_DELETE_SERIES" type="id"/>
-    <item name="MENU_EDIT_SERIES" type="id"/>
-    <item name="MENU_DELETE_STYLE" type="id"/>
-    <item name="MENU_EDIT_STYLE" type="id"/>
-    <item name="MENU_CLONE_STYLE" type="id"/>
+    <item name="MENU_DELETE_BOOK" type="id" />
+    <item name="MENU_EDIT_BOOK" type="id" />
+    <item name="MENU_EDIT_BOOK_NOTES" type="id" />
+    <item name="MENU_EDIT_BOOK_FRIENDS" type="id" />
+    <item name="MENU_SEND_BOOK_TO_GR" type="id" />
+    <item name="MENU_EDIT_AUTHOR" type="id" />
+    <item name="MENU_EDIT_FORMAT" type="id" />
+    <item name="MENU_DELETE_SERIES" type="id" />
+    <item name="MENU_EDIT_SERIES" type="id" />
+    <item name="MENU_DELETE_STYLE" type="id" />
+    <item name="MENU_EDIT_STYLE" type="id" />
+    <item name="MENU_CLONE_STYLE" type="id" />
 
     <string name="booklist_preferences">Boekenlijst Voorkeuren</string>
     <string name="extra_book_details">Extra boekdetails</string>
@@ -754,7 +754,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     </string>
 
     <!-- End: Added/Updated in 5.0.2 -->
-    
+
     <!-- Begin: Added/Updated in 5.0.3 -->
 
     <string name="new_in_503">
@@ -767,9 +767,9 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     </string>
 
     <!-- End: Added/Updated in 5.0.3 -->
-    
+
     <!-- Begin: Added/Updated in 5.0.4 -->
-    
+
     <!-- Short Heading for 'Language' field in book details -->
     <string name="language">Taal</string>
     <string name="new_in_504">
@@ -781,7 +781,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
 			</p>
 11		]]>
     </string>
-    
+
     <!-- End: Added/Updated in 5.0.4 -->
 
     <!-- Begin: Added/Updated in 5.0.5 -->
@@ -795,7 +795,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="force_fully_featured">Forceer volledige functionaliteit</string>
     <!-- Default Option listed under "booklist_generation" referring to a conservative way of generating bookslists -->
     <string name="automatically_use_recommended_option">Gebruik automatisch de aanbevolen optie</string>
-    
+
     <string name="new_in_505">
 		<![CDATA[
 			<p><b>Nieuw in 5.0.5</b>\n\n
@@ -805,7 +805,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
 			</p>
 		]]>
     </string>
-    
+
     <!-- End: Added/Updated in 5.0.5 -->
 
     <!-- Begin: Added/Updated in 5.0.8 -->
@@ -818,7 +818,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     </string>
     <!-- End: Added/Updated in 5.0.8 -->
 
-	<!--  Note to Translators: don't bother translating strings until they get a version number. They are very much 'draft' versions -->
+    <!--  Note to Translators: don't bother translating strings until they get a version number. They are very much 'draft' versions -->
 
     <!-- Begin: Added/Updated in 5.0.9 -->
     <string name="new_in_509">
@@ -834,7 +834,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <!-- End: Added/Updated in 5.0.9 -->
 
     <!-- Begin: Added/Updated in 5.1.0 -->
-    
+
     <!--  Explanatory text for 'import' dialogue -->
     <string name="import_books_blurb">De boeken in dit archief zullen worden geïmporteerd. Tik op één van de twee opties om de import te starten of druk op \'terug\' om te annuleren:</string>
     <!-- Description of the 'import all books' option -->
@@ -856,7 +856,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="covers_progress_incr">%1$s boekomslagen verwerkt (%2$s missend, %3$s overgeslagen)</string>
-    
+
     <!-- Explanatory note for 'export all' option -->
     <string name="export_all_blurb">Alle boeken, omslagafbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>
     <!-- Explanatory note for 'advanced export' option -->
@@ -873,26 +873,24 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="cover_images_blurb">Omslagafbeeldingen voor alle geselecteerde boeken. Dit zal de export aanzienlijk groter maken.</string>
     <!-- Brief description -->
     <string name="preferences_blurb">Voorkeuren en aangepaste boekenlijst stijlen</string>
-    
+
     <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_advanced_date_blurb">Specificeer desgewenst een datum voor de selectie van boeken en/of omslagen om te exporteren:</string>
-    
+
     <!-- Explanatory note for export date (not yet implemented) -->
     <string name="all_books_added_or_updated_since">Alle boeken die zijn toegevoegd of bijgewerkt sinds:</string>
     <!-- Explanatory note for export data since last backup -->
     <string name="all_books_added_or_updated_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up</string>
 
     <!-- Short text for 'n books' -->
-    <plurals
-        name="n_books">
+    <plurals name="n_books">
         <item quantity="zero">geen boeken</item>
         <item quantity="one">1 boek</item>
         <item quantity="other">%1$s boeken</item>
     </plurals>
 
     <!-- Short text for 'n covers' -->
-    <plurals
-        name="n_covers">
+    <plurals name="n_covers">
         <item quantity="zero">geen omslagen</item>
         <item quantity="one">1 omslag</item>
         <item quantity="other">%1$s omslagen</item>
@@ -916,29 +914,29 @@ Zie "Meer voorkeuren" voor de relevante instelling.
 			</p>
 		]]>
     </string>
-    
+
     <!-- Menu item -->
     <string name="amazon_books_in_series">Boeken in deze serie</string>
     <!-- Menu item -->
     <string name="amazon_books_by_author">Boeken van deze auteur</string>
     <!-- Menu item -->
     <string name="amazon_books_by_author_in_series">Boeken per auteur/serie</string>
-    
+
     <!-- Hint text displayed when user enters the book listw -->
     <string name="hint_book_list">Tikken op een boek zal de details van het boek tonen, lang drukken op een titel in de lijst geeft verdere opties.</string>
 
     <!-- TRANLATORS NOTE: I HAVE UPDATED THE new_in_510, above! Sorry. -->
-    
+
     <string name="zxing_scanner">Zxing Scanner</string>
-    
+
     <!-- Heading in 'about' dialog -->
     <string name="special_thanks_label">Speciale dankbetuiging</string>
-    
+
     <!-- Credits in the 'about' dialog -->
     <string name="translators_blurb">BookCatalogue is het resultaat van de inspanning van vele personen en zou niet zo\'n grote verspreiding kennen zonder de genereuse hulp van vrijwillige vertalers: Eugenio Davolio, José M. Galdo, Imkal, Gideon van Melle, Emir Sarı, Nick Silin, and Robert Wetzlmayr (als we iemand zijn vergeten, laat het ons aub weten).</string>
-    
+
     <!-- End: Added/Updated in 5.1.0 -->
-    
+
     <!-- Begin: Added/Updated in 5.1.1 -->
 
     <!-- Name of the 'Default' bookshelf, created when app first installed. Needs to be short. -->
@@ -954,8 +952,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="update_day">Dag update</string>
 
     <!-- Short text for 'n stars' -->
-    <plurals
-        name="n_stars">
+    <plurals name="n_stars">
         <item quantity="zero">%1$s sterren</item>
         <item quantity="one">%1$s ster</item>
         <item quantity="other">%1$s sterren</item>
@@ -978,7 +975,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
 
     <!-- A heading in the 'about' dialog -->
     <string name="amazon">Amazon</string>
-    
+
     <!-- The following strings are not in this release, but will be in a future release -->
     <!--  Menu Item - will be in the next release -->
 
@@ -989,7 +986,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <!-- End: Added/Updated in 5.1.2 -->
 
     <!-- Begin: Added/Updated in 5.2.0 -->
-    
+
     <!-- Preference name (fairly short) for preferred language -->
     <string name="preferred_interface_language">Voorkeurstaal voor Interface</string>
     <!-- Preference value for a specific language. First arg is name in it's own language, second arg is name in current locale -->
@@ -1011,9 +1008,9 @@ Zie "Meer voorkeuren" voor de relevante instelling.
 
     <!-- End: Added/Updated in 5.2.0 -->
 
-    <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->    
+    <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
 
-    
+
     <!-- End: Added/Updated in [Next Version] -->
-    
-    </resources>
+
+</resources>

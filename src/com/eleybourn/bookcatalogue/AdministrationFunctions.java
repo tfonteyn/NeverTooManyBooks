@@ -123,7 +123,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 			v.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					manageBookselves();
+					manageBookshelves();
 				}
 			});
 		}
@@ -149,12 +149,12 @@ public class AdministrationFunctions extends ActivityWithTasks {
 			v.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					BooklistStyles.startEditActivity(AdministrationFunctions.this);
+					manageBooklistStyles();
 				}
 			});
 		}
 
-		/* Backup to Archive */
+		/* Export (backup) to Archive */
 		{
 			View v = findViewById(R.id.backup_catalogue_label);
 			// Make line flash when clicked.
@@ -167,7 +167,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 			});
 		}
 
-		/* Restore from Archive */
+		/* Import from Archive */
 		{
 			/* Restore Catalogue Link */
 			View v = findViewById(R.id.restore_catalogue_label);
@@ -209,7 +209,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 							.setIcon(android.R.drawable.ic_menu_info_details)
 							.create();
 					alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
-							AdministrationFunctions.this.getResources().getString(R.string.ok),
+							AdministrationFunctions.this.getResources().getString(android.R.string.ok),
 							new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							importData();
@@ -217,7 +217,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 						}
 					});
 					alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-							AdministrationFunctions.this.getResources().getString(R.string.cancel),
+							AdministrationFunctions.this.getResources().getString(android.R.string.cancel),
 							new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							//do nothing
@@ -378,7 +378,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	/**
 	 * Load the Bookshelf Activity
 	 */
-	private void manageBookselves() {
+	private void manageBookshelves() {
 		Intent i = new Intent(this, Bookshelf.class);
 		startActivityForResult(i, ACTIVITY_BOOKSHELF);
 	}
@@ -390,6 +390,31 @@ public class AdministrationFunctions extends ActivityWithTasks {
 		Intent i = new Intent(this, FieldVisibility.class);
 		startActivityForResult(i, ACTIVITY_FIELD_VISIBILITY);
 	}
+
+	/**
+	 * Load the Edit Book List Styles Activity
+	 */
+	private void manageBooklistStyles() {
+		BooklistStyles.startEditActivity(AdministrationFunctions.this);
+	}
+
+    /**
+     * Start the archiving activity
+     */
+    public static void backupCatalogue(Activity a) {
+        Intent i = new Intent(a, BackupChooser.class);
+        i.putExtra(BackupChooser.EXTRA_MODE, BackupChooser.EXTRA_MODE_SAVE_AS);
+        a.startActivity(i);
+    }
+
+    /**
+     * Start the restore activity
+     */
+    private void restoreCatalogue() {
+        Intent i = new Intent(this, BackupChooser.class);
+        i.putExtra(BackupChooser.EXTRA_MODE, BackupChooser.EXTRA_MODE_OPEN);
+        startActivity(i);
+    }
 
 	/**
 	 * Export all data to a CSV file
@@ -420,7 +445,9 @@ public class AdministrationFunctions extends ActivityWithTasks {
 			} else {
 				// If more than one, ask user which file
 				// ENHANCE: Consider asking about importing cover images.
-				StandardDialogs.selectFileDialog(getLayoutInflater(), getString(R.string.more_than_one_export_file_blah), files, new SimpleDialogOnClickListener() {
+				StandardDialogs.selectFileDialog(getLayoutInflater(),
+                        getString(R.string.more_than_one_export_file_blah),
+                        files, new SimpleDialogOnClickListener() {
 					@Override
 					public void onClick(SimpleDialogItem item) {
 						SimpleDialogFileItem fileItem = (SimpleDialogFileItem) item;
@@ -461,24 +488,6 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	 */
 	private void showBackgroundTasks() {
 		Intent i = new Intent(this, TaskListActivity.class);
-		startActivity(i);
-	}
-
-	/**
-	 * Start the archiving activity
-	 */
-	public static void backupCatalogue(Activity a) {
-		Intent i = new Intent(a, BackupChooser.class);
-		i.putExtra(BackupChooser.EXTRA_MODE, BackupChooser.EXTRA_MODE_SAVE_AS);
-		a.startActivity(i);
-	}
-
-	/**
-	 * Start the restore activity
-	 */
-	private void restoreCatalogue() {
-		Intent i = new Intent(this, BackupChooser.class);
-		i.putExtra(BackupChooser.EXTRA_MODE, BackupChooser.EXTRA_MODE_OPEN);
 		startActivity(i);
 	}
 
@@ -533,7 +542,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 				.setIcon(android.R.drawable.ic_menu_send)
 				.create();
 		alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
-				getResources().getString(R.string.ok),
+				getResources().getString(android.R.string.ok),
 				new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				// setup the mail message
@@ -560,7 +569,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 			}
 		}); 
 		alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-				getResources().getString(R.string.cancel),
+				getResources().getString(android.R.string.cancel),
 				new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				//do nothing

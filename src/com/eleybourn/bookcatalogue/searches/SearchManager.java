@@ -26,20 +26,20 @@ import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.utils.ManagedTask;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
-import com.eleybourn.bookcatalogue.utils.TaskManager;
-import com.eleybourn.bookcatalogue.utils.TaskManager.TaskManagerListener;
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 import com.eleybourn.bookcatalogue.searches.amazon.SearchAmazonThread;
 import com.eleybourn.bookcatalogue.searches.goodreads.SearchGoodreadsThread;
-import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 import com.eleybourn.bookcatalogue.searches.googlebooks.SearchGoogleBooksThread;
 import com.eleybourn.bookcatalogue.searches.librarything.SearchLibraryThingThread;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
-import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.ManagedTask;
+import com.eleybourn.bookcatalogue.utils.TaskManager;
+import com.eleybourn.bookcatalogue.utils.TaskManager.TaskManagerListener;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.ArrayList;
@@ -134,7 +134,9 @@ public class SearchManager implements TaskManagerListener {
 	@Override
 	public void onTaskEnded(TaskManager manager, ManagedTask task) {
 		int size;
-		//System.out.println(task.getClass().getSimpleName() + "(" +  + task.getId() + ") FINISHED starting");
+        if (BuildConfig.DEBUG) {
+            System.out.println(task.getClass().getSimpleName() + "(" +  + task.getId() + ") onTaskEnded starting");
+        }
 
 		// Handle the result, and optionally queue another task
 		if (task instanceof SearchThread)
@@ -144,21 +146,25 @@ public class SearchManager implements TaskManagerListener {
 		synchronized(mRunningTasks) {
 			mRunningTasks.remove(task);
 			size = mRunningTasks.size();
-			//for(ManagedTask t: mRunningTasks) {
-			//	System.out.println(t.getClass().getSimpleName() + "(" +  + t.getId() + ") still running");
-			//}
+            if (BuildConfig.DEBUG) {
+                for(ManagedTask t: mRunningTasks) {
+                	System.out.println(t.getClass().getSimpleName() + "(" +  + t.getId() + ") still running");
+                }
+            }
 		}
 		if (size == 0) {
 			// Stop listening FIRST...otherwise, if sendResults() calls a listener that starts
 			// a new task, we will stop listening for the new task.
 			TaskManager.getMessageSwitch().removeListener(mTaskManager.getSenderId(), this);
 			if (BuildConfig.DEBUG) {
-				System.out.println("Not listening(1)");
+				System.out.println("SearchManager not listening(1)");
 			}
 			// Notify the listeners.
 			sendResults();
 		}
-		//System.out.println(task.getClass().getSimpleName() + "(" +  + task.getId() + ") FINISHED Exiting");
+		if (BuildConfig.DEBUG) {
+            System.out.println(task.getClass().getSimpleName() + "(" + +task.getId() + ") onTaskEnded Exiting");
+        }
 	}
 
 	/**
@@ -181,7 +187,9 @@ public class SearchManager implements TaskManagerListener {
 		synchronized(mRunningTasks) {
 			mRunningTasks.add(thread);
 			mTaskManager.addTask(thread);
-			//System.out.println(thread.getClass().getSimpleName() + "(" +  + thread.getId() + ") STARTING");
+			if (BuildConfig.DEBUG) {
+                System.out.println(thread.getClass().getSimpleName() + "(" +  + thread.getId() + ") STARTING");
+            }
 		}
 		thread.start();
 	}
@@ -284,7 +292,9 @@ public class SearchManager implements TaskManagerListener {
 	private void doSearch() {
 		// List for task ends
 		TaskManager.getMessageSwitch().addListener(mTaskManager.getSenderId(), this, false);
-		//System.out.println("Listening");
+        if (BuildConfig.DEBUG) {
+            System.out.println("SearchManager.doSearch listener started");
+        }
 
 		// We really want to ensure we get the same book from each, so if isbn is not present, do
 		// these in series.
@@ -314,7 +324,9 @@ public class SearchManager implements TaskManagerListener {
 			if (!tasksStarted) {
 				sendResults();
 				TaskManager.getMessageSwitch().removeListener(mTaskManager.getSenderId(), this);
-				//System.out.println("Not listening(2)");
+				if (BuildConfig.DEBUG) {
+					System.out.println("SearchManager.doSearch listener stopped");
+				}
 			}
 		}
 

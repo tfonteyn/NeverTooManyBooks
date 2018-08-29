@@ -3,56 +3,33 @@
     android:id="@+id/list_wrapper"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/top_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="top"
-        android:orientation="vertical" >
-    </LinearLayout>
+        android:orientation="vertical" />
 
-    <LinearLayout
-        android:id="@+id/bottom_buttons"
+    <include
+        android:id="@+id/buttonbar_cancel_save"
+        layout="@layout/inc_buttonbar_cancel_save"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:padding="@dimen/padding_border"
-        style="?android:attr/buttonBarStyle">
-
-        <Button
-            android:id="@+id/cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|start"
-            android:layout_weight="1"
-            android:text="@string/cancel"
-            style="?android:attr/buttonBarNegativeButtonStyle" />
-
-        <Button
-            android:id="@+id/confirm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|end"
-            android:layout_weight="1"
-            android:text="@string/save"
-            style="?android:attr/buttonBarPositiveButtonStyle"/>
-    </LinearLayout>
+        android:layout_height="wrap_content"/>
 
     <LinearLayout
         android:id="@+id/body"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_buttons"
+        android:layout_above="@+id/buttonbar_cancel_save"
         android:layout_below="@+id/top_buttons"
         android:gravity="top"
         android:orientation="vertical"
-        android:paddingStart="@dimen/padding_border"
-        android:paddingEnd="@dimen/padding_border">
+        android:paddingEnd="@dimen/padding_border"
+        android:paddingStart="@dimen/padding_border">
 
-        <com.eleybourn.bookcatalogue.widgets.TouchListView
-            xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
+        <com.eleybourn.bookcatalogue.widgets.TouchListView xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
             android:id="@+id/android:list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -109,7 +109,7 @@ public class PartialDatePicker extends AlertDialog {
 
 		// Get the layout
 		LayoutInflater inf = this.getLayoutInflater();
-		View root = inf.inflate(R.layout.date_picker, null);
+		View root = inf.inflate(R.layout.partial_date_picker, null);
 
 		// Ensure components match current locale order
 		reorderPickers(root);
@@ -265,7 +265,7 @@ public class PartialDatePicker extends AlertDialog {
 		);
 
 		// Handle OK
-		root.findViewById(R.id.ok).setOnClickListener(new View.OnClickListener() {
+		root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// Ensure the date is 'hierarchically valid'; require year, if month is non-null, require month if day non-null

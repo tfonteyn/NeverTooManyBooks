@@ -20,14 +20,19 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.SearchThread;
-import com.eleybourn.bookcatalogue.utils.TaskManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.TaskManager;
 
 import java.util.ArrayList;
+
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
 
 /**
  * SearchManager for goodreads.
@@ -36,9 +41,6 @@ import java.util.ArrayList;
  */
 public class SearchGoodreadsThread extends SearchThread {
 
-	/**
-	 * Constructor.
-	 */
 	public SearchGoodreadsThread(TaskManager manager,
 			String author, String title, String isbn, boolean fetchThumbnail) {
 		super(manager, author, title, isbn, fetchThumbnail);
@@ -60,10 +62,17 @@ public class SearchGoodreadsThread extends SearchThread {
 				}
 			}
 		} catch (BookNotFoundException ignore) {
+        } catch (OAuthMessageSignerException | OAuthExpectationFailedException | OAuthCommunicationException
+                | GoodreadsManager.Exceptions.NotAuthorizedException e) {
+		    // Added to stop confusing a new developer.... the dev keys need to be in the manifest
+            if (BuildConfig.DEBUG) {
+                Logger.logError(e);
+                showException(R.string.searching_goodreads, e);
+            }
 		} catch (Exception e) {
 			Logger.logError(e);
 			showException(R.string.searching_goodreads, e);
-		}
+        }
 	}
 
 	/**
@@ -73,5 +82,4 @@ public class SearchGoodreadsThread extends SearchThread {
 	public int getSearchId() {
 		return SearchManager.SEARCH_GOODREADS;
 	}
-
 }

@@ -13,6 +13,7 @@
     <!-- System wide theme customizing goes into these -->
     <style name="ThemeDark" parent="@style/Theme.AppCompat.NoActionBar" />
     <style name="ThemeLight" parent="@style/Theme.AppCompat.Light.NoActionBar" />
+
     <!--
     <style name="ThemeDark" parent="@android:style/Theme.Material.NoActionBar" />
     <style name="ThemeLight" parent="@android:style/Theme.Material.Light.NoActionBar" />

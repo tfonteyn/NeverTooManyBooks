@@ -136,31 +136,32 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
                 && isExistingBook;
 
         mTabLayout = findViewById(R.id.tabpanel);
+		mTabLayout.addOnTabSelectedListener(new TabListener());
 
 		if (mIsReadOnly) {
 			BookDetailsReadOnly details = new BookDetailsReadOnly();
 			details.setArguments(extras);
-			showTab(details);
+			replaceTab(details);
 
             mTabLayout.setVisibility(View.GONE);
-            findViewById(R.id.buttons).setVisibility(View.GONE);
+            findViewById(R.id.buttonbar_cancel_save).setVisibility(View.GONE);
 		} else {
             ArrayList<TabLayout.Tab> mAllTabs = new ArrayList<>();
             try {
-            	TabLayout.Tab t;
 
-            	t = mTabLayout.newTab().setText(R.string.details).setTag(mTabClasses[TAB_EDIT].newInstance());
-                mTabLayout.addTab(t);
-				mAllTabs.add(t);
+				TabLayout.Tab tab;
+				tab = mTabLayout.newTab().setText(R.string.details).setTag(mTabClasses[TAB_EDIT].newInstance());
+                mTabLayout.addTab(tab);
+				mAllTabs.add(tab);
 
-				t = mTabLayout.newTab().setText(R.string.notes).setTag(mTabClasses[TAB_EDIT_NOTES].newInstance());
-                mTabLayout.addTab(t);
-				mAllTabs.add(t);
+				tab = mTabLayout.newTab().setText(R.string.notes).setTag(mTabClasses[TAB_EDIT_NOTES].newInstance());
+                mTabLayout.addTab(tab);
+				mAllTabs.add(tab);
 
 				if (isExistingBook) {
-                    t = mTabLayout.newTab().setText(R.string.loan).setTag(mTabClasses[TAB_EDIT_FRIENDS].newInstance());
-					mTabLayout.addTab(t);
-					mAllTabs.add(t);
+                    tab = mTabLayout.newTab().setText(R.string.loan).setTag(mTabClasses[TAB_EDIT_FRIENDS].newInstance());
+					mTabLayout.addTab(tab);
+					mAllTabs.add(tab);
 
                     boolean isAnthology = (mBookData.getRowId() > 0) && (mBookData.getInt(BookData.KEY_ANTHOLOGY) != 0);
                     setShowAnthology(isAnthology);
@@ -169,19 +170,20 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
                 throw new RuntimeException("Creating tab instances failed - check code for: " + mTabClasses.toString(), e);
             }
 
-            mTabLayout.addOnTabSelectedListener(new TabListener());
 
 			if (extras != null && extras.containsKey(TAB)) {
 				int i = extras.getInt(TAB);
 				if (mAllTabs.size() > i) {
-					showTab(mAllTabs.get(i));
+					mAllTabs.get(i).select();
+					//replaceTab(mAllTabs.get(i));
 				}
 			} else {
-				showTab(mAllTabs.get(TAB_EDIT));
+				mAllTabs.get(TAB_EDIT).select();
+				//replaceTab(mAllTabs.get(TAB_EDIT));
 			}
             mTabLayout.setVisibility(View.VISIBLE);
 
-            findViewById(R.id.buttons).setVisibility(View.VISIBLE);
+            findViewById(R.id.buttonbar_cancel_save).setVisibility(View.VISIBLE);
         }
 
         Button mConfirmButton = findViewById(R.id.confirm);
@@ -227,7 +229,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     private class TabListener implements TabLayout.OnTabSelectedListener {
         @Override
         public void onTabSelected(TabLayout.Tab tab) {
-            showTab(tab);
+			replaceTab((Fragment)tab.getTag());
         }
 
         @Override
@@ -239,15 +241,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         }
     }
 
-    private Fragment getFragmentFromTab(TabLayout.Tab tab) {
-         return (Fragment)tab.getTag();
-    }
-
-    private void showTab(TabLayout.Tab tab) {
-        showTab(getFragmentFromTab(tab));
-    }
-
-    private void showTab(Fragment fragment) {
+    private void replaceTab(Fragment fragment) {
 		getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment, fragment)
@@ -481,7 +475,9 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         if (showAnthology) {
             if (mAnthologyTab == null) {
                 try {
-                    mAnthologyTab = mTabLayout.newTab().setText(R.string.edit_book_anthology).setTag(mTabClasses[TAB_EDIT_ANTHOLOGY].newInstance());
+                    mAnthologyTab = mTabLayout.newTab()
+							.setText(R.string.edit_book_anthology)
+							.setTag(mTabClasses[TAB_EDIT_ANTHOLOGY].newInstance());
                 } catch (InstantiationException | IllegalAccessException ignore) {
                 }
             }
@@ -584,7 +580,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 					alert.setTitle(R.string.duplicate_book_title);
 					alert.setIcon(android.R.drawable.ic_menu_info_details);
 					alert.setButton(SaveAlert.BUTTON_POSITIVE,
-							this.getResources().getString(R.string.ok),
+							this.getResources().getString(android.R.string.ok),
 							new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							updateOrCreate();
@@ -593,7 +589,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 						}
 					});
 					alert.setButton(SaveAlert.BUTTON_NEGATIVE,
-							this.getResources().getString(R.string.cancel),
+							this.getResources().getString(android.R.string.cancel),
 							new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							nextStep.failure();

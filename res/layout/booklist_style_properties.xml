@@ -15,35 +15,11 @@
         android:orientation="vertical" >
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/bottom_buttons"
+    <include
+        android:id="@+id/buttonbar_cancel_save"
+        layout="@layout/inc_buttonbar_cancel_save"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="bottom"
-        android:orientation="horizontal"
-        android:padding="@dimen/padding_border"
-        style="?android:attr/buttonBarStyle">
-
-        <Button
-            android:id="@+id/cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|start"
-            android:layout_weight="10"
-            android:text="@string/cancel"
-            style="?android:attr/buttonBarNegativeButtonStyle"/>
-
-        <Button
-            android:id="@+id/confirm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|end"
-            android:layout_weight="10"
-            android:text="@string/save"
-            style="?android:attr/buttonBarPositiveButtonStyle" />
-
-    </LinearLayout>
+        android:layout_height="wrap_content"/>
 
     <!-- incompatible with APIL4 android:fadeScrollbars="false" -->
 
@@ -52,7 +28,7 @@
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/bottom_buttons"
+        android:layout_above="@+id/buttonbar_cancel_save"
         android:layout_below="@+id/top_buttons" >
 
         <!--

@@ -25,6 +25,8 @@ import java.util.Date;
  * Class for representing read-only book details.
  *
  * @author n.silin
+ *
+ * Fragment !
  */
 public class BookDetailsReadOnly extends BookDetailsAbstract {
 

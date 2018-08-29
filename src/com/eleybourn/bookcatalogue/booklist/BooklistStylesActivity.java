@@ -65,14 +65,14 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
+			super.onCreate(savedInstanceState);
+
 			// Superclass will call getList() which needs DB, so create DB before calling superclass.
 			mDb = new CatalogueDBAdapter(this);
 			mDb.open();
 
 			// We want context menus to be available
 			registerForContextMenu(getListView());
-
-			super.onCreate(savedInstanceState);
 
 			this.setTitle(R.string.preferred_styles);
 			//mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, mDbHelper.fetchAllSeriesArray());
@@ -83,15 +83,12 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 
 			BCBackground.init(this);
 
-		} catch (Exception e) {
-			Logger.logError(e);
+		} catch (Exception ignore) {
+			Logger.logError(ignore);
 		}
 	}
 
-	/**
-	 * Fix background
-	 */
-	@Override 
+	@Override
 	public void onResume() {
 		super.onResume();
 		BCBackground.init(this);

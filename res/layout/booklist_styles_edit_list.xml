@@ -15,41 +15,17 @@
         android:orientation="horizontal" >
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/bottom_buttons"
+    <include
+        android:id="@+id/buttonbar_cancel_save"
+        layout="@layout/inc_buttonbar_cancel_save"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="bottom"
-        android:orientation="horizontal"
-        android:padding="5dp"
-        style="?android:attr/buttonBarStyle">
-
-        <Button
-            android:id="@+id/cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/cancel"
-            android:visibility="gone"
-            android:width="150sp"
-            style="?android:attr/buttonBarNegativeButtonStyle"/>
-
-        <Button
-            android:id="@+id/confirm"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/save"
-            android:visibility="gone"
-            android:width="150sp"
-            style="?android:attr/buttonBarPositiveButtonStyle"/>
-
-    </LinearLayout>
+        android:layout_height="wrap_content"/>
 
     <LinearLayout
         android:id="@+id/body"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_buttons"
+        android:layout_above="@+id/buttonbar_cancel_save"
         android:layout_below="@+id/top_buttons"
         android:gravity="top"
         android:orientation="vertical" >

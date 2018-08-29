@@ -42,6 +42,7 @@ import com.eleybourn.bookcatalogue.utils.FieldUsages;
 import com.eleybourn.bookcatalogue.utils.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
+//FIXME ... re-test and see why the progress stops
 public class UpdateFromInternet extends ActivityWithTasks {
 
     private long mUpdateSenderId = 0;
@@ -207,7 +208,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                             return;
                         }
                     });
-                    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, UpdateFromInternet.this.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, UpdateFromInternet.this.getResources().getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             //do nothing
                             return;

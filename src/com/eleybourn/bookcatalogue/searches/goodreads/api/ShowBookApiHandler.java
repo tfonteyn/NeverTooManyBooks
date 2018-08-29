@@ -143,7 +143,9 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 	 * 
 	 * @return	the Bundle of data.
 	 */
-    Bundle sendRequest(HttpGet request, boolean fetchThumbnail) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
+    Bundle sendRequest(HttpGet request, boolean fetchThumbnail) throws
+			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+			NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
     
 		mBook = new Bundle();
 

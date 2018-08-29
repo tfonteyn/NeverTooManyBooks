@@ -67,7 +67,7 @@ abstract public class SearchThread extends ManagedTask {
 
     @Override
     protected void onThreadFinish() {
-        doProgress("Done", 0);
+        doProgress(getString(R.string.done), 0);
     }
 
     /**
@@ -104,7 +104,7 @@ abstract public class SearchThread extends ManagedTask {
         try {
             s = e.getMessage();
         } catch (Exception e2) {
-            s = "Unknown Exception";
+            s = e2.getClass().getCanonicalName();
         }
         String msg = String.format(getString(R.string.search_exception), getString(id), s);
         doToast(msg);
