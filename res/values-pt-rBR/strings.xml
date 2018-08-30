@@ -123,12 +123,6 @@
     <string name="searching_library_thing">Searching LibraryThing</string>
     <string name="select_bookshelves">Select Bookshelves</string>
     <string name="format">Format</string>
-    <string name="format1">Paperback</string>
-    <string name="format2">Hard Cover</string>
-    <string name="format3">eBook</string>
-    <string name="format4">Audiobook</string>
-    <string name="format5">Guide / Companion</string>
-    <!-- NOTE: Adding a new format will involve changing code that references this list -->
     <string name="description">Description</string>
     <string name="genre">Genre</string>
     <string name="notset">Not Set</string>
@@ -976,6 +970,7 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- End: Added/Updated in 5.1.3 -->
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
+
     <!-- End: Added/Updated in [Next Version] -->
 
 </resources>

@@ -286,10 +286,25 @@
                     style="@style/editorFieldHeaderStyle"
                     android:text="@string/language" />
 
+                <ImageView
+                    android:id="@+id/language_button"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_alignBottom="@+id/language"
+                    android:layout_alignParentEnd="true"
+                    android:focusable="true"
+                    android:paddingEnd="@dimen/padding_border"
+                    android:paddingStart="@dimen/padding_border"
+                    app:srcCompat="@android:drawable/ic_menu_more"
+                    tools:ignore="ContentDescription" />
+
+                <!-- FIXME: style should be "@style/languageTextEntry" but that made the new button not work ?-->
                 <AutoCompleteTextView
                     android:id="@+id/language"
-                    style="@style/languageTextEntry"
+                    style="@style/editorFieldTextStyle"
                     android:layout_below="@+id/heading"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@id/language_button"
                     android:completionThreshold="2"
                     android:nextFocusDown="@+id/anthology"
                     android:singleLine="true"

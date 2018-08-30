@@ -120,12 +120,6 @@
     <string name="searching_library_thing">Suche bei LibraryThing</string>
     <string name="select_bookshelves">Bücherregale wählen</string>
     <string name="format">Ausgaben</string>
-    <string name="format1">Taschenbuch</string>
-    <string name="format2">Gebundene Ausgabe</string>
-    <string name="format3">E-Book</string>
-    <string name="format4">Hörbuch</string>
-    <string name="format5">Ratgeber / Kompendium</string>
-    <!-- NOTE: Adding a new format will involve changing code that references this list -->
     <string name="description">Beschreibung</string>
     <string name="genre">Genre</string>
     <string name="notset">Nicht gesetzt</string>
@@ -970,12 +964,19 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
 		]]>
     </string>
     <string name="loaned_to_2">→</string>
-    <string name="title_reorder">a|A|an|An|the|The</string>
 
     <!-- End: Added/Updated in 5.2.0 -->
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
 
+    <!-- adding more does not require code changes -->
+    <string-array name="predefined_formats">
+        <item>Taschenbuch</item>
+        <item>Gebundene Ausgabe</item>
+        <item>E-Book</item>
+        <item>Hörbuch</item>
+        <item>Ratgeber / Kompendium</item>
+    </string-array>
     <!-- End: Added/Updated in [Next Version] -->
 
 </resources>

@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="bookOrSeriesTitleTextEntry" parent="@style/localeBasedTextEntry">
+    <style name="editorFieldTextStyle" parent="@style/editorFieldTextStyleBase">
         <item name="android:inputType">textCapSentences</item>
+    </style>
+
+    <style name="dataEntryButtonStyle" parent="@style/editorFieldTextStyleBase">
+        <!-- empty -->
+    </style>
+
+    <style name="localeBasedTextEntry" parent="@style/editorFieldTextStyle">
+        <!-- empty -->
     </style>
 
     <style name="languageTextEntry" parent="@style/localeBasedTextEntry">
@@ -10,10 +18,12 @@
     </style>
 
     <style name="personalNameTextEntry" parent="@style/localeBasedTextEntry">
-        <item name="android:inputType">textCapSentences</item>
+        <item name="android:inputType">textCapWords</item>
     </style>
-    <style name="editorFieldTextStyle" parent="@style/editorFieldTextStyleBase" >
-        <item name="android:inputType">textCapSentences</item>
+
+    <style name="bookOrSeriesTitleTextEntry" parent="@style/localeBasedTextEntry">
+        <item name="android:inputType">text</item>
     </style>
+
 </resources>
 

@@ -121,12 +121,6 @@
     <string name="searching_library_thing">Ricerca in LibraryThing</string>
     <string name="select_bookshelves">Seleziona librerie</string>
     <string name="format">Formato</string>
-    <string name="format1">Tascabile</string>
-    <string name="format2">Copertina rigida</string>
-    <string name="format3">eBook</string>
-    <string name="format4">Audiolibro</string>
-    <string name="format5">Guida/Manuale</string>
-    <!-- NOTE: Adding a new format will involve changing code that references this list -->
     <string name="description">Descrizione</string>
     <string name="genre">Genere</string>
     <string name="notset">Non impostato</string>
@@ -995,6 +989,14 @@
     <!-- End: Added/Updated in 5.2.0 -->
 
     <!-- Begin: Added/Updated in [Next Version] -->
+    <!-- adding more does not require code changes -->
+    <string-array name="predefined_formats">
+        <item>Tascabile</item>
+        <item>Copertina rigidae</item>
+        <item>eBook</item>
+        <item>Audiolibro</item>
+        <item>Guida/Manuale</item>
+    </string-array>
     <!-- End: Added/Updated in [Next Version] -->
 
 </resources>

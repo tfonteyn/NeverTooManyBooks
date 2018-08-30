@@ -123,12 +123,6 @@
     <string name="searching_library_thing">Searching LibraryThing</string>
     <string name="select_bookshelves">Select Bookshelves</string>
     <string name="format">Format</string>
-    <string name="format1">Paperback</string>
-    <string name="format2">Hard Cover</string>
-    <string name="format3">eBook</string>
-    <string name="format4">Audiobook</string>
-    <string name="format5">Guide / Companion</string>
-    <!-- NOTE: Adding a new format will involve changing code that references this list -->
     <string name="description">Description</string>
     <string name="genre">Genre</string>
     <string name="notset">Not Set</string>
@@ -1020,10 +1014,36 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- End: Added/Updated in 5.2.2 -->
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
+    <string name="single_string" translatable="false">%1s</string> <!-- needed for string based ItemEntries properties -->
+    <string name="title_reorder">a|A|an|An|the|The</string>
+    <string name="menu_mark_as_read">Mark as read</string>
+    <string name="menu_mark_as_unread">Mark as unread</string>
+
+    <!-- adding more does not require code changes -->
+    <string-array name="predefined_formats">
+        <item>Paperback</item>
+        <item>Hard Cover</item>
+        <item>eBook</item>
+        <item>Audiobook</item>
+        <item>Guide / Companion</item>
+    </string-array>
+    <!-- adding more does not require code changes -->
+    <string-array name="predefined_languages">
+        <item>English</item>
+        <item>German</item>
+        <item>French</item>
+        <item>Dutch</item>
+        <item>Italian</item>
+    </string-array>
+
+
+
+    <!-- adding more DOES require code changes -->
     <string-array name="supported_themes">
         <item>Dark</item>
         <item>Light</item>
     </string-array>
+
     <!-- TODO  need better info here-->
     <string name="app_permissions_info">
         <![CDATA[
@@ -1039,11 +1059,6 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="generic_task_info" translatable="false">Task ID %1$d, Queued at %2$s</string>
     <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
     <string name="a_bracket_b_bracket" translatable="false">%1$s (%2$s)</string>
-    <string name="single_string" translatable="false">%1s</string> <!-- needed for string based ItemEntries properties -->
-
-    <string name="menu_mark_as_read">Mark as read</string>
-    <string name="menu_mark_as_unread">Mark as unread</string>
-    <string name="title_reorder">a|A|an|An|the|The</string>
     <string name="preferred_theme">Preferred Interface Theme</string>
     <string name="events_found">%1$d Events found</string>
     <string name="search_with_text">Search: %1$s</string>

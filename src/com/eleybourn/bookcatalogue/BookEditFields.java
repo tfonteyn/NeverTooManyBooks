@@ -129,7 +129,6 @@ public class BookEditFields extends BookDetailsAbstract
             mFields.setAdapter(R.id.genre, genre_adapter);
             ArrayAdapter<String> language_adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getLanguages());
             mFields.setAdapter(R.id.language, language_adapter);
-
             mFields.setListener(R.id.date_published, new View.OnClickListener() {
                 public void onClick(View view) {
                     showDatePublishedDialog();
@@ -139,13 +138,16 @@ public class BookEditFields extends BookDetailsAbstract
             final Field formatField = mFields.getField(R.id.format);
             // Get the formats to use in the AutoComplete stuff
             AutoCompleteTextView formatText = (AutoCompleteTextView) formatField.getView();
-            formatText.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getFormats()));
+            formatText.setAdapter(new ArrayAdapter<>(getActivity(),
+                    android.R.layout.simple_dropdown_item_1line,
+                    mEditManager.getFormats()));
             // Get the drop-down button for the formats list and setup dialog
             ImageView formatButton = getView().findViewById(R.id.format_button);
             formatButton.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    StandardDialogs.selectStringDialog(getActivity().getLayoutInflater(), getString(R.string.format),
+                    StandardDialogs.selectStringDialog(getActivity().getLayoutInflater(),
+                            getString(R.string.format),
                             mDbHelper.getFormats(), formatField.getValue().toString(),
                             new SimpleDialogOnClickListener() {
                                 @Override
@@ -156,16 +158,28 @@ public class BookEditFields extends BookDetailsAbstract
                 }
             });
 
-            //Spinner formatSpinner = (Spinner) formatField.getView();
-            //ArrayAdapter<String> formatArr = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
-            //formatArr.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            //formatSpinner.setAdapter(formatArr);
-            //formatArr.add(getString(R.string.format1));
-            //formatArr.add(getString(R.string.format2));
-            //formatArr.add(getString(R.string.format3));
-            //formatArr.add(getString(R.string.format4));
-            //formatArr.add(getString(R.string.format5));
-
+            final Field languageField = mFields.getField(R.id.language);
+            // Get the languages to use in the AutoComplete stuff
+            AutoCompleteTextView languageText = (AutoCompleteTextView) languageField.getView();
+            languageText.setAdapter(new ArrayAdapter<>(getActivity(),
+                    android.R.layout.simple_dropdown_item_1line,
+                    mEditManager.getLanguages()));
+            // Get the drop-down button for the languages list and setup dialog
+            ImageView languageButton = getView().findViewById(R.id.language_button);
+            languageButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    StandardDialogs.selectStringDialog(getActivity().getLayoutInflater(),
+                            getString(R.string.language),
+                            mDbHelper.getLanguages(), languageField.getValue().toString(),
+                            new SimpleDialogOnClickListener() {
+                                @Override
+                                public void onClick(SimpleDialogItem item) {
+                                    languageField.setValue(item.toString());
+                                }
+                            });
+                }
+            });
             Field bookshelfButtonFe = mFields.getField(R.id.bookshelf);
             bookshelfButtonFe.getView().setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {

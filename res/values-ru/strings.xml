@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">BookCatalogue</string>
-    <string name="system_app_name">Book Catalogue</string>
+    <string name="system_app_name">BookCatalogue</string>
     <string name="menu_insert">Добавить книгу</string>
     <string name="menu_delete">Удалить книгу</string>
     <string name="author">Автор</string>

@@ -122,11 +122,6 @@
     <string name="searching_library_thing">Vyhledávám na LibraryThing</string>
     <string name="bookshelves">Zvolte knihovnu</string>
     <string name="format">Formát</string>
-    <string name="format1">Brožovaná kniha</string>
-    <string name="format2">Pevná vazba</string>
-    <string name="format3">eKniha</string>
-    <string name="format4">Audiokniha</string>
-    <string name="format5">Průvodce / Společník</string>
     <string name="description">Popis</string>
     <string name="genre">Žánr</string>
     <string name="notset">Nenastaveno</string>
@@ -500,4 +495,14 @@
     <string name="name_can_not_be_blank">Jméno nesmí být prázdné</string>
     <string name="title_reorder">a|A|an|An|the|The</string>
     <string name="amazon">Amazon</string>
+
+
+    <!-- adding more does not require code changes -->
+    <string-array name="predefined_formats">
+        <item>Brožovaná kniha</item>
+        <item>Pevná vazba</item>
+        <item>eKniha</item>
+        <item>Audiokniha</item>
+        <item>Průvodce / Společník</item>
+    </string-array>
 </resources>

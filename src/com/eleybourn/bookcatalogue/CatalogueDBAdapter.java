@@ -58,6 +58,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -127,53 +128,54 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 * 
 	 * NOTE!!! Because Java String comparisons are not case-insensitive, it is 
 	 * important that ALL these fields be listed in LOWER CASE.
+	 *
+	 * Let's try to keep these alphabetically ?
 	 */
-	public static final String KEY_AUTHOR_OLD = "author";
-	public static final String KEY_AUTHOR_ID = "author";
-	public static final String KEY_AUTHOR_NAME = "author_name";
-	public static final String KEY_AUTHOR_POSITION = "author_position";
-	public static final String KEY_TITLE = "title";
-	public static final String KEY_THUMBNAIL = "thumbnail";
-	public static final String KEY_ISBN = "isbn";
-	public static final String KEY_PUBLISHER = "publisher";
-	public static final String KEY_DATE_PUBLISHED = "date_published";
-	public static final String KEY_RATING = "rating";
-	public static final String KEY_BOOKSHELF = "bookshelf";
-	public static final String KEY_READ = "read";
-	public static final String KEY_SERIES_ID = "series_id";
-	public static final String KEY_SERIES_NAME = "series_name";
-	public static final String KEY_SERIES_OLD = "series";
-	public static final String KEY_PAGES = "pages";
-	public static final String KEY_ROWID = "_id";
-	public static final String KEY_AUTHOR_DETAILS = "author_details";
+	public static final String KEY_ANTHOLOGY_MASK = "anthology";
 	public static final String KEY_ANTHOLOGY_TITLE_ARRAY = "anthology_title_array";
 	public static final String KEY_AUTHOR_ARRAY = "author_array";
-	public static final String KEY_FAMILY_NAME = "family_name";
-	public static final String KEY_GIVEN_NAMES = "given_names";
-	public static final String KEY_SERIES_DETAILS = "series_details";
-	public static final String KEY_SERIES_ARRAY = "series_array";
-	public static final String KEY_SERIES_NUM = "series_num";
-	public static final String KEY_SERIES_POSITION = "series_position";
-	public static final String KEY_NOTES = "notes";
-	public static final String KEY_BOOK = "book";
-	public static final String KEY_LOANED_TO = "loaned_to";
-	public static final String KEY_LIST_PRICE = "list_price";
-	public static final String KEY_POSITION = "position";
-	public static final String KEY_ANTHOLOGY_MASK = "anthology";
-	public static final String KEY_LOCATION = "location";
-	public static final String KEY_READ_START = "read_start";
-	public static final String KEY_READ_END = "read_end";
-	public static final String KEY_FORMAT = "format";
-	public static final String OLD_KEY_AUDIOBOOK = "audiobook";
-	public static final String KEY_SIGNED = "signed";
-	public static final String KEY_DESCRIPTION = "description";
-	public static final String KEY_GENRE = "genre";
-	public static final String KEY_DATE_ADDED = "date_added";
-	
+	public static final String KEY_AUTHOR_DETAILS = "author_details";
 	public static final String KEY_AUTHOR_FORMATTED = "author_formatted";
 	public static final String KEY_AUTHOR_FORMATTED_GIVEN_FIRST = "author_formatted_given_first";
+	public static final String KEY_AUTHOR_ID = "author";
+	public static final String KEY_AUTHOR_NAME = "author_name";
+	public static final String KEY_AUTHOR_OLD = "author";
+	public static final String KEY_AUTHOR_POSITION = "author_position";
+	public static final String KEY_BOOK = "book";
+	public static final String KEY_BOOKSHELF = "bookshelf";
+	public static final String KEY_DATE_ADDED = "date_added";
+	public static final String KEY_DATE_PUBLISHED = "date_published";
+	public static final String KEY_DESCRIPTION = "description";
+	public static final String KEY_FAMILY_NAME = "family_name";
+	public static final String KEY_FORMAT = "format";
+	public static final String KEY_GENRE = "genre";
+	public static final String KEY_GIVEN_NAMES = "given_names";
+	public static final String KEY_ISBN = "isbn";
+	public static final String KEY_LIST_PRICE = "list_price";
+	public static final String KEY_LOANED_TO = "loaned_to";
+	public static final String KEY_LOCATION = "location";
+	public static final String KEY_NOTES = "notes";
+	public static final String KEY_PAGES = "pages";
+	public static final String KEY_POSITION = "position";
+	public static final String KEY_PUBLISHER = "publisher";
+	public static final String KEY_RATING = "rating";
+	public static final String KEY_READ = "read";
+	public static final String KEY_READ_END = "read_end";
+	public static final String KEY_READ_START = "read_start";
+	public static final String KEY_ROWID = "_id";
+	public static final String KEY_SERIES_ARRAY = "series_array";
+	public static final String KEY_SERIES_DETAILS = "series_details";
 	public static final String KEY_SERIES_FORMATTED = "series_formatted";
+	public static final String KEY_SERIES_ID = "series_id";
+	public static final String KEY_SERIES_NAME = "series_name";
+	public static final String KEY_SERIES_NUM = "series_num";
 	public static final String KEY_SERIES_NUM_FORMATTED = "series_num_formatted";
+	public static final String KEY_SERIES_OLD = "series";
+	public static final String KEY_SERIES_POSITION = "series_position";
+	public static final String KEY_SIGNED = "signed";
+	public static final String KEY_THUMBNAIL = "thumbnail";
+	public static final String KEY_TITLE = "title";
+	public static final String OLD_KEY_AUDIOBOOK = "audiobook";
 
 	// We tried 'Collate UNICODE' but it seemed to be case sensitive. We ended
 	// up with 'Ursula Le Guin' and 'Ursula le Guin'.
@@ -3894,7 +3896,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	}
 
 	/**
-	 * Returns a unique list of all formats in the database; uses the pre-defined formats if none.
+	 * Returns a unique list of all formats in the database; uses the pre-defined ones if none.
 	 *
 	 * @return The list
 	 */
@@ -3902,7 +3904,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
 		// Hash to *try* to avoid duplicates
 		HashSet<String> foundSoFar = new HashSet<>();
 		ArrayList<String> list = new ArrayList<>();
-		Cursor c = mDb.rawQuery("Select distinct " + KEY_FORMAT + " from " + DB_TB_BOOKS + " Order by lower(" + KEY_FORMAT + ") " + COLLATION);
+		Cursor c = mDb.rawQuery("Select distinct " + KEY_FORMAT + " from " + DB_TB_BOOKS
+				+ " Order by lower(" + KEY_FORMAT + ") " + COLLATION);
 		try {
 			while (c.moveToNext()) {
 				String name = c.getString(0);
@@ -3920,16 +3923,44 @@ public class CatalogueDBAdapter implements AutoCloseable {
 			c.close();
 		}
 		if (list.size() == 0) {
-			list.add(BookCatalogueApp.getResourceString(R.string.format1));
-			list.add(BookCatalogueApp.getResourceString(R.string.format2));
-			list.add(BookCatalogueApp.getResourceString(R.string.format3));
-			list.add(BookCatalogueApp.getResourceString(R.string.format4));
-			list.add(BookCatalogueApp.getResourceString(R.string.format5));
+            Collections.addAll(list, BookCatalogueApp.getResourceStringArray(R.array.predefined_formats));
 		}
 		return list;
 	}
 
-	
+	/**
+	 * Returns a unique list of all languages in the database; uses the pre-defined ones if none.
+	 *
+	 * @return The list
+	 */
+	protected ArrayList<String> getLanguages() {
+		// Hash to *try* to avoid duplicates
+		HashSet<String> foundSoFar = new HashSet<>();
+		ArrayList<String> list = new ArrayList<>();
+		Cursor c = mDb.rawQuery("Select distinct " + DOM_LANGUAGE + " from " + DB_TB_BOOKS
+				+ " Order by lower(" + DOM_LANGUAGE + ") " + COLLATION);
+		try {
+			while (c.moveToNext()) {
+				String name = c.getString(0);
+				if (name != null)
+					try {
+						if (!name.isEmpty() && !foundSoFar.contains(name.toLowerCase())) {
+							foundSoFar.add(name.toLowerCase());
+							list.add(name);
+						}
+					} catch (NullPointerException e) {
+						// do nothing
+					}
+			}
+		} finally {
+			c.close();
+		}
+		if (list.size() == 0) {
+            Collections.addAll(list, BookCatalogueApp.getResourceStringArray(R.array.predefined_languages));
+		}
+		return list;
+	}
+
 	public ArrayList<AnthologyTitle> getBookAnthologyTitleList(long id) {
 		ArrayList<AnthologyTitle> list = new ArrayList<>();
 		Cursor cursor = null;

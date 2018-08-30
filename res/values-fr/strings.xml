@@ -216,11 +216,6 @@
     <string name="searching_library_thing">Recherche en cours sur LibraryThing</string>
     <string name="bookshelves">Bibliothèques</string>
     <string name="format">Format</string>
-    <string name="format1">Livre de poche</string>
-    <string name="format2">Couverture cartonnée</string>
-    <string name="format3">eBook</string>
-    <string name="format4">Livre audio</string>
-    <string name="format5">Guide</string>
     <string name="description">Description</string>
     <string name="genre">Genre</string>
     <string name="notset">Non défini</string>
@@ -955,14 +950,24 @@
 			</p>
 		]]>
     </string>
-    <string name="title_reorder">le|Le|la|La|les|Les</string>
     <string name="loaned_to_2">→</string>
 
     <!-- End: Added/Updated in 5.2.0 -->
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
+    <string name="title_reorder">le|Le|la|La|les|Les</string>
     <string name="menu_mark_as_read">Marqué comme lu</string>
     <string name="menu_mark_as_unread">Maqué comme non lu</string>
+
+    <!-- adding more does not require code changes -->
+    <string-array name="predefined_formats">
+        <item>Livre de poche</item>
+        <item>Couverture cartonnée</item>
+        <item>eBook</item>
+        <item>Livre audio</item>
+        <item>Guide</item>
+    </string-array>
+
     <!-- End: Added/Updated in [Next Version] -->
 
 </resources>

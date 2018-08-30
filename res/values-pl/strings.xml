@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Katalog książek</string>
-    <string name="system_app_name">Book Catalogue</string>
+    <string name="system_app_name">Katalog książek</string>
     <string name="menu_insert">Dodaj książkę</string>
     <string name="menu_delete">Usuń książkę</string>
     <string name="author">Autor</string>

@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">Kitap Kataloğu</string>
+    <string name="system_app_name">Kitap Kataloğu</string>
     <string name="menu_insert">Kitap ekle</string>
     <string name="menu_delete">Kitap sil</string>
     <string name="author">Yazar</string>
@@ -119,12 +120,6 @@
     <string name="searching_google_books">Google Kitaplar aranıyor</string>
     <string name="searching_library_thing">LibraryThing aranıyor</string>
     <string name="format">Biçim</string>
-    <string name="format1">Ciltsiz</string>
-    <string name="format2">Ciltli</string>
-    <string name="format3">e-Kitap</string>
-    <string name="format4">Sesli kitap</string>
-    <string name="format5">Kılavuz/Yoldaş</string>
-    <!-- NOTE: Adding a new format will involve changing code that references this list -->
     <string name="description">Özet</string>
     <string name="genre">Tür</string>
     <string name="notset">Ayarlı değil</string>
@@ -938,10 +933,21 @@
    ]]>
    </string>
     <!-- End: Added/Updated in 5.1.1 -->
-    <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
+    <!-- Begin: Added/Updated in 5.1.2 -->
     <string name="amazon">Amazon</string>
-    <string name="system_app_name">Book Catalogue</string>
-    <string name="title_reorder">a|A|an|An|the|The</string>
-    <!-- End: Added/Updated in [Next Version] -->
+
+    <!-- End: Added/Updated in 5.1.2 -->
+
+    <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
+
+    <!-- adding more does not require code changes -->
+    <string-array name="predefined_formats">
+        <item>Tascabile</item>
+        <item>Copertina rigidae</item>
+        <item>eBook</item>
+        <item>Audiolibro</item>
+        <item>Guida/Manuale</item>
+    </string-array>
+
     <!-- End: Added/Updated in [Next Version] -->
 </resources>

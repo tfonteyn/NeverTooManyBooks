@@ -123,12 +123,6 @@
     <string name="searching_library_thing">Αναζήτηση στο LibraryThing</string>
     <string name="select_bookshelves">Επιλέξτε ράφια</string>
     <string name="format">Μορφή</string>
-    <string name="format1">Μαλακό εξώφυλλο</string>
-    <string name="format2">Σκληρό εξώφυλλο</string>
-    <string name="format3">eBook</string>
-    <string name="format4">Audiobook</string>
-    <string name="format5">Οδηγός</string>
-    <!-- NOTE: Adding a new format will involve changing code that references this list -->
     <string name="description">Περιγραφή</string>
     <string name="genre">Είδος</string>
     <string name="notset">Μη ορισμένο</string>
@@ -975,6 +969,14 @@
     <!-- End: Added/Updated in 5.1.3 -->
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
+    <!-- adding more does not require code changes -->
+    <string-array name="predefined_formats">
+        <item>Μαλακό εξώφυλλο</item>
+        <item>Σκληρό εξώφυλλο</item>
+        <item>eBook</item>
+        <item>Audiobook</item>
+        <item>Οδηγός</item>
+    </string-array>
     <!-- End: Added/Updated in [Next Version] -->
 
 </resources>

@@ -5,19 +5,24 @@
         <item name="android:inputType">textCapSentences</item>
     </style>
 
-    <style name="localeBasedTextEntry" parent="@style/editorFieldTextStyle">
-        <item name="android:inputType">textCapSentences</item>
+    <style name="dataEntryButtonStyle" parent="@style/editorFieldTextStyleBase">
+        <!-- empty -->
     </style>
+
+    <style name="localeBasedTextEntry" parent="@style/editorFieldTextStyle">
+        <!-- -->
+    </style>
+
     <style name="languageTextEntry" parent="@style/localeBasedTextEntry">
-        <item name="android:inputType">textCapSentences</item>
+        <!-- -->
     </style>
 
     <style name="personalNameTextEntry" parent="@style/localeBasedTextEntry">
-        <item name="android:inputType">textCapSentences</item>
+        <!-- -->
     </style>
 
     <style name="bookOrSeriesTitleTextEntry" parent="@style/localeBasedTextEntry">
-        <item name="android:inputType">textCapSentences</item>
+        <!-- -->
     </style>
 
 </resources>
