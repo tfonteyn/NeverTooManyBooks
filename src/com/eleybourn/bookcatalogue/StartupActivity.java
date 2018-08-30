@@ -47,10 +47,11 @@ import java.lang.ref.WeakReference;
 /**
  * Single Activity to be the 'Main' activity for the app. I does app-startup stuff which is initially
  * to start the 'real' main activity.
- * 
+ *
+ * FIXME: now that MainMenu is gone.... see what this note means ? if anything
  * Note that calling the desired main activity first resulted in MainMenu's 'singleInstance' property
  * NOT being honoured. So we call MainMenu anyway, but set a flag in the Intent to indicate this is
- * a startup. This approach mostly works, but results in an apparent misordering of the activity 
+ * a startup. This approach mostly works, but results in an apparent mis-ordering of the activity
  * stack, which we can live with for now.
  * 
  * @author Philip Warner
@@ -58,7 +59,7 @@ import java.lang.ref.WeakReference;
 public class StartupActivity extends AppCompatActivity {
 	private static final String TAG = "StartupActivity";
 
-	/** FIXME: This is nasty, now we use fragments, StartupActivity should be a FragmenActivity and load the right fragment
+	/** FIXME: This is nasty, now we use fragments, StartupActivity should be a FragmentActivity and load the right fragment
 	 * then we could do away with the whole isRoot/willBeRoot thing
 	 * Check usage in the code of this string in the intent extra
 	 */
@@ -66,16 +67,16 @@ public class StartupActivity extends AppCompatActivity {
 
 	/** Flag to indicate FTS rebuild is required at startup */
 	private static final String PREF_FTS_REBUILD_REQUIRED = TAG + ".FtsRebuildRequired";
-	private static final String PREF_AUTHOR_SERIES_FIXUP_REQUIRED = TAG + ".FAuthorSeriesFixupRequired";
+	private static final String PREF_AUTHOR_SERIES_FIX_UP_REQUIRED = TAG + ".FAuthorSeriesFixupRequired";
 	
 	private static final String STATE_OPENED = "state_opened";
 	/** Number of times the app has been started */
 	private static final String PREF_START_COUNT = "Startup.StartCount";
 
-	/** Number of app startups between offers to backup */
+	/** Number of app startup's between offers to backup */
 	private static final int BACKUP_PROMPT_WAIT = 5;
 	
-	/** Number of app startups between displaying the Amazon hint */
+	/** Number of app startup's between displaying the Amazon hint */
 	private static final int AMAZON_PROMPT_WAIT = 7;
 
 	/** Indicates the upgrade message has been shown */
@@ -101,7 +102,7 @@ public class StartupActivity extends AppCompatActivity {
 	// Database connection
 	//CatalogueDBAdapter mDb = null;
 
-	/** Handler to post runnables to UI thread */
+	/** Handler to post run'ables to UI thread */
 	private Handler mHandler = new Handler();
 	/**UI thread */
 	private Thread mUiThread;
@@ -112,8 +113,8 @@ public class StartupActivity extends AppCompatActivity {
 	}
 
 	/** Set the flag to indicate an FTS rebuild is required */
-	public static void scheduleAuthorSeriesFixup() {
-		BookCataloguePreferences.setBoolean(PREF_AUTHOR_SERIES_FIXUP_REQUIRED, true);
+	public static void scheduleAuthorSeriesFixUp() {
+		BookCataloguePreferences.setBoolean(PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, true);
 	}
 	
 	private static WeakReference<StartupActivity> mStartupActivity = null;
@@ -329,11 +330,7 @@ public class StartupActivity extends AppCompatActivity {
 	 * Start whatever activity the user expects
 	 */
 	private void stage4Startup() {
-		if (BookCataloguePreferences.getStartInMyBook()) {
-			doMainActivity(BooksOnBookshelf.class);
-		} else {
-			doMainActivity(MainMenu.class);
-		}
+		doMainActivity(BooksOnBookshelf.class);
 
 		if (mExportRequired) {
 			AdministrationFunctions.backupCatalogue(this);
@@ -419,9 +416,9 @@ public class StartupActivity extends AppCompatActivity {
                 }
 			}
 			
-			if (BookCataloguePreferences.getBoolean(PREF_AUTHOR_SERIES_FIXUP_REQUIRED, false)) {
+			if (BookCataloguePreferences.getBoolean(PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {
 				db.fixupAuthorsAndSeries();
-				BookCataloguePreferences.setBoolean(PREF_AUTHOR_SERIES_FIXUP_REQUIRED, false);
+				BookCataloguePreferences.setBoolean(PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false);
 			}
 		}
 
