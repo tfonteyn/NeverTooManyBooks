@@ -3,7 +3,8 @@ package com.eleybourn.bookcatalogue.database;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper;
+
 
 /**
  * Class to detect if collation implementations are case sensitive.
@@ -28,7 +29,7 @@ public class CollationCaseSensitive {
 			db.execSQL("insert into collation_cs_check values ('a', 1)");		
 			// Row that *should* be returned second assuming 'a' <=> 'A'; will be returned first if 'A' < 'a'.
 			db.execSQL("insert into collation_cs_check values ('A', 2)");
-			c = db.rawQuery("Select t, i from collation_cs_check order by t " + CatalogueDBAdapter.COLLATION + ", i", new String[] {});
+			c = db.rawQuery("Select t, i from collation_cs_check order by t " + DatabaseHelper.COLLATION + ", i", new String[] {});
 			c.moveToFirst();
 			String s = c.getString(0);
 			return !s.equals("a");

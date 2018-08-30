@@ -32,6 +32,7 @@ import com.eleybourn.bookcatalogue.BookEdit;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
@@ -61,26 +62,26 @@ public class BookUtils {
 		try {
             Cursor thisBook = db.fetchBookById(rowId);
 			thisBook.moveToFirst();
-			book.putString(CatalogueDBAdapter.KEY_TITLE, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_TITLE)));
-			book.putString(CatalogueDBAdapter.KEY_ISBN, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_ISBN)));
-			book.putString(CatalogueDBAdapter.KEY_PUBLISHER, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_PUBLISHER)));
-			book.putString(CatalogueDBAdapter.KEY_DATE_PUBLISHED, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_DATE_PUBLISHED)));
-			book.putString(CatalogueDBAdapter.KEY_RATING, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_RATING)));
-			book.putString(CatalogueDBAdapter.KEY_READ, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_READ)));
-			book.putString(CatalogueDBAdapter.KEY_PAGES, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_PAGES)));
-			book.putString(CatalogueDBAdapter.KEY_NOTES, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_NOTES)));
-			book.putString(CatalogueDBAdapter.KEY_LIST_PRICE, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_LIST_PRICE)));
-			book.putString(CatalogueDBAdapter.KEY_ANTHOLOGY_MASK, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_ANTHOLOGY_MASK)));
-			book.putString(CatalogueDBAdapter.KEY_LOCATION, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_LOCATION)));
-			book.putString(CatalogueDBAdapter.KEY_READ_START, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_READ_START)));
-			book.putString(CatalogueDBAdapter.KEY_READ_END, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_READ_END)));
-			book.putString(CatalogueDBAdapter.KEY_FORMAT, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_FORMAT)));
-			book.putString(CatalogueDBAdapter.KEY_SIGNED, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_SIGNED)));
-			book.putString(CatalogueDBAdapter.KEY_DESCRIPTION, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_DESCRIPTION)));
-			book.putString(CatalogueDBAdapter.KEY_GENRE, thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_GENRE)));
+			book.putString(ColumnNames.KEY_TITLE, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_TITLE)));
+			book.putString(ColumnNames.KEY_ISBN, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_ISBN)));
+			book.putString(ColumnNames.KEY_PUBLISHER, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_PUBLISHER)));
+			book.putString(ColumnNames.KEY_DATE_PUBLISHED, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_DATE_PUBLISHED)));
+			book.putString(ColumnNames.KEY_RATING, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_RATING)));
+			book.putString(ColumnNames.KEY_READ, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_READ)));
+			book.putString(ColumnNames.KEY_PAGES, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_PAGES)));
+			book.putString(ColumnNames.KEY_NOTES, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_NOTES)));
+			book.putString(ColumnNames.KEY_LIST_PRICE, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_LIST_PRICE)));
+			book.putString(ColumnNames.KEY_ANTHOLOGY_MASK, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_ANTHOLOGY_MASK)));
+			book.putString(ColumnNames.KEY_LOCATION, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_LOCATION)));
+			book.putString(ColumnNames.KEY_READ_START, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_READ_START)));
+			book.putString(ColumnNames.KEY_READ_END, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_READ_END)));
+			book.putString(ColumnNames.KEY_FORMAT, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_FORMAT)));
+			book.putString(ColumnNames.KEY_SIGNED, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_SIGNED)));
+			book.putString(ColumnNames.KEY_DESCRIPTION, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_DESCRIPTION)));
+			book.putString(ColumnNames.KEY_GENRE, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_GENRE)));
 			
-			book.putSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, db.getBookAuthorList(rowId));
-			book.putSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY, db.getBookSeriesList(rowId));
+			book.putSerializable(ColumnNames.KEY_AUTHOR_ARRAY, db.getBookAuthorList(rowId));
+			book.putSerializable(ColumnNames.KEY_SERIES_ARRAY, db.getBookSeriesList(rowId));
 			
 			i.putExtra("bookData", book);
 			activity.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_MANUALLY);
@@ -126,11 +127,11 @@ public class BookUtils {
 		
 		Cursor thisBook = dbHelper.fetchBookById(rowId);
 		thisBook.moveToFirst();
-		String title = thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_TITLE));
-		double rating = thisBook.getDouble(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_RATING));
+		String title = thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_TITLE));
+		double rating = thisBook.getDouble(thisBook.getColumnIndex(ColumnNames.KEY_RATING));
 		String ratingString = "";
-		String author = thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_AUTHOR_FORMATTED_GIVEN_FIRST));
-		String series = thisBook.getString(thisBook.getColumnIndex(CatalogueDBAdapter.KEY_SERIES_FORMATTED));
+		String author = thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_AUTHOR_FORMATTED_GIVEN_FIRST));
+		String series = thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_SERIES_FORMATTED));
 		File image = CatalogueDBAdapter.fetchThumbnailByUuid(dbHelper.getBookUuid(rowId));
 
 		if (!series.isEmpty()) {

@@ -37,6 +37,7 @@ import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
@@ -187,7 +188,7 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
 		AutoCompleteTextView mUserText = getView().findViewById(R.id.loan_to_who);
 		String friend = mUserText.getText().toString();
 		BookData values = mEditManager.getBookData();
-		values.putString(CatalogueDBAdapter.KEY_LOANED_TO, friend);
+		values.putString(ColumnNames.KEY_LOANED_TO, friend);
 		mDbHelper.createLoan(values, true);
 		return friend;
 	}

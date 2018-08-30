@@ -35,6 +35,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -50,7 +51,7 @@ public class EditAuthorList extends EditObjectList<Author> {
 	 * Constructor; pass the superclass the main and row based layouts to use.
 	 */
 	public EditAuthorList() {
-		super(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, R.layout.edit_author_list, R.layout.row_edit_author_list);
+		super(ColumnNames.KEY_AUTHOR_ARRAY, R.layout.edit_author_list, R.layout.row_edit_author_list);
 	}
 
 	@Override

@@ -35,6 +35,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueListActivity;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
@@ -237,7 +238,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	        // Look for title and title_label
 			Bundle extras = getIntent().getExtras();
 			if (extras != null) {
-				mRowId = extras.getLong(CatalogueDBAdapter.KEY_ROWID);
+				mRowId = extras.getLong(ColumnNames.KEY_ROWID);
 				mBookTitleLabel = extras.getString("title_label");
 				mBookTitle = extras.getString("title");
 				setTextOrHideView(R.id.title_label, mBookTitleLabel);

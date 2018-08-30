@@ -43,6 +43,7 @@ import com.eleybourn.bookcatalogue.database.DbUtils.JoinContext;
 import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
 import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition.TableTypes;
 import com.eleybourn.bookcatalogue.database.SqlStatementManager;
+import com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -53,8 +54,6 @@ import java.util.Locale;
 import java.util.Map.Entry;
 
 import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.EMPTY_STRING_ARRAY;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_LOANED_TO;
 import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.encodeString;
 import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_AUTHOR;
 import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_BOOK;
@@ -145,6 +144,8 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_LOAN;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_ROW_NAVIGATOR_DEFN;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_ROW_NAVIGATOR_FLATTENED_DEFN;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_SERIES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_LOANED_TO;
 
 
 /**
@@ -1018,7 +1019,7 @@ public class BooklistBuilder implements AutoCloseable {
                 for (SortedDomainInfo sdi : sort) {
                     indexCols.append(sdi.domain.name);
                     if (sdi.domain.type.toLowerCase().equals("text")) {
-                        indexCols.append(CatalogueDBAdapter.COLLATION);
+                        indexCols.append(DatabaseHelper.COLLATION);
 
                         // *If* collations is case-sensitive, handle it.
                         if (collationIsCs)
@@ -1026,7 +1027,7 @@ public class BooklistBuilder implements AutoCloseable {
                         sortCols.append(sdi.domain.name);
                         if (collationIsCs)
                             sortCols.append(")");
-                        sortCols.append(CatalogueDBAdapter.COLLATION);
+                        sortCols.append(DatabaseHelper.COLLATION);
                     } else {
                         sortCols.append(sdi.domain.name);
                     }
@@ -1179,7 +1180,7 @@ public class BooklistBuilder implements AutoCloseable {
                             if (collatedCols.length() > 0)
                                 collatedCols.append(",");
                             cols.append(",\n	").append(d.name);
-                            collatedCols.append("\n	").append(d.name).append(CatalogueDBAdapter.COLLATION);
+                            collatedCols.append("\n	").append(d.name).append(DatabaseHelper.COLLATION);
                         }
                         // Construct the sum statement for this group
                         String sql = "Insert Into " + mListTable + "(\n	" + DOM_LEVEL + ",\n	" + DOM_KIND +
@@ -1188,7 +1189,7 @@ public class BooklistBuilder implements AutoCloseable {
                                 "\n select " + levelId + " as " + DOM_LEVEL + ",\n	" + g.kind + " as " + DOM_KIND +
                                 cols + "," + DOM_ROOT_KEY +
                                 "\n from " + mListTable + "\n " + " where level = " + (levelId + 1) +
-                                "\n Group by " + collatedCols + "," + DOM_ROOT_KEY + CatalogueDBAdapter.COLLATION;
+                                "\n Group by " + collatedCols + "," + DOM_ROOT_KEY + DatabaseHelper.COLLATION;
                         //"\n Group by " + DOM_LEVEL + ", " + DOM_KIND + collatedCols;
 
                         // Save, compile and run this statement
@@ -1493,7 +1494,7 @@ public class BooklistBuilder implements AutoCloseable {
                 if (sortedDomainNames.contains(d.name)) {
                     if (conditionSql.length() > 0)
                         conditionSql.append("	and ");
-                    conditionSql.append("Coalesce(l.").append(d).append(", '') = Coalesce(new.").append(d).append(",'') ").append(CatalogueDBAdapter.COLLATION).append("\n");
+                    conditionSql.append("Coalesce(l.").append(d).append(", '') = Coalesce(new.").append(d).append(",'') ").append(DatabaseHelper.COLLATION).append("\n");
                 }
             }
             //insertSql += ")\n	Select " + valuesSql + " Where not exists(Select 1 From " + mListTable + " l where " + conditionSql + ")";
@@ -1580,7 +1581,7 @@ public class BooklistBuilder implements AutoCloseable {
                 if (sortedDomainNames.contains(d.name)) {
                     if (conditionSql.length() > 0)
                         conditionSql.append("	and ");
-                    conditionSql.append("Coalesce(l.").append(d).append(",'') = Coalesce(new.").append(d).append(",'') ").append(CatalogueDBAdapter.COLLATION).append("\n");
+                    conditionSql.append("Coalesce(l.").append(d).append(",'') = Coalesce(new.").append(d).append(",'') ").append(DatabaseHelper.COLLATION).append("\n");
                 }
             }
 

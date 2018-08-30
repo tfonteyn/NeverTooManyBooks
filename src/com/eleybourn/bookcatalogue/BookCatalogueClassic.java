@@ -73,6 +73,8 @@ import net.philipwarner.taskqueue.QueueManager;
 
 import java.util.ArrayList;
 
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.*;
+
 /*
  * A book catalogue application that integrates with Google Books.
  */
@@ -481,12 +483,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				View v = mInflater.inflate(ViewManager.this.getLayoutChild(), parent, false);
 				BookHolder holder = new BookHolder();
 
-				initViewInfo(v, holder.author, R.id.row_author, FieldVisibility.prefix + CatalogueDBAdapter.KEY_AUTHOR_NAME);
-				initViewInfo(v, holder.title, R.id.row_title, FieldVisibility.prefix + CatalogueDBAdapter.KEY_TITLE);
+				initViewInfo(v, holder.author, R.id.row_author, FieldVisibility.prefix + KEY_AUTHOR_NAME);
+				initViewInfo(v, holder.title, R.id.row_title, FieldVisibility.prefix + KEY_TITLE);
 				initViewInfo(v, holder.image, R.id.row_image_view, FieldVisibility.prefix + "thumbnail");
-				initViewInfo(v, holder.publisher, R.id.row_publisher, FieldVisibility.prefix + CatalogueDBAdapter.KEY_PUBLISHER);
+				initViewInfo(v, holder.publisher, R.id.row_publisher, FieldVisibility.prefix + KEY_PUBLISHER);
 				initViewInfo(v, holder.read, R.id.row_read_image_view, FieldVisibility.prefix + "read");
-				initViewInfo(v, holder.series, R.id.row_series, FieldVisibility.prefix + CatalogueDBAdapter.KEY_SERIES_NAME);
+				initViewInfo(v, holder.series, R.id.row_series, FieldVisibility.prefix + KEY_SERIES_NAME);
 
 				ViewTagger.setTag(v, R.id.TAG_HOLDER, holder);
 
@@ -606,7 +608,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		TitleViewManager() {
 			mLayout = R.layout.row_authors;
 			mChildLayout = R.layout.row_books; 
-			mFrom = new String[]{CatalogueDBAdapter.KEY_ROWID};
+			mFrom = new String[]{KEY_ROWID};
 			mTo = new int[]{R.id.row_family};			
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
@@ -625,12 +627,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				// Return the search results instead of all books (for the bookshelf)
 				mCursor = mDbHelper.searchBooksChars(search_query, bookshelf);
 			}
-			mGroupIdColumnIndex = mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
 		}
 		@Override
 		public int getSectionNameColumn() {
-			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
+			return mCursor.getColumnIndex(KEY_ROWID);
 		}
 	}
 	
@@ -641,7 +643,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		AuthorViewManager() {
 			mLayout = R.layout.row_authors;
 			mChildLayout = R.layout.row_authors_books;
-			mFrom = new String[]{CatalogueDBAdapter.KEY_AUTHOR_FORMATTED};
+			mFrom = new String[]{KEY_AUTHOR_FORMATTED};
 			mTo = new int[]{R.id.row_family};	
 		}
 		public SQLiteCursor getChildrenCursor(final Cursor groupCursor) {
@@ -656,12 +658,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				// Return the search results instead of all books (for the bookshelf)
 				mCursor = mDbHelper.searchAuthors(search_query, bookshelf);
 			}
-			mGroupIdColumnIndex = mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
 		}
 		@Override
 		public int getSectionNameColumn() {
-			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_AUTHOR_FORMATTED);
+			return mCursor.getColumnIndex(KEY_AUTHOR_FORMATTED);
 		}
 	}
 	
@@ -672,7 +674,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		AuthorFirstViewManager() {
 			mLayout = R.layout.row_authors;
 			mChildLayout = R.layout.row_authors_books;
-			mFrom = new String[]{CatalogueDBAdapter.KEY_AUTHOR_FORMATTED_GIVEN_FIRST};
+			mFrom = new String[]{KEY_AUTHOR_FORMATTED_GIVEN_FIRST};
 			mTo = new int[]{R.id.row_family};	
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
@@ -687,12 +689,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				// Return the search results instead of all books (for the bookshelf)
 				mCursor = mDbHelper.searchAuthors(search_query, bookshelf, false, false);
 			}
-			mGroupIdColumnIndex = mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
 		}
 		@Override
 		public int getSectionNameColumn() {
-			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+			return mCursor.getColumnIndex(KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 		}
 	}
 	
@@ -703,7 +705,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		AuthorOneViewManager() {
 			mLayout = R.layout.row_authors;
 			mChildLayout = R.layout.row_authors_books;
-			mFrom = new String[]{CatalogueDBAdapter.KEY_AUTHOR_FORMATTED};
+			mFrom = new String[]{KEY_AUTHOR_FORMATTED};
 			mTo = new int[]{R.id.row_family};	
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
@@ -718,12 +720,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				// Return the search results instead of all books (for the bookshelf)
 				mCursor = mDbHelper.searchAuthors(search_query, bookshelf, true, true); 
 			}
-			mGroupIdColumnIndex = mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
 		}
 		@Override
 		public int getSectionNameColumn() {
-			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_AUTHOR_FORMATTED);
+			return mCursor.getColumnIndex(KEY_AUTHOR_FORMATTED);
 		}
 	}
 
@@ -734,11 +736,11 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		SeriesViewManager() {
 			mLayout = R.layout.row_authors;
 			mChildLayout = R.layout.row_series_books;
-			mFrom = new String[]{CatalogueDBAdapter.KEY_SERIES_NAME};
+			mFrom = new String[]{KEY_SERIES_NAME};
 			mTo = new int[]{R.id.row_family};	
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
-			return mDbHelper.fetchAllBooksBySeries(groupCursor.getString(groupCursor.getColumnIndex(CatalogueDBAdapter.KEY_SERIES_NAME)), bookshelf, search_query);
+			return mDbHelper.fetchAllBooksBySeries(groupCursor.getString(groupCursor.getColumnIndex(KEY_SERIES_NAME)), bookshelf, search_query);
 		}
 		@Override
 		public Cursor newGroupCursor() {
@@ -748,12 +750,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				mCursor = mDbHelper.searchSeries(search_query, bookshelf);
 			}
 			BookCatalogueClassic.this.startManagingCursor(mCursor);
-			mGroupIdColumnIndex = mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
 		}
 		@Override
 		public int getSectionNameColumn() {
-			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_SERIES_NAME);
+			return mCursor.getColumnIndex(KEY_SERIES_NAME);
 		}
 	}
 
@@ -764,7 +766,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		LoanViewManager() {
 			mLayout = R.layout.row_authors; 
 			mChildLayout = R.layout.row_series_books;
-			mFrom = new String[]{CatalogueDBAdapter.KEY_ROWID};
+			mFrom = new String[]{KEY_ROWID};
 			mTo = new int[]{R.id.row_family};	
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
@@ -773,12 +775,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		@Override
 		public Cursor newGroupCursor() {
 			mCursor = mDbHelper.fetchAllLoans();
-			mGroupIdColumnIndex = mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
 		}
 		@Override
 		public int getSectionNameColumn() {
-			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
+			return mCursor.getColumnIndex(KEY_ROWID);
 		}
 	}
 
@@ -789,7 +791,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		UnreadViewManager() {
 			mLayout = R.layout.row_authors; 
 			mChildLayout = R.layout.row_series_books;
-			mFrom = new String[]{CatalogueDBAdapter.KEY_ROWID};
+			mFrom = new String[]{KEY_ROWID};
 			mTo = new int[]{R.id.row_family};	
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
@@ -798,12 +800,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		@Override
 		public Cursor newGroupCursor() {
 			mCursor = mDbHelper.fetchAllUnreadPsuedo();
-			mGroupIdColumnIndex = mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
 		}
 		@Override
 		public int getSectionNameColumn() {
-			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
+			return mCursor.getColumnIndex(KEY_ROWID);
 		}
 	}
 	
@@ -814,7 +816,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		GenreViewManager() {
 			mLayout = R.layout.row_authors;
 			mChildLayout = R.layout.row_books;
-			mFrom = new String[]{CatalogueDBAdapter.KEY_ROWID};
+			mFrom = new String[]{KEY_ROWID};
 			mTo = new int[]{R.id.row_family};	
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
@@ -833,12 +835,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				// Return the search results instead of all books (for the bookshelf)
 				mCursor = mDbHelper.searchGenres(search_query, bookshelf);
 			}
-			mGroupIdColumnIndex = mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
 		}
 		@Override
 		public int getSectionNameColumn() {
-			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
+			return mCursor.getColumnIndex(KEY_ROWID);
 		}
 	}
 	
@@ -849,7 +851,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		PublishedViewManager() {
 			mLayout = R.layout.row_authors;
 			mChildLayout = R.layout.row_books;
-			mFrom = new String[]{CatalogueDBAdapter.KEY_ROWID};
+			mFrom = new String[]{KEY_ROWID};
 			mTo = new int[]{R.id.row_family};	
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
@@ -868,12 +870,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				// Return the search results instead of all books (for the bookshelf)
 				mCursor = mDbHelper.searchDatePublished(search_query, bookshelf);
 			}
-			mGroupIdColumnIndex = mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
 		}
 		@Override
 		public int getSectionNameColumn() {
-			return mCursor.getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
+			return mCursor.getColumnIndex(KEY_ROWID);
 		}
 	}
 	

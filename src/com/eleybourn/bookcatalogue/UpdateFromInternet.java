@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
@@ -93,18 +94,18 @@ public class UpdateFromInternet extends ActivityWithTasks {
      * to each field checkbox
      */
     private void setupFields() {
-        addIfVisible(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, CatalogueDBAdapter.KEY_AUTHOR_ID, R.string.author, FieldUsages.Usages.ADD_EXTRA, true);
-        addIfVisible(CatalogueDBAdapter.KEY_TITLE, null, R.string.title, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(CatalogueDBAdapter.KEY_ISBN, null, R.string.isbn, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(CatalogueDBAdapter.KEY_THUMBNAIL, null, R.string.thumbnail, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(CatalogueDBAdapter.KEY_SERIES_ARRAY, CatalogueDBAdapter.KEY_SERIES_NAME, R.string.series, FieldUsages.Usages.ADD_EXTRA, true);
-        addIfVisible(CatalogueDBAdapter.KEY_PUBLISHER, null, R.string.publisher, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(CatalogueDBAdapter.KEY_DATE_PUBLISHED, null, R.string.date_published, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(CatalogueDBAdapter.KEY_PAGES, null, R.string.pages, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(CatalogueDBAdapter.KEY_LIST_PRICE, null, R.string.list_price, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(CatalogueDBAdapter.KEY_FORMAT, null, R.string.format, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(CatalogueDBAdapter.KEY_DESCRIPTION, null, R.string.description, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(CatalogueDBAdapter.KEY_GENRE, null, R.string.genre, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnNames.KEY_AUTHOR_ARRAY, ColumnNames.KEY_AUTHOR_ID, R.string.author, FieldUsages.Usages.ADD_EXTRA, true);
+        addIfVisible(ColumnNames.KEY_TITLE, null, R.string.title, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnNames.KEY_ISBN, null, R.string.isbn, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnNames.KEY_THUMBNAIL, null, R.string.thumbnail, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnNames.KEY_SERIES_ARRAY, ColumnNames.KEY_SERIES_NAME, R.string.series, FieldUsages.Usages.ADD_EXTRA, true);
+        addIfVisible(ColumnNames.KEY_PUBLISHER, null, R.string.publisher, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnNames.KEY_DATE_PUBLISHED, null, R.string.date_published, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnNames.KEY_PAGES, null, R.string.pages, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnNames.KEY_LIST_PRICE, null, R.string.list_price, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnNames.KEY_FORMAT, null, R.string.format, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnNames.KEY_DESCRIPTION, null, R.string.description, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnNames.KEY_GENRE, null, R.string.genre, FieldUsages.Usages.COPY_IF_BLANK, false);
         addIfVisible(DatabaseDefinitions.DOM_LANGUAGE.name, null, R.string.language, FieldUsages.Usages.COPY_IF_BLANK, false);
 
         // Display the list of fields
@@ -192,7 +193,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                 // If they have selected thumbnails, check if they want to download ALL.
                 boolean thumbnail_check = false;
                 try {
-                    thumbnail_check = mFieldUsages.get(CatalogueDBAdapter.KEY_THUMBNAIL).selected;
+                    thumbnail_check = mFieldUsages.get(ColumnNames.KEY_THUMBNAIL).selected;
                 } catch (NullPointerException e) {
                     Logger.logError(e);
                 }
@@ -203,7 +204,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                     alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
                     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternet.this.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            mFieldUsages.get(CatalogueDBAdapter.KEY_THUMBNAIL).usage = FieldUsages.Usages.OVERWRITE;
+                            mFieldUsages.get(ColumnNames.KEY_THUMBNAIL).usage = FieldUsages.Usages.OVERWRITE;
                             startUpdate();
                             return;
                         }
@@ -216,7 +217,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                     });
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, UpdateFromInternet.this.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            mFieldUsages.get(CatalogueDBAdapter.KEY_THUMBNAIL).usage = FieldUsages.Usages.COPY_IF_BLANK;
+                            mFieldUsages.get(ColumnNames.KEY_THUMBNAIL).usage = FieldUsages.Usages.COPY_IF_BLANK;
                             startUpdate();
                             return;
                         }

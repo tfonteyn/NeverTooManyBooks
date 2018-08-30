@@ -22,14 +22,14 @@ package com.eleybourn.bookcatalogue.searches;
 
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.utils.ManagedTask;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
 import com.eleybourn.bookcatalogue.Series.SeriesDetails;
-import com.eleybourn.bookcatalogue.utils.TaskManager;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.ManagedTask;
+import com.eleybourn.bookcatalogue.utils.TaskManager;
 
 import java.util.ArrayList;
 
@@ -77,20 +77,20 @@ abstract public class SearchThread extends ManagedTask {
      */
     protected void checkForSeriesName() {
         try {
-            if (mBookData.containsKey(CatalogueDBAdapter.KEY_TITLE)) {
-                String thisTitle = mBookData.getString(CatalogueDBAdapter.KEY_TITLE);
+            if (mBookData.containsKey(ColumnNames.KEY_TITLE)) {
+                String thisTitle = mBookData.getString(ColumnNames.KEY_TITLE);
                 if (thisTitle != null) {
                     SeriesDetails details = Series.findSeries(thisTitle);
                     if (details != null && !details.name.isEmpty()) {
                         ArrayList<Series> sl;
-                        if (mBookData.containsKey(CatalogueDBAdapter.KEY_SERIES_DETAILS)) {
-                            sl = ArrayUtils.getSeriesUtils().decodeList(mBookData.getString(CatalogueDBAdapter.KEY_SERIES_DETAILS), '|', false);
+                        if (mBookData.containsKey(ColumnNames.KEY_SERIES_DETAILS)) {
+                            sl = ArrayUtils.getSeriesUtils().decodeList(mBookData.getString(ColumnNames.KEY_SERIES_DETAILS), '|', false);
                         } else {
                             sl = new ArrayList<>();
                         }
                         sl.add(new Series(details.name, details.position));
-                        mBookData.putString(CatalogueDBAdapter.KEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(sl, '|'));
-                        mBookData.putString(CatalogueDBAdapter.KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
+                        mBookData.putString(ColumnNames.KEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(sl, '|'));
+                        mBookData.putString(ColumnNames.KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
                     }
                 }
             }

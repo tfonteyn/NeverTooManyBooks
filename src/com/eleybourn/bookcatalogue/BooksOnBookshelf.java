@@ -64,6 +64,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStylePropertiesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.TrackedCursor;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -1027,8 +1028,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         switch (requestCode) {
             case UniqueId.ACTIVITY_CREATE_BOOK_SCAN:
                 try {
-                    if (intent != null && intent.hasExtra(CatalogueDBAdapter.KEY_ROWID)) {
-                        long newId = intent.getLongExtra(CatalogueDBAdapter.KEY_ROWID, 0);
+                    if (intent != null && intent.hasExtra(ColumnNames.KEY_ROWID)) {
+                        long newId = intent.getLongExtra(ColumnNames.KEY_ROWID, 0);
                         if (newId != 0) {
                             mMarkBookId = newId;
                         }
@@ -1046,8 +1047,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             case UniqueId.ACTIVITY_VIEW_BOOK:
             case UniqueId.ACTIVITY_EDIT_BOOK:
                 try {
-                    if (intent != null && intent.hasExtra(CatalogueDBAdapter.KEY_ROWID)) {
-                        long id = intent.getLongExtra(CatalogueDBAdapter.KEY_ROWID, 0);
+                    if (intent != null && intent.hasExtra(ColumnNames.KEY_ROWID)) {
+                        long id = intent.getLongExtra(ColumnNames.KEY_ROWID, 0);
                         if (id != 0) {
                             mMarkBookId = id;
                         }

@@ -22,7 +22,7 @@ package com.eleybourn.bookcatalogue.searches.googlebooks;
 
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -148,32 +148,32 @@ public class SearchGoogleBooksEntryHandler extends DefaultHandler {
 	public void endElement(String uri, String localName, String name) throws SAXException {
 		super.endElement(uri, localName, name);
 		if (localName.equalsIgnoreCase(TITLE)){
-			addIfNotPresent(CatalogueDBAdapter.KEY_TITLE);
+			addIfNotPresent(ColumnNames.KEY_TITLE);
 		} else if (localName.equalsIgnoreCase(ISBN)){
 			String tmp = builder.toString(); 
 			if (tmp.indexOf("ISBN:") == 0) {
 				tmp = tmp.substring(5); 
-				if (!mValues.containsKey(CatalogueDBAdapter.KEY_ISBN) || tmp.length() > mValues.getString(CatalogueDBAdapter.KEY_ISBN).length()) {
-					mValues.putString(CatalogueDBAdapter.KEY_ISBN, tmp);
+				if (!mValues.containsKey(ColumnNames.KEY_ISBN) || tmp.length() > mValues.getString(ColumnNames.KEY_ISBN).length()) {
+					mValues.putString(ColumnNames.KEY_ISBN, tmp);
 				}
 			}
 		} else if (localName.equalsIgnoreCase(AUTHOR)){
-			ArrayUtils.appendOrAdd(mValues, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, builder.toString());
+			ArrayUtils.appendOrAdd(mValues, ColumnNames.KEY_AUTHOR_DETAILS, builder.toString());
 		} else if (localName.equalsIgnoreCase(PUBLISHER)){
-			addIfNotPresent(CatalogueDBAdapter.KEY_PUBLISHER);
+			addIfNotPresent(ColumnNames.KEY_PUBLISHER);
 		} else if (localName.equalsIgnoreCase(DATE_PUBLISHED)){
-			addIfNotPresent(CatalogueDBAdapter.KEY_DATE_PUBLISHED);
+			addIfNotPresent(ColumnNames.KEY_DATE_PUBLISHED);
 		} else if (localName.equalsIgnoreCase(PAGES)){
 			String tmp = builder.toString();
 			int index = tmp.indexOf(" pages");
 			if (index > -1) {
 				tmp = tmp.substring(0, index).trim(); 
-				mValues.putString(CatalogueDBAdapter.KEY_PAGES, tmp);
+				mValues.putString(ColumnNames.KEY_PAGES, tmp);
 			}
 		} else if (localName.equalsIgnoreCase(GENRE)){
-			mValues.putString(CatalogueDBAdapter.KEY_GENRE, builder.toString());
+			mValues.putString(ColumnNames.KEY_GENRE, builder.toString());
 		} else if (localName.equalsIgnoreCase(DESCRIPTION)){
-			addIfNotPresent(CatalogueDBAdapter.KEY_DESCRIPTION);
+			addIfNotPresent(ColumnNames.KEY_DESCRIPTION);
 		}
 		builder.setLength(0);
 	}

@@ -28,6 +28,8 @@ import com.eleybourn.bookcatalogue.database.TrackedCursor;
 
 import java.util.Hashtable;
 
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ROWID;
+
 /**
  * Cursor implementation for book-related queries. The cursor wraps common
  * column lookups and reduces code clutter when accessing common columns.
@@ -75,7 +77,7 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
 	private int mIdCol = -2;
 	public final long getId() {
 		if (mIdCol < 0) {
-			mIdCol = getColumnIndex(CatalogueDBAdapter.KEY_ROWID);
+			mIdCol = getColumnIndex(KEY_ROWID);
 			if (mIdCol < 0)
 				throw new RuntimeException("ISBN column not in result set");
 		}

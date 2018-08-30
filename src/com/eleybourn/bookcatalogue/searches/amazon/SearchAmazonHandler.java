@@ -23,10 +23,10 @@ package com.eleybourn.bookcatalogue.searches.amazon;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.xml.sax.Attributes;
@@ -302,7 +302,7 @@ public class SearchAmazonHandler extends DefaultHandler {
 				if (mCurrencyCode.equalsIgnoreCase("usd") && !mCurrencyAmount.isEmpty()) {
 					try {
 						Float price = Float.parseFloat(mCurrencyAmount) / 100;
-						addIfNotPresent(CatalogueDBAdapter.KEY_LIST_PRICE, String.format("%.2f", price));
+						addIfNotPresent(ColumnNames.KEY_LIST_PRICE, String.format("%.2f", price));
 					} catch(Exception e) {
 						// Ignore
 					}
@@ -312,31 +312,31 @@ public class SearchAmazonHandler extends DefaultHandler {
 				mInListPrice = false;
 			} else if (entry) {
 				if (localName.equalsIgnoreCase(AUTHOR)){
-					ArrayUtils.appendOrAdd(mBookData, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, mBuilder.toString());
+					ArrayUtils.appendOrAdd(mBookData, ColumnNames.KEY_AUTHOR_DETAILS, mBuilder.toString());
 				} else if (localName.equalsIgnoreCase(TITLE)){
-					addIfNotPresent(CatalogueDBAdapter.KEY_TITLE);
+					addIfNotPresent(ColumnNames.KEY_TITLE);
 				} else if (localName.equalsIgnoreCase(EAN) || localName.equalsIgnoreCase(EISBN)){
 					String tmp = mBuilder.toString();
-					if (!mBookData.containsKey(CatalogueDBAdapter.KEY_ISBN) 
-							|| mBookData.getString(CatalogueDBAdapter.KEY_ISBN).length() < tmp.length()) {
-						mBookData.putString(CatalogueDBAdapter.KEY_ISBN, tmp);
+					if (!mBookData.containsKey(ColumnNames.KEY_ISBN)
+							|| mBookData.getString(ColumnNames.KEY_ISBN).length() < tmp.length()) {
+						mBookData.putString(ColumnNames.KEY_ISBN, tmp);
 					}					
 				} else if (localName.equalsIgnoreCase(ISBNOLD)){
 					String tmp = mBuilder.toString();
-					if (!mBookData.containsKey(CatalogueDBAdapter.KEY_ISBN) 
-							|| mBookData.getString(CatalogueDBAdapter.KEY_ISBN).length() < tmp.length()) {
-						mBookData.putString(CatalogueDBAdapter.KEY_ISBN, tmp);
+					if (!mBookData.containsKey(ColumnNames.KEY_ISBN)
+							|| mBookData.getString(ColumnNames.KEY_ISBN).length() < tmp.length()) {
+						mBookData.putString(ColumnNames.KEY_ISBN, tmp);
 					}					
 				} else if (localName.equalsIgnoreCase(PUBLISHER)){
-					addIfNotPresent(CatalogueDBAdapter.KEY_PUBLISHER);
+					addIfNotPresent(ColumnNames.KEY_PUBLISHER);
 				} else if (localName.equalsIgnoreCase(DATE_PUBLISHED)){
-					addIfNotPresent(CatalogueDBAdapter.KEY_DATE_PUBLISHED);
+					addIfNotPresent(ColumnNames.KEY_DATE_PUBLISHED);
 				} else if (localName.equalsIgnoreCase(PAGES)){
-					addIfNotPresentOrEqual(CatalogueDBAdapter.KEY_PAGES, "0");
+					addIfNotPresentOrEqual(ColumnNames.KEY_PAGES, "0");
 				} else if (localName.equalsIgnoreCase(DESCRIPTION)){
-					addIfNotPresent(CatalogueDBAdapter.KEY_DESCRIPTION);
+					addIfNotPresent(ColumnNames.KEY_DESCRIPTION);
 				} else if (localName.equalsIgnoreCase(BINDING)){
-					addIfNotPresent(CatalogueDBAdapter.KEY_FORMAT);
+					addIfNotPresent(ColumnNames.KEY_FORMAT);
 				} else if (mInLanguage && localName.equalsIgnoreCase(NAME)){
 					addIfNotPresent(DatabaseDefinitions.DOM_LANGUAGE.name);
 				} else if (mInListPrice && localName.equalsIgnoreCase(AMOUNT)){

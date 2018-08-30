@@ -45,6 +45,8 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.*;
+
 /**
  * Abstract class for creating activities containing book details.
  * Here we define common method for all children: database and background initializing,
@@ -614,7 +616,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
          * While we could do it in a formatter, it it not really a display-oriented function and
          * is handled in preprocessing in the database layer since it also needs to be applied
          * to imported record etc. */
-        mFields.add(R.id.title, CatalogueDBAdapter.KEY_TITLE, null);
+        mFields.add(R.id.title, KEY_TITLE, null);
 
         /* Anthology needs special handling, and we use a formatter to do this. If the original
          * value was 0 or 1, then setting/clearing it here should just set the new value to 0 or 1.
@@ -625,32 +627,32 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
          * activity. */
         mFields.add(R.id.anthology, BookData.KEY_ANTHOLOGY, null);
 
-        mFields.add(R.id.author, "", CatalogueDBAdapter.KEY_AUTHOR_FORMATTED, null);
-        mFields.add(R.id.isbn, CatalogueDBAdapter.KEY_ISBN, null);
+        mFields.add(R.id.author, "", KEY_AUTHOR_FORMATTED, null);
+        mFields.add(R.id.isbn, KEY_ISBN, null);
 
         if (root.findViewById(R.id.publisher) != null)
-            mFields.add(R.id.publisher, CatalogueDBAdapter.KEY_PUBLISHER, null);
+            mFields.add(R.id.publisher, KEY_PUBLISHER, null);
 
         if (root.findViewById(R.id.date_published) != null)
-            mFields.add(R.id.date_published, CatalogueDBAdapter.KEY_DATE_PUBLISHED, CatalogueDBAdapter.KEY_DATE_PUBLISHED,
+            mFields.add(R.id.date_published, KEY_DATE_PUBLISHED, KEY_DATE_PUBLISHED,
                     null, new Fields.DateFieldFormatter());
 
-        mFields.add(R.id.series, CatalogueDBAdapter.KEY_SERIES_NAME, CatalogueDBAdapter.KEY_SERIES_NAME, null);
+        mFields.add(R.id.series, KEY_SERIES_NAME, KEY_SERIES_NAME, null);
         mFields.add(R.id.list_price, "list_price", null);
-        mFields.add(R.id.pages, CatalogueDBAdapter.KEY_PAGES, null);
-        mFields.add(R.id.format, CatalogueDBAdapter.KEY_FORMAT, null);
-        //mFields.add(R.id.bookshelf, CatalogueDBAdapter.KEY_BOOKSHELF, null);
-        mFields.add(R.id.description, CatalogueDBAdapter.KEY_DESCRIPTION, null)
+        mFields.add(R.id.pages, KEY_PAGES, null);
+        mFields.add(R.id.format, KEY_FORMAT, null);
+        //mFields.add(R.id.bookshelf, KEY_BOOKSHELF, null);
+        mFields.add(R.id.description, KEY_DESCRIPTION, null)
                 .setShowHtml(true);
-        mFields.add(R.id.genre, CatalogueDBAdapter.KEY_GENRE, null);
+        mFields.add(R.id.genre, KEY_GENRE, null);
         mFields.add(R.id.language, DatabaseDefinitions.DOM_LANGUAGE.name, null);
 
         mFields.add(R.id.row_img, "", "thumbnail", null);
         mFields.getField(R.id.row_img).getView().setOnCreateContextMenuListener(mCreateBookThumbContextMenuListener);
 
-        mFields.add(R.id.format_button, "", CatalogueDBAdapter.KEY_FORMAT, null);
+        mFields.add(R.id.format_button, "", KEY_FORMAT, null);
         mFields.add(R.id.bookshelf, "bookshelf_text", null).doNoFetch = true; // Output-only field
-        mFields.add(R.id.signed, CatalogueDBAdapter.KEY_SIGNED, null);
+        mFields.add(R.id.signed, KEY_SIGNED, null);
     }
 
     /**

@@ -39,6 +39,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Date;
 
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.*;
+
 /**
  * Implementation of Exporter that creates a CSV file.
  * 
@@ -80,32 +82,32 @@ public class CsvExporter implements Exporter {
 		boolean displayingStartupMessage = true;
 
 		StringBuilder export = new StringBuilder(
-			'"' + CatalogueDBAdapter.KEY_ROWID + "\"," + 			//0
-			'"' + CatalogueDBAdapter.KEY_AUTHOR_DETAILS + "\"," + 	//2
-			'"' + CatalogueDBAdapter.KEY_TITLE + "\"," + 			//4
-			'"' + CatalogueDBAdapter.KEY_ISBN + "\"," + 			//5
-			'"' + CatalogueDBAdapter.KEY_PUBLISHER + "\"," + 		//6
-			'"' + CatalogueDBAdapter.KEY_DATE_PUBLISHED + "\"," + 	//7
-			'"' + CatalogueDBAdapter.KEY_RATING + "\"," + 			//8
+			'"' + KEY_ROWID + "\"," + 			//0
+			'"' + KEY_AUTHOR_DETAILS + "\"," + 	//2
+			'"' + KEY_TITLE + "\"," + 			//4
+			'"' + KEY_ISBN + "\"," + 			//5
+			'"' + KEY_PUBLISHER + "\"," + 		//6
+			'"' + KEY_DATE_PUBLISHED + "\"," + 	//7
+			'"' + KEY_RATING + "\"," + 			//8
 			'"' + "bookshelf_id\"," + 								//9
-			'"' + CatalogueDBAdapter.KEY_BOOKSHELF + "\"," +		//10
-			'"' + CatalogueDBAdapter.KEY_READ + "\"," +				//11
-			'"' + CatalogueDBAdapter.KEY_SERIES_DETAILS + "\"," +	//12
-			'"' + CatalogueDBAdapter.KEY_PAGES + "\"," + 			//14
-			'"' + CatalogueDBAdapter.KEY_NOTES + "\"," + 			//15
-			'"' + CatalogueDBAdapter.KEY_LIST_PRICE + "\"," + 		//16
-			'"' + CatalogueDBAdapter.KEY_ANTHOLOGY_MASK+ "\"," + 		//17
-			'"' + CatalogueDBAdapter.KEY_LOCATION+ "\"," + 			//18
-			'"' + CatalogueDBAdapter.KEY_READ_START+ "\"," + 		//19
-			'"' + CatalogueDBAdapter.KEY_READ_END+ "\"," + 			//20
-			'"' + CatalogueDBAdapter.KEY_FORMAT+ "\"," + 			//21
-			'"' + CatalogueDBAdapter.KEY_SIGNED+ "\"," + 			//22
-			'"' + CatalogueDBAdapter.KEY_LOANED_TO+ "\"," +			//23 
+			'"' + KEY_BOOKSHELF + "\"," +		//10
+			'"' + KEY_READ + "\"," +				//11
+			'"' + KEY_SERIES_DETAILS + "\"," +	//12
+			'"' + KEY_PAGES + "\"," + 			//14
+			'"' + KEY_NOTES + "\"," + 			//15
+			'"' + KEY_LIST_PRICE + "\"," + 		//16
+			'"' + KEY_ANTHOLOGY_MASK+ "\"," + 		//17
+			'"' + KEY_LOCATION+ "\"," + 			//18
+			'"' + KEY_READ_START+ "\"," + 		//19
+			'"' + KEY_READ_END+ "\"," + 			//20
+			'"' + KEY_FORMAT+ "\"," + 			//21
+			'"' + KEY_SIGNED+ "\"," + 			//22
+			'"' + KEY_LOANED_TO+ "\"," +			//23
 			'"' + "anthology_titles" + "\"," +						//24 
-			'"' + CatalogueDBAdapter.KEY_DESCRIPTION+ "\"," + 		//25
-			'"' + CatalogueDBAdapter.KEY_GENRE+ "\"," + 			//26
+			'"' + KEY_DESCRIPTION+ "\"," + 		//25
+			'"' + KEY_GENRE+ "\"," + 			//26
 			'"' + DatabaseDefinitions.DOM_LANGUAGE+ "\"," + 			//+1
-			'"' + CatalogueDBAdapter.KEY_DATE_ADDED+ "\"," + 		//27
+			'"' + KEY_DATE_ADDED+ "\"," + 		//27
 			'"' + DatabaseDefinitions.DOM_GOODREADS_BOOK_ID + "\"," + 		//28
 			'"' + DatabaseDefinitions.DOM_LAST_GOODREADS_SYNC_DATE + "\"," + 		//29
 			'"' + DatabaseDefinitions.DOM_LAST_UPDATE_DATE + "\"," + 		//30
@@ -136,18 +138,18 @@ public class CsvExporter implements Exporter {
 				if (books.moveToFirst()) {
 					do { 
 						num++;
-						long id = books.getLong(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_ROWID));
+						long id = books.getLong(books.getColumnIndexOrThrow(KEY_ROWID));
 						// Just get the string from the database and save it. It should be in standard SQL form already.
 						String dateString = "";
 						try {
-							dateString = books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_DATE_PUBLISHED));
+							dateString = books.getString(books.getColumnIndexOrThrow(KEY_DATE_PUBLISHED));
 						} catch (Exception e) {
 							//do nothing
 						}
 						// Just get the string from the database and save it. It should be in standard SQL form already.
 						String dateReadStartString = "";
 						try {
-							dateReadStartString = books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_READ_START));
+							dateReadStartString = books.getString(books.getColumnIndexOrThrow(KEY_READ_START));
 						} catch (Exception e) {
 							Logger.logError(e);
 							//do nothing
@@ -155,7 +157,7 @@ public class CsvExporter implements Exporter {
 						// Just get the string from the database and save it. It should be in standard SQL form already.
 						String dateReadEndString = "";
 						try {
-							dateReadEndString = books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_READ_END));
+							dateReadEndString = books.getString(books.getColumnIndexOrThrow(KEY_READ_END));
 						} catch (Exception e) {
 							Logger.logError(e);
 							//do nothing
@@ -163,20 +165,20 @@ public class CsvExporter implements Exporter {
 						// Just get the string from the database and save it. It should be in standard SQL form already.
 						String dateAddedString = "";
 						try {
-							dateAddedString = books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_DATE_ADDED));
+							dateAddedString = books.getString(books.getColumnIndexOrThrow(KEY_DATE_ADDED));
 						} catch (Exception e) {
 							//do nothing
 						}
 
-						int anthology = books.getInt(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_ANTHOLOGY_MASK));
+						int anthology = books.getInt(books.getColumnIndexOrThrow(KEY_ANTHOLOGY_MASK));
 						StringBuilder anthology_titles = new StringBuilder();
 						if (anthology != 0) {
 							Cursor titles = db.fetchAnthologyTitlesByBook(id);
 							try {
 								if (titles.moveToFirst()) {
 									do { 
-										String anth_title = titles.getString(titles.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_TITLE));
-										String anth_author = titles.getString(titles.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_AUTHOR_NAME));
+										String anth_title = titles.getString(titles.getColumnIndexOrThrow(KEY_TITLE));
+										String anth_author = titles.getString(titles.getColumnIndexOrThrow(KEY_AUTHOR_NAME));
 										anthology_titles.append(anth_title).append(" * ").append(anth_author).append("|");
 									} while (titles.moveToNext()); 
 								}
@@ -185,7 +187,7 @@ public class CsvExporter implements Exporter {
 									titles.close();
 							}
 						}
-						String title = books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_TITLE));
+						String title = books.getString(books.getColumnIndexOrThrow(KEY_TITLE));
 						// Sanity check: ensure title is non-blank. This has not happened yet, but we 
 						// know if does for author, so completeness suggests making sure all 'required'
 						// fields are non-blank.
@@ -197,8 +199,8 @@ public class CsvExporter implements Exporter {
 						StringBuilder bookshelves_id_text = new StringBuilder();
 						StringBuilder bookshelves_name_text = new StringBuilder();
 						while (bookshelves.moveToNext()) {
-							bookshelves_id_text.append(bookshelves.getString(bookshelves.getColumnIndex(CatalogueDBAdapter.KEY_ROWID))).append(BookEditFields.BOOKSHELF_SEPARATOR);
-							bookshelves_name_text.append(ArrayUtils.encodeListItem(bookshelves.getString(bookshelves.getColumnIndex(CatalogueDBAdapter.KEY_BOOKSHELF)), BookEditFields.BOOKSHELF_SEPARATOR)).append(BookEditFields.BOOKSHELF_SEPARATOR);
+							bookshelves_id_text.append(bookshelves.getString(bookshelves.getColumnIndex(KEY_ROWID))).append(BookEditFields.BOOKSHELF_SEPARATOR);
+							bookshelves_name_text.append(ArrayUtils.encodeListItem(bookshelves.getString(bookshelves.getColumnIndex(KEY_BOOKSHELF)), BookEditFields.BOOKSHELF_SEPARATOR)).append(BookEditFields.BOOKSHELF_SEPARATOR);
 						}
 						bookshelves.close();
 
@@ -216,21 +218,21 @@ public class CsvExporter implements Exporter {
 						row.append("\"").append(formatCell(rv.getIsbn())).append("\",");
 						row.append("\"").append(formatCell(rv.getPublisher())).append("\",");
 						row.append("\"").append(formatCell(dateString)).append("\",");
-						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_RATING)))).append("\",");
+						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_RATING)))).append("\",");
 						row.append("\"").append(formatCell(bookshelves_id_text)).append("\",");
 						row.append("\"").append(formatCell(bookshelves_name_text)).append("\",");
 						row.append("\"").append(formatCell(rv.getRead())).append("\",");
 						row.append("\"").append(formatCell(seriesDetails)).append("\",");
-						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_PAGES)))).append("\",");
+						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_PAGES)))).append("\",");
 						row.append("\"").append(formatCell(rv.getNotes())).append("\",");
-						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_LIST_PRICE)))).append("\",");
+						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_LIST_PRICE)))).append("\",");
 						row.append("\"").append(formatCell(anthology)).append("\",");
 						row.append("\"").append(formatCell(rv.getLocation())).append("\",");
 						row.append("\"").append(formatCell(dateReadStartString)).append("\",");
 						row.append("\"").append(formatCell(dateReadEndString)).append("\",");
-						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_FORMAT)))).append("\",");
-						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_SIGNED)))).append("\",");
-						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_LOANED_TO)) + "")).append("\",");
+						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_FORMAT)))).append("\",");
+						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_SIGNED)))).append("\",");
+						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_LOANED_TO)) + "")).append("\",");
 						row.append("\"").append(formatCell(anthology_titles.toString())).append("\",");
 						row.append("\"").append(formatCell(rv.getDescription())).append("\",");
 						row.append("\"").append(formatCell(rv.getGenre())).append("\",");

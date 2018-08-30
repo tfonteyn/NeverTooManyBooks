@@ -23,8 +23,8 @@ package com.eleybourn.bookcatalogue.searches.goodreads.api;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.Author;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.Series;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -32,7 +32,6 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exception
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.apache.http.client.methods.HttpGet;
@@ -44,6 +43,15 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_DETAILS;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_FORMAT;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ISBN;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PAGES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_DETAILS;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TITLE;
 import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.BOOK_ID;
 import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.BOOK_URL;
 import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.IMAGE;
@@ -61,7 +69,6 @@ import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHand
 import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.SHELVES;
 import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.SMALL_IMAGE;
 import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.WORK_ID;
-
 /**
  * Class to query and response to search.books api call. This is an abstract class
  * designed to be used by other classes that implement specific search methods. It does
@@ -162,7 +169,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         if (mBook.containsKey(ISBN13)) {
         	String s = mBook.getString(ISBN13);
         	if (s.length() == 13)
-        		mBook.putString(CatalogueDBAdapter.KEY_ISBN, s);
+        		mBook.putString(KEY_ISBN, s);
         }
 
         // TODO: Evaluate if ShowBook should store GR book ID.
@@ -191,23 +198,23 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         }
 
         /* Build the pub date based on the components */
-        GoodreadsManager.buildDate(mBook, PUBLICATION_YEAR, PUBLICATION_MONTH, PUBLICATION_DAY, CatalogueDBAdapter.KEY_DATE_PUBLISHED);
+        GoodreadsManager.buildDate(mBook, PUBLICATION_YEAR, PUBLICATION_MONTH, PUBLICATION_DAY, KEY_DATE_PUBLISHED);
 
         if (mBook.containsKey(IS_EBOOK) && mBook.getBoolean(IS_EBOOK))
-        	mBook.putString(CatalogueDBAdapter.KEY_FORMAT, "Ebook");
+        	mBook.putString(KEY_FORMAT, "Ebook");
 
         /*
          * Cleanup the title by removing series name, if present
          */
-        if (mBook.containsKey(CatalogueDBAdapter.KEY_TITLE)) {
-			String thisTitle = mBook.getString(CatalogueDBAdapter.KEY_TITLE);
+        if (mBook.containsKey(KEY_TITLE)) {
+			String thisTitle = mBook.getString(KEY_TITLE);
 			Series.SeriesDetails details = Series.findSeries(thisTitle);
 			if (details != null && details.name.length() > 0) {
 				if (mSeries == null)
 					mSeries = new ArrayList<>();
 				mSeries.add(new Series(details.name, details.position));
 				// Tempting to replace title with ORIG_TITLE, but that does bad things to translations (it used the original language)
-				mBook.putString(CatalogueDBAdapter.KEY_TITLE, thisTitle.substring(0, details.startChar-1));		        	
+				mBook.putString(KEY_TITLE, thisTitle.substring(0, details.startChar-1));
 				//if (mBook.containsKey(ORIG_TITLE)) {
 				//	mBook.putString(CatalogueDBAdapter.KEY_TITLE, mBook.getString(ORIG_TITLE));
 				//} else {
@@ -215,27 +222,27 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 				//}
 			}
         } else if (mBook.containsKey(ORIG_TITLE)) {
-        	mBook.putString(CatalogueDBAdapter.KEY_TITLE, mBook.getString(ORIG_TITLE));
+        	mBook.putString(KEY_TITLE, mBook.getString(ORIG_TITLE));
         }
 
     	// ENHANCE Store WORK_ID = "__work_id" into GR_WORK_ID;
         // ENHANCE: Store ORIGINAL_PUBLICATION_DATE in database
         
         // If no published date, try original date
-        if (!mBook.containsKey(CatalogueDBAdapter.KEY_DATE_PUBLISHED)) {
+        if (!mBook.containsKey(KEY_DATE_PUBLISHED)) {
             String origDate = GoodreadsManager.buildDate(mBook, ORIG_PUBLICATION_YEAR, ORIG_PUBLICATION_MONTH, ORIG_PUBLICATION_DAY, null);
         	if (origDate != null && origDate.length() > 0)
-        		mBook.putString(CatalogueDBAdapter.KEY_DATE_PUBLISHED, origDate);
+        		mBook.putString(KEY_DATE_PUBLISHED, origDate);
         }
 
     	//public static final String RATING = "__rating";
     	//public static final String BOOK_URL = "__url";
 
         if (mAuthors != null && mAuthors.size() > 0)
-			mBook.putString(CatalogueDBAdapter.KEY_AUTHOR_DETAILS, ArrayUtils.getAuthorUtils().encodeList(mAuthors, '|'));
+			mBook.putString(KEY_AUTHOR_DETAILS, ArrayUtils.getAuthorUtils().encodeList(mAuthors, '|'));
 
         if (mSeries != null && mSeries.size() > 0)
-			mBook.putString(CatalogueDBAdapter.KEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(mSeries, '|'));
+			mBook.putString(KEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(mSeries, '|'));
 
         if (mShelves != null && mShelves.size() > 0)
         	mBook.putStringArrayList(SHELVES, mShelves);
@@ -480,9 +487,9 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "id")
            		.setEndAction(mHandleLong, BOOK_ID);
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "title")
-                .setEndAction(mHandleText, CatalogueDBAdapter.KEY_TITLE);
+                .setEndAction(mHandleText, KEY_TITLE);
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "isbn")
-                .setEndAction(mHandleText, CatalogueDBAdapter.KEY_ISBN);
+                .setEndAction(mHandleText, KEY_ISBN);
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "isbn13")
                 .setEndAction(mHandleText, ISBN13);
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "image_url")
@@ -496,11 +503,11 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "publication_day")
                 .setEndAction(mHandleLong, PUBLICATION_DAY);
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "publisher")
-                .setEndAction(mHandleText, CatalogueDBAdapter.KEY_PUBLISHER);
+                .setEndAction(mHandleText, KEY_PUBLISHER);
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "is_ebook")
                 .setEndAction(mHandleBoolean, IS_EBOOK);
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "description")
-                .setEndAction(mHandleText, CatalogueDBAdapter.KEY_DESCRIPTION);
+                .setEndAction(mHandleText, KEY_DESCRIPTION);
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "id")
                 .setEndAction(mHandleLong, WORK_ID);
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "original_publication_day")
@@ -514,9 +521,9 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "average_rating")
                 .setEndAction(mHandleFloat, RATING);
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "num_pages")
-                .setEndAction(mHandleLong, CatalogueDBAdapter.KEY_PAGES);
+                .setEndAction(mHandleLong, KEY_PAGES);
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "format")
-                .setEndAction(mHandleText, CatalogueDBAdapter.KEY_FORMAT);
+                .setEndAction(mHandleText, KEY_FORMAT);
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "url")
 				.setEndAction(mHandleText, BOOK_URL);
 		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "authors", "author")

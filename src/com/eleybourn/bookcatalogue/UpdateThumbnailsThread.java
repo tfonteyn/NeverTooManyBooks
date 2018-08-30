@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Convert;
@@ -105,7 +106,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
 		}
 
 		// ENHANCE: Allow caller to pass cursor (again) so that specific books can be updated (eg. just one book)
-		Cursor books = mDbHelper.fetchAllBooks("b." + CatalogueDBAdapter.KEY_ROWID, "", "", "", "", "", "");
+		Cursor books = mDbHelper.fetchAllBooks("b." + ColumnNames.KEY_ROWID, "", "", "", "", "", "");
 		mManager.setMax(this, books.getCount());
 		try {
 			while (books.moveToNext() && !isCancelled()) {
@@ -119,20 +120,20 @@ public class UpdateThumbnailsThread extends ManagedTask {
 					mOrigData.putString(books.getColumnName(i), books.getString(i));
 				}
 				// Get the book ID
-				mCurrId = Convert.getAsLong(mOrigData, CatalogueDBAdapter.KEY_ROWID);
+				mCurrId = Convert.getAsLong(mOrigData, ColumnNames.KEY_ROWID);
 				// Get the book UUID
 				mCurrUuid = mOrigData.getString(DatabaseDefinitions.DOM_BOOK_UUID.name);
 				// Get the extra data about the book
-				mOrigData.putSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, mDbHelper.getBookAuthorList(mCurrId));
-				mOrigData.putSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY, mDbHelper.getBookSeriesList(mCurrId));
+				mOrigData.putSerializable(ColumnNames.KEY_AUTHOR_ARRAY, mDbHelper.getBookAuthorList(mCurrId));
+				mOrigData.putSerializable(ColumnNames.KEY_SERIES_ARRAY, mDbHelper.getBookSeriesList(mCurrId));
 
 				// Grab the searchable fields. Ideally we will have an ISBN but we may not.
-				String isbn = mOrigData.getString(CatalogueDBAdapter.KEY_ISBN);
+				String isbn = mOrigData.getString(ColumnNames.KEY_ISBN);
 				// Make sure ISBN is not NULL (legacy data, and possibly set to null when adding new book)
 				if (isbn == null)
 					isbn = "";
-				String author = mOrigData.getString(CatalogueDBAdapter.KEY_AUTHOR_FORMATTED);
-				String title = mOrigData.getString(CatalogueDBAdapter.KEY_TITLE);
+				String author = mOrigData.getString(ColumnNames.KEY_AUTHOR_FORMATTED);
+				String title = mOrigData.getString(ColumnNames.KEY_TITLE);
 
 				// Reset the fields we want for THIS book
 				mCurrFieldUsages = new FieldUsages();
@@ -151,12 +152,12 @@ public class UpdateThumbnailsThread extends ManagedTask {
 								// Handle special cases
 								// - If it's a thumbnail, then see if it's missing or empty.
 								switch (usage.fieldName) {
-									case CatalogueDBAdapter.KEY_THUMBNAIL:
+									case ColumnNames.KEY_THUMBNAIL:
 										File file = CatalogueDBAdapter.fetchThumbnailByUuid(mCurrUuid);
 										if (!file.exists() || file.length() == 0)
 											mCurrFieldUsages.put(usage);
 										break;
-									case CatalogueDBAdapter.KEY_AUTHOR_ARRAY:
+									case ColumnNames.KEY_AUTHOR_ARRAY:
 										// We should never have a book with no authors, but lets be paranoid
 										if (mOrigData.containsKey(usage.fieldName)) {
 											ArrayList<Author> origAuthors = ArrayUtils.getAuthorsFromBundle(mOrigData);
@@ -164,7 +165,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
 												mCurrFieldUsages.put(usage);
 										}
 										break;
-									case CatalogueDBAdapter.KEY_SERIES_ARRAY:
+									case ColumnNames.KEY_SERIES_ARRAY:
 										if (mOrigData.containsKey(usage.fieldName)) {
 											ArrayList<Series> origSeries = ArrayUtils.getSeriesFromBundle(mOrigData);
 											if (origSeries == null || origSeries.size() == 0)
@@ -185,7 +186,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
 				}
 
 				// Cache the value to indicate we need thumbnails (or not).
-				boolean tmpThumbWanted = mCurrFieldUsages.containsKey(CatalogueDBAdapter.KEY_THUMBNAIL);
+				boolean tmpThumbWanted = mCurrFieldUsages.containsKey(ColumnNames.KEY_THUMBNAIL);
 
 				if (tmpThumbWanted) {
 					// delete any temporary thumbnails //
@@ -302,7 +303,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
 		for(FieldUsage usage : requestedFields.values()) {
 			if (newData.containsKey(usage.fieldName)) {
 				// Handle thumbnail specially
-				if (usage.fieldName.equals(CatalogueDBAdapter.KEY_THUMBNAIL)) {
+				if (usage.fieldName.equals(ColumnNames.KEY_THUMBNAIL)) {
 					File downloadedFile = CatalogueDBAdapter.getTempThumbnail();
 					boolean copyThumb = false;
 					if (usage.usage == FieldUsages.Usages.COPY_IF_BLANK) {
@@ -313,8 +314,10 @@ public class UpdateThumbnailsThread extends ManagedTask {
 					}
 					if (copyThumb) {
 						File file = CatalogueDBAdapter.fetchThumbnailByUuid(bookUuid);
+						//noinspection ResultOfMethodCallIgnored
 						downloadedFile.renameTo(file);
 					} else {
+						//noinspection ResultOfMethodCallIgnored
 						downloadedFile.delete();
 					}
 				} else {
@@ -325,14 +328,14 @@ public class UpdateThumbnailsThread extends ManagedTask {
 					case COPY_IF_BLANK:
 						// Handle special cases
 						switch (usage.fieldName) {
-							case CatalogueDBAdapter.KEY_AUTHOR_ARRAY:
+							case ColumnNames.KEY_AUTHOR_ARRAY:
 								if (origData.containsKey(usage.fieldName)) {
 									ArrayList<Author> origAuthors = ArrayUtils.getAuthorsFromBundle(origData);
 									if (origAuthors != null && origAuthors.size() > 0)
 										newData.remove(usage.fieldName);
 								}
 								break;
-							case CatalogueDBAdapter.KEY_SERIES_ARRAY:
+							case ColumnNames.KEY_SERIES_ARRAY:
 								if (origData.containsKey(usage.fieldName)) {
                                     ArrayList<Series> origSeries = ArrayUtils.getSeriesFromBundle(origData);
 									if (origSeries != null && origSeries.size() > 0)
@@ -352,10 +355,10 @@ public class UpdateThumbnailsThread extends ManagedTask {
 					case ADD_EXTRA:
 						// Handle arrays
 						switch (usage.fieldName) {
-							case CatalogueDBAdapter.KEY_AUTHOR_ARRAY:
+							case ColumnNames.KEY_AUTHOR_ARRAY:
 								UpdateThumbnailsThread.<Author>combineArrays(usage.fieldName, origData, newData);
 								break;
-							case CatalogueDBAdapter.KEY_SERIES_ARRAY:
+							case ColumnNames.KEY_SERIES_ARRAY:
 								UpdateThumbnailsThread.<Series>combineArrays(usage.fieldName, origData, newData);
 								break;
 							default:

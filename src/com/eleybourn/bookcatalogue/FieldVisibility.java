@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -76,14 +77,14 @@ public class FieldVisibility extends BookCatalogueActivity {
 	private void setupFields() {
 		// The fields to show/hide
 		String[] fields = {
-		        CatalogueDBAdapter.KEY_AUTHOR_ID, CatalogueDBAdapter.KEY_TITLE, "thumbnail",
-				CatalogueDBAdapter.KEY_ISBN, CatalogueDBAdapter.KEY_SERIES_NAME, CatalogueDBAdapter.KEY_SERIES_NUM, 
-				CatalogueDBAdapter.KEY_PUBLISHER, CatalogueDBAdapter.KEY_DATE_PUBLISHED, CatalogueDBAdapter.KEY_BOOKSHELF, 
-				CatalogueDBAdapter.KEY_PAGES, CatalogueDBAdapter.KEY_LIST_PRICE, CatalogueDBAdapter.KEY_READ, 
-				CatalogueDBAdapter.KEY_RATING, CatalogueDBAdapter.KEY_NOTES, CatalogueDBAdapter.KEY_ANTHOLOGY_MASK, 
-				CatalogueDBAdapter.KEY_LOCATION, CatalogueDBAdapter.KEY_READ_START, CatalogueDBAdapter.KEY_READ_END, 
-				CatalogueDBAdapter.KEY_FORMAT, CatalogueDBAdapter.KEY_SIGNED, CatalogueDBAdapter.KEY_DESCRIPTION, 
-				CatalogueDBAdapter.KEY_GENRE, DatabaseDefinitions.DOM_LANGUAGE.name};
+				ColumnNames.KEY_AUTHOR_ID, ColumnNames.KEY_TITLE, "thumbnail",
+				ColumnNames.KEY_ISBN, ColumnNames.KEY_SERIES_NAME, ColumnNames.KEY_SERIES_NUM,
+				ColumnNames.KEY_PUBLISHER, ColumnNames.KEY_DATE_PUBLISHED, ColumnNames.KEY_BOOKSHELF,
+				ColumnNames.KEY_PAGES, ColumnNames.KEY_LIST_PRICE, ColumnNames.KEY_READ,
+				ColumnNames.KEY_RATING, ColumnNames.KEY_NOTES, ColumnNames.KEY_ANTHOLOGY_MASK,
+				ColumnNames.KEY_LOCATION, ColumnNames.KEY_READ_START, ColumnNames.KEY_READ_END,
+				ColumnNames.KEY_FORMAT, ColumnNames.KEY_SIGNED, ColumnNames.KEY_DESCRIPTION,
+				ColumnNames.KEY_GENRE, DatabaseDefinitions.DOM_LANGUAGE.name};
 		int[] fieldRs = {
 		        R.string.author, R.string.title, R.string.thumbnail,
                 R.string.isbn, R.string.series, R.string.series_num,

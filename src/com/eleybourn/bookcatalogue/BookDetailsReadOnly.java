@@ -21,6 +21,8 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.*;
+
 /**
  * Class for representing read-only book details.
  *
@@ -185,15 +187,15 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
      */
     private void addFields() {
         // From 'My comments' tab
-        mFields.add(R.id.rating, CatalogueDBAdapter.KEY_RATING, null);
-        mFields.add(R.id.notes, CatalogueDBAdapter.KEY_NOTES, null)
+        mFields.add(R.id.rating, KEY_RATING, null);
+        mFields.add(R.id.notes, KEY_NOTES, null)
                 .setShowHtml(true);
-        mFields.add(R.id.read_start, CatalogueDBAdapter.KEY_READ_START, null, new Fields.DateFieldFormatter());
-        mFields.add(R.id.read_end, CatalogueDBAdapter.KEY_READ_END, null, new Fields.DateFieldFormatter());
-        mFields.add(R.id.location, CatalogueDBAdapter.KEY_LOCATION, null);
+        mFields.add(R.id.read_start, KEY_READ_START, null, new Fields.DateFieldFormatter());
+        mFields.add(R.id.read_end, KEY_READ_END, null, new Fields.DateFieldFormatter());
+        mFields.add(R.id.location, KEY_LOCATION, null);
         // Make sure the label is hidden when the ISBN is
-        mFields.add(R.id.isbn_label, "", CatalogueDBAdapter.KEY_ISBN, null);
-        mFields.add(R.id.publishing_details, "", CatalogueDBAdapter.KEY_PUBLISHER, null);
+        mFields.add(R.id.isbn_label, "", KEY_ISBN, null);
+        mFields.add(R.id.publishing_details, "", KEY_PUBLISHER, null);
     }
 
     /**
@@ -202,14 +204,14 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
      */
     private void formatFormatSection(BookData book) {
         Field field = mFields.getField(R.id.pages);
-        String value = book.getString(CatalogueDBAdapter.KEY_PAGES);
+        String value = book.getString(KEY_PAGES);
         boolean isExist = value != null && !value.isEmpty();
         if (isExist) { //If 'pages' field is set format it
             field.setValue(getString(R.string.book_details_readonly_pages, value));
         }
         // Format 'format' field
         field = mFields.getField(R.id.format);
-        value = book.getString(CatalogueDBAdapter.KEY_FORMAT);
+        value = book.getString(KEY_FORMAT);
         if (isExist && value != null && !value.isEmpty()) {
             /* Surround 'format' field with braces if 'pages' field is set
              * and 'format' field is not empty */
@@ -222,9 +224,9 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
      * of 'publisher' and 'date published' fields.
      */
     private void formatPublishingSection(BookData book) {
-        String date = book.getString(CatalogueDBAdapter.KEY_DATE_PUBLISHED);
+        String date = book.getString(KEY_DATE_PUBLISHED);
         boolean hasDate = date != null && !date.isEmpty();
-        String pub = book.getString(CatalogueDBAdapter.KEY_PUBLISHER);
+        String pub = book.getString(KEY_PUBLISHER);
         boolean hasPub = pub != null && !pub.isEmpty();
         String value;
 
@@ -277,7 +279,7 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
      * @param book Cursor containing information of the book from database
      */
     private void showReadStatus(BookData book) {
-        if (FieldVisibility.isVisible(CatalogueDBAdapter.KEY_READ)) {
+        if (FieldVisibility.isVisible(KEY_READ)) {
             ImageView image = getView().findViewById(R.id.read);
             if (book.isRead()) {
                 image.setVisibility(View.VISIBLE);

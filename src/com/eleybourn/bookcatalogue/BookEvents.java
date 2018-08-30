@@ -34,6 +34,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.searches.goodreads.SendOneBookTask;
 import com.eleybourn.bookcatalogue.utils.BcQueueManager;
 import com.eleybourn.bookcatalogue.utils.HintManager.HintOwner;
@@ -353,7 +354,7 @@ public class BookEvents {
 	 */
 	private static void editBook(Context ctx, long bookId) {
 		Intent i = new Intent(ctx, BookEdit.class);
-		i.putExtra(CatalogueDBAdapter.KEY_ROWID, bookId);
+		i.putExtra(ColumnNames.KEY_ROWID, bookId);
 		i.putExtra(BookEdit.TAB, BookEdit.TAB_EDIT);
 		ctx.startActivity(i);	
 	}

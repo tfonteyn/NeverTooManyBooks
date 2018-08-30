@@ -32,6 +32,8 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.ArrayList;
 
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.*;
+
 /**
  * Represents the underlying data for a book.
  * 
@@ -139,7 +141,7 @@ public class BookData extends DataManager {
 		try {
 			StringBuilder bookshelves_list = new StringBuilder();
 			while (bookshelves.moveToNext()) {
-				String name = bookshelves.getString(bookshelves.getColumnIndex(CatalogueDBAdapter.KEY_BOOKSHELF));
+				String name = bookshelves.getString(bookshelves.getColumnIndex(KEY_BOOKSHELF));
 				String encoded_name = ArrayUtils.encodeListItem(name, BookDetailsAbstract.BOOKSHELF_SEPARATOR);
 				if (bookshelves_list.length() == 0) {
 					bookshelves_list.append(encoded_name);
@@ -201,12 +203,12 @@ public class BookData extends DataManager {
 
 	/** Special Accessor */
 	public void setAnthologyTitles(ArrayList<AnthologyTitle> list) {
-		putSerializable(CatalogueDBAdapter.KEY_ANTHOLOGY_TITLE_ARRAY, list);
+		putSerializable(KEY_ANTHOLOGY_TITLE_ARRAY, list);
 	}
 
 	/** Special Accessor */
 	public void setAuthorList(ArrayList<Author> list) {
-		putSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, list);
+		putSerializable(KEY_AUTHOR_ARRAY, list);
 	}
 
 	/** Special Accessor */
@@ -216,7 +218,7 @@ public class BookData extends DataManager {
 
 	/** Special Accessor */
 	public void setSeriesList(ArrayList<Series> list) {
-		putSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY, list);
+		putSerializable(KEY_SERIES_ARRAY, list);
 	}
 
 	/**
@@ -260,8 +262,8 @@ public class BookData extends DataManager {
 	 * Build any special purpose validators
 	 */
 	private void initValidators() {
-		addValidator(CatalogueDBAdapter.KEY_TITLE, nonBlankValidator);
-		addValidator(CatalogueDBAdapter.KEY_ANTHOLOGY_MASK, integerValidator);
+		addValidator(KEY_TITLE, nonBlankValidator);
+		addValidator(KEY_ANTHOLOGY_MASK, integerValidator);
 
 		/* Anthology needs special handling, and we use a formatter to do this. If the original
 		 * value was 0 or 1, then setting/clearing it here should just set the new value to 0 or 1.
@@ -273,26 +275,26 @@ public class BookData extends DataManager {
 		addAccessor(KEY_ANTHOLOGY, new DataAccessor() {
 			@Override
 			public Object get(DataManager data, Datum datum, Bundle rawData) {
-				Integer mask = data.getInt(CatalogueDBAdapter.KEY_ANTHOLOGY_MASK);				
+				Integer mask = data.getInt(KEY_ANTHOLOGY_MASK);
 				return mask != 0 ? "1" : "0";
 			}
 
 			@Override
 			public void set(DataManager data, Datum datum, Bundle rawData, Object value) {
-				Integer mask = getInt(CatalogueDBAdapter.KEY_ANTHOLOGY_MASK);				
+				Integer mask = getInt(KEY_ANTHOLOGY_MASK);
 				// Parse the string the CheckBox returns us (0 or 1)
 				if (Convert.toBoolean(value)) {
 					mask |= 1;
 				} else {
 					mask &= 0xFFFFFFFE;
 				}
-				putInt(CatalogueDBAdapter.KEY_ANTHOLOGY_MASK, mask);
+				putInt(KEY_ANTHOLOGY_MASK, mask);
 				
 			}
 
 			@Override
 			public boolean isPresent(DataManager data, Datum datum, Bundle rawData) {
-				return rawData.containsKey(CatalogueDBAdapter.KEY_ANTHOLOGY_MASK);
+				return rawData.containsKey(KEY_ANTHOLOGY_MASK);
 			}
 
 		});
@@ -316,7 +318,7 @@ public class BookData extends DataManager {
 		});
 
 		// Whenever the row ID is written, make sure mRowId is updated.
-		addAccessor(CatalogueDBAdapter.KEY_ROWID, new DataAccessor() {
+		addAccessor(KEY_ROWID, new DataAccessor() {
 			@Override
 			public Object get(DataManager data, Datum datum, Bundle rawData) {
 				return Datum.objectToLong(rawData.get(datum.getKey()));
@@ -336,7 +338,7 @@ public class BookData extends DataManager {
 		
 
 		addValidator("list_price", blankOrFloatValidator);
-		addValidator(CatalogueDBAdapter.KEY_PAGES, blankOrIntegerValidator);
+		addValidator(KEY_PAGES, blankOrIntegerValidator);
 	}
 	
 	/**
@@ -346,7 +348,7 @@ public class BookData extends DataManager {
 	 */
 	@SuppressWarnings("unchecked")
 	public ArrayList<AnthologyTitle> getAnthologyTitles() {
-		ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) getSerializable(CatalogueDBAdapter.KEY_ANTHOLOGY_TITLE_ARRAY);
+		ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) getSerializable(KEY_ANTHOLOGY_TITLE_ARRAY);
 		if (list == null) {
 			list = new ArrayList<>();
 		}
@@ -360,7 +362,7 @@ public class BookData extends DataManager {
 	 */
 	@SuppressWarnings("unchecked")
 	private ArrayList<Author> getAuthors() {
-		ArrayList<Author> list = (ArrayList<Author>) getSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY);
+		ArrayList<Author> list = (ArrayList<Author>) getSerializable(KEY_AUTHOR_ARRAY);
 		if (list == null) {
 			list = new ArrayList<>();
 		}
@@ -374,7 +376,7 @@ public class BookData extends DataManager {
 	 */
 	@SuppressWarnings("unchecked")
 	private ArrayList<Series> getSeries() {
-		ArrayList<Series> list = (ArrayList<Series>) getSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY);
+		ArrayList<Series> list = (ArrayList<Series>) getSerializable(KEY_SERIES_ARRAY);
 		if (list == null) {
 			list = new ArrayList<>();
 		}
@@ -383,12 +385,12 @@ public class BookData extends DataManager {
 
 	/** Convenience Accessor */
 	public boolean isRead() {
-		return getInt(CatalogueDBAdapter.KEY_READ) != 0;
+		return getInt(KEY_READ) != 0;
 	}
 
 	/** Convenience Accessor */
 	public boolean isSigned() {
-		return getInt(CatalogueDBAdapter.KEY_SIGNED) != 0;
+		return getInt(KEY_SIGNED) != 0;
 	}
 
 	/** 

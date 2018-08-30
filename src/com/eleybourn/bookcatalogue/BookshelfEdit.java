@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 public class BookshelfEdit extends BookCatalogueActivity {
@@ -47,10 +48,10 @@ public class BookshelfEdit extends BookCatalogueActivity {
 			mDbHelper = new CatalogueDBAdapter(this);
 			mDbHelper.open();
 			
-			mRowId = savedInstanceState != null ? savedInstanceState.getLong(CatalogueDBAdapter.KEY_ROWID) : null;
+			mRowId = savedInstanceState != null ? savedInstanceState.getLong(ColumnNames.KEY_ROWID) : null;
 			if (mRowId == null) {
 				Bundle extras = getIntent().getExtras();
-				mRowId = extras != null ? extras.getLong(CatalogueDBAdapter.KEY_ROWID) : null;
+				mRowId = extras != null ? extras.getLong(ColumnNames.KEY_ROWID) : null;
 			}
 
             mConfirmButton = findViewById(R.id.confirm);
@@ -90,7 +91,7 @@ public class BookshelfEdit extends BookCatalogueActivity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		try {
-			outState.putLong(CatalogueDBAdapter.KEY_ROWID, mRowId);
+			outState.putLong(ColumnNames.KEY_ROWID, mRowId);
 		} catch (Exception ignore) {
 		}
 	}

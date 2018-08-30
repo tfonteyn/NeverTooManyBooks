@@ -25,9 +25,9 @@ import android.os.Bundle;
 import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 import com.eleybourn.bookcatalogue.searches.amazon.SearchAmazonThread;
@@ -367,13 +367,13 @@ public class SearchManager implements TaskManagerListener {
 			else {
 				// Copy, append or update data as appropriate.
 				switch (k) {
-					case CatalogueDBAdapter.KEY_AUTHOR_DETAILS:
+					case ColumnNames.KEY_AUTHOR_DETAILS:
 						appendData(k, bookData, mBookData);
 						break;
-					case CatalogueDBAdapter.KEY_SERIES_DETAILS:
+					case ColumnNames.KEY_SERIES_DETAILS:
 						appendData(k, bookData, mBookData);
 						break;
-					case CatalogueDBAdapter.KEY_DATE_PUBLISHED:
+					case ColumnNames.KEY_DATE_PUBLISHED:
 						// Grab a different date if we can parse it.
 						Date newDate = DateUtils.parseDate(bookData.getString(k));
 						if (newDate != null) {
@@ -405,8 +405,8 @@ public class SearchManager implements TaskManagerListener {
 			for(int i: mDefaultReliabilityOrder) {
 				if (mSearchResults.containsKey(i)) {
 					Bundle bookData = mSearchResults.get(i);
-					if (bookData.containsKey(CatalogueDBAdapter.KEY_ISBN)) {
-						if (IsbnUtils.matches(mIsbn, bookData.getString(CatalogueDBAdapter.KEY_ISBN))) {
+					if (bookData.containsKey(ColumnNames.KEY_ISBN)) {
+						if (IsbnUtils.matches(mIsbn, bookData.getString(ColumnNames.KEY_ISBN))) {
 							results.add(i);
 						}
 					} else {
@@ -416,7 +416,7 @@ public class SearchManager implements TaskManagerListener {
 			}
 			results.addAll(uncertain);
 			// Add the passed ISBN first; avoid overwriting
-			mBookData.putString(CatalogueDBAdapter.KEY_ISBN, mIsbn);
+			mBookData.putString(ColumnNames.KEY_ISBN, mIsbn);
 		} else {
 			// If ISBN was not passed, then just used the default order
 			for(int i: mDefaultReliabilityOrder)
@@ -434,7 +434,7 @@ public class SearchManager implements TaskManagerListener {
 		// Try to use/construct authors
 		String authors = null;
 		try {
-			authors = mBookData.getString(CatalogueDBAdapter.KEY_AUTHOR_DETAILS);
+			authors = mBookData.getString(ColumnNames.KEY_AUTHOR_DETAILS);
 		} catch (Exception ignored) {}
 
 		if (authors == null || authors.isEmpty()) {
@@ -443,51 +443,51 @@ public class SearchManager implements TaskManagerListener {
 
 		if (authors != null && !authors.isEmpty()) {
 			ArrayList<Author> aa = ArrayUtils.getAuthorUtils().decodeList(authors, '|', false);
-			mBookData.putSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, aa);			
+			mBookData.putSerializable(ColumnNames.KEY_AUTHOR_ARRAY, aa);
 		}
 
 		// Try to use/construct title
 		String title = null;
 		try {
-			title = mBookData.getString(CatalogueDBAdapter.KEY_TITLE);
+			title = mBookData.getString(ColumnNames.KEY_TITLE);
 		} catch (Exception ignored) {}
 
 		if (title == null || title.isEmpty())
 			title = mTitle;
 
 		if (title != null && !title.isEmpty()) {
-			mBookData.putString(CatalogueDBAdapter.KEY_TITLE, title);
+			mBookData.putString(ColumnNames.KEY_TITLE, title);
 		}
 
 		// Try to use/construct isbn
 		String isbn = null;
 		try {
-			isbn = mBookData.getString(CatalogueDBAdapter.KEY_ISBN);
+			isbn = mBookData.getString(ColumnNames.KEY_ISBN);
 		} catch (Exception ignored) {}
 
 		if (isbn == null || isbn.isEmpty())
 			isbn = mIsbn;
 
 		if (isbn != null && !isbn.isEmpty()) {
-			mBookData.putString(CatalogueDBAdapter.KEY_ISBN, isbn);
+			mBookData.putString(ColumnNames.KEY_ISBN, isbn);
 		}
 		
 		// Try to use/construct series
 		String series = null;
 		try {
-			series = mBookData.getString(CatalogueDBAdapter.KEY_SERIES_DETAILS);
+			series = mBookData.getString(ColumnNames.KEY_SERIES_DETAILS);
 		} catch (Exception ignored) {}
 
 		if (series != null && !series.isEmpty()) {
 			try {
 				ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList(series, '|', false);
-				mBookData.putSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY, sa);
+				mBookData.putSerializable(ColumnNames.KEY_SERIES_ARRAY, sa);
 			} catch (Exception e) {
 				Logger.logError(e);
 			}
 		} else {
 			//add series to stop crashing
-			mBookData.putSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY, new ArrayList<Series>());
+			mBookData.putSerializable(ColumnNames.KEY_SERIES_ARRAY, new ArrayList<Series>());
 		}
 
 		//
@@ -589,13 +589,13 @@ public class SearchManager implements TaskManagerListener {
 				mSearchingAsin = false;
 				// Clear the 'isbn'
 				mIsbn = "";
-				if (Utils.isNonBlankString(bookData, CatalogueDBAdapter.KEY_ISBN)) {
+				if (Utils.isNonBlankString(bookData, ColumnNames.KEY_ISBN)) {
 					// We got an ISBN, so pretend we were searching for an ISBN
 					mWaitingForIsbn = true;
 				} else {
 					// See if we got author/title
-					mAuthor = bookData.getString(CatalogueDBAdapter.KEY_AUTHOR_NAME);
-					mTitle = bookData.getString(CatalogueDBAdapter.KEY_TITLE);
+					mAuthor = bookData.getString(ColumnNames.KEY_AUTHOR_NAME);
+					mTitle = bookData.getString(ColumnNames.KEY_TITLE);
 					if (mAuthor != null && !mAuthor.isEmpty() && mTitle != null && !mTitle.isEmpty()) {
 						// We got them, so pretend we are searching by author/title now, and waiting for an ASIN...
 						mWaitingForIsbn = true;
@@ -603,10 +603,10 @@ public class SearchManager implements TaskManagerListener {
 				}
 			}
 			if (mWaitingForIsbn) {
-				if (Utils.isNonBlankString(bookData, CatalogueDBAdapter.KEY_ISBN)) {
+				if (Utils.isNonBlankString(bookData, ColumnNames.KEY_ISBN)) {
 					mWaitingForIsbn = false;
 					// Start the other two...even if they have run before
-					mIsbn = bookData.getString(CatalogueDBAdapter.KEY_ISBN);
+					mIsbn = bookData.getString(ColumnNames.KEY_ISBN);
 					startSearches(mSearchFlags);
 				} else {
 					// Start next one that has not run. 

@@ -51,6 +51,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TITLE;
+
 public class StandardDialogs {
 
     /**
@@ -178,7 +180,7 @@ public class StandardDialogs {
             if (cur == null || !cur.moveToFirst())
                 return R.string.unable_to_find_book;
 
-            title = cur.getString(cur.getColumnIndex(CatalogueDBAdapter.KEY_TITLE));
+            title = cur.getString(cur.getColumnIndex(KEY_TITLE));
             if (title == null || title.isEmpty())
                 title = "<Unknown>";
 

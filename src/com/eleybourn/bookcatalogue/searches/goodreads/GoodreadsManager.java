@@ -76,6 +76,8 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_BOOKSHELF;
+
 /**
  * Class to wrap all GoodReads API calls and manage an API connection.
  * <p>
@@ -729,7 +731,7 @@ public class GoodreadsManager {
             int exclusiveCount = 0;
             Cursor shelfCsr = dbHelper.getAllBookBookshelvesForGoodreadsCursor(bookId);
             try {
-                int shelfCol = shelfCsr.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_BOOKSHELF);
+                int shelfCol = shelfCsr.getColumnIndexOrThrow(KEY_BOOKSHELF);
                 // Collect all shelf names for this book
                 while (shelfCsr.moveToNext()) {
                     final String shelfName = shelfCsr.getString(shelfCol);

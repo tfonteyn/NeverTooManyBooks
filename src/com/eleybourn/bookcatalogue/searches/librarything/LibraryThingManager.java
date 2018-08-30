@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
@@ -40,6 +39,10 @@ import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_DETAILS;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_DETAILS;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TITLE;
 
 /**
  * Handle all aspects of searching (and ultimately synchronizing with) LibraryThing.
@@ -546,7 +549,7 @@ public class LibraryThingManager {
 
 			} else if (localName.equalsIgnoreCase(AUTHOR)) {
 				// Add the author
-				ArrayUtils.appendOrAdd(mBookData, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, mBuilder.toString());
+				ArrayUtils.appendOrAdd(mBookData, KEY_AUTHOR_DETAILS, mBuilder.toString());
 
 			} else if (localName.equalsIgnoreCase(FACT)) {
 				// Process the FACT according to the active FIELD type.
@@ -554,11 +557,11 @@ public class LibraryThingManager {
 				switch (mFieldType) {
 
 				case TITLE:
-					addIfNotPresent(CatalogueDBAdapter.KEY_TITLE);
+					addIfNotPresent(KEY_TITLE);
 					break;
 
 				case SERIES:
-					appendOrAdd(CatalogueDBAdapter.KEY_SERIES_DETAILS);
+					appendOrAdd(KEY_SERIES_DETAILS);
 					break;
 
 				case PLACES:

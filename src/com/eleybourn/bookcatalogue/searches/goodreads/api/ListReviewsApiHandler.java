@@ -23,7 +23,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads.api;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -116,18 +116,18 @@ public class ListReviewsApiHandler extends ApiHandler {
 		public static final String AUTHORS = "__authors";
 		public static final String SHELF = "__shelf";
 		public static final String SHELVES = "__shelves";
-		public static final String DB_PAGES = CatalogueDBAdapter.KEY_PAGES;
-		public static final String DB_ISBN = CatalogueDBAdapter.KEY_ISBN;
-		public static final String DB_TITLE = CatalogueDBAdapter.KEY_TITLE;
-		public static final String DB_NOTES = CatalogueDBAdapter.KEY_NOTES;
-		public static final String DB_FORMAT = CatalogueDBAdapter.KEY_FORMAT;
-		public static final String DB_PUBLISHER = CatalogueDBAdapter.KEY_PUBLISHER;
-		public static final String DB_DESCRIPTION = CatalogueDBAdapter.KEY_DESCRIPTION;
-		public static final String DB_AUTHOR_ID = CatalogueDBAdapter.KEY_AUTHOR_ID;
-		public static final String DB_AUTHOR_NAME = CatalogueDBAdapter.KEY_AUTHOR_NAME;
-		public static final String DB_RATING = CatalogueDBAdapter.KEY_RATING;
-		public static final String DB_READ_START = CatalogueDBAdapter.KEY_READ_START;
-		public static final String DB_READ_END = CatalogueDBAdapter.KEY_READ_END;
+		public static final String DB_PAGES = ColumnNames.KEY_PAGES;
+		public static final String DB_ISBN = ColumnNames.KEY_ISBN;
+		public static final String DB_TITLE = ColumnNames.KEY_TITLE;
+		public static final String DB_NOTES = ColumnNames.KEY_NOTES;
+		public static final String DB_FORMAT = ColumnNames.KEY_FORMAT;
+		public static final String DB_PUBLISHER = ColumnNames.KEY_PUBLISHER;
+		public static final String DB_DESCRIPTION = ColumnNames.KEY_DESCRIPTION;
+		public static final String DB_AUTHOR_ID = ColumnNames.KEY_AUTHOR_ID;
+		public static final String DB_AUTHOR_NAME = ColumnNames.KEY_AUTHOR_NAME;
+		public static final String DB_RATING = ColumnNames.KEY_RATING;
+		public static final String DB_READ_START = ColumnNames.KEY_READ_START;
+		public static final String DB_READ_END = ColumnNames.KEY_READ_END;
 	}
 
 	private SimpleXmlFilter mFilters;

@@ -35,6 +35,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -43,7 +44,7 @@ public class EditSeriesList extends EditObjectList<Series> {
 	private ArrayAdapter<String> mSeriesAdapter;
 	
 	public EditSeriesList() {
-		super(CatalogueDBAdapter.KEY_SERIES_ARRAY, R.layout.edit_series_list, R.layout.row_edit_series_list);
+		super(ColumnNames.KEY_SERIES_ARRAY, R.layout.edit_series_list, R.layout.row_edit_series_list);
 	}
 	
 	@Override

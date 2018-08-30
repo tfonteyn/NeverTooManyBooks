@@ -33,6 +33,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
@@ -529,7 +530,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 
 						if ( (mFlags & BooklistStyle.EXTRAS_AUTHOR) != 0) {
 							if (mAuthorCol < 0)
-								mAuthorCol = c.getColumnIndex(CatalogueDBAdapter.KEY_AUTHOR_FORMATTED);
+								mAuthorCol = c.getColumnIndex(ColumnNames.KEY_AUTHOR_FORMATTED);
 							//if (mLocationRes == null)
 							//	mLocationRes = BookCatalogueApp.getResourceString(R.string.location);
 
@@ -538,7 +539,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 
 						if ( (mFlags & BooklistStyle.EXTRAS_LOCATION) != 0) {
 							if (mLocationCol < 0)
-								mLocationCol = c.getColumnIndex(CatalogueDBAdapter.KEY_LOCATION);
+								mLocationCol = c.getColumnIndex(ColumnNames.KEY_LOCATION);
 							if (mLocationRes == null)
 								mLocationRes = BookCatalogueApp.getResourceString(R.string.location);
 
@@ -547,7 +548,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 
 						if ( (mFlags & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
 							if (mPublisherCol < 0)
-								mPublisherCol = c.getColumnIndex(CatalogueDBAdapter.KEY_PUBLISHER);
+								mPublisherCol = c.getColumnIndex(ColumnNames.KEY_PUBLISHER);
 							if (mPublisherRes == null)
 								mPublisherRes = BookCatalogueApp.getResourceString(R.string.publisher);
 
@@ -1146,7 +1147,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 			BookData mBookData = new BookData(bookId);
 
 			// Force READ to true
-			mBookData.putInt(CatalogueDBAdapter.KEY_READ,1);
+			mBookData.putInt(ColumnNames.KEY_READ,1);
 
 			// Update the book into the DB
 			dba.updateBook(bookId, mBookData, 0);
@@ -1161,7 +1162,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 			BookData mBookData = new BookData(bookId);
 
 			// Force READ to true
-			mBookData.putInt(CatalogueDBAdapter.KEY_READ,0);
+			mBookData.putInt(ColumnNames.KEY_READ,0);
 
 			// Update the book into the DB
 			dba.updateBook(bookId, mBookData, 0);

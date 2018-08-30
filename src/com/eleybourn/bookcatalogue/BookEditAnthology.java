@@ -45,6 +45,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter.AnthologyTitleExistsException;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
+import com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper;
 import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaEntryHandler;
 import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaHandler;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
@@ -67,7 +69,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 	private Button mAdd;
 	private CheckBox mSame;
 	private Integer mEditPosition = null;
-	private int anthology_num = CatalogueDBAdapter.ANTHOLOGY_NO;
+	private int anthology_num = DatabaseHelper.ANTHOLOGY_NO;
 	private ArrayList<AnthologyTitle> mList;
 	
 	private static final int DELETE_ID = Menu.FIRST;
@@ -98,13 +100,13 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 	private void loadPage() {
 		
 		BookData book = mEditManager.getBookData();
-		bookAuthor = book.getString(CatalogueDBAdapter.KEY_AUTHOR_FORMATTED);
-		bookTitle = book.getString(CatalogueDBAdapter.KEY_TITLE);
+		bookAuthor = book.getString(ColumnNames.KEY_AUTHOR_FORMATTED);
+		bookTitle = book.getString(ColumnNames.KEY_TITLE);
 		// Setup the same author field
-		anthology_num = book.getInt(CatalogueDBAdapter.KEY_ANTHOLOGY_MASK);			
+		anthology_num = book.getInt(ColumnNames.KEY_ANTHOLOGY_MASK);
 
 		mSame = getView().findViewById(R.id.same_author);
-		if ((anthology_num & CatalogueDBAdapter.ANTHOLOGY_MULTIPLE_AUTHORS) != 0) {
+		if ((anthology_num & DatabaseHelper.ANTHOLOGY_MULTIPLE_AUTHORS) != 0) {
 			mSame.setChecked(false);
 		} else {
 			mSame.setChecked(true);
@@ -392,12 +394,12 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 
 	private void saveState(BookData book) {
 		if (mSame.isChecked()) {
-			anthology_num = CatalogueDBAdapter.ANTHOLOGY_IS_ANTHOLOGY;
+			anthology_num = DatabaseHelper.ANTHOLOGY_IS_ANTHOLOGY;
 		} else {
-			anthology_num = CatalogueDBAdapter.ANTHOLOGY_MULTIPLE_AUTHORS ^ CatalogueDBAdapter.ANTHOLOGY_IS_ANTHOLOGY;
+			anthology_num = DatabaseHelper.ANTHOLOGY_MULTIPLE_AUTHORS ^ DatabaseHelper.ANTHOLOGY_IS_ANTHOLOGY;
 		}
 		book.setAnthologyTitles(mList);
-		book.putInt(CatalogueDBAdapter.KEY_ANTHOLOGY_MASK, anthology_num);
+		book.putInt(ColumnNames.KEY_ANTHOLOGY_MASK, anthology_num);
 	}
 	
 	@Override 

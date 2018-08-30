@@ -44,6 +44,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.Fields.Field;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.BookshelfDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.BookshelfDialogFragment.OnBookshelfCheckChangeListener;
@@ -101,9 +102,9 @@ public class BookEditFields extends BookDetailsAbstract
                         @Override
                         public void onClick(View v) {
                             Intent i = new Intent(getActivity(), EditAuthorList.class);
-                            i.putExtra(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, mEditManager.getBookData().getAuthorList());
-                            i.putExtra(CatalogueDBAdapter.KEY_ROWID, mEditManager.getBookData().getRowId());
-                            i.putExtra("title_label", CatalogueDBAdapter.KEY_TITLE);
+                            i.putExtra(ColumnNames.KEY_AUTHOR_ARRAY, mEditManager.getBookData().getAuthorList());
+                            i.putExtra(ColumnNames.KEY_ROWID, mEditManager.getBookData().getRowId());
+                            i.putExtra("title_label", ColumnNames.KEY_TITLE);
                             i.putExtra("title", mFields.getField(R.id.title).getValue().toString());
                             startActivityForResult(i, ACTIVITY_EDIT_AUTHORS);
                         }
@@ -115,9 +116,9 @@ public class BookEditFields extends BookDetailsAbstract
                         @Override
                         public void onClick(View v) {
                             Intent i = new Intent(getActivity(), EditSeriesList.class);
-                            i.putExtra(CatalogueDBAdapter.KEY_SERIES_ARRAY, mEditManager.getBookData().getSeriesList());
-                            i.putExtra(CatalogueDBAdapter.KEY_ROWID, mEditManager.getBookData().getRowId());
-                            i.putExtra("title_label", CatalogueDBAdapter.KEY_TITLE);
+                            i.putExtra(ColumnNames.KEY_SERIES_ARRAY, mEditManager.getBookData().getSeriesList());
+                            i.putExtra(ColumnNames.KEY_ROWID, mEditManager.getBookData().getRowId());
+                            i.putExtra("title_label", ColumnNames.KEY_TITLE);
                             i.putExtra("title", mFields.getField(R.id.title).getValue().toString());
                             startActivityForResult(i, ACTIVITY_EDIT_SERIES);
                         }
@@ -387,7 +388,7 @@ public class BookEditFields extends BookDetailsAbstract
 
             switch (requestCode) {
                 case ACTIVITY_EDIT_AUTHORS:
-                    if (resultCode == Activity.RESULT_OK && intent.hasExtra(CatalogueDBAdapter.KEY_AUTHOR_ARRAY)) {
+                    if (resultCode == Activity.RESULT_OK && intent.hasExtra(ColumnNames.KEY_AUTHOR_ARRAY)) {
                         mEditManager.getBookData().setAuthorList(ArrayUtils.getAuthorFromIntentExtras(intent));
                         mEditManager.setDirty(true);
                     } else {
@@ -401,7 +402,7 @@ public class BookEditFields extends BookDetailsAbstract
                     populateAuthorListField();
                     mEditManager.setDirty(oldDirty);
                 case ACTIVITY_EDIT_SERIES:
-                    if (resultCode == Activity.RESULT_OK && intent.hasExtra(CatalogueDBAdapter.KEY_SERIES_ARRAY)) {
+                    if (resultCode == Activity.RESULT_OK && intent.hasExtra(ColumnNames.KEY_SERIES_ARRAY)) {
                         mEditManager.getBookData().setSeriesList(ArrayUtils.getSeriesFromIntentExtras(intent));
                         populateSeriesListField();
                         mEditManager.setDirty(true);

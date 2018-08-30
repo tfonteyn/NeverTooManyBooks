@@ -20,34 +20,42 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_AUTHOR_FORMATTED;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_AUTHOR_NAME;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_AUTHOR_POSITION;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_BOOK;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_DATE_ADDED;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_FAMILY_NAME;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_FORMAT;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_GIVEN_NAMES;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_ISBN;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_LOCATION;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_NOTES;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_PUBLISHER;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_RATING;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_READ;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_READ_END;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_SERIES_ID;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_SERIES_NAME;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_SERIES_NUM;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_SERIES_POSITION;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.KEY_TITLE;
-
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DbUtils.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
 import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition.TableTypes;
+
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_ID;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_NAME;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_POSITION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_BOOK;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DATE_ADDED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_FAMILY_NAME;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_FORMAT;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_GIVEN_NAMES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ISBN;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_LOCATION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_NOTES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_RATING;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ_END;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_ID;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_NUM;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_POSITION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TITLE;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_ANTHOLOGY;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_AUTHORS;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_BOOKS;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_BOOK_AUTHOR;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_BOOK_BOOKSHELF_WEAK;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_BOOK_SERIES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_LOAN;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_SERIES;
 
 /**
  * Static definitions of database objects; this is an incomplete representation of the BookCatalogue database. It should
@@ -159,39 +167,39 @@ public class DatabaseDefinitions {
 					;		
 
 	/** Partial representation of BOOKS table */
-	public static final TableDefinition TBL_BOOKS = new TableDefinition(CatalogueDBAdapter.DB_TB_BOOKS)
+	public static final TableDefinition TBL_BOOKS = new TableDefinition(DB_TB_BOOKS)
 		.addDomains(DOM_ID, DOM_TITLE)
 		.setAlias(ALIAS_BOOKS)
 		.setPrimaryKey(DOM_ID);
 	
 	/** Partial representation of AUTHORS table */
-	public static final TableDefinition TBL_AUTHORS = new TableDefinition(CatalogueDBAdapter.DB_TB_AUTHORS)
+	public static final TableDefinition TBL_AUTHORS = new TableDefinition(DB_TB_AUTHORS)
 		.addDomains(DOM_ID, DOM_GIVEN_NAMES, DOM_FAMILY_NAME)
 		.setAlias(ALIAS_AUTHORS)
 		.setPrimaryKey(DOM_ID);
 
 	/** Partial representation of BOOK_AUTHOR table */
-	public static final TableDefinition TBL_BOOK_AUTHOR = new TableDefinition(CatalogueDBAdapter.DB_TB_BOOK_AUTHOR)
+	public static final TableDefinition TBL_BOOK_AUTHOR = new TableDefinition(DB_TB_BOOK_AUTHOR)
 		.addDomains(DOM_BOOK, DOM_AUTHOR_ID)
 		.setAlias(ALIAS_BOOK_AUTHOR)
 		.addReference(TBL_BOOKS, DOM_BOOK)
 		.addReference(TBL_AUTHORS, DOM_AUTHOR_ID);
 
     /** Partial representation of ANTHOLOGY table */
-	public static final TableDefinition TBL_ANTHOLOGY = new TableDefinition(CatalogueDBAdapter.DB_TB_ANTHOLOGY)
+	public static final TableDefinition TBL_ANTHOLOGY = new TableDefinition(DB_TB_ANTHOLOGY)
 		.addDomains(DOM_ID, DOM_BOOK, DOM_AUTHOR_ID, DOM_TITLE, DOM_POSITION)
 		.setAlias(ALIAS_ANTHOLOGY)
 		.addReference(TBL_BOOKS, DOM_BOOK)
 		.addReference(TBL_AUTHORS, DOM_AUTHOR_ID);
 
     /** Partial representation of SERIES table */
-	public static final TableDefinition TBL_SERIES = new TableDefinition(CatalogueDBAdapter.DB_TB_SERIES)
+	public static final TableDefinition TBL_SERIES = new TableDefinition(DB_TB_SERIES)
 		.addDomains(DOM_ID, DOM_SERIES_NAME)
 		.setAlias(ALIAS_SERIES)
 		.setPrimaryKey(DOM_ID);
 
 	/** Partial representation of BOOK_SERIES table */
-	public static final TableDefinition TBL_BOOK_SERIES = new TableDefinition(CatalogueDBAdapter.DB_TB_BOOK_SERIES)
+	public static final TableDefinition TBL_BOOK_SERIES = new TableDefinition(DB_TB_BOOK_SERIES)
 		.addDomains(DOM_BOOK, DOM_SERIES_ID, DOM_SERIES_NUM, DOM_SERIES_POSITION)
 		.setAlias(ALIAS_BOOK_SERIES)
 		.setPrimaryKey(DOM_BOOK, DOM_SERIES_POSITION)
@@ -200,14 +208,14 @@ public class DatabaseDefinitions {
 		;
 
 	/** Partial representation of BOOKSHELF table */
-	public static final TableDefinition TBL_BOOKSHELF = new TableDefinition(CatalogueDBAdapter.DB_TB_BOOKSHELF)
+	public static final TableDefinition TBL_BOOKSHELF = new TableDefinition(DB_TB_BOOKSHELF)
 		.addDomains(DOM_ID, DOM_BOOKSHELF_NAME)
 		.setAlias(ALIAS_BOOKSHELF)
 		.setPrimaryKey(DOM_ID)
 		;
 
 	/** Partial representation of BOOK_BOOKSHELF table */
-	public static final TableDefinition TBL_BOOK_BOOKSHELF = new TableDefinition(CatalogueDBAdapter.DB_TB_BOOK_BOOKSHELF_WEAK)
+	public static final TableDefinition TBL_BOOK_BOOKSHELF = new TableDefinition(DB_TB_BOOK_BOOKSHELF_WEAK)
 		.addDomains(DOM_BOOK, DOM_BOOKSHELF_ID)
 		.setAlias(ALIAS_BOOK_BOOKSHELF)
 		.setPrimaryKey(DOM_BOOK, DOM_BOOKSHELF_ID)
@@ -216,7 +224,7 @@ public class DatabaseDefinitions {
 		;
 
 	/** Partial representation of LOAN table */
-	public static final TableDefinition TBL_LOAN = new TableDefinition(CatalogueDBAdapter.DB_TB_LOAN)
+	public static final TableDefinition TBL_LOAN = new TableDefinition(DB_TB_LOAN)
 		.addDomains(DOM_ID, DOM_BOOK, DOM_LOANED_TO)
 		.setPrimaryKey(DOM_ID)
 		.setAlias(ALIAS_LOAN)

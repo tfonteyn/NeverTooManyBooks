@@ -36,6 +36,7 @@ import android.text.util.Linkify;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.Series;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import org.apache.http.HttpEntity;
@@ -464,7 +465,7 @@ public class Utils {
 			}
     		// Finally, cleanup the data
     		result.remove("__thumbnail");
-    		result.putBoolean(CatalogueDBAdapter.KEY_THUMBNAIL, true);
+    		result.putBoolean(ColumnNames.KEY_THUMBNAIL, true);
     	}
 	}
 

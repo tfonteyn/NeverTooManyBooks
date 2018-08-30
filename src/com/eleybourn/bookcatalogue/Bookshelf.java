@@ -34,6 +34,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueListActivity;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
 
 /*
@@ -81,7 +82,7 @@ public class Bookshelf extends BookCatalogueListActivity
         startManagingCursor(bookshelfCursor);
 
         // Create an array to specify the fields we want to display in the list
-        String[] from = new String[]{CatalogueDBAdapter.KEY_BOOKSHELF, CatalogueDBAdapter.KEY_ROWID};
+        String[] from = new String[]{ColumnNames.KEY_BOOKSHELF, ColumnNames.KEY_ROWID};
 
         // and an array of the fields we want to bind those fields to (in this case just text1)
         int[] to = new int[]{R.id.row_bookshelf};
@@ -142,7 +143,7 @@ public class Bookshelf extends BookCatalogueListActivity
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         Intent i = new Intent(this, BookshelfEdit.class);
-        i.putExtra(CatalogueDBAdapter.KEY_ROWID, id);
+        i.putExtra(ColumnNames.KEY_ROWID, id);
         startActivityForResult(i, ACTIVITY_EDIT);
     }
 

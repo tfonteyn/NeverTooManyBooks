@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.Author;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.BcQueueManager;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -270,7 +271,7 @@ public class ImportAllTask extends GenericTask {
 			mBookshelfLookup = new Hashtable<>();
 			Cursor c = db.fetchAllBookshelves();
 			try {
-				int bsCol = c.getColumnIndex(CatalogueDBAdapter.KEY_BOOKSHELF);
+				int bsCol = c.getColumnIndex(ColumnNames.KEY_BOOKSHELF);
 				while (c.moveToNext()) {
 					String name = c.getString(bsCol);
 					mBookshelfLookup.put(GoodreadsManager.canonicalizeBookshelfName(name), name);
@@ -297,7 +298,7 @@ public class ImportAllTask extends GenericTask {
 		if (!isbn.isEmpty())
 			isbns.add(isbn);
 
-		isbn = review.getString(CatalogueDBAdapter.KEY_ISBN).trim();
+		isbn = review.getString(ColumnNames.KEY_ISBN).trim();
 		if (!isbn.isEmpty())
 			isbns.add(isbn);
 
@@ -332,7 +333,7 @@ public class ImportAllTask extends GenericTask {
 	private void createBook(CatalogueDBAdapter db, Bundle review) {
 		BookData book = buildBundle(db, null, review);
 		long id = db.createBook(book, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
-		if (book.getBoolean(CatalogueDBAdapter.KEY_THUMBNAIL)) {
+		if (book.getBoolean(ColumnNames.KEY_THUMBNAIL)) {
 			String uuid = db.getBookUuid(id);
 			File thumb = CatalogueDBAdapter.getTempThumbnail();
 			File real = CatalogueDBAdapter.fetchThumbnailByUuid(uuid);
@@ -363,7 +364,7 @@ public class ImportAllTask extends GenericTask {
 		// If it has a rating or a 'read_end' date, assume it's read. If these are missing then
 		// DO NOT overwrite existing data since it *may* be read even without these fields.
 		if ( (rating != null && rating > 0) || (readEnd != null && readEnd.length() > 0) ) {
-			book.putBoolean(CatalogueDBAdapter.KEY_READ, true);
+			book.putBoolean(ColumnNames.KEY_READ, true);
 		}
 
 		addStringIfNonBlank(review, ListReviewsFieldNames.DB_TITLE, book, ListReviewsFieldNames.DB_TITLE);
@@ -382,14 +383,14 @@ public class ImportAllTask extends GenericTask {
 				}
 			}
 			if (bestLen > 0) {
-				book.putString(CatalogueDBAdapter.KEY_ISBN, best);
+				book.putString(ColumnNames.KEY_ISBN, best);
 			}
 		}
 
         /* Build the pub date based on the components */
         String pubDate = GoodreadsManager.buildDate(review, ListReviewsFieldNames.PUB_YEAR, ListReviewsFieldNames.PUB_MONTH, ListReviewsFieldNames.PUB_DAY, null);
         if (pubDate != null && !pubDate.isEmpty())
-        	book.putString(CatalogueDBAdapter.KEY_DATE_PUBLISHED, pubDate);
+        	book.putString(ColumnNames.KEY_DATE_PUBLISHED, pubDate);
         
         ArrayList<Bundle> grAuthors = review.getParcelableArrayList(ListReviewsFieldNames.AUTHORS);
         if (grAuthors == null) {
@@ -412,7 +413,7 @@ public class ImportAllTask extends GenericTask {
         		authors.add(new Author(name));
         	}
         }
-        book.putSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, authors);
+        book.putSerializable(ColumnNames.KEY_AUTHOR_ARRAY, authors);
 
         if (rv == null) {
         	// Use the GR added date for new books
@@ -437,8 +438,8 @@ public class ImportAllTask extends GenericTask {
         /*
          * Cleanup the title by removing series name, if present
          */
-        if (book.containsKey(CatalogueDBAdapter.KEY_TITLE)) {
-			String thisTitle = book.getString(CatalogueDBAdapter.KEY_TITLE);
+        if (book.containsKey(ColumnNames.KEY_TITLE)) {
+			String thisTitle = book.getString(ColumnNames.KEY_TITLE);
 			Series.SeriesDetails details = Series.findSeries(thisTitle);
 			if (details != null && details.name.length() > 0) {
 				ArrayList<Series> allSeries;
@@ -448,10 +449,10 @@ public class ImportAllTask extends GenericTask {
 					allSeries = db.getBookSeriesList(rv.getId());
 
 				allSeries.add(new Series(details.name, details.position));
-				book.putString(CatalogueDBAdapter.KEY_TITLE, thisTitle.substring(0, details.startChar-1));
+				book.putString(ColumnNames.KEY_TITLE, thisTitle.substring(0, details.startChar-1));
 
 				Utils.pruneSeriesList(allSeries);
-		        book.putSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY, allSeries);
+		        book.putSerializable(ColumnNames.KEY_SERIES_ARRAY, allSeries);
 			}
         }
 

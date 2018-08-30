@@ -26,6 +26,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
@@ -138,9 +139,9 @@ public class UpgradeMessageManager {
 				// It's not a new install, so we use the 'old' message format and set the version to the
 				// last installed version that used the old method.
 				lastVersion = 98;
-				if (!CatalogueDBAdapter.message.isEmpty()) {
+				if (!DatabaseHelper.getMessage().isEmpty()) {
 					message.append("<p>")
-					    .append(CatalogueDBAdapter.message)
+					    .append(DatabaseHelper.getMessage())
 					    .append("</p>");
 				}
 			} finally {
