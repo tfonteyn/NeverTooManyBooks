@@ -34,6 +34,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistAuthorGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistSeriesGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle.CompoundKey;
+import com.eleybourn.bookcatalogue.database.CollationCaseSensitive;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
@@ -1002,7 +1003,7 @@ public class BooklistBuilder implements AutoCloseable {
             // Check if the collation we use is case sensitive; bug introduced in ICS was to make UNICODE not CI.
             // Due to bugs in other language sorting, we are now forced to use a different collation  anyway, but
             // we still check if it is CI.
-            boolean collationIsCs = BookCatalogueApp.isCollationCaseSensitive(mDb.getUnderlyingDatabase());
+            boolean collationIsCs = CollationCaseSensitive.isCaseSensitive(mDb.getUnderlyingDatabase());
 
             // List of column names appropriate for 'Order By' clause
             String sortColNameList;

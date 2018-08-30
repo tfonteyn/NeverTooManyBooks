@@ -1566,7 +1566,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 			if (curVersion == 74) {
 				//do nothing
 				curVersion++;
-				StartupActivity.scheduleAuthorSeriesFixup();
+				StartupActivity.scheduleAuthorSeriesFixUp();
 				message += "New in v4.0.3\n\n";
 				message += "* ISBN validation when searching/scanning and error beep when scanning (with preference to turn it off)\n\n";
 				message += "* 'Loaned' list now shows available books under the heading 'Available'\n\n";

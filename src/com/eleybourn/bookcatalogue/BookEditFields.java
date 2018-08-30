@@ -74,7 +74,7 @@ public class BookEditFields extends BookDetailsAbstract
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.edit_book, container, false);
+        return inflater.inflate(R.layout.edit_book_fields, container, false);
     }
 
     public void onActivityCreated(Bundle savedInstanceState) {

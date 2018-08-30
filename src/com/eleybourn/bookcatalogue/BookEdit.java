@@ -108,7 +108,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 
     @Override
 	protected int getLayoutId(){
-		return R.layout.book_edit_base;
+		return R.layout.edit_book_base;
 	}
 
     public void onCreate(Bundle savedInstanceState) {

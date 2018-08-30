@@ -232,7 +232,7 @@ public class BookData extends DataManager {
 		} else {
 			newText = list.get(0).getDisplayName();
 			if (list.size() > 1) {
-				newText += " " + BookCatalogueApp.getAppContext().getResources().getString(R.string.and_others);
+				newText += " " + BookCatalogueApp.getResourceString(R.string.and_others);
 			}
 		}
 		return newText;		
@@ -250,7 +250,7 @@ public class BookData extends DataManager {
 		} else {
 			newText = list.get(0).getDisplayName();
 			if (list.size() > 1) {
-				newText += " " + BookCatalogueApp.getAppContext().getResources().getString(R.string.and_others);
+				newText += " " + BookCatalogueApp.getResourceString(R.string.and_others);
 			}
 		}
 		return newText;		

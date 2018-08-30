@@ -19,18 +19,19 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
-import java.util.ArrayList;
-
-import net.philipwarner.taskqueue.ContextDialogItem;
-import net.philipwarner.taskqueue.LegacyEvent;
-import net.philipwarner.taskqueue.LegacyTask;
-import net.philipwarner.taskqueue.QueueManager;
 import android.content.Context;
 import android.view.View;
 import android.widget.AdapterView;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
+
+import net.philipwarner.taskqueue.ContextDialogItem;
+import net.philipwarner.taskqueue.LegacyEvent;
+import net.philipwarner.taskqueue.LegacyTask;
+import net.philipwarner.taskqueue.QueueManager;
+
+import java.util.ArrayList;
 
 /**
  * BookCatalogue implementation of QueueManager.
@@ -166,7 +167,7 @@ public class BcQueueManager extends QueueManager {
 	 */
 	@Override
 	public LegacyTask newLegacyTask(byte[] original) {
-		return new BcLegacyTask(original, BookCatalogueApp.getAppContext().getResources().getString(R.string.legacy_task));
+		return new BcLegacyTask(original, BookCatalogueApp.getResourceString(R.string.legacy_task));
 	}
 
 	@Override

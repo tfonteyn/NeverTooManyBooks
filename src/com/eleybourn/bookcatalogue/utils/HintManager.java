@@ -116,7 +116,7 @@ public class HintManager {
 
 		// Setup the message
         final TextView msg = dialog.findViewById(R.id.hint);
-        String hintText = BookCatalogueApp.getAppContext().getResources().getString(stringId, args);
+        String hintText = BookCatalogueApp.getResourceString(stringId, args);
         msg.setText(Utils.linkifyHtml(hintText, Linkify.ALL));
         //msg.setText(Html.fromHtml(hintText)); //stringId);
         //Linkify.addLinks(msg, Linkify.ALL);
