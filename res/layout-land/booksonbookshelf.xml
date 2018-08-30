@@ -16,16 +16,16 @@
         android:paddingStart="@dimen/padding_border">
 
         <include
+            layout="@layout/inc_toolbar_frame"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            layout="@layout/inc_toolbar_frame" />
+            android:layout_height="wrap_content" />
 
         <RelativeLayout
             android:id="@+id/header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_below="@id/toolbar_frame">
+            android:layout_below="@id/toolbar_frame"
+            android:orientation="vertical">
 
             <Spinner
                 android:id="@+id/bookshelf_name"

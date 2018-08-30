@@ -4,16 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="192dp"
-
-    android:background="?attr/colorPrimaryDark"
     android:padding="16dp"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark"
     android:orientation="vertical"
-    android:gravity="bottom">
+    android:gravity="bottom"
+    tools:ignore="UseCompoundDrawables">
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="192dp"
         app:srcCompat="@drawable/ic_launcher4"
         tools:ignore="ContentDescription" />
     <TextView

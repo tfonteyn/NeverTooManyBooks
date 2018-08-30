@@ -39,29 +39,11 @@
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout
-        style="?android:attr/buttonBarStyle"
+    <include
+        android:id="@+id/buttonbar_cancel_update"
+        layout="@layout/inc_buttonbar_cancel_update"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="-50dip"
-        android:gravity="bottom"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/cancel"
-            style="?android:attr/buttonBarNegativeButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@android:string/cancel" />
-
-        <Button
-            android:id="@+id/confirm"
-            style="?android:attr/buttonBarPositiveButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/confirm_update" />
-    </LinearLayout>
-
+        android:gravity="bottom"/>
 </LinearLayout>

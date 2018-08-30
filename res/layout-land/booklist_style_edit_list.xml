@@ -19,7 +19,8 @@
         android:id="@+id/buttonbar_cancel_save"
         layout="@layout/inc_buttonbar_cancel_save"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
 
     <LinearLayout
         android:id="@+id/body"
@@ -28,7 +29,8 @@
         android:layout_above="@+id/buttonbar_cancel_save"
         android:layout_below="@+id/top_buttons"
         android:gravity="top"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        >
 
         <com.eleybourn.bookcatalogue.widgets.TouchListView
             xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"

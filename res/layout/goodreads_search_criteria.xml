@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="top"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/header"
@@ -13,18 +13,18 @@
         android:layout_alignParentTop="true"
         android:orientation="vertical"
         android:paddingLeft="@dimen/padding_border"
-        android:paddingRight="@dimen/padding_border" >
+        android:paddingRight="@dimen/padding_border">
 
         <LinearLayout
             android:id="@+id/original_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -45,7 +45,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -66,7 +66,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -85,18 +85,17 @@
             </LinearLayout>
 
             <View
+                style="@style/main_menu_header_divider"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:paddingBottom="2dp"
-                style="@style/main_menu_header_divider"
-                />
+                android:paddingBottom="2dp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="@dimen/padding_border" >
+            android:paddingTop="@dimen/padding_border">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -106,11 +105,11 @@
 
             <EditText
                 android:id="@+id/search_text"
+                style="@style/seachTextEntry"
                 android:layout_width="match_parent"
                 android:layout_height="0dip"
                 android:layout_weight="1"
                 android:hint="@string/text_and_or_isbn"
-                style="@style/bookOrSeriesTitleTextEntry"
                 android:singleLine="false"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -124,11 +123,10 @@
         </LinearLayout>
 
         <View
+            style="@style/main_menu_header_divider"
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:paddingBottom="2dp"
-            style="@style/main_menu_header_divider"
-            />
+            android:paddingBottom="2dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -138,14 +136,13 @@
         android:layout_alignParentBottom="true"
         android:orientation="vertical"
         android:paddingLeft="@dimen/padding_border"
-        android:paddingRight="@dimen/padding_border" >
+        android:paddingRight="@dimen/padding_border">
 
         <View
+            style="@style/main_menu_header_divider"
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:paddingBottom="2dp"
-            style="@style/main_menu_header_divider"
-            />
+            android:paddingBottom="2dp" />
 
         <TextView
             android:id="@+id/works_found"

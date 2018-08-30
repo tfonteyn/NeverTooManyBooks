@@ -16,7 +16,8 @@
         android:id="@+id/buttonbar_cancel_save"
         layout="@layout/inc_buttonbar_cancel_save"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
 
     <LinearLayout
         android:id="@+id/body"
@@ -27,9 +28,11 @@
         android:gravity="top"
         android:orientation="vertical"
         android:paddingEnd="@dimen/padding_border"
-        android:paddingStart="@dimen/padding_border">
+        android:paddingStart="@dimen/padding_border"
+        >
 
-        <com.eleybourn.bookcatalogue.widgets.TouchListView xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
+        <com.eleybourn.bookcatalogue.widgets.TouchListView
+            xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
             android:id="@+id/android:list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

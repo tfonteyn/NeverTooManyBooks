@@ -115,7 +115,7 @@
     <string name="read">Avez-vous lu ce livre ?</string>
     <string name="series">Série</string>
     <string name="pages">Pages</string>
-    <string name="confirm_add">Ajouter le livre ?</string>
+    <string name="confirm_add">Ajouter le livre</string>
     <string name="confirm_update">Mettre à jour</string>
     <string name="nobooks">Il n\'y a pas de livre dans cette biblothèque. Veuillez en ajouter par le menu en bas de cet écran.</string>
     <string name="menu_expand_all">Tout étendre</string>
