@@ -268,7 +268,6 @@ public class CsvExporter implements Exporter {
 			if (displayingStartupMessage) {
 				try {
 					listener.onProgress("", 0);
-					displayingStartupMessage = false;
 				} catch (Exception ignored) {
 				}
 			}

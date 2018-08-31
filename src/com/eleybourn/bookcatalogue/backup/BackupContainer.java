@@ -44,7 +44,8 @@ public interface BackupContainer {
 	/**
 	 * @return the version of the underlying archiver
 	 */
-    int getVersion();
+	@SuppressWarnings("SameReturnValue")
+	int getVersion();
 
 	/**
 	 * Checks if the current archive looks valid. Does not need to be

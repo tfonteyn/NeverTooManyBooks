@@ -20,7 +20,6 @@
     <string name="menu_sort_by">Seřadit podle</string>
     <string name="menu_collapse_all">Sbalit vše</string>
     <string name="search">Hledat</string>
-    <string name="cancel">Zrušit</string>
     <string name="confirm_save">Uložit knihu</string>
     <string name="nobookshelves">Zatím nemáte vytvořenou žádnou knihovnu. Pro její vytvoření použijte menu ve spodní části obrazovky.</string>
     <string name="menu_insert_bs">Vytvořit knihovnu</string>
@@ -84,7 +83,6 @@
     <string name="overwrite_thumbnail">Toto aktualizuje pouze vybraná pole, ale náhledy budou staženy pro VŠECHNY knihy.\n\nChcete přepsat všechny existující náhledy? Pozor, může to chvíli trvat&#8230;</string>
     <string name="yes">Ano</string>
     <string name="no">Ne</string>
-    <string name="ok">OK</string>
     <string name="search_fail">Vyhledávání knihy se nezdařilo. Zkontrolujte prosím své síťové připojení.</string>
     <string name="search_exception">Hledání selhalo %1$s: %2$s</string>
     <string name="menu_delete_thumb">Smazat náhled</string>

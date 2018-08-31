@@ -21,7 +21,6 @@
     <string name="menu_sort_by">Ordenar por</string>
     <string name="menu_collapse_all">Comprimir todo</string>
     <string name="search">Buscar</string>
-    <string name="cancel">Cancelar</string>
     <string name="confirm_save">Guardar libro</string>
     <string name="nobookshelves">Todavía no has creado ninguna biblioteca. Cree una utilizando el menú al pie de esta pantalla.</string>
     <string name="menu_insert_bs">Crear biblioteca</string>
@@ -85,7 +84,6 @@
     <string name="overwrite_thumbnail">Los campos seleccionados se actualizarán tal y como se muestra, pero las imágenes de portadas se pueden descargar, si lo desea, para TODOS los libros.\n\n¿Desea sobreescribir todas las portadas existentes? ¡Atención!, esto puede requerir un tiempo considerable.</string>
     <string name="yes">Sí</string>
     <string name="no">No</string>
-    <string name="ok">Aceptar</string>
     <string name="search_fail">La búsqueda del libro ha fallado. Por favor, verifique la configuración de su conexión a internet.</string>
     <string name="search_exception">La búsqueda ha fallado %1$s: %2$s</string>
     <string name="menu_delete_thumb">Eliminar portada</string>

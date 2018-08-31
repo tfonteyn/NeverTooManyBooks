@@ -44,7 +44,7 @@ import com.eleybourn.bookcatalogue.utils.BCBackground;
  * @author Philip Warner
  */
 public class GoodreadsSearchCriteria extends BookCatalogueActivity {
-	public static final String EXTRA_BOOK_ID = "bookId";
+	private static final String EXTRA_BOOK_ID = "bookId";
 
 	private CatalogueDBAdapter mDbHelper;
 	private long mBookId = 0;

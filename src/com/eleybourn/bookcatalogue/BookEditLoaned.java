@@ -64,7 +64,7 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
 	 *  
 	 * @return an ArrayList of names
 	 */
-	protected ArrayList<String> getFriends() {
+	private ArrayList<String> getFriends() {
 		ArrayList<String> friend_list = new ArrayList<>();
 
 		// bail out silently

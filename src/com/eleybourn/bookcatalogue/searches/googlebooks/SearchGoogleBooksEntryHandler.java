@@ -106,10 +106,10 @@ import org.xml.sax.helpers.DefaultHandler;
  * </entry>
  * 
  */
-public class SearchGoogleBooksEntryHandler extends DefaultHandler {
+class SearchGoogleBooksEntryHandler extends DefaultHandler {
 	private StringBuilder builder;
 	
-	private Bundle mValues;
+	private final Bundle mValues;
 	private static boolean mFetchThumbnail;
 
 	private static final String ID = "id";

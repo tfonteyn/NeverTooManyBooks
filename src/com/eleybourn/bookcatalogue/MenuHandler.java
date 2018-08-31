@@ -56,7 +56,7 @@ public class MenuHandler {
      * Called by the constructor.
      * Allows re-using the MenuHandler
      */
-    public void init(Menu menu) {
+    private void init(Menu menu) {
         mSort = 0;
         menu.clear();
     }

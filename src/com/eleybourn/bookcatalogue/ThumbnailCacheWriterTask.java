@@ -45,7 +45,7 @@ public class ThumbnailCacheWriterTask implements SimpleTask {
 	 * Single-thread queue for writing data. There is no point in more than one thread since
 	 * the database will force serialization of the updates.
 	 */
-	private static SimpleTaskQueue mQueue = new SimpleTaskQueue("cachewriter", 1);
+	private static final SimpleTaskQueue mQueue = new SimpleTaskQueue("cachewriter", 1);
 
 	/**
 	 * Queue the passed bitmap to be compressed and written to the database, will be recycled if
@@ -70,7 +70,7 @@ public class ThumbnailCacheWriterTask implements SimpleTask {
 
 	// ******** INSTANCE Data ******** //
 
-	private Context mContext;
+	private final Context mContext;
 	/** Cache ID of this object */
 	private String mCacheId;
 	/** Indicates if Bitmap can be recycled when no longer needed */

@@ -55,7 +55,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
         }
     };
     private SharedPreferences mPrefs = null;
-    private FieldUsages mFieldUsages = new FieldUsages();
+    private final FieldUsages mFieldUsages = new FieldUsages();
 
     @Override
     protected int getLayoutId() {
@@ -210,6 +210,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                         }
                     });
                     alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, UpdateFromInternet.this.getResources().getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                        @SuppressWarnings("EmptyMethod")
                         public void onClick(DialogInterface dialog, int which) {
                             //do nothing
                             return;

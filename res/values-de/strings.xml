@@ -20,7 +20,6 @@
     <string name="menu_sort_by">Sortieren nach</string>
     <string name="menu_collapse_all">Alles einklappen</string>
     <string name="search">Suche</string>
-    <string name="cancel">Abbrechen</string>
     <string name="confirm_save">Buch speichern</string>
     <string name="nobookshelves">Es wurde noch kein Bücherregal erstellt. Bitte fügen Sie Bücherregale über das Menü am unteren Bildschirmrand hinzu.</string>
     <string name="menu_insert_bs">Bücherregal erstellen</string>
@@ -83,7 +82,6 @@
     <string name="overwrite_thumbnail">Die ausgewählten Felder werden wie gezeigt aktualisiert. Die Cover-Bilder können optional für ALLE Bücher heruntergeladen werden.\n\nSollen alle bestehenden Cover-Bilder überschrieben werden? Warnung, die Aktualisierung kann lange dauern. </string>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
-    <string name="ok">OK</string>
     <string name="search_fail">Die Suche nach dem Buch ist fehlgeschlagen. Bitte überprüfen Sie die Netzwerkeinstellungen.</string>
     <string name="search_exception">Die Suche ist fehlgeschlagen während %1$s: %2$s</string>
     <string name="menu_delete_thumb">Cover-Bild löschen</string>

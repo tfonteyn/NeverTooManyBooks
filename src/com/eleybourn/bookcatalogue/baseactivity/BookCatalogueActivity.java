@@ -32,7 +32,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
      */
     protected static final int DEFAULT_THEME = 0;
 
-    protected static final int[] THEMES = {
+    private static final int[] THEMES = {
             R.style.ThemeDark,
             R.style.ThemeLight
     };
@@ -101,9 +101,9 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
                 bar.setDisplayShowHomeEnabled(true);
                 //FIXME: find out why Vector icons don't work.... for now abusing the collapse icon
                 bar.setHomeAsUpIndicator(R.drawable.ic_menu_collapse);
-            } else {
-                // we get the default 'arrow back'
-            }
+            } //else {
+            // we get the default 'arrow back'
+            //}
         }
     }
 

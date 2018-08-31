@@ -96,7 +96,7 @@ public class TaskListActivity extends BindableItemListActivity {
 	/**
 	 * Listener to handle Event add/change/delete.
 	 */
-	private OnTaskChangeListener m_OnTaskChangeListener = new  OnTaskChangeListener() {
+	private final OnTaskChangeListener m_OnTaskChangeListener = new  OnTaskChangeListener() {
 		@Override
 		public void onTaskChange(Task task, TaskActions action) {
 			TaskListActivity.this.refreshData();

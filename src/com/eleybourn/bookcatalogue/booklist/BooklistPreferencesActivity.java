@@ -45,19 +45,19 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 public class BooklistPreferencesActivity extends PreferencesBase {
 
 	/** Prefix for all preferences */
-	public static final String TAG = "BookList.Global.";
+	private static final String TAG = "BookList.Global.";
 
 	/** Show flat backgrounds in Book lists */
-	public static final String PREF_BACKGROUND_THUMBNAILS = TAG + "BackgroundThumbnails";
+	private static final String PREF_BACKGROUND_THUMBNAILS = TAG + "BackgroundThumbnails";
 	/** Show flat backgrounds in Book lists */
-	public static final String PREF_CACHE_THUMBNAILS = TAG + "CacheThumbnails";
+	private static final String PREF_CACHE_THUMBNAILS = TAG + "CacheThumbnails";
 	/** Show flat backgrounds in Book lists */
-	public static final String PREF_FLAT_BACKGROUND = TAG + "FlatBackground";
+	private static final String PREF_FLAT_BACKGROUND = TAG + "FlatBackground";
 
 	/** Key added to resulting Intent */
-	public static final String PREF_CHANGED = TAG + "PrefChanged";
+	private static final String PREF_CHANGED = TAG + "PrefChanged";
 	/** Always expand/collapse/preserve book list state */
-	public static final String PREF_BOOKLISTS_STATE = TAG + "BooklistState";
+	private static final String PREF_BOOKLISTS_STATE = TAG + "BooklistState";
 
 	// ID values for state preservation property
 	public static final int BOOKLISTS_ALWAYS_EXPANDED = 1;

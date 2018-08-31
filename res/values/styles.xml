@@ -27,19 +27,6 @@
     <!--
     **************************************************************************************
     -->
-    <!-- Style for item in main menu -->
-    <style name="main_menu_item">
-        <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="paddingStart">@dimen/padding_border</item>
-        <item name="android:paddingTop">@dimen/padding_border_triple</item>
-        <item name="android:drawablePadding">20dp</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-    <!--
-    **************************************************************************************
-    -->
     <!-- the name is taken from the original xml drawable, should be renamed (or removed) -->
     <style name="main_menu_header_divider">
         <!--

@@ -170,14 +170,14 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  */
 public class SearchAmazonHandler extends DefaultHandler {
-	private Bundle mBookData;
+	private final Bundle mBookData;
 	private StringBuilder mBuilder;
 	private String mThumbnailUrl = "";
 	private int mThumbnailSize = -1;
 	private static boolean mFetchThumbnail;
 	
 	/* How many results found */
-	public int count = 0;
+	private int count = 0;
 	/* A flag to identify if we are in the correct node */
 	private boolean mInLanguage = false;
 	private boolean mInListPrice = false;

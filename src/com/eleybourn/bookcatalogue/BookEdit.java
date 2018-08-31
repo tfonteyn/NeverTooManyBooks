@@ -97,7 +97,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 	public static final String ADDED_AUTHOR = "ADDED_AUTHOR";
 
 	/** Key using in intent to start this class in read-only mode */
-	public static final String KEY_READ_ONLY = "key_read_only";
+	private static final String KEY_READ_ONLY = "key_read_only";
 
 	private final CatalogueDBAdapter mDbHelper = new CatalogueDBAdapter(this);
     private long mRowId;
@@ -168,7 +168,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
                     setShowAnthology(isAnthology);
                 }
             } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException("Creating tab instances failed - check code for: " + mTabClasses.toString(), e);
+                throw new RuntimeException("Creating tab instances failed - check code for: " + mTabClasses.getClass().getCanonicalName(), e);
             }
 
 
@@ -310,7 +310,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 	 * Listener to handle 'fling' events; we could handle others but need to be
 	 * careful about possible clicks and scrolling.
 	 */
-	private GestureDetector.SimpleOnGestureListener mGestureListener = new GestureDetector.SimpleOnGestureListener() {
+	private final GestureDetector.SimpleOnGestureListener mGestureListener = new GestureDetector.SimpleOnGestureListener() {
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 			if (mList == null)
@@ -356,6 +356,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 	/**
 	 * This is a straight passthrough
 	 */
+	@SuppressWarnings("EmptyMethod")
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
@@ -665,6 +666,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 	public interface PostSaveAction {
 		void success();
 
+		@SuppressWarnings("EmptyMethod")
 		void failure();
 	}
 

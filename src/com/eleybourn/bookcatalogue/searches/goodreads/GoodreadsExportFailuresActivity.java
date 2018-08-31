@@ -60,7 +60,7 @@ import java.util.ArrayList;
 public class GoodreadsExportFailuresActivity extends BindableItemListActivity 
 {
 	/** Key to store optional task ID hen activity is started */
-	public static final String KEY_TASK_ID = "GoodreadsExportFailuresActivity.TaskId";
+	private static final String KEY_TASK_ID = "GoodreadsExportFailuresActivity.TaskId";
 	/** DB connection */
 	private CatalogueDBAdapter m_db = null;
 	private BindableItemSQLiteCursor m_cursor;
@@ -126,7 +126,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	/**
 	 * Update the header to reflect current cursor size.
 	 */
-	protected void updateHeader() {
+	private void updateHeader() {
 		TextView head = this.findViewById(R.id.events_found);
 		head.setText(getResources().getString(R.string.events_found,m_cursor.getCount()));
 	}
@@ -244,7 +244,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	/** 
 	 * @return the unique ID associated with this activity. Used in activity results.
 	 */
-	public static int getActivityId() {
+	private static int getActivityId() {
 		return UniqueId.ACTIVITY_GOODREADS_EXPORT_FAILURES;
 	}
 

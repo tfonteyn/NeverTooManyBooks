@@ -15,7 +15,7 @@ public class SoundManager {
 	private SoundManager() {
 	}
 
-	public static final String TAG = "SoundManager";
+	private static final String TAG = "SoundManager";
 	public static final String PREF_BEEP_IF_SCANNED_ISBN_INVALID = TAG + "." + "BeepIfScannedIsbnInvalid";
 	public static final String PREF_BEEP_IF_SCANNED_ISBN_VALID = TAG + "." + "BeepIfScannedIsbnValid";
 

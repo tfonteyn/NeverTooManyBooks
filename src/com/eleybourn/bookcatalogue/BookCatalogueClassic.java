@@ -101,7 +101,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	private Spinner mBookshelfText;
 
 	private SharedPreferences mPrefs;
-	public int sort = 0;
+	private int sort = 0;
 	private static final int SORT_AUTHOR = 0; 
 	private static final int SORT_TITLE = 1; 
 	private static final int SORT_SERIES = 2; 
@@ -362,7 +362,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		public class BasicBookListAdapter extends ResourceCursorTreeAdapter implements SectionIndexer {
 
 			/** A local Inflater for convenience */
-			LayoutInflater mInflater;
+			final LayoutInflater mInflater;
 			
 			/**
 			 * 
@@ -1184,6 +1184,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 * This will be called when a menu item is selected. A large switch statement to
 	 * call the appropriate functions (or other activities) 
 	 */
+	@SuppressWarnings("EmptyMethod")
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		// MenuHandler handles the 'standard' items, we just handle local items.

@@ -67,9 +67,9 @@ import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KI
  */
 public class BooklistStyles implements Iterable<BooklistStyle> {
 	/** Internal storage for defined styles represented by this object */
-	private ArrayList<BooklistStyle> mList = new ArrayList<>();
-	private HashSet<String> mPreferredStyleNames;
-	private ArrayList<String> mPreferredStyleList;
+	private final ArrayList<BooklistStyle> mList = new ArrayList<>();
+	private final HashSet<String> mPreferredStyleNames;
+	private final ArrayList<String> mPreferredStyleList;
 
     public static final String TAG = "BooklistStyles";
 	public static final String PREF_MENU_PREFIX = TAG + ".Menu";

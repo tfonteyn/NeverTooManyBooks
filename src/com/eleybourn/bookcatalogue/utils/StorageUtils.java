@@ -164,6 +164,7 @@ public class StorageUtils {
 			//check if it exists
 			File existing = getFile(fileName);
 			if (existing.exists()) {
+				//noinspection ResultOfMethodCallIgnored
 				existing.renameTo(getFile(fileName + ".bak"));
 			}
 

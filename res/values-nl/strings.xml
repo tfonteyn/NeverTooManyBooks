@@ -21,7 +21,6 @@
     <string name="menu_sort_by">Sorteren op</string>
     <string name="menu_collapse_all">Alles inklappen</string>
     <string name="search">Zoeken</string>
-    <string name="cancel">Annuleren</string>
     <string name="confirm_save">Boek opslaan</string>
     <string name="nobookshelves">U heef nog geen boekenplank aangemaakt. Voeg er een toe via het menu onderaan dit scherm.</string>
     <string name="menu_insert_bs">Boekenplank maken</string>
@@ -85,7 +84,6 @@
     <string name="overwrite_thumbnail">Dit zal de geselecteerde velden zoals getoond bijwerken, maar miniaturen kunnen desgewenst voor Alle boeken worden gedownload.\n\nWilt u alle miniaturen overschrijven? Waarschuwing: dit kan een lange tijd in beslag nemen. </string>
     <string name="yes">Ja</string>
     <string name="no">Nee</string>
-    <string name="ok">OK</string>
     <string name="search_fail">Het zoeken naar het boek is mislukt. Controleer uw netwerk instellingen.</string>
     <string name="search_exception">Zoeken mislukt terwijl %1$s: %2$s</string>
     <string name="menu_delete_thumb">Verwijder miniatuur</string>

@@ -114,7 +114,7 @@ public class FastScroller {
     private RectF mOverlayPos;
     private final int mOverlaySize;
 
-    private AbsListView mList;
+    private final AbsListView mList;
     private boolean mScrollCompleted;
     private int mVisibleItem;
     private TextPaint mPaint;
@@ -130,7 +130,7 @@ public class FastScroller {
     
     private int mState;
     
-    private Handler mHandler = new Handler();
+    private final Handler mHandler = new Handler();
     
     private BaseAdapter mListAdapter;
     private SectionIndexer mSectionIndexerV1;

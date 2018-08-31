@@ -47,7 +47,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class UpdateThumbnailsThread extends ManagedTask {
 	// The fields that the user requested to update
-	private FieldUsages mRequestedFields;
+	private final FieldUsages mRequestedFields;
 
 	// Lock help by pop and by push when an item was added to an empty stack.
 	private final ReentrantLock mSearchLock = new ReentrantLock();
@@ -67,10 +67,10 @@ public class UpdateThumbnailsThread extends ManagedTask {
 	private FieldUsages mCurrFieldUsages;
 
 	// Active search manager
-	private SearchManager mSearchManager;
+	private final SearchManager mSearchManager;
 
 	// DB connection
-	protected CatalogueDBAdapter mDbHelper;
+	private CatalogueDBAdapter mDbHelper;
 
     /**
 	 * Constructor.
@@ -254,6 +254,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
 	/**
 	 * Called in the main thread for this object when a search has completed.
 	 */
+	@SuppressWarnings("SameReturnValue")
 	private boolean handleSearchFinished(Bundle bookData, boolean cancelled) {
 		if (BuildConfig.DEBUG) {
 			System.out.println("onSearchFinished (cancel = " + cancelled + ")");

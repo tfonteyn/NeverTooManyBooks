@@ -41,7 +41,7 @@ import net.philipwarner.taskqueue.QueueManager;
  * 
  * @author Philip Warner
  */
-public class GoodreadsAuthorizationResultCheck extends GenericTask {
+class GoodreadsAuthorizationResultCheck extends GenericTask {
 	private static final long serialVersionUID = -5502292652351148420L;
 
 	GoodreadsAuthorizationResultCheck() {

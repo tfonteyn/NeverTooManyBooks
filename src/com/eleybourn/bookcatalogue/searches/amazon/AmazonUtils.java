@@ -31,7 +31,9 @@ public class AmazonUtils {
 	private static final String AMAZON_BOOKS_BASE = "http://www.amazon.com/gp/search?index=books";
 	private static final String AMAZON_KEY = "bookcatalogue.amazon.appkey";
 
-	public static void openLink(Activity context, String author, String series) {
+	private static final String UTF8 = "UTF-8";
+
+	private static void openLink(Activity context, String author, String series) {
 		// Build the URL and args
 		String url = AMAZON_BOOKS_BASE;
 		
@@ -72,10 +74,13 @@ public class AmazonUtils {
 		String extra = "";
 		// http://www.amazon.com/gp/search?index=books&field-author=steven+a.+mckay&field-keywords=the+forest+lord
 		if (author != null && !author.trim().isEmpty()) {
+			//FIXME: the replaceAll call in fact discard the result....
+			//FIXME: you need to:   s = s.replaceAll  to have them take effect
+			//FIXME: not fixing this until the code/reason of the replace is understood.
 			author.replaceAll("\\.,+"," ");
 			author.replaceAll(" *","+");
 			try {
-				extra += "&field-author=" + URLEncoder.encode(author, "UTF-8");
+				extra += "&field-author=" + URLEncoder.encode(author, UTF8);
 			} catch (UnsupportedEncodingException e) {
 				Logger.logError(e, "Unable to add author to URL");
 				return null;
@@ -85,7 +90,7 @@ public class AmazonUtils {
 			series.replaceAll("\\.,+"," ");
 			series.replaceAll(" *","+");
 			try {
-				extra += "&field-keywords=" + URLEncoder.encode(series, "UTF-8");
+				extra += "&field-keywords=" + URLEncoder.encode(series, UTF8);
 			} catch (UnsupportedEncodingException e) {
 				Logger.logError(e, "Unable to add series to URL");
 				return null;

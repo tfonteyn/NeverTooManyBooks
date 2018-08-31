@@ -181,7 +181,7 @@ public class DbUtils {
 		/** Table alias */
 		private String mAlias;
 		/** List of domains in this table */
-		private ArrayList<DomainDefinition> mDomains;
+		private final ArrayList<DomainDefinition> mDomains;
 		/** Used for checking if a domain has already been added */ 
 		private final HashSet<DomainDefinition> mDomainCheck = new HashSet<>();
 		/** Used for checking if a domain NAME has already been added */

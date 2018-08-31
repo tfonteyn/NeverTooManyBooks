@@ -82,7 +82,7 @@ public class GetThumbnailTask implements SimpleTask {
      * Indicated we want the queue manager to call the finished() method.
      */
     private boolean mWantFinished = true;
-    private Context mContext;
+    private final Context mContext;
     /**
      * Constructor. Clean the view and save the details of what we want.
      */

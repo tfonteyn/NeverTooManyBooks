@@ -97,6 +97,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 			if (newFile.length() > 0)
 				return newFile;
 			else
+				//noinspection ResultOfMethodCallIgnored
 				newFile.delete();
 			newFile = CatalogueDBAdapter.fetchThumbnailByUuid(newUuid);
 		}
@@ -170,6 +171,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 		if (newFile.exists())
 			return;
 
+		//noinspection ResultOfMethodCallIgnored
 		orig.renameTo(newFile);
 	}
 

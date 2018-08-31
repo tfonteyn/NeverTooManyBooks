@@ -15,7 +15,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class AmazonManager {
+class AmazonManager {
 	/**
 	 * 
 	 * This searches the amazon REST site based on a specific isbn. It proxies through lgsolutions.com.au

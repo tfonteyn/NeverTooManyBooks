@@ -916,7 +916,7 @@ public class GoodreadsManager {
         public static class BookNotFoundException extends GeneralException {
             private static final long serialVersionUID = 872113355903361212L;
 
-            public BookNotFoundException(Throwable inner) {
+            BookNotFoundException(Throwable inner) {
                 super(inner);
             }
         }
@@ -924,7 +924,7 @@ public class GoodreadsManager {
         public static class NetworkException extends GeneralException {
             private static final long serialVersionUID = -4233137984910957925L;
 
-            public NetworkException(Throwable inner) {
+            NetworkException(Throwable inner) {
                 super(inner);
             }
         }
@@ -937,11 +937,11 @@ public class GoodreadsManager {
             mBundle = b;
         }
 
-        public String getName() {
+        String getName() {
             return mBundle.getString(BookshelfListFieldNames.NAME);
         }
 
-        public boolean isExclusive() {
+        boolean isExclusive() {
             return mBundle.getBoolean(BookshelfListFieldNames.EXCLUSIVE);
         }
     }

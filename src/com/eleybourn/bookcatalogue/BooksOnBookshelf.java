@@ -88,14 +88,18 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOKS
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
+ * <pre>
  * //Set zooming by default on clicking on image
  * getView().findViewById(R.id.row_img).setOnClickListener(new OnClickListener() {
  *
- * @author Philip Warner
- * @Override public void onClick(View v) {
+ *
+ * Override public void onClick(View v) {
  * showZoomedThumb(mEditManager.getBookData().getRowId());
  * }
  * });
+ * </pre>
+ *
+ * @author Philip Warner
  */
 public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistChangeListener {
     /**
@@ -918,7 +922,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 if (position == 0) {
                     new_bookshelf = "";
                 }
-                if (!new_bookshelf.equalsIgnoreCase(mCurrentBookshelf)) {
+                if (new_bookshelf != null && !new_bookshelf.equalsIgnoreCase(mCurrentBookshelf)) {
                     mCurrentBookshelf = new_bookshelf;
                     // save the current bookshelf into the preferences
                     SharedPreferences.Editor ed = BookCataloguePreferences.edit();

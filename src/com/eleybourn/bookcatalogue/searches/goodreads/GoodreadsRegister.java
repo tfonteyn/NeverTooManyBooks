@@ -75,7 +75,7 @@ public class GoodreadsRegister extends BookCatalogueActivity {
 		BCBackground.init(this);
 	}
 
-	public void setupViews() {
+	private void setupViews() {
 		final Resources res = this.getResources();
 		/* GR Reg Link */
 		TextView register = findViewById(R.id.goodreads_url);

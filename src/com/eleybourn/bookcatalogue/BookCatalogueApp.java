@@ -549,6 +549,7 @@ public class BookCatalogueApp extends Application {
             super(ctx);
         }
 
+        @SuppressWarnings("EmptyMethod")
         @Override
         public void send(CrashReportData report) throws ReportSenderException {
             //report.put(USER_COMMENT, report.get(USER_COMMENT) + "\n\n" + Tracker.getEventsInfo());

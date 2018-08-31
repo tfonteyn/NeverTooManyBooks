@@ -64,7 +64,7 @@ import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiH
  * 
  * @author Philip Warner
  */
-public class ImportAllTask extends GenericTask {
+class ImportAllTask extends GenericTask {
 	private static final long serialVersionUID = -3535324410982827612L;
 
 	/** Current position in entire list of reviews */

@@ -19,8 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.widgets;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -36,6 +34,8 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
+import java.util.ArrayList;
+
 /**
  * ArrayAdapter to manage rows of an arbitrary type with row movement via clicking on predefined 
  * sub-views, if present.
@@ -43,14 +43,14 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
  * @author Philip Warner
  */
 public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
-	private int mRowViewId;
+	private final int mRowViewId;
 	private boolean mCheckedFields = false;
 	private boolean mHasPosition = false;
 	private boolean mHasUp = false;
 	private boolean mHasDown = false;
 	private boolean mHasDelete = false;
 
-	private ArrayList<T> mItems;
+	private final ArrayList<T> mItems;
 	
 	public SimpleListAdapter(Context context, int rowViewId, ArrayList<T> items) {
             super(context, rowViewId, items);
@@ -76,7 +76,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 	 */
 	abstract protected void onSetupView(T object, int position, View target);
 
-	private OnClickListener mRowClickListener = new OnClickListener() {
+	private final OnClickListener mRowClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			try {
@@ -89,7 +89,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 		}			
 	};
 
-	private OnClickListener mRowDeleteListener = new OnClickListener() {
+	private final OnClickListener mRowDeleteListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			if (v == null)
@@ -109,7 +109,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 		}			
 	};
 
-	private OnClickListener mRowDownListener = new OnClickListener() {
+	private final OnClickListener mRowDownListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			int pos = getViewRow(v);
@@ -130,7 +130,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 		}			
 	};
 
-	private OnClickListener mRowUpListener = new OnClickListener() {
+	private final OnClickListener mRowUpListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			int pos = getViewRow(v);
@@ -154,7 +154,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 	};
 
 	/**
-	 * Interface to allow underlying objects to determine their vewi ID.
+	 * Interface to allow underlying objects to determine their view ID.
 	 */
 	public interface ViewProvider {
 		int getViewId();
@@ -201,7 +201,8 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                 TextView pt = v.findViewById(R.id.row_position);
                 if(pt != null){
                 	mHasPosition = true;
-                	pt.setText(Long.toString(position+1));
+                	String text = Integer.toString(position+1);
+                	pt.setText(text);
                 }
         	}
 

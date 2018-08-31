@@ -341,7 +341,7 @@ public class BookEvents {
     /**
 	 * Method to retry sending a book to goodreads.
 	 */
-	private static OnClickListener m_retryButtonListener = new OnClickListener() {
+	private static final OnClickListener m_retryButtonListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			BookEvent.BookEventHolder holder = ViewTagger.getTag(v, R.id.TAG_BOOK_EVENT_HOLDER);

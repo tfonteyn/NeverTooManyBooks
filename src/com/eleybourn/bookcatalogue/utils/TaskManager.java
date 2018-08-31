@@ -60,7 +60,7 @@ public class TaskManager implements AutoCloseable {
 		TaskManager getManager();
 	}
 
-	private TaskManagerController mController = new TaskManagerController() {
+	private final TaskManagerController mController = new TaskManagerController() {
 		@Override
 		public void requestAbort() {
 			TaskManager.this.cancelAllTasks();
@@ -73,8 +73,8 @@ public class TaskManager implements AutoCloseable {
 	};
 	
 	public static class OnTaskEndedMessage implements Message<TaskManagerListener> {
-		private TaskManager mManager;
-		private ManagedTask mTask;
+		private final TaskManager mManager;
+		private final ManagedTask mTask;
 
 		OnTaskEndedMessage(TaskManager manager, ManagedTask task) {
 			mManager = manager;
@@ -89,9 +89,9 @@ public class TaskManager implements AutoCloseable {
 	}
 
     public static class OnProgressMessage implements Message<TaskManagerListener> {
-		private int mCount;
-		private int mMax;
-		private String mMessage;
+		private final int mCount;
+		private final int mMax;
+		private final String mMessage;
 		
 		OnProgressMessage(int count, int max, String message) {
 			mCount = count;
@@ -107,7 +107,7 @@ public class TaskManager implements AutoCloseable {
 	}
 
 	public static class OnToastMessage implements Message<TaskManagerListener> {
-		private String mMessage;
+		private final String mMessage;
 		
 		OnToastMessage(String message) {
 			mMessage = message;
@@ -173,7 +173,7 @@ public class TaskManager implements AutoCloseable {
 
 	// Task info for each ManagedTask object
 	private class TaskInfo {
-		ManagedTask 		task;
+		final ManagedTask 		task;
 		String				progressMessage;
 		int					progressMax;
 		int					progressCurrent;
@@ -217,7 +217,7 @@ public class TaskManager implements AutoCloseable {
 	/**
 	 * Listen for task messages, specifically, task termination
 	 */
-	private ManagedTask.TaskListener mTaskListener = new ManagedTask.TaskListener() {
+	private final ManagedTask.TaskListener mTaskListener = new ManagedTask.TaskListener() {
 		@Override
 		public void onTaskFinished(ManagedTask t) {
 			TaskManager.this.onTaskFinished(t);

@@ -432,6 +432,8 @@ public class DbSync {
 		/**
 		 * Locking-aware wrapper for underlying database method; actually
 		 * calls insertOrThrow since this method also throws exceptions
+		 *
+		 * @return	the row ID of the newly inserted row, or -1 if an error occurred
 		 */
 		public long insert(String table, String nullColumnHack, ContentValues values) {
 			SyncLock l = null;

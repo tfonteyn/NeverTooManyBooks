@@ -19,6 +19,20 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.Bundle;
+
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter;
+import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
+import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
+import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlResponseParser;
+import com.eleybourn.bookcatalogue.utils.Base64;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -28,20 +42,6 @@ import java.util.Set;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.os.Bundle;
-
-import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlResponseParser;
-import com.eleybourn.bookcatalogue.utils.Base64;
-import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Utility functions for backup/restore code
@@ -88,25 +88,25 @@ public class BackupUtils {
 		@Override
 		public void putItem(Bundle bundle, String key, String type, String value) throws IOException {
 			switch (type) {
-				case BackupUtils.TYPE_INTEGER:
+				case TYPE_INTEGER:
 					mBundle.putInt(key, Integer.parseInt(value));
 					break;
-				case BackupUtils.TYPE_LONG:
+				case TYPE_LONG:
 					mBundle.putLong(key, Long.parseLong(value));
 					break;
-				case BackupUtils.TYPE_FLOAT:
+				case TYPE_FLOAT:
 					mBundle.putFloat(key, Float.parseFloat(value));
 					break;
-				case BackupUtils.TYPE_DOUBLE:
+				case TYPE_DOUBLE:
 					mBundle.putDouble(key, Double.parseDouble(value));
 					break;
-				case BackupUtils.TYPE_STRING:
+				case TYPE_STRING:
 					mBundle.putString(key, value);
 					break;
-				case BackupUtils.TYPE_BOOLEAN:
+				case TYPE_BOOLEAN:
 					mBundle.putBoolean(key, Boolean.parseBoolean(value));
 					break;
-				case BackupUtils.TYPE_SERIALIZABLE:
+				case TYPE_SERIALIZABLE:
 					Serializable s = Base64.decode(value);
 					mBundle.putSerializable(key, s);
 					break;
@@ -148,22 +148,23 @@ public class BackupUtils {
 		public Object get(String key) {
 			return mMap.get(key);
 		}
+
 		@Override
 		public void putItem(Bundle bundle, String key, String type, String value) {
 			switch (type) {
-				case BackupUtils.TYPE_INTEGER:
+				case TYPE_INTEGER:
 					mEditor.putInt(key, Integer.parseInt(value));
 					break;
-				case BackupUtils.TYPE_LONG:
+				case TYPE_LONG:
 					mEditor.putLong(key, Long.parseLong(value));
 					break;
-				case BackupUtils.TYPE_FLOAT:
+				case TYPE_FLOAT:
 					mEditor.putFloat(key, Float.parseFloat(value));
 					break;
-				case BackupUtils.TYPE_STRING:
+				case TYPE_STRING:
 					mEditor.putString(key, value);
 					break;
-				case BackupUtils.TYPE_BOOLEAN:
+				case TYPE_BOOLEAN:
 					mEditor.putBoolean(key, Boolean.parseBoolean(value));
 					break;
 				default:
@@ -304,11 +305,11 @@ public class BackupUtils {
 
 	}
 
-	public static final String TYPE_INTEGER = "Int";
-	public static final String TYPE_LONG = "Long";
-	public static final String TYPE_DOUBLE = "Dbl";
-	public static final String TYPE_FLOAT = "Flt";
-	public static final String TYPE_BOOLEAN = "Bool";
-	public static final String TYPE_STRING = "Str";
-	public static final String TYPE_SERIALIZABLE = "Serial";
+	private static final String TYPE_INTEGER = "Int";
+	private static final String TYPE_LONG = "Long";
+	private static final String TYPE_DOUBLE = "Dbl";
+	private static final String TYPE_FLOAT = "Flt";
+	private static final String TYPE_BOOLEAN = "Bool";
+	private static final String TYPE_STRING = "Str";
+	private static final String TYPE_SERIALIZABLE = "Serial";
 }

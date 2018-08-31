@@ -27,6 +27,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedCursor;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 
+import java.io.Closeable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,7 +43,7 @@ import java.util.HashSet;
  *
  * @author Philip Warner
  */
-public class TrackedCursor extends SynchronizedCursor  {
+public class TrackedCursor extends SynchronizedCursor  implements Closeable{
 	
 	/* Static Data */
 	/* =========== */

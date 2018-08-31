@@ -88,7 +88,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	/** Debug counter */
 	private static Integer mInstanceCount = 0;
 
-	private Context mContext;
+	private final Context mContext;
 
 	private SqlStatementManager mStatements;
 
@@ -660,8 +660,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	/**
 	 * Return a Cursor over the list of all books in the database
 	 *
-	 * @param sortByFamily
-	 * @param firstOnly
+	 * @param sortByFamily		flag
+	 * @param firstOnly			flag
 	 * @return Cursor over all notes
 	 */
 	public Cursor fetchAllAuthors(boolean sortByFamily, boolean firstOnly) {
@@ -1870,9 +1870,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 * Returns a list of books, similar to fetchAllBooks but restricted by a search string. The
 	 * query will be applied to author, title, and series
 	 * 
-	 * @param searchText The search string to restrict the output by
-	 * @param first_char
-	 * @param bookshelf The bookshelf to search within. Can be the string "All Books"
+	 * @param searchText	The search string to restrict the output by
+	 * @param first_char    The character to search for
+	 * @param bookshelf		The bookshelf to search within. Can be the string "All Books"
+	 *
 	 * @return A Cursor of book meeting the search criteria
 	 */
 	public BooksCursor searchBooksByChar(String searchText, String first_char, String bookshelf) {
@@ -2157,7 +2158,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 * This function will create a new bookshelf in the database
 	 * 
 	 * @param bookshelf The bookshelf name
-	 * @return
+     *
+	 * @return the row ID of the newly inserted row, or -1 if an error occurred
 	 */
 	public long createBookshelf(String bookshelf) {
 		// TODO: Decide if we need to backup EMPTY bookshelves...
@@ -2175,18 +2177,20 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 * 
 	 * @param bookId                The book id
 	 * @param bookshelves           A separated string of bookshelf names
-	 * @param dirtyBookIfNecessary
+	 * @param dirtyBookIfNecessary  flag to set book dirty or not (for now, always false...)
 	 */
-	private void createBookshelfBooks(long bookId, ArrayList<String> bookshelves, boolean dirtyBookIfNecessary) {
+	private void createBookshelfBooks(long bookId, ArrayList<String> bookshelves,
+                                      @SuppressWarnings("SameParameterValue") boolean dirtyBookIfNecessary) {
 		if (mDeleteBookshelfBooksStmt == null) {
-			mDeleteBookshelfBooksStmt = mStatements.add("mDeleteBookshelfBooksStmt", "Delete from " + DB_TB_BOOK_BOOKSHELF_WEAK + " Where " + KEY_BOOK + " = ?");
+			mDeleteBookshelfBooksStmt = mStatements.add("mDeleteBookshelfBooksStmt",
+                    "Delete from " + DB_TB_BOOK_BOOKSHELF_WEAK + " Where " + KEY_BOOK + " = ?");
 		}
 		mDeleteBookshelfBooksStmt.bindLong(1, bookId);
 		mDeleteBookshelfBooksStmt.execute();
 
 		if (mInsertBookshelfBooksStmt == null) {
-			mInsertBookshelfBooksStmt = mStatements.add("mInsertBookshelfBooksStmt", "Insert Into " 
-								+ DB_TB_BOOK_BOOKSHELF_WEAK + "(" + KEY_BOOK + ", " + KEY_BOOKSHELF + ")"
+			mInsertBookshelfBooksStmt = mStatements.add("mInsertBookshelfBooksStmt",
+                    "Insert Into " + DB_TB_BOOK_BOOKSHELF_WEAK + "(" + KEY_BOOK + ", " + KEY_BOOKSHELF + ")"
 								+ " Values (?,?)");
 		}
 
@@ -2223,7 +2227,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 * This function will create a new loan in the database
 	 *
 	 * @param values the book
-	 * @param dirtyBookIfNecessary
+	 * @param dirtyBookIfNecessary    flag to set book dirty or not (for now, always false...)
 	 * @return the ID of the loan
 	 */
 	public long createLoan(BookData values, boolean dirtyBookIfNecessary) {
@@ -2795,9 +2799,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 * and add the authors.
 	 * 
 	 * @param bookId		            ID of book
-	 * @param dirtyBookIfNecessary
+	 * @param dirtyBookIfNecessary      flag to set book dirty or not (for now, always false...)
 	 */
-	private void createBookAuthors(long bookId, ArrayList<Author> authors, boolean dirtyBookIfNecessary) {
+	private void createBookAuthors(long bookId, ArrayList<Author> authors,
+                                   @SuppressWarnings("SameParameterValue") boolean dirtyBookIfNecessary) {
 		if (dirtyBookIfNecessary)
 			setBookDirty(bookId);
 
@@ -3304,7 +3309,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
 			try {
 				File f = fetchThumbnailByUuid(uuid);
 				while (f.exists()) {
-					f.delete();				
+					//noinspection ResultOfMethodCallIgnored
+					f.delete();
 					f = fetchThumbnailByUuid(uuid);
 				}	
 			} catch (Exception e) {

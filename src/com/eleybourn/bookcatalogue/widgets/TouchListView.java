@@ -54,11 +54,11 @@ public class TouchListView extends ListView {
 	private int mLowerBound;
 	private int mHeight;
 	private GestureDetector mGestureDetector;
-	public static final int FLING = 0;
-	public static final int SLIDE_RIGHT = 1;
-	public static final int SLIDE_LEFT = 2;
+	private static final int FLING = 0;
+	private static final int SLIDE_RIGHT = 1;
+	private static final int SLIDE_LEFT = 2;
 	private int mRemoveMode = -1;
-	private Rect mTempRect = new Rect();
+	private final Rect mTempRect = new Rect();
 	private Bitmap mDragBitmap;
 	private final int mTouchSlop;
 	private int mItemHeightNormal=-1;

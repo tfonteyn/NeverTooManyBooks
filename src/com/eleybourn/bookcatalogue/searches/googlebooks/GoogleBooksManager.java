@@ -23,6 +23,7 @@ public class GoogleBooksManager {
 			if (b.containsKey(SearchGoogleBooksEntryHandler.THUMBNAIL_KEY)) {
 				File f = new File(Objects.requireNonNull(b.getString(SearchGoogleBooksEntryHandler.THUMBNAIL_KEY)));
 				File newName = new File(f.getAbsolutePath() + "_" + isbn);
+				//noinspection ResultOfMethodCallIgnored
 				f.renameTo(newName);
 				return newName;
 			} else {

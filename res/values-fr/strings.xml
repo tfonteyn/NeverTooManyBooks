@@ -122,7 +122,6 @@
     <string name="menu_sort_by">Trier par</string>
     <string name="menu_collapse_all">Tout réduire</string>
     <string name="search">Recherche</string>
-    <string name="cancel">Annuler</string>
     <string name="confirm_save">Sauvegarder le livre</string>
     <string name="nobookshelves">Vous n\'avez pas encore créé de bibliothèque. Veuillez en ajouter une par le menu en bas de cet écran.</string>
     <string name="menu_insert_bs">Créer une bibliothèque</string>
@@ -178,7 +177,6 @@
     <string name="overwrite_thumbnail">Les champs sélectionnés vont être mis à jour tels que montré ; en option, les vignettes peuvent être téléchargées pour tous les livres.\n\nVoulez-vous remplacer toutes les vignettes existantes ? Attention, cela peut prendre du temps.</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
-    <string name="ok">OK</string>
     <string name="search_fail">La recherche du livre a échoué. Merci de vérifier vos réglages réseau.</string>
     <string name="search_exception">Recherche en échec pendant %1$s : %2$s</string>
     <string name="menu_delete_thumb">Supprimer la vignette</string>

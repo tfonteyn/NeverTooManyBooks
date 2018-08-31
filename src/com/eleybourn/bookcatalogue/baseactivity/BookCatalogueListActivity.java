@@ -62,21 +62,14 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
         super.onResume();
     }
 
-    /**
-     * This field should be made private, so it is hidden from the SDK.
-     * {@hide}
-     */
-    protected ListAdapter mAdapter;
-    /**
-     * This field should be made private, so it is hidden from the SDK.
-     * {@hide}
-     */
-    protected ListView mList;
+    private ListAdapter mAdapter;
 
-    private Handler mHandler = new Handler();
+    private ListView mList;
+
+    private final Handler mHandler = new Handler();
     private boolean mFinishedStart = false;
 
-    private Runnable mRequestFocus = new Runnable() {
+    private final Runnable mRequestFocus = new Runnable() {
         public void run() {
             mList.focusableViewAvailable(mList);
         }
@@ -156,10 +149,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
     }
 
     /**
-     * Set the currently selected list item to the specified
-     * position with the adapter's data
-     *
-     * @param position
+     * Set the currently selected list item to the specified position with the adapter's data
      */
     public void setSelection(int position) {
         mList.setSelection(position);
@@ -200,7 +190,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
         }
     }
 
-    private AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {
+    private final AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> parent, View v, int position, long id)
         {
             onListItemClick((ListView)parent, v, position, id);

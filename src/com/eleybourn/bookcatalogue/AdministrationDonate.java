@@ -75,7 +75,7 @@ public class AdministrationDonate extends BookCatalogueActivity {
 	 * 4. The application version and link details
 	 * 5. The link to paypal for donation
 	 */
-	public void setupPage() {
+	private void setupPage() {
 		OnClickListener payPalClick = new OnClickListener() {
 				@Override
 				public void onClick(View v) {

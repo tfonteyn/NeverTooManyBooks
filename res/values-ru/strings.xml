@@ -21,7 +21,6 @@
     <string name="menu_sort_by">Отсортировать по</string>
     <string name="menu_collapse_all">Свернуть всё</string>
     <string name="search">Поиск</string>
-    <string name="cancel">Отмена</string>
     <string name="confirm_save">Сохранить книгу</string>
     <string name="nobookshelves">Вы не создали ни одной полки. Пожалуйста, добавьте полку, используя меню в нижней части этого экрана.</string>
     <string name="menu_insert_bs">Создать полку</string>
@@ -84,7 +83,6 @@
     <string name="overwrite_thumbnail">Выбранные поля будут обновлены как показано, но миниатюры при желании можно загрузить для ВСЕХ книг.\n\nВы хотите перезаписать все миниатюры? Предупреждение: это может занять много времени. </string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
-    <string name="ok">OK</string>
     <string name="search_fail">Поиск книги не удался. Пожалуйста, проверьте настройки интернет-соединения.</string>
     <string name="search_exception">Поиск во время %1$s: %2$s не удался</string>
     <string name="menu_delete_thumb">Удалить миниатюру</string>
@@ -122,12 +120,6 @@
     <string name="searching_library_thing">Поиск в LibraryThing</string>
     <string name="select_bookshelves">Выбор полок</string>
     <string name="format">Формат</string>
-    <string name="format1">Мягкий переплет</string>
-    <string name="format2">Твёрдый переплёт</string>
-    <string name="format3">Электронная книга</string>
-    <string name="format4">Аудиокнига</string>
-    <string name="format5">Руководство / Справочник</string>
-    <!-- NOTE: Adding a new format will involve changing code that references this list -->
     <string name="description">Описание</string>
     <string name="genre">Жанр</string>
     <string name="notset">Не установлено</string>
@@ -869,5 +861,18 @@
 			</p>
 		]]></string>
     <string name="title_reorder">a|A|an|An|the|The</string>
+
+    <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
+
+
+    <!-- adding more does not require code changes -->
+    <string-array name="predefined_formats">
+        <item>Мягкий переплет</item>
+        <item>Твёрдый переплёт</item>
+        <item>Электронная книга</item>
+        <item>Аудиокнига</item>
+        <item>Руководство / Справочник</item>
+    </string-array>
+    <!-- End: Added/Updated in  [Next Version]  -->
 
 </resources>

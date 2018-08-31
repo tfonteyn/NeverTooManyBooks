@@ -77,7 +77,7 @@ abstract public class ManagedTask extends Thread {
 	 * @param manager			Associated task manager
 	 *
 	 */
-	public ManagedTask(TaskManager manager) {
+	protected ManagedTask(TaskManager manager) {
 		// Must be non-null
 		if (manager == null)
 			throw new IllegalArgumentException();

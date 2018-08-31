@@ -188,6 +188,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 			putBooks(exportFile);
 		} finally {
 			if (exportFile.exists())
+				//noinspection ResultOfMethodCallIgnored
 				exportFile.delete();
 		}
 	}

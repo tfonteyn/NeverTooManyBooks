@@ -21,7 +21,6 @@
     <string name="menu_sort_by">Ταξινόμηση κατα</string>
     <string name="menu_collapse_all">Απόκρυψη Όλων</string>
     <string name="search">Αναζήτηση</string>
-    <string name="cancel">Ακύρωση</string>
     <string name="confirm_save">Αποθήκευση</string>
     <string name="nobookshelves">Δεν έχετε δημιουργήσει ακόμα ράφια. Παρακαλούμε προσθέστε μερικά με το μενού στο κάτω μέρος της οθόνης.</string>
     <string name="menu_insert_bs">Δημιουργία Ραφιού</string>
@@ -85,7 +84,6 @@
     <string name="overwrite_thumbnail">Τα επιλεγμένα πεδία θα ενημερωθούν όπως φαίνεται, αλλά οι Μικρογραφίες μπορούν να κατέβουν προαιρετικά για ΌΛΑ τα βιβλία.\n\nΘέλετε να αντικαταστήσετε όλες τις υπάρχουσες μικρογραφίες; Προσοχή, θα χρειαστεί πολύς χρόνος. </string>
     <string name="yes">Ναι</string>
     <string name="no">Όχι</string>
-    <string name="ok">OK</string>
     <string name="search_fail">Η αναζήτηση του βιβλίου απέτυχε. Παρακαλούμε ελέγξτε τις ρυθμίσεις δικτύου.</string>
     <string name="search_exception">Αναζήτηση απέτυχε όταν %1$s: %2$s</string>
     <string name="menu_delete_thumb">Διαγραφή μικρογραφίας</string>

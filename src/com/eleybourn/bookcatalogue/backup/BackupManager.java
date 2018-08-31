@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -26,8 +26,8 @@ import com.eleybourn.bookcatalogue.backup.BackupReader.BackupReaderListener;
 import com.eleybourn.bookcatalogue.backup.BackupWriter.BackupWriterListener;
 import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
-import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
@@ -39,202 +39,210 @@ import java.util.Date;
 
 /**
  * Class for public static methods relating to backup/restore
- * 
+ *
  * @author pjw
  */
 public class BackupManager {
 
-	/**
-	 * Create a BackupReader for the specified file.
-	 * 
-	 * @param file	File to read
-	 * 
-	 * @return	a new reader
-	 * 
-	 * @throws IOException (inaccessible, invalid other other errors)
-	 */
-	public static BackupReader readBackup(File file) throws IOException {
-		if (!file.exists())
-			throw new java.io.FileNotFoundException("Attempt to open non-existent backup file");
-		
-		// We only support one backup format; so we use that. In future we would need to 
-		// explore the file to determine which format to use
-		TarBackupContainer bkp = new TarBackupContainer(file);
-		// Each format should provide a validator of some kind
-		if (!bkp.isValid())
-			throw new IOException("Not a valid backup file");
+    /**
+     * Create a BackupReader for the specified file.
+     *
+     * @param file File to read
+     *
+     * @throws IOException (inaccessible, invalid other other errors)
+     * @return a new reader
+     */
+    public static BackupReader readBackup(File file) throws IOException {
+        if (!file.exists())
+            throw new java.io.FileNotFoundException("Attempt to open non-existent backup file");
 
-		return bkp.newReader();
-	}
+        // We only support one backup format; so we use that. In future we would need to
+        // explore the file to determine which format to use
+        TarBackupContainer bkp = new TarBackupContainer(file);
+        // Each format should provide a validator of some kind
+        if (!bkp.isValid())
+            throw new IOException("Not a valid backup file");
 
-	/**
-	 * Esnure the file name extension is what we want
-	 */
-	private static File cleanupFile(File requestedFile) {
-		if (!requestedFile.getName().toUpperCase().endsWith(".BCBK")) {
-			return new File(requestedFile.getAbsoluteFile() + ".bcbk");
-		} else {
-			return requestedFile;
-		}
+        return bkp.newReader();
+    }
 
-	}
+    /**
+     * Esnure the file name extension is what we want
+     */
+    private static File cleanupFile(File requestedFile) {
+        if (!requestedFile.getName().toUpperCase().endsWith(".BCBK")) {
+            return new File(requestedFile.getAbsoluteFile() + ".bcbk");
+        } else {
+            return requestedFile;
+        }
 
-	/**
-	 * Start a foreground task that backs up the entire catalogue.
-	 * 
-	 * We use a FragmentTask so that long actions do not occur in the UI thread.
-	 */
-	public static File backupCatalogue(final BookCatalogueActivity context, final File requestedFile, int taskId, final int backupFlags, final Date since) {
-		final int flags = backupFlags & Exporter.EXPORT_MASK;
-		if (flags == 0)
-			throw new RuntimeException("Backup flags must be specified");
-		//if (flags == (Exporter.EXPORT_ALL | Exporter.EXPORT_NEW_OR_UPDATED) )
-		//	throw new RuntimeException("Illegal backup flag combination: ALL and NEW_OR_UPADTED");
-		
-		final File resultingFile = cleanupFile(requestedFile);
-		final File tempFile = new File(resultingFile.getAbsolutePath() + ".tmp");
+    }
 
-		FragmentTask task = new FragmentTaskAbstract() {
-			private boolean mBackupOk = false;
-			private final String mBackupDate = DateUtils.toSqlDateTime(new Date());
+    /**
+     * Start a foreground task that backs up the entire catalogue.
+     * <p>
+     * We use a FragmentTask so that long actions do not occur in the UI thread.
+     */
+    public static File backupCatalogue(final BookCatalogueActivity context, final File requestedFile, int taskId, final int backupFlags, final Date since) {
+        final int flags = backupFlags & Exporter.EXPORT_MASK;
+        if (flags == 0)
+            throw new RuntimeException("Backup flags must be specified");
+        //if (flags == (Exporter.EXPORT_ALL | Exporter.EXPORT_NEW_OR_UPDATED) )
+        //	throw new RuntimeException("Illegal backup flag combination: ALL and NEW_OR_UPADTED");
 
-			@Override
-			public void run(final SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
-				BackupWriter wrt = null;
+        final File resultingFile = cleanupFile(requestedFile);
+        final File tempFile = new File(resultingFile.getAbsolutePath() + ".tmp");
 
-				try {
-					if (BuildConfig.DEBUG) {
-						System.out.println("Starting " + tempFile.getAbsolutePath());
-					}
-					TarBackupContainer bkp = new TarBackupContainer(tempFile);
-					wrt = bkp.newWriter();
+        FragmentTask task = new FragmentTaskAbstract() {
+            private final String mBackupDate = DateUtils.toSqlDateTime(new Date());
+            private boolean mBackupOk = false;
 
-					wrt.backup(new BackupWriterListener() {
-						private int mTotalBooks = 0;
+            @Override
+            public void run(final SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
+                BackupWriter wrt = null;
 
-						@Override
-						public void setMax(int max) {
-							fragment.setMax(max);
-						}
+                try {
+                    if (BuildConfig.DEBUG) {
+                        System.out.println("Starting " + tempFile.getAbsolutePath());
+                    }
+                    TarBackupContainer bkp = new TarBackupContainer(tempFile);
+                    wrt = bkp.newWriter();
 
-						@Override
-						public void step(String message, int delta) {
-							fragment.step(message, delta);
-						}
+                    wrt.backup(new BackupWriterListener() {
+                        private int mTotalBooks = 0;
 
-						@Override
-						public boolean isCancelled() {
-							return fragment.isCancelled();
-						}
+                        @Override
+                        public void setMax(int max) {
+                            fragment.setMax(max);
+                        }
 
-						@Override
-						public void setTotalBooks(int books) {
-							mTotalBooks = books;
-						}
+                        @Override
+                        public void step(String message, int delta) {
+                            fragment.step(message, delta);
+                        }
 
-						@Override
-						public int getTotalBooks() {
-							return mTotalBooks;
-						}}, backupFlags, since);
+                        @Override
+                        public boolean isCancelled() {
+                            return fragment.isCancelled();
+                        }
 
-					if (fragment.isCancelled()) {
-						if (BuildConfig.DEBUG) {
-							System.out.println("Cancelled " + resultingFile.getAbsolutePath());
-						}
-						if (tempFile.exists())
-							tempFile.delete();
-					} else {
-						if (resultingFile.exists())
-							resultingFile.delete();
-						tempFile.renameTo(resultingFile);
-						mBackupOk = true;
-						if (BuildConfig.DEBUG) {
-							System.out.println("Finished " + resultingFile.getAbsolutePath() + ", size = " + resultingFile.length());
-						}
-					}
-				} catch (Exception e) {
-					Logger.logError(e);
-					if (tempFile.exists())
-						try {
-							tempFile.delete();
-						} catch (Exception e2) {
-							// Ignore
-						}
-					throw new RuntimeException("Error during backup", e);
-				} finally {
-					if (wrt != null) {
-						try {
-							wrt.close();
-						} catch (Exception e2) {
-							// Ignore
-						}
-					}
-				}
-			}
+                        @Override
+                        public int getTotalBooks() {
+                            return mTotalBooks;
+                        }
 
-			@Override
-			public void onFinish(SimpleTaskQueueProgressFragment fragment, Exception exception) {
-				super.onFinish(fragment, exception);
-				if (exception != null) {
-					if (tempFile.exists())
-						tempFile.delete();
-				}
-				fragment.setSuccess(mBackupOk);
-				if (mBackupOk) {
-					if ( (backupFlags == Exporter.EXPORT_ALL)) {
-						BookCataloguePreferences.setLastBackupDate(mBackupDate);
-					}
-					BookCataloguePreferences.setLastBackupFile(resultingFile.getAbsolutePath());
-				}
-			}
+                        @Override
+                        public void setTotalBooks(int books) {
+                            mTotalBooks = books;
+                        }
+                    }, backupFlags, since);
 
-		};
-		SimpleTaskQueueProgressFragment frag = SimpleTaskQueueProgressFragment.runTaskWithProgress(context, R.string.backing_up_ellipsis, task, false, taskId);
-		frag.setNumberFormat(null);
-		return resultingFile;
-	}
+                    if (fragment.isCancelled()) {
+                        if (BuildConfig.DEBUG) {
+                            System.out.println("Cancelled " + resultingFile.getAbsolutePath());
+                        }
+                        if (tempFile.exists())
+                            //noinspection ResultOfMethodCallIgnored
+                            tempFile.delete();
+                    } else {
+                        if (resultingFile.exists()) {
+                            //noinspection ResultOfMethodCallIgnored
+                            resultingFile.delete();
+                        }
+                        //noinspection ResultOfMethodCallIgnored
+                        tempFile.renameTo(resultingFile);
+                        mBackupOk = true;
+                        if (BuildConfig.DEBUG) {
+                            System.out.println("Finished " + resultingFile.getAbsolutePath() + ", size = " + resultingFile.length());
+                        }
+                    }
+                } catch (Exception e) {
+                    Logger.logError(e);
+                    if (tempFile.exists())
+                        try {
+                            //noinspection ResultOfMethodCallIgnored
+                            tempFile.delete();
+                        } catch (Exception e2) {
+                            // Ignore
+                        }
+                    throw new RuntimeException("Error during backup", e);
+                } finally {
+                    if (wrt != null) {
+                        try {
+                            wrt.close();
+                        } catch (Exception e2) {
+                            // Ignore
+                        }
+                    }
+                }
+            }
 
-	/**
-	 * Start a foreground task that backs up the entire catalogue.
-	 * 
-	 * We use a FragmentTask so that long actions do not occur in the UI thread.
-	 */
-	public static void restoreCatalogue(final BookCatalogueActivity context, final File inputFile, int taskId, final int importFlags) {
+            @Override
+            public void onFinish(SimpleTaskQueueProgressFragment fragment, Exception exception) {
+                super.onFinish(fragment, exception);
+                if (exception != null) {
+                    if (tempFile.exists()) {
+                        //noinspection ResultOfMethodCallIgnored
+                        tempFile.delete();
+                    }
+                }
+                fragment.setSuccess(mBackupOk);
+                if (mBackupOk) {
+                    if ((backupFlags == Exporter.EXPORT_ALL)) {
+                        BookCataloguePreferences.setLastBackupDate(mBackupDate);
+                    }
+                    BookCataloguePreferences.setLastBackupFile(resultingFile.getAbsolutePath());
+                }
+            }
 
-		FragmentTask task = new FragmentTaskAbstract() {
-			@Override
-			public void run(final SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
-				try {
-					if (BuildConfig.DEBUG) {
-						System.out.println("Starting " + inputFile.getAbsolutePath());
-					}
-					BackupReader rdr = BackupManager.readBackup(inputFile);
-					rdr.restore(new BackupReaderListener() {
-						@Override
-						public void setMax(int max) {
-							fragment.setMax(max);
-						}
+        };
+        SimpleTaskQueueProgressFragment frag = SimpleTaskQueueProgressFragment.runTaskWithProgress(context, R.string.backing_up_ellipsis, task, false, taskId);
+        frag.setNumberFormat(null);
+        return resultingFile;
+    }
 
-						@Override
-						public void step(String message, int delta) {
-							fragment.step(message, delta);
-						}
+    /**
+     * Start a foreground task that backs up the entire catalogue.
+     * <p>
+     * We use a FragmentTask so that long actions do not occur in the UI thread.
+     */
+    public static void restoreCatalogue(final BookCatalogueActivity context, final File inputFile, int taskId, final int importFlags) {
 
-						@Override
-						public boolean isCancelled() {
-							return fragment.isCancelled();
-						}}, importFlags);
-				} catch (Exception e) {
-					Logger.logError(e);
-					throw new RuntimeException("Error during restore", e);
-				}
-				if (BuildConfig.DEBUG) {
-					System.out.println("Finished " + inputFile.getAbsolutePath() + ", size = " + inputFile.length());
-				}
-			}
-		};
-		SimpleTaskQueueProgressFragment frag = SimpleTaskQueueProgressFragment.runTaskWithProgress(context,
-				R.string.importing_ellipsis, task, false, taskId);
-		frag.setNumberFormat(null);
-	}
+        FragmentTask task = new FragmentTaskAbstract() {
+            @Override
+            public void run(final SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
+                try {
+                    if (BuildConfig.DEBUG) {
+                        System.out.println("Starting " + inputFile.getAbsolutePath());
+                    }
+                    BackupReader rdr = BackupManager.readBackup(inputFile);
+                    rdr.restore(new BackupReaderListener() {
+                        @Override
+                        public void setMax(int max) {
+                            fragment.setMax(max);
+                        }
+
+                        @Override
+                        public void step(String message, int delta) {
+                            fragment.step(message, delta);
+                        }
+
+                        @Override
+                        public boolean isCancelled() {
+                            return fragment.isCancelled();
+                        }
+                    }, importFlags);
+                } catch (Exception e) {
+                    Logger.logError(e);
+                    throw new RuntimeException("Error during restore", e);
+                }
+                if (BuildConfig.DEBUG) {
+                    System.out.println("Finished " + inputFile.getAbsolutePath() + ", size = " + inputFile.length());
+                }
+            }
+        };
+        SimpleTaskQueueProgressFragment frag = SimpleTaskQueueProgressFragment.runTaskWithProgress(context,
+                R.string.importing_ellipsis, task, false, taskId);
+        frag.setNumberFormat(null);
+    }
 }

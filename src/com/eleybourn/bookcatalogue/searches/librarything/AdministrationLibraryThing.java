@@ -137,6 +137,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 								// Queue a toast message
 								fragment.showToast(R.string.correct_key);
 							}
+							//noinspection ResultOfMethodCallIgnored
 							filetmp.delete();
 						}
 

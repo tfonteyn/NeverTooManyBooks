@@ -971,7 +971,7 @@ public class Fields extends ArrayList<Fields.Field> {
 			        }
 			        return false;
 			    }
-			});			
+			});
 		}
 		
 		/**

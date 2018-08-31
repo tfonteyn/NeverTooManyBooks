@@ -90,7 +90,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 		private static final String OWNED_BOOK_ID = "id";
 		private static final String WORK_ID = "work-id";
 
-		StringBuilder m_builder = new StringBuilder();
+		final StringBuilder m_builder = new StringBuilder();
 		int m_bookId = 0;
 		//int m_ownedBookId = 0;
 		//int m_workId = 0;

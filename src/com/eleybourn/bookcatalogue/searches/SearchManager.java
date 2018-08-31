@@ -78,7 +78,7 @@ public class SearchManager implements TaskManagerListener {
 	private int mSearchFlags;
 
 	// TaskManager for threads; may have other threads tham the ones this object creates.
-	private TaskManager mTaskManager;
+	private final TaskManager mTaskManager;
 	// Accumulated book data
 	private Bundle mBookData = null;
 	// Flag indicating searches will be non-concurrent title/author found via ASIN
@@ -102,7 +102,7 @@ public class SearchManager implements TaskManagerListener {
 	private Hashtable<Integer,Bundle> mSearchResults = new Hashtable<>();
 
 	// List of threads created by *this* object.
-	private ArrayList<ManagedTask> mRunningTasks = new ArrayList<>();
+	private final ArrayList<ManagedTask> mRunningTasks = new ArrayList<>();
 
 //	/**
 //	 * Task handler for thread management; caller MUST implement this to get

@@ -74,7 +74,7 @@ public class CoverBrowser {
 	// ISBN of book to lookup
 	private final String mIsbn;
 	// Calling context
-	private Context mContext;
+	private final Context mContext;
 	// Calculated size for preview images
 	private final int mPreviewSize;
 	// List of all editions for the given ISBN
@@ -431,6 +431,7 @@ public class CoverBrowser {
 
             try {
 				if (!ok && f.exists()) {
+					//noinspection ResultOfMethodCallIgnored
 					f.delete();
 				}
 			} catch(Exception e) {
@@ -520,6 +521,7 @@ public class CoverBrowser {
 					String filespec = mFiles.getString(k);
 					File file = new File(filespec);
 					if (file.exists())
+						//noinspection ResultOfMethodCallIgnored
 						file.delete();
 				}				
 				mFiles.clear();

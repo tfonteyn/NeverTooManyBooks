@@ -68,7 +68,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	private boolean finish_after = false;
 	private boolean mExportOnStartup = false;
 
-	public static final String DOAUTO = "do_auto";
+	private static final String DOAUTO = "do_auto";
 
     @Override
     protected int getLayoutId(){

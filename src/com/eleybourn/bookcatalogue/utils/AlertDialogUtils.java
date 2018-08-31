@@ -43,8 +43,8 @@ public class AlertDialogUtils {
 	 *
 	 */
 	public static class AlertDialogItem implements CharSequence {
-		public String name;
-		public Runnable handler;
+		public final String name;
+		public final Runnable handler;
 		public AlertDialogItem(String name, Runnable handler ) {
 			this.name = name;
 			this.handler = handler;

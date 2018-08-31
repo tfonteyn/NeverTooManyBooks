@@ -118,7 +118,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * </feed>
  * 
  */
-public class SearchGoogleBooksHandler extends DefaultHandler {
+class SearchGoogleBooksHandler extends DefaultHandler {
 	private StringBuilder builder;
 	private String id = "";
 	private int count = 0;

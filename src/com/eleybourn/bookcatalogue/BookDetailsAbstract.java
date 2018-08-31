@@ -40,12 +40,21 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.*;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_FORMAT;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_GENRE;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ISBN;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PAGES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SIGNED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TITLE;
 
 /**
  * Abstract class for creating activities containing book details.
@@ -59,8 +68,8 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
     public static final Character BOOKSHELF_SEPARATOR = ',';
 
     // Target size of a thumbnail in edit dialog and zoom dialog (bbox dim)
-    protected static final int MAX_EDIT_THUMBNAIL_SIZE = 256;
-    protected static final int MAX_ZOOM_THUMBNAIL_SIZE = 1024;
+    private static final int MAX_EDIT_THUMBNAIL_SIZE = 256;
+    private static final int MAX_ZOOM_THUMBNAIL_SIZE = 1024;
 
     private static final int CONTEXT_ID_DELETE = 1;
     private static final int CONTEXT_SUBMENU_REPLACE_THUMB = 2;
@@ -122,7 +131,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
     /**
      * Zoom size is minimum of MAX_ZOOM_THUMBNAIL_SIZE and largest screen dimension.
      */
-    protected Integer mThumbZoomSize;
+    private Integer mThumbZoomSize;
     private CoverBrowser mCoverBrowser = null;
     /**
      * Handler to process a cover selected from the CoverBrowser.
@@ -136,6 +145,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
                 // Get the new file
                 File newFile = new File(fileSpec);
                 // Overwrite with new file
+                //noinspection ResultOfMethodCallIgnored
                 newFile.renameTo(bookFile);
                 // update current activity
                 setCoverImage();
@@ -216,6 +226,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
                     if (resultCode == Activity.RESULT_OK) {
                         if (cropped.exists()) {
                             // Update the ImageView with the new image
+                            //noinspection ResultOfMethodCallIgnored
                             cropped.renameTo(thumbFile);
                             setCoverImage();
                         } else {
@@ -224,6 +235,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
                     } else {
                         Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - bad result", Tracker.States.Running);
                         if (cropped.exists())
+                            //noinspection ResultOfMethodCallIgnored
                             cropped.delete();
                     }
                     return;
@@ -233,6 +245,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
                     File cropped = this.getCroppedImageFileName();
                     if (resultCode == Activity.RESULT_OK) {
                         if (cropped.exists()) {
+                            //noinspection ResultOfMethodCallIgnored
                             cropped.renameTo(thumbFile);
                             // Update the ImageView with the new image
                             setCoverImage();
@@ -385,6 +398,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
             File[] files = dir.listFiles();
             if (files != null) {
                 for (File f : files) {
+                    //noinspection ResultOfMethodCallIgnored
                     f.delete();
                 }
             }
@@ -426,6 +440,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
         // Get and set the output file spec, and make sure it does not already exist.
         File cropped = this.getCroppedImageFileName();
         if (cropped.exists()) {
+            //noinspection ResultOfMethodCallIgnored
             cropped.delete();
         }
         crop_intent.putExtra("output", cropped.getAbsolutePath());
@@ -454,6 +469,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
             // Save output image in uri
             File cropped = this.getCroppedImageFileName();
             if (cropped.exists())
+                //noinspection ResultOfMethodCallIgnored
                 cropped.delete();
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(cropped.getAbsolutePath())));
 
@@ -476,6 +492,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
         try {
             File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
             if (thumbFile != null && thumbFile.exists())
+                //noinspection ResultOfMethodCallIgnored
                 thumbFile.delete();
         } catch (Exception e) {
             Logger.logError(e);
@@ -715,17 +732,18 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
         ViewUtils.fetchFileIntoImageView(getCoverFile(rowId), iv, maxWidth, maxHeight, true);
     }
 
-    private int getThemeId() {
-        try {
-            Class<?> wrapper = Context.class;
-            Method method = wrapper.getMethod("getThemeResId");
-            method.setAccessible(true);
-            return (Integer) method.invoke(this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
+    // unused in Context itself. But IS used in android\support\v7\view\ContextThemeWrapper.java
+//    private int getThemeId() {
+//        try {
+//            Class<?> wrapper = Context.class;
+//            Method method = wrapper.getMethod("getThemeResId");
+//            method.setAccessible(true);
+//            return (Integer) method.invoke(this);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return 0;
+//    }
 
     /**
      * Shows zoomed thumbnail in dialog. Closed by click on image area.

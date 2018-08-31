@@ -21,7 +21,6 @@
     <string name="menu_sort_by">Sırala</string>
     <string name="menu_collapse_all">Hepsini gizle</string>
     <string name="search">Ara</string>
-    <string name="cancel">Vazgeç</string>
     <string name="confirm_save">Kitabı kaydet</string>
     <string name="nobookshelves">Henüz hiçbir kitaplık oluşturmadınız. Ekranın alt kısmındaki bölümü kullanarak yeni kitaplık oluşturun.</string>
     <string name="menu_insert_bs">Kitaplık oluştur</string>
@@ -84,7 +83,6 @@
     <string name="overwrite_thumbnail">Bu işlem seçili alanları gösterildiği biçimde güncelleyecektir, ancak küçük resimler seçime bağlı olarak tüm kitaplar için de indirilebilir.\n\nVar olan tüm küçük resimlerin üzerine yazmak istiyor musunuz? Bu işlem uzun sürebilir. </string>
     <string name="yes">Evet</string>
     <string name="no">Hayır</string>
-    <string name="ok">Tamam</string>
     <string name="search_fail">Kitap araması başarısız oldu. Ağ ayarlarınızı denetleyiniz.</string>
     <string name="search_exception">%1$s sırasında arama başarısız oldu: %2$s</string>
     <string name="menu_delete_thumb">Küçük resmi sil</string>

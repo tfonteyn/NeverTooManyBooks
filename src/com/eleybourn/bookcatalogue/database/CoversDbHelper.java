@@ -133,7 +133,7 @@ public class CoversDbHelper implements AutoCloseable  {
 			.addIndex("file_date", true, DOM_FILENAME, DOM_DATE);
 	}
 
-    static final TableDefinition TABLES[] = new TableDefinition[] {TBL_IMAGE};
+    private static final TableDefinition[] TABLES = new TableDefinition[] {TBL_IMAGE};
 
 	private static CoversDbHelper mInstance;
 

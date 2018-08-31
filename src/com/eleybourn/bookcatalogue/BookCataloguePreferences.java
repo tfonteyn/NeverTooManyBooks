@@ -32,7 +32,7 @@ public class BookCataloguePreferences {
 	public static final String PREF_BOOKLIST_STYLE = "APP.BooklistStyle";
 
 	// All new prefs should start with TAG
-	public static final String TAG = "App";
+	private static final String TAG = "App";
 	public static final String PREF_INCLUDE_CLASSIC_MY_BOOKS = TAG + ".includeClassicView";
 	public static final String PREF_DISABLE_BACKGROUND_IMAGE = TAG + ".DisableBackgroundImage";
 	public static final String PREF_USE_EXTERNAL_IMAGE_CROPPER = TAG + ".UseExternalImageCropper";

@@ -257,10 +257,7 @@ public class BookEditFields extends BookDetailsAbstract
         final BookData book = mEditManager.getBookData();
 
         populateFieldsFromBook(book);
-        if (book.getRowId() > 0) { //Populating from database
-//			populateFieldsFromBook(book);
-            //getActivity().setTitle(this.getResources().getString(R.string.menu));
-        } else {
+        if (book.getRowId() <= 0) {
             if (extras != null) {
                 // From the ISBN Search (add)
                 try {
@@ -286,7 +283,10 @@ public class BookEditFields extends BookDetailsAbstract
             }
             initDefaultShelf();
             setCoverImage();
-        }
+        } //else { //Populating from database
+            //populateFieldsFromBook(book);
+            //getActivity().setTitle(this.getResources().getString(R.string.menu));
+        //}
 
         populateAuthorListField();
         populateSeriesListField();

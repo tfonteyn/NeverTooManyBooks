@@ -70,9 +70,9 @@ import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KI
 public class BooklistGroup implements Serializable {
 	private static final long serialVersionUID = 1012206875683862714L;
 
-	static final String PREF_SHOW_ALL_AUTHORS = "APP.ShowAllAuthors";
-	static final String PREF_SHOW_ALL_SERIES = "APP.ShowAllSeries";
-	static final String PREF_DISPLAY_FIRST_THEN_LAST_NAMES = "APP.DisplayFirstThenLast";
+	private static final String PREF_SHOW_ALL_AUTHORS = "APP.ShowAllAuthors";
+	private static final String PREF_SHOW_ALL_SERIES = "APP.ShowAllSeries";
+	private static final String PREF_DISPLAY_FIRST_THEN_LAST_NAMES = "APP.DisplayFirstThenLast";
 
 	/**
 	 * Static definitions of the kinds of rows that can be displayed and summarized.
@@ -164,6 +164,7 @@ public class BooklistGroup implements Serializable {
 		 * @param key		Key for new value
 		 * @param value		Data for new value
 		 */
+		@SuppressWarnings("SameReturnValue")
 		public V add(K key, V value) {
 			if (super.put(key, value) != null)
 				throw new RuntimeException("Map already contains key value" + key);

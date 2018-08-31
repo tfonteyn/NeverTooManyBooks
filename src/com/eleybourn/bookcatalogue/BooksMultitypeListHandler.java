@@ -619,7 +619,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 		/** String ID to use when data is blank */
 		private int mNoDataId;
 		/** Index of related data column */
-		private int mColIndex;
+		private final int mColIndex;
 
 		/**
 		 * Constructor

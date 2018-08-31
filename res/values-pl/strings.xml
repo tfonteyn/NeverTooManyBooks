@@ -20,7 +20,6 @@
     <string name="menu_sort_by">Sortuj wg</string>
     <string name="menu_collapse_all">Zwiń wszystko</string>
     <string name="search">Szukaj</string>
-    <string name="cancel">Anuluj</string>
     <string name="confirm_save">Zapisz książkę</string>
     <string name="nobookshelves">Nie utworzyłeś jeszcze żadnej półki. Dodaj jakąś przy pomocy menu na dole ekranu.</string>
     <string name="menu_insert_bs">Utwórz półkę</string>
@@ -84,7 +83,6 @@
     <string name="overwrite_thumbnail">Wybrane pola zostaną zaktualizowane, natomiast okładki mogą by opcjonalnie pobrane dla wszystkich książek.\n\nCzy chcesz zastąpić wszystkie istniejące okładki? Uwaga - może to zająć sporo czasu&#8230;</string>
     <string name="yes">Tak</string>
     <string name="no">Nie</string>
-    <string name="ok">OK</string>
     <string name="search_fail">Wyszukiwanie książki nie powiodło się. Sprawdź połączenie z siecią.</string>
     <string name="search_exception">Wyszukiwanie nie powiodło się: %1$s: %2$s</string>
     <string name="menu_delete_thumb">Usuń okładkę</string>
@@ -122,11 +120,6 @@
     <string name="searching_library_thing">Przeszukiwanie LibraryThing</string>
     <string name="bookshelves">Wybierz półki</string>
     <string name="format">Format</string>
-    <string name="format1">Miękka okładka</string>
-    <string name="format2">Twarda okładka</string>
-    <string name="format3">eBook</string>
-    <string name="format4">Audiobook</string>
-    <string name="format5">Przewodnik</string>
     <string name="description">Opis</string>
     <string name="genre">Gatunek</string>
     <string name="notset">Nie wybrany(a)</string>
@@ -239,4 +232,17 @@
     <string name="sortby_author_one">Sortuj wg autora (pierwszego)</string>
     <string name="title_reorder">a|A|an|An|the|The</string>
     <string name="amazon">Amazon</string>
+
+    <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
+
+    <!-- adding more does not require code changes -->
+    <string-array name="predefined_formats">
+        <item>Miękka okładka</item>
+        <item>Twarda okładka</item>
+        <item>eBook</item>
+        <item>Audiobook</item>
+        <item>Przewodnik</item>
+    </string-array>
+    <!-- End: Added/Updated in  [Next Version]  -->
+
 </resources>

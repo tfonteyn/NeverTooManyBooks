@@ -163,6 +163,7 @@ public class Utils {
 			}
 			f.close();
 			// All OK, so rename to real output file
+			//noinspection ResultOfMethodCallIgnored
 			temp.renameTo(out);
 			isOk = true;
 		} catch (IOException e) {
@@ -171,7 +172,8 @@ public class Utils {
 			// Delete temp file if it still exists
 			if (temp != null && temp.exists()) {
                 try {
-                    temp.delete();
+					//noinspection ResultOfMethodCallIgnored
+					temp.delete();
                 } catch (Exception ignored) {
                 }
             }
@@ -455,13 +457,15 @@ public class Utils {
     		for(int i = 0; i < files.size(); i++) {
     			if (i != bestFile) {
 		    		File file = new File(files.get(i));
-		    		file.delete();
+					//noinspection ResultOfMethodCallIgnored
+					file.delete();
     			}
     		}
     		// Get the best file (if present) and rename it.
 			if (bestFile >= 0) {
 	    		File file = new File(files.get(bestFile));
-	    		file.renameTo(CatalogueDBAdapter.getTempThumbnail());
+				//noinspection ResultOfMethodCallIgnored
+				file.renameTo(CatalogueDBAdapter.getTempThumbnail());
 			}
     		// Finally, cleanup the data
     		result.remove("__thumbnail");

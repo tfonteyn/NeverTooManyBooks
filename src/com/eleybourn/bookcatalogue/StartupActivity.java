@@ -103,7 +103,7 @@ public class StartupActivity extends AppCompatActivity {
 	//CatalogueDBAdapter mDb = null;
 
 	/** Handler to post run'ables to UI thread */
-	private Handler mHandler = new Handler();
+	private final Handler mHandler = new Handler();
 	/**UI thread */
 	private Thread mUiThread;
 
@@ -192,7 +192,7 @@ public class StartupActivity extends AppCompatActivity {
 	/**
 	 * Update the progress dialog, if it has not been dismissed.
 	 */
-	public void updateProgress(final String message) {
+	private void updateProgress(final String message) {
 		// If mProgress is null, it has been dismissed. Don't update.
 		if (mProgress == null) {
 			return;

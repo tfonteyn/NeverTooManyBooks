@@ -21,7 +21,6 @@
     <string name="menu_sort_by">Sort By</string>
     <string name="menu_collapse_all">Collapse All</string>
     <string name="search">Search</string>
-    <string name="cancel">Cancel</string>
     <string name="confirm_save">Save Book</string>
     <string name="nobookshelves">You have not created any bookshelves yet. Please add some using the menu at the bottom of this screen.</string>
     <string name="menu_insert_bs">Create Bookshelf</string>
@@ -85,7 +84,6 @@
     <string name="overwrite_thumbnail">This will update the selected fields as shown, but Thumbnails can optionally be downloaded for ALL books.\n\nDo you want to overwrite all existing thumbnails? Warning, this may take a long time. </string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="ok">OK</string>
     <string name="search_fail">Searching for the book failed. Please check your network settings.</string>
     <string name="search_exception">Search failed while %1$s: %2$s</string>
     <string name="menu_delete_thumb">Delete Thumbnail</string>

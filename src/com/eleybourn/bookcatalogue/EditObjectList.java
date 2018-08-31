@@ -258,7 +258,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	/**
 	 * Handle drop events; also preserves current position.
 	 */
-	private TouchListView.DropListener mDropListener=new TouchListView.DropListener() {
+	private final TouchListView.DropListener mDropListener=new TouchListView.DropListener() {
 		@Override
 		public void drop(int from, final int to) {
             final ListView lv = getListView();
@@ -534,7 +534,8 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	                TextView pt = v.findViewById(R.id.row_position);
 	                if(pt != null){
 	                	mHasPosition = true;
-	                	pt.setText(Long.toString(position+1));
+	                	String text = Integer.toString(position+1);
+	                	pt.setText(text);
 	                }
             	}
 

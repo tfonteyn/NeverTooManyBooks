@@ -74,6 +74,7 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
 			if (out.getChannel().isOpen())
 				out.close();
 			try {
+				//noinspection ResultOfMethodCallIgnored
 				outFile.setLastModified(this.getDateModified().getTime());
 			} catch (Exception e) {
 				// Ignore...it's nice to set the date, but not mandatory

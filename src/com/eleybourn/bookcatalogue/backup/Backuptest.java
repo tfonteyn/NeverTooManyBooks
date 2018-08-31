@@ -54,7 +54,7 @@ public class Backuptest {
 		}
 	}
 
-	public static void performBackupTar(File file) throws IOException {
+	private static void performBackupTar(File file) throws IOException {
 		if (BuildConfig.DEBUG) {
 			System.out.println("Starting " + file.getAbsolutePath());
 		}
@@ -65,7 +65,7 @@ public class Backuptest {
 		wrt.backup(new BackupWriterListener() {
 			private long mMax;
 			private String mMessage = "";
-			private boolean mIsCancelled = false;
+			private final boolean mIsCancelled = false;
 			private int mPosition = 0;
 			private int mTotalBooks;
 
@@ -103,7 +103,7 @@ public class Backuptest {
 		}
 	}
 
-	public static void performRestoreTar(File file) throws IOException {
+	private static void performRestoreTar(File file) throws IOException {
 		if (BuildConfig.DEBUG) {
 			System.out.println("Starting " + file.getAbsolutePath());
 		}
@@ -117,7 +117,7 @@ public class Backuptest {
 		rdr.restore(new BackupReaderListener() {
 			private long mMax;
 			private String mMessage = "";
-			private boolean mIsCancelled = false;
+			private final boolean mIsCancelled = false;
 			private int mPosition = 0;
 
 			@Override
