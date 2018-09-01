@@ -431,7 +431,7 @@ public class CoverBrowser {
         // ISBN
         private final String mIsbn;
         // Resulting file
-        private String filename;
+        private String fileSpec;
 
         /**
          * Constructor
@@ -453,10 +453,10 @@ public class CoverBrowser {
             }
 
             // Download the file
-            filename = mFileManager.download(mIsbn, ImageSizes.LARGE);
-            File file = new File(filename);
+            fileSpec = mFileManager.download(mIsbn, ImageSizes.LARGE);
+            File file = new File(fileSpec);
             if (file.length() < 50) {
-                filename = mFileManager.download(mIsbn, ImageSizes.SMALL);
+                fileSpec = mFileManager.download(mIsbn, ImageSizes.SMALL);
             }
         }
 
@@ -465,7 +465,7 @@ public class CoverBrowser {
             if (mShutdown)
                 return;
             // Update the ImageSwitcher
-            File file = new File(filename);
+            File file = new File(fileSpec);
             TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
             // the 100 is arbitrary...
             if (file.exists() && file.length() > 100) {
@@ -528,10 +528,10 @@ public class CoverBrowser {
          * @param isbn ISBN of file
          * @param size Size of image required.
          *
-         * @return the filename
+         * @return the fileSpec
          */
         public String download(String isbn, ImageSizes size) {
-            String filename;
+            String fileSpec;
             String key = isbn + "_" + size;
             boolean isPresent;
             synchronized (mFiles) {
@@ -541,10 +541,10 @@ public class CoverBrowser {
             // Do some checks on the actual file to see if a re-download may help
             if (isPresent) {
                 synchronized (mFiles) {
-                    filename = mFiles.getString(key);
+                    fileSpec = mFiles.getString(key);
                 }
-                if (filename != null) {
-                    File file = new File(filename);
+                if (fileSpec != null) {
+                    File file = new File(fileSpec);
                     if (!isGood(file)) {
                         mFiles.remove(key);
                         isPresent = false;
@@ -553,31 +553,31 @@ public class CoverBrowser {
             }
 
             if (!isPresent) {
-                filename = mLibraryThing.getCoverImage(isbn, null, size);
-                File file = new File(filename);
+                fileSpec = mLibraryThing.getCoverImage(isbn, null, size);
+                File file = new File(fileSpec);
                 if (isGood(file)) {
                     synchronized (mFiles) {
-                        mFiles.putString(key, filename);
+                        mFiles.putString(key, fileSpec);
                     }
                 } else {
                     // Try google
                     file = GoogleBooksManager.getThumbnailFromIsbn(isbn);
                     if (file != null && isGood(file)) {
-                        filename = file.getAbsolutePath();
+                        fileSpec = file.getAbsolutePath();
                         synchronized (mFiles) {
-                            mFiles.putString(key, filename);
+                            mFiles.putString(key, fileSpec);
                         }
                     } else {
-                        filename = "";
-                        mFiles.putString(key, filename);
+                        fileSpec = "";
+                        mFiles.putString(key, fileSpec);
                     }
                 }
             } else {
                 synchronized (mFiles) {
-                    filename = mFiles.getString(key);
+                    fileSpec = mFiles.getString(key);
                 }
             }
-            return filename;
+            return fileSpec;
         }
 
         // Get the requested file, if available, otherwise return null.
@@ -592,11 +592,11 @@ public class CoverBrowser {
                 return null;
             }
 
-            String filename;
+            String fileSpec;
             synchronized (mFiles) {
-                filename = mFiles.getString(key);
+                fileSpec = mFiles.getString(key);
             }
-            return (filename == null ? null : new File(filename));
+            return (fileSpec == null ? null : new File(fileSpec));
         }
 
         /**
@@ -605,9 +605,9 @@ public class CoverBrowser {
         public void purge() {
             try {
                 for (String k : mFiles.keySet()) {
-                    String filename = mFiles.getString(k);
-                    if (filename != null) {
-                        File file = new File(filename);
+                    String fileSpec = mFiles.getString(k);
+                    if (fileSpec != null) {
+                        File file = new File(fileSpec);
                         if (file.exists()) {
                             //noinspection ResultOfMethodCallIgnored
                             file.delete();

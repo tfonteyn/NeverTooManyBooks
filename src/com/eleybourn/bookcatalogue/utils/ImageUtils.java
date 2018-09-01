@@ -19,9 +19,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -29,7 +31,7 @@ import java.util.ArrayList;
 
 public class ImageUtils {
     /**
-     *  Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
+     * Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
      */
     private static final boolean DEBUG = false;
 
@@ -85,19 +87,10 @@ public class ImageUtils {
                 bm = coversDbHelper.fetchCachedImageIntoImageView(coverFile, destView, hash, maxWidth, maxHeight);
             }
             cacheWasChecked = true;
-        } //else {
-        //System.out.println("Skipping cache check");
-        //}
+        }
 
         if (bm != null)
             return bm;
-
-        // Check the file exists. Otherwise set 'help' icon and exit.
-        //if (!coverFile.exists()) {
-        //	if (destView != null)
-        //		destView.setImageResource(android.R.drawable.ic_menu_help);
-        //	return null;
-        //}
 
         // If we get here, the image is not in the cache but the original exists. See if we can queue it.
         if (allowBackground) {
@@ -106,49 +99,23 @@ public class ImageUtils {
             return null;
         }
 
-        //File coverFile = CatalogueDBAdapter.fetchThumbnail(bookId);
-
         // File is not in cache, original exists, we are in the background task (or not allowed to queue request)
         return shrinkFileIntoImageView(destView, coverFile.getPath(), maxWidth, maxHeight, exact);
-    }
-
-    /**
-     * This function will load the thumbnail bitmap with a guaranteed maximum size; it
-     * prevents OutOfMemory exceptions on large files and reduces memory usage in lists.
-     * It can also scale images to the exact requested size.
-     *
-     * @param uuid      The id of the book
-     * @param destView  The ImageView to load with the bitmap or an appropriate icon
-     * @param maxWidth  Maximum desired width of the image
-     * @param maxHeight Maximum desired height of the image
-     * @param exact     if true, the image will be propertionally scaled to fit bbox.
-     *
-     * @return The scaled bitmap for the file, or null if no file or bad file.
-     */
-    public static Bitmap fetchThumbnailIntoImageView(String uuid, ImageView destView, int maxWidth, int maxHeight, boolean exact) {
-        // Get the file, if it exists. Otherwise set 'help' icon and exit.
-        Bitmap image = null;
-        try {
-            File file = fetchThumbnailByUuid(uuid);
-            image = fetchFileIntoImageView(file, destView, maxWidth, maxHeight, exact);
-        } catch (IllegalArgumentException e) {
-            Logger.logError(e);
-        }
-        return image;
     }
 
     /**
      * Shrinks the passed image file spec into the specified dimensions, and returns the bitmap. If the view
      * is non-null, the image is also placed in the view.
      */
-    private static Bitmap shrinkFileIntoImageView(ImageView destView, String filename, int maxWidth, int maxHeight, boolean exact) {
+    @SuppressWarnings("WeakerAccess")
+    public static Bitmap shrinkFileIntoImageView(ImageView destView, String fileSpec, int maxWidth, int maxHeight, boolean exact) {
         Bitmap bm;
 
         // Read the file to get file size
         BitmapFactory.Options opt = new BitmapFactory.Options();
         opt.inJustDecodeBounds = true;
-        if (new File(filename).exists()) {
-            BitmapFactory.decodeFile(filename, opt);
+        if (new File(fileSpec).exists()) {
+            BitmapFactory.decodeFile(fileSpec, opt);
         }
 
         // If no size info, or a single pixel, assume file bad and set the 'alert' icon
@@ -176,9 +143,9 @@ public class ImageUtils {
 
         if (DEBUG && BuildConfig.DEBUG) {
             System.out.println("IU.shrinkFileIntoImageView:\n" +
-                    " filename = " + filename + "\n" +
+                    " filename = " + fileSpec + "\n" +
                     "  exact       = " + exact + "\n" +
-                    "  maxWidth    = " + maxWidth +  ", opt.outWidth = " + opt.outWidth +  ", widthRatio   = " + widthRatio + "\n" +
+                    "  maxWidth    = " + maxWidth + ", opt.outWidth = " + opt.outWidth + ", widthRatio   = " + widthRatio + "\n" +
                     "  maxHeight   = " + maxHeight + ", opt.outHeight= " + opt.outHeight + ",  heightRatio = " + heightRatio + "\n" +
                     "  ratio            = " + ratio + "\n" +
                     "  idealSampleSize  = " + idealSampleSize + "\n" +
@@ -192,7 +159,7 @@ public class ImageUtils {
                     opt.inSampleSize = 1;
                 }
 
-                Bitmap tmpBm = BitmapFactory.decodeFile(filename, opt);
+                Bitmap tmpBm = BitmapFactory.decodeFile(fileSpec, opt);
                 if (tmpBm == null) {
                     // We ran out of memory, most likely
                     // TODO: Need a way to try loading images after GC(), or something. Otherwise, covers in cover browser wil stay blank.
@@ -214,15 +181,15 @@ public class ImageUtils {
                 if (ratio < 1.0f) {
                     opt.inSampleSize = samplePow2;
                 }
-                bm = BitmapFactory.decodeFile(filename, opt);
+                bm = BitmapFactory.decodeFile(fileSpec, opt);
             }
         } catch (OutOfMemoryError e) {
             return null;
         }
         if (DEBUG && BuildConfig.DEBUG) {
             System.out.println("\n" +
-                            "bm.width = " + bm.getWidth() + "\n" +
-                            "bm.height = " + bm.getHeight() + "\n"
+                    "bm.width = " + bm.getWidth() + "\n" +
+                    "bm.height = " + bm.getHeight() + "\n"
             );
         }
 
@@ -291,9 +258,9 @@ public class ImageUtils {
      * @param urlText        Image file URL
      * @param filenameSuffix Suffix to add
      *
-     * @return Downloaded filespec
+     * @return Downloaded fileSpec
      */
-    static public String saveThumbnailFromUrl(String urlText, String filenameSuffix) {
+    public static String saveThumbnailFromUrl(String urlText, String filenameSuffix) {
         // Get the URL
         URL u;
         try {
@@ -359,7 +326,7 @@ public class ImageUtils {
      *
      * @return bitmap
      */
-    static public Bitmap getBitmapFromBytes(byte[] bytes) {
+    public static Bitmap getBitmapFromBytes(byte[] bytes) {
         if (bytes == null || bytes.length == 0)
             return null;
 
@@ -430,24 +397,114 @@ public class ImageUtils {
         }
     }
 
-    //	/**
-//	 * return the thumbnail (as a File object) for the given id
-//	 *
-//	 * @param id The id of the book
-//	 * @return The File object
-//	 */
-//	private static File fetchThumbnailById(long id) {
-//		return fetchThumbnailById(id, "");
-//	}
-
-    /*
-     * return the thumbnail (as a File object) for the given id. Optionally use a suffix
-     * on the file name.
+    /**
+     * Given a URL, get an image and return as a byte array.
      *
-     * @param id The id of the book
-     * @return The File object
+     * @param urlText Image file URL
+     *
+     * @return Downloaded byte[]
      */
-//	private static File fetchThumbnailById(long id, String suffix) {
-//		return fetchThumbnailByName(Long.toString(id), suffix);
-//	}
+    public static byte[] getBytesFromUrl(String urlText) {
+        URL u;
+        try {
+            u = new URL(urlText);
+        } catch (MalformedURLException e) {
+            Logger.logError(e);
+            return null;
+        }
+        // Request it from the network
+        HttpURLConnection c;
+        InputStream in;
+        try {
+            c = (HttpURLConnection) u.openConnection();
+            c.setConnectTimeout(30000);
+            c.setReadTimeout(30000);
+            c.setRequestMethod("GET");
+            c.setDoInput(true);
+            c.setUseCaches(false);
+            c.connect();
+            in = c.getInputStream();
+            if (c.getResponseCode() >= 300) {
+                Logger.logError(new RuntimeException("URL lookup failed: " + c.getResponseCode() + " " + c.getResponseMessage() + ", URL: " + u.toString()));
+                return null;
+            }
+        } catch (IOException e) {
+            Logger.logError(e);
+            return null;
+        }
+
+        // Save the output to a byte output stream
+        ByteArrayOutputStream f = new ByteArrayOutputStream();
+        try {
+            byte[] buffer = new byte[65536];
+            int len1;
+            while ((len1 = in.read(buffer)) >= 0) {
+                f.write(buffer, 0, len1);
+            }
+            f.close();
+        } catch (IOException e) {
+            Logger.logError(e);
+            return null;
+        }
+        return f.toByteArray();
+    }
+
+//    /**
+//     * Given a URL, get an image and return as a bitmap.
+//     *
+//     * @param urlText Image file URL
+//     *
+//     * @return Downloaded bitmap
+//     */
+//    public static Bitmap getBitmapFromUrl(String urlText) {
+//        return getBitmapFromBytes(getBytesFromUrl(urlText));
+//    }
+
+//    /**
+//     * return the thumbnail (as a File object) for the given id
+//     *
+//     * @param id The id of the book
+//     *
+//     * @return The File object
+//     */
+//    public static File fetchThumbnailById(long id) {
+//        return fetchThumbnailById(id, "");
+//    }
+//
+//    /*
+//     * return the thumbnail (as a File object) for the given id. Optionally use a suffix
+//     * on the file name.
+//     *
+//     * @param id The id of the book
+//     * @return The File object
+//     */
+//    @SuppressWarnings("WeakerAccess")
+//    public static File fetchThumbnailById(long id, String suffix) {
+//        return fetchThumbnailByName(Long.toString(id), suffix);
+//    }
+
+//    /**
+//     * This function will load the thumbnail bitmap with a guaranteed maximum size; it
+//     * prevents OutOfMemory exceptions on large files and reduces memory usage in lists.
+//     * It can also scale images to the exact requested size.
+//     *
+//     * @param uuid      The id of the book
+//     * @param destView  The ImageView to load with the bitmap or an appropriate icon
+//     * @param maxWidth  Maximum desired width of the image
+//     * @param maxHeight Maximum desired height of the image
+//     * @param exact     if true, the image will be propertionally scaled to fit bbox.
+//     *
+//     * @return The scaled bitmap for the file, or null if no file or bad file.
+//     */
+//    public static Bitmap fetchThumbnailIntoImageView(String uuid, ImageView destView, int maxWidth, int maxHeight, boolean exact) {
+//        // Get the file, if it exists. Otherwise set 'help' icon and exit.
+//        Bitmap image = null;
+//        try {
+//            File file = fetchThumbnailByUuid(uuid);
+//            image = fetchFileIntoImageView(file, destView, maxWidth, maxHeight, exact);
+//        } catch (IllegalArgumentException e) {
+//            Logger.logError(e);
+//        }
+//        return image;
+//    }
 }

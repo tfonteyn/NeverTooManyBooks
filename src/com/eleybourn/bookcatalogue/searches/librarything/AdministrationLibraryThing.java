@@ -126,10 +126,10 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 							//TEST Library Thing
 							Bundle tmp = new Bundle(); 
 							LibraryThingManager ltm = new LibraryThingManager(AdministrationLibraryThing.this);
-							String filename = ltm.getCoverImage("0451451783", tmp, LibraryThingManager.ImageSizes.SMALL);
-							File filetmp = new File(filename);
-							filetmp.deleteOnExit();
-							long length = filetmp.length();
+							String fileSpec = ltm.getCoverImage("0451451783", tmp, LibraryThingManager.ImageSizes.SMALL);
+							File tmpFile = new File(fileSpec);
+							tmpFile.deleteOnExit();
+							long length = tmpFile.length();
 							if (length < 100) {
 								// Queue a toast message
 								fragment.showToast(R.string.incorrect_key);
@@ -138,7 +138,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 								fragment.showToast(R.string.correct_key);
 							}
 							//noinspection ResultOfMethodCallIgnored
-							filetmp.delete();
+							tmpFile.delete();
 						}
 
 						@Override

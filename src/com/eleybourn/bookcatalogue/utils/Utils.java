@@ -39,13 +39,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
@@ -116,71 +115,6 @@ public class Utils {
             }
         }
         return isOk;
-    }
-
-//	/**
-//	 * Given a URL, get an image and return as a bitmap.
-//	 *
-//	 * @param urlText	Image file URL
-//	 *
-//	 * @return	Downloaded bitmap
-//	 */
-//	static public Bitmap getBitmapFromUrl(String urlText) {
-//		return getBitmapFromBytes( getBytesFromUrl(urlText) );
-//	}
-
-    /**
-     * Given a URL, get an image and return as a byte array.
-     *
-     * @param urlText Image file URL
-     *
-     * @return Downloaded byte[]
-     */
-    static public byte[] getBytesFromUrl(String urlText) {
-        // Get the URL
-        URL u;
-        try {
-            u = new URL(urlText);
-        } catch (MalformedURLException e) {
-            Logger.logError(e);
-            return null;
-        }
-        // Request it from the network
-        HttpURLConnection c;
-        InputStream in;
-        try {
-            c = (HttpURLConnection) u.openConnection();
-            c.setConnectTimeout(30000);
-            c.setReadTimeout(30000);
-            c.setRequestMethod("GET");
-            c.setDoInput(true);
-            c.setUseCaches(false);
-            c.connect();
-            in = c.getInputStream();
-            if (c.getResponseCode() >= 300) {
-                Logger.logError(new RuntimeException("URL lookup failed: " + c.getResponseCode() + " " + c.getResponseMessage() + ", URL: " + u.toString()));
-                return null;
-            }
-        } catch (IOException e) {
-            Logger.logError(e);
-            return null;
-        }
-
-        // Save the output to a byte output stream
-        ByteArrayOutputStream f = new ByteArrayOutputStream();
-        try {
-            byte[] buffer = new byte[65536];
-            int len1;
-            while ((len1 = in.read(buffer)) >= 0) {
-                f.write(buffer, 0, len1);
-            }
-            f.close();
-        } catch (IOException e) {
-            Logger.logError(e);
-            return null;
-        }
-        // Return it as a byte[]
-        return f.toByteArray();
     }
 
     /**
@@ -270,7 +204,8 @@ public class Utils {
                     connInfo.is = new StatefulBufferedInputStream(connInfo.conn.getInputStream());
 
                     if (c != null && c.getResponseCode() >= 300) {
-                        Logger.logError(new RuntimeException("URL lookup failed: " + c.getResponseCode() + " " + c.getResponseMessage() + ", URL: " + url.toString()));
+                        Logger.logError(new RuntimeException("URL lookup failed: " + c.getResponseCode()
+                                + " " + c.getResponseMessage() + ", URL: " + url.toString()));
                         return null;
                     }
 
@@ -630,7 +565,7 @@ public class Utils {
         StatefulBufferedInputStream is = null;
     }
 
-    public static class StatefulBufferedInputStream extends BufferedInputStream {
+    public static class StatefulBufferedInputStream extends BufferedInputStream implements Closeable{
         private boolean mIsClosed = false;
 
         StatefulBufferedInputStream(InputStream in) {

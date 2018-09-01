@@ -618,7 +618,7 @@ public class LibraryThingManager {
 	/**
 	 * Get the cover image using the ISBN
 	 *
-	 * @return the filename
+	 * @return the fileSpec
 	 **/
 	public String getCoverImage(String isbn, Bundle bookData, ImageSizes size) {
 		String url = getCoverImageUrl(isbn, size);
@@ -630,11 +630,11 @@ public class LibraryThingManager {
 		waitUntilRequestAllowed();
 		
 		// Save it with an _LT suffix
-		String filename = ImageUtils.saveThumbnailFromUrl(url, "_LT_" + size + "_" + isbn);
-		if (filename.length() > 0 && bookData != null) {
-			ArrayUtils.appendOrAdd(bookData, "__thumbnail", filename);
+		String fileSpec = ImageUtils.saveThumbnailFromUrl(url, "_LT_" + size + "_" + isbn);
+		if (fileSpec.length() > 0 && bookData != null) {
+			ArrayUtils.appendOrAdd(bookData, "__thumbnail", fileSpec);
 		}
-		return filename;
+		return fileSpec;
 	}
 	
 	/**

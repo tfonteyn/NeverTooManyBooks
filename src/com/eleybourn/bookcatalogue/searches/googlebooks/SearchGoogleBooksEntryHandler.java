@@ -190,9 +190,9 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
 		if (mFetchThumbnail && localName.equalsIgnoreCase(THUMBNAIL)){
 			if (attributes.getValue("", "rel").equals("http://schemas.google.com/books/2008/thumbnail")) {
 				String thumbnail = attributes.getValue("", "href");
-				String filename = ImageUtils.saveThumbnailFromUrl(thumbnail, "_GB");
-				if (filename.length() > 0)
-					ArrayUtils.appendOrAdd(mValues, THUMBNAIL_KEY, filename);
+				String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, "_GB");
+				if (fileSpec.length() > 0)
+					ArrayUtils.appendOrAdd(mValues, THUMBNAIL_KEY, fileSpec);
 			}
 		}
 	}

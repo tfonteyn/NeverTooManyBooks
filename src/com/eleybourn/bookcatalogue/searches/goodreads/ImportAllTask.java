@@ -429,9 +429,9 @@ class ImportAllTask extends GenericTask {
         		thumbnail = null;
         	}
         	if (thumbnail != null) {
-    			String filename = ImageUtils.saveThumbnailFromUrl(thumbnail, "_GR");
-    			if (filename.length() > 0)
-    				book.appendOrAdd( "__thumbnail", filename);
+    			String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, "_GR");
+    			if (fileSpec.length() > 0)
+    				book.appendOrAdd( "__thumbnail", fileSpec);
     			book.cleanupThumbnails();        		
         	}
         }

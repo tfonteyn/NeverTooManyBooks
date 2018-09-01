@@ -20,9 +20,9 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Background task to load an image for a GoodreadsWork from a URL. Does not store it locally; 
@@ -65,7 +65,7 @@ public class GetImageTask implements SimpleTask {
 	 */
 	@Override
 	public void run(SimpleTaskContext taskContext) {
-		mBytes = Utils.getBytesFromUrl(mUrl);
+		mBytes = ImageUtils.getBytesFromUrl(mUrl);
 	}
 
 	/**
