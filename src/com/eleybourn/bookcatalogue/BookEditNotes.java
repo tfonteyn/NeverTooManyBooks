@@ -36,7 +36,6 @@ import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment.OnPartialDatePickerListener;
-import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ViewUtils;
@@ -205,7 +204,7 @@ public class BookEditNotes extends BookEditFragmentAbstract implements OnPartial
 	 */
 	@Override
 	public void onPartialDatePickerSet(int dialogId, PartialDatePickerFragment dialog, Integer year, Integer month, Integer day) {
-		String value = Convert.buildPartialDate(year, month, day);
+		String value = DateUtils.buildPartialDate(year, month, day);
 		mFields.getField(dialogId).setValue(value);
 		dialog.dismiss();
 	}

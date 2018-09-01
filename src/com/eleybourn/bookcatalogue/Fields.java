@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -115,6 +116,7 @@ import java.util.Iterator;
  */
 public class Fields extends ArrayList<Fields.Field> {
 	// Used for date parsing
+	@SuppressLint("SimpleDateFormat")
 	private static final java.text.SimpleDateFormat mDateSqlSdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
 	private static final java.text.DateFormat mDateDispSdf = java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM);
 

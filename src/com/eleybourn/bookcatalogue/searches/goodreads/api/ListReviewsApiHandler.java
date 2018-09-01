@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -87,6 +88,7 @@ import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiH
 public class ListReviewsApiHandler extends ApiHandler {
 
 	/** Date format used for parsing 'last_update_date' */
+	@SuppressLint("SimpleDateFormat")
 	private static final SimpleDateFormat mUpdateDateFmt = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy");
 
 	/**

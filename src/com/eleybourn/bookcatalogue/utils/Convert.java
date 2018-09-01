@@ -51,36 +51,6 @@ public class Convert {
     }
 
     /**
-     * Passed date components build a (partial) SQL format date string.
-     *
-     * @return		Formatted date, eg. '2011-11-01' or '2011-11'
-     */
-    public static String buildPartialDate(Integer year, Integer month, Integer day) {
-        String value;
-        if (year == null) {
-            value = "";
-        } else {
-            value = String.format("%04d", year);
-            if (month != null && month > 0) {
-                String mm = month.toString();
-                if (mm.length() == 1) {
-                    mm = "0" + mm;
-                }
-
-                value += "-" + mm;
-
-                if (day != null && day > 0) {
-                    String dd = day.toString();
-                    if (dd.length() == 1) {
-                        dd = "0" + dd;
-                    }
-                    value += "-" + dd;
-                }
-            }
-        }
-        return value;
-    }
-    /**
      * Join the passed array of strings, with 'delim' between them.
      *
      * @param sa		Array of strings to join

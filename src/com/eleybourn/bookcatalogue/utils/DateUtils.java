@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
+import android.annotation.SuppressLint;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,6 +29,10 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+/**
+ * All date handling here is for UTC/sql only, hence no Locale used
+ */
+@SuppressLint("SimpleDateFormat")
 public class DateUtils {
     private DateUtils() {
     }
@@ -165,5 +171,37 @@ public class DateUtils {
         // Assumes months are integers and in sequence...which everyone seems to assume
         mCalendar.set(Calendar.MONTH, month - 1 + java.util.Calendar.JANUARY);
         return mMonthNameFormatter.format(mCalendar.getTime());
+    }
+
+    /**
+     * Passed date components build a (partial) SQL format date string.
+     *
+     * @return		Formatted date, eg. '2011-11-01' or '2011-11'
+     */
+    @SuppressLint("DefaultLocale")
+    public static String buildPartialDate(Integer year, Integer month, Integer day) {
+        String value;
+        if (year == null) {
+            value = "";
+        } else {
+            value = String.format("%04d", year);
+            if (month != null && month > 0) {
+                String mm = month.toString();
+                if (mm.length() == 1) {
+                    mm = "0" + mm;
+                }
+
+                value += "-" + mm;
+
+                if (day != null && day > 0) {
+                    String dd = day.toString();
+                    if (dd.length() == 1) {
+                        dd = "0" + dd;
+                    }
+                    value += "-" + dd;
+                }
+            }
+        }
+        return value;
     }
 }

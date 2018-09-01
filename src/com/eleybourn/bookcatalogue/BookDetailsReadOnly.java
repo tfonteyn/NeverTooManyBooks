@@ -6,13 +6,15 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.HintManager;
@@ -288,18 +290,19 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
      *
      * @param book Cursor containing information of the book from database
      */
-    private void showReadStatus(BookData book) {
-        if (FieldVisibility.isVisible(KEY_READ)) {
-            ImageView image = getView().findViewById(R.id.read);
-            if (book.isRead()) {
-                image.setVisibility(View.VISIBLE);
-                image.setImageResource(R.drawable.btn_check_buttonless_on);
-            } else {
-                image.setVisibility(View.GONE);
-            }
+    private void showReadStatus(final BookData book) {
+        final ToggleButton btn = getView().findViewById(R.id.read);
+        if (!FieldVisibility.isVisible(KEY_READ)) {
+            btn.setVisibility(View.GONE);
         } else {
-            ImageView image = getView().findViewById(R.id.read);
-            image.setVisibility(View.GONE);
+            btn.setSelected(book.isRead());
+            btn.setVisibility(View.VISIBLE);
+            btn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    BookUtils.setRead(mDbHelper, book, isChecked);
+                }
+            });
         }
     }
 
@@ -310,7 +313,8 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
      */
     private void showSignedStatus(BookData book) {
         if (book.isSigned()) {
-            ((TextView) getView().findViewById(R.id.signed)).setText(getResources().getString(R.string.yes));
+            TextView v = getView().findViewById(R.id.signed);
+            v.setText(getResources().getString(R.string.yes));
         }
     }
 

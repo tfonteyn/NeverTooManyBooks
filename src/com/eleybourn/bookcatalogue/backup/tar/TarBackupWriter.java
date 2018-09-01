@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -43,141 +43,134 @@ import java.io.OutputStreamWriter;
 
 /**
  * Implementation of TAR-specific writer functions
- * 
+ *
  * @author pjw
  */
 public class TarBackupWriter extends BackupWriterAbstract {
-	private final TarBackupContainer mContainer;
-	private TarArchiveOutputStream mOutput;
-	private int mStyleCounter = 0;
+    private final TarBackupContainer mContainer;
+    private TarArchiveOutputStream mOutput;
+    private int mStyleCounter = 0;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param container		Parent
-	 */
-	TarBackupWriter(TarBackupContainer container) throws IOException {
-		mContainer = container;
-		// Open the archive for writing
-		FileOutputStream out = new FileOutputStream(container.getFile());
-		mOutput = new TarArchiveOutputStream(out);
-	}
+    /**
+     * Constructor
+     *
+     * @param container Parent
+     */
+    TarBackupWriter(TarBackupContainer container) throws IOException {
+        mContainer = container;
+        // Open the archive for writing
+        FileOutputStream out = new FileOutputStream(container.getFile());
+        mOutput = new TarArchiveOutputStream(out);
+    }
 
-	@Override
-	public BackupContainer getContainer() {
-		return mContainer;
-	}
+    @Override
+    public BackupContainer getContainer() {
+        return mContainer;
+    }
 
 
-	/**
-	 * Save the books export file
-	 */
-	@Override
-	public void putBooks(File books) throws IOException {
-		TarArchiveEntry entry = new TarArchiveEntry(new File(TarBackupContainer.BOOKS_FILE));
-		entry.setModTime(books.lastModified());
-		entry.setSize(books.length());
-		mOutput.putArchiveEntry(entry);
-		FileInputStream in = new FileInputStream(books);
-		streamToArchive(in);
-	}
+    /**
+     * Save the books export file
+     */
+    @Override
+    public void putBooks(File books) throws IOException {
+        TarArchiveEntry entry = new TarArchiveEntry(new File(TarBackupContainer.BOOKS_FILE));
+        entry.setModTime(books.lastModified());
+        entry.setSize(books.length());
+        mOutput.putArchiveEntry(entry);
+        FileInputStream in = new FileInputStream(books);
+        streamToArchive(in);
+    }
 
-	/**
-	 * Save a cover file
-	 */
-	@Override
-	public void putCoverFile(File source) throws IOException {
-		TarArchiveEntry entry = new TarArchiveEntry(source.getName());
-		entry.setModTime(source.lastModified());
-		entry.setSize(source.length());
-		mOutput.putArchiveEntry(entry);
-		FileInputStream in = new FileInputStream(source);
-		streamToArchive(in);
-	}
+    /**
+     * Save a cover file
+     */
+    @Override
+    public void putCoverFile(File source) throws IOException {
+        TarArchiveEntry entry = new TarArchiveEntry(source.getName());
+        entry.setModTime(source.lastModified());
+        entry.setSize(source.length());
+        mOutput.putArchiveEntry(entry);
+        FileInputStream in = new FileInputStream(source);
+        streamToArchive(in);
+    }
 
-	/**
-	 * Save the INFO data
-	 */
-	@Override
-	public void putInfo(BackupInfo info) throws IOException {
-		ByteArrayOutputStream infoData = new ByteArrayOutputStream();
-		BufferedWriter infoOut = new BufferedWriter(new OutputStreamWriter(infoData, TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
-		BackupUtils.bundleToXml(infoOut, info.getBundle());
-		infoOut.close();
-		bytesToArchive(TarBackupContainer.INFO_FILE, infoData.toByteArray());
-	}
+    /**
+     * Save the INFO data
+     */
+    @Override
+    public void putInfo(BackupInfo info) throws IOException {
+        ByteArrayOutputStream infoData = new ByteArrayOutputStream();
+        BufferedWriter infoOut = new BufferedWriter(new OutputStreamWriter(infoData, TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
+        BackupUtils.bundleToXml(infoOut, info.getBundle());
+        infoOut.close();
+        bytesToArchive(TarBackupContainer.INFO_FILE, infoData.toByteArray());
+    }
 
-	/**
-	 * Save a Booklist style. We save them with increasing suffix counters to ensure uniqueness
-	 */
-	@Override
-	public void putBooklistStyle(BooklistStyle style) throws IOException {
-		// Turn the object into a byte array
-		byte[] blob = SerializationUtils.serializeObject(style);
-		mStyleCounter++;
-		bytesToArchive(TarBackupContainer.STYLE_PREFIX + mStyleCounter, blob);
-	}
+    /**
+     * Save a Booklist style. We save them with increasing suffix counters to ensure uniqueness
+     */
+    @Override
+    public void putBooklistStyle(BooklistStyle style) throws IOException {
+        // Turn the object into a byte array
+        byte[] blob = SerializationUtils.serializeObject(style);
+        mStyleCounter++;
+        bytesToArchive(TarBackupContainer.STYLE_PREFIX + mStyleCounter, blob);
+    }
 
-	/**
-	 * Save the preferences.
-	 * 
-	 * It would be nice to support groups (ie. more than one preference name), but ... we don't need it.
-	 */
-	@Override
-	public void putPreferences(SharedPreferences prefs) throws IOException {
-		// Turn the preferences into an XML file in a byte array
-		ByteArrayOutputStream infoData = new ByteArrayOutputStream();
-		BufferedWriter infoOut = new BufferedWriter(new OutputStreamWriter(infoData, TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
-		BackupUtils.preferencesToXml(infoOut, prefs);
-		infoOut.close();
-		// Save them
-		bytesToArchive(TarBackupContainer.PREFERENCES, infoData.toByteArray());
-	}
+    /**
+     * Save the preferences.
+     * <p>
+     * It would be nice to support groups (ie. more than one preference name), but ... we don't need it.
+     */
+    @Override
+    public void putPreferences(SharedPreferences prefs) throws IOException {
+        // Turn the preferences into an XML file in a byte array
+        ByteArrayOutputStream infoData = new ByteArrayOutputStream();
+        BufferedWriter infoOut = new BufferedWriter(new OutputStreamWriter(infoData, TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
+        BackupUtils.preferencesToXml(infoOut, prefs);
+        infoOut.close();
+        // Save them
+        bytesToArchive(TarBackupContainer.PREFERENCES, infoData.toByteArray());
+    }
 
-	/**
-	 * Utility routine to send the contents of a stream to the current archive entry
-	 * 
-	 * @param in			Stream to be saved
-	 */
-	private void streamToArchive(InputStream in) throws IOException {
-		try {
-			byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
-			while (true) {
-				int cnt = in.read(buffer);
-				if (cnt <= 0)
-					break;
-				mOutput.write(buffer, 0, cnt);
-			}			
-		} finally {
-			try {
-				in.close();
-			} finally {
-			}
-			try {
-				mOutput.closeArchiveEntry();		
-			} finally {
-			}
-		}
-		
-	}
+    /**
+     * Utility routine to send the contents of a stream to the current archive entry
+     *
+     * @param in Stream to be saved
+     */
+    private void streamToArchive(InputStream in) throws IOException {
+        try {
+            byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
+            while (true) {
+                int cnt = in.read(buffer);
+                if (cnt <= 0)
+                    break;
+                mOutput.write(buffer, 0, cnt);
+            }
+        } finally {
+            in.close();
+            mOutput.closeArchiveEntry();
+        }
+    }
 
-	/**
-	 * Utility routine to save the passed bytes to an entry with the passed name
-	 * 
-	 * @param name		name of "file" in archive
-	 * @param bytes		bytes to write
-	 */
-	private void bytesToArchive(String name, byte[] bytes) throws IOException {
-		TarArchiveEntry entry = new TarArchiveEntry(name);
-		entry.setSize(bytes.length);
-		mOutput.putArchiveEntry(entry);
-		InputStream in = new ByteArrayInputStream(bytes);
-		streamToArchive(in);
-	}
+    /**
+     * Utility routine to save the passed bytes to an entry with the passed name
+     *
+     * @param name  name of "file" in archive
+     * @param bytes bytes to write
+     */
+    private void bytesToArchive(String name, byte[] bytes) throws IOException {
+        TarArchiveEntry entry = new TarArchiveEntry(name);
+        entry.setSize(bytes.length);
+        mOutput.putArchiveEntry(entry);
+        InputStream in = new ByteArrayInputStream(bytes);
+        streamToArchive(in);
+    }
 
-	@Override
-	public void close() throws IOException {
-		super.close();
-		mOutput.close();
-	}
+    @Override
+    public void close() throws IOException {
+        super.close();
+        mOutput.close();
+    }
 }

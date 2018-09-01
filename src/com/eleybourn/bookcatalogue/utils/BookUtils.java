@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.eleybourn.bookcatalogue.BookData;
 import com.eleybourn.bookcatalogue.BookEdit;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
@@ -169,4 +170,25 @@ public class BookUtils {
 	}
 
 
+	/**
+	 * Update the 'read' status of a book in the database
+	 *  @param dba    database
+	 * @param book    book to update
+	 * @param read    true or false
+	 */
+	public static boolean setRead(CatalogueDBAdapter dba, BookData book, boolean read) {
+        book.putInt(ColumnNames.KEY_READ, read ? 1 : 0);
+		return dba.updateBook(book.getRowId(), book, 0);
+	}
+
+    /**
+     * Update the 'read' status of a book in the database
+     *  @param dba        database
+     * @param bookId    book to update
+     * @param read        true or false
+     */
+    public static boolean setRead(CatalogueDBAdapter dba, long bookId, boolean read) {
+        BookData book = new BookData(bookId);
+        return setRead(dba, book, read);
+    }
 }

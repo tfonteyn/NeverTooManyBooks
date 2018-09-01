@@ -2672,7 +2672,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 * specified using the rowId, and it is altered to use values passed in
 	 * 
 	 * @param rowId The id of the book in the database
-	 * @param values A ContentValues collection with the columns to be updated. May contain extrat data.
+	 * @param values A ContentValues collection with the columns to be updated. May contain extra data.
 	 * @param flags  See BOOK_UPDATE_* flag definitions
 	 * 
 	 * @return true if the note was successfully updated, false otherwise

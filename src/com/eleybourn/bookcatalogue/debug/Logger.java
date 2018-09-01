@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.debug;
 
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.util.Log;
 
@@ -50,7 +51,7 @@ public class Logger {
 	 * @param e The exception to log
 	 */
 	public static void logError(Exception e, String msg) {
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		@SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
 		String now = dateFormat.format(date);
 		

@@ -6,7 +6,7 @@
     -->
     <!-- Style for item in preferences lists -->
     <style name="prefs_item">
-        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center_vertical</item>
         <item name="paddingStart">@dimen/padding_prefs_item</item>
@@ -18,7 +18,7 @@
     -->
     <!-- Style for headers in preferences lists -->
     <style name="prefs_header">
-        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">@dimen/padding_border</item>
         <item name="paddingStart">@dimen/padding_border</item>
@@ -48,7 +48,7 @@
     -->
     <!-- Style for detail titles in read-only book details -->
     <style name="bookDetailsTitlesStyle">
-        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:textStyle">bold</item>
@@ -60,7 +60,7 @@
     <!-- Style for text details in read-only book details -->
     <style name="bookDetailsTextStyle">
         <item name="android:textIsSelectable">true</item>
-        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">@dimen/padding_book_details_info</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
@@ -77,7 +77,7 @@
     <!-- Style for text header data (typically title/author) in read-only book details -->
     <style name="bookDetailsHeaderStyle">
         <item name="android:textIsSelectable">true</item>
-        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
@@ -88,7 +88,7 @@
     <!-- Style for smaller text header data (typically isbn/pages) in read-only book details -->
     <style name="bookDetailsMinorDetailStyle">
         <item name="android:textIsSelectable">true</item>
-        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
@@ -114,7 +114,7 @@
     **************************************************************************************
     -->
     <style name="editorFieldTextStyleBase">
-        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:layout_alignParentStart">true</item>
@@ -146,7 +146,7 @@
     -->
     <style name="propertyValue">
         <!-- <item name="android:background">#40000000</item> -->
-        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="paddingStart">@dimen/padding_border</item>
         <item name="paddingEnd">@dimen/padding_border_double</item>
@@ -184,7 +184,7 @@
     **************************************************************************************
     -->
     <style name="link_url">
-        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingBottom">@dimen/padding_border</item>
         <item name="paddingStart">@dimen/padding_border_triple</item>
@@ -196,12 +196,25 @@
     **************************************************************************************
     -->
     <style name="link_donate">
-        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center</item>
         <item name="android:paddingBottom">20dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:textColor">@color/link_donate</item>
+    </style>
+
+    <style name="readToggleButton">
+        <item name="android:layout_width">30dp</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_gravity">top|end</item>
+        <item name="android:drawableTop">?android:attr/textCheckMark</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:textOn">@string/_empty_</item>
+        <item name="android:textOff">@string/_empty_</item>
+        <item name="android:visibility">visible</item>
     </style>
 
 </resources>
