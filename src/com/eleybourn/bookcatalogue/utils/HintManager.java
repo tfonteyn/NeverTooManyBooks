@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.utils;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
-import android.support.v7.app.AppCompatDialog;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.View;
@@ -35,6 +34,7 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -110,7 +110,7 @@ public class HintManager {
 		}
 
 		// Build the hint dialog
-		final Dialog dialog = new AppCompatDialog(context);
+		final Dialog dialog = new BasicDialog(context, false);
 		dialog.setContentView(R.layout.hint_dialogue);
         dialog.setTitle(R.string.hint);
 

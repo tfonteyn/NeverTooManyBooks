@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="CoverGallery">
+        <!--
+            Android\sdk\platforms\android-27\data\res\drawable\gallery_item_background.xml
+         which points to PNG files
+            Android\sdk\platforms\android-27\data\res\drawable-hdpi
+            -->
         <attr name="android:galleryItemBackground" />
     </declare-styleable>
 </resources>

@@ -40,6 +40,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import net.philipwarner.taskqueue.QueueManager;
@@ -335,8 +336,8 @@ class ImportAllTask extends GenericTask {
 		long id = db.createBook(book, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
 		if (book.getBoolean(ColumnNames.KEY_THUMBNAIL)) {
 			String uuid = db.getBookUuid(id);
-			File thumb = CatalogueDBAdapter.getTempThumbnail();
-			File real = CatalogueDBAdapter.fetchThumbnailByUuid(uuid);
+			File thumb = ImageUtils.getTempThumbnail();
+			File real = ImageUtils.fetchThumbnailByUuid(uuid);
 			//noinspection ResultOfMethodCallIgnored
 			thumb.renameTo(real);
 		}
@@ -428,7 +429,7 @@ class ImportAllTask extends GenericTask {
         		thumbnail = null;
         	}
         	if (thumbnail != null) {
-    			String filename = Utils.saveThumbnailFromUrl(thumbnail, "_GR");
+    			String filename = ImageUtils.saveThumbnailFromUrl(thumbnail, "_GR");
     			if (filename.length() > 0)
     				book.appendOrAdd( "__thumbnail", filename);
     			book.cleanupThumbnails();        		

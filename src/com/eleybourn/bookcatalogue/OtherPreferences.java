@@ -133,7 +133,7 @@ public class OtherPreferences extends PreferencesBase {
 
             .add(new IntegerListProperty(mAppThemeItems, BookCataloguePreferences.PREF_APP_THEME,
                     PropertyGroup.GRP_USER_INTERFACE, R.string.preferred_theme)
-                    .setDefaultValue(DEFAULT_THEME)
+                    .setDefaultValue(BookCatalogueApp.DEFAULT_THEME)
                     .setPreferenceKey(BookCataloguePreferences.PREF_APP_THEME)
                     .setGlobal(true)
                     .setWeight(200)

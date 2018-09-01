@@ -12,6 +12,7 @@ import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DbSync;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
@@ -21,7 +22,40 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_GOODR
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_LANGUAGE;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_LAST_GOODREADS_SYNC_DATE;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.*;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ANTHOLOGY_MASK;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_ID;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_OLD;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_POSITION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_BOOK;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DATE_ADDED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_FAMILY_NAME;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_FORMAT;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_GENRE;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_GIVEN_NAMES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ISBN;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_LIST_PRICE;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_LOANED_TO;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_LOCATION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_NOTES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PAGES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_POSITION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_RATING;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ_END;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ_START;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ROWID;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_ID;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_NUM;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_OLD;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_POSITION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SIGNED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TITLE;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.OLD_KEY_AUDIOBOOK;
 
 
 /**
@@ -29,7 +63,6 @@ import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.*;
  *
  * @author evan
  */
-@SuppressWarnings("unused")
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     //TODO: Update database version RELEASE: Update database version
@@ -40,15 +73,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static boolean mDbWasCreated;
 
-    private static String message = "";
+    private static String mMessage = "";
     public static String getMessage() {
-        return message;
+        return mMessage;
     }
 
+    @SuppressWarnings("unused")
     private DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
     }
 
+    @SuppressWarnings("unused")
     private DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler) {
         super(context, name, factory, version, errorHandler);
     }
@@ -85,7 +120,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Build the column list
         StringBuilder cols = new StringBuilder();
         boolean first = true;
-        for(ColumnInfo ci: src) {
+        for(TableInfo.ColumnInfo ci: src) {
             boolean isNeeded = true;
             for(String s: toRemove) {
                 if (s.equalsIgnoreCase(ci.name)) {
@@ -129,9 +164,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             while (c.moveToNext()) {
                 final long id = c.getLong(0);
                 final String hash = c.getString(1);
-                File f = CatalogueDBAdapter.fetchThumbnailByName(Long.toString(id),"");
+                File f = ImageUtils.fetchThumbnailByName(Long.toString(id),"");
                 if ( f.exists() ) {
-                    File newFile = CatalogueDBAdapter.fetchThumbnailByUuid(hash);
+                    File newFile = ImageUtils.fetchThumbnailByUuid(hash);
                     //noinspection ResultOfMethodCallIgnored
                     f.renameTo(newFile);
                 }
@@ -602,8 +637,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (curVersion == 16) {
             //do nothing except increment
             curVersion++;
-            message += "* This message will now appear whenever you upgrade\n\n";
-            message += "* Various SQL bugs have been resolved\n\n";
+            mMessage += "* This message will now appear whenever you upgrade\n\n";
+            mMessage += "* Various SQL bugs have been resolved\n\n";
         }
         if (curVersion == 17) {
             //do nothing except increment
@@ -629,12 +664,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         if (curVersion == 22) {
             curVersion++;
-            message += "* There is a new tabbed 'edit' interface to simplify editing books.\n\n";
-            message += "* The new comments tab also includes a notes field where you can add personal notes for any book (Requested by Luke).\n\n";
-            message += "* The new loaned books tab allows you to record books loaned to friends. This will lookup your phone contacts to pre-populate the list (Requested by Luke)\n\n";
-            message += "* Scanned books that already exist in the database (based on ISBN) will no longer be added (Identified by Colin)\n\n";
-            message += "* After adding a book, the main view will now scroll to a appropriate location. \n\n";
-            message += "* Searching has been made significantly faster.\n\n";
+            mMessage += "* There is a new tabbed 'edit' interface to simplify editing books.\n\n";
+            mMessage += "* The new comments tab also includes a notes field where you can add personal notes for any book (Requested by Luke).\n\n";
+            mMessage += "* The new loaned books tab allows you to record books loaned to friends. This will lookup your phone contacts to pre-populate the list (Requested by Luke)\n\n";
+            mMessage += "* Scanned books that already exist in the database (based on ISBN) will no longer be added (Identified by Colin)\n\n";
+            mMessage += "* After adding a book, the main view will now scroll to a appropriate location. \n\n";
+            mMessage += "* Searching has been made significantly faster.\n\n";
         }
         if (curVersion == 23) {
             //do nothing
@@ -672,23 +707,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (curVersion == 25) {
             //do nothing
             curVersion++;
-            message += "* Your sort order will be automatically saved when to close the application (Requested by Martin)\n\n";
-            message += "* There is a new 'about this app' view available from the administration tabs (Also from Martin)\n\n";
+            mMessage += "* Your sort order will be automatically saved when to close the application (Requested by Martin)\n\n";
+            mMessage += "* There is a new 'about this app' view available from the administration tabs (Also from Martin)\n\n";
         }
         if (curVersion == 26) {
             //do nothing
             curVersion++;
-            message += "* There are two additional sort functions, by series and by loaned (Request from N4ppy)\n\n";
-            message += "* Your bookshelf and current location will be saved when you exit (Feedback from Martin)\n\n";
-            message += "* Minor interface improvements when sorting by title \n\n";
+            mMessage += "* There are two additional sort functions, by series and by loaned (Request from N4ppy)\n\n";
+            mMessage += "* Your bookshelf and current location will be saved when you exit (Feedback from Martin)\n\n";
+            mMessage += "* Minor interface improvements when sorting by title \n\n";
         }
         if (curVersion == 27) {
             //do nothing
             curVersion++;
-            message += "* The book thumbnail now appears in the list view\n\n";
-            message += "* Emailing the developer now works from the admin page\n\n";
-            message += "* The Change Bookshelf option is now more obvious (Thanks Mike)\n\n";
-            message += "* The exports have been renamed to csv, use the correct published date and are now unicode safe (Thanks Mike)\n\n";
+            mMessage += "* The book thumbnail now appears in the list view\n\n";
+            mMessage += "* Emailing the developer now works from the admin page\n\n";
+            mMessage += "* The Change Bookshelf option is now more obvious (Thanks Mike)\n\n";
+            mMessage += "* The exports have been renamed to csv, use the correct published date and are now unicode safe (Thanks Mike)\n\n";
         }
         if (curVersion == 28) {
             curVersion++;
@@ -702,21 +737,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (curVersion == 29) {
             //do nothing
             curVersion++;
-            message += "* Adding books will now (finally) search Amazon\n\n";
-            message += "* A field for list price has been included (Requested by Brenda)\n\n";
-            message += "* You can bulk update the thumbnails for all books with ISBN's from the Admin page\n\n";
+            mMessage += "* Adding books will now (finally) search Amazon\n\n";
+            mMessage += "* A field for list price has been included (Requested by Brenda)\n\n";
+            mMessage += "* You can bulk update the thumbnails for all books with ISBN's from the Admin page\n\n";
         }
         if (curVersion == 30) {
             //do nothing
             curVersion++;
-            message += "* You can now delete individual thumbnails by holding on the image and selecting delete.\n\n";
+            mMessage += "* You can now delete individual thumbnails by holding on the image and selecting delete.\n\n";
         }
         if (curVersion == 31) {
             //do nothing
             curVersion++;
-            message += "* There is a new Admin option (Field Visibility) to hide unused fields\n\n";
-            message += "* 'All Books' should now be saved as a bookshelf preference correctly\n\n";
-            message += "* When adding books the bookshelf will default to your currently selected bookshelf (Thanks Martin)\n\n";
+            mMessage += "* There is a new Admin option (Field Visibility) to hide unused fields\n\n";
+            mMessage += "* 'All Books' should now be saved as a bookshelf preference correctly\n\n";
+            mMessage += "* When adding books the bookshelf will default to your currently selected bookshelf (Thanks Martin)\n\n";
         }
         if (curVersion == 32) {
             //do nothing
@@ -741,18 +776,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Logger.logError(e);
                 throw new RuntimeException("Failed to upgrade database", e);
             }
-            message += "* There is now support to record books as anthologies and it's titles. \n\n";
-            message += "* There is experimental support to automatically populate the anthology titles \n\n";
-            message += "* You can now take photos for the book cover (long click on the thumbnail in edit) \n\n";
+            mMessage += "* There is now support to record books as anthologies and it's titles. \n\n";
+            mMessage += "* There is experimental support to automatically populate the anthology titles \n\n";
+            mMessage += "* You can now take photos for the book cover (long click on the thumbnail in edit) \n\n";
         }
         if (curVersion == 33) {
             //do nothing
             curVersion++;
-            message += "* Minor enhancements\n\n";
-            message += "* Online help has been written\n\n";
-            message += "* Thumbnails can now be hidden just like any other field (Thanks Martin)\n\n";
-            message += "* You can also rotate thumbnails; useful for thumbnails taken with the camera\n\n";
-            message += "* Bookshelves will appear in the menu immediately (Thanks Martin/Julia)\n\n";
+            mMessage += "* Minor enhancements\n\n";
+            mMessage += "* Online help has been written\n\n";
+            mMessage += "* Thumbnails can now be hidden just like any other field (Thanks Martin)\n\n";
+            mMessage += "* You can also rotate thumbnails; useful for thumbnails taken with the camera\n\n";
+            mMessage += "* Bookshelves will appear in the menu immediately (Thanks Martin/Julia)\n\n";
         }
         if (curVersion == 34) {
             curVersion++;
@@ -783,26 +818,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (curVersion == 36) {
             //do nothing
             curVersion++;
-            message += "* Fixed several crashing defects when adding books\n\n";
-            message += "* Added Autocompleting Location Field (For Cam)\n\n";
-            message += "* Added Read Start & Read End Fields (For Robert)\n\n";
-            message += "* Added an Audiobook Checkbox Field (For Ted)\n\n";
-            message += "* Added a Book Signed Checkbox Field (For me)\n\n";
-            message += "*** Don't forget you can hide any of the new fields that you do not want to see.\n\n";
-            message += "* Series Number now support decimal figures (Requested by Beth)\n\n";
-            message += "* List price now support decimal figures (Requested by eleavings)\n\n";
-            message += "* Fixed Import Crashes (Thanks Roydalg) \n\n";
-            message += "* Fixed several defects for Android 1.6 users - I do not have a 1.6 device to test on so please let me know if you discover any errors\n\n";
+            mMessage += "* Fixed several crashing defects when adding books\n\n";
+            mMessage += "* Added Autocompleting Location Field (For Cam)\n\n";
+            mMessage += "* Added Read Start & Read End Fields (For Robert)\n\n";
+            mMessage += "* Added an Audiobook Checkbox Field (For Ted)\n\n";
+            mMessage += "* Added a Book Signed Checkbox Field (For me)\n\n";
+            mMessage += "*** Don't forget you can hide any of the new fields that you do not want to see.\n\n";
+            mMessage += "* Series Number now support decimal figures (Requested by Beth)\n\n";
+            mMessage += "* List price now support decimal figures (Requested by eleavings)\n\n";
+            mMessage += "* Fixed Import Crashes (Thanks Roydalg) \n\n";
+            mMessage += "* Fixed several defects for Android 1.6 users - I do not have a 1.6 device to test on so please let me know if you discover any errors\n\n";
         }
         if (curVersion == 37) {
             //do nothing
             curVersion++;
-            message += "Tip: If you long click on a book title on the main list you can delete it\n\n";
-            message += "Tip: If you want to see all books, change the bookshelf to 'All Books'\n\n";
-            message += "Tip: You can find the correct barcode for many modern paperbacks on the inside cover\n\n";
-            message += "* There is now a 'Sort by Unread' option, as well as a 'read' icon on the main list (requested by Angel)\n\n";
-            message += "* If you long click on the (?) thumbnail you can now select a new thumbnail from the gallery (requested by Giovanni)\n\n";
-            message += "* Bookshelves, loaned books and anthology titles will now import correctly\n\n";
+            mMessage += "Tip: If you long click on a book title on the main list you can delete it\n\n";
+            mMessage += "Tip: If you want to see all books, change the bookshelf to 'All Books'\n\n";
+            mMessage += "Tip: You can find the correct barcode for many modern paperbacks on the inside cover\n\n";
+            mMessage += "* There is now a 'Sort by Unread' option, as well as a 'read' icon on the main list (requested by Angel)\n\n";
+            mMessage += "* If you long click on the (?) thumbnail you can now select a new thumbnail from the gallery (requested by Giovanni)\n\n";
+            mMessage += "* Bookshelves, loaned books and anthology titles will now import correctly\n\n";
         }
         if (curVersion == 38) {
             //do nothing
@@ -818,13 +853,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (curVersion == 41) {
             //do nothing
             curVersion++;
-            message += "Tip: You can find the correct barcode for many modern paperbacks on the inside cover\n\n";
-            message += "* Added app2sd support (2.2 users only)\n\n";
-            message += "* You can now assign books to multiple bookshelves (requested by many people)\n\n";
-            message += "* A .nomedia file will be automatically created which will stop the thumbnails showing up in the gallery (thanks Brandon)\n\n";
-            message += "* The 'Add Book by ISBN' page has been redesigned to be simpler and more stable (thanks Vinikia)\n\n";
-            message += "* The export file is now formatted correctly (.csv) (thanks glohr)\n\n";
-            message += "* You will be prompted to backup your books on a regular basis \n\n";
+            mMessage += "Tip: You can find the correct barcode for many modern paperbacks on the inside cover\n\n";
+            mMessage += "* Added app2sd support (2.2 users only)\n\n";
+            mMessage += "* You can now assign books to multiple bookshelves (requested by many people)\n\n";
+            mMessage += "* A .nomedia file will be automatically created which will stop the thumbnails showing up in the gallery (thanks Brandon)\n\n";
+            mMessage += "* The 'Add Book by ISBN' page has been redesigned to be simpler and more stable (thanks Vinikia)\n\n";
+            mMessage += "* The export file is now formatted correctly (.csv) (thanks glohr)\n\n";
+            mMessage += "* You will be prompted to backup your books on a regular basis \n\n";
 
             try {
                 db.execSQL("DROP TABLE tmp1");
@@ -876,11 +911,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (curVersion == 42) {
             //do nothing
             curVersion++;
-            message += "* Export bug fixed\n\n";
-            message += "* Further enhancements to the new ISBN screen\n\n";
-            message += "* Filtering by bookshelf on title view is now fixed\n\n";
-            message += "* There is now an <Empty Series> when sorting by Series (thanks Vinikia)\n\n";
-            message += "* App will now search all fields (Thanks Michael)\n\n";
+            mMessage += "* Export bug fixed\n\n";
+            mMessage += "* Further enhancements to the new ISBN screen\n\n";
+            mMessage += "* Filtering by bookshelf on title view is now fixed\n\n";
+            mMessage += "* There is now an <Empty Series> when sorting by Series (thanks Vinikia)\n\n";
+            mMessage += "* App will now search all fields (Thanks Michael)\n\n";
         }
         if (curVersion == 43) {
             curVersion++;
@@ -980,14 +1015,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             curVersion++;
             // This used to be chaecks in BookCatalogueClassic, which is no longer called on startup...
             //do_action = DO_UPDATE_FIELDS;
-            message += "New in v3.1\n\n";
-            message += "* The audiobook checkbox has been replaced with a format selector (inc. paperback, hardcover, companion etc)\n\n";
-            message += "* When adding books the current bookshelf will be selected as the default bookshelf\n\n";
-            message += "* Genre/Subject and Description fields have been added (Requested by Tosh) and will automatically populate based on Google Books and Amazon information\n\n";
-            message += "* The save button will always be visible on the edit book screen\n\n";
-            message += "* Searching for a single space will clear the search results page\n\n";
-            message += "* The Date Picker will now appear in a popup in order to save space on the screen (Requested by several people)\n\n";
-            message += "* To improve speed when sorting by title, the titles will be broken up by the first character. Remember prefixes such as 'the' and 'a' are listed after the title, e.g. 'The Trigger' becomes 'Trigger, The'\n\n";
+            mMessage += "New in v3.1\n\n";
+            mMessage += "* The audiobook checkbox has been replaced with a format selector (inc. paperback, hardcover, companion etc)\n\n";
+            mMessage += "* When adding books the current bookshelf will be selected as the default bookshelf\n\n";
+            mMessage += "* Genre/Subject and Description fields have been added (Requested by Tosh) and will automatically populate based on Google Books and Amazon information\n\n";
+            mMessage += "* The save button will always be visible on the edit book screen\n\n";
+            mMessage += "* Searching for a single space will clear the search results page\n\n";
+            mMessage += "* The Date Picker will now appear in a popup in order to save space on the screen (Requested by several people)\n\n";
+            mMessage += "* To improve speed when sorting by title, the titles will be broken up by the first character. Remember prefixes such as 'the' and 'a' are listed after the title, e.g. 'The Trigger' becomes 'Trigger, The'\n\n";
         }
         if (curVersion == 48) {
             curVersion++;
@@ -998,10 +1033,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         if (curVersion == 49) {
             curVersion++;
-            message += "New in v3.2\n\n";
-            message += "* Books can now be automatically added by searching for the author name and book title\n\n";
-            message += "* Updating thumbnails, genre and description fields will also search by author name and title is the isbn does not exist\n\n";				message += "* Expand/Collapse all bug fixed\n\n";
-            message += "* The search query will be shown at the top of all search screens\n\n";
+            mMessage += "New in v3.2\n\n";
+            mMessage += "* Books can now be automatically added by searching for the author name and book title\n\n";
+            mMessage += "* Updating thumbnails, genre and description fields will also search by author name and title is the isbn does not exist\n\n";				mMessage += "* Expand/Collapse all bug fixed\n\n";
+            mMessage += "* The search query will be shown at the top of all search screens\n\n";
         }
         if (curVersion == 50) {
             curVersion++;
@@ -1009,17 +1044,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         if (curVersion == 51) {
             curVersion++;
-            message += "New in v3.3 - Updates courtesy of Grunthos\n\n";
-            message += "* The application should be significantly faster now - Fixed a bug with database index creation\n\n";
-            message += "* The thumbnail can be rotated in both directions now\n\n";
-            message += "* You can zoom in the thumbnail to see full detail\n\n";
-            message += "* The help page will redirect to the, more frequently updated, online wiki\n\n";
-            message += "* Dollar signs in the text fields will no longer FC on import/export\n\n";
+            mMessage += "New in v3.3 - Updates courtesy of Grunthos\n\n";
+            mMessage += "* The application should be significantly faster now - Fixed a bug with database index creation\n\n";
+            mMessage += "* The thumbnail can be rotated in both directions now\n\n";
+            mMessage += "* You can zoom in the thumbnail to see full detail\n\n";
+            mMessage += "* The help page will redirect to the, more frequently updated, online wiki\n\n";
+            mMessage += "* Dollar signs in the text fields will no longer FC on import/export\n\n";
         }
         if (curVersion == 52) {
             curVersion++;
-            message += "New in v3.3.1\n\n";
-            message += "* Minor bug fixes and error logging. Please email me if you have any further issues.\n\n";
+            mMessage += "New in v3.3.1\n\n";
+            mMessage += "* Minor bug fixes and error logging. Please email me if you have any further issues.\n\n";
         }
         if (curVersion == 53) {
             curVersion++;
@@ -1035,25 +1070,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             if (go) {
                 try {
-                    message += "New in v3.4 - Updates courtesy of (mainly) Grunthos (blame him, politely, if it toasts your data)\n\n";
-                    message += "* Multiple Authors per book\n\n";
-                    message += "* Multiple Series per book\n\n";
-                    message += "* Fetches series (and other stuff) from LibraryThing\n\n";
-                    message += "* Can now make global changes to Author and Series (Access this feature via long-click on the catalogue screen)\n\n";
-                    message += "* Can replace a cover thumbnail from a different edition via LibraryThing.\n\n";
-                    message += "* Does concurrent ISBN searches at Amazon, Google and LibraryThing (it's faster)\n\n";
-                    message += "* Displays a progress dialog while searching for a book on the internet.\n\n";
-                    message += "* Adding by Amazon's ASIN is supported on the 'Add by ISBN' page\n\n";
-                    message += "* Duplicate books allowed, with a warning message\n\n";
-                    message += "* User-selectable fields when reloading data from internet (eg. just update authors).\n\n";
-                    message += "* Unsaved edits are retained when rotating the screen.\n\n";
-                    message += "* Changed the ISBN data entry screen when the device is in landscape mode.\n\n";
-                    message += "* Displays square brackets around the series name when displaying a list of books.\n\n";
-                    message += "* Suggestions available when searching\n\n";
-                    message += "* Removed the need for contacts permission. Though it does mean you will need to manually enter everyone you want to loan to.\n\n";
-                    message += "* Preserves *all* open groups when closing application.\n\n";
-                    message += "* The scanner and book search screens remain active after a book has been added or a search fails. It was viewed that this more closely represents the work-flow of people adding or scanning books.\n\n";
-                    message += "See the web site (from the Admin menu) for more details\n\n";
+                    mMessage += "New in v3.4 - Updates courtesy of (mainly) Grunthos (blame him, politely, if it toasts your data)\n\n";
+                    mMessage += "* Multiple Authors per book\n\n";
+                    mMessage += "* Multiple Series per book\n\n";
+                    mMessage += "* Fetches series (and other stuff) from LibraryThing\n\n";
+                    mMessage += "* Can now make global changes to Author and Series (Access this feature via long-click on the catalogue screen)\n\n";
+                    mMessage += "* Can replace a cover thumbnail from a different edition via LibraryThing.\n\n";
+                    mMessage += "* Does concurrent ISBN searches at Amazon, Google and LibraryThing (it's faster)\n\n";
+                    mMessage += "* Displays a progress dialog while searching for a book on the internet.\n\n";
+                    mMessage += "* Adding by Amazon's ASIN is supported on the 'Add by ISBN' page\n\n";
+                    mMessage += "* Duplicate books allowed, with a warning message\n\n";
+                    mMessage += "* User-selectable fields when reloading data from internet (eg. just update authors).\n\n";
+                    mMessage += "* Unsaved edits are retained when rotating the screen.\n\n";
+                    mMessage += "* Changed the ISBN data entry screen when the device is in landscape mode.\n\n";
+                    mMessage += "* Displays square brackets around the series name when displaying a list of books.\n\n";
+                    mMessage += "* Suggestions available when searching\n\n";
+                    mMessage += "* Removed the need for contacts permission. Though it does mean you will need to manually enter everyone you want to loan to.\n\n";
+                    mMessage += "* Preserves *all* open groups when closing application.\n\n";
+                    mMessage += "* The scanner and book search screens remain active after a book has been added or a search fails. It was viewed that this more closely represents the work-flow of people adding or scanning books.\n\n";
+                    mMessage += "See the web site (from the Admin menu) for more details\n\n";
 
                     db.execSQL(DATABASE_CREATE_SERIES);
                     // We need to create a series table with series that are unique wrt case and unicode. The old
@@ -1172,11 +1207,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         if (curVersion == 56) {
             curVersion++;
-            message += "New in v3.5.4\n\n";
-            message += "* French translation available\n\n";
-            message += "* There is an option to create a duplicate book (requested by Vinika)\n\n";
-            message += "* Fixed errors caused by failed upgrades\n\n";
-            message += "* Fixed errors caused by trailing spaces in bookshelf names\n\n";
+            mMessage += "New in v3.5.4\n\n";
+            mMessage += "* French translation available\n\n";
+            mMessage += "* There is an option to create a duplicate book (requested by Vinika)\n\n";
+            mMessage += "* Fixed errors caused by failed upgrades\n\n";
+            mMessage += "* Fixed errors caused by trailing spaces in bookshelf names\n\n";
         }
         if (curVersion == 57) {
             curVersion++;
@@ -1266,37 +1301,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (curVersion == 58) {
             curVersion++;
             db.delete(DB_TB_LOAN, "("+KEY_BOOK+ "='' OR " + KEY_BOOK+ "=null OR " + KEY_LOANED_TO + "='' OR " + KEY_LOANED_TO + "=null) ", null);
-            message += "New in v3.6\n\n";
-            message += "* The LibraryThing Key will be verified when added\n\n";
-            message += "* When entering ISBN's manually, each button with vibrate the phone slightly\n\n";
-            message += "* When automatically updating fields click on each checkbox twice will give you the option to override existing fields (rather than populate only blank fields)\n\n";
-            message += "* Fixed a crash when exporting over 2000 books\n\n";
-            message += "* Orphan loan records will now be correctly managed\n\n";
-            message += "* The Amazon search will now look for English, French, German, Italian and Japanese versions\n\n";
+            mMessage += "New in v3.6\n\n";
+            mMessage += "* The LibraryThing Key will be verified when added\n\n";
+            mMessage += "* When entering ISBN's manually, each button with vibrate the phone slightly\n\n";
+            mMessage += "* When automatically updating fields click on each checkbox twice will give you the option to override existing fields (rather than populate only blank fields)\n\n";
+            mMessage += "* Fixed a crash when exporting over 2000 books\n\n";
+            mMessage += "* Orphan loan records will now be correctly managed\n\n";
+            mMessage += "* The Amazon search will now look for English, French, German, Italian and Japanese versions\n\n";
         }
         if (curVersion == 59) {
             curVersion++;
-            message += "New in v3.6.2\n\n";
-            message += "* Optionally restrict 'Sort By Author' to only the first Author (where there are multiple listed)\n\n";
-            message += "* Minor bug fixes\n\n";
+            mMessage += "New in v3.6.2\n\n";
+            mMessage += "* Optionally restrict 'Sort By Author' to only the first Author (where there are multiple listed)\n\n";
+            mMessage += "* Minor bug fixes\n\n";
         }
         if (curVersion == 60) {
             curVersion++;
-            message += "New in v3.7\n\n";
-            message += "Hint: The export function will create an export.csv file on the sdcard\n\n";
-            message += "* You can crop cover thumbnails (both from the menu and after taking a camera image)\n\n";
-            message += "* You can tweet about a book directly from the book edit screen.\n\n";
-            message += "* Sort by Date Published added\n\n";
-            message += "* Will check for network connection prior to searching for details (new permission required)\n\n";
-            message += "* Fixed crash when opening search results\n\n";
+            mMessage += "New in v3.7\n\n";
+            mMessage += "Hint: The export function will create an export.csv file on the sdcard\n\n";
+            mMessage += "* You can crop cover thumbnails (both from the menu and after taking a camera image)\n\n";
+            mMessage += "* You can tweet about a book directly from the book edit screen.\n\n";
+            mMessage += "* Sort by Date Published added\n\n";
+            mMessage += "* Will check for network connection prior to searching for details (new permission required)\n\n";
+            mMessage += "* Fixed crash when opening search results\n\n";
         }
         if (curVersion == 61) {
             curVersion++;
-            message += "New in v3.8\n\n";
-            message += "* Fixed several defects (including multiple author's and author prefix/suffix's)\n\n";
-            message += "* Fixed issue with thumbnail resolutions from LibraryThing\n\n";
-            message += "* Changed the 'Add Book' menu options to be submenu\n\n";
-            message += "* The database backup has been renamed for clarity\n\n";
+            mMessage += "New in v3.8\n\n";
+            mMessage += "* Fixed several defects (including multiple author's and author prefix/suffix's)\n\n";
+            mMessage += "* Fixed issue with thumbnail resolutions from LibraryThing\n\n";
+            mMessage += "* Changed the 'Add Book' menu options to be submenu\n\n";
+            mMessage += "* The database backup has been renamed for clarity\n\n";
         }
         if (curVersion == 62) {
             curVersion++;
@@ -1356,17 +1391,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             curVersion++;
             renameIdFilesToHash(sdb);
             // A bit of presumption here...
-            message += "New in v4.0 - Updates courtesy of (mainly) Philip Warner (a.k.a Grunthos) -- blame him, politely, if it toasts your data\n\n";
-            message += "* New look, new startup page\n\n";
-            message += "* Synchronization with goodreads (www.goodreads.com)\n\n";
-            message += "* New styles for book lists (including 'Compact' and 'Unread')\n\n";
-            message += "* User-defined styles for book lists\n\n";
-            message += "* More efficient memory usage\n\n";
-            message += "* New preferences, including 'always expanded/collapsed' lists\n\n";
-            message += "* Faster expand/collapse with large collections\n\n";
-            message += "* Cached covers for faster scrolling lists\n\n";
-            message += "* Cover images now have globally unique names, and books have globally unique IDs, so sharing and combining collections is easy\n\n";
-            message += "* Improved detection of series names\n\n";
+            mMessage += "New in v4.0 - Updates courtesy of (mainly) Philip Warner (a.k.a Grunthos) -- blame him, politely, if it toasts your data\n\n";
+            mMessage += "* New look, new startup page\n\n";
+            mMessage += "* Synchronization with goodreads (www.goodreads.com)\n\n";
+            mMessage += "* New styles for book lists (including 'Compact' and 'Unread')\n\n";
+            mMessage += "* User-defined styles for book lists\n\n";
+            mMessage += "* More efficient memory usage\n\n";
+            mMessage += "* New preferences, including 'always expanded/collapsed' lists\n\n";
+            mMessage += "* Faster expand/collapse with large collections\n\n";
+            mMessage += "* Cached covers for faster scrolling lists\n\n";
+            mMessage += "* Cover images now have globally unique names, and books have globally unique IDs, so sharing and combining collections is easy\n\n";
+            mMessage += "* Improved detection of series names\n\n";
         }
         if (curVersion == 72) {
             curVersion++;
@@ -1376,35 +1411,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (curVersion == 73) {
             //do nothing
             curVersion++;
-            message += "New in v4.0.1 - many bugs fixed\n\n";
-            message += "* Added a preference to completely disable background bitmap\n\n";
-            message += "* Added book counts to book lists\n\n";
-            message += "Thank you to all those people who reported bugs.\n\n";
+            mMessage += "New in v4.0.1 - many bugs fixed\n\n";
+            mMessage += "* Added a preference to completely disable background bitmap\n\n";
+            mMessage += "* Added book counts to book lists\n\n";
+            mMessage += "Thank you to all those people who reported bugs.\n\n";
         }
 
         if (curVersion == 74) {
             //do nothing
             curVersion++;
             StartupActivity.scheduleAuthorSeriesFixUp();
-            message += "New in v4.0.3\n\n";
-            message += "* ISBN validation when searching/scanning and error beep when scanning (with preference to turn it off)\n\n";
-            message += "* 'Loaned' list now shows available books under the heading 'Available'\n\n";
-            message += "* Added preference to hide list headers (for small phones)\n\n";
-            message += "* Restored functionality to use current bookshelf when adding book\n\n";
-            message += "* FastScroller sizing improved\n\n";
-            message += "* Several bugs fixed\n\n";
-            message += "Thank you to all those people who reported bugs and helped tracking them down.\n\n";
+            mMessage += "New in v4.0.3\n\n";
+            mMessage += "* ISBN validation when searching/scanning and error beep when scanning (with preference to turn it off)\n\n";
+            mMessage += "* 'Loaned' list now shows available books under the heading 'Available'\n\n";
+            mMessage += "* Added preference to hide list headers (for small phones)\n\n";
+            mMessage += "* Restored functionality to use current bookshelf when adding book\n\n";
+            mMessage += "* FastScroller sizing improved\n\n";
+            mMessage += "* Several bugs fixed\n\n";
+            mMessage += "Thank you to all those people who reported bugs and helped tracking them down.\n\n";
         }
 
         if (curVersion == 75) {
             //do nothing
             curVersion++;
             StartupActivity.scheduleFtsRebuild();
-            message += "New in v4.0.4\n\n";
-            message += "* Search now searches series and anthology data\n\n";
-            message += "* Allows non-numeric data entry in series position\n\n";
-            message += "* Better sorting of leading numerics in series position\n\n";
-            message += "* Several bug fixes\n\n";
+            mMessage += "New in v4.0.4\n\n";
+            mMessage += "* Search now searches series and anthology data\n\n";
+            mMessage += "* Allows non-numeric data entry in series position\n\n";
+            mMessage += "* Better sorting of leading numerics in series position\n\n";
+            mMessage += "* Several bug fixes\n\n";
         }
 
         if (curVersion == 76) {
@@ -1414,20 +1449,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (curVersion == 77) {
             //do nothing
             curVersion++;
-            message += "New in v4.0.6\n\n";
-            message += "* When adding books, scanning or typing an existing ISBN allows you the option to edit the book.\n";
-            message += "* Allow ASINs to be entered manually as well as ISBNs\n";
-            message += "* German translation updates (Robert Wetzlmayr)\n";
+            mMessage += "New in v4.0.6\n\n";
+            mMessage += "* When adding books, scanning or typing an existing ISBN allows you the option to edit the book.\n";
+            mMessage += "* Allow ASINs to be entered manually as well as ISBNs\n";
+            mMessage += "* German translation updates (Robert Wetzlmayr)\n";
         }
         if (curVersion == 78) {
             //do nothing
             curVersion++;
-            message += "New in v4.1\n\n";
-            message += "* New style groups: Location and Date Read\n";
-            message += "* Improved 'Share' functionality (filipeximenes)\n";
-            message += "* French translation updates (Djiko)\n";
-            message += "* Better handling of the 'back' key when editing books (filipeximenes)\n";
-            message += "* Various bug fixes\n";
+            mMessage += "New in v4.1\n\n";
+            mMessage += "* New style groups: Location and Date Read\n";
+            mMessage += "* Improved 'Share' functionality (filipeximenes)\n";
+            mMessage += "* French translation updates (Djiko)\n";
+            mMessage += "* Better handling of the 'back' key when editing books (filipeximenes)\n";
+            mMessage += "* Various bug fixes\n";
         }
 
         if (curVersion == 79) {

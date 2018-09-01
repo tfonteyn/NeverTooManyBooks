@@ -32,7 +32,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exception
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import org.apache.http.client.methods.HttpGet;
 
@@ -191,7 +191,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             	}
             }
             if (bestImage != null) {
-    			String filename = Utils.saveThumbnailFromUrl(bestImage, "_GR");
+    			String filename = ImageUtils.saveThumbnailFromUrl(bestImage, "_GR");
     			if (filename.length() > 0)
 					ArrayUtils.appendOrAdd(mBook, "__thumbnail", filename);
             }

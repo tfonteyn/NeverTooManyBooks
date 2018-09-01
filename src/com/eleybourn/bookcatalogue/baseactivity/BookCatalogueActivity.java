@@ -11,12 +11,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
-
-import java.util.Locale;
 
 /**
  * Base class for all (most) Activity's
@@ -25,17 +22,6 @@ import java.util.Locale;
  */
 abstract public class BookCatalogueActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    /**
-     * NEWKIND: add new supported themes here and in R.array.supported_themes,
-     * the string-array order must match the THEMES order
-     * The preferences choice will be build according to the string-array list/order.
-     */
-    protected static final int DEFAULT_THEME = 0;
-
-    private static final int[] THEMES = {
-            R.style.ThemeDark,
-            R.style.ThemeLight
-    };
 
     /**
      * The side/navigation panel
@@ -44,18 +30,9 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
     private NavigationView mNavigationView;
 
     /**
-     * Last locale used so; cached so we can check if it has genuinely changed
-     */
-    private Locale mLastLocale = BookCatalogueApp.getPreferredLocale();
-    /**
-     * same for Theme
-     */
-    private int mLastTheme = BookCataloguePreferences.getTheme(DEFAULT_THEME);
-    /**
      * when a locale or theme is changed, a restart of the activity is needed
      */
     private boolean mReloadOnResume = false;
-
 
     protected int getLayoutId(){
         return 0;
@@ -64,7 +41,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        setTheme(THEMES[mLastTheme]);
+        setTheme(BookCatalogueApp.getThemeResId());
         super.onCreate(savedInstanceState);
 
         int layoutId = getLayoutId();
@@ -174,10 +151,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
      * Reload this activity if locale has changed.
      */
     protected void updateLocaleIfChanged() {
-        Locale current = BookCatalogueApp.getPreferredLocale();
-        if ((current != null && !current.equals(mLastLocale)) || (current == null && mLastLocale != null)) {
-            mLastLocale = current;
-            BookCatalogueApp.applyPreferredLocaleIfNecessary(this.getResources());
+        if (BookCatalogueApp.hasLocalChanged(this.getResources())) {
             mReloadOnResume = true;
         }
     }
@@ -186,10 +160,8 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
      * Reload this activity if theme has changed.
      */
     protected void updateThemeIfChanged() {
-        int current = BookCataloguePreferences.getInt(BookCataloguePreferences.PREF_APP_THEME, DEFAULT_THEME);
-        if (mLastTheme != current) {
-            mLastTheme = current;
-            setTheme(THEMES[mLastTheme]);
+        if (BookCatalogueApp.hasThemeChanged()) {
+            setTheme(BookCatalogueApp.getThemeResId());
             mReloadOnResume = true;
         }
     }

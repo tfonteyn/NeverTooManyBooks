@@ -71,30 +71,18 @@ public class BCBackground {
      * Set the background based on user preferences
      */
     public static void init(Activity a) {
-        if (BuildConfig.DEBUG) {
-            System.out.println("BCBackground.init(Activity)");
-        }
         privateInit(a.findViewById(R.id.root),false);
     }
 
     public static void init(ListActivity a) {
-        if (BuildConfig.DEBUG) {
-            System.out.println("BCBackground.init(ListActivity)");
-        }
         privateInit(a.findViewById(R.id.root),false);
     }
 
     public static void init(Fragment f) {
-        if (BuildConfig.DEBUG) {
-            System.out.println("BCBackground.init(Fragment)");
-        }
         privateInit(f.getActivity().findViewById(R.id.root), false);
     }
 
     public static void init(Activity a, boolean bright) {
-        if (BuildConfig.DEBUG) {
-            System.out.println("BCBackground.init(Activity)");
-        }
         privateInit(a.findViewById(R.id.root),bright);
     }
 

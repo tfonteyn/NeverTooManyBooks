@@ -295,7 +295,7 @@ public class TaskManager implements AutoCloseable {
 	}
 
 	/**
-	 * Update the base progress message. Used (generally) by the ActivityWuthTasks to 
+	 * Update the base progress message. Used (generally) by the ActivityWithTasks to
 	 * display some text above the task info. Set to blank to ensure ProgressDialog will
 	 * be removed.
 	 */

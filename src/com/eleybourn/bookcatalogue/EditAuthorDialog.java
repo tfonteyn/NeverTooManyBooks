@@ -22,11 +22,12 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.support.v7.app.AppCompatDialog;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 
 public class EditAuthorDialog {
 	private final Context mContext;
@@ -40,7 +41,7 @@ public class EditAuthorDialog {
 	}
 
 	public void editAuthor(final Author author) {
-		final Dialog dialog = new AppCompatDialog(mContext);
+		final Dialog dialog = new BasicDialog(mContext);
 		dialog.setContentView(R.layout.edit_author);
 		dialog.setTitle(R.string.edit_author_details);
 		EditText familyView = dialog.findViewById(R.id.family_name);

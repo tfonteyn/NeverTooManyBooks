@@ -21,7 +21,17 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.*;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_FORMAT;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ISBN;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_LOCATION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_NOTES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PAGES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_RATING;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ_END;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ_START;
 
 /**
  * Class for representing read-only book details.

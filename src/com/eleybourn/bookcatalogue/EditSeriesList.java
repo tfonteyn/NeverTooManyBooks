@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -38,6 +37,7 @@ import android.widget.Toast;
 import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 
 public class EditSeriesList extends EditObjectList<Series> {
 	
@@ -122,7 +122,7 @@ public class EditSeriesList extends EditObjectList<Series> {
 	}
 	
 	private void editSeries(final Series series) {
-		final Dialog dialog = new AppCompatDialog(this);
+		final Dialog dialog = new BasicDialog(this);
 		dialog.setContentView(R.layout.edit_book_series);
 		dialog.setTitle(R.string.edit_book_series);
 

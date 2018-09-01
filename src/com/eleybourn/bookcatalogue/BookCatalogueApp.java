@@ -84,6 +84,44 @@ import java.util.Locale;
 )
 
 public class BookCatalogueApp extends Application {
+    /**
+     * NEWKIND: add new supported themes here and in R.array.supported_themes,
+     * the string-array order must match the APP_THEMES order
+     * The preferences choice will be build according to the string-array list/order.
+     */
+    public static final int DEFAULT_THEME = 0;
+    private static final int[] APP_THEMES = {
+            R.style.AppThemeDark,
+            R.style.AppThemeLight
+    };
+    private static final int[] DIALOG_THEMES = {
+            R.style.DialogThemeDark,
+            R.style.DialogThemeLight
+    };
+
+    private static int mLastTheme;
+
+    /**
+     * Tests if the Theme has changed + updates the global setting
+     *TODO: check OnSharedPreferenceChangeListener ?
+     * @return  true is a change was detected
+     */
+    public synchronized static boolean hasThemeChanged() {
+        int current = BookCataloguePreferences.getTheme(DEFAULT_THEME);
+        if (current != mLastTheme) {
+            mLastTheme = current;
+            return true;
+        }
+        return false;
+    }
+
+    public static int getThemeResId() {
+        return APP_THEMES[mLastTheme];
+    }
+
+    public static int getDialogThemeResId() {
+        return DIALOG_THEMES[mLastTheme];
+    }
 
     /**
      * Set of OnLocaleChangedListeners
@@ -108,6 +146,26 @@ public class BookCatalogueApp extends Application {
      */
     private static Locale mPreferredLocale = null;
     /**
+     * Last locale used so; cached so we can check if it has genuinely changed
+     */
+    private static Locale mLastLocale = null;
+    /**
+     * Tests if the Locale has changed + updates the global setting
+     *TODO: check OnSharedPreferenceChangeListener ?
+     *
+     * @return  true is a change was detected
+     */
+    public synchronized static boolean hasLocalChanged(Resources res) {
+        Locale current = mPreferredLocale;
+        if ((current != null && !current.equals(mLastLocale)) || (current == null && mLastLocale != null)) {
+            mLastLocale = current;
+            applyPreferredLocaleIfNecessary(res);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * List of supported locales
      */
     private static ArrayList<String> mSupportedLocales = null;
@@ -116,7 +174,8 @@ public class BookCatalogueApp extends Application {
      * <p>
      * Currently it just handles Locale changes and propagates it to any listeners.
      */
-    private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+    private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
+            new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             switch (key) {
@@ -129,6 +188,9 @@ public class BookCatalogueApp extends Application {
                     }
                     applyPreferredLocaleIfNecessary(getBaseContext().getResources());
                     notifyLocaleChanged();
+                    break;
+                case BookCataloguePreferences.PREF_APP_THEME:
+                    //TODO: implement global them change ?
                     break;
                 default:
                     break;
@@ -406,7 +468,7 @@ public class BookCatalogueApp extends Application {
 //	    mIsBound = true;
 //	}
 //	/**
-//	 * Detach existiing service connection.
+//	 * Detach existing service connection.
 //	 */
 //	void doUnbindService() {
 //	    if (mIsBound) {
@@ -422,7 +484,7 @@ public class BookCatalogueApp extends Application {
      *
      * @return true if it was actually changed
      */
-    public static void applyPreferredLocaleIfNecessary(Resources res) {
+    private static void applyPreferredLocaleIfNecessary(Resources res) {
         if (mPreferredLocale == null || (res.getConfiguration().locale.equals(mPreferredLocale))) {
             return;
         }
@@ -497,6 +559,9 @@ public class BookCatalogueApp extends Application {
         // Start the queue manager
         if (mQueueManager == null)
             mQueueManager = new BcQueueManager(this.getApplicationContext());
+
+        // Initialise the Theme
+        mLastTheme = BookCataloguePreferences.getTheme(DEFAULT_THEME);
 
         super.onCreate();
 

@@ -30,10 +30,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteQuery;
-import android.graphics.Bitmap;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
-import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
@@ -45,17 +43,16 @@ import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
 import com.eleybourn.bookcatalogue.database.SqlStatementManager;
 import com.eleybourn.bookcatalogue.database.TrackedCursor;
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnInfo;
 import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper;
 import com.eleybourn.bookcatalogue.database.dbaadapter.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.ViewUtils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -69,9 +66,82 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.*;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.*;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.*;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_AUTHOR_ID;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_AUTHOR_NAME;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_BOOK;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_BOOKSHELF_ID;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_DOCID;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_GENRE;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_ID;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_ISBN;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_LANGUAGE;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_LAST_GOODREADS_SYNC_DATE;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_LOCATION;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_NOTES;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_PUBLISHER;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_SERIES_ID;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_SERIES_NUM;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_STYLE;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_TITLE;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_ANTHOLOGY;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_AUTHORS;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOKS;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOKS_FTS;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOK_AUTHOR;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOK_LIST_STYLES;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOK_SERIES;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_SERIES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ANTHOLOGY_MASK;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_FORMATTED_GIVEN_FIRST;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_ID;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_NAME;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_POSITION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_BOOK;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DATE_ADDED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_FAMILY_NAME;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_FORMAT;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_GENRE;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_GIVEN_NAMES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ISBN;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_LIST_PRICE;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_LOANED_TO;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_LOCATION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_NOTES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PAGES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_POSITION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_RATING;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ_END;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ_START;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ROWID;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_ID;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_NUM;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_POSITION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SIGNED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TITLE;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.COLLATION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_ANTHOLOGY;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_AUTHORS;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_BOOKS;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_BOOK_AUTHOR;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_BOOK_BOOKSHELF_WEAK;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_BOOK_SERIES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_LOAN;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_TB_SERIES;
 
 /**
  * Book Catalogue database access helper class. Defines the basic CRUD operations
@@ -85,6 +155,12 @@ import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.*;
  * 
  */
 public class CatalogueDBAdapter implements AutoCloseable {
+
+    /**
+     *  Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
+     */
+    private static final boolean DEBUG = false;
+
 	/** Debug counter */
 	private static Integer mInstanceCount = 0;
 
@@ -290,7 +366,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 * @param ctx the Context within which to work
 	 */
 	public CatalogueDBAdapter(Context ctx) {
-		if (BuildConfig.DEBUG) {
+		if (DEBUG && BuildConfig.DEBUG) {
 			synchronized(mInstanceCount) {
 				mInstanceCount++;
 				System.out.println("CatDBA instances: " + mInstanceCount);
@@ -342,7 +418,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 mStatements.close();
             }
 
-			if (BuildConfig.DEBUG) {
+			if (DEBUG && BuildConfig.DEBUG) {
 				synchronized(mInstanceCount) {
 					mInstanceCount--;
 					System.out.println("CatDBA instances: " + mInstanceCount);
@@ -379,118 +455,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
 			Logger.logError(e);
 		}
 	}
-	
-	/**
-	 * Get the 'standard' temp file name for new books
-	 */
-	public static File getTempThumbnail() {
-		return getTempThumbnail("");
-	}
 
-	/**
-	 * Get the 'standard' temp file name for new books, including a suffix
-	 */
-	public static File getTempThumbnail(String suffix) {
-		return StorageUtils.getFile("tmp" + suffix + ".jpg");
-	}
-
-	/**
-	 * return the thumbnail (as a File object) for the given hash
-	 * 
-	 * @param uuid 	The uuid of the book
-	 * @return 		The File object
-	 */
-	public static File fetchThumbnailByUuid(String uuid) {
-		return fetchThumbnailByUuid(uuid, "");
-	}
-
-//	/**
-//	 * return the thumbnail (as a File object) for the given id
-//	 * 
-//	 * @param id The id of the book
-//	 * @return The File object
-//	 */
-//	private static File fetchThumbnailById(long id) {
-//		return fetchThumbnailById(id, "");
-//	}
-
-	/**
-	 * return the thumbnail (as a File object) for the given id.
-	 * 
-	 * @param prefix    Optional on the file name.
-	 * @param suffix    Optional on the file name.
-	 *
-	 * @return The File object
-	 */
-	public static File fetchThumbnailByName(String prefix, String suffix) {
-		if (suffix == null)
-			suffix = "";
-
-		if (prefix == null || prefix.isEmpty()) {
-			return getTempThumbnail(suffix);
-		} else {
-            File file = StorageUtils.getFile(prefix + suffix + ".jpg");
-			if (!file.exists()) {
-				File png = StorageUtils.getFile(prefix + suffix + ".png");
-				if (png.exists())
-					return png;
-				else
-					return file;
-			} else {
-				return file;
-			}
-		}
-	}
-	
-	/*
-	 * return the thumbnail (as a File object) for the given id. Optionally use a suffix
-	 * on the file name.
-	 * 
-	 * @param id The id of the book
-	 * @return The File object
-	 */
-//	private static File fetchThumbnailById(long id, String suffix) {
-//		return fetchThumbnailByName(Long.toString(id), suffix);
-//	}
-	
-	/**
-	 * return the thumbnail (as a File object) for the given id.
-	 * 
-	 * @param uuid		The id of the book
-	 * @param suffix	Optionally use a suffix on the file name.
-	 *
-	 * @return The File object
-	 */
-	public static File fetchThumbnailByUuid(String uuid, String suffix) {
-		return fetchThumbnailByName(uuid, suffix);
-	}
-
-	/**
-	 * This function will load the thumbnail bitmap with a guaranteed maximum size; it
-	 * prevents OutOfMemory exceptions on large files and reduces memory usage in lists.
-	 * It can also scale images to the exact requested size.
-	 * 
-	 * @param uuid		The id of the book
-	 * @param destView 	The ImageView to load with the bitmap or an appropriate icon
-	 * @param maxWidth 	Maximum desired width of the image
-	 * @param maxHeight Maximum desired height of the image
-	 * @param exact 	if true, the image will be propertionally scaled to fit bbox.
-	 * 
-	 * @return The scaled bitmap for the file, or null if no file or bad file.
-	 */
-	public static Bitmap fetchThumbnailIntoImageView(String uuid, ImageView destView, int maxWidth, int maxHeight, boolean exact) {
-		// Get the file, if it exists. Otherwise set 'help' icon and exit.
-		Bitmap image = null;
-		try {
-			File file = fetchThumbnailByUuid(uuid);
-			image = ViewUtils.fetchFileIntoImageView(file, destView, maxWidth, maxHeight, exact );
-		} catch (IllegalArgumentException e) {
-			Logger.logError(e);
-		}
-		return image;
-	}
-
-	/**
+    /**
 	 * This will return the parsed author name based on a String. 
 	 * The name can be in either "family, given" or "given family" format.
 	 *
@@ -2578,7 +2544,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 		// Create the arguments
 		for (String key : keys) {
 			// Get column info for this column.
-			ColumnInfo c = mBooksInfo.getColumn(key);
+			TableInfo.ColumnInfo c = mBooksInfo.getColumn(key);
 			// Check if we actually have a matching column.
 			if (c != null) {
 				// Never update PK.
@@ -3307,11 +3273,11 @@ public class CatalogueDBAdapter implements AutoCloseable {
 		// Delete thumbnail(s)
 		if (uuid != null) {
 			try {
-				File f = fetchThumbnailByUuid(uuid);
+				File f = ImageUtils.fetchThumbnailByUuid(uuid);
 				while (f.exists()) {
 					//noinspection ResultOfMethodCallIgnored
 					f.delete();
-					f = fetchThumbnailByUuid(uuid);
+					f = ImageUtils.fetchThumbnailByUuid(uuid);
 				}	
 			} catch (Exception e) {
 				Logger.logError(e, "Failed to delete cover thumbnail");
@@ -4325,7 +4291,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 				mDb.execSQL("Alter Table " + ftsTemp + " rename to " + TBL_BOOKS_FTS);
 		}
 
-		if (BuildConfig.DEBUG) {
+		if (DEBUG && BuildConfig.DEBUG) {
 			long t1 = System.currentTimeMillis();
 			System.out.println("books reindexed in " + (t1 - t0) + "ms");
 		}
@@ -4496,7 +4462,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 * there are still non-fatal anomalies.
 	 */
 	public static void printReferenceCount(String msg) {
-		if (BuildConfig.DEBUG) {
+		if (DEBUG && BuildConfig.DEBUG) {
 			if (mDb != null) {
                 SynchronizedDb.printRefCount(msg, mDb.getUnderlyingDatabase());
             }

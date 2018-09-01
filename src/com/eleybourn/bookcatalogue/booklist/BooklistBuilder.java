@@ -156,6 +156,10 @@ import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_LO
  * @author Philip Warner
  */
 public class BooklistBuilder implements AutoCloseable {
+    /**
+     *  Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
+     */
+    private static final boolean DEBUG = false;
 
     /**
      * BookList Compatibility mode property values
@@ -280,7 +284,7 @@ public class BooklistBuilder implements AutoCloseable {
      * @param style   Book list style to use
      */
     public BooklistBuilder(CatalogueDBAdapter adapter, BooklistStyle style) {
-        if (BuildConfig.DEBUG) {
+        if (DEBUG && BuildConfig.DEBUG) {
             synchronized (mInstanceCount) {
                 mInstanceCount++;
                 System.out.println("Builder instances: " + mInstanceCount);
@@ -1300,7 +1304,7 @@ public class BooklistBuilder implements AutoCloseable {
                 long t10 = System.currentTimeMillis();
                 //mDb.execSQL("analyze " + mTableName);
 
-                if (BuildConfig.DEBUG) {
+                if (DEBUG && BuildConfig.DEBUG) {
                     long t11 = System.currentTimeMillis();
 
                     System.out.println("T0a: " + (t0a - t0));
@@ -1821,7 +1825,7 @@ public class BooklistBuilder implements AutoCloseable {
         int cnt = (int) fooStmt.simpleQueryForLong();
         fooStmt.close();
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG && BuildConfig.DEBUG) {
             long tc1 = System.currentTimeMillis();
             System.out.println("Pseudo-count (" + name + ") = " + cnt + " completed in " + (tc1 - tc0) + "ms");
         }
@@ -1963,7 +1967,7 @@ public class BooklistBuilder implements AutoCloseable {
             deleteListNodeSettings();
         }
         long t1 = System.currentTimeMillis() - t0;
-        if (BuildConfig.DEBUG) {
+        if (DEBUG && BuildConfig.DEBUG) {
             System.out.println("Expand All: " + t1);
         }
     }
@@ -2025,7 +2029,7 @@ public class BooklistBuilder implements AutoCloseable {
      */
     private void cleanup(final boolean isFinalize) {
         if (mStatements.size() != 0) {
-            if (BuildConfig.DEBUG && isFinalize) {
+            if (DEBUG && BuildConfig.DEBUG && isFinalize) {
                 System.out.println("Finalizing BooklistBuilder with active statements");
             }
             try {
@@ -2036,7 +2040,7 @@ public class BooklistBuilder implements AutoCloseable {
         }
 
         if (mNavTable != null) {
-            if (BuildConfig.DEBUG && isFinalize) {
+            if (DEBUG && BuildConfig.DEBUG && isFinalize) {
                 System.out.println("Finalizing BooklistBuilder with nav table");
             }
             try {
@@ -2047,7 +2051,7 @@ public class BooklistBuilder implements AutoCloseable {
             }
         }
         if (mListTable != null) {
-            if (BuildConfig.DEBUG && isFinalize) {
+            if (DEBUG && BuildConfig.DEBUG && isFinalize) {
                 System.out.println("Finalizing BooklistBuilder with list table");
             }
             try {
@@ -2058,7 +2062,7 @@ public class BooklistBuilder implements AutoCloseable {
             }
         }
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG && BuildConfig.DEBUG) {
             if (!mReferenceDecremented) {
                 // Only de-reference once!
                 synchronized (mInstanceCount) {
@@ -2263,7 +2267,7 @@ public class BooklistBuilder implements AutoCloseable {
             long t1 = System.currentTimeMillis();
             mListTable.create(mDb, false);
 
-            if (BuildConfig.DEBUG) {
+            if (DEBUG && BuildConfig.DEBUG) {
                 long t2 = System.currentTimeMillis();
                 System.out.println("Drop = " + (t1 - t0));
                 System.out.println("Create = " + (t2 - t1));

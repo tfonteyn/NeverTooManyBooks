@@ -1,7 +1,7 @@
 /*
  * @copyright 2011 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -18,10 +18,10 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
- package com.eleybourn.bookcatalogue;
+package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.res.TypedArray;
@@ -29,399 +29,481 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatDialog;
+import android.support.annotation.NonNull;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.Gallery;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher.ViewFactory;
 
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager.ImageSizes;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
-import com.eleybourn.bookcatalogue.utils.ViewUtils;
+import com.eleybourn.bookcatalogue.widgets.PagerLayout;
+import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 
 import java.io.File;
 import java.util.ArrayList;
 
 /**
  * Class to display and manage a cover image browser in a dialog.
- *
+ * <p>
  * ENHANCE: For each ISBN returned by LT, add TWO images and get the second from GoodReads
  * ENHANCE: (Somehow) remove non-existent images from ImageSelector. Probably start with 1 image and GROW it.
- * 
+ *
  * @author Philip Warner
  */
 public class CoverBrowser {
-	// used in setting images sizes
-	private final android.util.DisplayMetrics mMetrics;
-	// Task queue for images
-	private SimpleTaskQueue mImageFetcher = null;
-	// Handler when an image is finally selected.
-	private final OnImageSelectedListener mOnImageSelectedListener;
-	// ISBN of book to lookup
-	private final String mIsbn;
-	// Calling context
-	private final Context mContext;
-	// Calculated size for preview images
-	private final int mPreviewSize;
-	// List of all editions for the given ISBN
-	private ArrayList<String> mEditions;
-	// Object to ensure files are cleaned up.
-	private FileManager mFileManager;
-	// The Dialog
-	private Dialog mDialog = null;
-	/** Indicates a 'shutdown()' has been requested */
-	private boolean mShutdown = false;
+    // Handler when an image is finally selected.
+    private final OnImageSelectedListener mOnImageSelectedListener;
+    // ISBN of book to lookup
+    private final String mIsbn;
+    // Calling context
+    private final Activity mActivity;
+    private final int mPreviewSizeWidth;
+    private final int mPreviewSizeHeight;
+    // Task queue for images
+    private SimpleTaskQueue mImageFetcher = null;
+    // List of all editions for the given ISBN
+    private ArrayList<String> mEditions;
+    // Object to ensure files are cleaned up.
+    private FileManager mFileManager;
+    // The Dialog
+    private final Dialog mDialog;
+    private android.util.DisplayMetrics mMetric;
+    /**
+     * Indicates a 'shutdown()' has been requested
+     */
+    private boolean mShutdown = false;
 
-	/**
-	 * Interface called when image is selected.
-	 * 
-	 * @author Philip Warner
-	 */
-	public interface OnImageSelectedListener {
-		void onImageSelected(String fileSpec);
-	}
+    /**
+     * Constructor
+     *
+     * @param a             Calling context
+     * @param metrics       Display metrics uses in sizing images
+     * @param isbn          ISBN of book
+     * @param onImageSelectedListener Handler to call when book selected
+     */
+    CoverBrowser(Activity a, android.util.DisplayMetrics metrics, String isbn,
+                 OnImageSelectedListener onImageSelectedListener) {
+        mActivity = a;
+        mMetric = metrics;
+        mIsbn = isbn;
+        mOnImageSelectedListener = onImageSelectedListener;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param context					Calling context
-	 * @param metrics					Display metrics uses in sizing images
-	 * @param isbn						ISBN of book
-	 * @param onImageSelectedListener	Handler to call when book selected
-	 */
-	CoverBrowser(Context context, android.util.DisplayMetrics metrics, String isbn, OnImageSelectedListener onImageSelectedListener) {
-		mIsbn = isbn;
-		mContext = context;
-		mMetrics = metrics;
-		mOnImageSelectedListener = onImageSelectedListener;
+        // Calculate some image sizes to display
+        int previewSize = Math.max(mMetric.widthPixels, mMetric.heightPixels) / 5;
+        // for code clarity kept as two variable names.
+        mPreviewSizeWidth = previewSize;
+        mPreviewSizeHeight = previewSize;
+        // Create an object to manage the downloaded files
+        mFileManager = new FileManager();
 
-		// Calculate some image sizes to display
-		mPreviewSize = Math.max(mMetrics.widthPixels, mMetrics.heightPixels)/5;
+        mDialog = new BasicDialog(mActivity);
+    }
 
-		// Create an object to manage the downloaded files
-		mFileManager = new FileManager();
+    /**
+     * Close and abort everything
+     */
+    public void dismiss() {
+        shutdown();
+    }
 
-	}
+    /**
+     * Close down everything
+     */
+    private void shutdown() {
+        mShutdown = true;
 
-	/**
-	 * Close and abort everything
-	 */
-	public void dismiss() {
-		shutdown();
-	}
+        if (mDialog != null) {
+            mDialog.dismiss();
+        }
+        if (mImageFetcher != null) {
+            mImageFetcher.finish();
+            mImageFetcher = null;
+        }
+        if (mFileManager != null) {
+            mFileManager.purge();
+            mFileManager = null;
+        }
+    }
 
-	/** 
-	 * Close down everything
-	 */
-	private void shutdown() {
-		mShutdown = true;
+    /**
+     * Show the user a selection of other covers and allow selection of a replacement.
+     */
+    public void showEditionCovers() {
 
-		if (mDialog != null) {
-			// Dismiss will call shutdown();
-			mDialog.dismiss();
-			mDialog = null;
-		}
-		if (mImageFetcher != null) {
-			mImageFetcher.finish();
-			mImageFetcher = null;
-		}
-		if (mFileManager != null) {
-			mFileManager.purge();
-			mFileManager = null;
-		}
-	}
-	/**
-	 * SimpleTask to fetch a thumbnail image and apply it to an ImageView
-	 * 
-	 * @author Philip Warner
-	 */
-	private class GetEditionsTask implements SimpleTask {
-		final String isbn;
+        LibraryThingManager mLibraryThing = new LibraryThingManager(mActivity);
+        if (!mLibraryThing.isAvailable()) {
+            StandardDialogs.needLibraryThingAlert(mActivity, true, "cover_browser");
+            return;
+        }
 
-		/**
-		 * Constructor
-		 */
-		GetEditionsTask(String isbn){
-			this.isbn = isbn;
-		}
+        if (mIsbn == null || mIsbn.trim().isEmpty()) {
+            Toast.makeText(mActivity, R.string.no_isbn_no_editions, Toast.LENGTH_LONG).show();
+            shutdown();
+            return;
+        }
 
-		@Override
-		public void run(SimpleTaskContext taskContext) {
-			// Get some editions
-			// ENHANCE: the list of editions should be expanded to somehow include Amazon and Google. As well
-			// as the alternate user-contributed images from LibraryThing. The latter are often the best 
-			// source but at present could only be obtained by HTML scraping.
-			try {
-				mEditions = LibraryThingManager.searchEditions(isbn);
-			} catch (Exception e) {
-				mEditions = null;
-			}
-		}
-		@Override
-		public void onFinish(Exception e) {
-			if (mEditions.size() == 0) {
-				Toast.makeText(mContext, R.string.no_editions, Toast.LENGTH_LONG).show();
-				shutdown();
-				return;
-			}
-			showDialogDetails();
-		}
+        // Setup the background fetcher
+        if (mImageFetcher == null) {
+            mImageFetcher = new SimpleTaskQueue("cover-browser");
+        }
 
-	}
+        SimpleTask edTask = new GetEditionsTask(mIsbn);
+        mImageFetcher.enqueue(edTask);
 
-	/**
-	 * SimpleTask to fetch a thumbnail image and apply it to an ImageView
-	 * 
-	 * @author Philip Warner
-	 */
-	@SuppressWarnings("unused")
-	private class GetThumbnailTask implements SimpleTask {
-		final ImageView v;
-		final int position;
-		final String isbn;
-		String fileSpec;
+        // Setup the basic dialog
+        mDialog.setContentView(R.layout.select_edition_cover);
+        mDialog.setTitle(R.string.finding_editions);
+        mDialog.show();
+    }
 
-		/**
-		 * Constructor
-		 * 
-		 * @param position	Position on requested cover.
-		 * @param v			View to update
-		 */
-		GetThumbnailTask(int position, ImageView v){
-			this.position = position;
-			this.v = v;
-			isbn = mEditions.get(position);
-		}
+    private void showDialogDetails() {
+        mDialog.setTitle(R.string.select_cover);
 
-		@Override
-		public void run(SimpleTaskContext taskContext) {
-			// Start the download
-			fileSpec = mFileManager.download(isbn, ImageSizes.SMALL);
-			File file = new File(fileSpec);
-			if (file.length() < 50) {
-				fileSpec = mFileManager.download(isbn, ImageSizes.LARGE);
-			}				
-		}
-		@Override
-		public void onFinish(Exception e) {
-			// Load the file and apply to view
-			File file = new File(fileSpec);
-			file.deleteOnExit();
-			//CoverImageAdapter cia = (CoverImageAdapter) gallery.getAdapter();
-			//cia.notifyDataSetChanged();
-			ViewUtils.fetchFileIntoImageView(file, v, mPreviewSize, mPreviewSize, true );
-		}
-	}
+        // Setup the Gallery.
+        final PagerLayout container = mDialog.findViewById(R.id.gallery);
+        container.setMinimumWidth(mMetric.widthPixels);
 
-	/**
-	 * SimpleTask to download an image and apply it to the ImageSwitcher.
-	 * 
-	 * @author Philip Warner
-	 */
-	@SuppressWarnings("unused")
-	private class GetFullImageTask implements SimpleTask {
-		// Switcher to use
-		private final ImageSwitcher switcher;
-		// Position of edition
-		private final int position;
-		// ISBN
-		private final String isbn;
-		// Resulting file spec
-		private String fileSpec;
+        final ViewPager gallery = container.getViewPager();
 
-		/**
-		 * Constructor
-		 * 
-		 * @param position		Position f ISBN
-		 * @param switcher		ImageSwicther to update
-		 */
-		GetFullImageTask(int position, ImageSwitcher switcher){
-			this.position = position;
-			this.switcher = switcher;
-			// Get the ISBN
-			isbn = mEditions.get(position);
-		}
-		@Override
-		public void run(SimpleTaskContext taskContext) {
-			// If we are shutdown, just return
-			if (mShutdown) {
-				taskContext.setRequiresFinish(false);
-				return;
-			}
+        // The switcher will be used to display larger versions; needed for onItemClick().
+        final ImageSwitcher switcher = mDialog.findViewById(R.id.switcher);
 
-			// Download the file
-			fileSpec = mFileManager.download(isbn, ImageSizes.LARGE);
-			File file = new File(fileSpec);
-			if (file.length() < 50) {
-				fileSpec = mFileManager.download(isbn, ImageSizes.SMALL);
-			}
-		}
-		@Override
-		public void onFinish(Exception e) {
-			if (mShutdown)
-				return;
-			// Update the ImageSwitcher
-			File file = new File(fileSpec);
-			TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
-			if (file.exists() && file.length() > 100) {
-				Drawable d = new BitmapDrawable(mContext.getResources(),
-						ViewUtils.fetchFileIntoImageView(file, null, mPreviewSize*4, mPreviewSize*4, true ));
-				switcher.setImageDrawable(d);
-				ViewTagger.setTag(switcher, file.getAbsolutePath());    			
-				msgVw.setVisibility(View.GONE);
-				switcher.setVisibility(View.VISIBLE);
-			} else {
-				msgVw.setVisibility(View.VISIBLE);
-				switcher.setVisibility(View.GONE);
-				msgVw.setText(R.string.image_not_found);
-			}
-		}
-	}
+        // Use our custom adapter to load images
+        final PagerAdapter adapter = new CoverImagePagerAdapter(switcher);
+        gallery.setAdapter(adapter);
 
-	/**
-	 * Show the user a selection of other covers and allow selection of a replacement.
-	 */
-	public void showEditionCovers() {
+        //Necessary or the pager will only have one extra page to show
+        // make this at least however many pages you can see
+        gallery.setOffscreenPageLimit(adapter.getCount());
 
-		LibraryThingManager mLibraryThing = new LibraryThingManager(mContext);
-		if (!mLibraryThing.isAvailable()) {
-			StandardDialogs.needLibraryThingAlert(mContext, true, "cover_browser");
-			return;
-		}
+        //If hardware acceleration is enabled, you should also remove
+        // clipping on the pager for its children.
+        gallery.setClipChildren(false);
 
-		if (mIsbn == null || mIsbn.trim().isEmpty()) {
-			Toast.makeText(mContext, R.string.no_isbn_no_editions, Toast.LENGTH_LONG).show();
-			shutdown();
-			return;
-		}
+        // dev note: if we set width to MATCH_PARENT, the page (cover image) IN the PageView is maximized.
+        // we don't want that... we want PageView maximized, but page itself as is.
+        gallery.setLayoutParams(new PagerLayout.LayoutParams(mPreviewSizeWidth, mPreviewSizeHeight));
 
-		// Setup the background fetcher
-		if (mImageFetcher == null)
-			mImageFetcher = new SimpleTaskQueue("cover-browser");
+        // Show help message
+        final TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
+        msgVw.setText(R.string.click_on_thumb);
+        msgVw.setVisibility(View.VISIBLE);
 
-		SimpleTask edTask = new GetEditionsTask(mIsbn);
-		mImageFetcher.enqueue(edTask);
+        // When the large image is clicked, send it back to the caller and terminate.
+        switcher.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Object newSpec = ViewTagger.getTag(switcher);
+                if (newSpec != null) {
+                    if (mOnImageSelectedListener != null) {
+                        mOnImageSelectedListener.onImageSelected((String) newSpec);
+                    }
+                }
+                mDialog.dismiss();
+            }
+        });
 
-		// Setup the basic dialog
-		mDialog = new AppCompatDialog(mContext);
-		mDialog.setContentView(R.layout.select_edition_cover);
-		mDialog.setTitle(R.string.finding_editions);
+        // Required object. Just create an ImageView
+        switcher.setFactory(new ViewFactory() {
+            @Override
+            public View makeView() {
+                ImageView i = new ImageView(mActivity);
+                i.setBackgroundColor(0xFF000000);
+                i.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                i.setLayoutParams(new ImageSwitcher.LayoutParams(
+                        ImageSwitcher.LayoutParams.WRAP_CONTENT,
+                        ImageSwitcher.LayoutParams.WRAP_CONTENT));
+                i.setImageResource(android.R.drawable.ic_menu_help);
+                return i;
+            }
+        });
 
-		//TextView msgVw = (TextView)mDialog.findViewById(R.id.status);
-		//msgVw.setText(R.string.finding_editions);
+        // When the dialog is closed, delete the files and terminated the SimpleTaskQueue.
+        mDialog.setOnDismissListener(new OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                shutdown();
+            }
+        });
+    }
 
-		mDialog.show();
-	}
+    /**
+     * //FIXME: use RecyclerView ? to research....
+     * <p>
+     * ImageAdapter for gallery. Queues image requests.
+     *
+     * @author Philip Warner
+     */
+    private class CoverImagePagerAdapter extends PagerAdapter {
+        private final int mGalleryItemBackground;
+        private final ImageSwitcher mSwitcher;
 
-	private void showDialogDetails() {
-		mDialog.setTitle(R.string.select_cover);
+        CoverImagePagerAdapter(ImageSwitcher switcher) {
+            mSwitcher = switcher;
+            // Setup the background
+            TypedArray a = mActivity.obtainStyledAttributes(R.styleable.CoverGallery);
+            mGalleryItemBackground = a.getResourceId(R.styleable.CoverGallery_android_galleryItemBackground, 0);
+            a.recycle();
+        }
 
-		// The switcher will be used to display larger versions; needed for onItemClick().
-		final ImageSwitcher switcher = mDialog.findViewById(R.id.switcher);
+        @NonNull
+        @Override
+        public Object instantiateItem(@NonNull ViewGroup collection, final int position) {
+            ImageView coverImage = new ImageView(mActivity);
 
-		// Setup the Gallery.
-		final Gallery gallery = mDialog.findViewById(R.id.gallery);
-		gallery.setVisibility(View.VISIBLE);
+            // If we are shutdown, just return a view
+            if (mShutdown)
+                return coverImage;
 
-		// Show help message
-		TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
-		msgVw.setText(R.string.click_on_thumb);
-		msgVw.setVisibility(View.VISIBLE);
+            // Initialize the view
+            //coverImage.setScaleType(ImageView.ScaleType.FIT_XY);
+            coverImage.setBackgroundResource(mGalleryItemBackground);
 
-		//gallery.setHorizontalScrollBarEnabled(true);
-		gallery.setMinimumWidth(mMetrics.widthPixels);
-		gallery.setMinimumHeight(mPreviewSize);
-		gallery.setSpacing(mPreviewSize/10);
+            // now go fetch an image based on the isbn
+            String isbn = mEditions.get(position);
 
+            // See if file is present
+            File file = null;
+            try {
+                file = mFileManager.getFile(isbn, ImageSizes.SMALL);
+            } catch (NullPointerException ignore) {
+                //file did not exist. Dealt with later.
+            }
 
-		// Use our custom adapter to load images
-		CoverImageAdapter mAdapter = new CoverImageAdapter();
-		gallery.setAdapter(mAdapter);
+            if (file == null) {
+                // Not present; request it
+                mImageFetcher.enqueue(new GetThumbnailTask(isbn, coverImage, mPreviewSizeWidth, mPreviewSizeHeight));
+                //  and use a placeholder.
+                coverImage.setImageResource(android.R.drawable.ic_menu_help);
+            } else {
+                // Present, so use it.
+                ImageUtils.fetchFileIntoImageView(file, coverImage, mPreviewSizeWidth, mPreviewSizeHeight, true);
+            }
 
-		// When the gallery is clicked, load the switcher
-		gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-	    		// Show status message
-	    		TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
-        		switcher.setVisibility(View.GONE);
-	    		msgVw.setText(R.string.loading);
-        		msgVw.setVisibility(View.VISIBLE);
+            coverImage.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mSwitcher.setVisibility(View.GONE);
 
-	    		GetFullImageTask task = new GetFullImageTask(position, switcher);
-	        	mImageFetcher.enqueue(task);
-	        }
-	    });
+                    // Show status message
+                    final TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
+                    msgVw.setText(R.string.loading);
+                    msgVw.setVisibility(View.VISIBLE);
 
-		// When the dialog is closed, delete the files and terminated the SimpleTaskQueue.
-		mDialog.setOnDismissListener(new OnDismissListener() {
-			@Override
-			public void onDismiss(DialogInterface dialog) {
-				shutdown();
-			}});
+                    GetFullImageTask task = new GetFullImageTask(position, mSwitcher);
+                    mImageFetcher.enqueue(task);
+                }
+            });
+            collection.addView(coverImage);
+            return coverImage;
+        }
 
-		// When the large image is clicked, send it back to the caller and terminate.
-		switcher.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Object newSpec = ViewTagger.getTag(switcher);
-				if (newSpec != null) {
-					if (mOnImageSelectedListener != null)
-						mOnImageSelectedListener.onImageSelected((String)newSpec);
-				}
-				if (mDialog != null)
-					mDialog.dismiss();
-			}});
-		
+        @Override
+        public void destroyItem(@NonNull ViewGroup collection, int position, @NonNull Object view) {
+            collection.removeView((ImageView) view);
+        }
 
-		// Required object. Just create an ImageView
-		switcher.setFactory(new ViewFactory() {
-			@Override
-			public View makeView() {
-		        ImageView i = new ImageView(mContext);
-		        i.setBackgroundColor(0xFF000000);
-		        i.setScaleType(ImageView.ScaleType.FIT_CENTER);
-		        i.setLayoutParams(new ImageSwitcher.LayoutParams(ImageSwitcher.LayoutParams.WRAP_CONTENT,
-		        		ImageSwitcher.LayoutParams.WRAP_CONTENT));
-			    i.setImageResource(android.R.drawable.ic_menu_help);
-		        return i;
-			}});
+        @Override
+        public int getCount() {
+            return mEditions.size();
+        }
 
-	}
+        @Override
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+            return view == object;
+        }
+    }
 
-	/**
-	 * Simple utility class to (try) to cleanup and prevent files from accumulating.
-	 * 
-	 * @author Philip Warner
-	 */
-	private class FileManager {
-		private final Bundle mFiles = new Bundle();
-    	final LibraryThingManager mLibraryThing = new LibraryThingManager(mContext);
+    /**
+     * Interface called when image is selected.
+     *
+     * @author Philip Warner
+     */
+    public interface OnImageSelectedListener {
+        void onImageSelected(String fileSpec);
+    }
 
-    	private boolean isGood(File f) {
-    		boolean ok = false;
+    /**
+     * SimpleTask to fetch a thumbnail image and apply it to an ImageView
+     *
+     * @author Philip Warner
+     */
+    private class GetEditionsTask implements SimpleTask {
+        final String isbn;
 
-            if (f.exists() && f.length() != 0) {
+        /**
+         * Constructor
+         */
+        GetEditionsTask(String isbn) {
+            this.isbn = isbn;
+        }
+
+        @Override
+        public void run(SimpleTaskContext taskContext) {
+            // Get some editions
+            // ENHANCE: the list of editions should be expanded to somehow include Amazon and Google. As well
+            // as the alternate user-contributed images from LibraryThing. The latter are often the best
+            // source but at present could only be obtained by HTML scraping.
+            try {
+                mEditions = LibraryThingManager.searchEditions(isbn);
+            } catch (Exception e) {
+                mEditions = null;
+            }
+        }
+
+        @Override
+        public void onFinish(Exception e) {
+            if (mEditions.isEmpty()) {
+                Toast.makeText(mActivity, R.string.no_editions, Toast.LENGTH_LONG).show();
+                shutdown();
+                return;
+            }
+            showDialogDetails();
+        }
+
+    }
+
+    /**
+     * SimpleTask to fetch a thumbnail image and apply it to an ImageView
+     *
+     * @author Philip Warner
+     */
+    private class GetThumbnailTask implements SimpleTask {
+        private final ImageView mImageView;
+        private final int mMaxWidth;
+        private final int mMaxHeight;
+        private final String mIsbn;
+        private String mFilename;
+
+        /**
+         * @param isbn  ISBN on requested cover.
+         * @param v V   iew to update
+         */
+        GetThumbnailTask(String isbn, ImageView v, int maxWidth, int maxHeight) {
+            mImageView = v;
+            mMaxWidth = maxWidth;
+            mMaxHeight = maxHeight;
+            mIsbn = isbn;
+        }
+
+        @Override
+        public void run(SimpleTaskContext taskContext) {
+            // Start the download
+            mFilename = mFileManager.download(mIsbn, ImageSizes.SMALL);
+            File file = new File(mFilename);
+            if (file.length() < 50) {
+                mFilename = mFileManager.download(mIsbn, ImageSizes.LARGE);
+            }
+        }
+
+        @Override
+        public void onFinish(Exception e) {
+            // Load the file and apply to view
+            File file = new File(mFilename);
+            file.deleteOnExit();
+            ImageUtils.fetchFileIntoImageView(file, mImageView, mMaxWidth, mMaxHeight, true);
+        }
+    }
+
+    /**
+     * SimpleTask to download an image and apply it to the ImageSwitcher.
+     *
+     * @author Philip Warner
+     */
+    private class GetFullImageTask implements SimpleTask {
+        // Switcher to use
+        private final ImageSwitcher mSwitcher;
+        // ISBN
+        private final String mIsbn;
+        // Resulting file
+        private String filename;
+
+        /**
+         * Constructor
+         *
+         * @param position Position f ISBN
+         * @param switcher ImageSwitcher to update
+         */
+        GetFullImageTask(int position, ImageSwitcher switcher) {
+            mSwitcher = switcher;
+            mIsbn = mEditions.get(position);
+        }
+
+        @Override
+        public void run(SimpleTaskContext taskContext) {
+            // If we are shutdown, just return
+            if (mShutdown) {
+                taskContext.setRequiresFinish(false);
+                return;
+            }
+
+            // Download the file
+            filename = mFileManager.download(mIsbn, ImageSizes.LARGE);
+            File file = new File(filename);
+            if (file.length() < 50) {
+                filename = mFileManager.download(mIsbn, ImageSizes.SMALL);
+            }
+        }
+
+        @Override
+        public void onFinish(Exception e) {
+            if (mShutdown)
+                return;
+            // Update the ImageSwitcher
+            File file = new File(filename);
+            TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
+            // the 100 is arbitrary...
+            if (file.exists() && file.length() > 100) {
+                Drawable image = new BitmapDrawable(mActivity.getResources(),
+                        ImageUtils.fetchFileIntoImageView(file, null,
+                                mPreviewSizeWidth * 4, mPreviewSizeHeight * 4, true));
+                mSwitcher.setImageDrawable(image);
+                ViewTagger.setTag(mSwitcher, file.getAbsolutePath());
+                msgVw.setVisibility(View.GONE);
+                mSwitcher.setVisibility(View.VISIBLE);
+            } else {
+                msgVw.setVisibility(View.VISIBLE);
+                mSwitcher.setVisibility(View.GONE);
+                msgVw.setText(R.string.image_not_found);
+            }
+        }
+    }
+
+    /**
+     * Simple utility class to (try) to cleanup and prevent files from accumulating.
+     *
+     * @author Philip Warner
+     */
+    private class FileManager {
+        final LibraryThingManager mLibraryThing = new LibraryThingManager(mActivity);
+        private final Bundle mFiles = new Bundle();
+
+        private boolean isGood(File file) {
+            boolean ok = false;
+
+            if (file.exists() && file.length() != 0) {
                 try {
                     // Just read the image files to get file size
                     BitmapFactory.Options opt = new BitmapFactory.Options();
                     opt.inJustDecodeBounds = true;
-                    BitmapFactory.decodeFile( f.getAbsolutePath(), opt );
+                    BitmapFactory.decodeFile(file.getAbsolutePath(), opt);
                     // If too small, it's no good
-                    ok = (opt.outHeight >= 8 && opt.outWidth >= 8 );
+                    ok = (opt.outHeight >= 8 && opt.outWidth >= 8);
                 } catch (Exception e) {
                     // Failed to decode; probably not an image
                     ok = false;
@@ -430,181 +512,114 @@ public class CoverBrowser {
             }
 
             try {
-				if (!ok && f.exists()) {
-					//noinspection ResultOfMethodCallIgnored
-					f.delete();
-				}
-			} catch(Exception e) {
-    			Logger.logError(e, "Unable to delete bad thumbnail");				
-			}
-			return ok;
-    	}
+                if (!ok && file.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
+                    file.delete();
+                }
+            } catch (Exception e) {
+                Logger.logError(e, "Unable to delete bad thumbnail");
+            }
+            return ok;
+        }
 
-    	/**
-		 * Download a file if not present and keep a record of it.
-		 * 
-		 * @param isbn	ISBN of file
-		 * @param size	Size of image required.
+        /**
+         * Download a file if not present and keep a record of it.
+         *
+         * @param isbn ISBN of file
+         * @param size Size of image required.
+         *
+         * @return the filename
+         */
+        public String download(String isbn, ImageSizes size) {
+            String filename;
+            String key = isbn + "_" + size;
+            boolean isPresent;
+            synchronized (mFiles) {
+                isPresent = mFiles.containsKey(key);
+            }
 
-		 */
-		public String download(String isbn, ImageSizes size) {
-		    String filespec;
-		    String key = isbn + "_" + size;
-		    boolean isPresent;
-		    synchronized(mFiles) {
-		    	isPresent = mFiles.containsKey(key);
-		    }
+            // Do some checks on the actual file to see if a re-download may help
+            if (isPresent) {
+                synchronized (mFiles) {
+                    filename = mFiles.getString(key);
+                }
+                if (filename != null) {
+                    File file = new File(filename);
+                    if (!isGood(file)) {
+                        mFiles.remove(key);
+                        isPresent = false;
+                    }
+                }
+            }
 
-		    // Do some checks on the actual file to see if a re-download may help
-		    if (isPresent) {
-			    synchronized(mFiles) {
-		    		filespec = mFiles.getString(key);			    	
-			    }
-		    	File f = new File(filespec);
-		    	if (!isGood(f)) {
-		    		mFiles.remove(key);
-		    		isPresent = false;		    		
-		    	}
-		    }
+            if (!isPresent) {
+                filename = mLibraryThing.getCoverImage(isbn, null, size);
+                File file = new File(filename);
+                if (isGood(file)) {
+                    synchronized (mFiles) {
+                        mFiles.putString(key, filename);
+                    }
+                } else {
+                    // Try google
+                    file = GoogleBooksManager.getThumbnailFromIsbn(isbn);
+                    if (file != null && isGood(file)) {
+                        filename = file.getAbsolutePath();
+                        synchronized (mFiles) {
+                            mFiles.putString(key, filename);
+                        }
+                    } else {
+                        filename = "";
+                        mFiles.putString(key, filename);
+                    }
+                }
+            } else {
+                synchronized (mFiles) {
+                    filename = mFiles.getString(key);
+                }
+            }
+            return filename;
+        }
 
-		    if (!isPresent) {
-		    	filespec = mLibraryThing.getCoverImage(isbn, null, size);
-		    	File f = new File(filespec);
-		    	if (isGood(f)) {
-			    	synchronized(mFiles) {
-					    mFiles.putString(key, filespec);		    		
-			    	}
-		    	} else {
-		    		// Try google
-		    		f = GoogleBooksManager.getThumbnailFromIsbn(isbn);
-			    	if (f != null && isGood(f)) {
-			    		filespec = f.getAbsolutePath();
-				    	synchronized(mFiles) {
-						    mFiles.putString(key, filespec);		    		
-				    	}
-			    	} else {
-			    		filespec = "";
-					    mFiles.putString(key, filespec);		    		
-			    	}
-		    	}
-		    } else {
-		    	synchronized(mFiles) {
-			    	filespec = mFiles.getString(key);		    		
-		    	}
-		    }
-			return filespec;
-		}
+        // Get the requested file, if available, otherwise return null.
+        public File getFile(String isbn, ImageSizes size) {
+            String key = isbn + "_" + size;
+            boolean isPresent;
+            synchronized (mFiles) {
+                isPresent = mFiles.containsKey(key);
+            }
 
-		// Get the requested file, if available, otherwise return null.
-		public File getFile(String isbn, ImageSizes size) {
-		    String filespec;
-		    String key = isbn + "_" + size;
-		    boolean isPresent;
-		    synchronized(mFiles) {
-		    	isPresent = mFiles.containsKey(key);
-		    }
+            if (!isPresent) {
+                return null;
+            }
 
-		    if (!isPresent)
-		    	return null;
-	    	synchronized(mFiles) {
-		    	filespec = mFiles.getString(key);		    		
-	    	}
-			return new File(filespec);
-		}
+            String filename;
+            synchronized (mFiles) {
+                filename = mFiles.getString(key);
+            }
+            return (filename == null ? null : new File(filename));
+        }
 
-		/**
-		 * Clean up all files.
-		 */
-		public void purge() {
-			try {
-				for(String k : mFiles.keySet()) {
-					String filespec = mFiles.getString(k);
-					File file = new File(filespec);
-					if (file.exists())
-						//noinspection ResultOfMethodCallIgnored
-						file.delete();
-				}				
-				mFiles.clear();
-			} catch (Exception e) {
-				Logger.logError(e);
-			}
-		}
-	}
+        /**
+         * Clean up all files.
+         */
+        public void purge() {
+            try {
+                for (String k : mFiles.keySet()) {
+                    String filename = mFiles.getString(k);
+                    if (filename != null) {
+                        File file = new File(filename);
+                        if (file.exists()) {
+                            //noinspection ResultOfMethodCallIgnored
+                            file.delete();
+                        }
+                    }
+                }
+                mFiles.clear();
+            } catch (Exception e) {
+                Logger.logError(e);
+            }
+        }
+    }
 
-	/**
-	 * ImageAdapter for gallery. Queues image requests.
-	 * 
-	 * @author Philip Warner
-	 */
-	public class CoverImageAdapter extends BaseAdapter {
-		private final int mGalleryItemBackground;
-		
-		/**
-		 * Constructor
-		 */
-		CoverImageAdapter() {
-			// Setup the background
-			TypedArray a = mContext.obtainStyledAttributes(R.styleable.CoverGallery);
-			mGalleryItemBackground = a.getResourceId(
-					R.styleable.CoverGallery_android_galleryItemBackground, 0);
-			a.recycle();
-		}
-		
-		@Override
-		public Object getItem(int position) {
-			return position;
-		}
-		
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
-		
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			// Create or reuse view
-			ImageView i;
-			if (convertView == null)
-				i = new ImageView(mContext);
-			else 
-				i = (ImageView)convertView;
-
-			// If we are shutdown, just return a view
-			if (mShutdown)
-				return i;
-
-			// Initialize the view
-			i.setScaleType(ImageView.ScaleType.FIT_XY);
-			//i.setAdjustViewBounds(true);
-			i.setMaxHeight(mPreviewSize);
-			i.setMaxWidth(mPreviewSize);
-			i.setBackgroundResource(mGalleryItemBackground);
-			
-			// See if file is present
-			File f = null;
-			try {
-				f = mFileManager.getFile(mEditions.get(position), ImageSizes.SMALL);
-			} catch (NullPointerException e) {
-				//file did not exist. Dealt with later.
-			}
-			if (f == null) {
-				// Not present; request it and use a placeholder.
-				GetThumbnailTask task = new GetThumbnailTask(position, i);
-				mImageFetcher.enqueue(task);
-				i.setImageResource(android.R.drawable.ic_menu_help);
-			} else {
-				// Present, so use it.
-				ViewUtils.fetchFileIntoImageView(f, i, mPreviewSize, mPreviewSize, true );
-			}
-			
-			return i;
-		}
-		
-		@Override
-		public int getCount() {
-			return mEditions.size();
-		}
-
-	}
 
 }

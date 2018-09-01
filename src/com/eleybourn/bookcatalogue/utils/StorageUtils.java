@@ -50,6 +50,12 @@ import java.util.regex.Pattern;
  * @author Philip Warner
  */
 public class StorageUtils {
+
+    /**
+     *  Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
+     */
+	private static final boolean DEBUG = false;
+
 	private StorageUtils() {
 	}
 
@@ -115,7 +121,7 @@ public class StorageUtils {
 	 * Get a File, don't check on existence or creation
 	 */
 	public static File getFile(String fileName) {
-        if (BuildConfig.DEBUG) {
+        if (DEBUG && BuildConfig.DEBUG) {
         	System.out.println("StorageUtils.getFile: Accessing file: " + EXTERNAL_FILE_PATH + File.separator + fileName);
 		}
         return new File(EXTERNAL_FILE_PATH + File.separator + fileName);
@@ -176,11 +182,11 @@ public class StorageUtils {
 			while ((length = dbOrig.read(buffer))>0) {
 				dbCopy.write(buffer, 0, length);
 			}
-			
+
 			dbCopy.flush();
 			dbCopy.close();
 			dbOrig.close();
-			
+
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -190,7 +196,7 @@ public class StorageUtils {
 
 	/**
 	 * Compare two files based on date. Used for sorting file list by date.
-	 * 
+	 *
 	 * @author Philip Warner
 	 */
 	static class FileDateComparator implements Comparator<File> {
@@ -215,7 +221,7 @@ public class StorageUtils {
 				return mDirection;
 			else
 				return 0;
-		}		
+		}
 	}
 
 	/**
@@ -223,7 +229,8 @@ public class StorageUtils {
 	 * of all CSV files.
 	 */
 	public static ArrayList<File> findExportFiles() {
-		StringBuilder info = new StringBuilder();
+        @SuppressWarnings("UnusedAssignment")
+        StringBuilder debugInfo = new StringBuilder();
 
 		ArrayList<File> files = new ArrayList<>();
 		Pattern mountPointPat = Pattern.compile("^\\s*[^\\s]+\\s+([^\\s]+)");
@@ -236,33 +243,33 @@ public class StorageUtils {
 				return (fl.endsWith(".csv"));
 				//ENHANCE: Allow for other files? Backups? || fl.endsWith(".csv.bak"));
 			}
-		}; 
+		};
 
 		ArrayList<File> dirs = new ArrayList<>();
 
-		if (BuildConfig.DEBUG) {
-			info.append("Getting mounted file systems\n");
+		if (DEBUG && BuildConfig.DEBUG) {
+			debugInfo.append("Getting mounted file systems\n");
 		}
 		// Scan all mounted file systems
 		try {
 			in = new BufferedReader(new InputStreamReader(new FileInputStream("/proc/mounts")),1024);
 			String line;
 			while ((line = in.readLine()) != null) {
-				if( BuildConfig.DEBUG) {
-					info.append("   checking ").append(line).append("\n");
+				if(DEBUG && BuildConfig.DEBUG) {
+					debugInfo.append("   checking ").append(line).append("\n");
 				}
 				Matcher m = mountPointPat.matcher(line);
 				// Get the mount point
 				if (m.find()) {
 					// See if it has a bookCatalogue directory
 					File dir = new File(m.group(1) + File.separator + DIRECTORY_NAME);
-					if( BuildConfig.DEBUG) {
-						info.append("       matched ").append(dir.getAbsolutePath()).append("\n");
+					if(DEBUG && BuildConfig.DEBUG) {
+						debugInfo.append("       matched ").append(dir.getAbsolutePath()).append("\n");
 					}
 					dirs.add(dir);
 				} else {
-					if (BuildConfig.DEBUG) {
-						info.append("       NO match\n");
+					if (DEBUG && BuildConfig.DEBUG) {
+						debugInfo.append("       NO match\n");
 					}
 				}
 			}
@@ -271,13 +278,13 @@ public class StorageUtils {
 		} finally {
 			if (in != null)
 				try {
-					in.close();					
+					in.close();
 				} catch (Exception ignored) {}
 		}
 
 		// Sometimes (Android 6?) the /proc/mount search seems to fail, so we revert to environment vars
-        if (BuildConfig.DEBUG) {
-		    info.append("Found ").append(dirs.size()).append(" directories\n");
+        if (DEBUG && BuildConfig.DEBUG) {
+		    debugInfo.append("Found ").append(dirs.size()).append(" directories\n");
         }
 
 		try {
@@ -285,12 +292,12 @@ public class StorageUtils {
 			if (loc1 != null) {
 				File dir = new File(loc1 + File.separator + DIRECTORY_NAME);
 				dirs.add(dir);
-				if (BuildConfig.DEBUG) {
-					info.append("Loc1 added ").append(dir.getAbsolutePath()).append("\n");
+				if (DEBUG && BuildConfig.DEBUG) {
+					debugInfo.append("Loc1 added ").append(dir.getAbsolutePath()).append("\n");
 				}
 			} else {
-				if (BuildConfig.DEBUG) {
-					info.append("Loc1 was null\n");
+				if (DEBUG && BuildConfig.DEBUG) {
+					debugInfo.append("Loc1 was null\n");
 				}
 			}
 
@@ -298,12 +305,12 @@ public class StorageUtils {
 			if (loc2 != null && !loc2.equals(loc1)) {
 				File dir = new File(loc2 + File.separator + DIRECTORY_NAME);
 				dirs.add(dir);
-				if (BuildConfig.DEBUG) {
-					info.append("Loc2 added ").append(dir.getAbsolutePath()).append("\n");
+				if (DEBUG && BuildConfig.DEBUG) {
+					debugInfo.append("Loc2 added ").append(dir.getAbsolutePath()).append("\n");
 				}
 			} else {
-				if (BuildConfig.DEBUG) {
-					info.append("Loc2 ignored: ").append(loc2).append("\n");
+				if (DEBUG && BuildConfig.DEBUG) {
+					debugInfo.append("Loc2 ignored: ").append(loc2).append("\n");
 				}
 			}
 		} catch (Exception e) {
@@ -312,8 +319,8 @@ public class StorageUtils {
 
 		HashSet<String> paths = new HashSet<>();
 
-		if (BuildConfig.DEBUG) {
-			info.append("Looking for files in directories\n");
+		if (DEBUG && BuildConfig.DEBUG) {
+			debugInfo.append("Looking for files in directories\n");
 		}
 		for(File dir: dirs) {
 			try {
@@ -321,34 +328,34 @@ public class StorageUtils {
 					// Scan for csv files
 					File[] csvFiles = dir.listFiles(csvFilter);
 					if (csvFiles != null) {
-						if (BuildConfig.DEBUG) {
-							info.append("    found ").append(csvFiles.length).append(" in ").append(dir.getAbsolutePath()).append("\n");
+						if (DEBUG && BuildConfig.DEBUG) {
+							debugInfo.append("    found ").append(csvFiles.length).append(" in ").append(dir.getAbsolutePath()).append("\n");
 						}
 						for (File f : csvFiles) {
-							if (BuildConfig.DEBUG) {
-								info.append("Found: ").append(f.getAbsolutePath());
+							if (DEBUG && BuildConfig.DEBUG) {
+								debugInfo.append("Found: ").append(f.getAbsolutePath());
 							}
 							final String cp = f.getCanonicalPath();
 							if (paths.contains(cp)) {
-								if (BuildConfig.DEBUG) {
-									info.append("        already present as ").append(cp).append("\n");
+								if (DEBUG && BuildConfig.DEBUG) {
+									debugInfo.append("        already present as ").append(cp).append("\n");
 								}
 							} else {
 								files.add(f);
 								paths.add(cp);
-								if (BuildConfig.DEBUG) {
-									info.append("        added as ").append(cp).append("\n");
+								if (DEBUG && BuildConfig.DEBUG) {
+									debugInfo.append("        added as ").append(cp).append("\n");
 								}
 							}
 						}
 					} else {
-						if (BuildConfig.DEBUG) {
-							info.append("    null returned by listFiles() in ").append(dir.getAbsolutePath()).append("\n");
+						if (DEBUG && BuildConfig.DEBUG) {
+							debugInfo.append("    null returned by listFiles() in ").append(dir.getAbsolutePath()).append("\n");
 						}
 					}
 				} else {
-					if (BuildConfig.DEBUG) {
-						info.append("    ").append(dir.getAbsolutePath()).append(" does not exist\n");
+					if (DEBUG && BuildConfig.DEBUG) {
+						debugInfo.append("    ").append(dir.getAbsolutePath()).append(" does not exist\n");
 					}
 				}
 			} catch (Exception e) {
@@ -356,8 +363,8 @@ public class StorageUtils {
 			}
 		}
 
-		if (BuildConfig.DEBUG) {
-			Logger.logError(new RuntimeException("INFO"), info.toString());
+		if (DEBUG && BuildConfig.DEBUG) {
+			Logger.logError(new RuntimeException("INFO"), debugInfo.toString());
 		}
 
 		// Sort descending based on modified date
@@ -367,7 +374,7 @@ public class StorageUtils {
 
 	/**
 	 * Check if the sdcard is writable
-	 * 
+	 *
 	 * @return	success or failure
 	 */
 	static public boolean sdCardWritable() {
@@ -379,7 +386,7 @@ public class StorageUtils {
 			return true;
 		} catch (IOException e) {
 			return false;
-		}		
+		}
 	}
 
 	private static final String[] mPurgeableFilePrefixes = new String[] {

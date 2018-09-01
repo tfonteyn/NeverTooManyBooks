@@ -50,11 +50,11 @@ import com.eleybourn.bookcatalogue.searches.goodreads.SendOneBookTask;
 import com.eleybourn.bookcatalogue.utils.BcQueueManager;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
-import com.eleybourn.bookcatalogue.utils.ViewUtils;
 
 import net.philipwarner.taskqueue.QueueManager;
 
@@ -413,7 +413,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 
 			// Thumbnail
 			if ( (extras & BooklistStyle.EXTRAS_THUMBNAIL) != 0)
-				ViewUtils.fetchBookCoverIntoImageView(cover,
+				ImageUtils.fetchBookCoverIntoImageView(cover,
 						rowView.getMaxThumbnailWidth(), rowView.getMaxThumbnailHeight(),
 						true, rowView.getBookUuid(),
 						BooklistPreferencesActivity.isThumbnailCacheEnabled(),

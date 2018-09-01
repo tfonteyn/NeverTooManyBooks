@@ -11,7 +11,6 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v7.app.AppCompatDialog;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
@@ -30,9 +29,10 @@ import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.HintManager;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
-import com.eleybourn.bookcatalogue.utils.ViewUtils;
+import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -327,7 +327,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
             switch (item.getItemId()) {
                 case CONTEXT_ID_DELETE:
                     deleteThumbnail();
-                    ViewUtils.fetchFileIntoImageView(thumbFile, iv, mThumbEditSize, mThumbEditSize, true);
+                    ImageUtils.fetchFileIntoImageView(thumbFile, iv, mThumbEditSize, mThumbEditSize, true);
                     return true;
                 case CONTEXT_ID_SUBMENU_ROTATE_THUMB:
                     // Just a submenu; skip, but display a hint if user is rotating a camera image
@@ -338,15 +338,15 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
                     return true;
                 case CONTEXT_ID_ROTATE_THUMB_CW:
                     rotateThumbnail(90);
-                    ViewUtils.fetchFileIntoImageView(thumbFile, iv, mThumbEditSize, mThumbEditSize, true);
+                    ImageUtils.fetchFileIntoImageView(thumbFile, iv, mThumbEditSize, mThumbEditSize, true);
                     return true;
                 case CONTEXT_ID_ROTATE_THUMB_CCW:
                     rotateThumbnail(-90);
-                    ViewUtils.fetchFileIntoImageView(thumbFile, iv, mThumbEditSize, mThumbEditSize, true);
+                    ImageUtils.fetchFileIntoImageView(thumbFile, iv, mThumbEditSize, mThumbEditSize, true);
                     return true;
                 case CONTEXT_ID_ROTATE_THUMB_180:
                     rotateThumbnail(180);
-                    ViewUtils.fetchFileIntoImageView(thumbFile, iv, mThumbEditSize, mThumbEditSize, true);
+                    ImageUtils.fetchFileIntoImageView(thumbFile, iv, mThumbEditSize, mThumbEditSize, true);
                     return true;
                 case CODE_ADD_PHOTO:
                     // Increment the temp counter and cleanup the temp directory
@@ -507,9 +507,9 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
      */
     protected File getCoverFile(Long rowId) {
         if (rowId == null || rowId == 0)
-            return CatalogueDBAdapter.getTempThumbnail();
+            return ImageUtils.getTempThumbnail();
         else
-            return CatalogueDBAdapter.fetchThumbnailByUuid(mDbHelper.getBookUuid(rowId));
+            return ImageUtils.fetchThumbnailByUuid(mDbHelper.getBookUuid(rowId));
     }
 
     /**
@@ -577,7 +577,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
             try {
                 File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
 
-                Bitmap origBm = ViewUtils.fetchFileIntoImageView(thumbFile, null, mThumbZoomSize * 2, mThumbZoomSize * 2, true);
+                Bitmap origBm = ImageUtils.fetchFileIntoImageView(thumbFile, null, mThumbZoomSize * 2, mThumbZoomSize * 2, true);
                 if (origBm == null)
                     return;
 
@@ -729,11 +729,11 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
     protected void setBookThumbnail(Long rowId, int maxWidth, int maxHeight) {
         // Sets book thumbnail
         ImageView iv = getView().findViewById(R.id.row_img);
-        ViewUtils.fetchFileIntoImageView(getCoverFile(rowId), iv, maxWidth, maxHeight, true);
+        ImageUtils.fetchFileIntoImageView(getCoverFile(rowId), iv, maxWidth, maxHeight, true);
     }
 
     // unused in Context itself. But IS used in android\support\v7\view\ContextThemeWrapper.java
-//    private int getThemeId() {
+//    private int getThemeResId() {
 //        try {
 //            Class<?> wrapper = Context.class;
 //            Method method = wrapper.getMethod("getThemeResId");
@@ -766,11 +766,11 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
             if (opt.outHeight <= 0 || opt.outWidth <= 0) {
                 Toast.makeText(c, R.string.cover_corrupt, Toast.LENGTH_LONG).show();
             } else {
-                final Dialog dialog = new AppCompatDialog(c);
+                final Dialog dialog = new BasicDialog(c,false);
                 dialog.setContentView(R.layout.zoom_thumb_dialog);
-                dialog.setTitle(getResources().getString(R.string.cover_detail));
+
                 ImageView cover = new ImageView(getActivity());
-                ViewUtils.fetchFileIntoImageView(thumbFile, cover, mThumbZoomSize, mThumbZoomSize, true);
+                ImageUtils.fetchFileIntoImageView(thumbFile, cover, mThumbZoomSize, mThumbZoomSize, true);
                 cover.setAdjustViewBounds(true);
                 cover.setOnClickListener(new OnClickListener() {
                     @Override
@@ -813,7 +813,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
 
     protected void setCoverImage() {
         ImageView iv = getView().findViewById(R.id.row_img);
-        ViewUtils.fetchFileIntoImageView(getCoverFile(mEditManager.getBookData().getRowId()), iv, mThumbEditSize, mThumbEditSize, true);
+        ImageUtils.fetchFileIntoImageView(getCoverFile(mEditManager.getBookData().getRowId()), iv, mThumbEditSize, mThumbEditSize, true);
         // Make sure the cached thumbnails (if present) are deleted
         invalidateCachedThumbnail();
     }

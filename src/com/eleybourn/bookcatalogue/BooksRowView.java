@@ -24,7 +24,21 @@ import android.database.Cursor;
 
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.*;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_FORMATTED_GIVEN_FIRST;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_GENRE;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ISBN;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_LOCATION;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_NOTES;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_RATING;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ_END;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ROWID;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SIGNED;
+import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TITLE;
 
 /**
  * Convenience class to avoid having to write the same code in more than one place. This

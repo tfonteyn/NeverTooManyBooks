@@ -103,6 +103,10 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOKS
  */
 public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistChangeListener {
     /**
+     *  Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
+     */
+    private static final boolean DEBUG = false;
+    /**
      * Prefix used in preferences for this activity
      */
     private final static String TAG = "BooksOnBookshelf";
@@ -219,7 +223,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      */
     public BooksOnBookshelf() {
         super();
-        if (BuildConfig.DEBUG) {
+        if (DEBUG && BuildConfig.DEBUG) {
             synchronized (mInstanceCount) {
                 mInstanceCount++;
                 System.out.println("BoB instances: " + mInstanceCount);
@@ -595,7 +599,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     int first = lv.getFirstVisiblePosition();
                     int last = lv.getLastVisiblePosition();
                     int centre = (last + first) / 2;
-                    if (BuildConfig.DEBUG) {
+                    if (DEBUG && BuildConfig.DEBUG) {
                         System.out.println("New List: (" + first + ", " + last + ")<-" + centre);
                     }
                     // Get the first 'target' and make it 'best candidate'
@@ -611,12 +615,12 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                         }
                     }
 
-                    if (BuildConfig.DEBUG) {
+                    if (DEBUG && BuildConfig.DEBUG) {
                         System.out.println("Best @" + best.listPosition);
                     }
                     // Try to put at top if not already visible, or only partially visible
                     if (first >= best.listPosition || last <= best.listPosition) {
-                        if (BuildConfig.DEBUG) {
+                        if (DEBUG && BuildConfig.DEBUG) {
                             System.out.println("Adjusting position");
                         }
                         //
@@ -645,7 +649,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                         });
 
                         //int newTop = best.listPosition - (last-first)/2;
-                        // if (BuildConfig.DEBUG) {
+                        // if (DEBUG && BuildConfig.DEBUG) {
                         //System.out.println("New Top @" + newTop );
                         //}
                         //lv.setSelection(newTop);
@@ -706,7 +710,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 oldList.getBuilder().close();
             oldList.close();
         }
-        if (BuildConfig.DEBUG) {
+        if (DEBUG && BuildConfig.DEBUG) {
             long t1 = System.currentTimeMillis();
             System.out.println("displayList: " + (t1 - t0));
         }
@@ -747,14 +751,14 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     private BooklistBuilder buildBooklist(boolean isFullRebuild) {
         // If not a full rebuild then just use the current builder to requery the underlying data
         if (mList != null && !isFullRebuild) {
-            if (BuildConfig.DEBUG) {
+            if (DEBUG && BuildConfig.DEBUG) {
                 System.out.println("Doing rebuild()");
             }
             BooklistBuilder b = mList.getBuilder();
             b.rebuild();
             return b;
         } else {
-            if (BuildConfig.DEBUG) {
+            if (DEBUG && BuildConfig.DEBUG) {
                 System.out.println("Doing full reconstruct");
             }
             // Make sure we have a style chosen
@@ -863,7 +867,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         mAdapter = null;
         mBookshelfSpinner = null;
         mBookshelfAdapter = null;
-        if (BuildConfig.DEBUG) {
+        if (DEBUG && BuildConfig.DEBUG) {
             synchronized (mInstanceCount) {
                 mInstanceCount--;
 
@@ -871,7 +875,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             }
         }
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG && BuildConfig.DEBUG) {
             TrackedCursor.dumpCursors();
         }
         Tracker.exitOnDestroy(this);
@@ -1335,7 +1339,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 mTotalBooks = mTempList.getBookCount();
                 long t6 = System.currentTimeMillis();
 
-                if (BuildConfig.DEBUG) {
+                if (DEBUG && BuildConfig.DEBUG) {
                     System.out.println("Build: " + (t1 - t0));
                     System.out.println("Position: " + (t2 - t1));
                     System.out.println("Select: " + (t3 - t2));

@@ -31,6 +31,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -279,7 +280,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 		try {
 			final int uuidCol = c.getColumnIndex(DatabaseDefinitions.DOM_BOOK_UUID.toString());
 			while(c.moveToNext() && !listener.isCancelled()) {
-				File cover = CatalogueDBAdapter.fetchThumbnailByUuid(c.getString(uuidCol));
+				File cover = ImageUtils.fetchThumbnailByUuid(c.getString(uuidCol));
 				if (cover.exists()) {
 					if (cover.exists() 
 							&& (since == null || sinceTime < cover.lastModified())) 

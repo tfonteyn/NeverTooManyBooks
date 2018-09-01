@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.eleybourn.bookcatalogue.dialogs;
 
 import android.app.Activity;
@@ -86,7 +85,8 @@ public class StandardDialogs {
         dialog.create().show();
     }
 
-    public static void needLibraryThingAlert(final Context context, final boolean ltRequired, final String prefSuffix) {
+    public static void needLibraryThingAlert(final Context context, final boolean ltRequired,
+                                             final String prefSuffix) {
         boolean showAlert;
         int msgId;
         final String prefName = LibraryThingManager.LT_HIDE_ALERT_PREF_NAME + "_" + prefSuffix;
@@ -136,7 +136,8 @@ public class StandardDialogs {
         dlg.show();
     }
 
-    public static void deleteSeriesAlert(Context context, final CatalogueDBAdapter dbHelper, final Series series, final Runnable onDeleted) {
+    public static void deleteSeriesAlert(Context context, final CatalogueDBAdapter dbHelper,
+                                         final Series series, final Runnable onDeleted) {
 
         // When we get here, we know the names are genuinely different and the old series is used in more than one place.
         String message = "Delete series";
@@ -170,7 +171,8 @@ public class StandardDialogs {
         alertDialog.show();
     }
 
-    public static int deleteBookAlert(Context context, final CatalogueDBAdapter dbHelper, final long id, final Runnable onDeleted) {
+    public static int deleteBookAlert(Context context, final CatalogueDBAdapter dbHelper,
+                                      final long id, final Runnable onDeleted) {
 
         ArrayList<Author> authorList = dbHelper.getBookAuthorList(id);
 
@@ -270,7 +272,9 @@ public class StandardDialogs {
     /**
      * Select a custom item from a list, and call halder when/if item is selected.
      */
-    public static void selectItemDialog(LayoutInflater inflater, String message, ArrayList<SimpleDialogItem> items, SimpleDialogItem selectedItem, final SimpleDialogOnClickListener handler) {
+    public static void selectItemDialog(LayoutInflater inflater, String message,
+                                        ArrayList<SimpleDialogItem> items, SimpleDialogItem selectedItem,
+                                        final SimpleDialogOnClickListener handler) {
         // Get the view and the radio group
         final View root = inflater.inflate(R.layout.select_list_dialog, null);
         TextView msg = root.findViewById(R.id.message);
@@ -292,7 +296,7 @@ public class StandardDialogs {
                 SimpleDialogItem item = ViewTagger.getTag(v, R.id.TAG_DIALOG_ITEM);
                 // For a consistent UI, make sure the selector is checked as well. NOT mandatory from
                 // a functional point of view, just consistent
-                if (!(v instanceof RadioButton)) {
+                if (item != null && !(v instanceof RadioButton)) {
                     RadioButton btn = item.getSelector(v);
                     if (btn != null) {
                         btn.setChecked(true);
@@ -388,6 +392,7 @@ public class StandardDialogs {
     public static class SimpleDialogFileItem implements SimpleDialogItem {
         private final File mFile;
 
+        @SuppressWarnings("WeakerAccess")
         public SimpleDialogFileItem(File file) {
             mFile = file;
         }

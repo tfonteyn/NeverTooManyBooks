@@ -12,6 +12,12 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 public class MessageDialogFragment extends DialogFragment {
+	private static final String DIALOG_ID = "dialogId";
+	private static final String TITLE_ID = "titleId";
+	private static final String MESSAGE = "message";
+	private static final String BUTTON_POSITIVE_TEXT_ID = "buttonPositiveTextId";
+	private static final String BUTTON_NEGATIVE_TEXT_ID = "buttonNegativeTextId";
+	private static final String BUTTON_NEUTRAL_TEXT_ID = "buttonNeutralTextId";
 	private int mDialogId;
 
 	/**
@@ -47,12 +53,12 @@ public class MessageDialogFragment extends DialogFragment {
 	public static MessageDialogFragment newInstance(int dialogId, int titleId, String message, int buttonPositiveTextId, int buttonNegativeTextId, int buttonNeutralTextId) {
 		MessageDialogFragment frag = new MessageDialogFragment();
         Bundle args = new Bundle();
-        args.putInt("dialogId", dialogId);
-        args.putInt("titleId", titleId);
-        args.putString("message", message);
-        args.putInt("buttonPositiveTextId", buttonPositiveTextId);
-        args.putInt("buttonNegativeTextId", buttonNegativeTextId);
-        args.putInt("buttonNeutralTextId", buttonNeutralTextId);
+        args.putInt(DIALOG_ID, dialogId);
+        args.putInt(TITLE_ID, titleId);
+        args.putString(MESSAGE, message);
+        args.putInt(BUTTON_POSITIVE_TEXT_ID, buttonPositiveTextId);
+        args.putInt(BUTTON_NEGATIVE_TEXT_ID, buttonNegativeTextId);
+        args.putInt(BUTTON_NEUTRAL_TEXT_ID, buttonNeutralTextId);
         frag.setArguments(args);
         return frag;
     }
@@ -75,12 +81,12 @@ public class MessageDialogFragment extends DialogFragment {
     @NonNull
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	mDialogId = getArguments().getInt("dialogId");
-        int title = getArguments().getInt("titleId");
-        String msg = getArguments().getString("message");
-        int btnPos = getArguments().getInt("buttonPositiveTextId");
-        int btnNeg = getArguments().getInt("buttonNegativeTextId");
-        int btnNeut = getArguments().getInt("buttonNeutralTextId");
+    	mDialogId = getArguments().getInt(DIALOG_ID);
+        int title = getArguments().getInt(TITLE_ID);
+        String msg = getArguments().getString(MESSAGE);
+        int btnPos = getArguments().getInt(BUTTON_POSITIVE_TEXT_ID);
+        int btnNeg = getArguments().getInt(BUTTON_NEGATIVE_TEXT_ID);
+        int btnNeut = getArguments().getInt(BUTTON_NEUTRAL_TEXT_ID);
         
 		AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setMessage(msg).create();
 		alertDialog.setTitle(title);

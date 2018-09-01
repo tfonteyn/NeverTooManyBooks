@@ -26,11 +26,11 @@ import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
-import com.eleybourn.bookcatalogue.utils.ViewUtils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -174,7 +174,7 @@ public class GetThumbnailTask implements SimpleTask {
             return;
         }
 
-        File originalFile = CatalogueDBAdapter.fetchThumbnailByUuid(mBookHash);
+        File originalFile = ImageUtils.fetchThumbnailByUuid(mBookHash);
 
         if (!mCacheWasChecked) {
             try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(mContext)) {
@@ -185,7 +185,7 @@ public class GetThumbnailTask implements SimpleTask {
         }
 
         if (mBitmap == null)
-            mBitmap = ViewUtils.fetchBookCoverIntoImageView(null, mWidth, mHeight, true, mBookHash, false, false);
+            mBitmap = ImageUtils.fetchBookCoverIntoImageView(null, mWidth, mHeight, true, mBookHash, false, false);
         //}
 
         taskContext.setRequiresFinish(mWantFinished);

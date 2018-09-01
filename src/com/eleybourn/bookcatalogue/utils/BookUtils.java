@@ -50,6 +50,7 @@ public class BookUtils {
 	/**
 	 * Open a new book editing activity with fields copied from saved book.
 	 * Saved book (original of duplicating) is defined by its row _id in database.
+	 *
 	 * @param rowId The id of the book to copy fields
 	 */
 	public static void duplicateBook(Activity activity, CatalogueDBAdapter db, Long rowId){
@@ -117,6 +118,7 @@ public class BookUtils {
 	 * Perform sharing of book by its database rowId. Create chooser with matched 
 	 * apps for sharing some text like the next:<br>
 	 * <b>"I'm reading " + title + " by " + author + series + " " + ratingString</b>
+     *
 	 * @param rowId The database id of the book for deleting
 	 */
 	public static void shareBook(Context context, final CatalogueDBAdapter dbHelper, Long rowId){
@@ -132,7 +134,7 @@ public class BookUtils {
 		String ratingString = "";
 		String author = thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_AUTHOR_FORMATTED_GIVEN_FIRST));
 		String series = thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_SERIES_FORMATTED));
-		File image = CatalogueDBAdapter.fetchThumbnailByUuid(dbHelper.getBookUuid(rowId));
+		File image = ImageUtils.fetchThumbnailByUuid(dbHelper.getBookUuid(rowId));
 
 		if (!series.isEmpty()) {
 			series = " (" + series.replace("#", "%23") + ")";

@@ -52,6 +52,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEditorListener;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -626,8 +627,8 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 
 			if (id > 0) {
 				setRowId(id);
-				File thumb = CatalogueDBAdapter.getTempThumbnail();
-				File real = CatalogueDBAdapter.fetchThumbnailByUuid(mDbHelper.getBookUuid(mRowId));
+				File thumb = ImageUtils.getTempThumbnail();
+				File real = ImageUtils.fetchThumbnailByUuid(mDbHelper.getBookUuid(mRowId));
                 //noinspection ResultOfMethodCallIgnored
                 thumb.renameTo(real);
 			}

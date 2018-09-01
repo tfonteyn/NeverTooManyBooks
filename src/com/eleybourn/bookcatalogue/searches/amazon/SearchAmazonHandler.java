@@ -27,7 +27,7 @@ import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -269,7 +269,7 @@ public class SearchAmazonHandler extends DefaultHandler {
 	@Override
 	public void endDocument() {
 		if (mFetchThumbnail && mThumbnailUrl.length() > 0) {
-			String filename = Utils.saveThumbnailFromUrl(mThumbnailUrl, "_AM");
+			String filename = ImageUtils.saveThumbnailFromUrl(mThumbnailUrl, "_AM");
 			if (filename.length() > 0)
 				ArrayUtils.appendOrAdd(mBookData, "__thumbnail", filename);
 		}		

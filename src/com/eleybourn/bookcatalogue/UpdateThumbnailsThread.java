@@ -30,6 +30,7 @@ import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.FieldUsage;
 import com.eleybourn.bookcatalogue.utils.FieldUsages;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.TaskManager;
@@ -153,7 +154,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
 								// - If it's a thumbnail, then see if it's missing or empty.
 								switch (usage.fieldName) {
 									case ColumnNames.KEY_THUMBNAIL:
-										File file = CatalogueDBAdapter.fetchThumbnailByUuid(mCurrUuid);
+										File file = ImageUtils.fetchThumbnailByUuid(mCurrUuid);
 										if (!file.exists() || file.length() == 0)
 											mCurrFieldUsages.put(usage);
 										break;
@@ -191,7 +192,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
 				if (tmpThumbWanted) {
 					// delete any temporary thumbnails //
 					try {
-						File delthumb = CatalogueDBAdapter.getTempThumbnail();
+						File delthumb = ImageUtils.getTempThumbnail();
 						//noinspection ResultOfMethodCallIgnored
 						delthumb.delete();
 					} catch (Exception e) {
@@ -305,16 +306,16 @@ public class UpdateThumbnailsThread extends ManagedTask {
 			if (newData.containsKey(usage.fieldName)) {
 				// Handle thumbnail specially
 				if (usage.fieldName.equals(ColumnNames.KEY_THUMBNAIL)) {
-					File downloadedFile = CatalogueDBAdapter.getTempThumbnail();
+					File downloadedFile = ImageUtils.getTempThumbnail();
 					boolean copyThumb = false;
 					if (usage.usage == FieldUsages.Usages.COPY_IF_BLANK) {
-						File file = CatalogueDBAdapter.fetchThumbnailByUuid(bookUuid);
+						File file = ImageUtils.fetchThumbnailByUuid(bookUuid);
 						copyThumb = (!file.exists() || file.length() == 0);
 					} else if (usage.usage == FieldUsages.Usages.OVERWRITE) {
 						copyThumb = true;
 					}
 					if (copyThumb) {
-						File file = CatalogueDBAdapter.fetchThumbnailByUuid(bookUuid);
+						File file = ImageUtils.fetchThumbnailByUuid(bookUuid);
 						//noinspection ResultOfMethodCallIgnored
 						downloadedFile.renameTo(file);
 					} else {

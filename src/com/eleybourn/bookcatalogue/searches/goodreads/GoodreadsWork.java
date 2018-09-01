@@ -24,8 +24,8 @@ import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.lang.ref.WeakReference;
@@ -68,7 +68,7 @@ public class GoodreadsWork {
 			synchronized(v) {
 				// Make sure our view is still associated with us
 				if (ViewTagger.getTag(v, R.id.TAG_GOODREADS_WORK).equals(this)) {
-					v.setImageBitmap( Utils.getBitmapFromBytes(imageBytes) );
+					v.setImageBitmap( ImageUtils.getBitmapFromBytes(imageBytes) );
 				}
 			}						
 		}
@@ -102,7 +102,7 @@ public class GoodreadsWork {
 				//QueueManager.getQueueManager().bringTaskToFront(this.imageTaskId);
 			} else {
 				// We already have an image, so just expand it.
-				v.setImageBitmap( Utils.getBitmapFromBytes(this.imageBytes) );
+				v.setImageBitmap( ImageUtils.getBitmapFromBytes(this.imageBytes) );
 				// Clear the work in the View, in case some other job was running
 				ViewTagger.setTag(v, R.id.TAG_GOODREADS_WORK, null);
 			}

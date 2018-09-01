@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.backup;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
@@ -92,14 +93,14 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 	private File getNewCoverFile(File orig, String newUuid) {
 		File newFile;
 		// Check for ANY current image; delete empty ones and retry
-		newFile = CatalogueDBAdapter.fetchThumbnailByUuid(newUuid);
+		newFile = ImageUtils.fetchThumbnailByUuid(newUuid);
 		while (newFile.exists()) {
 			if (newFile.length() > 0)
 				return newFile;
 			else
 				//noinspection ResultOfMethodCallIgnored
 				newFile.delete();
-			newFile = CatalogueDBAdapter.fetchThumbnailByUuid(newUuid);
+			newFile = ImageUtils.fetchThumbnailByUuid(newUuid);
 		}
 		
 		// Get the new path based on the input file type.

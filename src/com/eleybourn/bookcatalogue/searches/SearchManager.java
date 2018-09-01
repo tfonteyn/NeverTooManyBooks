@@ -36,6 +36,7 @@ import com.eleybourn.bookcatalogue.searches.googlebooks.SearchGoogleBooksThread;
 import com.eleybourn.bookcatalogue.searches.librarything.SearchLibraryThingThread;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.TaskManager;
@@ -429,7 +430,7 @@ public class SearchManager implements TaskManagerListener {
 			accumulateData(i);
 
 		// If there are thumbnails present, pick the biggest, delete others and rename.
-		Utils.cleanupThumbnails(mBookData);
+		ImageUtils.cleanupThumbnails(mBookData);
 
 		// Try to use/construct authors
 		String authors = null;

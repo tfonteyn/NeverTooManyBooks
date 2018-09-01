@@ -14,14 +14,13 @@ import java.util.Map;
  *
  * @author Philip Warner
  */
-public class TableInfo implements Iterable<ColumnInfo> {
-    private final Map<String,ColumnInfo> mColumns;
-    private final DbSync.SynchronizedDb mDb;
+public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
 
     public static final int CLASS_INTEGER = 1;
     public static final int CLASS_TEXT = 2;
     public static final int CLASS_REAL = 3;
-
+    private final Map<String, ColumnInfo> mColumns;
+    private final DbSync.SynchronizedDb mDb;
     public TableInfo(DbSync.SynchronizedDb db, String tableName) {
         mDb = db;
         mColumns = describeTable(tableName);
@@ -43,14 +42,14 @@ public class TableInfo implements Iterable<ColumnInfo> {
     /**
      * Get the column details for the given table.
      *
-     * @param tableName	Name of the database table to lookup
+     * @param tableName Name of the database table to lookup
      *
-     * @return	A collection of ColumnInfo objects.
+     * @return A collection of ColumnInfo objects.
      */
-    private Map<String,ColumnInfo> describeTable(String tableName) {
+    private Map<String, ColumnInfo> describeTable(String tableName) {
         String sql = "PRAGMA table_info(" + tableName + ")";
 
-        Map<String,ColumnInfo> cols = new Hashtable<>();
+        Map<String, ColumnInfo> cols = new Hashtable<>();
 
         Cursor colCsr = mDb.rawQuery(sql, new String[]{});
         try {
@@ -93,7 +92,7 @@ public class TableInfo implements Iterable<ColumnInfo> {
                         throw new RuntimeException("Unknown data type '" + tName + "'");
                 }
 
-                cols.put(col.name.toLowerCase(),col);
+                cols.put(col.name.toLowerCase(), col);
                 if (colCsr.isLast())
                     break;
                 colCsr.moveToNext();
@@ -104,4 +103,23 @@ public class TableInfo implements Iterable<ColumnInfo> {
         }
         return cols;
     }
+
+    /**
+     * Column info support. This is useful for auto-building queries from maps that have
+     * more columns than are in the table.
+     *
+     * @author Philip Warner
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static class ColumnInfo {
+        public int position;
+        public String name;
+        public String typeName;
+        public boolean allowNull;
+        public boolean isPrimaryKey;
+        public String defaultValue;
+        public int typeClass;
+    }
+
+
 }

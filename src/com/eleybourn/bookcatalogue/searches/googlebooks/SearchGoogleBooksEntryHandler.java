@@ -24,7 +24,7 @@ import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -190,7 +190,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
 		if (mFetchThumbnail && localName.equalsIgnoreCase(THUMBNAIL)){
 			if (attributes.getValue("", "rel").equals("http://schemas.google.com/books/2008/thumbnail")) {
 				String thumbnail = attributes.getValue("", "href");
-				String filename = Utils.saveThumbnailFromUrl(thumbnail, "_GB");
+				String filename = ImageUtils.saveThumbnailFromUrl(thumbnail, "_GB");
 				if (filename.length() > 0)
 					ArrayUtils.appendOrAdd(mValues, THUMBNAIL_KEY, filename);
 			}

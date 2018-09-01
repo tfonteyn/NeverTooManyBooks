@@ -24,10 +24,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DebugReport {
+    private static final String[] FILE_PREFIXES = new String[]{
+            StorageUtils.DIRECTORY_NAME + "DbUpgrade",
+            StorageUtils.DIRECTORY_NAME + "DbExport",
+            "error.log",
+            "export.csv"};
+
     /**
      * Return the MD5 hash of the public key that signed this app, or a useful
      * text message if an error or other problem occurred.
-     *
+     * <p>
      * No longer caching as only needed at a crash anyhow
      */
     public static String signedBy(Context context) {
@@ -36,11 +42,11 @@ public class DebugReport {
         try {
             // Get app info
             PackageManager manager = context.getPackageManager();
-            PackageInfo appInfo = manager.getPackageInfo( context.getPackageName(), PackageManager.GET_SIGNATURES);
+            PackageInfo appInfo = manager.getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
 
             // Each sig is a PK of the signer:
             //     https://groups.google.com/forum/?fromgroups=#!topic/android-developers/fPtdt6zDzns
-            for(Signature sig: appInfo.signatures) {
+            for (Signature sig : appInfo.signatures) {
                 if (sig != null) {
                     final MessageDigest sha1 = MessageDigest.getInstance("MD5");
                     final byte[] publicKey = sha1.digest(sig.toByteArray());
@@ -79,15 +85,9 @@ public class DebugReport {
         return signedBy.toString();
     }
 
-    private static final String[] FILE_PREFIXES = new String[] {
-            StorageUtils.DIRECTORY_NAME + "DbUpgrade",
-            StorageUtils.DIRECTORY_NAME + "DbExport",
-            "error.log",
-            "export.csv"};
-
     /**
      * Collect and send com.eleybourn.bookcatalogue.debug info to a support email address.
-     *
+     * <p>
      * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MAILING LIST OR FORUM!
      */
     public static void sendDebugInfo(Context context, CatalogueDBAdapter dbHelper) {
@@ -104,37 +104,37 @@ public class DebugReport {
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
         StringBuilder message = new StringBuilder();
 
-try {
+        try {
             // Get app info
-PackageManager manager = context.getPackageManager();
-            PackageInfo appInfo = manager.getPackageInfo( context.getPackageName(), 0);
+            PackageManager manager = context.getPackageManager();
+            PackageInfo appInfo = manager.getPackageInfo(context.getPackageName(), 0);
             message.append("App: ").append(appInfo.packageName).append("\n")
-                .append("Version: ").append(appInfo.versionName).append(" (").append(appInfo.versionCode).append(")\n");
+                    .append("Version: ").append(appInfo.versionName).append(" (").append(appInfo.versionCode).append(")\n");
         } catch (Exception ignore) {
             // Not much we can do inside error logger...
         }
 
 
-message.append("SDK: ").append(Build.VERSION.RELEASE).append(" (").append(Build.VERSION.SDK_INT).append(" ").append(Build.TAGS).append(")\n")
-            .append("Phone Model: ").append(Build.MODEL).append("\n")
-            .append("Phone Manufacturer: ").append(Build.MANUFACTURER).append("\n")
-            .append("Phone Device: ").append(Build.DEVICE).append("\n")
-            .append("Phone Product: ").append(Build.PRODUCT).append("\n")
-            .append("Phone Brand: ").append(Build.BRAND).append("\n")
-            .append("Phone ID: ").append(Build.ID).append("\n")
-            .append("Signed-By: ").append(signedBy(context)).append("\n")
-            .append("\nHistory:\n").append(Tracker.getEventsInfo()).append("\n");
+        message.append("SDK: ").append(Build.VERSION.RELEASE).append(" (").append(Build.VERSION.SDK_INT).append(" ").append(Build.TAGS).append(")\n")
+                .append("Phone Model: ").append(Build.MODEL).append("\n")
+                .append("Phone Manufacturer: ").append(Build.MANUFACTURER).append("\n")
+                .append("Phone Device: ").append(Build.DEVICE).append("\n")
+                .append("Phone Product: ").append(Build.PRODUCT).append("\n")
+                .append("Phone Brand: ").append(Build.BRAND).append("\n")
+                .append("Phone ID: ").append(Build.ID).append("\n")
+                .append("Signed-By: ").append(signedBy(context)).append("\n")
+                .append("\nHistory:\n").append(Tracker.getEventsInfo()).append("\n");
 
         // Scanners installed
         try {
             message.append("Pref. Scanner: ").append(BookCataloguePreferences.getInt(ScannerManager.PREF_PREFERRED_SCANNER, -1)).append("\n");
-            String[] scanners = new String[] { ZxingScanner.ACTION, Scan.ACTION, Scan.Pro.ACTION};
-            for(String scanner:  scanners) {
+            String[] scanners = new String[]{ZxingScanner.ACTION, Scan.ACTION, Scan.Pro.ACTION};
+            for (String scanner : scanners) {
                 message.append("Scanner [").append(scanner).append("]:\n");
                 final Intent mainIntent = new Intent(scanner, null);
-                final List<ResolveInfo> resolved = context.getPackageManager().queryIntentActivities( mainIntent, 0);
+                final List<ResolveInfo> resolved = context.getPackageManager().queryIntentActivities(mainIntent, 0);
                 if (resolved.size() > 0) {
-                    for(ResolveInfo r: resolved) {
+                    for (ResolveInfo r : resolved) {
                         message.append("    ");
                         // Could be activity or service...
                         if (r.activityInfo != null) {
@@ -156,9 +156,9 @@ message.append("SDK: ").append(Build.VERSION.RELEASE).append(" (").append(Build.
         }
         message.append("\n");
 
-message.append("Details:\n\n").append(context.getString(R.string.debug_body).toUpperCase()).append("\n\n");
+        message.append("Details:\n\n").append(context.getString(R.string.debug_body).toUpperCase()).append("\n\n");
 
-Logger.logError(new RuntimeException("DEBUG"), message.toString());
+        Logger.logError(new RuntimeException("DEBUG"), message.toString());
 
         emailIntent.putExtra(Intent.EXTRA_TEXT, message.toString());
         //has to be an ArrayList
@@ -171,7 +171,7 @@ Logger.logError(new RuntimeException("DEBUG"), message.toString());
         try {
             for (String name : dir.list()) {
                 boolean send = false;
-                for(String prefix : FILE_PREFIXES)
+                for (String prefix : FILE_PREFIXES)
                     if (name.startsWith(prefix)) {
                         send = true;
                         break;
@@ -181,8 +181,7 @@ Logger.logError(new RuntimeException("DEBUG"), message.toString());
             }
 
             // Build the attachment list
-            for (String file : files)
-            {
+            for (String file : files) {
                 File fileIn = StorageUtils.getFile(file);
                 if (fileIn.exists() && fileIn.length() > 0) {
                     Uri u = Uri.fromFile(fileIn);

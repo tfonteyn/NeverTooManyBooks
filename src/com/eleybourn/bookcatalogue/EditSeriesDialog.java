@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.support.v7.app.AppCompatDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -30,6 +29,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 
 public class EditSeriesDialog {
 	private final Context mContext;
@@ -45,7 +45,7 @@ public class EditSeriesDialog {
 	}
 
 	public void editSeries(final Series series) {
-		final Dialog dialog = new AppCompatDialog(mContext);
+		final Dialog dialog = new BasicDialog(mContext);
 		dialog.setContentView(R.layout.edit_series);
 		dialog.setTitle(R.string.edit_series);
 

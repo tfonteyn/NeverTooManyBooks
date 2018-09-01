@@ -24,9 +24,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.xml.sax.Attributes;
@@ -60,6 +62,11 @@ import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TI
  *
  */
 public class LibraryThingManager {
+    /**
+     *  Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
+     */
+    private static final boolean DEBUG = false;
+
 	/** App context (for prefs) */
 	private final Context mAppContext;
 
@@ -610,18 +617,23 @@ public class LibraryThingManager {
 	}
 	/**
 	 * Get the cover image using the ISBN
+	 *
+	 * @return the filename
 	 **/
 	public String getCoverImage(String isbn, Bundle bookData, ImageSizes size) {
 		String url = getCoverImageUrl(isbn, size);
-		//Log.e("BC", url + " " + isbn + " " + size.toString());
+		if (DEBUG && BuildConfig.DEBUG) {
+			System.out.println("LTM: " + url + " " + isbn + " " + size.toString());
+		}
 		
 		// Make sure we follow LibraryThing ToS (no more than 1 request/second).
 		waitUntilRequestAllowed();
 		
 		// Save it with an _LT suffix
-		String filename = Utils.saveThumbnailFromUrl(url, "_LT_" + size + "_" + isbn);
-		if (filename.length() > 0 && bookData != null)
+		String filename = ImageUtils.saveThumbnailFromUrl(url, "_LT_" + size + "_" + isbn);
+		if (filename.length() > 0 && bookData != null) {
 			ArrayUtils.appendOrAdd(bookData, "__thumbnail", filename);
+		}
 		return filename;
 	}
 	

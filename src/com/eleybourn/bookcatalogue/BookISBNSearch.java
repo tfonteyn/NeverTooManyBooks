@@ -46,6 +46,7 @@ import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.utils.AsinUtils;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.SoundManager;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -671,7 +672,7 @@ public class BookISBNSearch extends ActivityWithTasks {
         // System.out.println(mId + " doSearchBook");
         /* Delete any hanging around temporary thumbs */
         try {
-            File thumb = CatalogueDBAdapter.getTempThumbnail();
+            File thumb = ImageUtils.getTempThumbnail();
             //noinspection ResultOfMethodCallIgnored
             thumb.delete();
         } catch (Exception ignore) {
