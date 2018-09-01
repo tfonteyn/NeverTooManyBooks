@@ -142,7 +142,7 @@ public class DebugReport {
                         } else if (r.serviceInfo != null) {
                             message.append(r.serviceInfo.packageName);
                         } else {
-                            message.append("UNKNOWN");
+                            message.append("UNKNOWN_MONTH");
                         }
                         message.append(" (priority ").append(r.priority).append(", preference ").append(r.preferredOrder).append(", match ").append(r.match).append(", default=").append(r.isDefault).append(")\n");
                     }

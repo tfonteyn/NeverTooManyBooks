@@ -192,7 +192,6 @@ public class PartialDatePickerFragment extends DialogFragment {
 		} catch (Exception ignore) {
 		}
 
-		setDate(yyyy, mm, dd);
-		return this;
+		return setDate(yyyy, mm, dd);
 	}
 }

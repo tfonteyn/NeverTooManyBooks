@@ -22,6 +22,8 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import java.io.File;
 
 public class ExportAdvancedDialogFragment extends DialogFragment {
+	private static final String DIALOG_ID = "dialogId";
+	private static final String FILE_SPEC = "fileSpec";
 	private int mDialogId;
 	private File mFile;
 
@@ -44,8 +46,8 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
 	public static ExportAdvancedDialogFragment newInstance(int dialogId, File file) {
 		ExportAdvancedDialogFragment frag = new ExportAdvancedDialogFragment();
         Bundle args = new Bundle();
-        args.putInt("dialogId", dialogId);
-        args.putString("fileSpec", file.getAbsolutePath());
+        args.putInt(DIALOG_ID, dialogId);
+        args.putString(FILE_SPEC, file.getAbsolutePath());
         frag.setArguments(args);
         return frag;
     }
@@ -103,8 +105,8 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
     @NonNull
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	mDialogId = getArguments().getInt("dialogId");
-    	mFile = new File(getArguments().getString("fileSpec"));
+    	mDialogId = getArguments().getInt(DIALOG_ID);
+    	mFile = new File(getArguments().getString(FILE_SPEC));
 
         View v = getActivity().getLayoutInflater().inflate(R.layout.export_advanced_options, null);
 		AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(v).setTitle(R.string.advanced_options).create();
@@ -129,7 +131,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         return alertDialog;
     }
     
-    private void handleClick(View v) {
+    private void handleClick(@SuppressWarnings("unused") View v) {
     	try {
     		OnExportTypeSelectionDialogResultListener a = (OnExportTypeSelectionDialogResultListener)getActivity();
     		if (a != null) {

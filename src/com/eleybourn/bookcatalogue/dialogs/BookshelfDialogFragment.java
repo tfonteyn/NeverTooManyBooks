@@ -48,6 +48,10 @@ import static com.eleybourn.bookcatalogue.BookDetailsAbstract.BOOKSHELF_SEPARATO
  * @author pjw
  */
 public class BookshelfDialogFragment extends DialogFragment {
+	private static final String DIALOG_ID = "dialogId";
+	private static final String ROW_ID = "rowId";
+	private static final String TEXT = "text";
+	private static final String LIST = "list";
 	/** ID passed by caller. Can be 0, will be passed back in event */
 	private int mDialogId;
 	/** Current display text for bookshelf list */
@@ -77,10 +81,10 @@ public class BookshelfDialogFragment extends DialogFragment {
 	public static BookshelfDialogFragment newInstance(int dialogId, Long rowId, String initialText, String initialList) {
 		BookshelfDialogFragment frag = new BookshelfDialogFragment();
         Bundle args = new Bundle();
-        args.putInt("dialogId", dialogId);
-        args.putLong("rowId", rowId);
-        args.putString("text", initialText);
-        args.putString("list", initialList);
+        args.putInt(DIALOG_ID, dialogId);
+        args.putLong(ROW_ID, rowId);
+        args.putString(TEXT, initialText);
+        args.putString(LIST, initialList);
         frag.setArguments(args);
         return frag;
     }
@@ -107,8 +111,8 @@ public class BookshelfDialogFragment extends DialogFragment {
 	 */
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putString("list", mCurrList);
-		outState.putString("text", mCurrText);
+		outState.putString(LIST, mCurrList);
+		outState.putString(TEXT, mCurrText);
 	}
 
 	@Override
@@ -117,20 +121,20 @@ public class BookshelfDialogFragment extends DialogFragment {
 
 		// Grab the args
 		final Bundle args = getArguments();
-    	mDialogId = args.getInt("dialogId");
+    	mDialogId = args.getInt(DIALOG_ID);
 		/* Book ID */
-		Long mRowId = args.getLong("rowId");
+		Long mRowId = args.getLong(ROW_ID);
 		// Retrieve dynamic values
-    	if (savedInstanceState != null && savedInstanceState.containsKey("text")) { 
-        	mCurrText = savedInstanceState.getString("text");
+    	if (savedInstanceState != null && savedInstanceState.containsKey(TEXT)) {
+        	mCurrText = savedInstanceState.getString(TEXT);
     	} else {
-        	mCurrText = args.getString("text");
+        	mCurrText = args.getString(TEXT);
     	}
     	
-    	if (savedInstanceState != null && savedInstanceState.containsKey("list")) { 
-        	mCurrList = savedInstanceState.getString("list");
+    	if (savedInstanceState != null && savedInstanceState.containsKey(LIST)) {
+        	mCurrList = savedInstanceState.getString(LIST);
     	} else {
-        	mCurrList = args.getString("list");
+        	mCurrList = args.getString(LIST);
     	}
 
     	// Setp the dialog

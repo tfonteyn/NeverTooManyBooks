@@ -49,6 +49,8 @@ import java.util.Calendar;
  * @author pjw
  */
 public class PartialDatePicker extends AlertDialog {
+    private static final String UNKNOWN_MONTH = "---";
+    private static final String UNKNOWN_DAY = "--";
     /**
      * Calling context
      */
@@ -138,11 +140,11 @@ public class PartialDatePicker extends AlertDialog {
         mDaySpinner.setAdapter(mDayAdapter);
 
         // First entry is 'unknown'
-        monthAdapter.add("---");
-        mDayAdapter.add("--");
+        monthAdapter.add(UNKNOWN_MONTH);
+        mDayAdapter.add(UNKNOWN_DAY);
 
         // Make sure that the spinner can initially take any 'day' value. Otherwise, when a dialog is
-        // reconstructed after rotation, the 'day' field will not be restorable by Android.
+        // reconstructed after rotation, the 'day' field will not be restored by Android.
         regenDaysOfMonth(31);
 
         // Get a calendar for locale-related info
@@ -156,35 +158,37 @@ public class PartialDatePicker extends AlertDialog {
         }
 
         // Handle selections from the MONTH spinner
-        mMonthSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+        mMonthSpinner.setOnItemSelectedListener(
+                new OnItemSelectedListener() {
 
-                                                    @Override
-                                                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                                                        int pos = mMonthSpinner.getSelectedItemPosition();
-                                                        handleMonth(pos);
-                                                    }
+                    @Override
+                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                        int pos = mMonthSpinner.getSelectedItemPosition();
+                        handleMonth(pos);
+                    }
 
-                                                    @Override
-                                                    public void onNothingSelected(AdapterView<?> arg0) {
-                                                        handleMonth(null);
-                                                    }
-                                                }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> arg0) {
+                        handleMonth(null);
+                    }
+                }
         );
 
         // Handle selections from the DAY spinner
-        mDaySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+        mDaySpinner.setOnItemSelectedListener(
+                new OnItemSelectedListener() {
 
-                                                  @Override
-                                                  public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                                                      int pos = mDaySpinner.getSelectedItemPosition();
-                                                      handleDay(pos);
-                                                  }
+                    @Override
+                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                        int pos = mDaySpinner.getSelectedItemPosition();
+                        handleDay(pos);
+                    }
 
-                                                  @Override
-                                                  public void onNothingSelected(AdapterView<?> arg0) {
-                                                      handleDay(null);
-                                                  }
-                                              }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> arg0) {
+                        handleDay(null);
+                    }
+                }
         );
 
         // Handle all changes to the YEAR text
@@ -207,40 +211,42 @@ public class PartialDatePicker extends AlertDialog {
         });
 
         // Handle YEAR +
-        root.findViewById(R.id.plus).setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                String text;
-                                                                if (mYear != null) {
-                                                                    text = (++mYear).toString();
-                                                                } else {
-                                                                    text = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
-                                                                }
-                                                                mYearView.setText(text);
-                                                            }
-                                                        }
+        root.findViewById(R.id.plus).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String text;
+                        if (mYear != null) {
+                            text = (++mYear).toString();
+                        } else {
+                            text = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
+                        }
+                        mYearView.setText(text);
+                    }
+                }
         );
 
         // Handle YEAR -
-        root.findViewById(R.id.minus).setOnClickListener(new View.OnClickListener() {
-                                                             @Override
-                                                             public void onClick(View v) {
-                                                                 String text;
-                                                                 if (mYear != null) {
-                                                                     // We can't support negatvive years yet because of sorting issues and the fact that
-                                                                     // the Calendar object bugs out with them. To fix the calendar object interface we
-                                                                     // would need to translate -ve years to Epoch settings throughout the app. For now,
-                                                                     // not many people have books written before 0AD, so it's a low priority.
-                                                                     if (mYear > 0) {
-                                                                         text = (--mYear).toString();
-                                                                         mYearView.setText(text);
-                                                                     }
-                                                                 } else {
-                                                                     text = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
-                                                                     mYearView.setText(text);
-                                                                 }
-                                                             }
-                                                         }
+        root.findViewById(R.id.minus).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String text;
+                        if (mYear != null) {
+                            // We can't support negatvive years yet because of sorting issues and the fact that
+                            // the Calendar object bugs out with them. To fix the calendar object interface we
+                            // would need to translate -ve years to Epoch settings throughout the app. For now,
+                            // not many people have books written before 0AD, so it's a low priority.
+                            if (mYear > 0) {
+                                text = (--mYear).toString();
+                                mYearView.setText(text);
+                            }
+                        } else {
+                            text = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
+                            mYearView.setText(text);
+                        }
+                    }
+                }
         );
 
         // Handle MONTH +

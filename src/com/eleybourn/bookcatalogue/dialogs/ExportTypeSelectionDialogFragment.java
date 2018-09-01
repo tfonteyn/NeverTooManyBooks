@@ -17,6 +17,8 @@ import java.io.File;
 import java.util.Date;
 
 public class ExportTypeSelectionDialogFragment extends DialogFragment {
+	private static final String DIALOG_ID = "dialogId";
+	private static final String FILE_SPEC = "fileSpec";
 	private int mDialogId;
 	private File mFile;
 
@@ -46,8 +48,8 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
 	public static ExportTypeSelectionDialogFragment newInstance(int dialogId, File file) {
 		ExportTypeSelectionDialogFragment frag = new ExportTypeSelectionDialogFragment();
         Bundle args = new Bundle();
-        args.putInt("dialogId", dialogId);
-        args.putString("fileSpec", file.getAbsolutePath());
+        args.putInt(DIALOG_ID, dialogId);
+        args.putString(FILE_SPEC, file.getAbsolutePath());
         frag.setArguments(args);
         return frag;
     }
@@ -87,8 +89,8 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
     @NonNull
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	mDialogId = getArguments().getInt("dialogId");
-    	mFile = new File(getArguments().getString("fileSpec"));
+    	mDialogId = getArguments().getInt(DIALOG_ID);
+    	mFile = new File(getArguments().getString(FILE_SPEC));
 
         View v = getActivity().getLayoutInflater().inflate(R.layout.export_type_selection, null);
 		AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(v).setTitle(R.string.backup_to_archive).create();
