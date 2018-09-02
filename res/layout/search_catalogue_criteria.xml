@@ -99,8 +99,7 @@
                 </LinearLayout>
 
                 <View
-                    style="@style/main_menu_header_divider"
-                    android:layout_width="match_parent"
+                    style="@style/listDivider"
                     android:layout_height="2dp"
                     android:paddingBottom="2dp" />
             </LinearLayout>
@@ -113,8 +112,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <View
-                style="@style/main_menu_header_divider"
-                android:layout_width="match_parent"
+                style="@style/listDivider"
                 android:layout_height="2dp"
                 android:paddingBottom="2dp" />
         </LinearLayout>
@@ -129,8 +127,7 @@
             android:paddingRight="@dimen/padding_border">
 
             <View
-                style="@style/main_menu_header_divider"
-                android:layout_width="match_parent"
+                style="@style/listDivider"
                 android:layout_height="2dp"
                 android:paddingBottom="2dp" />
 

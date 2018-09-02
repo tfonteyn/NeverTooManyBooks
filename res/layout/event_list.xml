@@ -20,11 +20,10 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <View
-            android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_below="@id/events_found"
             android:paddingBottom="2dp"
-            style="@style/main_menu_header_divider"
+            style="@style/listDivider"
             />
     </RelativeLayout>
 

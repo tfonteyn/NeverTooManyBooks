@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    style="@style/propertyValue">
+    style="@style/propertyValue"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/name"
@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="5sp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:text="Some name"/>
+        tools:text="Some name" />
 
     <EditText
         android:id="@+id/value"
@@ -19,14 +19,13 @@
         android:layout_weight="1"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:paddingStart="@dimen/padding_border"
         android:paddingEnd="@dimen/padding_border"
-        android:textAppearance="?android:attr/textAppearanceMedium" 
+        android:paddingStart="@dimen/padding_border"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         tools:ignore="LabelFor,TextFields" />
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/propertyDivider"
         android:src="?android:attr/dividerHorizontal"
         tools:ignore="ContentDescription" />
 

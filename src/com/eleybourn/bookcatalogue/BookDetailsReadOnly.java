@@ -6,8 +6,10 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.eleybourn.bookcatalogue.Fields.Field;
@@ -98,8 +100,8 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
      * fields needed for read-only mode (user notes, loaned, etc.) */
     protected void populateFieldsFromBook(BookData book) {
         try {
-            //BookData book = mEditManager.getBookData();
             populateBookDetailsFields(book);
+
             // Set maximum aspect ratio width : height = 1 : 2
             setBookThumbnail(book.getRowId(), mThumbEditSize, mThumbEditSize * 2);
 
@@ -110,6 +112,9 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
             showSignedStatus(book);
             formatFormatSection(book);
             formatPublishingSection(book);
+            if (0 != book.getInt(BookData.KEY_ANTHOLOGY)) {
+                showAnthologyTitlesButton();
+            }
 
             // Restore default visibility and hide unused/unwanted and empty fields
             showHideFields(true);
@@ -129,11 +134,23 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 
     }
 
+    private void showAnthologyTitlesButton() {
+        Button antBtn = getView().findViewById(R.id.anthology_popuplist);
+        antBtn.setVisibility(View.VISIBLE);
+        antBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //FIXME: popup the list of titles.
+                Toast.makeText(getView().getContext(),"ants to come",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     @Override
     /* Override populating author field. Hide the field if author not set or
      * shows author (or authors through ',') with 'by' at the beginning. */
     protected void populateAuthorListField() {
-        ArrayList<Author> authors = mEditManager.getBookData().getAuthorList();
+        ArrayList<Author> authors = mEditManager.getBookData().getAuthors();
         int authorsCount = authors.size();
         if (authorsCount == 0) {
             // Hide author field if it is not set
@@ -154,7 +171,7 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 
     @Override
     protected void populateSeriesListField() {
-        ArrayList<Series> series = mEditManager.getBookData().getSeriesList();
+        ArrayList<Series> series = mEditManager.getBookData().getSeries();
 
         int size;
         try {
@@ -341,8 +358,7 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
     }
 
     public void onResume() {
-        // If we are read-only, returning here from somewhere else and have an
-        // ID...reload!
+        // If we are read-only, returning here from somewhere else and have an ID...reload!
         BookData book = mEditManager.getBookData();
         if (book.getRowId() != 0) {
             book.reload();

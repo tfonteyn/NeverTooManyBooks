@@ -69,6 +69,11 @@ public class BookEditFields extends BookDetailsAbstract
 
     private static final int ACTIVITY_EDIT_AUTHORS = 1000;
     private static final int ACTIVITY_EDIT_SERIES = 1001;
+    public static final String BOOKSHELVES_DIALOG = "bookshelves_dialog";
+    public static final String BOOK_DATA = "bookData";
+    public static final String BOOK = "book";
+    public static final String TITLE_LABEL = "title_label";
+    public static final String TITLE = "title";
 
     /**
      * Display the edit fields page
@@ -102,10 +107,10 @@ public class BookEditFields extends BookDetailsAbstract
                         @Override
                         public void onClick(View v) {
                             Intent i = new Intent(getActivity(), EditAuthorList.class);
-                            i.putExtra(ColumnNames.KEY_AUTHOR_ARRAY, mEditManager.getBookData().getAuthorList());
+                            i.putExtra(ColumnNames.KEY_AUTHOR_ARRAY, mEditManager.getBookData().getAuthors());
                             i.putExtra(ColumnNames.KEY_ROWID, mEditManager.getBookData().getRowId());
-                            i.putExtra("title_label", ColumnNames.KEY_TITLE);
-                            i.putExtra("title", mFields.getField(R.id.title).getValue().toString());
+                            i.putExtra(TITLE_LABEL, ColumnNames.KEY_TITLE);
+                            i.putExtra(TITLE, mFields.getField(R.id.title).getValue().toString());
                             startActivityForResult(i, ACTIVITY_EDIT_AUTHORS);
                         }
                     });
@@ -116,19 +121,19 @@ public class BookEditFields extends BookDetailsAbstract
                         @Override
                         public void onClick(View v) {
                             Intent i = new Intent(getActivity(), EditSeriesList.class);
-                            i.putExtra(ColumnNames.KEY_SERIES_ARRAY, mEditManager.getBookData().getSeriesList());
+                            i.putExtra(ColumnNames.KEY_SERIES_ARRAY, mEditManager.getBookData().getSeries());
                             i.putExtra(ColumnNames.KEY_ROWID, mEditManager.getBookData().getRowId());
-                            i.putExtra("title_label", ColumnNames.KEY_TITLE);
-                            i.putExtra("title", mFields.getField(R.id.title).getValue().toString());
+                            i.putExtra(TITLE_LABEL, ColumnNames.KEY_TITLE);
+                            i.putExtra(TITLE, mFields.getField(R.id.title).getValue().toString());
                             startActivityForResult(i, ACTIVITY_EDIT_SERIES);
                         }
                     });
 
-            ArrayAdapter<String> publisher_adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getPublishers());
+            ArrayAdapter<String> publisher_adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getPublishers());
             mFields.setAdapter(R.id.publisher, publisher_adapter);
-            ArrayAdapter<String> genre_adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getGenres());
+            ArrayAdapter<String> genre_adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getGenres());
             mFields.setAdapter(R.id.genre, genre_adapter);
-            ArrayAdapter<String> language_adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getLanguages());
+            ArrayAdapter<String> language_adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, mEditManager.getLanguages());
             mFields.setAdapter(R.id.language, language_adapter);
             mFields.setListener(R.id.date_published, new View.OnClickListener() {
                 public void onClick(View view) {
@@ -190,7 +195,7 @@ public class BookEditFields extends BookDetailsAbstract
                             mEditManager.getBookData().getBookshelfText(),
                             mEditManager.getBookData().getBookshelfList()
                     );
-                    frag.show(getFragmentManager(), "bookshelves_dialog");
+                    frag.show(getFragmentManager(), BOOKSHELVES_DIALOG);
                 }
             });
 
@@ -224,8 +229,9 @@ public class BookEditFields extends BookDetailsAbstract
 
         if (BuildConfig.DEBUG) {
             double tn = System.currentTimeMillis();
-            System.out.println("BEF oAC(super): " + (t1 - t0));
-            System.out.println("BEF oAC: " + (tn - t0));
+            System.out.println(
+                    "\nBEF oAC(super): " + (t1 - t0) +
+                    "\nBEF oAC: " + (tn - t0));
         }
 
     }
@@ -261,10 +267,10 @@ public class BookEditFields extends BookDetailsAbstract
             if (extras != null) {
                 // From the ISBN Search (add)
                 try {
-                    if (extras.containsKey("book")) {
+                    if (extras.containsKey(BOOK)) {
                         throw new RuntimeException("[book] array passed in Intent");
                     } else {
-                        Bundle values = extras.getParcelable("bookData");
+                        Bundle values = extras.getParcelable(BOOK_DATA);
                         for (Field f : mFields) {
                             if (!f.column.isEmpty() && values.containsKey(f.column)) {
                                 try {
@@ -415,7 +421,7 @@ public class BookEditFields extends BookDetailsAbstract
 
     @Override
     protected void populateAuthorListField() {
-        ArrayList<Author> list = mEditManager.getBookData().getAuthorList();
+        ArrayList<Author> list = mEditManager.getBookData().getAuthors();
         if (list.size() != 0 && Utils.pruneList(mDbHelper, list)) {
             mEditManager.setDirty(true);
             mEditManager.getBookData().setAuthorList(list);
@@ -493,8 +499,8 @@ public class BookEditFields extends BookDetailsAbstract
     }
 
     @Override
-    public void onBookshelfCheckChanged(int dialogId,
-                                        BookshelfDialogFragment dialog, boolean checked, String shelf, String textList, String encodedList) {
+    public void onBookshelfCheckChanged(int dialogId, BookshelfDialogFragment dialog,
+                                        boolean checked, String shelf, String textList, String encodedList) {
 
         Field fe = mFields.getField(R.id.bookshelf);
         fe.setValue(textList);

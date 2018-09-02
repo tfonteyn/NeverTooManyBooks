@@ -90,7 +90,7 @@
     <string name="help">Help</string>
     <string name="menu_manage_fields">Zichtbaarheid velden beheren</string>
     <string name="manage_fields_help">Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen. Ongeselecteerde velden zijn verborgen.</string>
-    <string name="edit_book_anthology">Bloemlezing titels</string>
+    <string name="anthology_titles">Bloemlezing titels</string>
     <string name="amazon_wishlist">Amazon Verlanglijst</string>
     <string name="same_author">Alle verhalen in deze bloemlezing zijn geschreven door dezelfde auteur</string>
     <string name="menu_delete_anthology">Verwijder titels uit bloemlezing</string>

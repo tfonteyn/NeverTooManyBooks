@@ -88,7 +88,7 @@
     <string name="help">Hilfe</string>
     <string name="menu_manage_fields">Feld Sichtbarkeit bearbeiten</string>
     <string name="manage_fields_help">Die ausgewählten Felder werden im Bildschirm Buch hinzufügen/bearbeiten angezeigt. Nicht ausgewählte Felder werden nicht angezeigt.</string>
-    <string name="edit_book_anthology">Anthologie-Titel</string>
+    <string name="anthology_titles">Anthologie-Titel</string>
     <string name="amazon_wishlist">Amazon-Wunschliste</string>
     <string name="same_author">Alle Geschichten in dieser Anthologie wurden vom gleichen Autor geschrieben.</string>
     <string name="menu_delete_anthology">Titel von Anthologie löschen</string>

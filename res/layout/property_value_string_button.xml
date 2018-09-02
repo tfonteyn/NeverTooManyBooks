@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    style="@style/propertyValue">
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/propertyValue"
+    android:orientation="vertical">
 
     <FrameLayout
         android:id="@+id/frame"
@@ -13,6 +13,7 @@
         android:layout_centerVertical="true"
         android:paddingEnd="@dimen/padding_border"
         android:paddingStart="@dimen/padding_border">
+
         <ImageView
             android:id="@+id/edit_button"
             android:layout_width="wrap_content"
@@ -45,8 +46,8 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         tools:text="some value" />
 
-     <ImageView
-        android:layout_width="match_parent"
+    <ImageView
+        style="@style/propertyDivider"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:src="?android:attr/dividerHorizontal"

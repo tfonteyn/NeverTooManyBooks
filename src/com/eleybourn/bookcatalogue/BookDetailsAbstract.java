@@ -259,8 +259,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
         }
     }
 
-    /* Note that you should use setContentView() method in descendant before
-     * running this.
+    /* Note that you should use setContentView() method in descendant before running this.
      */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -280,9 +279,6 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
                 showZoomedThumb(mEditManager.getBookData().getRowId());
             }
         });
-
-        //BCBackground.init(this);
-
     }
 
     @Override
@@ -302,9 +298,6 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
     public void onResume() {
         Tracker.enterOnResume(this);
         super.onResume();
-
-        // Fix background
-        //BCBackground.init(this);
         Tracker.exitOnResume(this);
     }
 
@@ -545,7 +538,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
     protected void populateSeriesListField() {
         String newText;
         int size;
-        ArrayList<Series> list = mEditManager.getBookData().getSeriesList();
+        ArrayList<Series> list = mEditManager.getBookData().getSeries();
         try {
             size = list.size();
         } catch (NullPointerException e) {

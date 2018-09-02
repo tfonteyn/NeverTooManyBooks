@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/message"
@@ -15,24 +15,22 @@
 
     <View
         android:id="@+id/titleDivider"
-        android:layout_width="match_parent"
-        android:layout_height="2dip"
         style="@style/DialogDividerTheme"
-        />
+        android:layout_width="match_parent"
+        android:layout_height="2dip" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp" >
+        android:layout_marginTop="8dp">
 
         <LinearLayout
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
-        </LinearLayout>
+            android:orientation="vertical" />
     </ScrollView>
 
 </LinearLayout>

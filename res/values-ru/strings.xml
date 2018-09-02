@@ -89,7 +89,7 @@
     <string name="help">Помощь</string>
     <string name="menu_manage_fields">Видимость полей</string>
     <string name="manage_fields_help">Выбранные поля видны на экранах добавления/редактирования книги. Невыбранные поля скрыты.</string>
-    <string name="edit_book_anthology">Названия антологий</string>
+    <string name="anthology_titles">Названия антологий</string>
     <string name="amazon_wishlist">Amazon Wishlist</string>
     <string name="same_author">Все рассказы этой антологии написаны одним автором</string>
     <string name="menu_delete_anthology">Удалить название антологии</string>

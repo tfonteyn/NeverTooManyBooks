@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -27,68 +27,89 @@ import android.support.v4.app.DialogFragment;
 
 /**
  * Fragment wrapper for the PartialDatePicker dialog
- * 
+ *
  * @author pjw
  */
 public class PartialDatePickerFragment extends DialogFragment {
-	/** Currently displayed year; null if empty/invalid */
-	private Integer mYear;
-	/** Currently displayed month; null if empty/invalid */
-	private Integer mMonth;
-	/** Currently displayed day; null if empty/invalid */
-	private Integer mDay;
-	/** Title id */
-	private int mTitleId;
-	/** ID passed from caller to identify this dialog */
-	private int mDialogId;
+    public static final String YEAR = "year";
+    public static final String MONTH = "month";
+    public static final String DAY = "day";
+    public static final String TITLE = "title";
+    public static final String DIALOG_ID = "dialogId";
 
-	/**
-	 * Listener interface to receive notifications when dialog is closed by any means.
-	 *
-	 * @author pjw
-	 */
-	public interface OnPartialDatePickerListener {
-		void onPartialDatePickerSet(int dialogId, PartialDatePickerFragment dialog, Integer year, Integer month, Integer day);
-		void onPartialDatePickerCancel(int dialogId, PartialDatePickerFragment dialog);
-	}
+    /**
+     * Currently displayed year; null if empty/invalid
+     */
+    private Integer mYear;
+    /**
+     * Currently displayed month; null if empty/invalid
+     */
+    private Integer mMonth;
+    /**
+     * Currently displayed day; null if empty/invalid
+     */
+    private Integer mDay;
+    /**
+     * Title id
+     */
+    private int mTitleId;
+    /**
+     * ID passed from caller to identify this dialog
+     */
+    private int mDialogId;
+    /**
+     * The callback received when the user "sets" the date in the dialog.
+     * <p>
+     * The event is passed on the the calling activity
+     */
+    private final PartialDatePicker.OnDateSetListener mDialogListener = new PartialDatePicker.OnDateSetListener() {
+        public void onDateSet(PartialDatePicker dialog, Integer year, Integer month, Integer day) {
+            ((OnPartialDatePickerListener) getActivity()).onPartialDatePickerSet(mDialogId, PartialDatePickerFragment.this, year, month, day);
+        }
 
-	/**
-	 * Constructor
-	 * 
-	 * @return		new instance
-	 */
-	public static PartialDatePickerFragment newInstance() {
+        @Override
+        public void onCancel(PartialDatePicker dialog) {
+            ((OnPartialDatePickerListener) getActivity()).onPartialDatePickerCancel(mDialogId, PartialDatePickerFragment.this);
+        }
+    };
+
+    /**
+     * Constructor
+     *
+     * @return new instance
+     */
+    public static PartialDatePickerFragment newInstance() {
         return new PartialDatePickerFragment();
     }
 
-	/**
-	 * Check the activity supports the interface
-	 */
-	@Override
-	public void onAttach(Context a) {
-		super.onAttach(a);
+    /**
+     * Check the activity supports the interface
+     */
+    @Override
+    public void onAttach(Context a) {
+        super.onAttach(a);
 
-		if (! (a instanceof OnPartialDatePickerListener))
-			throw new RuntimeException("Activity " + a.getClass().getSimpleName() + " must implement OnPartialDatePickerListener");
+        if (!(a instanceof OnPartialDatePickerListener))
+            throw new RuntimeException("Activity " + a.getClass().getSimpleName() + " must implement OnPartialDatePickerListener");
 
-	}
+    }
 
-	/**
-	 * Create the underlying dialog
-	 */
-	@NonNull
-	@Override
+    /**
+     * Create the underlying dialog
+     */
+    @NonNull
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-		// Restore saved state info
+        // Restore saved state info
         if (savedInstanceState != null) {
-        	if (savedInstanceState.containsKey("year"))
-        		mYear = savedInstanceState.getInt("year");
-        	if (savedInstanceState.containsKey("month"))
-        		mMonth = savedInstanceState.getInt("month");
-        	if (savedInstanceState.containsKey("day"))
-        		mDay = savedInstanceState.getInt("day");
-        	mTitleId = savedInstanceState.getInt("title");
-        	mDialogId = savedInstanceState.getInt("dialogId");
+            if (savedInstanceState.containsKey(YEAR))
+                mYear = savedInstanceState.getInt(YEAR);
+            if (savedInstanceState.containsKey(MONTH))
+                mMonth = savedInstanceState.getInt(MONTH);
+            if (savedInstanceState.containsKey(DAY))
+                mDay = savedInstanceState.getInt(DAY);
+            mTitleId = savedInstanceState.getInt(TITLE);
+            mDialogId = savedInstanceState.getInt(DIALOG_ID);
         }
 
         // Create the dialog and listen (locally) for its events
@@ -96,102 +117,101 @@ public class PartialDatePickerFragment extends DialogFragment {
         editor.setDate(mYear, mMonth, mDay);
         editor.setOnDateSetListener(mDialogListener);
         if (mTitleId != 0)
-	        editor.setTitle(mTitleId);
+            editor.setTitle(mTitleId);
         return editor;
     }
 
-	public PartialDatePickerFragment setDialogId(int id) {
-		mDialogId = id;
-		return this;
-	}
+    public int getDialogId() {
+        return mDialogId;
+    }
 
-	public int getDialogId() {
-		return mDialogId;
-	}
+    public PartialDatePickerFragment setDialogId(int id) {
+        mDialogId = id;
+        return this;
+    }
 
-	/** Accessor. Update dialog if available. */
-	public PartialDatePickerFragment setTitle(int title) {
-		mTitleId = title;
-		PartialDatePicker d = (PartialDatePicker)getDialog();
-		if (d != null) {
-			d.setTitle(mTitleId);		
-		}
-		return this;
-	}
+    /**
+     * Accessor. Update dialog if available.
+     */
+    public PartialDatePickerFragment setTitle(int title) {
+        mTitleId = title;
+        PartialDatePicker d = (PartialDatePicker) getDialog();
+        if (d != null) {
+            d.setTitle(mTitleId);
+        }
+        return this;
+    }
 
-	/** Accessor. Update dialog if available. */
-	public PartialDatePickerFragment setDate(Integer year, Integer month, Integer day) {
-    	mYear = year;
-    	mMonth = month;
-    	mDay = day;
-		PartialDatePicker d = (PartialDatePicker)getDialog();
-		if (d != null) {
-			d.setDate(mYear, mMonth, mDay);		
-		}
-		return this;
-	}
+    /**
+     * Accessor. Update dialog if available.
+     */
+    public PartialDatePickerFragment setDate(Integer year, Integer month, Integer day) {
+        mYear = year;
+        mMonth = month;
+        mDay = day;
+        PartialDatePicker d = (PartialDatePicker) getDialog();
+        if (d != null) {
+            d.setDate(mYear, mMonth, mDay);
+        }
+        return this;
+    }
 
-	@Override 
-	public void onSaveInstanceState(Bundle state) {
-		state.putInt("title", mTitleId);
-		state.putInt("dialogId", mDialogId);
-		if (mYear != null)
-			state.putInt("year", mYear);
-		if (mMonth != null)
-			state.putInt("month", mMonth);
-		if (mDay != null)
-			state.putInt("day", mDay);
-	}
+    @Override
+    public void onSaveInstanceState(Bundle state) {
+        state.putInt(TITLE, mTitleId);
+        state.putInt(DIALOG_ID, mDialogId);
+        if (mYear != null)
+            state.putInt(YEAR, mYear);
+        if (mMonth != null)
+            state.putInt(MONTH, mMonth);
+        if (mDay != null)
+            state.putInt(DAY, mDay);
+    }
 
-	/**
-	 * Make sure data is saved in onPause() because onSaveInstanceState will have lost the views
-	 */
-	@Override
-	public void onPause() {
-		super.onPause();
-		PartialDatePicker d = (PartialDatePicker)getDialog();
-		if (d != null) {
-			mYear = d.getYear();
-			mMonth = d.getMonth();
-			mDay = d.getDay();
-		}		
-	}
+    /**
+     * Make sure data is saved in onPause() because onSaveInstanceState will have lost the views
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        PartialDatePicker d = (PartialDatePicker) getDialog();
+        if (d != null) {
+            mYear = d.getYear();
+            mMonth = d.getMonth();
+            mDay = d.getDay();
+        }
+    }
 
-	/**
-	 *  The callback received when the user "sets" the date in the dialog.
-	 *
-	 *  The event is passed on the the calling activity
-	 */
-	private final PartialDatePicker.OnDateSetListener mDialogListener = new PartialDatePicker.OnDateSetListener() {
-		public void onDateSet(PartialDatePicker dialog, Integer year, Integer month, Integer day) {
-			((OnPartialDatePickerListener)getActivity()).onPartialDatePickerSet(mDialogId, PartialDatePickerFragment.this, year, month, day);
-		}
+    /**
+     * @param current Current date (may be null)
+     */
+    public PartialDatePickerFragment setDate(Object current) {
+        String dateString = current == null ? "" : current.toString();
 
-		@Override
-		public void onCancel(PartialDatePicker dialog) {
-			((OnPartialDatePickerListener)getActivity()).onPartialDatePickerCancel(mDialogId, PartialDatePickerFragment.this);
-		}
-	};
+        // get the current date
+        Integer yyyy = null;
+        Integer mm = null;
+        Integer dd = null;
+        try {
+            String[] dateAndTime = dateString.split(" ");
+            String[] date = dateAndTime[0].split("-");
+            yyyy = Integer.parseInt(date[0]);
+            mm = Integer.parseInt(date[1]);
+            dd = Integer.parseInt(date[2]);
+        } catch (Exception ignore) {
+        }
 
-	/**
-	 * @param current	Current date (may be null)
-	 */
-	public PartialDatePickerFragment setDate(Object current) {
-		String dateString = current == null ? "" : current.toString();
+        return setDate(yyyy, mm, dd);
+    }
 
-		// get the current date
-		Integer yyyy = null;
-		Integer mm = null;
-		Integer dd = null;
-		try {
-			String[] dateAndTime = dateString.split(" ");
-			String[] date = dateAndTime[0].split("-");
-			yyyy = Integer.parseInt(date[0]);
-			mm = Integer.parseInt(date[1]);
-			dd = Integer.parseInt(date[2]);
-		} catch (Exception ignore) {
-		}
+    /**
+     * Listener interface to receive notifications when dialog is closed by any means.
+     *
+     * @author pjw
+     */
+    public interface OnPartialDatePickerListener {
+        void onPartialDatePickerSet(int dialogId, PartialDatePickerFragment dialog, Integer year, Integer month, Integer day);
 
-		return setDate(yyyy, mm, dd);
-	}
+        void onPartialDatePickerCancel(int dialogId, PartialDatePickerFragment dialog);
+    }
 }

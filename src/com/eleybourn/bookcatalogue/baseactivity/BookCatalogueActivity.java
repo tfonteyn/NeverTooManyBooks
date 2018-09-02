@@ -60,14 +60,9 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
             setSupportActionBar(toolbar);
         }
 
-        /*
-        Normal setup of the action bar now
-         */
+        // Normal setup of the action bar now
         ActionBar bar = getSupportActionBar();
         if (bar != null) {
-
-            // debatable... discouraged in API 21+
-           // bar.setDisplayShowTitleEnabled(true);
 
             bar.setHomeButtonEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);

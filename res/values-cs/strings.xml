@@ -89,7 +89,7 @@
     <string name="help">Nápověda</string>
     <string name="menu_manage_fields">Spravovat viditelnost jednotlivých polí</string>
     <string name="manage_fields_help">Vybraná pole jsou viditelná na obrazovce pro přidání/úpravu knihy. Nevybraná pole jsou skryta.</string>
-    <string name="edit_book_anthology">Antologické tituly</string>
+    <string name="anthology_titles">Antologické tituly</string>
     <string name="amazon_wishlist">Amazon Wishlist</string>
     <string name="same_author">Všechny příběhy v této antologii jsou napsány stejným autorem</string>
     <string name="menu_delete_anthology">Odstranit tento titul z antologií</string>

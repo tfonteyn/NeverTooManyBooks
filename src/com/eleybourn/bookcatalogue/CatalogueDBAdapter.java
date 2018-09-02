@@ -2077,7 +2077,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 				values.putString(KEY_DATE_ADDED, DateUtils.toSqlDateTime(new Date()));
 
 			// Make sure we have an author
-			ArrayList<Author> authors = values.getAuthorList();
+			ArrayList<Author> authors = values.getAuthors();
 			if (authors == null || authors.size() == 0)
 				throw new IllegalArgumentException();
 			ContentValues initialValues = filterValues(values, mBooksInfo);
@@ -2101,7 +2101,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
 			createBookAuthors(rowId, authors, false);
 
-			ArrayList<Series> series = values.getSeriesList();
+			ArrayList<Series> series = values.getSeries();
 			createBookSeries(rowId, series, false);
 
 			ArrayList<AnthologyTitle> anthologyTitles = values.getAnthologyTitles();
@@ -2707,11 +2707,11 @@ public class CatalogueDBAdapter implements AutoCloseable {
 			}
 
 			if (values.containsKey(ColumnNames.KEY_AUTHOR_ARRAY)) {
-				ArrayList<Author> authors = values.getAuthorList();
+				ArrayList<Author> authors = values.getAuthors();
 				createBookAuthors(rowId, authors, false);			
 			}
 			if (values.containsKey(ColumnNames.KEY_SERIES_ARRAY)) {
-				ArrayList<Series> series = values.getSeriesList();
+				ArrayList<Series> series = values.getSeries();
 				createBookSeries(rowId, series, false);			
 			}
 

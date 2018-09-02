@@ -26,8 +26,7 @@
 
             <TextView
                 style="@style/prefs_header"
-                android:text="@string/general"
-                android:textAllCaps="true" />
+                android:text="@string/general" />
 
             <TextView
                 android:id="@+id/bookshelf_label"
@@ -51,8 +50,7 @@
 
             <TextView
                 style="@style/prefs_header"
-                android:text="@string/data_import_export"
-                android:textAllCaps="true" />
+                android:text="@string/data_import_export" />
 
             <TextView
                 android:id="@+id/backup_catalogue_label"
@@ -82,8 +80,7 @@
 
             <TextView
                 style="@style/prefs_header"
-                android:text="@string/internet_update_fields"
-                android:textAllCaps="true" />
+                android:text="@string/internet_update_fields" />
 
             <TextView
                 android:id="@+id/update_internet_label"
@@ -113,8 +110,7 @@
 
             <TextView
                 style="@style/prefs_header"
-                android:text="@string/credentials"
-                android:textAllCaps="true" />
+                android:text="@string/credentials" />
 
             <TextView
                 android:id="@+id/goodreads_auth"
@@ -132,8 +128,7 @@
 
             <TextView
                 style="@style/prefs_header"
-                android:text="@string/advanced_options"
-                android:textAllCaps="true" />
+                android:text="@string/advanced_options" />
 
             <TextView
                 android:id="@+id/background_tasks_label"

@@ -68,7 +68,7 @@ import java.util.ArrayList;
  * be tempting to add local implementations the java generic model seems to prevent this.
  * 
  * This Activity uses TouchListView from CommonsWare which is in turn based on Android code
- * for TouchIntercptor which was (reputedly) removed in Android 2.2. 
+ * for TouchInterceptor which was (reputedly) removed in Android 2.2.
  * 
  * For this code to work, the  main view must contain:
  * - a TouchListView with id = @+id/android:list

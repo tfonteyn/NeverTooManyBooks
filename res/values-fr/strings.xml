@@ -183,7 +183,7 @@
     <string name="help">Aide</string>
     <string name="menu_manage_fields">Gérer la visibilité des champs</string>
     <string name="manage_fields_help">Les champs sélectionnés sont visibles dans les écrans d\'ajout et d\'édition des livres. Les champs non sélectionnés sont cachés.</string>
-    <string name="edit_book_anthology">Titres de l\'anthologie</string>
+    <string name="anthology_titles">Titres de l\'anthologie</string>
     <string name="amazon_wishlist">Idées cadeaux Amazon</string>
     <string name="same_author">Toutes les histoires de cette anthologie sont écrites par le même auteur.</string>
     <string name="menu_delete_anthology">Supprimer ce titre de l\'anthologie</string>

@@ -90,7 +90,7 @@
     <string name="help">Help</string>
     <string name="menu_manage_fields">Manage Field Visibility</string>
     <string name="manage_fields_help">Selected fields are visible in the add/edit book screens. Unselected fields are hidden.</string>
-    <string name="edit_book_anthology">Anthology Titles</string>
+    <string name="anthology_titles">Anthology Titles</string>
     <string name="amazon_wishlist">Amazon Wishlist</string>
     <string name="same_author">All stories in this anthology are written by the same author</string>
     <string name="menu_delete_anthology">Delete Title from Anthology</string>

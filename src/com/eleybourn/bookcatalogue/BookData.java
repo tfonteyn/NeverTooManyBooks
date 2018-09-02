@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -45,388 +45,412 @@ import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TI
 
 /**
  * Represents the underlying data for a book.
- * 
+ *
  * @author pjw
  */
 public class BookData extends DataManager {
-	
-	/** Row ID for book */
-	private long mRowId;
 
-	/** Key for special field */
-	private static final String KEY_BOOKSHELF_LIST = "+BookshelfList";
-	/** Key for special field */
-	private static final String KEY_BOOKSHELF_TEXT = "+BookshelfText";
-	/** Key for special field */
-	public static final String KEY_ANTHOLOGY = "+IsAnthology";
+    /**
+     * Key for special field
+     */
+    public static final String KEY_ANTHOLOGY = "+IsAnthology";
+    /**
+     * Key for special field
+     */
+    private static final String KEY_BOOKSHELF_LIST = "+BookshelfList";
+    /**
+     * Key for special field
+     */
+    private static final String KEY_BOOKSHELF_TEXT = "+BookshelfText";
+    /**
+     * Row ID for book
+     */
+    private long mRowId;
 
-	/** Constructor */
-	public BookData() {
-		this(0L, null);
-	}
+    /**
+     * Constructor
+     */
+    public BookData() {
+        this(0L, null);
+    }
 
-	/** Constructor */
-	public BookData(Long rowId) {
-		this(rowId, null);
-	}
+    /**
+     * Constructor
+     */
+    public BookData(Long rowId) {
+        this(rowId, null);
+    }
 
-	/**
-	 * Constructor
-	 * 
-	 * @param src		Bundle with book data (may be null)
-	 */
-	public BookData(Bundle src) {
-		this(0L, src);
-	}
+    /**
+     * Constructor
+     *
+     * @param src Bundle with book data (may be null)
+     */
+    public BookData(Bundle src) {
+        this(0L, src);
+    }
 
-	/**
-	 * Constructor
-	 * 
-	 * @param rowId		ID of book (may be 0 for new)
-	 * @param src		Bundle with book data (may be null)
-	 */
-	public BookData(Long rowId, Bundle src) {
-		// Save the row, if possible
-		if (rowId == null) {
-			mRowId = 0;
-		} else {
-			mRowId = rowId;
-		}
-		// Load from bundle or database
-		if (src != null) {
-			putAll(src);			
-		} else if (mRowId > 0) {
-			reload();
-		}
-		// Create special validators
-		initValidators();
-	}
+    /**
+     * Constructor
+     *
+     * @param rowId ID of book (may be 0 for new)
+     * @param src   Bundle with book data (may be null)
+     */
+    public BookData(Long rowId, Bundle src) {
+        // Save the row, if possible
+        if (rowId == null) {
+            mRowId = 0;
+        } else {
+            mRowId = rowId;
+        }
+        // Load from bundle or database
+        if (src != null) {
+            putAll(src);
+        } else if (mRowId > 0) {
+            reload();
+        }
+        // Create special validators
+        initValidators();
+    }
 
-	/**
-	 * Erase everything in this instance and reset the special handlers
- 	 * 
-	 * @return	self, for chaining
-	 */
-	@Override
-	public DataManager clear() {
-		super.clear();
-		// Create special validators
-		initValidators();
-		return this;
-	}
-	
-	/** Accessor */
-	public void setBookshelfList(String encodedList) {
-		putString(KEY_BOOKSHELF_LIST, encodedList);
-	}
-	/** Accessor */
-	public String getBookshelfList() {
-		return getString(KEY_BOOKSHELF_LIST);
-	}
-	/** Accessor. Return a formatted list of books. */
-	public String getBookshelfText() {
-		String list = getBookshelfList();
-		ArrayList<String> items = ArrayUtils.decodeList(list, BookDetailsAbstract.BOOKSHELF_SEPARATOR);
-		if (items.size() == 0)
-			return "";
+    /**
+     * Erase everything in this instance and reset the special handlers
+     *
+     * @return self, for chaining
+     */
+    @Override
+    public DataManager clear() {
+        super.clear();
+        // Create special validators
+        initValidators();
+        return this;
+    }
 
-		StringBuilder text = new StringBuilder(items.get(0));
-		for(int i = 1; i < items.size(); i++) {
-			text.append(", ");
-			text.append(items.get(i));
-		}
-		return text.toString();
-	}
+    /**
+     * Accessor
+     */
+    public String getBookshelfList() {
+        return getString(KEY_BOOKSHELF_LIST);
+    }
 
-	/**
-	 * Create the list of bookshelves in the underlying data
-	 * 
-	 * @param db		Database connection
-	 * 
-	 * @return			The list
-	 */
-	private String getBookshelfListFromDb(CatalogueDBAdapter db) {
-		Cursor bookshelves = db.fetchAllBookshelvesByBook(getRowId());
-		try {
-			StringBuilder bookshelves_list = new StringBuilder();
-			while (bookshelves.moveToNext()) {
-				String name = bookshelves.getString(bookshelves.getColumnIndex(KEY_BOOKSHELF));
-				String encoded_name = ArrayUtils.encodeListItem(name, BookDetailsAbstract.BOOKSHELF_SEPARATOR);
-				if (bookshelves_list.length() == 0) {
-					bookshelves_list.append(encoded_name);
-				} else {
-					bookshelves_list.append(BookDetailsAbstract.BOOKSHELF_SEPARATOR).append(encoded_name);
-				}
-			}
-			return bookshelves_list.toString();
-		} finally {
-			if (bookshelves != null)
-				bookshelves.close();
-		}
-	}
+    /**
+     * Accessor
+     */
+    public void setBookshelfList(String encodedList) {
+        putString(KEY_BOOKSHELF_LIST, encodedList);
+    }
 
-	/** Accessor */
-	public long getRowId() {
-		return mRowId;
-	}
+    /**
+     * Accessor. Return a formatted list of books.
+     */
+    public String getBookshelfText() {
+        String list = getBookshelfList();
+        ArrayList<String> items = ArrayUtils.decodeList(list, BookDetailsAbstract.BOOKSHELF_SEPARATOR);
+        if (items.size() == 0)
+            return "";
 
-	/**
-	 * Load the book details from the database
-	 */
-	public void reload() {
-		long rowId = getRowId();
-		// If ID = 0, no details in DB
-		if (rowId == 0)
-			return;
+        StringBuilder text = new StringBuilder(items.get(0));
+        for (int i = 1; i < items.size(); i++) {
+            text.append(", ");
+            text.append(items.get(i));
+        }
+        return text.toString();
+    }
 
-		// Connect to DB and get cursor for book details
-		CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-		db.open();
-		try {
-			BooksCursor book = db.fetchBookById(getRowId());
-			try {
-				// Put all cursor fields in collection
-				putAll(book);
 
-				// Get author, series, bookshelf and anthology title lists
-				setAuthorList(db.getBookAuthorList(getRowId()));
-				setSeriesList(db.getBookSeriesList(getRowId()));
-				setBookshelfList(getBookshelfListFromDb(db));
-				setAnthologyTitles(db.getBookAnthologyTitleList(getRowId()));
+    /**
+     * Accessor
+     */
+    public long getRowId() {
+        return mRowId;
+    }
 
-			} catch (Exception e) {
-				Logger.logError(e);
-			} finally {
-				if (book != null)
-					book.close();
-			}
-		} finally {
-			db.close();
-		}
-	}
+    /**
+     * Load the book details from the database
+     */
+    public void reload() {
+        long rowId = getRowId();
+        // If ID = 0, no details in DB
+        if (rowId == 0)
+            return;
 
-	/** Special Accessor */
-	public ArrayList<Author> getAuthorList() {
-		return getAuthors();
-	}
+        // Connect to DB and get cursor for book details
+        CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+        db.open();
+        try {
+            BooksCursor book = db.fetchBookById(getRowId());
+            try {
+                // Put all cursor fields in collection
+                putAll(book);
 
-	/** Special Accessor */
-	public void setAnthologyTitles(ArrayList<AnthologyTitle> list) {
-		putSerializable(KEY_ANTHOLOGY_TITLE_ARRAY, list);
-	}
+                // Get author, series, bookshelf and anthology title lists
+                setAuthorList(db.getBookAuthorList(getRowId()));
+                setSeriesList(db.getBookSeriesList(getRowId()));
+                setBookshelfList(getBookshelfListFromDb(db));
+                setAnthologyTitles(db.getBookAnthologyTitleList(getRowId()));
 
-	/** Special Accessor */
-	public void setAuthorList(ArrayList<Author> list) {
-		putSerializable(KEY_AUTHOR_ARRAY, list);
-	}
+            } catch (Exception e) {
+                Logger.logError(e);
+            } finally {
+                if (book != null)
+                    book.close();
+            }
+        } finally {
+            db.close();
+        }
+    }
 
-	/** Special Accessor */
-	public ArrayList<Series> getSeriesList() {
-		return getSeries(); // mSeriesList;
-	}
+    /**
+     * Special Accessor
+     */
+    public void setAuthorList(ArrayList<Author> list) {
+        putSerializable(KEY_AUTHOR_ARRAY, list);
+    }
 
-	/** Special Accessor */
-	public void setSeriesList(ArrayList<Series> list) {
-		putSerializable(KEY_SERIES_ARRAY, list);
-	}
+    /**
+     * Special Accessor
+     */
+    public void setSeriesList(ArrayList<Series> list) {
+        putSerializable(KEY_SERIES_ARRAY, list);
+    }
 
-	/**
-	 *  Special Accessor.
-	 *  
-	 *  Build a formatted string for author list.
-	 */
-	public String getAuthorTextShort() {
-		String newText;
-		ArrayList<Author> list = getAuthorList();
-		if (list.size() == 0) {
-			newText = null;
-		} else {
-			newText = list.get(0).getDisplayName();
-			if (list.size() > 1) {
-				newText += " " + BookCatalogueApp.getResourceString(R.string.and_others);
-			}
-		}
-		return newText;		
-	}
-	/**
-	 *  Special Accessor.
-	 *  
-	 *  Build a formatted string for series list.
-	 */
-	public String getSeriesTextShort() {
-		String newText;
-		ArrayList<Series> list = getSeriesList();
-		if (list.size() == 0) {
-			newText = null;
-		} else {
-			newText = list.get(0).getDisplayName();
-			if (list.size() > 1) {
-				newText += " " + BookCatalogueApp.getResourceString(R.string.and_others);
-			}
-		}
-		return newText;		
-	}
-	
-	/**
-	 * Build any special purpose validators
-	 */
-	private void initValidators() {
-		addValidator(KEY_TITLE, nonBlankValidator);
-		addValidator(KEY_ANTHOLOGY_MASK, integerValidator);
+    /**
+     * Special Accessor.
+     * <p>
+     * Build a formatted string for author list.
+     */
+    public String getAuthorTextShort() {
+        String newText;
+        ArrayList<Author> list = getAuthors();
+        if (list.size() == 0) {
+            newText = null;
+        } else {
+            newText = list.get(0).getDisplayName();
+            if (list.size() > 1) {
+                newText += " " + BookCatalogueApp.getResourceString(R.string.and_others);
+            }
+        }
+        return newText;
+    }
 
-		/* Anthology needs special handling, and we use a formatter to do this. If the original
-		 * value was 0 or 1, then setting/clearing it here should just set the new value to 0 or 1.
-		 * However...if if the original value was 2, then we want setting/clearing to alternate
-		 * between 2 and 0, not 1 and 0.
-		 * So, despite if being a checkbox, we use an integerValidator and use a special formatter.
-		 * We also store it in the tag field so that it is automatically serialized with the
-		 * activity. */
-		addAccessor(KEY_ANTHOLOGY, new DataAccessor() {
-			@Override
-			public Object get(DataManager data, Datum datum, Bundle rawData) {
-				Integer mask = data.getInt(KEY_ANTHOLOGY_MASK);
-				return mask != 0 ? "1" : "0";
-			}
+    /**
+     * Special Accessor.
+     * <p>
+     * Build a formatted string for series list.
+     */
+    public String getSeriesTextShort() {
+        String newText;
+        ArrayList<Series> list = getSeries();
+        if (list.size() == 0) {
+            newText = null;
+        } else {
+            newText = list.get(0).getDisplayName();
+            if (list.size() > 1) {
+                newText += " " + BookCatalogueApp.getResourceString(R.string.and_others);
+            }
+        }
+        return newText;
+    }
 
-			@Override
-			public void set(DataManager data, Datum datum, Bundle rawData, Object value) {
-				Integer mask = getInt(KEY_ANTHOLOGY_MASK);
-				// Parse the string the CheckBox returns us (0 or 1)
-				if (Convert.toBoolean(value)) {
-					mask |= 1;
-				} else {
-					mask &= 0xFFFFFFFE;
-				}
-				putInt(KEY_ANTHOLOGY_MASK, mask);
-				
-			}
+    /**
+     * Utility routine to get an anthology title list from a data manager
+     *
+     * @return List of anthology titles
+     */
+    @SuppressWarnings("unchecked")
+    public ArrayList<AnthologyTitle> getAnthologyTitles() {
+        ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) getSerializable(KEY_ANTHOLOGY_TITLE_ARRAY);
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        return list;
+    }
 
-			@Override
-			public boolean isPresent(DataManager data, Datum datum, Bundle rawData) {
-				return rawData.containsKey(KEY_ANTHOLOGY_MASK);
-			}
+    /**
+     * Special Accessor
+     */
+    public void setAnthologyTitles(ArrayList<AnthologyTitle> list) {
+        putSerializable(KEY_ANTHOLOGY_TITLE_ARRAY, list);
+    }
 
-		});
+    /**
+     * Utility routine to get an author list from a data manager
+     *
+     * @return List of authors
+     */
+    @SuppressWarnings("unchecked")
+    public ArrayList<Author> getAuthors() {
+        ArrayList<Author> list = (ArrayList<Author>) getSerializable(KEY_AUTHOR_ARRAY);
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        return list;
+    }
 
-		// Make a formatted list of bookshelves
-		addAccessor(KEY_BOOKSHELF_TEXT, new DataAccessor() {
-			@Override
-			public Object get(DataManager data, Datum datum, Bundle rawData) {
-				return getBookshelfText();
-			}
+    /**
+     * Utility routine to get an series list from a data manager
+     *
+     * @return List of series
+     */
+    @SuppressWarnings("unchecked")
+    public ArrayList<Series> getSeries() {
+        ArrayList<Series> list = (ArrayList<Series>) getSerializable(KEY_SERIES_ARRAY);
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        return list;
+    }
 
-			@Override
-			public void set(DataManager data, Datum datum, Bundle rawData, Object value) {
-				throw new RuntimeException("Bookshelf Text can not be set");
-			}
+    /**
+     * Convenience Accessor
+     */
+    public boolean isRead() {
+        return getInt(KEY_READ) != 0;
+    }
 
-			@Override
-			public boolean isPresent(DataManager data, Datum datum, Bundle rawData) {
-				return !getBookshelfText().isEmpty();
-			}
-		});
+    /**
+     * Convenience Accessor
+     */
+    public boolean isSigned() {
+        return getInt(KEY_SIGNED) != 0;
+    }
 
-		// Whenever the row ID is written, make sure mRowId is updated.
-		addAccessor(KEY_ROWID, new DataAccessor() {
-			@Override
-			public Object get(DataManager data, Datum datum, Bundle rawData) {
-				return Datum.objectToLong(rawData.get(datum.getKey()));
-			}
+    /**
+     * Update author details from DB
+     *
+     * @param db Database connection
+     */
+    public void refreshAuthorList(CatalogueDBAdapter db) {
+        ArrayList<Author> list = getAuthors();
+        for (Author a : list) {
+            db.refreshAuthor(a);
+        }
+        setAuthorList(list);
+    }
 
-			@Override
-			public void set(DataManager data, Datum datum, Bundle rawData, Object value) {
-				rawData.putLong(datum.getKey(), Datum.objectToLong(value));
-				mRowId = rawData.getLong(datum.getKey());
-			}
+    /**
+     * Cleanup thumbnails from underlying data
+     */
+    public void cleanupThumbnails() {
+        ImageUtils.cleanupThumbnails(mBundle);
+    }
 
-			@Override
-			public boolean isPresent(DataManager data, Datum datum, Bundle rawData) {
-				return true;
-			}
-		});
-		
+    /**
+     * Get the underlying raw data.
+     * DO NOT UPDATE THIS! IT SHOULD BE USED FOR READING DATA ONLY.
+     */
+    public Bundle getRawData() {
+        return mBundle;
+    }
 
-		addValidator("list_price", blankOrFloatValidator);
-		addValidator(KEY_PAGES, blankOrIntegerValidator);
-	}
-	
-	/**
-	 * Utility routine to get an author list from a data manager
-	 * 
-	 * @return		List of authors
-	 */
-	@SuppressWarnings("unchecked")
-	public ArrayList<AnthologyTitle> getAnthologyTitles() {
-		ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) getSerializable(KEY_ANTHOLOGY_TITLE_ARRAY);
-		if (list == null) {
-			list = new ArrayList<>();
-		}
-		return list;
-	}
+    /**
+     * Create the list of bookshelves in the underlying data
+     *
+     * @param db Database connection
+     *
+     * @return The list
+     */
+    private String getBookshelfListFromDb(CatalogueDBAdapter db) {
+        Cursor bookshelves = db.fetchAllBookshelvesByBook(getRowId());
+        try {
+            StringBuilder bookshelves_list = new StringBuilder();
+            while (bookshelves.moveToNext()) {
+                String name = bookshelves.getString(bookshelves.getColumnIndex(KEY_BOOKSHELF));
+                String encoded_name = ArrayUtils.encodeListItem(name, BookDetailsAbstract.BOOKSHELF_SEPARATOR);
+                if (bookshelves_list.length() == 0) {
+                    bookshelves_list.append(encoded_name);
+                } else {
+                    bookshelves_list.append(BookDetailsAbstract.BOOKSHELF_SEPARATOR).append(encoded_name);
+                }
+            }
+            return bookshelves_list.toString();
+        } finally {
+            if (bookshelves != null)
+                bookshelves.close();
+        }
+    }
 
-	/**
-	 * Utility routine to get an author list from a data manager
-	 * 
-	 * @return		List of authors
-	 */
-	@SuppressWarnings("unchecked")
-	private ArrayList<Author> getAuthors() {
-		ArrayList<Author> list = (ArrayList<Author>) getSerializable(KEY_AUTHOR_ARRAY);
-		if (list == null) {
-			list = new ArrayList<>();
-		}
-		return list;
-	}
+    /**
+     * Build any special purpose validators
+     */
+    private void initValidators() {
+        addValidator(KEY_TITLE, nonBlankValidator);
+        addValidator(KEY_ANTHOLOGY_MASK, integerValidator);
 
-	/**
-	 * Utility routine to get an author list from a data manager
-	 * 
-	 * @return		List of authors
-	 */
-	@SuppressWarnings("unchecked")
-	private ArrayList<Series> getSeries() {
-		ArrayList<Series> list = (ArrayList<Series>) getSerializable(KEY_SERIES_ARRAY);
-		if (list == null) {
-			list = new ArrayList<>();
-		}
-		return list;
-	}
+        /* Anthology needs special handling, and we use a formatter to do this. If the original
+         * value was 0 or 1, then setting/clearing it here should just set the new value to 0 or 1.
+         * However...if if the original value was 2, then we want setting/clearing to alternate
+         * between 2 and 0, not 1 and 0.
+         * So, despite if being a checkbox, we use an integerValidator and use a special formatter.
+         * We also store it in the tag field so that it is automatically serialized with the
+         * activity. */
+        addAccessor(KEY_ANTHOLOGY, new DataAccessor() {
+            @Override
+            public Object get(DataManager data, Datum datum, Bundle rawData) {
+                Integer mask = data.getInt(KEY_ANTHOLOGY_MASK);
+                return mask != 0 ? "1" : "0";
+            }
 
-	/** Convenience Accessor */
-	public boolean isRead() {
-		return getInt(KEY_READ) != 0;
-	}
+            @Override
+            public void set(DataManager data, Datum datum, Bundle rawData, Object value) {
+                Integer mask = getInt(KEY_ANTHOLOGY_MASK);
+                // Parse the string the CheckBox returns us (0 or 1)
+                if (Convert.toBoolean(value)) {
+                    mask |= 1;
+                } else {
+                    mask &= 0xFFFFFFFE;
+                }
+                putInt(KEY_ANTHOLOGY_MASK, mask);
 
-	/** Convenience Accessor */
-	public boolean isSigned() {
-		return getInt(KEY_SIGNED) != 0;
-	}
+            }
 
-	/** 
-	 * Update author details from DB
-	 * 
-	 * @param db		Database connection
-	 */
-	public void refreshAuthorList(CatalogueDBAdapter db) {
-		ArrayList<Author> list = getAuthorList();
-		for(Author a : list) {
-			db.refreshAuthor(a);
-		}
-		setAuthorList(list);
-	}
+            @Override
+            public boolean isPresent(DataManager data, Datum datum, Bundle rawData) {
+                return rawData.containsKey(KEY_ANTHOLOGY_MASK);
+            }
 
-	/**
-	 * Cleanup thumbnails from underlying data
-	 */
-	public void cleanupThumbnails() {
-		ImageUtils.cleanupThumbnails(mBundle);
-	}
+        });
 
-	/**
-	 * Get the underlying raw data.
-	 * DO NOT UPDATE THIS! IT SHOULD BE USED FOR READING DATA ONLY.
-	 */
-	public Bundle getRawData() {
-		return mBundle;
-	}
+        // Make a formatted list of bookshelves
+        addAccessor(KEY_BOOKSHELF_TEXT, new DataAccessor() {
+            @Override
+            public Object get(DataManager data, Datum datum, Bundle rawData) {
+                return getBookshelfText();
+            }
+
+            @Override
+            public void set(DataManager data, Datum datum, Bundle rawData, Object value) {
+                throw new RuntimeException("Bookshelf Text can not be set");
+            }
+
+            @Override
+            public boolean isPresent(DataManager data, Datum datum, Bundle rawData) {
+                return !getBookshelfText().isEmpty();
+            }
+        });
+
+        // Whenever the row ID is written, make sure mRowId is updated.
+        addAccessor(KEY_ROWID, new DataAccessor() {
+            @Override
+            public Object get(DataManager data, Datum datum, Bundle rawData) {
+                return Datum.objectToLong(rawData.get(datum.getKey()));
+            }
+
+            @Override
+            public void set(DataManager data, Datum datum, Bundle rawData, Object value) {
+                rawData.putLong(datum.getKey(), Datum.objectToLong(value));
+                mRowId = rawData.getLong(datum.getKey());
+            }
+
+            @Override
+            public boolean isPresent(DataManager data, Datum datum, Bundle rawData) {
+                return true;
+            }
+        });
+
+
+        addValidator("list_price", blankOrFloatValidator);
+        addValidator(KEY_PAGES, blankOrIntegerValidator);
+    }
+
 }

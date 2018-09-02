@@ -150,11 +150,31 @@
             </RelativeLayout>
         </LinearLayout>
 
-        <View
-            android:id="@+id/header_div"
-            style="@style/main_menu_header_divider"
+
+
+        <!-- Anthology -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="1dp" />
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/anthology_popuplist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/anthology_titles"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <!-- Checkbox below is used only for compatibility with edit_book -->
+            <CheckBox
+                android:id="@+id/anthology"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <View style="@style/listDivider" />
 
         <!-- Series -->
 
@@ -214,22 +234,31 @@
             style="@style/bookDetailsTextStyle"
             tools:text="Science Fiction" />
 
-        <!-- Genre -->
-
-        <TextView
-            android:id="@+id/lbl_language"
-            style="@style/bookDetailsTitlesStyle"
-            android:text="@string/language" />
-
-        <TextView
-            android:id="@+id/language"
-            style="@style/bookDetailsTextStyle"
-            tools:text="Quenya" />
+        <View
+            style="@style/listDivider"
+            android:paddingBottom="2dp"
+            android:paddingTop="2dp" />
 
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <!-- Language -->
+            <TableRow
+                android:id="@+id/row_language"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/lbl_language"
+                    style="@style/bookDetailsTitlesStyle"
+                    android:text="@string/language" />
+
+                <TextView
+                    android:id="@+id/language"
+                    style="@style/bookDetailsTextStyle"
+                    tools:text="Quenya" />
+            </TableRow>
+            <!-- List price -->
             <TableRow
                 android:id="@+id/row_list_price"
                 android:layout_width="match_parent"
@@ -245,16 +274,9 @@
                     android:layout_weight="1"
                     tools:text="45" />
             </TableRow>
-
-            <!-- Checkbox below is unused now. -->
-            <!-- Used only for compatibility with edit_book -->
-
-            <CheckBox
-                android:id="@+id/anthology"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
         </TableLayout>
+
+        <!-- Notes section starts here -->
 
         <TextView
             android:id="@+id/my_comments"
@@ -265,9 +287,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <View
-            style="@style/main_menu_header_divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
+            style="@style/listDivider"
             android:paddingBottom="2dp"
             android:paddingTop="2dp" />
 
@@ -377,9 +397,7 @@
 
         <View
             android:id="@+id/description_divider"
-            style="@style/main_menu_header_divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
+            style="@style/listDivider"
             android:paddingBottom="2dp"
             android:paddingTop="2dp" />
 

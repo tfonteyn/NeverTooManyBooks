@@ -18,6 +18,7 @@
     -->
     <!-- Style for headers in preferences lists -->
     <style name="prefs_header">
+        <item name="android:textAllCaps">true</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">@dimen/padding_border</item>
@@ -27,11 +28,10 @@
     <!--
     **************************************************************************************
     -->
-    <!-- the name is taken from the original xml drawable, should be renamed (or removed) -->
-    <style name="main_menu_header_divider">
-        <!--
-        <item name="android:background">@drawable/main_menu_header_divider</item>
-        -->
+    <style name="listDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">?android:attr/listDivider</item>
     </style>
     <!--
     **************************************************************************************
@@ -153,6 +153,7 @@
         <item name="android:gravity">top</item>
     </style>
 
+
     <!--
     **************************************************************************************
     -->
@@ -215,6 +216,11 @@
         <item name="android:textOn">@string/_empty_</item>
         <item name="android:textOff">@string/_empty_</item>
         <item name="android:visibility">visible</item>
+    </style>
+
+    <style name="propertyDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
 </resources>

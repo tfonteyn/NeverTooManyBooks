@@ -89,7 +89,7 @@
     <string name="help">Yardım</string>
     <string name="menu_manage_fields">Alan görünürlüğünü yönet</string>
     <string name="manage_fields_help">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
-    <string name="edit_book_anthology">Seçmeler</string>
+    <string name="anthology_titles">Seçmeler</string>
     <string name="amazon_wishlist">Amazon Wishlist</string>
     <string name="same_author">Bu seçkideki tüm anlatılar aynı yazar tarafından yazılmıştır</string>
     <string name="menu_delete_anthology">Seçkiden eser sil</string>

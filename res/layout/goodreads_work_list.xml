@@ -87,10 +87,9 @@
         -->
 
         <View
-            android:layout_width="match_parent"
             android:layout_height="2dp"
             android:paddingBottom="2dp"
-            style="@style/main_menu_header_divider"
+            style="@style/listDivider"
             />
     </LinearLayout>
 
@@ -102,10 +101,9 @@
         android:orientation="vertical" >
 
         <View
-            android:layout_width="match_parent"
             android:layout_height="2dp"
             android:paddingBottom="2dp"
-            style="@style/main_menu_header_divider"
+            style="@style/listDivider"
             />
 
         <TextView

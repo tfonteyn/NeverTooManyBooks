@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:text="@string/edit_book_anthology"
+        android:text="@string/anthology_titles"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <CheckBox

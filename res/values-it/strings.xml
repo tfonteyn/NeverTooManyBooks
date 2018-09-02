@@ -88,7 +88,7 @@
     <string name="help">Aiuto</string>
     <string name="menu_manage_fields">Gestisci visibilità campi</string>
     <string name="manage_fields_help">I campi selezionati sono visibili nella schermata aggiungi/modifica libro. Gli altri rimangono nascosti.</string>
-    <string name="edit_book_anthology">Antologia titoli</string>
+    <string name="anthology_titles">Antologia titoli</string>
     <string name="amazon_wishlist">Amazon Wishlist</string>
     <string name="same_author">Tutte le storie in questa antologia sono scritte dallo stesso autore</string>
     <string name="menu_delete_anthology">Cancella titolo dall\'antologia</string>

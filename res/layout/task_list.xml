@@ -17,9 +17,7 @@
 
         <View
             android:id="@+id/header"
-            style="@style/main_menu_header_divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
+            style="@style/listDivider"
             android:layout_alignParentTop="true"
             android:paddingBottom="@dimen/padding_border" />
 

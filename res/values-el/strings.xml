@@ -90,7 +90,7 @@
     <string name="help">Βοήθεια</string>
     <string name="menu_manage_fields">Διαχείρηση ορατότητας πεδίου</string>
     <string name="manage_fields_help">Τα επιλεγμένα πεδία είναι ορατά στις οθόνες προσθήκης/επεξεργασίας βιβλίου. Τα μη επιλεγμένα πεδία είναι κρυφά.</string>
-    <string name="edit_book_anthology">Τίτλοι Ανθολογιών</string>
+    <string name="anthology_titles">Τίτλοι Ανθολογιών</string>
     <string name="amazon_wishlist">Amazon Wishlist</string>
     <string name="same_author">Όλες οι ιστορίες σε αυτήν την ανθολογία είναι γραμμένες από τον ίδιο συγγραφέα.</string>
     <string name="menu_delete_anthology">Διαγραφή τίτλου από Ανθολογία</string>

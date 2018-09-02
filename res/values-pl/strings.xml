@@ -89,7 +89,7 @@
     <string name="help">Pomoc</string>
     <string name="menu_manage_fields">Dostosuj widoczność pól</string>
     <string name="manage_fields_help">Wybrane pola są widoczne na ekranach dodawania i edycji książki. Pozostałe są ukryte.</string>
-    <string name="edit_book_anthology">Tytuły antologii</string>
+    <string name="anthology_titles">Tytuły antologii</string>
     <string name="amazon_wishlist">Amazon Wishlist</string>
     <string name="same_author">Wszystkie ksiązki w tej antologii są napisane przez tego samego autora</string>
     <string name="menu_delete_anthology">Usuń pozycję z antologii</string>
