@@ -34,43 +34,16 @@
             app:srcCompat="@drawable/ic_grabber"
             tools:ignore="ContentDescription" />
 
-        <RelativeLayout
+        <include
             android:id="@+id/row_details"
+            layout="@layout/row_anthology"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@id/ROW_DELETE"
             android:layout_toStartOf="@id/grabber"
-            android:orientation="vertical"
-            android:padding="2dp">
-
-            <TextView
-                android:id="@+id/row_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:ellipsize="marquee"
-                android:gravity="start"
-                android:paddingEnd="@dimen/padding_border"
-                android:paddingStart="@dimen/padding_border"
-                android:singleLine="true"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/row_author"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_below="@id/row_title"
-                android:ellipsize="marquee"
-                android:gravity="start"
-                android:paddingEnd="@dimen/padding_border"
-                android:paddingStart="@dimen/padding_border"
-                android:singleLine="true"
-                android:textSize="12sp" />
-        </RelativeLayout>
-
+            android:padding="2dp" />
     </RelativeLayout>
 
 </LinearLayout>

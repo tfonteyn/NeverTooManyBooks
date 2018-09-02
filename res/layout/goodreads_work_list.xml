@@ -86,11 +86,7 @@
 
         -->
 
-        <View
-            android:layout_height="2dp"
-            android:paddingBottom="2dp"
-            style="@style/listDivider"
-            />
+        <View style="@style/listDivider" />
     </LinearLayout>
 
     <LinearLayout
@@ -100,11 +96,7 @@
         android:layout_alignParentBottom="true"
         android:orientation="vertical" >
 
-        <View
-            android:layout_height="2dp"
-            android:paddingBottom="2dp"
-            style="@style/listDivider"
-            />
+        <View style="@style/listDivider" />
 
         <TextView
             android:id="@+id/works_found"

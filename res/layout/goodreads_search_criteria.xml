@@ -84,10 +84,7 @@
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
 
-            <View
-                style="@style/listDivider"
-                android:layout_height="2dp"
-                android:paddingBottom="2dp" />
+            <View style="@style/listDivider" />
         </LinearLayout>
 
         <LinearLayout
@@ -121,10 +118,7 @@
                 android:text="@string/search" />
         </LinearLayout>
 
-        <View
-            style="@style/listDivider"
-            android:layout_height="2dp"
-            android:paddingBottom="2dp" />
+        <View style="@style/listDivider" />
     </LinearLayout>
 
     <LinearLayout
@@ -136,10 +130,7 @@
         android:paddingLeft="@dimen/padding_border"
         android:paddingRight="@dimen/padding_border">
 
-        <View
-            style="@style/listDivider"
-            android:layout_height="2dp"
-            android:paddingBottom="2dp" />
+        <View style="@style/listDivider" />
 
         <TextView
             android:id="@+id/works_found"

@@ -98,10 +98,7 @@
                         tools:ignore="LabelFor" />
                 </LinearLayout>
 
-                <View
-                    style="@style/listDivider"
-                    android:layout_height="2dp"
-                    android:paddingBottom="2dp" />
+                <View style="@style/listDivider" />
             </LinearLayout>
 
             <TextView
@@ -126,10 +123,7 @@
             android:paddingLeft="@dimen/padding_border"
             android:paddingRight="@dimen/padding_border">
 
-            <View
-                style="@style/listDivider"
-                android:layout_height="2dp"
-                android:paddingBottom="2dp" />
+            <View style="@style/listDivider" />
 
             <Button
                 android:id="@+id/rebuild"

@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="top"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/events_found"
@@ -20,11 +20,8 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <View
-            android:layout_height="2dp"
-            android:layout_below="@id/events_found"
-            android:paddingBottom="2dp"
             style="@style/listDivider"
-            />
+            android:layout_below="@id/events_found" />
     </RelativeLayout>
 
     <Button
@@ -33,15 +30,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:focusable="false"
-        android:text="@string/cleanup_old_events"
-        />
+        android:text="@string/cleanup_old_events" />
 
     <ListView
         android:id="@+id/android:list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/cleanup"
-        android:layout_below="@id/header" >
-    </ListView>
+        android:layout_below="@id/header" />
 
 </RelativeLayout>

@@ -150,21 +150,30 @@
             </RelativeLayout>
         </LinearLayout>
 
-
+        <View style="@style/listDivider" />
 
         <!-- Anthology -->
         <LinearLayout
+            android:id="@+id/anthology_section"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            tools:visibility="visible">
 
-            <Button
-                android:id="@+id/anthology_popuplist"
+            <TextView
+                style="@style/bookDetailsTitlesStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/anthology_titles"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:visibility="gone"
-                tools:visibility="visible" />
+                android:text="@string/anthology_titles" />
+
+            <Switch
+                android:id="@+id/anthology_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingEnd="40dp"
+                android:paddingStart="40dp"
+                tools:ignore="ContentDescription" />
 
             <!-- Checkbox below is used only for compatibility with edit_book -->
             <CheckBox
@@ -173,16 +182,20 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone" />
         </LinearLayout>
-
-        <View style="@style/listDivider" />
+        <LinearLayout
+            android:id="@+id/anthology_titlelist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
+        </LinearLayout>
 
         <!-- Series -->
-
         <TextView
             android:id="@+id/lbl_series"
             style="@style/bookDetailsTitlesStyle"
             android:text="@string/series" />
-
         <TextView
             android:id="@+id/series"
             style="@style/bookDetailsTextStyle"
@@ -190,12 +203,10 @@
             tools:text="Series name (1)\nSeries name (2)" />
 
         <!-- Publishing -->
-
         <TextView
             android:id="@+id/lbl_publishing"
             style="@style/bookDetailsTitlesStyle"
             android:text="@string/book_details_readonly_publishing" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -210,34 +221,27 @@
 
         </LinearLayout>
 
-        <!-- Shelves -->
-
+        <!-- Book Shelves -->
         <TextView
             android:id="@+id/lbl_bookshelves"
             style="@style/bookDetailsTitlesStyle"
             android:text="@string/bookshelves" />
-
         <TextView
             android:id="@+id/bookshelf"
             style="@style/bookDetailsTextStyle"
             tools:text="The best books, Wanted" />
 
         <!-- Genre -->
-
         <TextView
             android:id="@+id/lbl_genre"
             style="@style/bookDetailsTitlesStyle"
             android:text="@string/genre" />
-
         <TextView
             android:id="@+id/genre"
             style="@style/bookDetailsTextStyle"
             tools:text="Science Fiction" />
 
-        <View
-            style="@style/listDivider"
-            android:paddingBottom="2dp"
-            android:paddingTop="2dp" />
+        <View style="@style/listDivider" />
 
         <TableLayout
             android:layout_width="match_parent"
@@ -248,6 +252,7 @@
                 android:id="@+id/row_language"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <TextView
                     android:id="@+id/lbl_language"
                     style="@style/bookDetailsTitlesStyle"
@@ -286,10 +291,7 @@
             android:text="@string/notes"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <View
-            style="@style/listDivider"
-            android:paddingBottom="2dp"
-            android:paddingTop="2dp" />
+        <View style="@style/listDivider" />
 
         <!-- Notes -->
 
@@ -395,11 +397,7 @@
             android:text="@string/description"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <View
-            android:id="@+id/description_divider"
-            style="@style/listDivider"
-            android:paddingBottom="2dp"
-            android:paddingTop="2dp" />
+        <View style="@style/listDivider" />
 
         <TextView
             android:id="@+id/description"

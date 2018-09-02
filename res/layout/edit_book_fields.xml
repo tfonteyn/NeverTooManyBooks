@@ -328,11 +328,7 @@
                 android:text="@string/description"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <View
-                android:id="@+id/header_divider"
-                style="@style/listDivider"
-                android:paddingBottom="2dp"
-                android:paddingTop="2dp" />
+            <View style="@style/listDivider" />
 
             <TextView
                 android:id="@+id/description"
