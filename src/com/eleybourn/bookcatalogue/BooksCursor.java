@@ -35,14 +35,14 @@ import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_RO
  * column lookups and reduces code clutter when accessing common columns.
  * 
  * The cursor also simulates a 'selected' flag for each book based on a 
- * hashmap of book IDs.
+ * HashMap of book IDs.
  * 
  * @author Philip Warner
  *
  */
 public class BooksCursor extends TrackedCursor implements AutoCloseable {
 
-	/** Hashmap of selected book IDs */
+	/** HashMap of selected book IDs */
 	private final Hashtable<Long,Boolean> m_selections = new Hashtable<>();
 
 	/**

@@ -85,7 +85,8 @@ public class StandardDialogs {
         dialog.create().show();
     }
 
-    public static void needLibraryThingAlert(final Context context, final boolean ltRequired,
+    public static void needLibraryThingAlert(final Context context,
+                                             final boolean ltRequired,
                                              final String prefSuffix) {
         boolean showAlert;
         int msgId;
@@ -136,8 +137,10 @@ public class StandardDialogs {
         dlg.show();
     }
 
-    public static void deleteSeriesAlert(Context context, final CatalogueDBAdapter dbHelper,
-                                         final Series series, final Runnable onDeleted) {
+    public static void deleteSeriesAlert(Context context,
+                                         final CatalogueDBAdapter dbHelper,
+                                         final Series series,
+                                         final Runnable onDeleted) {
 
         // When we get here, we know the names are genuinely different and the old series is used in more than one place.
         String message = "Delete series";
@@ -171,8 +174,10 @@ public class StandardDialogs {
         alertDialog.show();
     }
 
-    public static int deleteBookAlert(Context context, final CatalogueDBAdapter dbHelper,
-                                      final long id, final Runnable onDeleted) {
+    public static int deleteBookAlert(Context context,
+                                      final CatalogueDBAdapter dbHelper,
+                                      final long id,
+                                      final Runnable onDeleted) {
 
         ArrayList<Author> authorList = dbHelper.getBookAuthorList(id);
 
@@ -270,10 +275,12 @@ public class StandardDialogs {
     }
 
     /**
-     * Select a custom item from a list, and call halder when/if item is selected.
+     * Select a custom item from a list, and call handler when/if item is selected.
      */
-    public static void selectItemDialog(LayoutInflater inflater, String message,
-                                        ArrayList<SimpleDialogItem> items, SimpleDialogItem selectedItem,
+    public static void selectItemDialog(LayoutInflater inflater,
+                                        String message,
+                                        ArrayList<SimpleDialogItem> items,
+                                        SimpleDialogItem selectedItem,
                                         final SimpleDialogOnClickListener handler) {
         // Get the view and the radio group
         final View root = inflater.inflate(R.layout.select_list_dialog, null);
@@ -343,7 +350,8 @@ public class StandardDialogs {
      * Wrapper class to present a list of files for selection
      */
     public static void selectFileDialog(LayoutInflater inflater,
-                                        String title, ArrayList<File> files,
+                                        String title,
+                                        ArrayList<File> files,
                                         final SimpleDialogOnClickListener handler) {
         ArrayList<SimpleDialogItem> items = new ArrayList<>();
         for (File file : files) {
@@ -357,7 +365,9 @@ public class StandardDialogs {
      * the toString() method to display a simple list.
      */
     public static <T> void selectStringDialog(LayoutInflater inflater,
-                                              String title, ArrayList<T> objects, String current,
+                                              String title,
+                                              ArrayList<T> objects,
+                                              String current,
                                               final SimpleDialogOnClickListener handler) {
         ArrayList<SimpleDialogItem> items = new ArrayList<>();
         SimpleDialogItem selectedItem = null;
