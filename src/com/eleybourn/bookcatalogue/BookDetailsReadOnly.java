@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.eleybourn.bookcatalogue.Fields.Field;
@@ -113,7 +112,7 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
             formatFormatSection(book);
             formatPublishingSection(book);
             if (0 != book.getInt(BookData.KEY_ANTHOLOGY)) {
-                showAnthologyTitlesButton();
+                showAnthologySection(book);
             }
 
             // Restore default visibility and hide unused/unwanted and empty fields
@@ -131,19 +130,55 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
             getView().findViewById(R.id.lbl_bookshelves).setVisibility(View.GONE);
             //getView().findViewById(R.id.bookshelf_text).setVisibility(View.GONE);
         }
-
     }
 
-    private void showAnthologyTitlesButton() {
-        Button antBtn = getView().findViewById(R.id.anthology_popuplist);
-        antBtn.setVisibility(View.VISIBLE);
-        antBtn.setOnClickListener(new View.OnClickListener() {
+    // first time user opens up the list, create the entries. Avoids unneeded/lengthy rebuilds.
+    private boolean generateAnthologyFieldList = true;
+    private void showAnthologySection(BookData book) {
+        final BookData aBook = book;
+        View section = getView().findViewById(R.id.anthology_section);
+        section.setVisibility(View.VISIBLE);
+        Button btn = getView().findViewById(R.id.anthology_button);
+        btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //FIXME: popup the list of titles.
-                Toast.makeText(getView().getContext(),"ants to come",Toast.LENGTH_SHORT).show();
+                View titles = getView().findViewById(R.id.anthology_titlelist);
+                titles.setVisibility(titles.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+
+                if (generateAnthologyFieldList) {
+                    populateAnthologyListField(aBook);
+                    generateAnthologyFieldList = false;
+                }
             }
         });
+    }
+
+    /**
+     * FIXME: is this *really* the best way to do this ? Surely this can be done better/faster ?
+     *
+     */
+    protected void populateAnthologyListField(BookData book) {
+        ArrayList<Author> bookAuthors = book.getAuthors();
+        boolean isSingleAuthor = (1 == bookAuthors.size());
+        long firstAuthorId = book.getAuthors().get(0).id;
+
+        ViewGroup view = getView().findViewById(R.id.anthology_titlelist);
+        for (AnthologyTitle aTitle : book.getAnthologyTitles()) {
+            ViewGroup antGroup = (ViewGroup)getLayoutInflater().inflate(R.layout.row_anthology, null);
+
+            TextView antTitle = antGroup.findViewById(R.id.row_title);
+            antTitle.setText(aTitle.getTitle());
+
+            TextView antAuthor = antGroup.findViewById(R.id.row_author);
+            Author author = aTitle.getAuthor();
+            if (isSingleAuthor && (firstAuthorId == author.id)) {
+                antAuthor.setVisibility(View.GONE);
+            } else {
+                antAuthor.setText(author.getSortName());
+                antAuthor.setVisibility(View.VISIBLE);
+            }
+            view.addView(antGroup);
+        }
     }
 
     @Override
