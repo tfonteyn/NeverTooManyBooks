@@ -65,11 +65,11 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
-			super.onCreate(savedInstanceState);
-
 			// Superclass will call getList() which needs DB, so create DB before calling superclass.
 			mDb = new CatalogueDBAdapter(this);
 			mDb.open();
+
+			super.onCreate(savedInstanceState);
 
 			// We want context menus to be available
 			registerForContextMenu(getListView());

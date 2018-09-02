@@ -49,10 +49,11 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
  * @author Philip Warner
  */
 public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
+	public static final String TAG = "BooklistStyleProperties";
 	/** Parameter used to pass data to this activity */
-	public static final String KEY_STYLE = "BooklistStyleProperties.Style";
+	public static final String KEY_STYLE = TAG + ".Style";
 	/** Parameter used to pass data to this activity */
-	public static final String KEY_SAVE_TO_DATABASE = "BooklistStyleProperties.SaveToDb";
+	public static final String KEY_SAVE_TO_DATABASE = TAG + ".SaveToDb";
 
 	/** Database connection, if used */
 	private CatalogueDBAdapter mDb = null;
@@ -166,7 +167,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
 		}
 
 		/**
-		 * Setup the view
+		 * Setup the view for a single line/property
 		 */
 		@Override
 		public View getView(LayoutInflater inflater) {
