@@ -29,6 +29,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.text.StaticLayout;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -131,12 +132,13 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
             }
         }
     };
+
     private TabLayout mTabLayout;
     private TabLayout.Tab mAnthologyTab;
     private ArrayList<String> mPublishers;
     private ArrayList<String> mGenres;
     /**
-     * List of languages in database so far
+     * List of languages , formats in database so far
      */
     private ArrayList<String> mLanguages;
     private ArrayList<String> mFormats;
@@ -218,7 +220,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     public void onCreate(Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
-
+        StaticLayout s;
         mDbHelper.open();
 
         // Get the extras; we use them a lot
@@ -531,6 +533,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 
     /**
      * Show or hide the anthology tab
+     * FIXME:  android:ellipsize="end" and maxLine="1" on the TextView used by the mAnthologyTab... how ?
      */
     public void setShowAnthology(boolean showAnthology) {
         if (showAnthology) {

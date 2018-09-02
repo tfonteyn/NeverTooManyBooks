@@ -28,7 +28,7 @@
         android:id="@+id/bookshelf_num"
         android:layout_width="wrap_content"
         android:layout_height="32dp"
-        android:layout_toEndOf="@+id/bookshelf_name"
+        android:layout_toEndOf="@id/bookshelf_name"
         android:paddingStart="@dimen/padding_border"
         android:paddingEnd="@dimen/padding_border"
         android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -37,7 +37,7 @@
         android:id="@+id/bookshelf_down"
         android:layout_width="wrap_content"
         android:layout_height="32dp"
-        android:layout_toEndOf="@+id/bookshelf_num"
+        android:layout_toEndOf="@id/bookshelf_num"
         android:paddingStart="@dimen/padding_border"
         android:paddingEnd="@dimen/padding_border"
         app:srcCompat="@drawable/ic_dialog_menu_generic"

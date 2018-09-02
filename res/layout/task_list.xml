@@ -44,7 +44,7 @@
                 android:layout_weight="1"
                 android:fillViewport="true"
                 android:layout_below="@id/header"
-                android:layout_above="@id/footer"
+                android:layout_above="@+id/footer"
                 >
         -->
 
@@ -52,7 +52,7 @@
             android:id="@+id/android:list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/footer"
+            android:layout_above="@+id/footer"
             android:layout_below="@id/header" />
 
     </RelativeLayout>

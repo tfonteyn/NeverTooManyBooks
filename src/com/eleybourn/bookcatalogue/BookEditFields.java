@@ -67,6 +67,11 @@ import java.util.ArrayList;
 public class BookEditFields extends BookDetailsAbstract
         implements OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
 
+    /**
+     *  Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
+     */
+    private static final boolean DEBUG = false;
+
     private static final int ACTIVITY_EDIT_AUTHORS = 1000;
     private static final int ACTIVITY_EDIT_SERIES = 1001;
     public static final String BOOKSHELVES_DIALOG = "bookshelves_dialog";
@@ -89,11 +94,11 @@ public class BookEditFields extends BookDetailsAbstract
         double t1 = 0;
 
         try {
-            if (BuildConfig.DEBUG) {
+            if (DEBUG && BuildConfig.DEBUG) {
                 t0 = System.currentTimeMillis();
             }
             super.onActivityCreated(savedInstanceState);
-            if (BuildConfig.DEBUG) {
+            if (DEBUG && BuildConfig.DEBUG) {
                 t1 = System.currentTimeMillis();
             }
 
@@ -227,11 +232,9 @@ public class BookEditFields extends BookDetailsAbstract
             Tracker.exitOnActivityCreated(this);
         }
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG && BuildConfig.DEBUG) {
             double tn = System.currentTimeMillis();
-            System.out.println(
-                    "\nBEF oAC(super): " + (t1 - t0) +
-                    "\nBEF oAC: " + (tn - t0));
+            System.out.println("BEF oAC(super): " + (t1 - t0) + ", BEF oAC: " + (tn - t0));
         }
 
     }
@@ -300,7 +303,7 @@ public class BookEditFields extends BookDetailsAbstract
         // Restore default visibility and hide unused/unwanted and empty fields
         showHideFields(false);
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG && BuildConfig.DEBUG) {
             System.out.println("BEF popF: " + (System.currentTimeMillis() - t0));
         }
     }
@@ -361,7 +364,7 @@ public class BookEditFields extends BookDetailsAbstract
         tv.setFocusable(false);
         // Set the colour to prevent flicker on click
         tv.setTextColor(this.getResources().getColor(android.R.color.primary_text_dark_nodisable));
-        if (BuildConfig.DEBUG) {
+        if (DEBUG && BuildConfig.DEBUG) {
             System.out.println("BEF bDesc: " + (System.currentTimeMillis() - t0));
         }
     }

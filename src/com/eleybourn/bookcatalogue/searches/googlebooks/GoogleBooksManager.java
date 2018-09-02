@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.searches.googlebooks;
 
 import android.os.Bundle;
 
+import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -40,7 +41,7 @@ public class GoogleBooksManager {
 		author = author.replace(" ", "%20");
 		title = title.replace(" ", "%20");
 
-		String path = "http://books.google.com/books/feeds/volumes";
+		String path = BookCataloguePreferences.WEBSITE_URL_GOOGLE_BOOKS + "/books/feeds/volumes";
 		if (mIsbn.isEmpty()) {
 			path += "?q=" + "intitle%3A"+title+"%2Binauthor%3A"+author+"";
 		} else {

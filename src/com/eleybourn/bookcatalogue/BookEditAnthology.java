@@ -66,8 +66,8 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
     private static final int POPULATE = Menu.FIRST + 1;
     private EditText mTitleText;
     private AutoCompleteTextView mAuthorText;
-    private String bookAuthor;
-    private String bookTitle;
+    private String mBookAuthor;
+    private String mBookTitle;
     private Button mAdd;
     private CheckBox mSame;
     private Integer mEditPosition = null;
@@ -76,7 +76,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.list_anthology, container, false);
+        return inflater.inflate(R.layout.edit_book_anthology, container, false);
     }
 
     /**
@@ -85,7 +85,6 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         loadPage();
     }
 
@@ -93,16 +92,16 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
      * Display the main manage anthology page. This has three parts.
      * 1. Setup the "Same Author" checkbox
      * 2. Setup the "Add Title" fields
-     * 3. Populate the "Title List" - @see fillAnthology();
+     * 3. Populate the "Title List" - {@link #fillAnthology};
      */
     private void loadPage() {
 
         BookData book = mEditManager.getBookData();
-        bookAuthor = book.getString(ColumnNames.KEY_AUTHOR_FORMATTED);
-        bookTitle = book.getString(ColumnNames.KEY_TITLE);
+        mBookAuthor = book.getString(ColumnNames.KEY_AUTHOR_FORMATTED);
+        mBookTitle = book.getString(ColumnNames.KEY_TITLE);
+
         // Setup the same author field
         anthology_num = book.getInt(ColumnNames.KEY_ANTHOLOGY_MASK);
-
         mSame = getView().findViewById(R.id.same_author);
         if ((anthology_num & DatabaseHelper.ANTHOLOGY_MULTIPLE_AUTHORS) != 0) {
             mSame.setChecked(false);
@@ -134,7 +133,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
                     String title = mTitleText.getText().toString();
                     String author = mAuthorText.getText().toString();
                     if (mSame.isChecked()) {
-                        author = bookAuthor;
+                        author = mBookAuthor;
                     }
                     AnthologyTitleListAdapter adapter = ((AnthologyTitleListAdapter) BookEditAnthology.this.getListView().getAdapter());
                     if (mEditPosition == null) {
@@ -159,7 +158,6 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 
         fillAnthology();
 
-        // Setup the background
         BCBackground.init(this);
     }
 
@@ -174,9 +172,9 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
     private void fillAnthology() {
 
         // Get all of the rows from the database and create the item list
-        mList = mEditManager.getBookData().getAnthologyTitles(); // mDbHelper.getBookAnthologyTitleList(mEditManager.getBookData().getRowId());
+        mList = mEditManager.getBookData().getAnthologyTitles();
         // Now create a simple cursor adapter and set it to display
-        AnthologyTitleListAdapter books = new AnthologyTitleListAdapter(getActivity(), R.layout.row_anthology, mList);
+        AnthologyTitleListAdapter books = new AnthologyTitleListAdapter(getActivity(), R.layout.row_edit_anthology, mList);
         final ListView list = getListView();
         list.setAdapter(books);
         registerForContextMenu(list);
@@ -191,7 +189,6 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
                 mAdd.setText(R.string.anthology_save);
             }
         });
-
     }
 
     private ListView getListView() {
@@ -211,13 +208,16 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
         return;
     }
 
+    /**
+     * FIXME: android.os.NetworkOnMainThreadException, use a task...
+     */
     private void searchWikipedia() {
-        String basepath = "http://en.wikipedia.org";
-        String pathAuthor = bookAuthor.replace(" ", "+");
+        String basepath = BookCataloguePreferences.WEBSITE_URL_EN_WIKIPEDIA_ORG;
+        String pathAuthor = mBookAuthor.replace(" ", "+");
         pathAuthor = pathAuthor.replace(",", "");
         // Strip everything past the , from the title
-        String pathTitle = bookTitle;
-        int comma = bookTitle.indexOf(",");
+        String pathTitle = mBookTitle;
+        int comma = pathTitle.indexOf(",");
         if (comma > 0) {
             pathTitle = pathTitle.substring(0, comma);
         }
@@ -247,6 +247,11 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
                     break;
                 }
                 url = new URL(basepath + link);
+
+                if (BuildConfig.DEBUG) {
+                    System.out.println("BEA: Calling out: " + url.toString());
+                }
+
                 parser = factory.newSAXParser();
                 try {
                     parser.parse(Utils.getInputStream(url), entryHandler);
@@ -289,7 +294,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
                         for (int j = 0; j < titles.size(); j++) {
                             String anthology_title = titles.get(j);
                             anthology_title = anthology_title + ", ";
-                            String anthology_author = bookAuthor;
+                            String anthology_author = mBookAuthor;
                             // Does the string look like "Hindsight by Jack Williamson"
                             int pos = anthology_title.indexOf(" by ");
                             if (pos > 0) {

@@ -198,7 +198,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         if (o != null) {
         	// Try to set position value
         	if (mHasPosition || !mCheckedFields) {
-                TextView pt = v.findViewById(R.id.row_position);
+                TextView pt = v.findViewById(R.id.ROW_POSITION);
                 if(pt != null){
                 	mHasPosition = true;
                 	String text = Integer.toString(position+1);
@@ -208,7 +208,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
         	// Try to set the UP handler
         	if (mHasUp || !mCheckedFields) {
-                ImageView up = v.findViewById(R.id.row_up);
+                ImageView up = v.findViewById(R.id.ROW_UP);
                 if (up != null) {
                 	up.setOnClickListener(mRowUpListener);
                 	mHasUp = true;
@@ -217,7 +217,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
         	// Try to set the DOWN handler
         	if (mHasDown || !mCheckedFields) {
-                ImageView dn = v.findViewById(R.id.row_down);
+                ImageView dn = v.findViewById(R.id.ROW_DOWN);
                 if (dn != null) {
                 	dn.setOnClickListener(mRowDownListener);
                 	mHasDown = true;
@@ -226,7 +226,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
         	// Try to set the DELETE handler
         	if (mHasDelete || !mCheckedFields) {
-            	ImageView del = v.findViewById(R.id.row_delete);
+            	ImageView del = v.findViewById(R.id.ROW_DELETE);
                 if (del != null) {
     	    		del.setImageResource(android.R.drawable.ic_delete);
                 	del.setOnClickListener(mRowDeleteListener);   

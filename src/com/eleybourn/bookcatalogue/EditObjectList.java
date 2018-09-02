@@ -56,12 +56,19 @@ import java.util.ArrayList;
  *  - add (OPTIONAL)
  *  
  * Row View (must have layout ID set to android:id="@+id/row"):
- *  - position (OPTIONAL)
- *  - up (OPTIONAL)
- *  - down (OPTIONAL)
- *  - delete (OPTIONAL)
- * 
- * The row view is tagged using TAG_POSITION, defined in strings.xml, to save the rows position for
+ *  - ROW_POSITION (OPTIONAL)
+ *  - ROW_UP (OPTIONAL)
+ *  - ROW_DOWN (OPTIONAL)
+ *  - ROW_DELETE (OPTIONAL)
+ *  ids.xml has these predefined:
+ *  <pre>
+ *		<item name="ROW_POSITION" type="id"/>
+ *     	<item name="ROW_UP" type="id"/>
+ *		<item name="ROW_DOWN" type="id"/>
+ *		<item name="ROW_DELETE" type="id"/>
+ *     	<item name="TAG_POSITION" type="id" />
+ *	</pre>
+ * The row view is tagged using TAG_POSITION,, to save the rows position for
  * use when moving the row up/down or deleting it.
  *
  * Abstract methods are defined for specific tasks (Add, Save, Load etc). While would 
@@ -89,6 +96,8 @@ import java.util.ArrayList;
  */
 abstract public class EditObjectList<T extends Serializable> extends BookCatalogueListActivity {
 
+	public static final String EXTRAS_TITLE = "title";
+	public static final String EXTRAS_TITLE_LABEL = "title_label";
 	// List
 	protected ArrayList<T> mList = null;
 	// Adapter used to manage list
@@ -112,14 +121,14 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 
 	/**
 	 * Called when user clicks the 'Add' button (if present).
-	 * 
+	 *
 	 * @param v		The view that was clicked ('add' button).
 	 */
 	abstract protected void onAdd(View v);
 
 	/**
 	 * Call to set up the row view.
-	 * 
+	 *
 	 * @param target	The target row view object
 	 * @param object	The object (or type T) from which to draw values.
 	 */
@@ -127,20 +136,20 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 
 	/**
 	 * Called when an otherwise inactive part of the row is clicked.
-	 * 
+	 *
 	 * @param target	The view clicked
 	 * @param object	The object associated with this row
 	 */
 	abstract protected void onRowClick(View target, int position, T object);
-	
+
 	/**
 	 * Called when user clicks the 'Save' button (if present). Primary task is
 	 * to return a boolean indicating it is OK to continue.
-	 * 
+	 *
 	 * Can be overridden to perform other checks.
-	 * 
+	 *
 	 * @param intent	A newly created Intent to store output if necessary.
-	 * 
+	 *
 	 * @return		True if activity should exit, false to abort exit.
 	 */
 	protected boolean onSave(Intent intent) { return true; }
@@ -148,9 +157,9 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
     /**
 	 * Called when user presses 'Cancel' button if present. Primary task is
 	 * return a boolean indicating it is OK to continue.
-	 * 
+	 *
 	 * Can be overridden to perform other checks.
-	 * 
+	 *
 	 * @return		True if activity should exit, false to abort exit.
 	 */
 	protected boolean onCancel() { return true;}
@@ -239,13 +248,12 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 			Bundle extras = getIntent().getExtras();
 			if (extras != null) {
 				mRowId = extras.getLong(ColumnNames.KEY_ROWID);
-				mBookTitleLabel = extras.getString("title_label");
-				mBookTitle = extras.getString("title");
+				mBookTitleLabel = extras.getString(EXTRAS_TITLE_LABEL);
+				mBookTitle = extras.getString(EXTRAS_TITLE);
 				setTextOrHideView(R.id.title_label, mBookTitleLabel);
 				setTextOrHideView(R.id.title, mBookTitle);
 			}
 
-			
 			TouchListView tlv=(TouchListView)getListView();
 			tlv.setDropListener(mDropListener);
 			//tlv.setRemoveListener(onRemove);
@@ -531,7 +539,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
             if (o != null) {
             	// Try to set position value
             	if (mHasPosition || !mCheckedFields) {
-	                TextView pt = v.findViewById(R.id.row_position);
+	                TextView pt = v.findViewById(R.id.ROW_POSITION);
 	                if(pt != null){
 	                	mHasPosition = true;
 	                	String text = Integer.toString(position+1);
@@ -541,7 +549,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 
             	// Try to set the UP handler
             	if (mHasUp || !mCheckedFields) {
-                    ImageView up = v.findViewById(R.id.row_up);
+                    ImageView up = v.findViewById(R.id.ROW_UP);
                     if (up != null) {
                     	up.setOnClickListener(mRowUpListener);
                     	mHasUp = true;
@@ -550,7 +558,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 
             	// Try to set the DOWN handler
             	if (mHasDown || !mCheckedFields) {
-                    ImageView dn = v.findViewById(R.id.row_down);
+                    ImageView dn = v.findViewById(R.id.ROW_DOWN);
                     if (dn != null) {
                     	dn.setOnClickListener(mRowDownListener);
                     	mHasDown = true;
@@ -559,7 +567,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 
             	// Try to set the DELETE handler
             	if (mHasDelete || !mCheckedFields) {
-                	ImageView del = v.findViewById(R.id.row_delete);
+                	ImageView del = v.findViewById(R.id.ROW_DELETE);
                     if (del != null) {
         	    		del.setImageResource(android.R.drawable.ic_delete);
                     	del.setOnClickListener(mRowDeleteListener);   

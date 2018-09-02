@@ -39,10 +39,11 @@
             android:hint="@string/name"
             style="@style/personalNameTextEntry" />
 
-        <Button
-            android:id="@+id/confirm"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/confirm_add" />
+    <Button
+        android:id="@+id/confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:text="@string/add" />
     </LinearLayout>
 

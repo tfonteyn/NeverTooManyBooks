@@ -51,7 +51,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
 
         /*
          Using a {@link NavigationView} and matching {@link Toolbar}
-         @link https://developer.android.com/training/implementing-navigation/nav-drawer }
+         see https://developer.android.com/training/implementing-navigation/nav-drawer
          */
         setDrawerLayout((DrawerLayout)findViewById(R.id.drawer_layout));
         setNavigationView((NavigationView)findViewById(R.id.nav_view));

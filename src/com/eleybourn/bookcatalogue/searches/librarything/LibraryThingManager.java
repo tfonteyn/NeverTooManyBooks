@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -90,11 +91,13 @@ public class LibraryThingManager {
 	private static final String PLACES = "placesmentioned";
 	private static final String CHARACTERS = "characternames";
 
-	private static final String COVER_URL_LARGE = "http://covers.librarything.com/devkey/%1$s/large/isbn/%2$s";
-	private static final String COVER_URL_MEDIUM = "http://covers.librarything.com/devkey/%1$s/medium/isbn/%2$s";
-	private static final String COVER_URL_SMALL = "http://covers.librarything.com/devkey/%1$s/small/isbn/%2$s";
-	private static final String DETAIL_URL = "http://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&isbn=%2$s";
-	private static final String EDITIONS_URL = "http://www.librarything.com/api/thingISBN/%s";
+	private static final String BASE_URL = BookCataloguePreferences.WEBSITE_URL_LIBRARYTHING;
+	private static final String BASE_URL_COVERS = BookCataloguePreferences.WEBSITE_URL_LIBRARYTHING_COVERS;
+	private static final String COVER_URL_LARGE = BASE_URL_COVERS + "/devkey/%1$s/large/isbn/%2$s";
+	private static final String COVER_URL_MEDIUM = BASE_URL_COVERS + "/devkey/%1$s/medium/isbn/%2$s";
+	private static final String COVER_URL_SMALL = BASE_URL_COVERS + "/devkey/%1$s/small/isbn/%2$s";
+	private static final String DETAIL_URL = BASE_URL + "/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&isbn=%2$s";
+	private static final String EDITIONS_URL = BASE_URL + "/api/thingISBN/%s";
 
     // Field types we are interested in.
 	private enum FieldTypes{ NONE, AUTHOR, TITLE, SERIES, PLACES, CHARACTERS, OTHER }

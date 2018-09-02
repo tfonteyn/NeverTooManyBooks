@@ -119,7 +119,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
             CheckBox cb = new CheckBox(this);
             cb.setChecked(usage.selected);
             ViewTagger.setTag(cb, usage);
-            cb.setId(R.id.fieldCheckbox);
+            cb.setId(R.id.FIELD_CHECKBOX);
             //add override capability
             cb.setOnClickListener(new OnClickListener() {
                 @Override
@@ -246,7 +246,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
         int nSelected = 0;
         for (int i = 0; i < nChildren; i++) {
             View v = parent.getChildAt(i);
-            CheckBox cb = v.findViewById(R.id.fieldCheckbox);
+            CheckBox cb = v.findViewById(R.id.FIELD_CHECKBOX);
             if (cb != null) {
                 FieldUsage usage = (FieldUsage) ViewTagger.getTag(cb);
                 usage.selected = cb.isChecked();

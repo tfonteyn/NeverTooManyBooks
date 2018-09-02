@@ -42,7 +42,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:layout_alignWithParentIfMissing="true"
-                    android:layout_toStartOf="@+id/read"
+                    android:layout_toStartOf="@id/read"
                     android:textStyle="italic"
                     tools:text="Anna Karenina" />
 
@@ -53,7 +53,7 @@
                     style="@style/bookDetailsTextStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/title"
+                    android:layout_below="@id/title"
                     android:layout_marginTop="@dimen/padding_border"
                     android:paddingBottom="8dp"
                     tools:text="Lev Tolstoy" />

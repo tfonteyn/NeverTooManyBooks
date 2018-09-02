@@ -32,7 +32,7 @@
         android:layout_alignBaseline="@+id/updated_label"
         android:layout_alignBottom="@+id/updated_label"
         android:layout_marginStart="4dp"
-        android:layout_toEndOf="@+id/updated_label"
+        android:layout_toEndOf="@id/updated_label"
         android:singleLine="false"
         android:text="Fri, 23 July, 17:54:01 2011"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -54,7 +54,7 @@
         android:layout_alignBaseline="@+id/size_label"
         android:layout_alignBottom="@+id/size_label"
         android:layout_marginStart="4dp"
-        android:layout_toEndOf="@+id/size_label"
+        android:layout_toEndOf="@id/size_label"
         android:singleLine="false"
         android:text="154kb"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -65,7 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/size_label"
+        android:layout_below="@id/size_label"
         android:layout_marginTop="4sp"
         android:orientation="horizontal">
 

@@ -5,7 +5,7 @@
     android:id="@+id/row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal" >
+    android:orientation="horizontal">
 
     <!--
          NOTE: The outer layout is used because this item appears in a TouchListView which uses the outer element padding, and
@@ -15,65 +15,35 @@
 
     -->
 
-    <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/row_real"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="@dimen/padding_border_double"
-        tools:ignore="UselessParent" >
+        tools:ignore="UselessParent">
 
         <ImageView
-            android:id="@+id/row_delete"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:gravity="start"
-            android:paddingStart="@dimen/padding_border"
-            android:paddingEnd="@dimen/padding_border"
+            android:id="@id/ROW_DELETE"
+            style="@style/TouchListView_row_delete"
             tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/grabber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
+            style="@style/TouchListView_row_grabber"
             app:srcCompat="@drawable/ic_grabber"
             tools:ignore="ContentDescription" />
-        <!--
-		<TextView android:id="@+id/row_position" 
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:paddingRight="5sp"
-			android:gravity="left"
-			
-			android:layout_toRightOf="@id/row_delete"
-			android:layout_alignParentTop="true"
-			android:layout_alignParentBottom="true"
-			android:layout_weight="1"
-			android:visibility="gone"
-			/>
-
-        -->
 
         <RelativeLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/row_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentTop="true"
-            android:layout_toStartOf="@+id/grabber"
-            android:layout_toEndOf="@id/row_delete"
+            android:layout_toEndOf="@id/ROW_DELETE"
+            android:layout_toStartOf="@id/grabber"
             android:orientation="vertical"
-            android:padding="2dp" >
+            android:padding="2dp">
 
             <TextView
                 android:id="@+id/row_series"
@@ -83,8 +53,8 @@
                 android:layout_alignParentTop="true"
                 android:ellipsize="marquee"
                 android:gravity="start"
-                android:paddingStart="@dimen/padding_border"
                 android:paddingEnd="@dimen/padding_border"
+                android:paddingStart="@dimen/padding_border"
                 android:singleLine="true"
                 android:textSize="16sp" />
 
@@ -96,8 +66,8 @@
                 android:layout_below="@+id/row_series"
                 android:ellipsize="marquee"
                 android:gravity="start"
-                android:paddingStart="@dimen/padding_border"
                 android:paddingEnd="@dimen/padding_border"
+                android:paddingStart="@dimen/padding_border"
                 android:singleLine="true"
                 android:textSize="12sp" />
         </RelativeLayout>

@@ -40,7 +40,7 @@
         android:id="@+id/android:list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/cleanup"
+        android:layout_above="@+id/cleanup"
         android:layout_below="@id/header" >
     </ListView>
 

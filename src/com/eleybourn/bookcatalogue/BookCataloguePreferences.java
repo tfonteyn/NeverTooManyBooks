@@ -15,6 +15,15 @@ public class BookCataloguePreferences {
 	private BookCataloguePreferences() {
 	}
 
+	//FIXME: check if these need upgrading to https!
+    // any https in the code was left as-is.
+	public static final String WEBSITE_URL_EN_WIKIPEDIA_ORG = "http://en.wikipedia.org";
+    public static final String WEBSITE_URL_LIBRARYTHING = "http://www.librarything.com";
+    public static final String WEBSITE_URL_LIBRARYTHING_COVERS = "http://covers.librarything.com";
+    public static final String WEBSITE_URL_GOOGLE_SCHEMAS = "http://schemas.google.co";
+    public static final String WEBSITE_URL_GOOGLE_BOOKS = "http://books.google.com";
+    public static final String WEBSITE_URL_AMAZON_BOOKS_BASE = "http://www.amazon.com";
+
 	/** Underlying SharedPreferences */
 	private static final SharedPreferences m_prefs = getSharedPreferences();
     public static SharedPreferences getPrefs() {

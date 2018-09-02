@@ -223,4 +223,27 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+    <style name="TouchListView_row_delete">
+        <item name="android:layout_width">25dp</item>
+        <item name="android:layout_height">25dp</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentStart">true</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:gravity">start</item>
+        <item name="android:paddingEnd">@dimen/padding_border</item>
+        <item name="android:paddingStart">@dimen/padding_border</item>
+    </style>
+
+    <style name="TouchListView_row_grabber">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:layout_alignParentTop">true</item>
+    </style>
+
+
 </resources>

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="TAG_POSITION" type="id" />
     <item name="TAG_ORIGINAL_VALUE" type="id" />
-    <item name="fieldCheckbox" type="id" />
+
     <item name="TAG_EVENT" type="id" />
     <item name="TAG_HOLDER" type="id" />
     <item name="TAG_TASK" type="id" />
@@ -11,6 +10,8 @@
     <item name="TAG_TASK_HOLDER" type="id" />
     <item name="TAG_PROPERTY" type="id" />
     <item name="TAG_DIALOG_ITEM" type="id" />
+
+    <item name="FIELD_CHECKBOX" type="id" />
 
     <item name="NOTIFICATION" type="id" />
 
@@ -36,5 +37,13 @@
     <item name="MENU_AMAZON_BOOKS_IN_SERIES" type="id"/>
     <item name="MENU_AMAZON_BOOKS_BY_AUTHOR" type="id"/>
     <item name="MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES" type="id"/>
-    
+
+    <!-- used by {@link SimpleListAdapter} {@link EditObjectList} -->
+    <item name="ROW_POSITION" type="id"/>
+    <item name="ROW_UP" type="id"/>
+    <item name="ROW_DOWN" type="id"/>
+    <item name="ROW_DELETE" type="id"/>
+    <item name="TAG_POSITION" type="id" />
+    <!-- end of used by {@link SimpleListAdapter} -->
+
 </resources>

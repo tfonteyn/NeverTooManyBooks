@@ -10,6 +10,7 @@ import com.amazon.device.associates.AssociatesAPI;
 import com.amazon.device.associates.LinkService;
 import com.amazon.device.associates.OpenSearchPageRequest;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -27,8 +28,8 @@ import java.net.URLEncoder;
  */
 public class AmazonUtils {
 
+	private static final String AMAZON_BOOKS_BASE = BookCataloguePreferences.WEBSITE_URL_AMAZON_BOOKS_BASE + "/gp/search?index=books";
 	private static final String AMAZON_LINK_EXTRAS = "&tag=bookcatalogue-20&linkCode=da5";
-	private static final String AMAZON_BOOKS_BASE = "http://www.amazon.com/gp/search?index=books";
 	private static final String AMAZON_KEY = "bookcatalogue.amazon.appkey";
 
 	private static final String UTF8 = "UTF-8";

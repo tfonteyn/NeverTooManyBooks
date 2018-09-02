@@ -31,6 +31,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
@@ -83,7 +84,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 		register.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.librarything.com/"));
+				Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(BookCataloguePreferences.WEBSITE_URL_LIBRARYTHING + "/"));
 				startActivity(loadweb); 
 				return;
 			}
@@ -94,7 +95,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 		devkeyLink.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.librarything.com/services/keys.php"));
+				Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(BookCataloguePreferences.WEBSITE_URL_LIBRARYTHING + "/services/keys.php"));
 				startActivity(loadweb); 
 				return;
 			}

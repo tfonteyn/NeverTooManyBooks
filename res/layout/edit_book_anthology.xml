@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingEnd="@dimen/padding_border"
+    android:paddingStart="@dimen/padding_border">
+
+    <CheckBox
+        android:id="@+id/same_author"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:text="@string/same_author" />
+
+    <AutoCompleteTextView
+        android:id="@+id/add_author"
+        style="@style/personalNameTextEntry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/same_author"
+        android:hint="@string/author"
+        tools:text="add new author here" />
+
+    <Button
+        android:id="@+id/row_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/add_author"
+        android:text="@string/add" />
+
+    <EditText
+        android:id="@+id/add_title"
+        style="@style/bookOrSeriesTitleTextEntry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/add_author"
+        android:layout_toStartOf="@id/row_add"
+        android:hint="@string/title"
+        tools:text="add new title here" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/add_title"
+        android:orientation="vertical">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <com.eleybourn.bookcatalogue.widgets.TouchListView xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
+                android:id="@+id/android:list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fillViewport="true"
+                android:textSize="16sp"
+                tlv:grabber="@+id/grabber"
+                tlv:normal_height="64dip"
+                tlv:remove_mode="none" />
+        </ScrollView>
+
+        <TextView
+            android:id="@+id/android:empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/notset"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+
+</RelativeLayout>

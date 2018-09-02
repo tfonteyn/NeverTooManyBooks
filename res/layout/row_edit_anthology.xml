@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <!--
+         NOTE: The outer layout is used because this item appears in a TouchListView which uses the outer element padding, and
+				we want to set our own padding.
+
+				With careful analysis, we could probably put padding on the right elements. But this is clearer and easier.
+
+    -->
+
+    <RelativeLayout
+        android:id="@+id/row_real"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_border_double"
+        tools:ignore="UselessParent">
+
+        <ImageView
+            android:id="@id/ROW_DELETE"
+            style="@style/TouchListView_row_delete"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/grabber"
+            style="@style/TouchListView_row_grabber"
+            app:srcCompat="@drawable/ic_grabber"
+            tools:ignore="ContentDescription" />
+
+        <RelativeLayout
+            android:id="@+id/row_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@id/ROW_DELETE"
+            android:layout_toStartOf="@id/grabber"
+            android:orientation="vertical"
+            android:padding="2dp">
+
+            <TextView
+                android:id="@+id/row_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:ellipsize="marquee"
+                android:gravity="start"
+                android:paddingEnd="@dimen/padding_border"
+                android:paddingStart="@dimen/padding_border"
+                android:singleLine="true"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/row_author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_below="@id/row_title"
+                android:ellipsize="marquee"
+                android:gravity="start"
+                android:paddingEnd="@dimen/padding_border"
+                android:paddingStart="@dimen/padding_border"
+                android:singleLine="true"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

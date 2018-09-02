@@ -369,6 +369,7 @@ public class GoodreadsManager {
         }
 
         // Make a valid URL for the parser (some come back without a schema)
+        //FIXME: double check if this ever gives issues!
         if (!authUrl.startsWith("http://") && !authUrl.startsWith("https://"))
             authUrl = "http://" + authUrl;
 

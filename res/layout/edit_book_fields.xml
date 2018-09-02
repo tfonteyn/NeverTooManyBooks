@@ -88,7 +88,7 @@
                     android:id="@+id/isbn"
                     style="@style/editorFieldTextStyle"
                     android:layout_alignParentStart="false"
-                    android:layout_toEndOf="@+id/heading"
+                    android:layout_toEndOf="@id/heading"
                     android:inputType="text"
                     android:nextFocusDown="@+id/series"
                     tools:ignore="LabelFor" />
