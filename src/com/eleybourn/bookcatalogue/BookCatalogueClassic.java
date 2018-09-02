@@ -29,7 +29,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -46,10 +45,7 @@ import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.ResourceCursorTreeAdapter;
-import android.widget.ScrollView;
 import android.widget.SectionIndexer;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -126,8 +122,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	private String search_query = "";
 	// These are the states that get saved onPause
 	private static final String STATE_SORT = "state_sort"; 
-	//private static final String STATE_BOOKSHELF = "state_bookshelf"; 
-	private static final String STATE_CURRENT_GROUP_COUNT = "state_current_group_count"; 
+	private static final String STATE_CURRENT_GROUP_COUNT = "state_current_group_count";
 	private static final String STATE_CURRENT_GROUP = "state_current_group"; 
 
 	/** 
@@ -147,7 +142,10 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 
 			// In V4.0 the startup activity is StartupActivity, but we need to deal with old icons. 
 			// So we check the intent.
-			// TODO: Consider renaming 'BookCatalogue' activity to 'BookCatalogueClassic' and creating a dummy BookCatalogue activity stub to avoid this check
+			/* FIXME ? is this not done already ? -> check!
+			   TODO: Consider renaming 'BookCatalogue' activity to 'BookCatalogueClassic' and
+			         creating a dummy BookCatalogue activity stub to avoid this check
+			 */
 			if ( ! StartupActivity.hasBeenCalled() ) {
 				// The startup activity has NOT been called; this may be because of a restart after FC, in which case the action may be null, or may be valid
 				Intent i = getIntent();
@@ -992,175 +990,176 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		}
 	}
 
-	/**
-	 * Setup the sort options. This function will also call fillData when 
-	 * complete having loaded the appropriate view. 
-	 */
-	private void sortOptions() {
-		ScrollView sv = new ScrollView(this);
-		RadioGroup group = new RadioGroup(this);
-		sv.addView(group);
-		final AlertDialog sortDialog = new AlertDialog.Builder(this).setView(sv).create();
-		sortDialog.setTitle(R.string.menu_sort_by);
-		sortDialog.setIcon(android.R.drawable.ic_menu_info_details);
-		sortDialog.show();
-		
-		RadioButton radio_author = new RadioButton(this);
-		radio_author.setText(R.string.sortby_author);
-		group.addView(radio_author);
-		if (sort == SORT_AUTHOR) {
-			radio_author.setChecked(true);
-		} else {
-			radio_author.setChecked(false);
-		}
-		radio_author.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				saveSortBy(SORT_AUTHOR);
-				sortDialog.dismiss();
-				return;
-			}
-		});
-		
-		RadioButton radio_author_one = new RadioButton(this);
-		radio_author_one.setText(R.string.sortby_author_one);
-		group.addView(radio_author_one);
-		if (sort == SORT_AUTHOR_ONE) {
-			radio_author_one.setChecked(true);
-		} else {
-			radio_author_one.setChecked(false);
-		}
-		radio_author_one.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				saveSortBy(SORT_AUTHOR_ONE);
-				sortDialog.dismiss();
-				return;
-			}
-		});
-		
-		RadioButton radio_author_given = new RadioButton(this);
-		radio_author_given.setText(R.string.sortby_author_given);
-		group.addView(radio_author_given);
-		if (sort == SORT_AUTHOR_GIVEN) {
-			radio_author_given.setChecked(true);
-		} else {
-			radio_author_given.setChecked(false);
-		}
-		radio_author_given.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				saveSortBy(SORT_AUTHOR_GIVEN);
-				sortDialog.dismiss();
-				return;
-			}
-		});
-		
-		RadioButton radio_title = new RadioButton(this);
-		radio_title.setText(R.string.sortby_title);
-		group.addView(radio_title);
-		if (sort == SORT_TITLE) {
-			radio_title.setChecked(true);
-		} else {
-			radio_title.setChecked(false);
-		}
-		radio_title.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				saveSortBy(SORT_TITLE);
-				sortDialog.dismiss();
-				return;
-			}
-		});
-		
-		RadioButton radio_series = new RadioButton(this);
-		radio_series.setText(R.string.sortby_series);
-		group.addView(radio_series);
-		if (sort == SORT_SERIES) {
-			radio_series.setChecked(true);
-		} else {
-			radio_series.setChecked(false);
-		}
-		radio_series.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				saveSortBy(SORT_SERIES);
-				sortDialog.dismiss();
-				return;
-			}
-		});
-		
-		RadioButton radio_genre = new RadioButton(this);
-		radio_genre.setText(R.string.sortby_genre);
-		group.addView(radio_genre);
-		if (sort == SORT_GENRE) {
-			radio_genre.setChecked(true);
-		} else {
-			radio_genre.setChecked(false);
-		}
-		radio_genre.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				saveSortBy(SORT_GENRE);
-				sortDialog.dismiss();
-				return;
-			}
-		});
+//	/**
+//	 * Setup the sort options. This function will also call fillData when
+//	 * complete having loaded the appropriate view.
+//	 */
+//	private void sortOptions() {
+//		ScrollView sv = new ScrollView(this);
+//		RadioGroup group = new RadioGroup(this);
+//		sv.addView(group);
+//		final AlertDialog sortDialog = new AlertDialog.Builder(this).setView(sv).create();
+//		sortDialog.setTitle(R.string.menu_sort_by);
+//		sortDialog.setIcon(android.R.drawable.ic_menu_info_details);
+//		sortDialog.show();
+//
+//		RadioButton radio_author = new RadioButton(this);
+//		radio_author.setText(R.string.sortby_author);
+//		group.addView(radio_author);
+//		if (sort == SORT_AUTHOR) {
+//			radio_author.setChecked(true);
+//		} else {
+//			radio_author.setChecked(false);
+//		}
+//		radio_author.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				saveSortBy(SORT_AUTHOR);
+//				sortDialog.dismiss();
+//				return;
+//			}
+//		});
+//
+//		RadioButton radio_author_one = new RadioButton(this);
+//		radio_author_one.setText(R.string.sortby_author_one);
+//		group.addView(radio_author_one);
+//		if (sort == SORT_AUTHOR_ONE) {
+//			radio_author_one.setChecked(true);
+//		} else {
+//			radio_author_one.setChecked(false);
+//		}
+//		radio_author_one.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				saveSortBy(SORT_AUTHOR_ONE);
+//				sortDialog.dismiss();
+//				return;
+//			}
+//		});
+//
+//		RadioButton radio_author_given = new RadioButton(this);
+//		radio_author_given.setText(R.string.sortby_author_given);
+//		group.addView(radio_author_given);
+//		if (sort == SORT_AUTHOR_GIVEN) {
+//			radio_author_given.setChecked(true);
+//		} else {
+//			radio_author_given.setChecked(false);
+//		}
+//		radio_author_given.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				saveSortBy(SORT_AUTHOR_GIVEN);
+//				sortDialog.dismiss();
+//				return;
+//			}
+//		});
+//
+//		RadioButton radio_title = new RadioButton(this);
+//		radio_title.setText(R.string.sortby_title);
+//		group.addView(radio_title);
+//		if (sort == SORT_TITLE) {
+//			radio_title.setChecked(true);
+//		} else {
+//			radio_title.setChecked(false);
+//		}
+//		radio_title.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				saveSortBy(SORT_TITLE);
+//				sortDialog.dismiss();
+//				return;
+//			}
+//		});
+//
+//		RadioButton radio_series = new RadioButton(this);
+//		radio_series.setText(R.string.sortby_series);
+//		group.addView(radio_series);
+//		if (sort == SORT_SERIES) {
+//			radio_series.setChecked(true);
+//		} else {
+//			radio_series.setChecked(false);
+//		}
+//		radio_series.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				saveSortBy(SORT_SERIES);
+//				sortDialog.dismiss();
+//				return;
+//			}
+//		});
+//
+//		RadioButton radio_genre = new RadioButton(this);
+//		radio_genre.setText(R.string.sortby_genre);
+//		group.addView(radio_genre);
+//		if (sort == SORT_GENRE) {
+//			radio_genre.setChecked(true);
+//		} else {
+//			radio_genre.setChecked(false);
+//		}
+//		radio_genre.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				saveSortBy(SORT_GENRE);
+//				sortDialog.dismiss();
+//				return;
+//			}
+//		});
+//
+//
+//		RadioButton radio_loan = new RadioButton(this);
+//		radio_loan.setText(R.string.sortby_loan);
+//		group.addView(radio_loan);
+//		if (sort == SORT_LOAN) {
+//			radio_loan.setChecked(true);
+//		} else {
+//			radio_loan.setChecked(false);
+//		}
+//		radio_loan.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				saveSortBy(SORT_LOAN);
+//				sortDialog.dismiss();
+//				return;
+//			}
+//		});
+//
+//		RadioButton radio_unread = new RadioButton(this);
+//		radio_unread.setText(R.string.sortby_unread);
+//		group.addView(radio_unread);
+//		if (sort == SORT_UNREAD) {
+//			radio_unread.setChecked(true);
+//		} else {
+//			radio_unread.setChecked(false);
+//		}
+//		radio_unread.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				saveSortBy(SORT_UNREAD);
+//				sortDialog.dismiss();
+//				return;
+//			}
+//		});
+//
+//		RadioButton radio_published = new RadioButton(this);
+//		radio_published.setText(R.string.sortby_published);
+//		group.addView(radio_published);
+//		if (sort == SORT_PUBLISHED) {
+//			radio_published.setChecked(true);
+//		} else {
+//			radio_published.setChecked(false);
+//		}
+//		radio_published.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				saveSortBy(SORT_PUBLISHED);
+//				sortDialog.dismiss();
+//				return;
+//			}
+//		});
+//	}
 
-		
-		RadioButton radio_loan = new RadioButton(this);
-		radio_loan.setText(R.string.sortby_loan);
-		group.addView(radio_loan);
-		if (sort == SORT_LOAN) {
-			radio_loan.setChecked(true);
-		} else {
-			radio_loan.setChecked(false);
-		}
-		radio_loan.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				saveSortBy(SORT_LOAN);
-				sortDialog.dismiss();
-				return;
-			}
-		});
-		
-		RadioButton radio_unread = new RadioButton(this);
-		radio_unread.setText(R.string.sortby_unread);
-		group.addView(radio_unread);
-		if (sort == SORT_UNREAD) {
-			radio_unread.setChecked(true);
-		} else {
-			radio_unread.setChecked(false);
-		}
-		radio_unread.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				saveSortBy(SORT_UNREAD);
-				sortDialog.dismiss();
-				return;
-			}
-		});
-		
-		RadioButton radio_published = new RadioButton(this);
-		radio_published.setText(R.string.sortby_published);
-		group.addView(radio_published);
-		if (sort == SORT_PUBLISHED) {
-			radio_published.setChecked(true);
-		} else {
-			radio_published.setChecked(false);
-		}
-		radio_published.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				saveSortBy(SORT_PUBLISHED);
-				sortDialog.dismiss();
-				return;
-			}
-		});
-	}
-
-	private MenuHandler mMenuHandler;
+	@SuppressWarnings("FieldCanBeLocal")
+    private MenuHandler mMenuHandler;
 	/**
 	 * Run each time the menu button is pressed. This will setup the options menu
 	 */
@@ -1525,19 +1524,18 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		adapter.regenGroups();
 	}
 
-	/**
-	 * Change the sort order of the view and refresh the page
-	 */
-	private void saveSortBy(int sortType) {
-		sort = sortType;
-		currentGroup = new ArrayList<>();
-		fillData();
-		/* Save the current sort settings */
-		SharedPreferences.Editor ed = mPrefs.edit();
-		ed.putInt(STATE_SORT, sortType);
-		ed.apply();
-		
-	}
+//	/**
+//	 * Change the sort order of the view and refresh the page
+//	 */
+//	private void saveSortBy(int sortType) {
+//		sort = sortType;
+//		currentGroup = new ArrayList<>();
+//		fillData();
+//		/* Save the current sort settings */
+//		SharedPreferences.Editor ed = mPrefs.edit();
+//		ed.putInt(STATE_SORT, sortType);
+//		ed.apply();
+//	}
 	
 	@Override
 	public boolean onChildClick(ExpandableListView l, View v, int position, int childPosition, long id) {
