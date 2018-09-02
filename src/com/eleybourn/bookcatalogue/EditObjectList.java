@@ -267,6 +267,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	 * Handle drop events; also preserves current position.
 	 */
 	private final TouchListView.DropListener mDropListener=new TouchListView.DropListener() {
+
 		@Override
 		public void drop(int from, final int to) {
             final ListView lv = getListView();
@@ -312,7 +313,6 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 							}
 						}});
 				}});
-
 		}
 	};
 

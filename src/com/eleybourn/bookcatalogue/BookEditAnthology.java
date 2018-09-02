@@ -53,6 +53,7 @@ import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaHandler;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
+import com.eleybourn.bookcatalogue.widgets.TouchListView;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
     private Integer mEditPosition = null;
     private int anthology_num = DatabaseHelper.ANTHOLOGY_NO;
     private ArrayList<AnthologyTitle> mList;
+    private AnthologyTitleListAdapter mAdapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -158,6 +160,9 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 
         fillAnthology();
 
+        TouchListView tlv=(TouchListView)getListView();
+        tlv.setDropListener(mDropListener);
+
         BCBackground.init(this);
     }
 
@@ -174,9 +179,9 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
         // Get all of the rows from the database and create the item list
         mList = mEditManager.getBookData().getAnthologyTitles();
         // Now create a simple cursor adapter and set it to display
-        AnthologyTitleListAdapter books = new AnthologyTitleListAdapter(getActivity(), R.layout.row_edit_anthology, mList);
+        mAdapter = new AnthologyTitleListAdapter(getActivity(), R.layout.row_edit_anthology, mList);
         final ListView list = getListView();
-        list.setAdapter(books);
+        list.setAdapter(mAdapter);
         registerForContextMenu(list);
         list.setOnItemClickListener(new OnItemClickListener() {
 
@@ -395,6 +400,64 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
         super.onSaveBookDetails(book);
         saveState(book);
     }
+
+    private void onListChanged() {
+        /* do nothing */
+    }
+
+    /**
+     * Handle drop events; also preserves current position.
+     * TODO: I've been quick&dirty... copied from EditObjectList.. should be unified ?
+     */
+    private final TouchListView.DropListener mDropListener = new TouchListView.DropListener() {
+
+        @Override
+        public void drop(int from, final int to) {
+            final ListView lv = getListView();
+            // Check if nothing to do; also avoids the nasty case where list size == 1
+            if (from == to)
+                return;
+
+            final int firstPos = lv.getFirstVisiblePosition();
+
+            AnthologyTitle item=mAdapter.getItem(from);
+            mAdapter.remove(item);
+            mAdapter.insert(item, to);
+            onListChanged();
+
+            int first2 = lv.getFirstVisiblePosition();
+            if (BuildConfig.DEBUG) {
+                System.out.println(from + " -> " + to + ", first " + firstPos + "(" + first2 + ")");
+            }
+            final int newFirst = (to > from && from < firstPos) ? (firstPos - 1) : firstPos;
+
+            View firstView = lv.getChildAt(0);
+            final int offset = firstView.getTop();
+            lv.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (BuildConfig.DEBUG) {
+                        System.out.println("Positioning to " + newFirst + "+{" + offset + "}");
+                    }
+                    lv.requestFocusFromTouch();
+                    lv.setSelectionFromTop(newFirst, offset);
+                    lv.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            for(int i = 0; ; i++) {
+                                View c = lv.getChildAt(i);
+                                if (c == null)
+                                    break;
+                                if (lv.getPositionForView(c) == to) {
+                                    lv.setSelectionFromTop(to, c.getTop());
+                                    //c.requestFocusFromTouch();
+                                    break;
+                                }
+                            }
+                        }});
+                }});
+        }
+    };
 
     protected class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle> {
         boolean series = false;
