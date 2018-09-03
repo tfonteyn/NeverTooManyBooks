@@ -66,6 +66,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
     public void onCreate(Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
+            this.setTitle(R.string.update_fields);
             LibraryThingManager.showLtAlertIfNecessary(this, false, "update_from_internet");
             mPrefs = getSharedPreferences("bookCatalogue", android.content.Context.MODE_PRIVATE);
             setupFields();
@@ -85,7 +86,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
     private void addIfVisible(String field, String visField, int stringId, FieldUsages.Usages usage, boolean canAppend) {
         if (visField == null || visField.trim().isEmpty())
             visField = field;
-        if (mPrefs.getBoolean(FieldVisibility.prefix + visField, true))
+        if (mPrefs.getBoolean(FieldVisibility.TAG + visField, true))
             mFieldUsages.put(new FieldUsage(field, stringId, usage, canAppend));
     }
 

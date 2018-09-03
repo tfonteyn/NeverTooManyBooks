@@ -63,6 +63,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStylePropertiesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
+import com.eleybourn.bookcatalogue.booklist.BooklistStylesActivity;
 import com.eleybourn.bookcatalogue.database.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -241,7 +242,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         Tracker.enterOnCreate(this);
         try {
             super.onCreate(savedInstanceState);
-            //setTitle(R.string.my_books);
             setTitle(R.string.app_name);
 
             if (savedInstanceState == null) {
@@ -271,12 +271,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             // Restore view style
             refreshStyle();
 
-            // This sets the search capability to local (application) search
+            // set the search capability to local (application) search
             setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
-
             setupSearch();
 
-            // We want context menus to be available
             makeContextMenusAvailable();
 
             // use the custom fast scroller (the ListView in the XML is our custom version).
@@ -293,8 +291,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             // Debug; makes list structures vary across calls to ensure code is correct...
             mMarkBookId = -1;
 
-            // This will cause the list to be generated.
+            // This will cause the BookShelf list to be generated.
             initBookshelfSpinner();
+
+            // the actual book list
             setupList(true);
 
             if (savedInstanceState == null) {
@@ -509,9 +509,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         BCBackground.init(root, lv, header);
     }
 
-    /**
-     * Fix background
-     */
+
     @Override
     public void onResume() {
         Tracker.enterOnResume(this);
@@ -523,6 +521,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         // is the call occurs after Activity is destroyed.
         if (mIsDead)
             return;
+
+        // bookshelves can have changed, so reload
+        populateBookShelfSpinner();
 
         initBackground();
         Tracker.exitOnResume(this);
@@ -623,8 +624,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                         if (DEBUG && BuildConfig.DEBUG) {
                             System.out.println("Adjusting position");
                         }
-                        //
-                        // setSelectionfromTop does not seem to always do what is expected.
+                        // setSelectionFromTop does not seem to always do what is expected.
                         // But adding smoothScrollToPosition seems to get the job done reasonably well.
                         //
                         // Specific problem occurs if:
@@ -656,7 +656,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     }
                 }
             });
-            //}
         }
 
         final boolean hasLevel1 = (mList.numLevels() > 1);
@@ -887,35 +886,14 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         mBookshelfAdapter = new ArrayAdapter<>(this, R.layout.spinner_frontpage);
         mBookshelfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBookshelfSpinner.setAdapter(mBookshelfAdapter);
-
-        // Add the default All Books bookshelf
-        int pos = 0;
-        int bspos = pos;
-        mBookshelfAdapter.add(getString(R.string.all_books));
-        pos++;
-
-        try (Cursor bookshelves = mDb.fetchAllBookshelves()) {
-            if (bookshelves.moveToFirst()) {
-                do {
-                    String this_bookshelf = bookshelves.getString(1);
-                    if (this_bookshelf.equals(mCurrentBookshelf)) {
-                        bspos = pos;
-                    }
-                    pos++;
-                    mBookshelfAdapter.add(this_bookshelf);
-                }
-                while (bookshelves.moveToNext());
-            }
-        }
-        // Set the current bookshelf. We use this to force the correct bookshelf after
-        // the state has been restored.
-        mBookshelfSpinner.setSelection(bspos);
+        //populateBookShelfSpinner();
 
         /*
          * This is fired whenever a bookshelf is selected. It is also fired when the
          * page is loaded with the default (or current) bookshelf.
          */
         mBookshelfSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
             public void onItemSelected(AdapterView<?> parentView, View view, int position, long id) {
                 // Check to see if mBookshelfAdapter is null, which should only occur if
                 // the activity is being torn down: see Issue 370.
@@ -936,6 +914,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 }
             }
 
+            @Override
             public void onNothingSelected(AdapterView<?> parentView) {
                 // Do Nothing
             }
@@ -951,6 +930,32 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 }
             });
         }
+    }
+
+    /** setup/refresh the BookShel list in the Spinner */
+    private void populateBookShelfSpinner() {
+        mBookshelfAdapter.clear();
+        // Add the default All Books bookshelf
+        mBookshelfAdapter.add(getString(R.string.all_books));
+        int currentPos = 0;
+        int position = 1;
+
+        try (Cursor bookshelves = mDb.fetchAllBookshelves()) {
+            if (bookshelves.moveToFirst()) {
+                do {
+                    String this_bookshelf = bookshelves.getString(1);
+                    if (this_bookshelf.equals(mCurrentBookshelf)) {
+                        currentPos = position;
+                    }
+                    position++;
+                    mBookshelfAdapter.add(this_bookshelf);
+                }
+                while (bookshelves.moveToNext());
+            }
+        }
+        // Set the current bookshelf. We use this to force the correct bookshelf after
+        // the state has been restored.
+        mBookshelfSpinner.setSelection(currentPos);
     }
 
     /**
@@ -1189,7 +1194,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             @Override
             public void onClick(View v) {
                 sortDialog.dismiss();
-                BooklistStyles.startEditActivity(BooksOnBookshelf.this);
+                BooklistStylesActivity.startActivity(BooksOnBookshelf.this);
             }
         });
     }

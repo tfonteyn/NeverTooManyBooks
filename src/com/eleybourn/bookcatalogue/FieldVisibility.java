@@ -1,7 +1,7 @@
 /*
  * @copyright 2010 Evan Leybourn
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -28,74 +28,70 @@ import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
-import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
-import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
- * 
- * This is the Field Visibility page. It contains a list of all fields and a 
+ * This is the Field Visibility page. It contains a list of all fields and a
  * checkbox to enable or disable the field on the main edit book screen.
- * 
+ *
  * @author Evan Leybourn
  */
 public class FieldVisibility extends BookCatalogueActivity {
-	public final static String prefix = "field_visibility_";
 
-	@Override
-	protected int getLayoutId(){
-		return R.layout.field_visibility;
-	}
+    /**
+     * Prefix for all preferences
+     */
+    public final static String TAG = "field_visibility_";
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		try {
-			super.onCreate(savedInstanceState);
-			setTitle(R.string.menu_manage_fields);
-			setupFields();
-			BCBackground.init(this);
-		} catch (Exception e) {
-			Logger.logError(e);
-		}
-	}
-	
-	/**
-	 * Fix background
-	 */
-	@Override 
-	public void onResume() {
-		super.onResume();
-		BCBackground.init(this);
-	}
+    public static boolean isVisible(String fieldName) {
+        return BookCataloguePreferences.getBoolean(TAG + fieldName, true);
+    }
 
-	/**
-	 * This function builds the manage field visibility by adding onClick events
-	 * to each field checkbox
-	 */
-	private void setupFields() {
-		// The fields to show/hide
-		String[] fields = {
-				ColumnNames.KEY_AUTHOR_ID, ColumnNames.KEY_TITLE, "thumbnail",
-				ColumnNames.KEY_ISBN, ColumnNames.KEY_SERIES_NAME, ColumnNames.KEY_SERIES_NUM,
-				ColumnNames.KEY_PUBLISHER, ColumnNames.KEY_DATE_PUBLISHED, ColumnNames.KEY_BOOKSHELF,
-				ColumnNames.KEY_PAGES, ColumnNames.KEY_LIST_PRICE, ColumnNames.KEY_READ,
-				ColumnNames.KEY_RATING, ColumnNames.KEY_NOTES, ColumnNames.KEY_ANTHOLOGY_MASK,
-				ColumnNames.KEY_LOCATION, ColumnNames.KEY_READ_START, ColumnNames.KEY_READ_END,
-				ColumnNames.KEY_FORMAT, ColumnNames.KEY_SIGNED, ColumnNames.KEY_DESCRIPTION,
-				ColumnNames.KEY_GENRE, DatabaseDefinitions.DOM_LANGUAGE.name};
-		int[] fieldRs = {
-		        R.string.author, R.string.title, R.string.thumbnail,
+    @Override
+    protected int getLayoutId() {
+        return R.layout.field_visibility;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        try {
+            super.onCreate(savedInstanceState);
+            setTitle(R.string.menu_manage_fields);
+            setupFields();
+        } catch (Exception e) {
+            Logger.logError(e);
+        }
+    }
+
+    /**
+     * This function builds the manage field visibility by adding onClick events
+     * to each field checkbox
+     */
+    private void setupFields() {
+        // The fields to show/hide
+        String[] fields = {
+                ColumnNames.KEY_AUTHOR_ID, ColumnNames.KEY_TITLE, ColumnNames.KEY_THUMBNAIL,
+                ColumnNames.KEY_ISBN, ColumnNames.KEY_SERIES_NAME, ColumnNames.KEY_SERIES_NUM,
+                ColumnNames.KEY_PUBLISHER, ColumnNames.KEY_DATE_PUBLISHED, ColumnNames.KEY_BOOKSHELF,
+                ColumnNames.KEY_PAGES, ColumnNames.KEY_LIST_PRICE, ColumnNames.KEY_READ,
+                ColumnNames.KEY_RATING, ColumnNames.KEY_NOTES, ColumnNames.KEY_ANTHOLOGY_MASK,
+                ColumnNames.KEY_LOCATION, ColumnNames.KEY_READ_START, ColumnNames.KEY_READ_END,
+                ColumnNames.KEY_FORMAT, ColumnNames.KEY_SIGNED, ColumnNames.KEY_DESCRIPTION,
+                ColumnNames.KEY_GENRE, DatabaseDefinitions.DOM_LANGUAGE.name};
+        int[] fieldRs = {
+                R.string.author, R.string.title, R.string.thumbnail,
                 R.string.isbn, R.string.series, R.string.series_num,
-				R.string.publisher, R.string.date_published, R.string.bookshelf,
+                R.string.publisher, R.string.date_published, R.string.bookshelf,
                 R.string.pages, R.string.list_price, R.string.read,
                 R.string.rating, R.string.notes, R.string.anthology,
                 R.string.location_of_book, R.string.read_start, R.string.read_end,
                 R.string.format, R.string.signed, R.string.description,
-				R.string.genre, R.string.language};
-		boolean[] compulsory = {
-		        true, true, false,
+                R.string.genre, R.string.language};
+        boolean[] compulsory = {
+                true, true, false,
                 false, false, false,
                 false, false, true,
                 false, false, false,
@@ -103,61 +99,58 @@ public class FieldVisibility extends BookCatalogueActivity {
                 false, false, false,
                 false, false, false,
                 false, false};
-		
-		SharedPreferences mPrefs = getSharedPreferences("bookCatalogue", MODE_PRIVATE);
-		//SharedPreferences.Editor ed = mPrefs.edit();
-		//ed.putString(STATE_BOOKSHELF, bookshelf);
-		//ed.commit();
 
-		// Display the list of fields
-		LinearLayout parent = findViewById(R.id.manage_fields_scrollview);
-		for (int i = 0; i<fields.length; i++) {
-			final String prefs_name = prefix + fields[i];
-			//Create the LinearLayout to hold each row
-			LinearLayout ll = new LinearLayout(this);
-			ll.setPadding(5, 0, 0, 0);
+        SharedPreferences mPrefs = getSharedPreferences("bookCatalogue", MODE_PRIVATE);
+        //SharedPreferences.Editor ed = mPrefs.edit();
+        //ed.putString(STATE_BOOKSHELF, bookshelf);
+        //ed.commit();
 
-			OnClickListener listener = new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					SharedPreferences mPrefs = getSharedPreferences("bookCatalogue", MODE_PRIVATE);
-					SharedPreferences.Editor ed = mPrefs.edit();
-					boolean field_visibility = mPrefs.getBoolean(prefs_name, true);
-					ed.putBoolean(prefs_name, !field_visibility);
-					ed.apply();
-					return;
-				}};
+        // Display the list of fields
+        LinearLayout parent = findViewById(R.id.manage_fields_scrollview);
+        for (int i = 0; i < fields.length; i++) {
+            final String prefs_name = TAG + fields[i];
+            //Create the LinearLayout to hold each row
+            LinearLayout ll = new LinearLayout(this);
+            ll.setPadding(5, 0, 0, 0);
 
-			//Create the checkbox
-			boolean field_visibility = mPrefs.getBoolean(prefs_name, true);
-			CheckBox cb = new CheckBox(this);
-			cb.setChecked(field_visibility);
-			if (compulsory[i]) {
-				cb.setEnabled(false);
-			} else {
-				cb.setOnClickListener(listener);
-			}
-			ll.addView(cb);
-			
-			//Create the checkBox label (or textView)
-			//TextView tv = new TextView(this);
-			cb.setTextAppearance(this, android.R.style.TextAppearance_Large);
-			cb.setText(fieldRs[i]);
-			//cb.setPadding(0, 5, 0, 0);
-			if (compulsory[i]) {
-				cb.setTextColor(Color.GRAY);
-			//} else {
-				//cb.setOnClickListener(listener);
-			}
-			//ll.addView(tv);
-			
-			//Add the LinearLayout to the parent
-			parent.addView(ll);
-			
-		}
-	}
+            OnClickListener listener = new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SharedPreferences mPrefs = getSharedPreferences("bookCatalogue", MODE_PRIVATE);
+                    SharedPreferences.Editor ed = mPrefs.edit();
+                    boolean field_visibility = mPrefs.getBoolean(prefs_name, true);
+                    ed.putBoolean(prefs_name, !field_visibility);
+                    ed.apply();
+                    return;
+                }
+            };
 
-	public static boolean isVisible(String fieldName) {
-		return BookCataloguePreferences.getBoolean(prefix + fieldName, true);
-	}
+            //Create the checkbox
+            boolean field_visibility = mPrefs.getBoolean(prefs_name, true);
+            CheckBox cb = new CheckBox(this);
+            cb.setChecked(field_visibility);
+            if (compulsory[i]) {
+                cb.setEnabled(false);
+            } else {
+                cb.setOnClickListener(listener);
+            }
+            ll.addView(cb);
+
+            //Create the checkBox label (or textView)
+            //TextView tv = new TextView(this);
+            cb.setTextAppearance(this, android.R.style.TextAppearance_Large);
+            cb.setText(fieldRs[i]);
+            //cb.setPadding(0, 5, 0, 0);
+            if (compulsory[i]) {
+                cb.setTextColor(Color.GRAY);
+                //} else {
+                //cb.setOnClickListener(listener);
+            }
+            //ll.addView(tv);
+
+            //Add the LinearLayout to the parent
+            parent.addView(ll);
+
+        }
+    }
 }

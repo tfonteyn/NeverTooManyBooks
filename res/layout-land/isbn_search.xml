@@ -13,12 +13,18 @@
         android:orientation="vertical"
         tools:ignore="HardcodedText" >
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            style="@style/toolbar"
+            tools:text="TOOLBAR" />
+
+        <!-- digits: 0..9X for ISBN, but ASIN allows more -->
         <EditText
             android:id="@+id/isbn"
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="1"
-            android:digits="0123456789Xx"
+            android:digits="1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
             android:hint="@string/isbn"
             android:inputType="text"
             android:padding="@dimen/padding_border_double"

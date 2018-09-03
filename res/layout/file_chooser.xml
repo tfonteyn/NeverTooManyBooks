@@ -47,10 +47,9 @@
             android:layout_toEndOf="@id/up"
             android:layout_toStartOf="@id/create"
             android:gravity="center_vertical"
-            android:text="/foo/bar/gum"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold"
-            tools:ignore="HardcodedText" />
+            tools:text="/foo/bar/gum" />
     </RelativeLayout>
 
     <View
@@ -66,9 +65,9 @@
         android:inputType="text"
         android:paddingBottom="@dimen/padding_border_double"
         android:paddingTop="@dimen/padding_border_double"
-        android:text="fred.bcbk"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:ignore="HardcodedText,LabelFor" />
+        tools:text="fred.bcbk"
+        tools:ignore="LabelFor" />
 
     <View
         android:id="@+id/footer_divider"

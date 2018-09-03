@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -27,10 +27,10 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 
 import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsExportFailuresActivity;
 import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import net.philipwarner.taskqueue.BindableItem;
@@ -47,142 +47,140 @@ import java.util.ArrayList;
 
 /**
  * Activity to display the available QueueManager Task object subclasses to the user.
- * 
+ *
  * @author Philip Warner
  */
 public class TaskListActivity extends BindableItemListActivity {
-	private CatalogueDBAdapter m_db = null;
-	private TasksCursor m_cursor;
+    /**
+     * Listener to handle Event add/change/delete.
+     */
+    private final OnTaskChangeListener m_OnTaskChangeListener = new OnTaskChangeListener() {
+        @Override
+        public void onTaskChange(Task task, TaskActions action) {
+            TaskListActivity.this.refreshData();
+        }
+    };
+    private CatalogueDBAdapter m_db = null;
+    private TasksCursor m_cursor;
 
-	/**
-	 * Constructor. Give superclass the list view ID.
-	 */
-	public TaskListActivity() {
-		super(R.layout.task_list);
-	}
+    /**
+     * Constructor. Give superclass the list view ID.
+     */
+    public TaskListActivity() {
+        super(R.layout.task_list);
+    }
 
-	@Override 
-	protected void onCreate(Bundle savedInstanceState) {
-		try {
-			super.onCreate(savedInstanceState);			
-			// Get a DB adapter
-			m_db = new CatalogueDBAdapter(this);
-			m_db.open();
-			//When any Event is added/changed/deleted, update the list. Lazy, yes.
-			BookCatalogueApp.getQueueManager().registerTaskListener(m_OnTaskChangeListener);		
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        try {
+            super.onCreate(savedInstanceState);
+            this.setTitle(R.string.background_tasks);
 
-			// Bind the 'cleanup' button.
-			{
-				View v = this.findViewById(R.id.cleanup);
-				v.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						QueueManager.getQueueManager().cleanupOldTasks(7);
-					}});				
-			}
+            // Get a DB adapter
+            m_db = new CatalogueDBAdapter(this);
+            m_db.open();
+            //When any Event is added/changed/deleted, update the list. Lazy, yes.
+            BookCatalogueApp.getQueueManager().registerTaskListener(m_OnTaskChangeListener);
 
-			this.setTitle(R.string.background_tasks);
+            View cleanupButton = this.findViewById(R.id.cleanup);
+            cleanupButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    QueueManager.getQueueManager().cleanupOldTasks(7);
+                }
+            });
 
-			if (savedInstanceState == null)
-				HintManager.displayHint(this, R.string.hint_background_tasks, null);
+            if (savedInstanceState == null)
+                HintManager.displayHint(this, R.string.hint_background_tasks, null);
 
-			BCBackground.init(this);
-		} catch (Exception e) {
-			Logger.logError(e);
-		}
-		
-	}
+        } catch (Exception e) {
+            Logger.logError(e);
+        }
 
-	/**
-	 * Listener to handle Event add/change/delete.
-	 */
-	private final OnTaskChangeListener m_OnTaskChangeListener = new  OnTaskChangeListener() {
-		@Override
-		public void onTaskChange(Task task, TaskActions action) {
-			TaskListActivity.this.refreshData();
-		}};
+    }
 
-	/**
-	 * Refresh data; some other activity may have changed relevant data (eg. a book)
-	 */
-	@Override
-	protected void onResume() {
-		super.onResume();
-		refreshData();
-		BCBackground.init(this);
-	} 
+    /**
+     * Refresh data; some other activity may have changed relevant data (eg. a book)
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshData();
+        BCBackground.init(this);
+    }
 
-	/**
-	 * Build a context menu dialogue when an item is clicked.
-	 */
-	@Override
-	public void onListItemClick(AdapterView<?> parent, final View v, final int position, final long id) {
-		Task task = ViewTagger.getTag(v, R.id.TAG_TASK);
-		ArrayList<ContextDialogItem> items = new ArrayList<>();
+    /**
+     * Build a context menu dialogue when an item is clicked.
+     */
+    @Override
+    public void onListItemClick(AdapterView<?> parent, final View v, final int position, final long id) {
+        Task task = ViewTagger.getTag(v, R.id.TAG_TASK);
+        ArrayList<ContextDialogItem> items = new ArrayList<>();
 
-		items.add(new ContextDialogItem(getString(R.string.show_events_ellipsis), new Runnable(){
-			@Override
-			public void run() {
-				doShowTaskEvents(id);
-			}}));
+        items.add(new ContextDialogItem(getString(R.string.show_events_ellipsis), new Runnable() {
+            @Override
+            public void run() {
+                doShowTaskEvents(id);
+            }
+        }));
 
-		task.addContextMenuItems(this, parent, v, position, id, items, m_db);
+        task.addContextMenuItems(this, parent, v, position, id, items, m_db);
 
-		if (items.size() > 0) {
-			showContextDialogue(this.getString(R.string.select_an_action), items);
-		}
-	}
+        if (items.size() > 0) {
+            showContextDialogue(this.getString(R.string.select_an_action), items);
+        }
+    }
 
-	private void doShowTaskEvents(long taskId) {
-		GoodreadsExportFailuresActivity.start(this, taskId);
-	}
-	
-	/**
-	 * Return the number of task types we might return. 50 is just paranoia.
-	 * RELEASE: Keep checking this value!
-	 */
-	@Override
-	public int getBindableItemTypeCount() {
-		return 50;
-	}
+    private void doShowTaskEvents(long taskId) {
+        GoodreadsExportFailuresActivity.start(this, taskId);
+    }
 
-	/**
-	 * Pass binding off to the task object.
-	 */
-	@Override
-	public void bindViewToItem(Context context, View view, BindableItemSQLiteCursor cursor, BindableItem bindable) {
-		ViewTagger.setTag(view, R.id.TAG_TASK, bindable);
-		bindable.bindView(view, context, cursor, m_db);
-	}
+    /**
+     * Return the number of task types we might return. 50 is just paranoia.
+     * RELEASE: Keep checking this value!
+     */
+    @Override
+    public int getBindableItemTypeCount() {
+        return 50;
+    }
 
-	/**
-	 * Get a cursor returning the tasks we are interested in (in this case all tasks)
-	 */
-	@Override
-	protected BindableItemSQLiteCursor getBindableItemCursor(Bundle savedInstanceState) {
-		m_cursor = QueueManager.getQueueManager().getTasks(TaskCursorSubtype.all);
-		return m_cursor;
-	}
+    /**
+     * Pass binding off to the task object.
+     */
+    @Override
+    public void bindViewToItem(Context context, View view, BindableItemSQLiteCursor cursor, BindableItem bindable) {
+        ViewTagger.setTag(view, R.id.TAG_TASK, bindable);
+        bindable.bindView(view, context, cursor, m_db);
+    }
 
-	/**
-	 * Cleanup
-	 */
-	@Override
-	protected void onDestroy() {
-		try {
-			super.onDestroy();
-		} catch (Exception e) {/* Ignore */}
-		try {
-			if (m_db != null)
-				m_db.close();
-		} catch (Exception e) {/* Ignore */}
-		try {
-			BookCatalogueApp.getQueueManager().unregisterTaskListener(m_OnTaskChangeListener);					
-		} catch (Exception e) {/* Ignore */}
-		try {
-			if (m_cursor != null)
-				m_cursor.close();
-		} catch (Exception e) {/* Ignore */}
-	} 
+    /**
+     * Get a cursor returning the tasks we are interested in (in this case all tasks)
+     */
+    @Override
+    protected BindableItemSQLiteCursor getBindableItemCursor(Bundle savedInstanceState) {
+        m_cursor = QueueManager.getQueueManager().getTasks(TaskCursorSubtype.all);
+        return m_cursor;
+    }
+
+    /**
+     * Cleanup
+     */
+    @Override
+    protected void onDestroy() {
+        try {
+            super.onDestroy();
+        } catch (Exception e) {/* Ignore */}
+        try {
+            if (m_db != null)
+                m_db.close();
+        } catch (Exception e) {/* Ignore */}
+        try {
+            BookCatalogueApp.getQueueManager().unregisterTaskListener(m_OnTaskChangeListener);
+        } catch (Exception e) {/* Ignore */}
+        try {
+            if (m_cursor != null)
+                m_cursor.close();
+        } catch (Exception e) {/* Ignore */}
+    }
 
 }

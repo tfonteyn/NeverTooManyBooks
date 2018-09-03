@@ -33,7 +33,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 public abstract class Property {
 	/**
 	 * Counter used to generate unique View IDs. Needed to prevent some fields being overwritten when
-	 * screen is rotated (if thay all have the same ID).
+	 * screen is rotated (if they all have the same ID).
 	 * 
 	 * ENHANCE: allow topological sort of parameters to allow arbitrary grouping and sorting.
 	 * 
@@ -54,7 +54,6 @@ public abstract class Property {
 	private transient PropertyGroup mGroup;
 	/** Resource ID for name of this property */
 	private transient int mNameResourceId;
-	//private transient String mName = null;
 	/** Property weight (for sorting). Most will remain set at 0. */
 	private int mWeight = 0;
 	/** Hint associated with this property. Subclasses need t ouse, where appropriate */
@@ -82,8 +81,6 @@ public abstract class Property {
 	 * @return the string name of this property
 	 */
 	public String getName() {
-//		if (mName == null)
-//			mName = BookCatalogueApp.getResourceString(mNameResourceId);
 		return BookCatalogueApp.getResourceString(mNameResourceId);
 	}
 
@@ -181,8 +178,12 @@ public abstract class Property {
 	public void validate() {
 	}
 
-	/** Children must implement set(Property) */
+	/**
+	 * Children must implement set(Property)
+	 * */
 	public abstract Property set(Property p);
-	/** Children must method to return an editor for this object */
+	/**
+	 *  Children must implement getView to return an editor for this object
+	 *  */
 	public abstract View getView(LayoutInflater inflater);
 }

@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
@@ -29,7 +27,6 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
@@ -359,14 +356,6 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
         Editor e = BookCataloguePreferences.edit();
         e.putString(PREF_MENU_ITEMS, items.toString());
         e.commit();
-    }
-
-    /**
-     * Start the activity to edit this style.
-     */
-    public static void startEditActivity(Activity a) {
-        Intent i = new Intent(a, BooklistStylesActivity.class);
-        a.startActivityForResult(i, UniqueId.ACTIVITY_BOOKLIST_STYLES);
     }
 
     /**

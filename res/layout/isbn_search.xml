@@ -13,16 +13,33 @@
         android:orientation="vertical"
         tools:ignore="HardcodedText" >
 
-        <EditText
-            android:id="@+id/isbn"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            style="@style/toolbar"
+            tools:text="TOOLBAR" />
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dip"
-            android:layout_weight="1"
-            android:digits="0123456789Xx"
-            android:hint="@string/isbn"
-            android:inputType="text"
-            android:padding="@dimen/padding_border_double"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <!-- digits: 0..9X for ISBN, but ASIN allows more -->
+            <EditText
+                android:id="@+id/isbn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:digits="1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
+                android:hint="@string/isbn"
+                android:inputType="text"
+                android:padding="@dimen/padding_border_double"
+                android:gravity="start"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+            <Button
+                android:id="@+id/search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -114,23 +131,13 @@
                 tools:ignore="ContentDescription" />
         </LinearLayout>
 
-        <LinearLayout
+        <CheckBox
+            android:id="@+id/asinCheckbox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:gravity="start"
+            android:text="@string/allow_asin" />
 
-            <CheckBox
-                android:id="@+id/asinCheckbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/allow_asin" />
-
-            <Button
-                android:id="@+id/search"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/search" />
-        </LinearLayout>
     </LinearLayout>
 
 </ScrollView>

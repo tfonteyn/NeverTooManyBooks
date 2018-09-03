@@ -26,6 +26,7 @@ import android.os.Bundle;
 import com.eleybourn.bookcatalogue.PreferencesBase;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.properties.BooleanListProperty;
 import com.eleybourn.bookcatalogue.properties.IntegerListProperty;
 import com.eleybourn.bookcatalogue.properties.ListProperty.ItemEntries;
@@ -33,9 +34,7 @@ import com.eleybourn.bookcatalogue.properties.Properties;
 import com.eleybourn.bookcatalogue.properties.Property;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.ValuePropertyWithGlobalDefault;
-import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
-import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Activity to manage the preferences associate with Book lists (and the BooksOnBookshelf activity).
@@ -45,19 +44,19 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 public class BooklistPreferencesActivity extends PreferencesBase {
 
 	/** Prefix for all preferences */
-	private static final String TAG = "BookList.Global.";
+	private static final String TAG = "BookList.Global";
 
 	/** Show flat backgrounds in Book lists */
-	private static final String PREF_BACKGROUND_THUMBNAILS = TAG + "BackgroundThumbnails";
+	private static final String PREF_BACKGROUND_THUMBNAILS = TAG + ".BackgroundThumbnails";
 	/** Show flat backgrounds in Book lists */
-	private static final String PREF_CACHE_THUMBNAILS = TAG + "CacheThumbnails";
+	private static final String PREF_CACHE_THUMBNAILS = TAG + ".CacheThumbnails";
 	/** Show flat backgrounds in Book lists */
-	private static final String PREF_FLAT_BACKGROUND = TAG + "FlatBackground";
+	private static final String PREF_FLAT_BACKGROUND = TAG + ".FlatBackground";
 
 	/** Key added to resulting Intent */
-	private static final String PREF_CHANGED = TAG + "PrefChanged";
+	private static final String PREF_CHANGED = TAG + ".PrefChanged";
 	/** Always expand/collapse/preserve book list state */
-	private static final String PREF_BOOKLISTS_STATE = TAG + "BooklistState";
+	private static final String PREF_BOOKLISTS_STATE = TAG + ".BooklistState";
 
 	// ID values for state preservation property
 	public static final int BOOKLISTS_ALWAYS_EXPANDED = 1;
@@ -139,9 +138,9 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 		try {
 			super.onCreate(savedInstanceState);	
 			setTitle(R.string.booklist_preferences);
-			if (savedInstanceState == null)
+			if (savedInstanceState == null) {
 				HintManager.displayHint(this, R.string.hint_booklist_global_properties, null);
-			BCBackground.init(this);
+			}
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -158,7 +157,7 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 	 * Setup each component of the layout using the passed preferences
 	 */
 	@Override
-	protected void setupViews(Properties globalProps) {
+	protected void setupViews(Properties globalProperties) {
 		/*
 		 * This activity predominantly shows 'Property' objects; we build that collection here.
 		 */
@@ -172,20 +171,20 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 		
 		// Get all the properties from the style that have global defaults.
 		Properties allProps = style.getProperties();
-		for(Property p: allProps) {
-			if (p instanceof ValuePropertyWithGlobalDefault) {
-				ValuePropertyWithGlobalDefault<?> gp = (ValuePropertyWithGlobalDefault<?>)p;
-				if (gp.hasGlobalDefault()) {
-					gp.setGlobal(true);
-					globalProps.add(gp);
+		for(Property property: allProps) {
+			if (property instanceof ValuePropertyWithGlobalDefault) {
+				ValuePropertyWithGlobalDefault<?> globProp = (ValuePropertyWithGlobalDefault<?>)property;
+				if (globProp.hasGlobalDefault()) {
+					globProp.setGlobal(true);
+					globalProperties.add(globProp);
 				}
 			}
 		}
 		// Add the locally constructed properties
-		globalProps.add(mFlatBackgroundProperty);
-		globalProps.add(mBooklistStateProperty);
-		globalProps.add(mCacheThumbnailsProperty);
-		globalProps.add(mBackgroundThumbnailsProperty);
+		globalProperties.add(mFlatBackgroundProperty);
+		globalProperties.add(mBooklistStateProperty);
+		globalProperties.add(mCacheThumbnailsProperty);
+		globalProperties.add(mBackgroundThumbnailsProperty);
 
 	}
 
@@ -205,15 +204,6 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 				getParent().setResult(RESULT_OK, i);
 			}
 		}
-	}
-
-	/**
-	 * Fix background
-	 */
-	@Override 
-	public void onResume() {
-		super.onResume();
-		BCBackground.init(this);
 	}
 
 	public static boolean isBackgroundFlat() {

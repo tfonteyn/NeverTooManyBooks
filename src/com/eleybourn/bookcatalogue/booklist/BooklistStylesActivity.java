@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -62,7 +63,12 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 		super(null, R.layout.booklist_styles_edit_list, R.layout.booklist_styles_edit_row);
 	}
 
-	@Override
+    public static void startActivity(Activity from) {
+        Intent i = new Intent(from, BooklistStylesActivity.class);
+        from.startActivityForResult(i, UniqueId.ACTIVITY_BOOKLIST_STYLES);
+    }
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
 			// Superclass will call getList() which needs DB, so create DB before calling superclass.
@@ -70,11 +76,11 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 			mDb.open();
 
 			super.onCreate(savedInstanceState);
+			this.setTitle(R.string.preferred_styles);
 
 			// We want context menus to be available
 			registerForContextMenu(getListView());
 
-			this.setTitle(R.string.preferred_styles);
 			//mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, mDbHelper.fetchAllSeriesArray());
 			//((AutoCompleteTextView)this.findViewById(R.id.series)).setAdapter(mAdapter);
 
@@ -279,7 +285,6 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 	 * @param alwaysClone	Force a clone, even if its already user-defined
 	 */
 	private void editStyle(int position, BooklistStyle style, boolean alwaysClone) {
-		Intent i = new Intent(this, BooklistStylePropertiesActivity.class);
 		// Save the current row
 		mEditedRow = position;
 
@@ -294,7 +299,9 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 				return;
 			}
 		}
-		i.putExtra(BooklistStylePropertiesActivity.KEY_STYLE, style);
+
+        Intent i = new Intent(this, BooklistStylePropertiesActivity.class);
+        i.putExtra(BooklistStylePropertiesActivity.KEY_STYLE, style);
 		startActivityForResult(i, UniqueId.ACTIVITY_BOOKLIST_STYLE);		
 	}
 

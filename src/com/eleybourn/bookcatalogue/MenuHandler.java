@@ -155,7 +155,7 @@ public class MenuHandler {
      */
     private void createBookScan(Activity a) {
         Intent i = new Intent(a, BookISBNSearch.class);
-        i.putExtra(BookISBNSearch.BY, BookISBNSearch.BY_SCAN);
+        i.putExtra(BookISBNSearch.KEY_BY, BookISBNSearch.BY_SCAN);
         a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_SCAN);
     }
 
@@ -164,7 +164,7 @@ public class MenuHandler {
      */
     private void createBookISBN(Activity a, String by) {
         Intent i = new Intent(a, BookISBNSearch.class);
-        i.putExtra(BookISBNSearch.BY, by);
+        i.putExtra(BookISBNSearch.KEY_BY, by);
         a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_ISBN);
     }
 

@@ -75,8 +75,8 @@ public class Properties implements Iterable<Property> {
 		sort();
 		// Record last group used, so we know when to output a header.
 		PropertyGroup lastGroup = null;
-		// Loop
 		for(Property p: mList) {
+			// new header ?
 			PropertyGroup currGroup = p.getGroup();
 			if (currGroup != lastGroup) {
 				// Add a new header
@@ -84,7 +84,8 @@ public class Properties implements Iterable<Property> {
 				v.setText(currGroup.getNameId());
 				parent.addView(v);
 			}
-			// Just add the property editor
+
+			// add the property editor
 			View pv = p.getView(inflater);
 			parent.addView(pv);
 			lastGroup = currGroup;

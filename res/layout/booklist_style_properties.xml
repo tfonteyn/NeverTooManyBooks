@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="@dimen/padding_border" >
+    android:padding="@dimen/padding_border">
 
-    <LinearLayout
-        android:id="@+id/top_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="top"
-        android:orientation="vertical" >
-    </LinearLayout>
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/toolbar"
+        tools:text="TOOLBAR" />
 
     <include
         android:id="@+id/buttonbar_cancel_save"
@@ -21,23 +19,18 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"/>
 
-    <!-- incompatible with APIL4 android:fadeScrollbars="false" -->
-
     <ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/buttonbar_cancel_save"
-        android:layout_below="@+id/top_buttons" >
+        android:layout_below="@+id/toolbar" >
 
         <!--
              NOTE: This view (id=body) will be EMPTIED by the activity that uses this layout
 			 DON'T ADD ANYTHING TO IT
 			 It is OK to add stuff to the ScrollView, or anywhere else in this layout.
-
         -->
-
         <LinearLayout
             android:id="@+id/body"
             android:layout_width="match_parent"

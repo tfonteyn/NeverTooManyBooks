@@ -46,10 +46,11 @@ import java.util.Objects;
  * @author Philip Warner
  */
 public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
+	private static final String TAG = "StyleEditor";
 	// Preferences setup
-	public static final String KEY_STYLE = "StyleEditor.Style";
-	public static final String KEY_SAVE_TO_DATABASE = "StyleEditor.SaveToDb";
-	private static final String KEY_GROUPS = "StyleEditor.Groups";
+	public static final String KEY_STYLE = TAG + ".Style";
+	public static final String KEY_SAVE_TO_DATABASE = TAG + ".SaveToDb";
+	private static final String KEY_GROUPS = TAG + ".Groups";
 
 	/** Copy of the style we are editing */
 	private BooklistStyle mStyle;
@@ -118,13 +119,7 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 
 			// Init the subclass now it has the array it expects
 			super.onCreate(savedInstanceState);
-
-			if (isNew)
-				this.setTitle(getString(R.string.add_style));
-			else if (mStyle.getRowId() == 0)
-				this.setTitle(getString(R.string.clone_style_colon_name, mStyle.getDisplayName()));
-			else
-				this.setTitle(getString(R.string.edit_style_colon_name, mStyle.getDisplayName()));
+            this.setTitle(getString(R.string.groupings) + ": " + mStyle.getDisplayName());
 
 			if (savedInstanceState == null)
 				HintManager.displayHint(this, R.string.hint_booklist_style_groups, null);
@@ -136,7 +131,7 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 
 	@Override
 	protected void onAdd(View v) {
-		throw new RuntimeException("Unexpeted call to 'onAdd'");
+		throw new RuntimeException("Unexpected call to 'onAdd'");
 	}
 
 	/**

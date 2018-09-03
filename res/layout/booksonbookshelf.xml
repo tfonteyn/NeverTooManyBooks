@@ -23,7 +23,8 @@
             android:paddingStart="@dimen/padding_border">
 
             <include
-                layout="@layout/inc_toolbar_frame"
+                android:id="@+id/toolbar"
+                layout="@layout/inc_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -31,7 +32,7 @@
                 android:id="@+id/header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/toolbar_frame"
+                android:layout_below="@id/toolbar"
                 android:orientation="vertical">
 
                 <Spinner

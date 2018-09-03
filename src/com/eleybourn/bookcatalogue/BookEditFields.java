@@ -449,7 +449,7 @@ public class BookEditFields extends BookDetailsAbstract
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        boolean thumbVisible = BookCataloguePreferences.getBoolean(FieldVisibility.prefix + "thumbnail", true);
+        boolean thumbVisible = BookCataloguePreferences.getBoolean(FieldVisibility.TAG + "thumbnail", true);
         if (thumbVisible) {
             MenuItem thumbOptions = menu.add(0, BookEditFragmentAbstract.THUMBNAIL_OPTIONS_ID, 0, R.string.cover_options_cc_ellipsis);
             thumbOptions.setIcon(android.R.drawable.ic_menu_camera);

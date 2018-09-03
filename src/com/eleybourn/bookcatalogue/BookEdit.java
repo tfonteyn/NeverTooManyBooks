@@ -217,6 +217,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         return R.layout.edit_book_base;
     }
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
@@ -474,6 +475,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     /**
      * Get the current status of the data in this activity
      */
+    @Override
     public boolean isDirty() {
         return mIsDirtyFlg;
     }
@@ -481,6 +483,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     /**
      * Mark the data as dirty (or not)
      */
+    @Override
     public void setDirty(boolean dirty) {
         mIsDirtyFlg = dirty;
     }

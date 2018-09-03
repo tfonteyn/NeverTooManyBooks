@@ -40,7 +40,7 @@ import java.util.Iterator;
 import java.util.Objects;
 
 /**
- * Implement a generic list-of-values property.
+ * Implement a generic list-of-values property. Display is done with Radio Buttons
  * 
  * @author Philip Warner
  *
@@ -66,10 +66,10 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 	 */
 	@Override
 	public View getView(final LayoutInflater inflater) {
-		View v = inflater.inflate(R.layout.property_value_list, null);
-		ViewTagger.setTag(v, R.id.TAG_PROPERTY, this);
+		View view = inflater.inflate(R.layout.property_value_list, null);
+		ViewTagger.setTag(view, R.id.TAG_PROPERTY, this);
 		// Display the list of values when clicked.
-		v.setOnClickListener(new OnClickListener() {
+		view.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				handleClick(v, inflater);
@@ -77,26 +77,26 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 		});
 
 		// Set the name
-		TextView text = v.findViewById(R.id.name);
+		TextView text = view.findViewById(R.id.name);
 		text.setText(getName());
 		
 		// Try to find the list item that corresponds to the current stored value.
-		ItemEntry<T> val = null;
+		ItemEntry<T> entry = null;
 		for(ItemEntry<T> e: getListItems() ) {
 			if (e.value == null) {
 				if (get() == null) {
-					val = e;
+					entry = e;
 				}
 			} else {
 				if (get() != null && get().equals(e.value)) {
-					val = e;					
+					entry = e;
 				}
 			}
 		}
 		// Display current value
-		setValueInView(v, val);
+		setValueInView(view, entry);
 
-		return v;
+		return view;
 	}
 
 	private void handleClick(final View base, final LayoutInflater inflater) {
@@ -238,57 +238,60 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 	/**
 	 * Called to display a list of values for this property.
 	 * 
-	 * @param base        Specific view that was clicked
+	 * @param baseView    Specific view that was clicked
 	 * @param inflater    LayoutInflater
 	 * @param items       All list items
 	 */
-	private void displayList(final View base, final LayoutInflater inflater, ItemEntries<T> items) {
+	private void displayList(final View baseView, final LayoutInflater inflater, ItemEntries<T> items) {
+
+        T currentValue = this.get();
 
 		// Get the view and the radio group
 		View root = inflater.inflate(R.layout.property_value_list_list, null);
-		RadioGroup grp = root.findViewById(R.id.values);
-
-		// Get the current value
-		T curr = get();
-
-		final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext()).setView(root).create();
+		final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext())
+				.setView(root)
+				.create();
 
 		// Create a listener that responds to any click on the list
-		OnClickListener l = new OnClickListener() {
+		OnClickListener clickListener = new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
-				Holder<T> h = ViewTagger.getTag(v, R.id.TAG_HOLDER);
-				set(Objects.requireNonNull(h).item.value);
-				setValueInView(h.baseView, h.item);
+				Holder<T> holder = ViewTagger.getTag(v, R.id.TAG_HOLDER);
+				set(Objects.requireNonNull(holder).item.value);
+				setValueInView(holder.baseView, holder.item);
 			}
 		};
 
+        RadioGroup radioGroup = root.findViewById(R.id.values);
 		// Add each entry to the list
-		for(ItemEntry<T> e: items) {
+		for(ItemEntry<T> entry: items) {
 			// If we are looking at global-only values, NULL is invalid
-			if (e.value != null || !isGlobal()) {
+			if (entry.value != null || !isGlobal()) {
+
 				// Check if this value is the currently selected value
 				boolean selected = false;
-				if (e.value == null && curr == null)
+				if (entry.value == null && currentValue == null)
 					selected = true;
-				else if (e.value != null && curr != null && curr.equals(e.value))
+				else if (entry.value != null && currentValue != null && entry.value.equals(currentValue))
 					selected = true;
+
 				// Make the view for this item
-				View v = inflater.inflate(R.layout.property_value_list_item, null);
-				TextView name = v.findViewById(R.id.name);
-				RadioButton sel = v.findViewById(R.id.selector);
+				View line = inflater.inflate(R.layout.property_value_list_item, null);
+                RadioButton sel = line.findViewById(R.id.selector);
+
 				//Set the various values
 				sel.setChecked(selected);
-				name.setText(e.getString());
+                sel.setText(entry.getString());
+
 				// Listen for clicks
-				sel.setOnClickListener(l);
-				v.setOnClickListener(l);
+				sel.setOnClickListener(clickListener);
+
 				// Set the tacks used by the listeners
-				ViewTagger.setTag(v, R.id.TAG_HOLDER, new Holder<>(e, base));
-				ViewTagger.setTag(sel, R.id.TAG_HOLDER, new Holder<>(e, base));
+				ViewTagger.setTag(sel, R.id.TAG_HOLDER, new Holder<>(entry, baseView));
+
 				// Add it to the group
-				grp.addView(v);		
+				radioGroup.addView(line);
 			}
 		}
 

@@ -137,9 +137,9 @@ public class BooklistGroup implements Serializable {
 		mRowKindNames.add(ROW_KIND_UPDATE_YEAR, BookCatalogueApp.getResourceString(R.string.update_year));
 		mRowKindNames.add(ROW_KIND_RATING, BookCatalogueApp.getResourceString(R.string.rating));
 		mRowKindNames.add(ROW_KIND_BOOKSHELF, BookCatalogueApp.getResourceString(R.string.bookshelf));
-		// NEWKIND: Add new kinds here
 		mRowKindNames.add(ROW_KIND_BOOK, BookCatalogueApp.getResourceString(R.string.book));
-		
+		// NEWKIND: Add new kinds here
+
 		// Sanity check
 		for(int i = 0; i <= ROW_KIND_MAX; i++) {
 			if (!mRowKindNames.containsKey(i))
@@ -227,19 +227,14 @@ public class BooklistGroup implements Serializable {
 	 * @param kind		Kind of group to create
 	 */
 	public static BooklistGroup newGroup(int kind) {
-		BooklistGroup g;
 		switch(kind) {
-		case ROW_KIND_AUTHOR:
-			g = new BooklistGroup.BooklistAuthorGroup();
-			break;
-		case ROW_KIND_SERIES:
-			g = new BooklistGroup.BooklistSeriesGroup();
-			break;
-		default:
-			g = new BooklistGroup(kind);
-			break;			
+			case ROW_KIND_AUTHOR:
+				return new BooklistGroup.BooklistAuthorGroup();
+			case ROW_KIND_SERIES:
+				return new BooklistGroup.BooklistSeriesGroup();
+			default:
+				return new BooklistGroup(kind);
 		}
-		return g;
 	}
 	
 	/**

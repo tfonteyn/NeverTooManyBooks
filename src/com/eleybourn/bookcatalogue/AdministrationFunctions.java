@@ -32,7 +32,7 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
-import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
+import com.eleybourn.bookcatalogue.booklist.BooklistStylesActivity;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.database.ExportThread;
 import com.eleybourn.bookcatalogue.database.ImportThread;
@@ -68,7 +68,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	private boolean finish_after = false;
 	private boolean mExportOnStartup = false;
 
-	private static final String DOAUTO = "do_auto";
+	private static final String EXTRAS_DO_AUTO = "do_auto";
 
     @Override
     protected int getLayoutId(){
@@ -81,18 +81,18 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	public void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
-			setTitle(R.string.administration_label);
+			this.setTitle(R.string.administration_label);
 			mDbHelper = new CatalogueDBAdapter(this);
 			mDbHelper.open();
 
 			Bundle extras = getIntent().getExtras();
-			if (extras != null && extras.containsKey(DOAUTO)) {
+			if (extras != null && extras.containsKey(EXTRAS_DO_AUTO)) {
 				try {
-					if ("export".equals(extras.getString(DOAUTO))) {
+					if ("export".equals(extras.getString(EXTRAS_DO_AUTO))) {
 						finish_after = true;
 						mExportOnStartup = true;
 					} else {
-						throw new RuntimeException("Unsupported DOAUTO option");
+						throw new RuntimeException("Unsupported EXTRAS_DO_AUTO option");
 					}
 				} catch (NullPointerException e) {
 					Logger.logError(e);
@@ -100,10 +100,8 @@ public class AdministrationFunctions extends ActivityWithTasks {
 			}
 
 			setupAdminPage();
-			BCBackground.init(this);
-
-		} catch (Exception e) {
-			Logger.logError(e);
+		} catch (Exception ignore) {
+			Logger.logError(ignore);
 		}
 	}
 	
@@ -162,7 +160,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 			v.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					backupCatalogue(AdministrationFunctions.this);
+					exportToArchive(AdministrationFunctions.this);
 				}
 			});
 		}
@@ -176,7 +174,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 			v.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					restoreCatalogue();
+					importFromArchive();
 				}
 			});
 		}
@@ -189,7 +187,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 			v.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					exportData();
+					exportToCSV();
 				}
 			});
 		}
@@ -203,27 +201,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 				@Override
 				public void onClick(View v) {
 					// Verify - this can be a dangerous operation
-					AlertDialog alertDialog = new AlertDialog.Builder(AdministrationFunctions.this)
-							.setMessage(R.string.import_alert)
-							.setTitle(R.string.import_data)
-							.setIcon(android.R.drawable.ic_menu_info_details)
-							.create();
-					alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
-							AdministrationFunctions.this.getResources().getString(android.R.string.ok),
-							new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							importData();
-							//Toast.makeText(pthis, importUpdated + " Existing, " + importCreated + " Created", Toast.LENGTH_LONG).show();
-						}
-					});
-					alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-							AdministrationFunctions.this.getResources().getString(android.R.string.cancel),
-							new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							//do nothing
-						}
-					});
-					alertDialog.show();
+                    confirmToImportFromCSV();
 				}
 			});
 		}
@@ -350,7 +328,6 @@ public class AdministrationFunctions extends ActivityWithTasks {
 			});
 		}
 
-
 		/* Copy database for tech support */
 		{
 			View v = findViewById(R.id.backup_label);
@@ -367,7 +344,31 @@ public class AdministrationFunctions extends ActivityWithTasks {
 		}
 	}
 
-	///**
+    private void confirmToImportFromCSV() {
+        AlertDialog alertDialog = new AlertDialog.Builder(AdministrationFunctions.this)
+                .setMessage(R.string.import_alert)
+                .setTitle(R.string.import_data)
+                .setIcon(android.R.drawable.ic_menu_info_details)
+                .create();
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
+                AdministrationFunctions.this.getResources().getString(android.R.string.ok),
+                new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                importFromCSV();
+                //Toast.makeText(pthis, importUpdated + " Existing, " + importCreated + " Created", Toast.LENGTH_LONG).show();
+            }
+        });
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
+                AdministrationFunctions.this.getResources().getString(android.R.string.cancel),
+                new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                //do nothing
+            }
+        });
+        alertDialog.show();
+    }
+
+    ///**
 	// * Show the activity that displays all Event objects created by the QueueManager.
 	// */
 	//private void showEvents() {
@@ -379,7 +380,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	 * Load the Bookshelf Activity
 	 */
 	private void manageBookshelves() {
-		Intent i = new Intent(this, Bookshelf.class);
+		Intent i = new Intent(this, BookshelfAdminActivity.class);
 		startActivityForResult(i, ACTIVITY_BOOKSHELF);
 	}
 
@@ -395,13 +396,13 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	 * Load the Edit Book List Styles Activity
 	 */
 	private void manageBooklistStyles() {
-		BooklistStyles.startEditActivity(AdministrationFunctions.this);
+		BooklistStylesActivity.startActivity(AdministrationFunctions.this);
 	}
 
     /**
      * Start the archiving activity
      */
-    public static void backupCatalogue(Activity a) {
+    public static void exportToArchive(Activity a) {
         Intent i = new Intent(a, BackupChooser.class);
         i.putExtra(BackupChooser.EXTRA_MODE, BackupChooser.EXTRA_MODE_SAVE_AS);
         a.startActivity(i);
@@ -410,7 +411,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
     /**
      * Start the restore activity
      */
-    private void restoreCatalogue() {
+    private void importFromArchive() {
         Intent i = new Intent(this, BackupChooser.class);
         i.putExtra(BackupChooser.EXTRA_MODE, BackupChooser.EXTRA_MODE_OPEN);
         startActivity(i);
@@ -421,9 +422,8 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	 * 
 	 * return void
 	 */
-	private void exportData() {
-		ExportThread thread = new ExportThread(getTaskManager());
-		thread.start();
+	private void exportToCSV() {
+		new ExportThread(getTaskManager()).start();
 	}
 
 	/**
@@ -431,7 +431,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	 * 
 	 * return void
 	 */
-	private void importData() {
+	private void importFromCSV() {
 		// Find all possible files (CSV in bookCatalogue directory)
 		ArrayList<File> files = StorageUtils.findExportFiles();
 		// If none, exit with message
@@ -441,7 +441,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 		} else {
 			if (files.size() == 1) {
 				// If only 1, just use it
-				importData(files.get(0).getAbsolutePath());
+				importFromCSV(files.get(0).getAbsolutePath());
 			} else {
 				// If more than one, ask user which file
 				// ENHANCE: Consider asking about importing cover images.
@@ -451,25 +451,17 @@ public class AdministrationFunctions extends ActivityWithTasks {
 					@Override
 					public void onClick(SimpleDialogItem item) {
 						SimpleDialogFileItem fileItem = (SimpleDialogFileItem) item;
-						importData(fileItem.getFile().getAbsolutePath());
+						importFromCSV(fileItem.getFile().getAbsolutePath());
 					}});
-			}				
+			}
 		}
 	}
 
 	/**
 	 * Import all data from the passed CSV file spec
 	 */
-	private void importData(String filespec) {
-		ImportThread thread;
-//		try {
-			thread = new ImportThread(getTaskManager(), filespec);
-//		} catch (IOException e) {
-//			Logger.logError(e);
-//			Toast.makeText(this, getString(R.string.problem_starting_import_arg, e.getMessage()), Toast.LENGTH_LONG).show();
-//			return;
-//		}
-		thread.start();
+	private void importFromCSV(String filespec) {
+		new ImportThread(getTaskManager(), filespec).start();
 	}
 
 	/**
@@ -516,7 +508,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 		super.onResume();
 		BCBackground.init(this);
 		if (mExportOnStartup)
-			exportData();
+			exportToCSV();
 	}
 
 	/**

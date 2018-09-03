@@ -52,18 +52,15 @@ public abstract class FileChooser extends BookCatalogueActivity implements
 	/** Flag indicating nature of this activity */
 	private boolean mIsSaveDialog = false;
 	/**
-	 * Key for member of EXTRAS that specifies the mode of operation of this
-	 * dialog
+	 * Key for member of EXTRAS that specifies the mode of operation of this dialog
 	 */
 	public static final String EXTRA_MODE = "mode";
 	/**
-	 * Value for member of EXTRAS that specifies the mode of operation of this
-	 * dialog
+	 * Value for member of EXTRAS that specifies the mode of operation of this dialog
 	 */
 	public static final String EXTRA_MODE_SAVE_AS = "saveAs";
 	/**
-	 * Value for member of EXTRAS that specifies the mode of operation of this
-	 * dialog
+	 * Value for member of EXTRAS that specifies the mode of operation of this dialog
 	 */
 	public static final String EXTRA_MODE_OPEN = "open";
 
@@ -88,7 +85,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
 			mIsSaveDialog = false;
 		} else {
 			String mode = extras.getString(EXTRA_MODE);
-			mIsSaveDialog = mode != null && mode.equals(EXTRA_MODE_SAVE_AS);
+			mIsSaveDialog = EXTRA_MODE_SAVE_AS.equals(mode);
 		}
 
 		// Get and display the fragment
@@ -189,8 +186,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
 	 */
 	@Override
 	public void onGotFileList(File root, ArrayList<FileDetails> list) {
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		Fragment frag = fragmentManager.findFragmentById(R.id.browser_fragment);
+		Fragment frag = getSupportFragmentManager().findFragmentById(R.id.browser_fragment);
 		if (frag != null && frag instanceof FileListerListener) {
 			((FileListerListener) frag).onGotFileList(root, list);
 		}

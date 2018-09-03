@@ -89,13 +89,14 @@ public class CoversDbHelper implements AutoCloseable {
     private static final DomainDefinition DOM_ID = new DomainDefinition("_id", "integer", "primary key autoincrement", "");
     private static final DomainDefinition DOM_DATE = new DomainDefinition("date", "datetime", "default current_timestamp", "not null");
 
-    // Domain and table definitions
+    // Domain definitions
     private static final DomainDefinition DOM_TYPE = new DomainDefinition("type", "text", "", "not null");    // T = Thumbnail; C = cover?
     private static final DomainDefinition DOM_IMAGE = new DomainDefinition("image", "blob", "", "not null");
     private static final DomainDefinition DOM_WIDTH = new DomainDefinition("width", "integer", "", "not null");
     private static final DomainDefinition DOM_HEIGHT = new DomainDefinition("height", "integer", "", "not null");
     private static final DomainDefinition DOM_SIZE = new DomainDefinition("size", "integer", "", "not null");
     private static final DomainDefinition DOM_FILENAME = new DomainDefinition("filename", "text", "", "");
+    // table definitions
     private static final TableDefinition TBL_IMAGE = new TableDefinition("image",
             DOM_ID, DOM_TYPE, DOM_IMAGE, DOM_DATE, DOM_WIDTH, DOM_HEIGHT, DOM_SIZE, DOM_FILENAME);
     private static final TableDefinition[] TABLES = new TableDefinition[]{TBL_IMAGE};
@@ -359,7 +360,6 @@ public class CoversDbHelper implements AutoCloseable {
         if (mSharedDb == null) {
             return;
         }
-
         if (mEraseCoverCacheStmt == null) {
             String sql = "Delete From " + TBL_IMAGE;
             mEraseCoverCacheStmt = mStatements.add(mSharedDb, "mEraseCoverCacheStmt", sql);

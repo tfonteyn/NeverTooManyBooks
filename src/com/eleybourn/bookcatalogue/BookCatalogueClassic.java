@@ -487,12 +487,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				View v = mInflater.inflate(ViewManager.this.getLayoutChild(), parent, false);
 				BookHolder holder = new BookHolder();
 
-				initViewInfo(v, holder.author, R.id.row_author, FieldVisibility.prefix + KEY_AUTHOR_NAME);
-				initViewInfo(v, holder.title, R.id.row_title, FieldVisibility.prefix + KEY_TITLE);
-				initViewInfo(v, holder.image, R.id.row_image_view, FieldVisibility.prefix + "thumbnail");
-				initViewInfo(v, holder.publisher, R.id.row_publisher, FieldVisibility.prefix + KEY_PUBLISHER);
-				initViewInfo(v, holder.read, R.id.row_read_image_view, FieldVisibility.prefix + "read");
-				initViewInfo(v, holder.series, R.id.row_series, FieldVisibility.prefix + KEY_SERIES_NAME);
+				initViewInfo(v, holder.author, R.id.row_author, FieldVisibility.TAG + KEY_AUTHOR_NAME);
+				initViewInfo(v, holder.title, R.id.row_title, FieldVisibility.TAG + KEY_TITLE);
+				initViewInfo(v, holder.image, R.id.row_image_view, FieldVisibility.TAG + "thumbnail");
+				initViewInfo(v, holder.publisher, R.id.row_publisher, FieldVisibility.TAG + KEY_PUBLISHER);
+				initViewInfo(v, holder.read, R.id.row_read_image_view, FieldVisibility.TAG + "read");
+				initViewInfo(v, holder.series, R.id.row_series, FieldVisibility.TAG + KEY_SERIES_NAME);
 
 				ViewTagger.setTag(v, R.id.TAG_HOLDER, holder);
 

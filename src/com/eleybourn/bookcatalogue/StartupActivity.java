@@ -333,7 +333,7 @@ public class StartupActivity extends AppCompatActivity {
 		doMainActivity(BooksOnBookshelf.class);
 
 		if (mExportRequired) {
-			AdministrationFunctions.backupCatalogue(this);
+			AdministrationFunctions.exportToArchive(this);
 		}
 
 		// We are done

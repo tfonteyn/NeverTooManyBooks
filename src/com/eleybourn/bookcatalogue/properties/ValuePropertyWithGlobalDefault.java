@@ -55,7 +55,8 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
 	 * 
 	 * Note: it is a good idea to provide a non-null value for defaultValue!
 	 */
-	public ValuePropertyWithGlobalDefault(String uniqueId, PropertyGroup group, int nameResourceId, T value, String preferenceKey, T defaultValue, boolean isGlobal) {
+	@SuppressWarnings("WeakerAccess")
+	ValuePropertyWithGlobalDefault(String uniqueId, PropertyGroup group, int nameResourceId, T value, String preferenceKey, T defaultValue, boolean isGlobal) {
 		super(uniqueId, group, nameResourceId);
 		mValue = value;
 		mDefaultPrefKey = preferenceKey;
@@ -75,7 +76,7 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
 	 * 
 	 * Note: it is a good idea to provide a non-null value for defaultValue!
 	 */
-	public ValuePropertyWithGlobalDefault(String uniqueId, PropertyGroup group, int nameResourceId, T value, String preferenceKey, T defaultValue) {
+	ValuePropertyWithGlobalDefault(String uniqueId, PropertyGroup group, int nameResourceId, T value, String preferenceKey, T defaultValue) {
 		this(uniqueId, group, nameResourceId, value, preferenceKey, defaultValue, false);
 	}
 
@@ -156,6 +157,7 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
 	/**
 	 * Utility to check if the current value IS the default value
 	 */
+	@SuppressWarnings("WeakerAccess")
 	public boolean isDefault(T value) {
 		if (hasGlobalDefault() && !isGlobal())
 			return (value == null);
