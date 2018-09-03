@@ -154,7 +154,7 @@ import static com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper.DB_
  * ENHANCE: Use date_added to add 'Recent Acquisitions' virtual shelf; need to resolve how this may relate to date_purchased and 'I own this book'...
  * 
  */
-public class CatalogueDBAdapter implements AutoCloseable {
+public class CatalogueDBAdapter {
 
     /**
      *  Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
@@ -172,12 +172,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	private static final Synchronizer mSynchronizer = new Synchronizer();
 
 	/** Convenience to avoid writing "String[] {}" in many DB routines */
-	public static final String[] EMPTY_STRING_ARRAY = new String[]{};
-
-
-
-
-	private static final String[] EMPTY_STRNG_ARRAY = new String[] {};
+	public static final String[]  EMPTY_STRING_ARRAY = new String[]{};
+	private static final String[] EMPTY_STRNG_ARRAY  = new String[]{}; //FIXME: surely this is a typo ?
 
 	private static DatabaseHelper mDbHelper;
 	private static SynchronizedDb mDb;
@@ -193,7 +189,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 //						+ ", a." + KEY_GIVEN_NAMES + " as " + KEY_GIVEN_NAMES 
 //						+ ", a." + KEY_FAMILY_NAME + " || ', ' || a." + KEY_GIVEN_NAMES + " as " + KEY_AUTHOR_FORMATTED;
 
-		private static String getAuthorFields(String alias, String idName) {
+	private static String getAuthorFields(String alias, String idName) {
 			String sql;
 			if (idName != null && !idName.isEmpty()) {
 				sql = " " + alias + "." + KEY_ROWID + " as " + idName + ", ";
@@ -211,7 +207,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 			return sql;
 		}
 
-		//		private static String BOOK_FIELDS = 
+	//		private static String BOOK_FIELDS =
 //		"b." + KEY_TITLE + " as " + KEY_TITLE + ", " +
 //		"b." + KEY_ISBN + " as " + KEY_ISBN + ", " +
 //		"b." + KEY_PUBLISHER + " as " + KEY_PUBLISHER + ", " +
@@ -230,7 +226,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 //		"b." + KEY_DESCRIPTION + " as " + KEY_DESCRIPTION + ", " + 
 //		"b." + KEY_GENRE  + " as " + KEY_GENRE;
 
-		private static String getBookFields(String alias, String idName) {
+	private static String getBookFields(String alias, String idName) {
 			String sql;
 			if (idName != null && !idName.isEmpty()) {
 				sql = alias + "." + KEY_ROWID + " as " + idName + ", ";
@@ -286,7 +282,6 @@ public class CatalogueDBAdapter implements AutoCloseable {
 //						+ " b LEFT OUTER JOIN " + DB_TB_BOOK_SERIES + " w "
 //						+ " ON (b." + KEY_ROWID + "=w." + KEY_BOOK + ") "
 //						+ " LEFT OUTER JOIN " + DB_TB_SERIES + " s ON (s." + KEY_ROWID + "=w." + KEY_SERIES_ID + ") ";
-
 
 
 	private TableInfo mBooksInfo = null;
@@ -408,7 +403,6 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	/**
 	 * Generic function to close the database
 	 */
-	@Override
 	public void close() {
 
 		if (!mCloseWasCalled) {
@@ -547,17 +541,11 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 */
 	public int countBooks() {
 		int result = 0;
-		String sql = "SELECT count(*) as count FROM " + DB_TB_BOOKS + " b ";
-		Cursor count = null;
-		try {
-			count = mDb.rawQuery(sql, new String[]{});
+		try (Cursor count = mDb.rawQuery("SELECT count(*) as count FROM " + DB_TB_BOOKS + " b ", new String[]{})){
 			count.moveToNext();
 			result = count.getInt(0);
 		} catch (IllegalStateException e) {
 			Logger.logError(e);
-		} finally {
-			if (count != null)
-				count.close();			
 		}
 		return result;
 	}
@@ -581,10 +569,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
 				" Join " + DB_TB_BOOKS + " b " +
 				"     On bbs." + KEY_BOOK + " = b." + KEY_ROWID + 
 				" WHERE " + makeTextTerm("bs." + KEY_BOOKSHELF, "=", bookshelf);
-			Cursor count = mDb.rawQuery(sql, new String[]{});
-			count.moveToNext();
-			result = count.getInt(0);
-			count.close();
+			try (Cursor count = mDb.rawQuery(sql, new String[]{})) {
+				count.moveToNext();
+				result = count.getInt(0);
+			}
 		} catch (IllegalStateException e) {
 			Logger.logError(e);
 		}
@@ -645,6 +633,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 			sql += " AND ab." + KEY_AUTHOR_POSITION + "=1 ";
 		}
 		sql += order;
+		//FIXME cleanup .. there are more similar code snippets
 		Cursor returnable = null;
 		try {
 			returnable = mDb.rawQuery(sql, new String[]{});
@@ -663,15 +652,12 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 */
 	protected ArrayList<String> getAllAuthors() {
 		ArrayList<String> author_list = new ArrayList<>();
-		Cursor author_cur = fetchAllAuthorsIgnoreBooks();
-		try {
+		try(Cursor author_cur = fetchAllAuthorsIgnoreBooks())  {
 			while (author_cur.moveToNext()) {
 				String name = author_cur.getString(author_cur.getColumnIndexOrThrow(KEY_AUTHOR_FORMATTED));
 				author_list.add(name);
 			}
 			return author_list;			
-		} finally {
-			author_cur.close();			
 		}
 	}
 
@@ -1333,12 +1319,11 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 * @return An integer of the highest position. 0 if it is not an anthology
 	 */
 	public int fetchAnthologyPositionByBook(long rowId) {
-		String sql = "SELECT max(" + KEY_POSITION + ") FROM " + DB_TB_ANTHOLOGY + 
+		String sql = "SELECT max(" + KEY_POSITION + ") FROM " + DB_TB_ANTHOLOGY +
 			" WHERE " + KEY_BOOK + "='" + rowId + "'";
-		Cursor mCursor = mDb.rawQuery(sql, new String[]{});
-		int position = getIntValue(mCursor, 0);
-		mCursor.close();
-		return position;
+		try (Cursor mCursor = mDb.rawQuery(sql, new String[]{})) {
+			return getIntValue(mCursor, 0);
+		}
 	}
 	
 	/**
@@ -1364,10 +1349,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
 			"     AND " + makeTextTerm("a." + KEY_FAMILY_NAME, "<", names[1]) + ")) " + 
 			where + 
 			" ORDER BY Upper(a." + KEY_GIVEN_NAMES + ") " + COLLATION + ", Upper(a." + KEY_FAMILY_NAME + ") " + COLLATION;
-		Cursor results = mDb.rawQuery(sql, null);
-		int pos = getIntValue(results, 0);
-		results.close();
-		return pos;
+		try (Cursor results = mDb.rawQuery(sql, null)) {
+			return getIntValue(results, 0);
+		}
 	}
 	
 	/**
@@ -1393,10 +1377,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
 			"     AND " + makeTextTerm("a." + KEY_GIVEN_NAMES, "<", names[1]) + ")) " + 
 			where + 
 			" ORDER BY Upper(a." + KEY_FAMILY_NAME + ") " + COLLATION + ", Upper(a." + KEY_GIVEN_NAMES + ") " + COLLATION;
-		Cursor results = mDb.rawQuery(sql, null);
-		int pos = getIntValue(results, 0);
-		results.close();
-		return pos;
+		try (Cursor results = mDb.rawQuery(sql, null)) {
+			return getIntValue(results, 0);
+		}
 	}
 	
 	/**
@@ -1559,10 +1542,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
 		String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", makeTextTerm("Substr(b." + KEY_TITLE + ",1,1)", "<", title.substring(0,1)), "", "", "");
 		String sql = "SELECT Count(Distinct Upper(Substr(" + KEY_TITLE + ",1,1))" + COLLATION + ") as count " + baseSql;
 
-		Cursor results = mDb.rawQuery(sql, null);
-		int pos = getIntValue(results, 0);
-		results.close();
-		return pos;
+		try (Cursor results = mDb.rawQuery(sql, null)) {
+			return getIntValue(results, 0);
+		}
 	}
 
 	private SynchronizedStatement mGetBookshelfNameStmt = null;
@@ -1642,10 +1624,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	public String fetchLoanByBook(Long mRowId) {
 		String sql;
 		sql = KEY_BOOK + "=" + mRowId + "";
-		Cursor results = mDb.query(DB_TB_LOAN, new String[] {KEY_BOOK, KEY_LOANED_TO}, sql, null, null, null, null);
-		String user = getStringValue(results, 1);
-		results.close();
-		return user;
+		try (Cursor results = mDb.query(DB_TB_LOAN, new String[] {KEY_BOOK, KEY_LOANED_TO}, sql, null, null, null, null)) {
+			return getStringValue(results, 1);
+		}
 	}
 	
 	/**
@@ -1663,10 +1644,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
 		String baseSql = fetchAllBooksInnerSql("", bookshelf, "", where, "", "", "");
 
 		String sql = "SELECT Count(DISTINCT Upper(" + KEY_GENRE + "))" + baseSql;
-		Cursor results = mDb.rawQuery(sql, null);
-		int pos = (getIntValue(results, 0));
-		results.close();
-		return pos;
+		try (Cursor results = mDb.rawQuery(sql, null)) {
+			return  getIntValue(results, 0);
+		}
 	}
 	
 	/**
@@ -1729,10 +1709,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
 					+ " WHERE " + makeTextTerm("s." + KEY_SERIES_NAME, "<", seriesName)
 					+ " Order by s." + KEY_SERIES_NAME + COLLATION + " asc ";
 
-		Cursor results = mDb.rawQuery(sql, null);
-		int pos = (getIntValue(results, 0));
-		results.close();
-		return pos;
+		try (Cursor results = mDb.rawQuery(sql, null)) {
+			return getIntValue(results, 0);
+		}
 	}
 	
 	/**
@@ -2248,11 +2227,13 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 * @return true/false on success
 	 */
 	public int updateAnthologyTitlePosition(long rowId, boolean up, boolean dirtyBookIfNecessary) {
-		Cursor title = fetchAnthologyTitleById(rowId);
-		title.moveToFirst();
-		int book = title.getInt(title.getColumnIndexOrThrow(KEY_BOOK));
-		int position = title.getInt(title.getColumnIndexOrThrow(KEY_POSITION));
-		title.close();
+        int book;
+        int position;
+		try (Cursor title = fetchAnthologyTitleById(rowId)) {
+            title.moveToFirst();
+            book = title.getInt(title.getColumnIndexOrThrow(KEY_BOOK));
+            position = title.getInt(title.getColumnIndexOrThrow(KEY_POSITION));
+        }
 
 		int max_position = fetchAnthologyPositionByBook(rowId);
 
@@ -2378,14 +2359,16 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 * @return The list
 	 */
 	protected ArrayList<String> getFormats() {
-		Cursor c = mDb.rawQuery("Select distinct " + KEY_FORMAT + " from " + DB_TB_BOOKS
-				+ " Order by lower(" + KEY_FORMAT + ") " + COLLATION);
+		String sql = "Select distinct " + KEY_FORMAT + " from " + DB_TB_BOOKS
+				+ " Order by lower(" + KEY_FORMAT + ") " + COLLATION;
 
-		ArrayList<String> list = singleColumnCursorToArrayList(c);
-		if (list.size() == 0) {
-            Collections.addAll(list, BookCatalogueApp.getResourceStringArray(R.array.predefined_formats));
+		try (Cursor c = mDb.rawQuery(sql)) {
+			ArrayList<String> list = singleColumnCursorToArrayList(c);
+			if (list.size() == 0) {
+				Collections.addAll(list, BookCatalogueApp.getResourceStringArray(R.array.predefined_formats));
+			}
+			return list;
 		}
-		return list;
 	}
 
 	/**
@@ -2394,14 +2377,16 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 * @return The list
 	 */
 	protected ArrayList<String> getLanguages() {
-		Cursor c = mDb.rawQuery("Select distinct " + DOM_LANGUAGE + " from " + DB_TB_BOOKS
-				+ " Order by lower(" + DOM_LANGUAGE + ") " + COLLATION);
+		String sql = "Select distinct " + DOM_LANGUAGE + " from " + DB_TB_BOOKS
+				+ " Order by lower(" + DOM_LANGUAGE + ") " + COLLATION;
 
-        ArrayList<String> list = singleColumnCursorToArrayList(c);
-		if (list.size() == 0) {
-            Collections.addAll(list, BookCatalogueApp.getResourceStringArray(R.array.predefined_languages));
+		try (Cursor c = mDb.rawQuery(sql)) {
+			ArrayList<String> list = singleColumnCursorToArrayList(c);
+			if (list.size() == 0) {
+				Collections.addAll(list, BookCatalogueApp.getResourceStringArray(R.array.predefined_languages));
+			}
+			return list;
 		}
-		return list;
 	}
 
     /**
@@ -2436,9 +2421,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
     public ArrayList<AnthologyTitle> getBookAnthologyTitleList(long id) {
 		ArrayList<AnthologyTitle> list = new ArrayList<>();
-		Cursor cursor = null;
-		try {
-			cursor = this.fetchAnthologyTitlesByBook(id);
+		try (Cursor cursor = this.fetchAnthologyTitlesByBook(id)) {
+
 			int count = cursor.getCount();
 
 			if (count == 0)
@@ -2453,18 +2437,14 @@ public class CatalogueDBAdapter implements AutoCloseable {
 				Author a = new Author(cursor.getLong(authorIdCol), cursor.getString(familyNameCol), cursor.getString(givenNameCol));
 				list.add(new AnthologyTitle(a, cursor.getString(titleCol)));
 			}			
-		} finally {
-			if (cursor != null && !cursor.isClosed())
-				cursor.close();
 		}
 		return list;
 	}
 
 	public ArrayList<Author> getBookAuthorList(long id) {
 		ArrayList<Author> authorList = new ArrayList<>();
-		Cursor authors = null;
-		try {
-			authors = fetchAllAuthorsByBook(id);
+		try (Cursor authors = fetchAllAuthorsByBook(id)) {
+
 			int count = authors.getCount();
 
 			if (count == 0)
@@ -2477,18 +2457,14 @@ public class CatalogueDBAdapter implements AutoCloseable {
 			while (authors.moveToNext()) {
 				authorList.add(new Author(authors.getLong(idCol), authors.getString(familyCol), authors.getString(givenCol)));
 			}			
-		} finally {
-			if (authors != null)
-				authors.close();
 		}
 		return authorList;
 	}
 
 	public ArrayList<Series> getBookSeriesList(long id) {
 		ArrayList<Series> seriesList = new ArrayList<>();
-		Cursor series = null;
-		try {
-			series = fetchAllSeriesByBook(id);
+		try (Cursor series = fetchAllSeriesByBook(id)) {
+
 			int count = series.getCount();
 
 			if (count == 0)
@@ -2501,9 +2477,6 @@ public class CatalogueDBAdapter implements AutoCloseable {
 			while (series.moveToNext()) {
 				seriesList.add(new Series(series.getLong(idCol), series.getString(nameCol), series.getString(numCol)));
 			}			
-		} finally {
-			if (series != null)
-				series.close();
 		}
 		return seriesList;
 	}
@@ -3116,11 +3089,13 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 */
 	public boolean deleteAnthologyTitle(long anthRowId, boolean dirtyBookIfNecessary) {
 		// Find the soon to be deleted title position#
-		Cursor anthology = fetchAnthologyTitleById(anthRowId);
-		anthology.moveToFirst();
-		int position = anthology.getInt(anthology.getColumnIndexOrThrow(KEY_POSITION));
-		int book = anthology.getInt(anthology.getColumnIndexOrThrow(KEY_BOOK));
-		anthology.close();
+		int position;
+		int book;
+		try (Cursor anthology = fetchAnthologyTitleById(anthRowId)) {
+			anthology.moveToFirst();
+			position = anthology.getInt(anthology.getColumnIndexOrThrow(KEY_POSITION));
+			book = anthology.getInt(anthology.getColumnIndexOrThrow(KEY_BOOK));
+		}
 
 		boolean success;
 		// Delete the title
@@ -3459,44 +3434,30 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	
 /**************************************************************************************/
 	
-	
-	
-	
-	
     /*
      * This will return the author based on the ID.
      */
     public Author getAuthorById(long id) {
-    	Cursor c = null;
-    	try {
-        	String sql = "Select " + KEY_FAMILY_NAME + ", " + KEY_GIVEN_NAMES + " From " + DB_TB_AUTHORS 
-        				+ " Where " + KEY_ROWID + " = " + id;
-            c = mDb.rawQuery(sql, null);
-            if (!c.moveToFirst())
+		String sql = "Select " + KEY_FAMILY_NAME + ", " + KEY_GIVEN_NAMES + " From " + DB_TB_AUTHORS
+				+ " Where " + KEY_ROWID + " = " + id;
+     	try (Cursor c = mDb.rawQuery(sql, null)) {
+             if (!c.moveToFirst())
             	return null;
             return new Author(id, c.getString(0), c.getString(1)); 
-    	} finally {
-    		if (c != null)
-	            c.close();    		
-	    	}
+    	}
     }
  
     /*
      * This will return the series based on the ID.
      */
     public Series getSeriesById(long id) {
-    	Cursor c = null;
-    	try {
-        	String sql = "Select " + KEY_SERIES_NAME + " From " + DB_TB_SERIES 
-        				+ " Where " + KEY_ROWID + " = " + id;
-            c = mDb.rawQuery(sql, null);
+		String sql = "Select " + KEY_SERIES_NAME + " From " + DB_TB_SERIES
+				+ " Where " + KEY_ROWID + " = " + id;
+    	try (Cursor c = mDb.rawQuery(sql, null)) {
             if (!c.moveToFirst())
             	return null;
             return new Series(id, c.getString(0), ""); 
-    	} finally {
-    		if (c != null)
-	            c.close();    		
-	    	}
+    	}
     }
  
     private SynchronizedStatement mGetAuthorBookCountQuery = null;
@@ -3673,12 +3634,12 @@ public class CatalogueDBAdapter implements AutoCloseable {
 		+ " And Exists(Select NULL From " + tableName + " ba Where "
 		+ "                 ba." + KEY_BOOK + " = " + tableName + "." + KEY_BOOK
 		+ "                 and ba." + objectIdField + " = " + newId + ")";			
-		Cursor c = mDb.rawQuery(sql);
+
 		SynchronizedStatement delStmt = null;
 		SynchronizedStatement replacementIdPosStmt = null;
 		SynchronizedStatement checkMinStmt = null;
 		SynchronizedStatement moveStmt = null;
-		try {
+		try (Cursor c = mDb.rawQuery(sql)) {
 			// Get the column indexes we need
 			final int bookCol = c.getColumnIndexOrThrow(KEY_BOOK);
 			final int posCol = c.getColumnIndexOrThrow(positionField);
@@ -3740,7 +3701,6 @@ public class CatalogueDBAdapter implements AutoCloseable {
 				}
 			}			
 		} finally {
-			c.close();
 			if (delStmt != null)
 				delStmt.close();
 			if (moveStmt != null)
@@ -3775,10 +3735,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
     private void fixupPositionedBookItems(String tableName, String objectIdField, String positionField) {
 		String sql = "select b." + KEY_ROWID + " as " + KEY_ROWID + ", min(o." + positionField + ") as pos" +
 				" from " + TBL_BOOKS + " b join " + tableName + " o On o." + KEY_BOOK + " = b." + KEY_ROWID +
-				" Group by b." + KEY_ROWID; 
-		Cursor c = mDb.rawQuery(sql);
+				" Group by b." + KEY_ROWID;
 		SynchronizedStatement moveStmt = null;
-		try {
+		try (Cursor c = mDb.rawQuery(sql)) {
 			// Get the column indexes we need
 			final int bookCol = c.getColumnIndexOrThrow(KEY_ROWID);
 			final int posCol = c.getColumnIndexOrThrow("pos");
@@ -3801,7 +3760,6 @@ public class CatalogueDBAdapter implements AutoCloseable {
 				}
 			}			
 		} finally {
-			c.close();
 			if (moveStmt != null)
 				moveStmt.close();
 		}
@@ -3892,18 +3850,14 @@ public class CatalogueDBAdapter implements AutoCloseable {
      */
     private ArrayList<String> fetchArray(String sql, String columnName) {
 		ArrayList<String> list = new ArrayList<>();
-
-		Cursor cursor = mDb.rawQuery(sql, new String[]{});
-		try {
+		try (Cursor cursor = mDb.rawQuery(sql, new String[]{})) {
 			int column = cursor.getColumnIndexOrThrow(columnName);
 			while (cursor.moveToNext()) {
 				String name = cursor.getString(column);
 				list.add(name);
 			}
 			return list;			
-		} finally {
-			cursor.close();			
-		}    	
+		}
     }
 
     /**
@@ -4021,7 +3975,6 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	 */
 	public void ftsSendBooks(BooksCursor books, SynchronizedStatement stmt) {
 
-		// Get a rowview for the cursor
 		final BooksRowView book = books.getRowView();
 		// Build the SQL to get author details for a book.
 		// ... all authors
@@ -4055,62 +4008,47 @@ public class CatalogueDBAdapter implements AutoCloseable {
 			seriesText.setLength(0);
 			titleText.setLength(0);
 			// Get list of authors
-			{
-				Cursor c = mDb.rawQuery(authorBaseSql + book.getId());
-				try {
-					// Get column indexes, if not already got
-					if (colGivenNames < 0)
-						colGivenNames = c.getColumnIndex(KEY_GIVEN_NAMES);
-					if (colFamilyName < 0)
-						colFamilyName = c.getColumnIndex(KEY_FAMILY_NAME);
-					// Append each author
-					while (c.moveToNext()) {
-						authorText.append(c.getString(colGivenNames));
-						authorText.append(" ");
-						authorText.append(c.getString(colFamilyName));
-						authorText.append(";");
-					}
-				} finally {
-					c.close();
+			try (Cursor c = mDb.rawQuery(authorBaseSql + book.getId())) {
+				// Get column indexes, if not already got
+				if (colGivenNames < 0)
+					colGivenNames = c.getColumnIndex(KEY_GIVEN_NAMES);
+				if (colFamilyName < 0)
+					colFamilyName = c.getColumnIndex(KEY_FAMILY_NAME);
+				// Append each author
+				while (c.moveToNext()) {
+					authorText.append(c.getString(colGivenNames));
+					authorText.append(" ");
+					authorText.append(c.getString(colFamilyName));
+					authorText.append(";");
 				}
 			}
 
 			// Get list of series
-			{
-				Cursor c = mDb.rawQuery(seriesBaseSql + book.getId());
-				try {
-					// Get column indexes, if not already got
-					if (colSeriesInfo < 0)
-						colSeriesInfo = c.getColumnIndex("seriesInfo");
-					// Append each series
-					while (c.moveToNext()) {
-						seriesText.append(c.getString(colSeriesInfo));
-						seriesText.append(";");
-					}
-				} finally {
-					c.close();
-				}				
+			try (Cursor c = mDb.rawQuery(seriesBaseSql + book.getId())) {
+				// Get column indexes, if not already got
+				if (colSeriesInfo < 0)
+					colSeriesInfo = c.getColumnIndex("seriesInfo");
+				// Append each series
+				while (c.moveToNext()) {
+					seriesText.append(c.getString(colSeriesInfo));
+					seriesText.append(";");
+				}
 			}
 
 			// Get list of anthology data (author and title)
-			{
-				Cursor c = mDb.rawQuery(anthologyBaseSql + book.getId());
-				try {
-					// Get column indexes, if not already got
-					if (colAnthologyAuthorInfo < 0)
-						colAnthologyAuthorInfo = c.getColumnIndex("anthologyAuthorInfo");
-					if (colAnthologyTitleInfo < 0)
-						colAnthologyTitleInfo = c.getColumnIndex("anthologyTitleInfo");
-					// Append each series
-					while (c.moveToNext()) {
-						authorText.append(c.getString(colAnthologyAuthorInfo));
-						authorText.append(";");
-						titleText.append(c.getString(colAnthologyTitleInfo));
-						titleText.append(";");
-					}
-				} finally {
-					c.close();
-				}				
+			try (Cursor c = mDb.rawQuery(anthologyBaseSql + book.getId())) {
+				// Get column indexes, if not already got
+				if (colAnthologyAuthorInfo < 0)
+					colAnthologyAuthorInfo = c.getColumnIndex("anthologyAuthorInfo");
+				if (colAnthologyTitleInfo < 0)
+					colAnthologyTitleInfo = c.getColumnIndex("anthologyTitleInfo");
+				// Append each series
+				while (c.moveToNext()) {
+					authorText.append(c.getString(colAnthologyAuthorInfo));
+					authorText.append(";");
+					titleText.append(c.getString(colAnthologyTitleInfo));
+					titleText.append(";");
+				}
 			}
 
 			// Set the parameters and call
@@ -4448,12 +4386,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
 	
 	public long getBookCount() {
 		String sql = "select Count(*) From " + DatabaseDefinitions.TBL_BOOKS.ref();
-		Cursor c = mDb.rawQuery(sql);
-		try {
+		;
+		try (Cursor c = mDb.rawQuery(sql)) {
 			c.moveToFirst();
 			return c.getLong(0);
-		} finally {
-			c.close();
 		}
 	}
 	

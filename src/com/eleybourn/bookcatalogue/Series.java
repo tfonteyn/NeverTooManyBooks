@@ -150,7 +150,12 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 
 	/** Pattern used to recognize series numbers embedded in names */
 	private static Pattern mSeriesPat = null;
-	private static final String mSeriesNumberPrefixes = BookCatalogueApp.getResourceString(R.string.series_number_prefixes);
+
+    private static final String SERIES_REGEX_SUFFIX =
+            BookCatalogueApp.getResourceString(R.string.series_number_prefixes)
+            + "\\s*([0-9\\.\\-]+|[ivxlcm\\.\\-]+)\\s*$";
+	private static final String SERIES_REGEX_1 = "^\\s*"            + SERIES_REGEX_SUFFIX;
+	private static final String SERIES_REGEX_2 = "(.*?)(,|\\s)\\s*" + SERIES_REGEX_SUFFIX;
 
 	/**
 	 * Try to extract a series from a book title.
@@ -167,10 +172,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 				details.name = title.substring((last+1), close);
 				details.startChar = last;
 				if (mSeriesPat == null) {
-					// NOTE: Changes to this pattern should be mirrored in cleanupSeriesPosition().
-					String seriesExp = "(.*?)(,|\\s)\\s*" + mSeriesNumberPrefixes + "\\s*([0-9\\.\\-]+|[ivxlcm\\.\\-]+)\\s*$";
-					// Compile and get a reference to a Pattern object. <br>  
-					mSeriesPat = Pattern.compile(seriesExp, Pattern.CASE_INSENSITIVE|Pattern.UNICODE_CASE);
+					mSeriesPat = Pattern.compile(SERIES_REGEX_2, Pattern.CASE_INSENSITIVE|Pattern.UNICODE_CASE);
 				}
 				Matcher matcher = mSeriesPat.matcher(details.name);
 				if (matcher.find()) {
@@ -197,10 +199,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 		position = position.trim();
 
 		if (mSeriesPosCleanupPat == null) {
-			// NOTE: Changes to this pattern should be mirrored in findSeries().
-			String seriesExp = "^\\s*" + mSeriesNumberPrefixes + "\\s*([0-9\\.\\-]+|[ivxlcm\\.\\-]+)\\s*$";
-			// Compile and get a reference to a Pattern object. <br>
-			mSeriesPosCleanupPat = Pattern.compile(seriesExp, Pattern.CASE_INSENSITIVE|Pattern.UNICODE_CASE);
+			mSeriesPosCleanupPat = Pattern.compile(SERIES_REGEX_1, Pattern.CASE_INSENSITIVE|Pattern.UNICODE_CASE);
 		}
 		if (mSeriesIntegerPat == null) {
 			String numericExp = "^[0-9]+$";

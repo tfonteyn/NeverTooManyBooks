@@ -745,14 +745,12 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     public ArrayList<String> getPublishers() {
         if (mPublishers == null) {
             mPublishers = new ArrayList<>();
-            Cursor publisher_cur = mDbHelper.fetchAllPublishers();
-            final int col = publisher_cur.getColumnIndexOrThrow(ColumnNames.KEY_PUBLISHER);
-            try {
+
+            try (Cursor publisher_cur = mDbHelper.fetchAllPublishers()) {
+                final int col = publisher_cur.getColumnIndexOrThrow(ColumnNames.KEY_PUBLISHER);
                 while (publisher_cur.moveToNext()) {
                     mPublishers.add(publisher_cur.getString(col));
                 }
-            } finally {
-                publisher_cur.close();
             }
         }
         return mPublishers;
@@ -768,14 +766,12 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     public ArrayList<String> getGenres() {
         if (mGenres == null) {
             mGenres = new ArrayList<>();
-            Cursor genre_cur = mDbHelper.fetchAllGenres("");
-            final int col = genre_cur.getColumnIndexOrThrow(ColumnNames.KEY_ROWID);
-            try {
+
+            try (Cursor genre_cur = mDbHelper.fetchAllGenres("")) {
+                final int col = genre_cur.getColumnIndexOrThrow(ColumnNames.KEY_ROWID);
                 while (genre_cur.moveToNext()) {
                     mGenres.add(genre_cur.getString(col));
                 }
-            } finally {
-                genre_cur.close();
             }
         }
         return mGenres;
@@ -791,17 +787,15 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     public ArrayList<String> getLanguages() {
         if (mLanguages == null) {
             mLanguages = new ArrayList<>();
-            Cursor cur = mDbHelper.fetchAllLanguages("");
-            final int col = cur.getColumnIndexOrThrow(ColumnNames.KEY_ROWID);
-            try {
+
+            try (Cursor cur = mDbHelper.fetchAllLanguages("")) {
+                final int col = cur.getColumnIndexOrThrow(ColumnNames.KEY_ROWID);
                 while (cur.moveToNext()) {
                     String s = cur.getString(col);
                     if (s != null && !s.isEmpty()) {
                         mLanguages.add(cur.getString(col));
                     }
                 }
-            } finally {
-                cur.close();
             }
         }
         return mLanguages;

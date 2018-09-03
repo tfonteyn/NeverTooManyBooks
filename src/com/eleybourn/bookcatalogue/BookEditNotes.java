@@ -55,20 +55,16 @@ public class BookEditNotes extends BookEditFragmentAbstract implements OnPartial
 	 */
 	private ArrayList<String> getLocations() {
 		ArrayList<String> location_list = new ArrayList<>();
-		Cursor location_cur = mDbHelper.fetchAllLocations();
-		try {
+		try(Cursor location_cur = mDbHelper.fetchAllLocations()) {
 			while (location_cur.moveToNext()) {
 				String location = location_cur.getString(location_cur.getColumnIndexOrThrow(ColumnNames.KEY_LOCATION));
 				try {
 					if (location.length() > 2) {
 						location_list.add(location);
 					}
-				} catch (NullPointerException e) {
-					// do nothing
+				} catch (NullPointerException ignore) {
 				}
 			}
-		} finally {
-			location_cur.close();
 		}
 		return location_list;
 	}

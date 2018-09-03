@@ -730,8 +730,7 @@ public class GoodreadsManager {
 
             // Build the list of shelves that we have in the local database for the book
             int exclusiveCount = 0;
-            Cursor shelfCsr = dbHelper.getAllBookBookshelvesForGoodreadsCursor(bookId);
-            try {
+            try(Cursor shelfCsr = dbHelper.getAllBookBookshelvesForGoodreadsCursor(bookId)) {
                 int shelfCol = shelfCsr.getColumnIndexOrThrow(KEY_BOOKSHELF);
                 // Collect all shelf names for this book
                 while (shelfCsr.moveToNext()) {
@@ -744,8 +743,6 @@ public class GoodreadsManager {
                         exclusiveCount++;
                     }
                 }
-            } finally {
-                shelfCsr.close();
             }
 
             // If no exclusive shelves are specified, then add pseudo-shelf to match goodreads because

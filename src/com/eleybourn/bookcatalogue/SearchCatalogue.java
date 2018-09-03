@@ -193,9 +193,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 		//		""/*searchText*/, ""/*loaned_to*/, ""/*seriesName*/);	
 
 		// Get the cursor
-		Cursor c = null;
-		try {
-			c = mDbHelper.searchFts(author, title, criteria);
+		try(Cursor c = mDbHelper.searchFts(author, title, criteria)) {
 			if (c == null) {
 				// Null return means searchFts thought parameters were effectively blank
 				tmpMsg = "(enter search criteria)";
@@ -207,12 +205,6 @@ public class SearchCatalogue extends BookCatalogueActivity {
 			}				
 		} catch (Exception e) {
 			tmpMsg = e.getMessage();
-		} finally {
-			// Cleanup cursor
-			try {
-				if (c != null)
-					c.close();					
-			} catch (Exception ignored) {}
 		}
 		final String message = tmpMsg;
 

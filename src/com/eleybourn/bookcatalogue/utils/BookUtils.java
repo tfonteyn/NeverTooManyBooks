@@ -45,6 +45,9 @@ import java.io.File;
  * @author pjw
  */
 public class BookUtils {
+
+	private static final String EXTRA_BOOK_DATA = "bookData";
+
 	private BookUtils() {
 	}
 
@@ -61,8 +64,7 @@ public class BookUtils {
 
 		Intent i = new Intent(activity, BookEdit.class);
 		Bundle book = new Bundle();
-		try {
-            Cursor thisBook = db.fetchBookById(rowId);
+		try(Cursor thisBook = db.fetchBookById(rowId)) {
 			thisBook.moveToFirst();
 			book.putString(ColumnNames.KEY_TITLE, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_TITLE)));
 			book.putString(ColumnNames.KEY_ISBN, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_ISBN)));
@@ -85,7 +87,7 @@ public class BookUtils {
 			book.putSerializable(ColumnNames.KEY_AUTHOR_ARRAY, db.getBookAuthorList(rowId));
 			book.putSerializable(ColumnNames.KEY_SERIES_ARRAY, db.getBookSeriesList(rowId));
 			
-			i.putExtra("bookData", book);
+			i.putExtra(EXTRA_BOOK_DATA, book);
 			activity.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_MANUALLY);
 		} catch (CursorIndexOutOfBoundsException e) {
 			Toast.makeText(activity, R.string.unknown_error, Toast.LENGTH_LONG).show();
@@ -127,14 +129,21 @@ public class BookUtils {
 			Toast.makeText(context, R.string.this_option_is_not_available_until_the_book_is_saved, Toast.LENGTH_LONG).show();
 			return;
 		}
-		
-		Cursor thisBook = dbHelper.fetchBookById(rowId);
-		thisBook.moveToFirst();
-		String title = thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_TITLE));
-		double rating = thisBook.getDouble(thisBook.getColumnIndex(ColumnNames.KEY_RATING));
+
+		String title;
+		double rating;
 		String ratingString = "";
-		String author = thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_AUTHOR_FORMATTED_GIVEN_FIRST));
-		String series = thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_SERIES_FORMATTED));
+		String author;
+		String series;
+
+		try(Cursor thisBook = dbHelper.fetchBookById(rowId)) {
+			thisBook.moveToFirst();
+			title = thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_TITLE));
+			rating = thisBook.getDouble(thisBook.getColumnIndex(ColumnNames.KEY_RATING));
+			author = thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_AUTHOR_FORMATTED_GIVEN_FIRST));
+			series = thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_SERIES_FORMATTED));
+		}
+
 		File image = ImageUtils.fetchThumbnailByUuid(dbHelper.getBookUuid(rowId));
 
 		if (!series.isEmpty()) {

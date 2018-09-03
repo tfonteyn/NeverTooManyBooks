@@ -467,11 +467,8 @@ public class FastScroller {
 			}
 		}
 
-		if ( (mSectionTextV2 != null ) || (mSectionTextV1 != null && mSectionTextV1.length() > 0)) {
-			mDrawOverlay = true;    //(mSectionText.length() != 1 || mSectionText.charAt(0) != ' ') && sectionIndex < sections.length;
-		} else {
-			mDrawOverlay = false;
-		}
+        //(mSectionText.length() != 1 || mSectionText.charAt(0) != ' ') && sectionIndex < sections.length;
+        mDrawOverlay = (mSectionTextV2 != null) || (mSectionTextV1 != null && mSectionTextV1.length() > 0);
 	}
 
     private void cancelFling() {

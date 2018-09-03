@@ -54,6 +54,8 @@ import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TI
 
 public class StandardDialogs {
 
+    private static final String UNKNOWN = "<Unknown>";
+
     /**
      * Show a dialog asking if unsaved edits should be ignored. Finish if so.
      */
@@ -182,24 +184,19 @@ public class StandardDialogs {
         ArrayList<Author> authorList = dbHelper.getBookAuthorList(id);
 
         String title;
-        Cursor cur = dbHelper.fetchBookById(id);
-        try {
+        try(Cursor cur = dbHelper.fetchBookById(id)) {
             if (cur == null || !cur.moveToFirst())
                 return R.string.unable_to_find_book;
 
             title = cur.getString(cur.getColumnIndex(KEY_TITLE));
             if (title == null || title.isEmpty())
-                title = "<Unknown>";
-
-        } finally {
-            if (cur != null)
-                cur.close();
+                title = UNKNOWN;
         }
 
         // Format the list of authors nicely
         StringBuilder authors = new StringBuilder();
         if (authorList.size() == 0)
-            authors.append("<Unknown>");
+            authors.append(UNKNOWN);
         else {
             authors.append(authorList.get(0).getDisplayName());
             for (int i = 1; i < authorList.size() - 1; i++) {

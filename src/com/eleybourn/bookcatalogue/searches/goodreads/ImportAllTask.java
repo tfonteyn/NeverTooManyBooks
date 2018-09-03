@@ -67,6 +67,7 @@ import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiH
  */
 class ImportAllTask extends GenericTask {
 	private static final long serialVersionUID = -3535324410982827612L;
+	private static final String NOCOVER = "nocover";
 
 	/** Current position in entire list of reviews */
 	private int mPosition;
@@ -270,16 +271,13 @@ class ImportAllTask extends GenericTask {
 	private String translateBookshelf(CatalogueDBAdapter db, String grShelfName) {
 		if (mBookshelfLookup == null) {
 			mBookshelfLookup = new Hashtable<>();
-			Cursor c = db.fetchAllBookshelves();
-			try {
+			;
+			try(Cursor c = db.fetchAllBookshelves()) {
 				int bsCol = c.getColumnIndex(ColumnNames.KEY_BOOKSHELF);
 				while (c.moveToNext()) {
 					String name = c.getString(bsCol);
 					mBookshelfLookup.put(GoodreadsManager.canonicalizeBookshelfName(name), name);
 				}
-			} finally {
-				if (c != null)
-					c.close();
 			}
 		}
 		if (mBookshelfLookup.containsKey(grShelfName.toLowerCase())) {
@@ -421,9 +419,9 @@ class ImportAllTask extends GenericTask {
         	addStringIfNonBlank(review, ListReviewsFieldNames.ADDED, book, DOM_ADDED_DATE.name);
         	// Also fetch thumbnail if add
         	String thumbnail;
-        	if (review.containsKey(ListReviewsFieldNames.LARGE_IMAGE) && !review.getString(ListReviewsFieldNames.LARGE_IMAGE).toLowerCase().contains("nocover")) {
+        	if (review.containsKey(ListReviewsFieldNames.LARGE_IMAGE) && !review.getString(ListReviewsFieldNames.LARGE_IMAGE).toLowerCase().contains(NOCOVER)) {
         		thumbnail = review.getString(ListReviewsFieldNames.LARGE_IMAGE);
-        	} else if (review.containsKey(ListReviewsFieldNames.SMALL_IMAGE) && !review.getString(ListReviewsFieldNames.SMALL_IMAGE).toLowerCase().contains("nocover")) {
+        	} else if (review.containsKey(ListReviewsFieldNames.SMALL_IMAGE) && !review.getString(ListReviewsFieldNames.SMALL_IMAGE).toLowerCase().contains(NOCOVER)) {
         		thumbnail = review.getString(ListReviewsFieldNames.SMALL_IMAGE);        		
         	} else {
         		thumbnail = null;

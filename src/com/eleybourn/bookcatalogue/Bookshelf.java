@@ -74,21 +74,18 @@ public class Bookshelf extends BookCatalogueListActivity
         // base the layout and the query on the sort order
         int layout = R.layout.row_bookshelf;
 
-        // Get all of the rows from the database and create the item list
-        //FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
-        //FIXME Use the new {@link android.content.CursorLoader} class with {@link LoaderManager} instead
-
-        Cursor bookshelfCursor = mDbHelper.fetchAllBookshelves();
-        startManagingCursor(bookshelfCursor);
-
         // Create an array to specify the fields we want to display in the list
         String[] from = new String[]{ColumnNames.KEY_BOOKSHELF, ColumnNames.KEY_ROWID};
 
         // and an array of the fields we want to bind those fields to (in this case just text1)
         int[] to = new int[]{R.id.row_bookshelf};
 
-        // Now create a simple cursor adapter and set it to display
+        // Get all of the rows from the database and create the item list
         //FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
+        //FIXME Use the new {@link android.content.CursorLoader} class with {@link LoaderManager} instead
+        Cursor bookshelfCursor = mDbHelper.fetchAllBookshelves();
+        startManagingCursor(bookshelfCursor);
+        // Now create a simple cursor adapter and set it to display
         SimpleCursorAdapter books = new SimpleCursorAdapter(this, layout, bookshelfCursor, from, to);
         setListAdapter(books);
     }

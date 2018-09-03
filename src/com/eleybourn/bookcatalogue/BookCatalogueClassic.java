@@ -1,7 +1,7 @@
 /*
  * @copyright 2010 Evan Leybourn
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -81,14 +81,14 @@ import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TI
  * A book catalogue application that integrates with Google Books.
  */
 public class BookCatalogueClassic extends ExpandableListActivity {
-	
+
 	// Target size of a thumbnail in a list (bbox dim)
 	private static final int LIST_THUMBNAIL_SIZE=60;
-		
+
 	private CatalogueDBAdapter mDbHelper;
-	private static final int SORT_BY_AUTHOR_EXPANDED = MenuHandler.FIRST + 1; 
+	private static final int SORT_BY_AUTHOR_EXPANDED = MenuHandler.FIRST + 1;
 	private static final int SORT_BY_AUTHOR_COLLAPSED = MenuHandler.FIRST + 2;
-	private static final int SORT_BY = MenuHandler.FIRST + 3; 
+	private static final int SORT_BY = MenuHandler.FIRST + 3;
 	private static final int DELETE_ID = MenuHandler.FIRST + 7;
 	private static final int EDIT_BOOK = MenuHandler.FIRST + 10;
 	private static final int EDIT_BOOK_NOTES = MenuHandler.FIRST + 11;
@@ -97,17 +97,17 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	private static final int EDIT_AUTHOR_ID = MenuHandler.FIRST + 16;
 	private static final int EDIT_SERIES_ID = MenuHandler.FIRST + 17;
 	private static final int EDIT_BOOK_SEND_TO_GR = MenuHandler.FIRST + 19;
-	
+
 	private String bookshelf = "";
 	private ArrayAdapter<String> spinnerAdapter;
 	private Spinner mBookshelfText;
 
 	private SharedPreferences mPrefs;
 	private int sort = 0;
-	private static final int SORT_AUTHOR = 0; 
-	private static final int SORT_TITLE = 1; 
-	private static final int SORT_SERIES = 2; 
-	private static final int SORT_LOAN = 3; 
+	private static final int SORT_AUTHOR = 0;
+	private static final int SORT_TITLE = 1;
+	private static final int SORT_SERIES = 2;
+	private static final int SORT_LOAN = 3;
 	private static final int SORT_UNREAD = 4;
 	private static final int SORT_GENRE = 5;
 	private static final int SORT_AUTHOR_GIVEN = 6;
@@ -121,12 +121,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 
 	private String search_query = "";
 	// These are the states that get saved onPause
-	private static final String STATE_SORT = "state_sort"; 
+	private static final String STATE_SORT = "state_sort";
 	private static final String STATE_CURRENT_GROUP_COUNT = "state_current_group_count";
-	private static final String STATE_CURRENT_GROUP = "state_current_group"; 
+	private static final String STATE_CURRENT_GROUP = "state_current_group";
 
-	/** 
-	 * Called when the activity is first created. 
+	/**
+	 * Called when the activity is first created.
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -140,7 +140,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		try {
 			super.onCreate(savedInstanceState);
 
-			// In V4.0 the startup activity is StartupActivity, but we need to deal with old icons. 
+			// In V4.0 the startup activity is StartupActivity, but we need to deal with old icons.
 			// So we check the intent.
 			/* FIXME ? is this not done already ? -> check!
 			   TODO: Consider renaming 'BookCatalogue' activity to 'BookCatalogueClassic' and
@@ -160,7 +160,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				}
 			}
 
-			// Extract the sort type from the bundle. getInt will return 0 if there is no attribute 
+			// Extract the sort type from the bundle. getInt will return 0 if there is no attribute
 			// sort (which is exactly what we want)
 			try {
 				mPrefs = getSharedPreferences("bookCatalogue", MODE_PRIVATE);
@@ -175,7 +175,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			setContentView(R.layout.list_authors);
 			mDbHelper = new CatalogueDBAdapter(this);
 			mDbHelper.open();
-			
+
 			// Did the user search
 			Intent intent = getIntent();
 			if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -188,7 +188,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			if (search_query == null || search_query.equals(".")) {
 				search_query = "";
 			}
-			
+
 			bookshelf();
 			//fillData();
 
@@ -199,43 +199,43 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			finish();
 		}
 	}
-	
+
 	/**
-	 * Setup the bookshelf spinner. This function will also call fillData when 
-	 * complete having loaded the appropriate bookshelf. 
+	 * Setup the bookshelf spinner. This function will also call fillData when
+	 * complete having loaded the appropriate bookshelf.
 	 */
 	private void bookshelf() {
-		// Setup the Bookshelf Spinner 
+		// Setup the Bookshelf Spinner
 		mBookshelfText = findViewById(R.id.bookshelf_name);
 		spinnerAdapter = new ArrayAdapter<>(this, R.layout.spinner_frontpage);
 		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mBookshelfText.setAdapter(spinnerAdapter);
-		
+
 		// Add the default All Books bookshelf
 		int pos = 0;
 		int bspos = pos;
-		spinnerAdapter.add(getString(R.string.all_books)); 
+		spinnerAdapter.add(getString(R.string.all_books));
 		pos++;
-		
-		Cursor bookshelves = mDbHelper.fetchAllBookshelves();
-		if (bookshelves.moveToFirst()) { 
-			do {
-				String this_bookshelf = bookshelves.getString(1);
-				if (this_bookshelf.equals(bookshelf)) {
-					bspos = pos;
+
+		try (Cursor bookshelves = mDbHelper.fetchAllBookshelves()) {
+			if (bookshelves.moveToFirst()) {
+				do {
+					String this_bookshelf = bookshelves.getString(1);
+					if (this_bookshelf.equals(bookshelf)) {
+						bspos = pos;
+					}
+					pos++;
+					spinnerAdapter.add(this_bookshelf);
 				}
-				pos++;
-				spinnerAdapter.add(this_bookshelf); 
-			} 
-			while (bookshelves.moveToNext()); 
-		} 
-		bookshelves.close(); // close the cursor
+				while (bookshelves.moveToNext());
+			}
+		}
 		// Set the current bookshelf. We use this to force the correct bookshelf after
-		// the state has been restored. 
+		// the state has been restored.
 		mBookshelfText.setSelection(bspos);
-		
+
 		/*
-		 * This is fired whenever a bookshelf is selected. It is also fired when the 
+		 * This is fired whenever a bookshelf is selected. It is also fired when the
 		 * page is loaded with the default (or current) bookshelf.
 		 */
 		mBookshelfText.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -254,13 +254,13 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				ed.apply();
 				fillData();
 			}
-			
+
 			public void onNothingSelected(AdapterView<?> parentView) {
 				// Do Nothing
-				
+
 			}
 		});
-		
+
 		ImageView mBookshelfDown = findViewById(R.id.bookshelf_down);
 		mBookshelfDown.setOnClickListener(new OnClickListener() {
 			@Override
@@ -269,7 +269,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				return;
 			}
 		});
-		
+
 		TextView mBookshelfNum = findViewById(R.id.bookshelf_num);
 		mBookshelfNum.setOnClickListener(new OnClickListener() {
 			@Override
@@ -278,24 +278,24 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				return;
 			}
 		});
-		
+
 	}
-	
+
 	/*
 	 * Class that handles list/view specific initializations etc.
 	 * The member variable mViewManager is set early in object
 	 * initialization of the containing class.
-	 * 
+	 *
 	 * All child views are assumed to have books in them and a single
 	 * method call is made to bind a child view.
 	 */
 	private abstract class ViewManager {
 		int mGroupIdColumnIndex;
-		int mLayout = -1;			// Top level resource I
+		int mLayout = -1;		// Top level resource I
 		int mChildLayout = -1;	// Child resource ID
 		Cursor mCursor = null;	// Top level cursor
 		String[] mFrom = null;	// Source fields for top level resource
-		int[] mTo = null;			// Dest field resource IDs for top level
+		int[] mTo = null;		// Dest field resource IDs for top level
 		// Methods to 'get' list/view related items
 		public int getLayout() { return mLayout; }
 
@@ -313,9 +313,9 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		public String[] getFrom() { return mFrom; }
 		public int[] getTo() { return mTo; }
 		/**
-		 * Method to return the group cursor column that contains text that can be used 
+		 * Method to return the group cursor column that contains text that can be used
 		 * to derive the section name used by the FastScroller overlay.
-		 * 
+		 *
 		 * @return	column number
 		 */
 		abstract public int getSectionNameColumn();
@@ -360,25 +360,25 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		/**
 		 * Adapter for the the expandable list of books. Uses ViewManager to manage
 		 * cursor.
-		 * 
+		 *
 		 * @author Philip Warner
 		 */
 		public class BasicBookListAdapter extends ResourceCursorTreeAdapter implements SectionIndexer {
 
 			/** A local Inflater for convenience */
 			final LayoutInflater mInflater;
-			
+
 			/**
-			 * 
+			 *
 			 * Pass the parameters directly to the overridden function and
 			 * create an Inflater for use later.
-			 * 
+			 *
 			 * Note: It would be great to pass a ViewManager to the constructor
-			 * as an instance variable, but the 'super' initializer calls 
+			 * as an instance variable, but the 'super' initializer calls
 			 * getChildrenCursor which needs the ViewManager...which can not be set
 			 * before the call to 'super'...so we use an instance variable in the
 			 * containing class.
-			 * 
+			 *
 			 * @param context
 			 */
 			private int[] mFromCols = null;
@@ -392,7 +392,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 
 			/**
 			 * Bind the passed 'from' text fields to the 'to' fields.
-			 * 
+			 *
 			 * If anything more fancy is needed, we probably need to implement it
 			 * in the subclass.
 			 */
@@ -419,7 +419,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		            }
 		        }
 			}
-			
+
 			/**
 			 * Override the getChildrenCursor. This runs the SQL to extract the titles per author
 			 */
@@ -443,7 +443,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				// BookCatalogue.this.startManagingCursor(csc);
 
 				// TODO FIND A BETTER CURSOR MANAGEMENT SOLUTION!
-				// THIS CAUSES CRASH IN HONEYCOMB when viewing book details then clicking 'back', so we have 
+				// THIS CAUSES CRASH IN HONEYCOMB when viewing book details then clicking 'back', so we have
 				// overridden startManagingCursor to only close cursors in onDestroy().
 				BookCatalogueClassic.this.startManagingCursor(children);
 				return children;
@@ -461,8 +461,8 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				} else {
 					info.show = (info.view != null);
 					if (info.show)
-						info.view.setVisibility(View.VISIBLE);						
-				}				
+						info.view.setVisibility(View.VISIBLE);
+				}
 			}
 			/**
 			 * Setup the related info record based on actual View contents
@@ -475,8 +475,8 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				} else {
 					info.show = (info.view != null);
 					if (info.show)
-						info.view.setVisibility(View.VISIBLE);						
-				}				
+						info.view.setVisibility(View.VISIBLE);
+				}
 			}
 
 			/**
@@ -498,12 +498,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 
 				return v;
 			}
-			
+
 			/**
-			 * Rather than having setText/setImage etc, or using messy from/to fields, 
+			 * Rather than having setText/setImage etc, or using messy from/to fields,
 			 * we just bind child views using a Holder object and the cursor RowView.
 			 */
-			@Override 
+			@Override
 			protected void bindChildView(View view, Context context, Cursor origCursor, boolean isLastChild) {
 				BookHolder holder = ViewTagger.getTag(view, R.id.TAG_HOLDER);
 				final BooksCursor snapshot = (BooksCursor) origCursor;
@@ -534,14 +534,14 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 						holder.read.view.setImageResource(R.drawable.btn_check_buttonless_off);
 					}
 				}
-				
+
 				if (holder.series.show) {
 					String series = rowView.getSeries();
 					if (sort == SORT_SERIES || series.isEmpty()) {
-						holder.series.view.setText("");						
+						holder.series.view.setText("");
 					} else {
 						holder.series.view.setText(getResources().getString(R.string.brackets, series));
-					}					
+					}
 				}
 
 				if (holder.publisher.show)
@@ -553,7 +553,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			 */
 			private void regenGroups() {
 				setGroupCursor(newGroupCursor());
-				notifyDataSetChanged();	
+				notifyDataSetChanged();
 				// Reset the scroller, just in case
 				FastScrollExpandableListView fselv = (FastScrollExpandableListView)BookCatalogueClassic.this.getExpandableListView();
 				fselv.setFastScrollEnabled(false);
@@ -611,9 +611,9 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	private class TitleViewManager extends ViewManager {
 		TitleViewManager() {
 			mLayout = R.layout.row_authors;
-			mChildLayout = R.layout.row_books; 
+			mChildLayout = R.layout.row_books;
 			mFrom = new String[]{KEY_ROWID};
-			mTo = new int[]{R.id.row_family};			
+			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
 			if (search_query.isEmpty()) {
@@ -639,7 +639,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return mCursor.getColumnIndex(KEY_ROWID);
 		}
 	}
-	
+
 	/*
 	 * ViewManager for sorting by Author
 	 */
@@ -648,7 +648,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mLayout = R.layout.row_authors;
 			mChildLayout = R.layout.row_authors_books;
 			mFrom = new String[]{KEY_AUTHOR_FORMATTED};
-			mTo = new int[]{R.id.row_family};	
+			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(final Cursor groupCursor) {
 			return mDbHelper.fetchAllBooksByAuthor(groupCursor.getInt(mGroupIdColumnIndex), bookshelf, search_query, false);
@@ -670,7 +670,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return mCursor.getColumnIndex(KEY_AUTHOR_FORMATTED);
 		}
 	}
-	
+
 	/*
 	 * ViewManager for sorting by Author
 	 */
@@ -679,7 +679,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mLayout = R.layout.row_authors;
 			mChildLayout = R.layout.row_authors_books;
 			mFrom = new String[]{KEY_AUTHOR_FORMATTED_GIVEN_FIRST};
-			mTo = new int[]{R.id.row_family};	
+			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
 			return mDbHelper.fetchAllBooksByAuthor(groupCursor.getInt(mGroupIdColumnIndex), bookshelf, search_query, false);
@@ -701,7 +701,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return mCursor.getColumnIndex(KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 		}
 	}
-	
+
 	/*
 	 * ViewManager for sorting by Author
 	 */
@@ -710,7 +710,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mLayout = R.layout.row_authors;
 			mChildLayout = R.layout.row_authors_books;
 			mFrom = new String[]{KEY_AUTHOR_FORMATTED};
-			mTo = new int[]{R.id.row_family};	
+			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
 			return mDbHelper.fetchAllBooksByAuthor(groupCursor.getInt(mGroupIdColumnIndex), bookshelf, search_query, true);
@@ -722,7 +722,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				mCursor = mDbHelper.fetchAllAuthors(bookshelf, true, true);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDbHelper.searchAuthors(search_query, bookshelf, true, true); 
+				mCursor = mDbHelper.searchAuthors(search_query, bookshelf, true, true);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
@@ -741,7 +741,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mLayout = R.layout.row_authors;
 			mChildLayout = R.layout.row_series_books;
 			mFrom = new String[]{KEY_SERIES_NAME};
-			mTo = new int[]{R.id.row_family};	
+			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
 			return mDbHelper.fetchAllBooksBySeries(groupCursor.getString(groupCursor.getColumnIndex(KEY_SERIES_NAME)), bookshelf, search_query);
@@ -768,10 +768,10 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 */
 	private class LoanViewManager extends ViewManager {
 		LoanViewManager() {
-			mLayout = R.layout.row_authors; 
+			mLayout = R.layout.row_authors;
 			mChildLayout = R.layout.row_series_books;
 			mFrom = new String[]{KEY_ROWID};
-			mTo = new int[]{R.id.row_family};	
+			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
 			return mDbHelper.fetchAllBooksByLoan(groupCursor.getString(mGroupIdColumnIndex), search_query);
@@ -789,14 +789,14 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	}
 
 	/*
-	 * ViewManager for sorting by Unread 
+	 * ViewManager for sorting by Unread
 	 */
 	private class UnreadViewManager extends ViewManager {
 		UnreadViewManager() {
-			mLayout = R.layout.row_authors; 
+			mLayout = R.layout.row_authors;
 			mChildLayout = R.layout.row_series_books;
 			mFrom = new String[]{KEY_ROWID};
-			mTo = new int[]{R.id.row_family};	
+			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
 			return mDbHelper.fetchAllBooksByRead(groupCursor.getString(mGroupIdColumnIndex), bookshelf, search_query);
@@ -812,7 +812,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return mCursor.getColumnIndex(KEY_ROWID);
 		}
 	}
-	
+
 	/*
 	 * ViewManager for sorting by Genre
 	 */
@@ -821,7 +821,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mLayout = R.layout.row_authors;
 			mChildLayout = R.layout.row_books;
 			mFrom = new String[]{KEY_ROWID};
-			mTo = new int[]{R.id.row_family};	
+			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
 			if (search_query.isEmpty()) {
@@ -847,7 +847,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return mCursor.getColumnIndex(KEY_ROWID);
 		}
 	}
-	
+
 	/*
 	 * ViewManager for sorting by Genre
 	 */
@@ -856,7 +856,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mLayout = R.layout.row_authors;
 			mChildLayout = R.layout.row_books;
 			mFrom = new String[]{KEY_ROWID};
-			mTo = new int[]{R.id.row_family};	
+			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
 			if (search_query.isEmpty()) {
@@ -882,22 +882,20 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return mCursor.getColumnIndex(KEY_ROWID);
 		}
 	}
-	
+
 	/**
 	 * Build the tree view
 	 */
 	private void fillData() {
 		//check and reset mDbHelper. Avoid leaking cursors. Each one is 1MB (allegedly)!
-		Cursor c = null;
-		try {
-			c = mDbHelper.fetchAllAuthors(bookshelf);
+		// so we're not interested in the Cursor returned, only in the fact that
+		// the db does the work ?? AND that we don't leak the Cursor
+		//FIXME: is there any real reason to run a SELECT and then discard it ??
+		try (Cursor c = mDbHelper.fetchAllAuthors(bookshelf)){
 		} catch (NullPointerException e) {
 			//reset
 			mDbHelper = new CatalogueDBAdapter(this);
 			mDbHelper.open();
-		} finally {
-			if (c != null)
-				c.close();
 		}
 
 		ViewManager vm;
@@ -945,9 +943,9 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			Toast.makeText(this, numResults + " " + this.getResources().getString(R.string.results_found), Toast.LENGTH_LONG).show();
 			this.setTitle(getResources().getString(R.string.search_title) + " - " + search_query);
 		}
-		
+
 		// Instantiate the List Adapter
-		ViewManager.BasicBookListAdapter adapter = vm.newAdapter(this); 
+		ViewManager.BasicBookListAdapter adapter = vm.newAdapter(this);
 
 		// Handle the click event. Do not open, but goto the book edit page
 		ExpandableListView expandableList = getExpandableListView();
@@ -968,18 +966,18 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 					adjustCurrentGroup(groupPosition, -1, false, false);
 			}
 		});
-		
+
 		/* Hide the default expandable icon, and use a different icon (actually the same icon)
 		 * The override is for when changing back from the title view and it has hidden the icon. */
-		Drawable indicator = this.getResources().getDrawable(R.drawable.expander_group); 
+		Drawable indicator = this.getResources().getDrawable(R.drawable.expander_group);
 		expandableList.setGroupIndicator(indicator);
-		
-		setListAdapter(adapter);		
+
+		setListAdapter(adapter);
 		// Force a rebuild of the fast scroller
 		adapterChanged();
 
 		adapter.notifyDataSetChanged();
-		
+
 		gotoCurrentGroup();
 		/* Add number to bookshelf */
 		TextView mBookshelfNumView = findViewById(R.id.bookshelf_num);
@@ -1184,10 +1182,10 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 
 		return super.onPrepareOptionsMenu(menu);
 	}
-	
+
 	/**
 	 * This will be called when a menu item is selected. A large switch statement to
-	 * call the appropriate functions (or other activities) 
+	 * call the appropriate functions (or other activities)
 	 */
 	@SuppressWarnings("EmptyMethod")
 	@Override
@@ -1204,9 +1202,9 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 //			case SORT_BY:
 //				sortOptions();
 //				return true;
-//			}			
+//			}
 //		}
-		
+
 		return super.onMenuItemSelected(featureId, item);
 	}
 
@@ -1217,21 +1215,21 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		try {
 			SharedPreferences.Editor ed = mPrefs.edit();
 			ed.putInt(STATE_CURRENT_GROUP_COUNT, currentGroup.size());
-			
+
 			int i = 0;
 			for (Integer currentValue : currentGroup) {
 				ed.putInt(STATE_CURRENT_GROUP + " " + i, currentValue);
 				i++;
 			}
-			
+
 			ed.apply();
-			
+
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
 		return;
 	}
-	
+
 	/*
 	 * Load Current group from preferences
 	 */
@@ -1268,7 +1266,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	public void gotoCurrentGroup() {
 		try {
 			synchronized(mLoadingGroups) {
-				mLoadingGroups += 1; 
+				mLoadingGroups += 1;
 			}
 			// DEBUG:
 			//System.gc();
@@ -1303,15 +1301,15 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			Logger.logError(e);
 		} finally {
 			synchronized(mLoadingGroups) {
-				mLoadingGroups -= 1; 
+				mLoadingGroups -= 1;
 			}
 		}
 		return;
 	}
-		
+
 	/**
 	 * add / remove items from the current group arrayList
-	 * 
+	 *
 	 * @param pos	The position to add or remove
 	 * @param adj	Adjustment to make (+1/-1 = open/close)
 	 * @param force	If force is true, then it will be always be added (if adj=1), even if it already exists - but moved to the end
@@ -1327,20 +1325,20 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		} else {
 			//it does exist (so is open), so remove from the list if adj=-1
 			if (adj < 0) {
-				currentGroup.remove(index);	
+				currentGroup.remove(index);
 			} else {
 				if (force) {
-					currentGroup.remove(index);	
+					currentGroup.remove(index);
 					currentGroup.add(pos);
 					/* Add the latest position to the preferences */
-				}				
+				}
 			}
 		}
 		collapsed = (currentGroup.size() == 0);
 		if (save)
 			saveCurrentGroup();
 	}
-	
+
 //	/**
 //	 * Expand all Groups
 //	 */
@@ -1357,14 +1355,14 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 //		}
 //		collapsed = false;
 //	}
-	
+
 //	/**
 //	 * Collapse all Author Groups. Passes directly to collapseAll(boolean clearCurrent)
 //	 */
 //	public void collapseAll() {
 //		collapseAll(true);
 //	}
-	
+
 //	/**
 //	 * Collapse all Author Groups
 //	 *
@@ -1388,7 +1386,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 //		}
 //		collapsed = true;
 //	}
-	
+
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
@@ -1430,7 +1428,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			Logger.logError(e);
 		}
 	}
-	
+
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		ExpandableListContextMenuInfo info = (ExpandableListContextMenuInfo) item.getMenuInfo();
@@ -1444,7 +1442,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 					mDbHelper.purgeSeries();
 					fillData();
 				}});
-			if (res != 0) 
+			if (res != 0)
 				Toast.makeText(this, res, Toast.LENGTH_LONG).show();
 			return true;
 
@@ -1489,7 +1487,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 							regenGroups();
 						}});
 					d.editSeries(s);
-				} 
+				}
 				break;
 			}
 		case DELETE_SERIES_ID:
@@ -1499,7 +1497,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 					public void run() {
 						regenGroups();
 					}});
-				break;			
+				break;
 			}
 		case EDIT_AUTHOR_ID:
 			{
@@ -1536,7 +1534,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 //		ed.putInt(STATE_SORT, sortType);
 //		ed.apply();
 //	}
-	
+
 	@Override
 	public boolean onChildClick(ExpandableListView l, View v, int position, int childPosition, long id) {
 		boolean result = super.onChildClick(l, v, position, childPosition, id);
@@ -1544,10 +1542,10 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		BookEdit.openBook(this, id);
 		return result;
 	}
-	
+
 	/**
-	 * Called when an activity launched exits, giving you the requestCode you started it with, 
-	 * the resultCode it returned, and any additional data from it. 
+	 * Called when an activity launched exits, giving you the requestCode you started it with,
+	 * the resultCode it returned, and any additional data from it.
 	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -1563,7 +1561,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 					i.putExtra("isbn", contents);
 					startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_SCAN);
 				} else {
-					fillData();				
+					fillData();
 				}
 			} catch (NullPointerException e) {
 				// This is not a scan result, but a normal return
@@ -1624,7 +1622,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			break;
 		}
 	}
-	
+
 	/**
 	 * Restore UI state when loaded.
 	 */
@@ -1640,7 +1638,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		}
 		super.onResume();
 	}
-	
+
 	/**
 	 * Save UI state changes.
 	 */
@@ -1670,8 +1668,8 @@ public class BookCatalogueClassic extends ExpandableListActivity {
             mTaskQueue = null;
 		}
 		super.onDestroy();
-	} 
-	
+	}
+
 	//@Override
 	//public boolean onKeyDown(int keyCode, KeyEvent event) {
 	//	if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -1691,8 +1689,8 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	//	}
 	//	return super.onKeyDown(keyCode, event);
 	//}
-	
-	
+
+
 	/**
 	 * When the adapter is changed, we need to rebuild the FastScroller.
 	 */
@@ -1705,7 +1703,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 
 	/**
 	 * Accessor used by Robotium test harness.
-	 * 
+	 *
 	 * @param s		New search string.
 	 */
 	public void setSearchQuery(String s) {

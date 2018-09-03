@@ -1,7 +1,7 @@
 /*
-* @copyright 2013 Evan Leybourn
+ * @copyright 2013 Evan Leybourn
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -66,290 +66,294 @@ import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TI
 
 /**
  * Implementation of Exporter that creates a CSV file.
- * 
+ *
  * @author pjw
  */
 public class CsvExporter implements Exporter {
-	private String mLastError;
+    private static final String UTF8 = "utf8";
+    private static final int BUFFER_SIZE = 32768;
+    private String mLastError;
 
-	private static final String UTF8 = "utf8";
-	private static final int BUFFER_SIZE = 32768;
+    public String getLastError() {
+        return mLastError;
+    }
 
-	public String getLastError() {
-		return mLastError;
-	}
+    public boolean export(OutputStream outputStream, Exporter.ExportListener listener, final int backupFlags, Date since) throws IOException {
+        final String UNKNOWN = BookCatalogueApp.getResourceString(R.string.unknown);
+        final String AUTHOR = BookCatalogueApp.getResourceString(R.string.author);
 
-	public boolean export(OutputStream outputStream, Exporter.ExportListener listener, final int backupFlags, Date since) throws IOException {
-		final String UNKNOWN = BookCatalogueApp.getResourceString(R.string.unknown);
-		final String AUTHOR = BookCatalogueApp.getResourceString(R.string.author);
+        /* RELEASE: Handle flags! */
+        int num = 0;
+        if (!StorageUtils.sdCardWritable()) {
+            mLastError = "Export Failed - Could not write to SDCard";
+            return false;
+        }
 
-		/* RELEASE: Handle flags! */
-		int num = 0;
-		if (!StorageUtils.sdCardWritable()) {
-			mLastError = "Export Failed - Could not write to SDCard";
-			return false;			
-		}
+        // Fix the 'since' date, if required
+        if ((backupFlags & Exporter.EXPORT_SINCE) != 0) {
+            if (since == null) {
+                mLastError = "Export Failed - 'since' is null";
+                return false;
+            }
+        } else {
+            since = null;
+        }
 
-		// Fix the 'since' date, if required
-		if ( (backupFlags & Exporter.EXPORT_SINCE) != 0) {
-			if (since == null) {
-				mLastError = "Export Failed - 'since' is null";
-				return false;			
-			}
-		} else {
-			since = null;
-		}
+        // Display startup message
+        listener.onProgress(BookCatalogueApp.getResourceString(R.string.export_starting_ellipsis), 0);
+        boolean displayingStartupMessage = true;
 
-		// Display startup message
-		listener.onProgress(BookCatalogueApp.getResourceString(R.string.export_starting_ellipsis), 0);
-		boolean displayingStartupMessage = true;
+        StringBuilder export = new StringBuilder(
+                '"' + KEY_ROWID + "\"," +            //0
+                        '"' + KEY_AUTHOR_DETAILS + "\"," +    //2
+                        '"' + KEY_TITLE + "\"," +            //4
+                        '"' + KEY_ISBN + "\"," +            //5
+                        '"' + KEY_PUBLISHER + "\"," +        //6
+                        '"' + KEY_DATE_PUBLISHED + "\"," +    //7
+                        '"' + KEY_RATING + "\"," +            //8
+                        '"' + "bookshelf_id\"," +                                //9
+                        '"' + KEY_BOOKSHELF + "\"," +        //10
+                        '"' + KEY_READ + "\"," +                //11
+                        '"' + KEY_SERIES_DETAILS + "\"," +    //12
+                        '"' + KEY_PAGES + "\"," +            //14
+                        '"' + KEY_NOTES + "\"," +            //15
+                        '"' + KEY_LIST_PRICE + "\"," +        //16
+                        '"' + KEY_ANTHOLOGY_MASK + "\"," +        //17
+                        '"' + KEY_LOCATION + "\"," +            //18
+                        '"' + KEY_READ_START + "\"," +        //19
+                        '"' + KEY_READ_END + "\"," +            //20
+                        '"' + KEY_FORMAT + "\"," +            //21
+                        '"' + KEY_SIGNED + "\"," +            //22
+                        '"' + KEY_LOANED_TO + "\"," +            //23
+                        '"' + "anthology_titles" + "\"," +                        //24
+                        '"' + KEY_DESCRIPTION + "\"," +        //25
+                        '"' + KEY_GENRE + "\"," +            //26
+                        '"' + DatabaseDefinitions.DOM_LANGUAGE + "\"," +            //+1
+                        '"' + KEY_DATE_ADDED + "\"," +        //27
+                        '"' + DatabaseDefinitions.DOM_GOODREADS_BOOK_ID + "\"," +        //28
+                        '"' + DatabaseDefinitions.DOM_LAST_GOODREADS_SYNC_DATE + "\"," +        //29
+                        '"' + DatabaseDefinitions.DOM_LAST_UPDATE_DATE + "\"," +        //30
+                        '"' + DatabaseDefinitions.DOM_BOOK_UUID + "\"," +        //31
+                        "\n");
 
-		StringBuilder export = new StringBuilder(
-			'"' + KEY_ROWID + "\"," + 			//0
-			'"' + KEY_AUTHOR_DETAILS + "\"," + 	//2
-			'"' + KEY_TITLE + "\"," + 			//4
-			'"' + KEY_ISBN + "\"," + 			//5
-			'"' + KEY_PUBLISHER + "\"," + 		//6
-			'"' + KEY_DATE_PUBLISHED + "\"," + 	//7
-			'"' + KEY_RATING + "\"," + 			//8
-			'"' + "bookshelf_id\"," + 								//9
-			'"' + KEY_BOOKSHELF + "\"," +		//10
-			'"' + KEY_READ + "\"," +				//11
-			'"' + KEY_SERIES_DETAILS + "\"," +	//12
-			'"' + KEY_PAGES + "\"," + 			//14
-			'"' + KEY_NOTES + "\"," + 			//15
-			'"' + KEY_LIST_PRICE + "\"," + 		//16
-			'"' + KEY_ANTHOLOGY_MASK+ "\"," + 		//17
-			'"' + KEY_LOCATION+ "\"," + 			//18
-			'"' + KEY_READ_START+ "\"," + 		//19
-			'"' + KEY_READ_END+ "\"," + 			//20
-			'"' + KEY_FORMAT+ "\"," + 			//21
-			'"' + KEY_SIGNED+ "\"," + 			//22
-			'"' + KEY_LOANED_TO+ "\"," +			//23
-			'"' + "anthology_titles" + "\"," +						//24 
-			'"' + KEY_DESCRIPTION+ "\"," + 		//25
-			'"' + KEY_GENRE+ "\"," + 			//26
-			'"' + DatabaseDefinitions.DOM_LANGUAGE+ "\"," + 			//+1
-			'"' + KEY_DATE_ADDED+ "\"," + 		//27
-			'"' + DatabaseDefinitions.DOM_GOODREADS_BOOK_ID + "\"," + 		//28
-			'"' + DatabaseDefinitions.DOM_LAST_GOODREADS_SYNC_DATE + "\"," + 		//29
-			'"' + DatabaseDefinitions.DOM_LAST_UPDATE_DATE + "\"," + 		//30
-			'"' + DatabaseDefinitions.DOM_BOOK_UUID + "\"," + 		//31
-			"\n");
-		
-		long lastUpdate = 0;
-		
-		StringBuilder row = new StringBuilder();
+        long lastUpdate = 0;
 
-		CatalogueDBAdapter db;
-		db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-		db.open();		
+        StringBuilder row = new StringBuilder();
 
-		BooksCursor books = db.exportBooks(since);
-		BooksRowView rv = books.getRowView();
+        CatalogueDBAdapter db;
+        db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+        db.open();
 
-		try {
-			final int totalBooks = books.getCount();
+        BooksCursor books = db.exportBooks(since);
+        BooksRowView rv = books.getRowView();
 
-			if (!listener.isCancelled()) {
-	
-				listener.setMax(totalBooks);
+        try {
+            final int totalBooks = books.getCount();
 
-				/* write to the SDCard */
-				BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream, UTF8), BUFFER_SIZE);
-				out.write(export.toString());
-				if (books.moveToFirst()) {
-					do { 
-						num++;
-						long id = books.getLong(books.getColumnIndexOrThrow(KEY_ROWID));
-						// Just get the string from the database and save it. It should be in standard SQL form already.
-						String dateString = "";
-						try {
-							dateString = books.getString(books.getColumnIndexOrThrow(KEY_DATE_PUBLISHED));
-						} catch (Exception e) {
-							//do nothing
-						}
-						// Just get the string from the database and save it. It should be in standard SQL form already.
-						String dateReadStartString = "";
-						try {
-							dateReadStartString = books.getString(books.getColumnIndexOrThrow(KEY_READ_START));
-						} catch (Exception e) {
-							Logger.logError(e);
-							//do nothing
-						}
-						// Just get the string from the database and save it. It should be in standard SQL form already.
-						String dateReadEndString = "";
-						try {
-							dateReadEndString = books.getString(books.getColumnIndexOrThrow(KEY_READ_END));
-						} catch (Exception e) {
-							Logger.logError(e);
-							//do nothing
-						}
-						// Just get the string from the database and save it. It should be in standard SQL form already.
-						String dateAddedString = "";
-						try {
-							dateAddedString = books.getString(books.getColumnIndexOrThrow(KEY_DATE_ADDED));
-						} catch (Exception e) {
-							//do nothing
-						}
+            if (!listener.isCancelled()) {
 
-						int anthology = books.getInt(books.getColumnIndexOrThrow(KEY_ANTHOLOGY_MASK));
-						StringBuilder anthology_titles = new StringBuilder();
-						if (anthology != 0) {
-							Cursor titles = db.fetchAnthologyTitlesByBook(id);
-							try {
-								if (titles.moveToFirst()) {
-									do { 
-										String anth_title = titles.getString(titles.getColumnIndexOrThrow(KEY_TITLE));
-										String anth_author = titles.getString(titles.getColumnIndexOrThrow(KEY_AUTHOR_NAME));
-										anthology_titles.append(anth_title).append(" * ").append(anth_author).append("|");
-									} while (titles.moveToNext()); 
-								}
-							} finally {
-								if (titles != null)
-									titles.close();
-							}
-						}
-						String title = books.getString(books.getColumnIndexOrThrow(KEY_TITLE));
-						// Sanity check: ensure title is non-blank. This has not happened yet, but we 
-						// know if does for author, so completeness suggests making sure all 'required'
-						// fields are non-blank.
-						if (title == null || title.trim().isEmpty())
-							title = UNKNOWN;
+                listener.setMax(totalBooks);
 
-						//Display the selected bookshelves
-						Cursor bookshelves = db.fetchAllBookshelvesByBook(id);
-						StringBuilder bookshelves_id_text = new StringBuilder();
-						StringBuilder bookshelves_name_text = new StringBuilder();
-						while (bookshelves.moveToNext()) {
-							bookshelves_id_text.append(bookshelves.getString(bookshelves.getColumnIndex(KEY_ROWID))).append(BookEditFields.BOOKSHELF_SEPARATOR);
-							bookshelves_name_text.append(ArrayUtils.encodeListItem(bookshelves.getString(bookshelves.getColumnIndex(KEY_BOOKSHELF)), BookEditFields.BOOKSHELF_SEPARATOR)).append(BookEditFields.BOOKSHELF_SEPARATOR);
-						}
-						bookshelves.close();
+                /* write to the SDCard */
+                BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream, UTF8), BUFFER_SIZE);
+                out.write(export.toString());
+                if (books.moveToFirst()) {
+                    do {
+                        num++;
+                        long id = books.getLong(books.getColumnIndexOrThrow(KEY_ROWID));
+                        // Just get the string from the database and save it. It should be in standard SQL form already.
+                        String dateString = "";
+                        try {
+                            dateString = books.getString(books.getColumnIndexOrThrow(KEY_DATE_PUBLISHED));
+                        } catch (Exception e) {
+                            //do nothing
+                        }
+                        // Just get the string from the database and save it. It should be in standard SQL form already.
+                        String dateReadStartString = "";
+                        try {
+                            dateReadStartString = books.getString(books.getColumnIndexOrThrow(KEY_READ_START));
+                        } catch (Exception e) {
+                            Logger.logError(e);
+                            //do nothing
+                        }
+                        // Just get the string from the database and save it. It should be in standard SQL form already.
+                        String dateReadEndString = "";
+                        try {
+                            dateReadEndString = books.getString(books.getColumnIndexOrThrow(KEY_READ_END));
+                        } catch (Exception e) {
+                            Logger.logError(e);
+                            //do nothing
+                        }
+                        // Just get the string from the database and save it. It should be in standard SQL form already.
+                        String dateAddedString = "";
+                        try {
+                            dateAddedString = books.getString(books.getColumnIndexOrThrow(KEY_DATE_ADDED));
+                        } catch (Exception e) {
+                            //do nothing
+                        }
 
-						String authorDetails = ArrayUtils.getAuthorUtils().encodeList( db.getBookAuthorList(id), '|' );
-						// Sanity check: ensure author is non-blank. This HAPPENS. Probably due to constraint failures.
-						if (authorDetails == null || authorDetails.trim().isEmpty())
-							authorDetails = AUTHOR + ", " + UNKNOWN;
+                        int anthology = books.getInt(books.getColumnIndexOrThrow(KEY_ANTHOLOGY_MASK));
+                        StringBuilder anthology_titles = new StringBuilder();
+                        if (anthology != 0) {
+                            try (Cursor titles = db.fetchAnthologyTitlesByBook(id)) {
+                                if (titles.moveToFirst()) {
+                                    do {
+                                        String anth_title = titles.getString(titles.getColumnIndexOrThrow(KEY_TITLE));
+                                        String anth_author = titles.getString(titles.getColumnIndexOrThrow(KEY_AUTHOR_NAME));
+                                        anthology_titles.append(anth_title).append(" * ").append(anth_author).append("|");
+                                    } while (titles.moveToNext());
+                                }
+                            }
+                        }
+                        String title = books.getString(books.getColumnIndexOrThrow(KEY_TITLE));
+                        // Sanity check: ensure title is non-blank. This has not happened yet, but we
+                        // know if does for author, so completeness suggests making sure all 'required'
+                        // fields are non-blank.
+                        if (title == null || title.trim().isEmpty())
+                            title = UNKNOWN;
 
-						String seriesDetails = ArrayUtils.getSeriesUtils().encodeList( db.getBookSeriesList(id), '|' );
+                        //Display the selected bookshelves
+                        StringBuilder bookshelves_id_text = new StringBuilder();
+                        StringBuilder bookshelves_name_text = new StringBuilder();
+                        try (Cursor bookshelves = db.fetchAllBookshelvesByBook(id)) {
+                            while (bookshelves.moveToNext()) {
+                                bookshelves_id_text
+                                        .append(bookshelves.getString(bookshelves.getColumnIndex(KEY_ROWID)))
+                                        .append(BookEditFields.BOOKSHELF_SEPARATOR);
+                                bookshelves_name_text
+                                        .append(ArrayUtils.encodeListItem(bookshelves.getString(bookshelves.getColumnIndex(KEY_BOOKSHELF)), BookEditFields.BOOKSHELF_SEPARATOR))
+                                        .append(BookEditFields.BOOKSHELF_SEPARATOR);
+                            }
+                        }
 
-						row.setLength(0);
-						row.append("\"").append(formatCell(id)).append("\",");
-						row.append("\"").append(formatCell(authorDetails)).append("\",");
-						row.append("\"").append(formatCell(title)).append("\",");
-						row.append("\"").append(formatCell(rv.getIsbn())).append("\",");
-						row.append("\"").append(formatCell(rv.getPublisher())).append("\",");
-						row.append("\"").append(formatCell(dateString)).append("\",");
-						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_RATING)))).append("\",");
-						row.append("\"").append(formatCell(bookshelves_id_text)).append("\",");
-						row.append("\"").append(formatCell(bookshelves_name_text)).append("\",");
-						row.append("\"").append(formatCell(rv.getRead())).append("\",");
-						row.append("\"").append(formatCell(seriesDetails)).append("\",");
-						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_PAGES)))).append("\",");
-						row.append("\"").append(formatCell(rv.getNotes())).append("\",");
-						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_LIST_PRICE)))).append("\",");
-						row.append("\"").append(formatCell(anthology)).append("\",");
-						row.append("\"").append(formatCell(rv.getLocation())).append("\",");
-						row.append("\"").append(formatCell(dateReadStartString)).append("\",");
-						row.append("\"").append(formatCell(dateReadEndString)).append("\",");
-						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_FORMAT)))).append("\",");
-						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_SIGNED)))).append("\",");
-						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_LOANED_TO)) + "")).append("\",");
-						row.append("\"").append(formatCell(anthology_titles.toString())).append("\",");
-						row.append("\"").append(formatCell(rv.getDescription())).append("\",");
-						row.append("\"").append(formatCell(rv.getGenre())).append("\",");
-						row.append("\"").append(formatCell(rv.getLanguage())).append("\",");
-						row.append("\"").append(formatCell(dateAddedString)).append("\",");
-						row.append("\"").append(formatCell(rv.getGoodreadsBookId())).append("\",");
-						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.DOM_LAST_GOODREADS_SYNC_DATE.name)))).append("\",");
-						row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.DOM_LAST_UPDATE_DATE.name)))).append("\",");
-						row.append("\"").append(formatCell(rv.getBookUuid())).append("\",");
-						row.append("\n");
-						out.write(row.toString());
+                        String authorDetails = ArrayUtils.getAuthorUtils().encodeList(db.getBookAuthorList(id), '|');
+                        // Sanity check: ensure author is non-blank. This HAPPENS. Probably due to constraint failures.
+                        if (authorDetails == null || authorDetails.trim().isEmpty())
+                            authorDetails = AUTHOR + ", " + UNKNOWN;
 
-						long now = System.currentTimeMillis();
-						if ( (now - lastUpdate) > 200) {
-							if (displayingStartupMessage) {
-								listener.onProgress("",0);
-								displayingStartupMessage = false;
-							}
-							listener.onProgress(title, num);
-							lastUpdate = now;
-						}
-					}
-					while (books.moveToNext() && !listener.isCancelled()); 
-				} 
-				
-				out.close();
-			}
-	
-		} finally {
-			if (BuildConfig.DEBUG) {
-				System.out.println("Books Exported: " + num);
-			}
-			if (displayingStartupMessage) {
-				try {
-					listener.onProgress("", 0);
-				} catch (Exception ignored) {
-				}
-			}
-			try { books.close(); } catch (Exception ignored) {}
+                        String seriesDetails = ArrayUtils.getSeriesUtils().encodeList(db.getBookSeriesList(id), '|');
+
+                        row.setLength(0);
+                        row.append("\"").append(formatCell(id)).append("\",");
+                        row.append("\"").append(formatCell(authorDetails)).append("\",");
+                        row.append("\"").append(formatCell(title)).append("\",");
+                        row.append("\"").append(formatCell(rv.getIsbn())).append("\",");
+                        row.append("\"").append(formatCell(rv.getPublisher())).append("\",");
+                        row.append("\"").append(formatCell(dateString)).append("\",");
+                        row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_RATING)))).append("\",");
+                        row.append("\"").append(formatCell(bookshelves_id_text)).append("\",");
+                        row.append("\"").append(formatCell(bookshelves_name_text)).append("\",");
+                        row.append("\"").append(formatCell(rv.getRead())).append("\",");
+                        row.append("\"").append(formatCell(seriesDetails)).append("\",");
+                        row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_PAGES)))).append("\",");
+                        row.append("\"").append(formatCell(rv.getNotes())).append("\",");
+                        row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_LIST_PRICE)))).append("\",");
+                        row.append("\"").append(formatCell(anthology)).append("\",");
+                        row.append("\"").append(formatCell(rv.getLocation())).append("\",");
+                        row.append("\"").append(formatCell(dateReadStartString)).append("\",");
+                        row.append("\"").append(formatCell(dateReadEndString)).append("\",");
+                        row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_FORMAT)))).append("\",");
+                        row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_SIGNED)))).append("\",");
+                        row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_LOANED_TO)) + "")).append("\",");
+                        row.append("\"").append(formatCell(anthology_titles.toString())).append("\",");
+                        row.append("\"").append(formatCell(rv.getDescription())).append("\",");
+                        row.append("\"").append(formatCell(rv.getGenre())).append("\",");
+                        row.append("\"").append(formatCell(rv.getLanguage())).append("\",");
+                        row.append("\"").append(formatCell(dateAddedString)).append("\",");
+                        row.append("\"").append(formatCell(rv.getGoodreadsBookId())).append("\",");
+                        row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.DOM_LAST_GOODREADS_SYNC_DATE.name)))).append("\",");
+                        row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.DOM_LAST_UPDATE_DATE.name)))).append("\",");
+                        row.append("\"").append(formatCell(rv.getBookUuid())).append("\",");
+                        row.append("\n");
+                        out.write(row.toString());
+
+                        long now = System.currentTimeMillis();
+                        if ((now - lastUpdate) > 200) {
+                            if (displayingStartupMessage) {
+                                listener.onProgress("", 0);
+                                displayingStartupMessage = false;
+                            }
+                            listener.onProgress(title, num);
+                            lastUpdate = now;
+                        }
+                    }
+                    while (books.moveToNext() && !listener.isCancelled());
+                }
+
+                out.close();
+            }
+
+        } finally {
+            if (BuildConfig.DEBUG) {
+                System.out.println("Books Exported: " + num);
+            }
+            if (displayingStartupMessage) {
+                try {
+                    listener.onProgress("", 0);
+                } catch (Exception ignored) {
+                }
+            }
+            try {
+                books.close();
+            } catch (Exception ignored) {
+            }
             db.close();
-		}
-		return true;
-	}
+        }
+        return true;
+    }
 
-	private String formatCell(StringBuilder cell) {
-		return cell.toString();
-	}
+    private String formatCell(StringBuilder cell) {
+        return cell.toString();
+    }
 
-	private String formatCell(long cell) {
-		String newcell = cell + "";
-		return formatCell(newcell);
-	}
+    private String formatCell(long cell) {
+        String newcell = cell + "";
+        return formatCell(newcell);
+    }
+
     /**
      * Double quote all "'s and remove all newlines
      *
      * @param cell The cell the format
+     *
      * @return The formatted cell
      */
-	private String formatCell(String cell) {
-		try {
-			if (cell.equals("null") || cell.trim().isEmpty()) {
-				return "";
-			}
-			StringBuilder bld = new StringBuilder();
-			int endPos = cell.length() - 1;
-			int pos = 0;
-			while (pos <= endPos) {
-				char c = cell.charAt(pos);
-				switch(c) {
-				case '\r':
-					bld.append("\\r");
-					break;
-				case '\n':
-					bld.append("\\n");
-					break;
-				case '\t':
-					bld.append("\\t");
-					break;
-				case '"':
-					bld.append("\"\"");
-					break;
-				case '\\':
-					bld.append("\\\\");
-					break;
-				default:
-					bld.append(c);
-				}
-				pos++;
+    private String formatCell(String cell) {
+        try {
+            if (cell.equals("null") || cell.trim().isEmpty()) {
+                return "";
+            }
+            StringBuilder bld = new StringBuilder();
+            int endPos = cell.length() - 1;
+            int pos = 0;
+            while (pos <= endPos) {
+                char c = cell.charAt(pos);
+                switch (c) {
+                    case '\r':
+                        bld.append("\\r");
+                        break;
+                    case '\n':
+                        bld.append("\\n");
+                        break;
+                    case '\t':
+                        bld.append("\\t");
+                        break;
+                    case '"':
+                        bld.append("\"\"");
+                        break;
+                    case '\\':
+                        bld.append("\\\\");
+                        break;
+                    default:
+                        bld.append(c);
+                }
+                pos++;
 
-			}
-			return bld.toString();
-		} catch (NullPointerException e) {
-			return "";
-		}
-	}
-	
+            }
+            return bld.toString();
+        } catch (NullPointerException e) {
+            return "";
+        }
+    }
+
 }

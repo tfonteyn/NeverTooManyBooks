@@ -65,6 +65,10 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 
     private static final int DELETE_ID = Menu.FIRST;
     private static final int POPULATE = Menu.FIRST + 1;
+
+    // Trim extraneous punctuation and whitespace from the titles and authors
+    private static final String CLEANUP_REGEX = "[\\,\\.\\'\\:\\;\\`\\~\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\_\\+]*$";
+
     private EditText mTitleText;
     private AutoCompleteTextView mAuthorText;
     private String mBookAuthor;
@@ -75,6 +79,62 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
     private int anthology_num = DatabaseHelper.ANTHOLOGY_NO;
     private ArrayList<AnthologyTitle> mList;
     private AnthologyTitleListAdapter mAdapter;
+
+    /**
+     * Handle drop events; also preserves current position.
+     * TODO: I've been quick&dirty... copied from EditObjectList.. should be unified ?
+     */
+    private final TouchListView.DropListener mDropListener = new TouchListView.DropListener() {
+
+        @Override
+        public void drop(int from, final int to) {
+            final ListView lv = getListView();
+            // Check if nothing to do; also avoids the nasty case where list size == 1
+            if (from == to)
+                return;
+
+            final int firstPos = lv.getFirstVisiblePosition();
+
+            AnthologyTitle item = mAdapter.getItem(from);
+            mAdapter.remove(item);
+            mAdapter.insert(item, to);
+            onListChanged();
+
+            int first2 = lv.getFirstVisiblePosition();
+            if (BuildConfig.DEBUG) {
+                System.out.println(from + " -> " + to + ", first " + firstPos + "(" + first2 + ")");
+            }
+            final int newFirst = (to > from && from < firstPos) ? (firstPos - 1) : firstPos;
+
+            View firstView = lv.getChildAt(0);
+            final int offset = firstView.getTop();
+            lv.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (BuildConfig.DEBUG) {
+                        System.out.println("Positioning to " + newFirst + "+{" + offset + "}");
+                    }
+                    lv.requestFocusFromTouch();
+                    lv.setSelectionFromTop(newFirst, offset);
+                    lv.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (int i = 0; ; i++) {
+                                View c = lv.getChildAt(i);
+                                if (c == null)
+                                    break;
+                                if (lv.getPositionForView(c) == to) {
+                                    lv.setSelectionFromTop(to, c.getTop());
+                                    //c.requestFocusFromTouch();
+                                    break;
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    };
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -160,7 +220,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 
         fillAnthology();
 
-        TouchListView tlv=(TouchListView)getListView();
+        TouchListView tlv = (TouchListView) getListView();
         tlv.setDropListener(mDropListener);
 
         BCBackground.init(this);
@@ -307,8 +367,14 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
                                 anthology_title = anthology_title.substring(0, pos);
                             }
                             // Trim extraneous punctuation and whitespace from the titles and authors
-                            anthology_author = anthology_author.trim().replace("\n", " ").replaceAll("[\\,\\.\\'\\:\\;\\`\\~\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\_\\+]*$", "").trim();
-                            anthology_title = anthology_title.trim().replace("\n", " ").replaceAll("[\\,\\.\\'\\:\\;\\`\\~\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\_\\+]*$", "").trim();
+                            anthology_author = anthology_author.trim()
+                                    .replace("\n", " ")
+                                    .replaceAll(CLEANUP_REGEX, "")
+                                    .trim();
+                            anthology_title = anthology_title.trim()
+                                    .replace("\n", " ")
+                                    .replaceAll(CLEANUP_REGEX, "")
+                                    .trim();
                             AnthologyTitle anthology = new AnthologyTitle(new Author(anthology_author), anthology_title);
                             mList.add(anthology);
                         }
@@ -404,60 +470,6 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
     private void onListChanged() {
         /* do nothing */
     }
-
-    /**
-     * Handle drop events; also preserves current position.
-     * TODO: I've been quick&dirty... copied from EditObjectList.. should be unified ?
-     */
-    private final TouchListView.DropListener mDropListener = new TouchListView.DropListener() {
-
-        @Override
-        public void drop(int from, final int to) {
-            final ListView lv = getListView();
-            // Check if nothing to do; also avoids the nasty case where list size == 1
-            if (from == to)
-                return;
-
-            final int firstPos = lv.getFirstVisiblePosition();
-
-            AnthologyTitle item=mAdapter.getItem(from);
-            mAdapter.remove(item);
-            mAdapter.insert(item, to);
-            onListChanged();
-
-            int first2 = lv.getFirstVisiblePosition();
-            if (BuildConfig.DEBUG) {
-                System.out.println(from + " -> " + to + ", first " + firstPos + "(" + first2 + ")");
-            }
-            final int newFirst = (to > from && from < firstPos) ? (firstPos - 1) : firstPos;
-
-            View firstView = lv.getChildAt(0);
-            final int offset = firstView.getTop();
-            lv.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (BuildConfig.DEBUG) {
-                        System.out.println("Positioning to " + newFirst + "+{" + offset + "}");
-                    }
-                    lv.requestFocusFromTouch();
-                    lv.setSelectionFromTop(newFirst, offset);
-                    lv.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            for(int i = 0; ; i++) {
-                                View c = lv.getChildAt(i);
-                                if (c == null)
-                                    break;
-                                if (lv.getPositionForView(c) == to) {
-                                    lv.setSelectionFromTop(to, c.getTop());
-                                    //c.requestFocusFromTouch();
-                                    break;
-                                }
-                            }
-                        }});
-                }});
-        }
-    };
 
     protected class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle> {
         boolean series = false;

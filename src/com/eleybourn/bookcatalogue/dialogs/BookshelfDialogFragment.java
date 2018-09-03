@@ -120,21 +120,21 @@ public class BookshelfDialogFragment extends DialogFragment {
 		super.onActivityCreated(savedInstanceState);
 
 		// Grab the args
-		final Bundle args = getArguments();
-    	mDialogId = args.getInt(DIALOG_ID);
+		final Bundle ags = getArguments();
+    	mDialogId = ags.getInt(DIALOG_ID);
 		/* Book ID */
-		Long mRowId = args.getLong(ROW_ID);
+		Long mRowId = ags.getLong(ROW_ID);
 		// Retrieve dynamic values
     	if (savedInstanceState != null && savedInstanceState.containsKey(TEXT)) {
         	mCurrText = savedInstanceState.getString(TEXT);
     	} else {
-        	mCurrText = args.getString(TEXT);
+        	mCurrText = ags.getString(TEXT);
     	}
     	
     	if (savedInstanceState != null && savedInstanceState.containsKey(LIST)) {
         	mCurrList = savedInstanceState.getString(LIST);
     	} else {
-        	mCurrList = args.getString(LIST);
+        	mCurrList = ags.getString(LIST);
     	}
 
     	// Setp the dialog
@@ -142,12 +142,9 @@ public class BookshelfDialogFragment extends DialogFragment {
 
 		// Build a list of shelves
 		CatalogueDBAdapter db = new CatalogueDBAdapter(getActivity());
-		Cursor bookshelves_for_book = null;
-    	db.open();
-    	try {
+		db.open();
+    	try (Cursor bookshelves_for_book = db.fetchAllBookshelves(mRowId)) {
         	final View rootView = getView();
-
-			bookshelves_for_book = db.fetchAllBookshelves(mRowId);
 
 			// Handle the OK button
     		Button button = rootView.findViewById(R.id.bookshelf_dialog_button);
@@ -230,12 +227,7 @@ public class BookshelfDialogFragment extends DialogFragment {
     		} 
 
     	} finally {
-    		if (bookshelves_for_book != null && !bookshelves_for_book.isClosed()) {
-    			bookshelves_for_book.close();
-    		}
-    		if (db != null)
-	    		db.close();
+    		db.close();
     	}
 	}
-
 }

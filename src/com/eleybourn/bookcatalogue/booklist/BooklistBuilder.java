@@ -1728,8 +1728,7 @@ public class BooklistBuilder implements AutoCloseable {
         String sql = "select " + mNavTable.dot(DOM_ID) + ", " + mNavTable.dot(DOM_VISIBLE) + " From " + mListTable + " bl "
                 + mListTable.join(mNavTable) + " Where " + mListTable.dot(DOM_BOOK) + " = " + bookId;
 
-        Cursor c = mDb.rawQuery(sql, EMPTY_STRING_ARRAY);
-        try {
+        try (Cursor c = mDb.rawQuery(sql, EMPTY_STRING_ARRAY)) {
             ArrayList<BookRowInfo> rows = new ArrayList<>();
             if (c.moveToFirst()) {
                 do {
@@ -1740,8 +1739,6 @@ public class BooklistBuilder implements AutoCloseable {
             } else {
                 return null;
             }
-        } finally {
-            c.close();
         }
     }
 

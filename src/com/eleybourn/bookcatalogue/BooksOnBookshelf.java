@@ -103,7 +103,7 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOKS
  */
 public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistChangeListener {
     /**
-     *  Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
+     * Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
      */
     private static final boolean DEBUG = false;
     /**
@@ -894,19 +894,19 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         mBookshelfAdapter.add(getString(R.string.all_books));
         pos++;
 
-        Cursor bookshelves = mDb.fetchAllBookshelves();
-        if (bookshelves.moveToFirst()) {
-            do {
-                String this_bookshelf = bookshelves.getString(1);
-                if (this_bookshelf.equals(mCurrentBookshelf)) {
-                    bspos = pos;
+        try (Cursor bookshelves = mDb.fetchAllBookshelves()) {
+            if (bookshelves.moveToFirst()) {
+                do {
+                    String this_bookshelf = bookshelves.getString(1);
+                    if (this_bookshelf.equals(mCurrentBookshelf)) {
+                        bspos = pos;
+                    }
+                    pos++;
+                    mBookshelfAdapter.add(this_bookshelf);
                 }
-                pos++;
-                mBookshelfAdapter.add(this_bookshelf);
+                while (bookshelves.moveToNext());
             }
-            while (bookshelves.moveToNext());
         }
-        bookshelves.close(); // close the cursor
         // Set the current bookshelf. We use this to force the correct bookshelf after
         // the state has been restored.
         mBookshelfSpinner.setSelection(bspos);

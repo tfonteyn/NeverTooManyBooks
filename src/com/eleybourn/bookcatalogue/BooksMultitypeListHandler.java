@@ -261,8 +261,8 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
     }
 
     @Override
-    public View getView(Cursor c, LayoutInflater inflater, View convertView, ViewGroup parent) {
-        final BooklistRowView rowView = ((BooklistSupportProvider) c).getRowView();
+    public View getView(Cursor cursor, LayoutInflater inflater, View convertView, ViewGroup parent) {
+        final BooklistRowView rowView = ((BooklistSupportProvider) cursor).getRowView();
         BooklistHolder holder;
         final int level = rowView.getLevel();
         if (convertView == null) {
@@ -1009,8 +1009,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                         if ((mFlags & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
                             // Now build a list of all bookshelves the book is on.
                             StringBuilder shelves = new StringBuilder();
-                            Cursor sc = dba.getAllBookBookshelvesForGoodreadsCursor(mBookId);
-                            try {
+                            try ( Cursor sc = dba.getAllBookBookshelvesForGoodreadsCursor(mBookId)) {
                                 if (sc.moveToFirst()) {
                                     do {
                                         if (shelves.length() > 0)
@@ -1018,8 +1017,6 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                                         shelves.append(sc.getString(0));
                                     } while (sc.moveToNext());
                                 }
-                            } finally {
-                                sc.close();
                             }
                             mShelves = BookCatalogueApp.getResourceString(R.string.shelves) + ": " + shelves;
                         }

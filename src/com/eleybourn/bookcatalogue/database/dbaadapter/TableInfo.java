@@ -51,8 +51,7 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
 
         Map<String, ColumnInfo> cols = new Hashtable<>();
 
-        Cursor colCsr = mDb.rawQuery(sql, new String[]{});
-        try {
+        try(Cursor colCsr = mDb.rawQuery(sql, new String[]{})) {
             if (colCsr == null)
                 throw new IllegalArgumentException();
 
@@ -97,9 +96,6 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
                     break;
                 colCsr.moveToNext();
             }
-        } finally {
-            if (colCsr != null)
-                colCsr.close();
         }
         return cols;
     }

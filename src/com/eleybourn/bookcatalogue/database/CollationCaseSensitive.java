@@ -19,8 +19,6 @@ import com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper;
  */
 public class CollationCaseSensitive {
 	public static boolean isCaseSensitive(SQLiteDatabase db) {
-		Cursor c = null;
-
 		// Drop and create table
 		db.execSQL("Drop Table If Exists collation_cs_check");
 		db.execSQL("Create Table collation_cs_check (t text, i int)");		
@@ -29,17 +27,17 @@ public class CollationCaseSensitive {
 			db.execSQL("insert into collation_cs_check values ('a', 1)");		
 			// Row that *should* be returned second assuming 'a' <=> 'A'; will be returned first if 'A' < 'a'.
 			db.execSQL("insert into collation_cs_check values ('A', 2)");
-			c = db.rawQuery("Select t, i from collation_cs_check order by t " + DatabaseHelper.COLLATION + ", i", new String[] {});
-			c.moveToFirst();
-			String s = c.getString(0);
-			return !s.equals("a");
+
+			String s;
+			try (Cursor c = db.rawQuery("Select t, i from collation_cs_check order by t " + DatabaseHelper.COLLATION + ", i", new String[] {})) {
+				c.moveToFirst();
+				s = c.getString(0);
+			}
+			return !"a".equals(s);
 		} finally {
 			// Cleanup
-			try { 
-				if (c != null)
-					c.close();
+			try { db.execSQL("Drop Table If Exists collation_cs_check");
 			} catch (Exception ignored) {}
-			try { db.execSQL("Drop Table If Exists collation_cs_check"); } catch (Exception ignored) {}
 		}
 	}
 }

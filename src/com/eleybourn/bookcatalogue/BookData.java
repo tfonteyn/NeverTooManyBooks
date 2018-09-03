@@ -348,8 +348,8 @@ public class BookData extends DataManager {
      * @return The list
      */
     private String getBookshelfListFromDb(CatalogueDBAdapter db) {
-        Cursor bookshelves = db.fetchAllBookshelvesByBook(getRowId());
-        try {
+        ;
+        try(Cursor bookshelves = db.fetchAllBookshelvesByBook(getRowId())) {
             StringBuilder bookshelves_list = new StringBuilder();
             while (bookshelves.moveToNext()) {
                 String name = bookshelves.getString(bookshelves.getColumnIndex(KEY_BOOKSHELF));
@@ -361,9 +361,6 @@ public class BookData extends DataManager {
                 }
             }
             return bookshelves_list.toString();
-        } finally {
-            if (bookshelves != null)
-                bookshelves.close();
         }
     }
 
