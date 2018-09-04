@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -39,7 +38,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 	private static final long serialVersionUID = 1L;
 	public long		id;
 	public String 	name;
-	public String	num;
+	public String number;
 
 	@SuppressWarnings({"FieldCanBeLocal"})
 	private final Pattern mPattern = Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
@@ -48,10 +47,10 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 		java.util.regex.Matcher m = mPattern.matcher(name);
 		if (m.find()) {
 			this.name = m.group(1).trim();
-			this.num = cleanupSeriesPosition(m.group(2));
+			this.number = cleanupSeriesPosition(m.group(2));
 		} else {
 			this.name = name.trim();
-			this.num = "";
+			this.number = "";
 		}
 		this.id = 0L;
 	}
@@ -60,19 +59,19 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 		this(id, name, "");
 	}
 
-	public Series(String name, String num) {
-		this(0L, name, num);
+	public Series(String name, String number) {
+		this(0L, name, number);
 	}
 
-	Series(long id, String name, String num) {
+	Series(long id, String name, String number) {
 		this.id = id;
 		this.name = name.trim();
-		this.num = cleanupSeriesPosition(num);
+		this.number = cleanupSeriesPosition(number);
 	}
 
 	public String getDisplayName() {
-		if (num != null && !num.isEmpty())
-			return name + " (" + num + ")";
+		if (number != null && !number.isEmpty())
+			return name + " (" + number + ")";
 		else
 			return name;
 	}
@@ -92,7 +91,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
      */
     void copyFrom(Series source) {
 		name = source.name;
-		num = source.num;
+		number = source.number;
 		id = source.id;    	
     }
 
@@ -112,7 +111,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
     
     private Series(Parcel in) {
     	name = in.readString();
-    	num = in.readString();
+    	number = in.readString();
     	id = in.readLong();
     }
 
@@ -162,7 +161,10 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 	 * 
 	 * @param 	title	Book title to parse
 	 */
-	public static SeriesDetails findSeries(@NonNull String title) {
+	public static SeriesDetails findSeries(String title) {
+		if (title == null || title.isEmpty()) {
+			return null;
+		}
 		SeriesDetails details = null;
 		int last = title.lastIndexOf("(");
 		if (last >= 1) { // We want a title that does not START with a bracket!

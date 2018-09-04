@@ -74,11 +74,9 @@ public class BookEditFields extends BookDetailsAbstract
 
     private static final int ACTIVITY_EDIT_AUTHORS = 1000;
     private static final int ACTIVITY_EDIT_SERIES = 1001;
+
     public static final String BOOKSHELVES_DIALOG = "bookshelves_dialog";
-    public static final String BOOK_DATA = "bookData";
-    public static final String BOOK = "book";
-    public static final String TITLE_LABEL = "title_label";
-    public static final String TITLE = "title";
+    public static final String BKEY_BOOK_DATA = "bookData";
 
     /**
      * Display the edit fields page
@@ -114,8 +112,7 @@ public class BookEditFields extends BookDetailsAbstract
                             Intent i = new Intent(getActivity(), EditAuthorList.class);
                             i.putExtra(ColumnNames.KEY_AUTHOR_ARRAY, mEditManager.getBookData().getAuthors());
                             i.putExtra(ColumnNames.KEY_ROWID, mEditManager.getBookData().getRowId());
-                            i.putExtra(TITLE_LABEL, ColumnNames.KEY_TITLE);
-                            i.putExtra(TITLE, mFields.getField(R.id.title).getValue().toString());
+                            i.putExtra(ColumnNames.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
                             startActivityForResult(i, ACTIVITY_EDIT_AUTHORS);
                         }
                     });
@@ -128,8 +125,7 @@ public class BookEditFields extends BookDetailsAbstract
                             Intent i = new Intent(getActivity(), EditSeriesList.class);
                             i.putExtra(ColumnNames.KEY_SERIES_ARRAY, mEditManager.getBookData().getSeries());
                             i.putExtra(ColumnNames.KEY_ROWID, mEditManager.getBookData().getRowId());
-                            i.putExtra(TITLE_LABEL, ColumnNames.KEY_TITLE);
-                            i.putExtra(TITLE, mFields.getField(R.id.title).getValue().toString());
+                            i.putExtra(ColumnNames.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
                             startActivityForResult(i, ACTIVITY_EDIT_SERIES);
                         }
                     });
@@ -270,10 +266,10 @@ public class BookEditFields extends BookDetailsAbstract
             if (extras != null) {
                 // From the ISBN Search (add)
                 try {
-                    if (extras.containsKey(BOOK)) {
+                    if (extras.containsKey(ColumnNames.KEY_BOOK)) {
                         throw new RuntimeException("[book] array passed in Intent");
                     } else {
-                        Bundle values = extras.getParcelable(BOOK_DATA);
+                        Bundle values = extras.getParcelable(BKEY_BOOK_DATA);
                         for (Field f : mFields) {
                             if (!f.column.isEmpty() && values.containsKey(f.column)) {
                                 try {

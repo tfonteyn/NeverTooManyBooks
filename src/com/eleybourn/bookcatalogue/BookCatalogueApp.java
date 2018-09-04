@@ -98,6 +98,7 @@ public class BookCatalogueApp extends Application {
             R.style.DialogThemeDark,
             R.style.DialogThemeLight
     };
+    private static final String BKEY_BRING_FG = "bringFg";
 
     private static int mLastTheme;
 
@@ -373,7 +374,6 @@ public class BookCatalogueApp extends Application {
     /**
      * should be removed together with BCBackground ?
      */
-    @Deprecated
     public static int getBackgroundColor() {
 
         TypedValue tv = new TypedValue();
@@ -398,7 +398,7 @@ public class BookCatalogueApp extends Application {
         i.setAction("android.intent.action.MAIN");
         i.addCategory(Intent.CATEGORY_LAUNCHER);
         // No idea what to do with this!
-        i.putExtra("bringFg", true);
+        i.putExtra(BKEY_BRING_FG, true);
         return i;
     }
 

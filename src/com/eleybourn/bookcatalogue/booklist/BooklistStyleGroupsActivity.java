@@ -48,9 +48,9 @@ import java.util.Objects;
 public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 	private static final String TAG = "StyleEditor";
 	// Preferences setup
-	public static final String KEY_STYLE = TAG + ".Style";
-	public static final String KEY_SAVE_TO_DATABASE = TAG + ".SaveToDb";
-	private static final String KEY_GROUPS = TAG + ".Groups";
+	public static final String BKEY_STYLE = TAG + ".Style";
+	public static final String BKEY_SAVE_TO_DATABASE = TAG + ".SaveToDb";
+	private static final String BKEY_GROUPS = TAG + ".Groups";
 
 	/** Copy of the style we are editing */
 	private BooklistStyle mStyle;
@@ -64,7 +64,7 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 	 * Constructor
 	 */
 	public BooklistStyleGroupsActivity() {
-		super(KEY_GROUPS, R.layout.booklist_style_edit_list, R.layout.booklist_style_edit_row);
+		super(BKEY_GROUPS, R.layout.booklist_style_edit_list, R.layout.booklist_style_edit_row);
 	}
 
 	/**
@@ -91,10 +91,10 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 		try {
 			// Get the intent and get the style and other settings
 			Intent i = this.getIntent();
-			mStyle = (BooklistStyle) i.getSerializableExtra(KEY_STYLE);
+			mStyle = (BooklistStyle) i.getSerializableExtra(BKEY_STYLE);
 
-			if (i.hasExtra(KEY_SAVE_TO_DATABASE))
-				mSaveToDb = i.getBooleanExtra(KEY_SAVE_TO_DATABASE, true);
+			if (i.hasExtra(BKEY_SAVE_TO_DATABASE))
+				mSaveToDb = i.getBooleanExtra(BKEY_SAVE_TO_DATABASE, true);
 
 			/* Indicated this activity was called without an existing style */
 			boolean isNew = (mStyle == null);
@@ -115,7 +115,7 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 			}
 
 			// Store the full list in the intent
-			i.putExtra(KEY_GROUPS, groups);
+			i.putExtra(BKEY_GROUPS, groups);
 
 			// Init the subclass now it has the array it expects
 			super.onCreate(savedInstanceState);
@@ -230,7 +230,7 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 		mStyle.setProperties(props);
 
 		// Store in resulting Intent
-		intent.putExtra(KEY_STYLE, mStyle);
+		intent.putExtra(BKEY_STYLE, mStyle);
 
 		// Save to DB if necessary
 		if (mSaveToDb)

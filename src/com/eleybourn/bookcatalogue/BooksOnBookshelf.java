@@ -72,7 +72,6 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogMenuItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickListener;
-import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
@@ -489,27 +488,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         }
     }
 
-    /**
-     * Set the listview background based on user preferences
-     */
-    private void initBackground() {
-        ListView lv = getListView();
-        View root = findViewById(R.id.root);
-        View header = findViewById(R.id.header);
-
-        // Sanity checks as a result of user bug report that was caused by either:
-        // (a) root being null
-        // or
-        // (b) getResources() returning null
-        //
-        Objects.requireNonNull(root, "Sanity Check Fail: Root view not found; isFinishing() = " + isFinishing());
-        Objects.requireNonNull(header, "Sanity Check Fail: Header view not found; isFinishing() = " + isFinishing());
-        Objects.requireNonNull(getResources(), "Sanity Check Fail: getResources() returned null; isFinishing() = " + isFinishing());
-
-        BCBackground.init(root, lv, header);
-    }
-
-
     @Override
     public void onResume() {
         Tracker.enterOnResume(this);
@@ -525,7 +503,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         // bookshelves can have changed, so reload
         populateBookShelfSpinner();
 
-        initBackground();
         Tracker.exitOnResume(this);
     }
 
@@ -539,8 +516,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         Objects.requireNonNull(newList, "Unexpected empty list");
 
         final int showHeaderFlags = (mCurrentStyle == null ? BooklistStyle.SUMMARY_SHOW_ALL : mCurrentStyle.getShowHeaderInfo());
-
-        initBackground();
 
         TextView bookCounts = findViewById(R.id.bookshelf_count);
         if ((showHeaderFlags & BooklistStyle.SUMMARY_SHOW_COUNT) != 0) {
@@ -1075,8 +1050,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 break;
             case UniqueId.ACTIVITY_BOOKLIST_STYLE_PROPERTIES:
                 try {
-                    if (intent != null && intent.hasExtra(BooklistStylePropertiesActivity.KEY_STYLE)) {
-                        BooklistStyle style = (BooklistStyle) intent.getSerializableExtra(BooklistStylePropertiesActivity.KEY_STYLE);
+                    if (intent != null && intent.hasExtra(BooklistStylePropertiesActivity.BKEY_STYLE)) {
+                        BooklistStyle style = (BooklistStyle) intent.getSerializableExtra(BooklistStylePropertiesActivity.BKEY_STYLE);
                         if (style != null)
                             mCurrentStyle = style;
                     }

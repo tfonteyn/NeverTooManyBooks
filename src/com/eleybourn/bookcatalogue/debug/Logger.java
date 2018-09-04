@@ -51,9 +51,9 @@ public class Logger {
 	 * @param e The exception to log
 	 */
 	public static void logError(Exception e, String msg) {
-		@SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date = new Date();
-		String now = dateFormat.format(date);
+		@SuppressLint("SimpleDateFormat")
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String now = dateFormat.format(new Date());
 		
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);

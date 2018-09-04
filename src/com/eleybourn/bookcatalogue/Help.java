@@ -31,9 +31,8 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
-import com.eleybourn.bookcatalogue.utils.BCBackground;
-import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
@@ -94,8 +93,6 @@ public class Help extends BookCatalogueActivity {
 			
 			setupCleanupButton();
 			
-			BCBackground.init(this);
-
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
@@ -136,7 +133,6 @@ public class Help extends BookCatalogueActivity {
 	protected void onResume() {
 		super.onResume();
 		setupCleanupButton();		
-		BCBackground.init(this);
 	}
 
 	/**

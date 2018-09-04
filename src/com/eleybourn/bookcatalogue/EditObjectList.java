@@ -96,9 +96,7 @@ import java.util.ArrayList;
  */
 abstract public class EditObjectList<T extends Serializable> extends BookCatalogueListActivity {
 
-	public static final String EXTRAS_TITLE = "title";
-	public static final String EXTRAS_TITLE_LABEL = "title_label";
-	// List
+    // List
 	protected ArrayList<T> mList = null;
 	// Adapter used to manage list
 	protected ArrayAdapter<T> mAdapter;
@@ -107,7 +105,6 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	protected CatalogueDBAdapter mDbHelper;
 
 	protected String mBookTitle;
-	protected String mBookTitleLabel;
 
 	// The key to use in the Bundle to get the array
 	private final String mKey;
@@ -248,9 +245,8 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 			Bundle extras = getIntent().getExtras();
 			if (extras != null) {
 				mRowId = extras.getLong(ColumnNames.KEY_ROWID);
-				mBookTitleLabel = extras.getString(EXTRAS_TITLE_LABEL);
-				mBookTitle = extras.getString(EXTRAS_TITLE);
-				setTextOrHideView(R.id.title_label, mBookTitleLabel);
+
+				mBookTitle = extras.getString(ColumnNames.KEY_TITLE);
 				setTextOrHideView(R.id.title, mBookTitle);
 			}
 
@@ -258,8 +254,8 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 			tlv.setDropListener(mDropListener);
 			//tlv.setRemoveListener(onRemove);
 
-		} catch (Exception e) {
-			Logger.logError(e);
+		} catch (Exception ignore) {
+			Logger.logError(ignore);
 		}
 	}
 

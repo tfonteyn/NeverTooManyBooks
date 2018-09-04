@@ -36,11 +36,13 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  */
 public class MenuHandler {
     public static final int FIRST = Menu.FIRST + 13;
+
     private static final int MENU_ADD_BOOK = Menu.FIRST + 1;
     private static final int MENU_ITEM_ADD_BOOK_MANUAL = Menu.FIRST + 2;
     private static final int MENU_ITEM_ADD_BOOK_BARCODE = Menu.FIRST + 3;
     private static final int MENU_ITEM_ADD_BOOK_ISBN = Menu.FIRST + 4;
     private static final int MENU_ITEM_ADD_BOOK_NAMES = Menu.FIRST + 5;
+
     private static final int MENU_ITEM_SEARCH = Menu.FIRST + 6;
 
     /**
@@ -155,7 +157,7 @@ public class MenuHandler {
      */
     private void createBookScan(Activity a) {
         Intent i = new Intent(a, BookISBNSearch.class);
-        i.putExtra(BookISBNSearch.KEY_BY, BookISBNSearch.BY_SCAN);
+        i.putExtra(BookISBNSearch.BKEY_BY, BookISBNSearch.BY_SCAN);
         a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_SCAN);
     }
 
@@ -164,7 +166,7 @@ public class MenuHandler {
      */
     private void createBookISBN(Activity a, String by) {
         Intent i = new Intent(a, BookISBNSearch.class);
-        i.putExtra(BookISBNSearch.KEY_BY, by);
+        i.putExtra(BookISBNSearch.BKEY_BY, by);
         a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_ISBN);
     }
 

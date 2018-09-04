@@ -84,6 +84,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 
 	// Target size of a thumbnail in a list (bbox dim)
 	private static final int LIST_THUMBNAIL_SIZE=60;
+	private static final String BKEY_ISBN = "isbn";
 
 	private CatalogueDBAdapter mDbHelper;
 	private static final int SORT_BY_AUTHOR_EXPANDED = MenuHandler.FIRST + 1;
@@ -163,7 +164,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			// Extract the sort type from the bundle. getInt will return 0 if there is no attribute
 			// sort (which is exactly what we want)
 			try {
-				mPrefs = getSharedPreferences("bookCatalogue", MODE_PRIVATE);
+				mPrefs = getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, MODE_PRIVATE);
 				sort = mPrefs.getInt(STATE_SORT, sort);
 				bookshelf = mPrefs.getString(BooksOnBookshelf.PREF_BOOKSHELF, bookshelf);
 				loadCurrentGroup();
@@ -1558,12 +1559,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				if (contents != null && !contents.isEmpty()) {
 					Toast.makeText(this, R.string.isbn_found, Toast.LENGTH_LONG).show();
 					Intent i = new Intent(this, BookISBNSearch.class);
-					i.putExtra("isbn", contents);
+					i.putExtra(BKEY_ISBN, contents);
 					startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_SCAN);
 				} else {
 					fillData();
 				}
-			} catch (NullPointerException e) {
+			} catch (NullPointerException ignore) {
 				// This is not a scan result, but a normal return
 				fillData();
 			}
@@ -1629,7 +1630,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	@Override
 	public void onResume() {
 		try {
-			mPrefs = getSharedPreferences("bookCatalogue", MODE_PRIVATE);
+			mPrefs = getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, MODE_PRIVATE);
 			sort = mPrefs.getInt(STATE_SORT, sort);
 			bookshelf = mPrefs.getString(BooksOnBookshelf.PREF_BOOKSHELF, bookshelf);
 			loadCurrentGroup();

@@ -40,12 +40,12 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
+/**
+ * TODO: removed everywhere.... reduce overhead + makes the screens actually harder to read with an image background
+ */
 public class BCBackground {
     private BCBackground() {
     }
-
-    /** FIXME: init which is not functioning yet, done this way for easy future debug  */
-    private static final boolean BACKGROUND_ALLOWED = false;
 
     /**
      * Call setCacheColorHint on a listview and trap IndexOutOfBoundsException.
@@ -88,7 +88,6 @@ public class BCBackground {
 
     //FIXME
     private static void privateInit(View root, boolean bright) {
-        if (BACKGROUND_ALLOWED) {
             try {
                 if (BookCataloguePreferences.getDisableBackgroundImage()) {
                     final int backgroundColor = BookCatalogueApp.getBackgroundColor();
@@ -116,12 +115,10 @@ public class BCBackground {
                 // This is a purely cosmetic function; just log the error
                 Logger.logError(e, "Error setting background");
             }
-        }
     }
 
     // FIXME
     public static void init(View root, ListView lv, View header) {
-        if (BACKGROUND_ALLOWED) {
             Drawable d = null;
             try {
                 if (BookCataloguePreferences.getDisableBackgroundImage()) {
@@ -151,7 +148,6 @@ public class BCBackground {
                 header.setBackgroundColor(Color.TRANSPARENT);
             }
             root.invalidate();
-        }
     }
 
     /**

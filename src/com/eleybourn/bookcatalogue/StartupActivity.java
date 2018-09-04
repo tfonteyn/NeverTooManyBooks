@@ -63,7 +63,8 @@ public class StartupActivity extends AppCompatActivity {
 	 * then we could do away with the whole isRoot/willBeRoot thing
 	 * Check usage in the code of this string in the intent extra
 	 */
-	public static final String IS_TASK_ROOT = "willBeTaskRoot";
+	public static final String BKEY_IS_TASK_ROOT = "willBeTaskRoot";
+	private static final String BKEY_STARTUP = "startup";
 
 	/** Flag to indicate FTS rebuild is required at startup */
 	private static final String PREF_FTS_REBUILD_REQUIRED = TAG + ".FtsRebuildRequired";
@@ -343,9 +344,9 @@ public class StartupActivity extends AppCompatActivity {
     private void doMainActivity(Class nextActivityClass) {
         Intent i = new Intent(this, nextActivityClass);
         if (mWasReallyStartup)
-            i.putExtra("startup", true);
+            i.putExtra(BKEY_STARTUP, true);
 
-        i.putExtra(IS_TASK_ROOT, isTaskRoot());
+        i.putExtra(BKEY_IS_TASK_ROOT, isTaskRoot());
         startActivity(i);
     }
 

@@ -35,7 +35,6 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
-import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -62,20 +61,11 @@ public class AdministrationAbout extends BookCatalogueActivity {
 			super.onCreate(savedInstanceState);
  			setTitle(R.string.app_name);
 			setupPage();
-			BCBackground.init(this);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
 	}
 
-	/**
-	 * Fix background
-	 */
-	@Override 
-	public void onResume() {
-		super.onResume();
-		BCBackground.init(this);
-	}
 	/**
 	 * This function builds the Admin page in 4 sections. 
 	 * 1. The button to goto the manage bookshelves activity

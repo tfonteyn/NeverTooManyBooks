@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
-import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
@@ -52,19 +51,9 @@ public class AdministrationDonate extends BookCatalogueActivity {
 			super.onCreate(savedInstanceState);
 			setTitle(R.string.app_name);
 			setupPage();
-			BCBackground.init(this);
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
-	}
-
-	/**
-	 * Fix background
-	 */
-	@Override 
-	public void onResume() {
-		super.onResume();
-		BCBackground.init(this);
 	}
 
 	/**

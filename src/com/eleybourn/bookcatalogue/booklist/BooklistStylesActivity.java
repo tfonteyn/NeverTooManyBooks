@@ -37,7 +37,6 @@ import com.eleybourn.bookcatalogue.EditObjectList;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
@@ -84,20 +83,12 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 			//mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, mDbHelper.fetchAllSeriesArray());
 			//((AutoCompleteTextView)this.findViewById(R.id.series)).setAdapter(mAdapter);
 
-			if (savedInstanceState == null)
-				HintManager.displayHint(this, R.string.hint_booklist_styles_editor, null);
-
-			BCBackground.init(this);
-
+			if (savedInstanceState == null) {
+                HintManager.displayHint(this, R.string.hint_booklist_styles_editor, null);
+            }
 		} catch (Exception ignore) {
 			Logger.logError(ignore);
 		}
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		BCBackground.init(this);
 	}
 
 	/**
@@ -135,25 +126,23 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 
 	@Override
 	protected void onSetupView(View target, BooklistStyle style) {
-		Holder h;
-		h = ViewTagger.getTag(target, R.id.TAG_HOLDER);
-		if (h == null) {
-			// No holder found, create one
-
-			h = new Holder();
-			h.name = target.findViewById(R.id.name);
-			h.groups = target.findViewById(R.id.groups);
-			h.kind = target.findViewById(R.id.kind);
-			h.preferred = target.findViewById(R.id.preferred);
+		Holder holder;
+		holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
+		if (holder == null) {
+			holder = new Holder();
+			holder.name = target.findViewById(R.id.name);
+			holder.groups = target.findViewById(R.id.groups);
+			holder.kind = target.findViewById(R.id.kind);
+			holder.preferred = target.findViewById(R.id.preferred);
 			// Tag relevant views
-			ViewTagger.setTag(target, R.id.TAG_HOLDER, h);
-			ViewTagger.setTag(h.preferred, R.id.TAG_HOLDER, h);
+			ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);
+			ViewTagger.setTag(holder.preferred, R.id.TAG_HOLDER, holder);
 
 			// Make it flash
 			//target.setBackgroundResource(android.R.drawable.list_selector_background);
 			
 			// Handle clicks on the tick/cross
-			h.preferred.setOnClickListener(new OnClickListener() {
+			holder.preferred.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					Holder h = ViewTagger.getTag(v, R.id.TAG_HOLDER);
@@ -169,19 +158,19 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 		}
 
 		// Set the volatile fields in the holder
-		h.style = style;
-		h.name.setText(style.getDisplayName());
-		h.groups.setText(style.getGroupListDisplayNames());
+		holder.style = style;
+		holder.name.setText(style.getDisplayName());
+		holder.groups.setText(style.getGroupListDisplayNames());
 
 		if (style.isUserDefined())
-			h.kind.setText(R.string.user_defined);
+			holder.kind.setText(R.string.user_defined);
 		else
-			h.kind.setText(R.string.builtin);
+			holder.kind.setText(R.string.builtin);
 		
 		if (style.isPreferred()) {
-			h.preferred.setImageResource(R.drawable.btn_check_clipped);
+			holder.preferred.setImageResource(R.drawable.btn_check_clipped);
 		} else {
-    		h.preferred.setImageResource(android.R.drawable.ic_delete);			
+    		holder.preferred.setImageResource(android.R.drawable.ic_delete);
 		}
 	}
 
@@ -259,8 +248,7 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 				switch(items.get(which).getId()) {
 				case R.id.MENU_DELETE_STYLE:
 					style.deleteFromDb(mDb);
-					// Refresh the list
-					setList(getList());
+					setList(getList()); // Refresh the list
 					dialog.dismiss();
 					return;
 				case R.id.MENU_EDIT_STYLE:
@@ -301,7 +289,7 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 		}
 
         Intent i = new Intent(this, BooklistStylePropertiesActivity.class);
-        i.putExtra(BooklistStylePropertiesActivity.KEY_STYLE, style);
+        i.putExtra(BooklistStylePropertiesActivity.BKEY_STYLE, style);
 		startActivityForResult(i, UniqueId.ACTIVITY_BOOKLIST_STYLE);		
 	}
 
@@ -330,11 +318,11 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 	 */
 	private void handleStyleResult(Intent data) {
 		// Make sure we have a style. If not, the user must have cancelled.
-		if (data == null || !data.hasExtra(BooklistStylePropertiesActivity.KEY_STYLE))
+		if (data == null || !data.hasExtra(BooklistStylePropertiesActivity.BKEY_STYLE))
 			return;
 		
 		try {
-			BooklistStyle result = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.KEY_STYLE);
+			BooklistStyle result = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.BKEY_STYLE);
 			if (result == null) {
 				// Style was deleted. Refresh.
 				setList(getList());

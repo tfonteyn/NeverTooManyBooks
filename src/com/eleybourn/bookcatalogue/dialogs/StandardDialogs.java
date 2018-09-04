@@ -35,6 +35,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.Author;
+import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
@@ -95,7 +96,7 @@ public class StandardDialogs {
         final String prefName = LibraryThingManager.LT_HIDE_ALERT_PREF_NAME + "_" + prefSuffix;
         if (!ltRequired) {
             msgId = R.string.uses_library_thing_info;
-            SharedPreferences prefs = context.getSharedPreferences("bookCatalogue", android.content.Context.MODE_PRIVATE);
+            SharedPreferences prefs = context.getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
             showAlert = !prefs.getBoolean(prefName, false);
         } else {
             msgId = R.string.require_library_thing_info;
@@ -121,7 +122,7 @@ public class StandardDialogs {
         if (!ltRequired) {
             dlg.setButton(DialogInterface.BUTTON_NEUTRAL, context.getResources().getString(R.string.disable_dialogue), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    SharedPreferences prefs = context.getSharedPreferences("bookCatalogue", android.content.Context.MODE_PRIVATE);
+                    SharedPreferences prefs = context.getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
                     SharedPreferences.Editor ed = prefs.edit();
                     ed.putBoolean(prefName, true);
                     ed.apply();

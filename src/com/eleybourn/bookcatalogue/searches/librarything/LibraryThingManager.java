@@ -719,7 +719,7 @@ public class LibraryThingManager {
 	}
 
 	private String getDevKey() {
-		SharedPreferences prefs = mAppContext.getSharedPreferences("bookCatalogue", android.content.Context.MODE_PRIVATE);
+		SharedPreferences prefs = mAppContext.getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
 		String key = prefs.getString(LT_DEVKEY_PREF_NAME, "");
 		return key.replaceAll("[\\r\\t\\n\\s]*", "");
 	}

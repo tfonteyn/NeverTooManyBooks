@@ -34,10 +34,9 @@ import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
-import com.eleybourn.bookcatalogue.utils.BCBackground;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.HintManager.HintOwner;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import net.philipwarner.taskqueue.BindableItem;
@@ -108,10 +107,9 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	
 		this.setTitle(R.string.task_errors);
 
-		if (savedInstanceState == null)
+		if (savedInstanceState == null) {
 			HintManager.displayHint(this, R.string.hint_background_task_events, null);
-
-		BCBackground.init(this);
+		}
 	}
 
 	/**
@@ -138,8 +136,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	protected void onResume() {
 		super.onResume();
 		refreshData();
-		BCBackground.init(this);
-	} 
+	}
 
 	/**
 	 * Build a context menu dialogue when an item is clicked.

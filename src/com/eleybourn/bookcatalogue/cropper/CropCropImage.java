@@ -56,6 +56,17 @@ import java.util.concurrent.CountDownLatch;
 public class CropCropImage extends CropMonitoredActivity {
 	// private static final String TAG = "CropImage";
 
+	public static final String BKEY_CIRCLE_CROP = "circleCrop";
+    public static final String BKEY_IMAGE_PATH = "image-path";
+    public static final String BKEY_OUTPUT = "output";
+    public static final String BKEY_ASPECT_X = "aspectX";
+    public static final String BKEY_ASPECT_Y = "aspectY";
+    public static final String BKEY_OUTPUT_X = "outputX";
+    public static final String BKEY_OUTPUT_Y = "outputY";
+    public static final String BKEY_SCALE = "scale";
+    public static final String BKEY_SCALE_UP_IF_NEEDED = "scaleUpIfNeeded";
+    public static final String BKEY_WHOLE_IMAGE = "whole-image";
+
 	// These are various options can be specified in the intent.
 	private final Bitmap.CompressFormat mOutputFormat =
 			Bitmap.CompressFormat.JPEG; // only used with mSaveUri
@@ -111,17 +122,17 @@ public class CropCropImage extends CropMonitoredActivity {
 		Intent intent = getIntent();
 		Bundle extras = intent.getExtras();
 		if (extras != null) {
-			if (extras.getString("circleCrop") != null) {
+			if (extras.getString(BKEY_CIRCLE_CROP) != null) {
 				mCircleCrop = true;
 				mAspectX = 1;
 				mAspectY = 1;
 			}
 
-			String imagePath = extras.getString("image-path");
+			String imagePath = extras.getString(BKEY_IMAGE_PATH);
 
 			// Use the "output" parameter if present, otherwise overwrite
 			// existing file
-			String imgUri = extras.getString("output");
+			String imgUri = extras.getString(BKEY_OUTPUT);
 			if (imgUri == null)
 				imgUri = imagePath;
 
@@ -129,13 +140,13 @@ public class CropCropImage extends CropMonitoredActivity {
 
 			mBitmap = getBitmap(imagePath);
 
-			mAspectX = extras.getInt("aspectX");
-			mAspectY = extras.getInt("aspectY");
-			mOutputX = extras.getInt("outputX");
-			mOutputY = extras.getInt("outputY");
-			mScale = extras.getBoolean("scale", true);
-			mScaleUp = extras.getBoolean("scaleUpIfNeeded", true);
-			mCropWholeImage = extras.getBoolean("whole-image", false);
+			mAspectX = extras.getInt(BKEY_ASPECT_X);
+			mAspectY = extras.getInt(BKEY_ASPECT_Y);
+			mOutputX = extras.getInt(BKEY_OUTPUT_X);
+			mOutputY = extras.getInt(BKEY_OUTPUT_Y);
+			mScale = extras.getBoolean(BKEY_SCALE, true);
+			mScaleUp = extras.getBoolean(BKEY_SCALE_UP_IF_NEEDED, true);
+			mCropWholeImage = extras.getBoolean(BKEY_WHOLE_IMAGE, false);
 		}
 
 		if (mBitmap == null) {

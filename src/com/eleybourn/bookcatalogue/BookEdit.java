@@ -52,7 +52,6 @@ import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment.OnPartialDa
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEditorListener;
-import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import java.io.File;
@@ -327,8 +326,6 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 
         // Must come after all book data and list retrieved.
         setActivityTitle();
-
-        BCBackground.init(this);
 
         Tracker.exitOnCreate(this);
     }

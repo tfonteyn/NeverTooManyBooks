@@ -15,11 +15,10 @@
         android:paddingEnd="@dimen/padding_border"
         android:paddingStart="@dimen/padding_border">
 
-        <include
+        <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            layout="@layout/inc_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            style="@style/toolbar"
+            tools:text="TOOLBAR" />
 
         <RelativeLayout
             android:id="@+id/header"

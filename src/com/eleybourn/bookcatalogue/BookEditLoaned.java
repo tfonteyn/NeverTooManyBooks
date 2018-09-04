@@ -41,7 +41,6 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.utils.BCBackground;
 
 import java.util.ArrayList;
 
@@ -126,7 +125,6 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
             } else {
                 loaned(user);
             }
-            BCBackground.init(this);
         } finally {
             Tracker.exitOnCreate(this);
         }

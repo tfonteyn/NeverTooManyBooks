@@ -83,6 +83,15 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
     private static final int CONTEXT_ID_ROTATE_THUMB_180 = 33;
     private static final int CODE_CROP_RESULT_EXTERNAL = 42;
     private static final int CODE_CROP_RESULT_INTERNAL = 43;
+
+    private static final String BKEY_IMAGE_PATH = "image-path";
+    private static final String BKEY_SCALE = "scale";
+    private static final String BKEY_WHOLE_IMAGE = "whole-image";
+    private static final String BKEY_OUTPUT = "output";
+    private static final String BKEY_CROP = "crop";
+    private static final String BKEY_NO_FACE_DETECTION = "noFaceDetection";
+    private static final String BKEY_RETURN_DATA = "return-data";
+    private static final String BKEY_DATA = "data";
     /**
      * Counter used to prevent images being reused accidentally
      */
@@ -169,7 +178,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
                 case CODE_ADD_PHOTO:
                     if (resultCode == Activity.RESULT_OK && intent != null && intent.getExtras() != null) {
                         File cameraFile = getCameraImageFile();
-                        Bitmap x = (Bitmap) intent.getExtras().get("data");
+                        Bitmap x = (Bitmap) intent.getExtras().get(BKEY_DATA);
                         if (x != null && x.getWidth() > 0 && x.getHeight() > 0) {
                             Matrix m = new Matrix();
                             m.postRotate(BookCataloguePreferences.getAutoRotateCameraImagesInDegrees());
@@ -427,16 +436,16 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
     private void cropCoverImageInternal(File thumbFile) {
         Intent crop_intent = new Intent(getActivity(), CropCropImage.class);
         // here you have to pass absolute path to your file
-        crop_intent.putExtra("image-path", thumbFile.getAbsolutePath());
-        crop_intent.putExtra("scale", true);
-        crop_intent.putExtra("whole-image", BookCataloguePreferences.getCropFrameWholeImage());
+        crop_intent.putExtra(BKEY_IMAGE_PATH, thumbFile.getAbsolutePath());
+        crop_intent.putExtra(BKEY_SCALE, true);
+        crop_intent.putExtra(BKEY_WHOLE_IMAGE, BookCataloguePreferences.getCropFrameWholeImage());
         // Get and set the output file spec, and make sure it does not already exist.
         File cropped = this.getCroppedImageFileName();
         if (cropped.exists()) {
             //noinspection ResultOfMethodCallIgnored
             cropped.delete();
         }
-        crop_intent.putExtra("output", cropped.getAbsolutePath());
+        crop_intent.putExtra(BKEY_OUTPUT, cropped.getAbsolutePath());
         startActivityForResult(crop_intent, CODE_CROP_RESULT_INTERNAL);
     }
 
@@ -444,21 +453,24 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
         Tracker.handleEvent(this, "cropCoverImageExternal", Tracker.States.Enter);
         try {
             Intent intent = new Intent("com.android.camera.action.CROP");
-//			 this will open any image file
+            // this will open any image file
             intent.setDataAndType(Uri.fromFile(new File(thumbFile.getAbsolutePath())), "image/*");
-            intent.putExtra("crop", "true");
-            // This defines the aspect ratio
+            //TODO: does not seem to be used... find out what is it/was for and remove.
+            intent.putExtra(BKEY_CROP, "true");
+
+//          // This defines the aspect ratio
 //			intent.putExtra("aspectX", 1);
 //			intent.putExtra("aspectY", 1);
-            // This defines the output bitmap size
+//          // This defines the output bitmap size
 //			intent.putExtra("outputX", 3264);
 //			intent.putExtra("outputY", 2448);
 //			intent.putExtra("outputX", mThumbZoomSize*2);
 //			intent.putExtra("outputY", mThumbZoomSize*2);
-            intent.putExtra("scale", true);
-            intent.putExtra("noFaceDetection", true);
+
+            intent.putExtra(BKEY_SCALE, true);
+            intent.putExtra(BKEY_NO_FACE_DETECTION, true);
             // True to return a Bitmap, false to directly save the cropped iamge
-            intent.putExtra("return-data", false);
+            intent.putExtra(BKEY_RETURN_DATA, false);
             // Save output image in uri
             File cropped = this.getCroppedImageFileName();
             if (cropped.exists())

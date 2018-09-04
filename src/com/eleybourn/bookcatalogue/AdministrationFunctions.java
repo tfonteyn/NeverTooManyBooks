@@ -45,7 +45,6 @@ import com.eleybourn.bookcatalogue.filechooser.BackupChooser;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegister;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.searches.librarything.AdministrationLibraryThing;
-import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -68,7 +67,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	private boolean finish_after = false;
 	private boolean mExportOnStartup = false;
 
-	private static final String EXTRAS_DO_AUTO = "do_auto";
+	private static final String BKEY_DO_AUTO = "do_auto";
 
     @Override
     protected int getLayoutId(){
@@ -86,13 +85,13 @@ public class AdministrationFunctions extends ActivityWithTasks {
 			mDbHelper.open();
 
 			Bundle extras = getIntent().getExtras();
-			if (extras != null && extras.containsKey(EXTRAS_DO_AUTO)) {
+			if (extras != null && extras.containsKey(BKEY_DO_AUTO)) {
 				try {
-					if ("export".equals(extras.getString(EXTRAS_DO_AUTO))) {
+					if ("export".equals(extras.getString(BKEY_DO_AUTO))) {
 						finish_after = true;
 						mExportOnStartup = true;
 					} else {
-						throw new RuntimeException("Unsupported EXTRAS_DO_AUTO option");
+						throw new RuntimeException("Unsupported BKEY_DO_AUTO option");
 					}
 				} catch (NullPointerException e) {
 					Logger.logError(e);
@@ -506,7 +505,6 @@ public class AdministrationFunctions extends ActivityWithTasks {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		BCBackground.init(this);
 		if (mExportOnStartup)
 			exportToCSV();
 	}

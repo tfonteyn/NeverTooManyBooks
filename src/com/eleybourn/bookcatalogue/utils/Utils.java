@@ -397,7 +397,7 @@ public class Utils {
         Hashtable<String, Series> index = new Hashtable<>();
 
         for (Series s : list) {
-            final boolean emptyNum = s.num == null || s.num.trim().isEmpty();
+            final boolean emptyNum = s.number == null || s.number.trim().isEmpty();
             final String lcName = s.name.trim().toLowerCase();
             final boolean inNames = index.containsKey(lcName);
             if (!inNames) {
@@ -411,13 +411,13 @@ public class Utils {
                 } else {
                     // See if the one in 'index' also has a num
                     Series orig = index.get(lcName);
-                    if (orig.num == null || orig.num.trim().isEmpty()) {
+                    if (orig.number == null || orig.number.trim().isEmpty()) {
                         // Replace with this one, and mark orig for delete
                         index.put(lcName, s);
                         toDelete.add(orig);
                     } else {
                         // Both have numbers. See if they are the same.
-                        if (s.num.trim().toLowerCase().equals(orig.num.trim().toLowerCase())) {
+                        if (s.number.trim().toLowerCase().equals(orig.number.trim().toLowerCase())) {
                             // Same exact series, delete this one
                             toDelete.add(s);
                         } //else {

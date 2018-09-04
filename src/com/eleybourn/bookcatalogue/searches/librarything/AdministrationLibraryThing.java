@@ -34,7 +34,6 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
-import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
@@ -63,21 +62,11 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 			super.onCreate(savedInstanceState);
 			setTitle(R.string.library_thing);
 			setupPage();
-			BCBackground.init(this);
-		} catch (Exception e) {
-			Logger.logError(e);
+		} catch (Exception ignore) {
+			Logger.logError(ignore);
 		}
 	}
 	
-	/**
-	 * Fix background
-	 */
-	@Override 
-	public void onResume() {
-		super.onResume();
-		BCBackground.init(this);
-	}
-
 	private void setupPage() {
 		/* LT Reg Link */
 		TextView register = findViewById(R.id.register_url);
@@ -102,7 +91,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 		});
 
 		EditText devkeyView = findViewById(R.id.devkey);
-		SharedPreferences prefs = getSharedPreferences("bookCatalogue", Context.MODE_PRIVATE);
+		SharedPreferences prefs = getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
 		devkeyView.setText(prefs.getString(LibraryThingManager.LT_DEVKEY_PREF_NAME, ""));
 		
 		/* Save Button */
@@ -112,7 +101,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 			public void onClick(View v) {
 				EditText devkeyView = findViewById(R.id.devkey);
 				String devkey = devkeyView.getText().toString();
-				SharedPreferences prefs = getSharedPreferences("bookCatalogue", Context.MODE_PRIVATE);
+				SharedPreferences prefs = getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
 				SharedPreferences.Editor ed = prefs.edit();
 				ed.putString(LibraryThingManager.LT_DEVKEY_PREF_NAME, devkey);
 				ed.apply();
@@ -161,7 +150,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 		resetBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				SharedPreferences prefs = getSharedPreferences("bookCatalogue", android.content.Context.MODE_PRIVATE);
+				SharedPreferences prefs = getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
 				SharedPreferences.Editor ed = prefs.edit();
 				for( String key : prefs.getAll().keySet()) {
 					if (key.toLowerCase().startsWith(LibraryThingManager.LT_HIDE_ALERT_PREF_NAME.toLowerCase())) 

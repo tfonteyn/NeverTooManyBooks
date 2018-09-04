@@ -50,7 +50,6 @@ import com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaEntryHandler;
 import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaHandler;
-import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
@@ -222,8 +221,6 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 
         TouchListView tlv = (TouchListView) getListView();
         tlv.setDropListener(mDropListener);
-
-        BCBackground.init(this);
     }
 
     public void fillAnthology(int scroll_to_id) {

@@ -100,7 +100,7 @@ public class FieldVisibility extends BookCatalogueActivity {
                 false, false, false,
                 false, false};
 
-        SharedPreferences mPrefs = getSharedPreferences("bookCatalogue", MODE_PRIVATE);
+        SharedPreferences mPrefs = getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, MODE_PRIVATE);
         //SharedPreferences.Editor ed = mPrefs.edit();
         //ed.putString(STATE_BOOKSHELF, bookshelf);
         //ed.commit();
@@ -116,7 +116,7 @@ public class FieldVisibility extends BookCatalogueActivity {
             OnClickListener listener = new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SharedPreferences mPrefs = getSharedPreferences("bookCatalogue", MODE_PRIVATE);
+                    SharedPreferences mPrefs = getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, MODE_PRIVATE);
                     SharedPreferences.Editor ed = mPrefs.edit();
                     boolean field_visibility = mPrefs.getBoolean(prefs_name, true);
                     ed.putBoolean(prefs_name, !field_visibility);

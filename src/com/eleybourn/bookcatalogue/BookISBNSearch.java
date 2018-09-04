@@ -39,6 +39,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.scanner.Scanner;
@@ -63,23 +64,21 @@ import java.util.HashSet;
  *
  * ISBN stands for International Standard Book Number.
  *  Every book is assigned a unique ISBN-10 and ISBN-13 when published.
-
+ *
  * ASIN stands for Amazon Standard Identification Number.
- *   Almost every product on our Amazon has its own ASIN, a unique code we use to identify it.
+ *   Almost every product on Amazon has its own ASIN, a unique code used to identify it.
  *   For books, the ASIN is the same as the ISBN number, but for all other products a new ASIN
- *   is created when the item is uploaded to our catalogue.
+ *   is created when the item is uploaded to their catalogue.
  */
 public class BookISBNSearch extends ActivityWithTasks {
-    public static final String KEY_BY = "by";
+    public static final String BKEY_BY = "by";
     public static final String BY_ISBN = "isbn";
     public static final String BY_NAME = "name";
     public static final String BY_SCAN = "scan";
 
-    // isbn key itself, not to be confused with BY_ISBN
-    private static final String KEY_ISBN = "isbn";
-
-    private static final String KEY_SEARCH_MANAGER_ID = "SearchManagerId";
-    private static final String KEY_SCANNER_STARTED = "mScannerStarted";
+    private static final String BKEY_SEARCH_MANAGER_ID = "SearchManagerId";
+    private static final String BKEY_SCANNER_STARTED = "mScannerStarted";
+    private static final String BKEY_LAST_BOOK_INTENT = "LastBookIntent";
 
     /*
      *  Mode this activity is in; MANUAL = data entry, SCAN = data from scanner.
@@ -157,8 +156,8 @@ public class BookISBNSearch extends ActivityWithTasks {
 
             // Must do this before super.onCreate as getLayoutId() needs them
             Bundle extras = getIntent().getExtras();
-            mIsbn = extras.getString(KEY_ISBN);
-            mBy = extras.getString(KEY_BY);
+            mIsbn = extras.getString(ColumnNames.KEY_ISBN);
+            mBy = extras.getString(BKEY_BY);
 
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.title_isbn_search);
@@ -169,12 +168,12 @@ public class BookISBNSearch extends ActivityWithTasks {
             mDbHelper.open();
 
             if (savedInstanceState != null) {
-                mSearchManagerId = savedInstanceState.getLong(KEY_SEARCH_MANAGER_ID);
+                mSearchManagerId = savedInstanceState.getLong(BKEY_SEARCH_MANAGER_ID);
 
-                if (savedInstanceState.containsKey(KEY_SCANNER_STARTED)) {
-                    mScannerStarted = savedInstanceState.getBoolean(KEY_SCANNER_STARTED);
+                if (savedInstanceState.containsKey(BKEY_SCANNER_STARTED)) {
+                    mScannerStarted = savedInstanceState.getBoolean(BKEY_SCANNER_STARTED);
                 } // else {
-                //System.out.println(mId + " OnCreate mScannerStarted NOT PRESENT");
+                //System.out.println(mId + " OnCreate BKEY_SCANNER_STARTED NOT PRESENT");
                 //}
             }
 
@@ -196,11 +195,11 @@ public class BookISBNSearch extends ActivityWithTasks {
             if (mIsbn == null && (mBy == null || mBy.isEmpty())) {
                 Logger.logError(new RuntimeException("Empty args for BookISBNSearch"));
                 if (savedInstanceState != null) {
-                    if (mIsbn == null && savedInstanceState.containsKey(KEY_ISBN)) {
-                        mIsbn = savedInstanceState.getString(KEY_ISBN);
+                    if (mIsbn == null && savedInstanceState.containsKey(ColumnNames.KEY_ISBN)) {
+                        mIsbn = savedInstanceState.getString(ColumnNames.KEY_ISBN);
                     }
-                    if (savedInstanceState.containsKey(KEY_BY)) {
-                        mBy = savedInstanceState.getString(KEY_BY);
+                    if (savedInstanceState.containsKey(BKEY_BY)) {
+                        mBy = savedInstanceState.getString(BKEY_BY);
                     }
                 }
                 // If they are still null, we can't proceed.
@@ -253,8 +252,8 @@ public class BookISBNSearch extends ActivityWithTasks {
                 startScannerActivity();
             } else {
                 // It's a saved state, so see if we have an ISBN
-                if (savedInstanceState.containsKey(KEY_ISBN)) {
-                    go(savedInstanceState.getString(KEY_ISBN), "", "");
+                if (savedInstanceState.containsKey(ColumnNames.KEY_ISBN)) {
+                    go(savedInstanceState.getString(ColumnNames.KEY_ISBN), "", "");
                 }
             }
         } catch (SecurityException e) {
@@ -773,7 +772,7 @@ public class BookISBNSearch extends ActivityWithTasks {
      */
     private void createBook(Bundle book) {
         Intent i = new Intent(this, BookEdit.class);
-        i.putExtra("bookData", book);
+        i.putExtra(BookEditFields.BKEY_BOOK_DATA, book);
         startActivityForResult(i, UniqueId.ACTIVITY_EDIT_BOOK);
         //dismissProgress();
     }
@@ -875,10 +874,10 @@ public class BookISBNSearch extends ActivityWithTasks {
     protected void onRestoreInstanceState(Bundle inState) {
         //System.out.println(mId + " onRestoreInstanceState");
 
-        mSearchManagerId = inState.getLong(KEY_SEARCH_MANAGER_ID);
+        mSearchManagerId = inState.getLong(BKEY_SEARCH_MANAGER_ID);
 
         // Now do 'standard' stuff
-        mLastBookIntent = inState.getParcelable("LastBookIntent");
+        mLastBookIntent = inState.getParcelable(BKEY_LAST_BOOK_INTENT);
 
         // Call the super method only after we have the searchManager set up
         super.onRestoreInstanceState(inState);
@@ -892,22 +891,22 @@ public class BookISBNSearch extends ActivityWithTasks {
         // handsets. Search for "BUG NOTE 1" in this source file for a discussion
         Bundle b = getIntent().getExtras();
         if (b != null) {
-            if (b.containsKey(KEY_ISBN)) {
-                inState.putString(KEY_ISBN, b.getString(KEY_ISBN));
+            if (b.containsKey(ColumnNames.KEY_ISBN)) {
+                inState.putString(ColumnNames.KEY_ISBN, b.getString(ColumnNames.KEY_ISBN));
             }
-            if (b.containsKey(KEY_BY)) {
-                inState.putString(KEY_BY, b.getString(KEY_BY));
+            if (b.containsKey(BKEY_BY)) {
+                inState.putString(BKEY_BY, b.getString(BKEY_BY));
             }
         }
 
-        inState.putParcelable("LastBookIntent", mLastBookIntent);
+        inState.putParcelable(BKEY_LAST_BOOK_INTENT, mLastBookIntent);
         // Save the current search details as this may be called as a result of a rotate during an alert dialog.
-        inState.putString("author", mAuthor);
-        inState.putString(KEY_ISBN, mIsbn);
-        inState.putString("title", mTitle);
-        inState.putBoolean(KEY_SCANNER_STARTED, mScannerStarted);
+        inState.putString(ColumnNames.KEY_AUTHOR_ID, mAuthor);
+        inState.putString(ColumnNames.KEY_ISBN, mIsbn);
+        inState.putString(ColumnNames.KEY_TITLE, mTitle);
+        inState.putBoolean(BKEY_SCANNER_STARTED, mScannerStarted);
         if (mSearchManagerId != 0) {
-            inState.putLong(KEY_SEARCH_MANAGER_ID, mSearchManagerId);
+            inState.putLong(BKEY_SEARCH_MANAGER_ID, mSearchManagerId);
         }
     }
 }

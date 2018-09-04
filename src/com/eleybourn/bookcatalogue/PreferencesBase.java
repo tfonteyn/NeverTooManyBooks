@@ -51,7 +51,6 @@ public abstract class PreferencesBase extends BookCatalogueActivity {
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
-		
 	}
 
 //	/**

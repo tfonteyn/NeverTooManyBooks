@@ -8,27 +8,17 @@
     android:paddingStart="@dimen/padding_border">
 
     <TextView
-        android:id="@+id/title_label"
+        android:id="@+id/booktitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:hint="Label"
-        android:textSize="12sp"
-        tools:ignore="HardcodedText" />
-
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/title_label"
-        android:hint="@string/title"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        tools:text="@string/title" />
 
     <LinearLayout
-        android:id="@+id/top_buttons"
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/title"
+        android:layout_below="@+id/booktitle"
         android:gravity="top"
         android:orientation="horizontal">
 
@@ -58,6 +48,6 @@
         layout="@layout/inc_buttonbar_cancel_save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" />
+        android:layout_below="@id/content" />
 
 </RelativeLayout>

@@ -211,8 +211,8 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
      * Return the *absolute* position of the passed view in the list of books.
      */
     public int getAbsolutePosition(View v) {
-        BooklistHolder h = ViewTagger.getTag(v, R.id.TAG_HOLDER);
-        return h.absolutePosition;
+        BooklistHolder holder = ViewTagger.getTag(v, R.id.TAG_HOLDER);
+        return holder.absolutePosition;
     }
 
     private void scaleViewText(BooklistRowView rowView, View root) {
@@ -795,7 +795,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
             }
 
             // Build the flags indicating which extras to get.
-            int flags = extras & GetBookExtrasTask.EXTRAS_HANDLED;
+            int flags = extras & GetBookExtrasTask.BKEY_HANDLED;
 
             // If there are extras to get, run the background task.
             if (flags != 0) {
@@ -887,7 +887,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
      */
     private static class GetBookExtrasTask implements SimpleTask {
 
-        public static final int EXTRAS_HANDLED = BooklistStyle.EXTRAS_AUTHOR | BooklistStyle.EXTRAS_LOCATION | BooklistStyle.EXTRAS_PUBLISHER | BooklistStyle.EXTRAS_BOOKSHELVES;
+        public static final int BKEY_HANDLED = BooklistStyle.EXTRAS_AUTHOR | BooklistStyle.EXTRAS_LOCATION | BooklistStyle.EXTRAS_PUBLISHER | BooklistStyle.EXTRAS_BOOKSHELVES;
         /**
          * Location resource string
          */
@@ -950,7 +950,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
          * @param holder View holder of view for the book
          */
         GetBookExtrasTask(long bookId, BookHolder holder, int flags) {
-            if ((flags & EXTRAS_HANDLED) == 0)
+            if ((flags & BKEY_HANDLED) == 0)
                 throw new RuntimeException("GetBookExtrasTask called for unhandled extras");
 
             mHolder = holder;

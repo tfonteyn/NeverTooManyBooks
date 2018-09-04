@@ -5,6 +5,8 @@ package com.eleybourn.bookcatalogue.database.dbaadapter;
  * NOTE!!! Because Java String comparisons are not case-insensitive, it is
  * important that ALL these fields be listed in LOWER CASE.
  *
+ * NOTE 2: these are also used (abused?) as Bundle keys passed around in the Extras
+ *
  * Let's try to keep these alphabetically ?
  */
 public class ColumnNames {

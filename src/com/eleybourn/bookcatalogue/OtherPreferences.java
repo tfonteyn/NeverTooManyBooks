@@ -32,7 +32,6 @@ import com.eleybourn.bookcatalogue.properties.Property;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.StringListProperty;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
-import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.SoundManager;
 
 import java.util.Locale;
@@ -216,7 +215,68 @@ public class OtherPreferences extends PreferencesBase {
         }
     };
 
-     /**
+    @Override
+    protected int getLayoutId() {
+        return R.layout.other_preferences;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Make sure the names are correct
+        updateLocalesListItems();
+
+        setTitle(R.string.other_preferences);
+    }
+
+    @Override
+    public void onPause() {
+        // Don't bother listening since we check for locale changes in onResume of super class
+        BookCatalogueApp.unregisterOnLocaleChangedListener(mLocaleListener);
+        super.onPause();
+    }
+
+    /**
+     * Fix background
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Listen for locale changes (this activity CAN change it)
+        BookCatalogueApp.registerOnLocaleChangedListener(mLocaleListener);
+    }
+
+    /**
+     * Display current preferences and set handlers to catch changes.
+     */
+    @Override
+    protected void setupViews(Properties globalProps) {
+        // Add the locally constructed properties
+        for (Property p : mProperties)
+            globalProps.add(p);
+    }
+
+    /**
+     * Utility routine to adjust the strings used in displaying a language list.
+     */
+    private void updateLocalesListItems() {
+        String name;
+        String lang;
+        for (ListProperty.ItemEntry<String> item : mLocalesListItems) {
+            String loc = item.getValue();
+            if (loc.isEmpty()) {
+                name = getString(R.string.system_locale);
+                lang = BookCatalogueApp.getSystemLocal().getDisplayLanguage();
+            } else {
+                Locale locale = BookCatalogueApp.localeFromName(loc);
+                name = locale.getDisplayLanguage(locale);
+                lang = locale.getDisplayLanguage();
+            }
+            item.setString(R.string.preferred_language_x, name, lang);
+        }
+    }
+
+    /**
      * Format the list of locales (languages)
      *
      * @return List of preference items
@@ -247,68 +307,5 @@ public class OtherPreferences extends PreferencesBase {
             items.add(i, R.string.single_string, themeList[i]);
         }
         return items;
-    }
-
-    @Override
-    protected int getLayoutId() {
-        return R.layout.other_preferences;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Make sure the names are correct
-        updateLocalesListItems();
-
-        setTitle(R.string.other_preferences);
-        BCBackground.init(this);
-    }
-
-    @Override
-    public void onPause() {
-        // Don't bother listening since we check for locale changes in onResume of super class
-        BookCatalogueApp.unregisterOnLocaleChangedListener(mLocaleListener);
-        super.onPause();
-    }
-
-    /**
-     * Fix background
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Listen for locale changes (this activity CAN change it)
-        BookCatalogueApp.registerOnLocaleChangedListener(mLocaleListener);
-        BCBackground.init(this);
-    }
-
-    /**
-     * Display current preferences and set handlers to catch changes.
-     */
-    @Override
-    protected void setupViews(Properties globalProps) {
-        // Add the locally constructed properties
-        for (Property p : mProperties)
-            globalProps.add(p);
-    }
-
-    /**
-     * Utility routine to adjust the strings used in displaying a language list.
-     */
-    private void updateLocalesListItems() {
-        for (ListProperty.ItemEntry<String> item : mLocalesListItems) {
-            String loc = item.getValue();
-            String name;
-            String lang;
-            if (loc.isEmpty()) {
-                name = getString(R.string.system_locale);
-                lang = BookCatalogueApp.getSystemLocal().getDisplayLanguage();
-            } else {
-                Locale l = BookCatalogueApp.localeFromName(loc);
-                name = l.getDisplayLanguage(l);
-                lang = l.getDisplayLanguage();
-            }
-            item.setString(R.string.preferred_language_x, name, lang);
-        }
     }
 }

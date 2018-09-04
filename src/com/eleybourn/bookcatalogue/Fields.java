@@ -190,7 +190,7 @@ public class Fields extends ArrayList<Fields.Field> {
 	Fields(Activity a) {
 		super();
 		mContext = new ActivityContext(a);
-		mPrefs = a.getSharedPreferences("bookCatalogue", android.content.Context.MODE_PRIVATE);
+		mPrefs = a.getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
 	}
 
 	/**
@@ -201,7 +201,7 @@ public class Fields extends ArrayList<Fields.Field> {
 	Fields(Fragment f) {
 		super();
 		mContext = new FragmentContext(f);
-		mPrefs = f.getActivity().getSharedPreferences("bookCatalogue", android.content.Context.MODE_PRIVATE);
+		mPrefs = f.getActivity().getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
 	}
 
 	/**

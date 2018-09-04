@@ -12,8 +12,14 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  * @author Philip Warner
  */
 public class BookCataloguePreferences {
+
 	private BookCataloguePreferences() {
 	}
+
+	/** the name used for calls to Context.getSharedPreferences(name, ...) */
+	public static final String APP_SHARED_PREFERENCES = "bookCatalogue";
+
+
 
 	//FIXME: check if these need upgrading to https!
     // any https in the code was left as-is.
@@ -194,7 +200,7 @@ public class BookCataloguePreferences {
     /** Get (or create) the static shared preferences */
 	public static SharedPreferences getSharedPreferences() {
         if (mPrefs == null) {
-            mPrefs = BookCatalogueApp.getAppContext().getSharedPreferences("bookCatalogue", BookCatalogueApp.MODE_PRIVATE);
+            mPrefs = BookCatalogueApp.getAppContext().getSharedPreferences(APP_SHARED_PREFERENCES, BookCatalogueApp.MODE_PRIVATE);
         }
 		return mPrefs;
 	}

@@ -29,7 +29,6 @@ import android.widget.AdapterView;
 import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsExportFailuresActivity;
-import com.eleybourn.bookcatalogue.utils.BCBackground;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
@@ -106,7 +105,6 @@ public class TaskListActivity extends BindableItemListActivity {
     protected void onResume() {
         super.onResume();
         refreshData();
-        BCBackground.init(this);
     }
 
     /**

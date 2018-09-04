@@ -2842,13 +2842,13 @@ public class CatalogueDBAdapter {
 					String seriesName = s.name;
 					seriesIdTxt = getSeriesIdOrCreate(seriesName);
 					long seriesId = Long.parseLong(seriesIdTxt);
-					String uniqueId = seriesIdTxt + "(" + s.num.trim().toUpperCase() + ")";
+					String uniqueId = seriesIdTxt + "(" + s.number.trim().toUpperCase() + ")";
 					if (!idHash.containsKey(uniqueId)) {
 						idHash.put(uniqueId, true);
 						pos++;
 						mAddBookSeriesStmt.bindLong(1, bookId);
 						mAddBookSeriesStmt.bindLong(2, seriesId);
-						mAddBookSeriesStmt.bindString(3, s.num);
+						mAddBookSeriesStmt.bindString(3, s.number);
 						mAddBookSeriesStmt.bindLong(4, pos);
 						mAddBookSeriesStmt.execute();
 					}					

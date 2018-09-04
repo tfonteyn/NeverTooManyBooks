@@ -79,7 +79,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
 	/** Extra book data to show at lowest level */
 	public static final int EXTRAS_THUMBNAIL_LARGE = 32;
 	/** Extra book data to show at lowest level */
-	public static final int EXTRAS_ALL = EXTRAS_BOOKSHELVES|EXTRAS_LOCATION|EXTRAS_PUBLISHER|EXTRAS_AUTHOR|EXTRAS_THUMBNAIL|EXTRAS_THUMBNAIL_LARGE;
+	public static final int EXTRAS_ALL = EXTRAS_BOOKSHELVES | EXTRAS_LOCATION | EXTRAS_PUBLISHER | EXTRAS_AUTHOR | EXTRAS_THUMBNAIL | EXTRAS_THUMBNAIL_LARGE;
 
 	private static final String SFX_SHOW_BOOKSHELVES = "ShowBookshelves";
 	private static final String SFX_SHOW_LOCATION = "ShowLocation";

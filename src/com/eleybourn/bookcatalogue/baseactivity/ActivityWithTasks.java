@@ -55,6 +55,7 @@ import com.eleybourn.bookcatalogue.utils.TaskManager.TaskManagerListener;
  * @author Philip Warner
  */
 abstract public class ActivityWithTasks extends BookCatalogueActivity {
+    private static final String BKEY_TASK_MANAGER_ID = "TaskManagerId";
     /**
      * ID of associated TaskManager
      */
@@ -161,7 +162,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
 
         // Restore mTaskManagerId if present
         if (savedInstanceState != null) {
-            mTaskManagerId = savedInstanceState.getLong("TaskManagerId");
+            mTaskManagerId = savedInstanceState.getLong(BKEY_TASK_MANAGER_ID);
         }
     }
 
@@ -310,7 +311,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
         super.onSaveInstanceState(outState);
 
         if (mTaskManagerId != 0)
-            outState.putLong("TaskManagerId", mTaskManagerId);
+            outState.putLong(ActivityWithTasks.BKEY_TASK_MANAGER_ID, mTaskManagerId);
     }
 
     /**

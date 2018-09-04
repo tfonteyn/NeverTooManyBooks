@@ -68,7 +68,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
             bar.setDisplayHomeAsUpEnabled(true);
 
             // Only display the 'back' decoration if we are at the top
-            boolean isTaskRoot = isTaskRoot() || getIntent().getBooleanExtra(StartupActivity.IS_TASK_ROOT, false);
+            boolean isTaskRoot = isTaskRoot() || getIntent().getBooleanExtra(StartupActivity.BKEY_IS_TASK_ROOT, false);
             if (isTaskRoot) {
                 bar.setDisplayShowHomeEnabled(true);
                 //FIXME: find out why Vector icons don't work.... for now abusing the collapse icon

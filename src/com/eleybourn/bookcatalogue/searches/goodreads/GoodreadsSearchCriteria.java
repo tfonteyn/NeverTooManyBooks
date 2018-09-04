@@ -32,7 +32,6 @@ import com.eleybourn.bookcatalogue.BooksRowView;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
-import com.eleybourn.bookcatalogue.utils.BCBackground;
 
 /**
  * Activity to handle searching goodreads for books that did not automatically convert. These
@@ -115,17 +114,6 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
 			public void onClick(View v) {
 				doSearch();
 			}});
-		
-		BCBackground.init(this);
-	}
-
-	/**
-	 * Fix background
-	 */
-	@Override 
-	public void onResume() {
-		super.onResume();
-		BCBackground.init(this);
 	}
 
 	/**
