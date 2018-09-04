@@ -1070,23 +1070,23 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 				if (intent != null && intent.hasExtra(BookEditFields.ADDED_HAS_INFO)) {
 					if (sort == SORT_TITLE) {
 						justAdded = intent.getStringExtra(BookEditFields.ADDED_TITLE);
-						int position = mDbHelper.fetchBookPositionByTitle(justAdded, bookshelf);
+						int position = mDb.fetchBookPositionByTitle(justAdded, bookshelf);
 						adjustCurrentGroup(position, 1, true, false);
 					} else if (sort == SORT_AUTHOR) {
 						justAdded = intent.getStringExtra(BookEditFields.ADDED_AUTHOR);
-						int position = mDbHelper.fetchAuthorPositionByName(justAdded, bookshelf);
+						int position = mDb.fetchAuthorPositionByName(justAdded, bookshelf);
 						adjustCurrentGroup(position, 1, true, false);
 					} else if (sort == SORT_AUTHOR_GIVEN) {
 						justAdded = intent.getStringExtra(BookEditFields.ADDED_AUTHOR);
-						int position = mDbHelper.fetchAuthorPositionByGivenName(justAdded, bookshelf);
+						int position = mDb.fetchAuthorPositionByGivenName(justAdded, bookshelf);
 						adjustCurrentGroup(position, 1, true, false);
 					} else if (sort == SORT_SERIES) {
 						justAdded = intent.getStringExtra(BookEditFields.ADDED_SERIES);
-						int position = mDbHelper.fetchSeriesPositionBySeries(justAdded, bookshelf);
+						int position = mDb.fetchSeriesPositionBySeries(justAdded, bookshelf);
 						adjustCurrentGroup(position, 1, true, false);
 					} else if (sort == SORT_GENRE) {
 						justAdded = intent.getStringExtra(BookEditFields.ADDED_GENRE);
-						int position = mDbHelper.fetchGenrePositionByGenre(justAdded, bookshelf);
+						int position = mDb.fetchGenrePositionByGenre(justAdded, bookshelf);
 						adjustCurrentGroup(position, 1, true, false);
 					}
 				}

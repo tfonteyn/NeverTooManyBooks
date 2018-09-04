@@ -155,7 +155,7 @@ public class BookEditFields extends BookDetailsAbstract
                 public void onClick(View v) {
                     StandardDialogs.selectStringDialog(getActivity().getLayoutInflater(),
                             getString(R.string.format),
-                            mDbHelper.getFormats(), formatField.getValue().toString(),
+                            mDb.getFormats(), formatField.getValue().toString(),
                             new SimpleDialogOnClickListener() {
                                 @Override
                                 public void onClick(SimpleDialogItem item) {
@@ -178,7 +178,7 @@ public class BookEditFields extends BookDetailsAbstract
                 public void onClick(View v) {
                     StandardDialogs.selectStringDialog(getActivity().getLayoutInflater(),
                             getString(R.string.language),
-                            mDbHelper.getLanguages(), languageField.getValue().toString(),
+                            mDb.getLanguages(), languageField.getValue().toString(),
                             new SimpleDialogOnClickListener() {
                                 @Override
                                 public void onClick(SimpleDialogItem item) {
@@ -313,7 +313,7 @@ public class BookEditFields extends BookDetailsAbstract
         if (list == null || list.isEmpty()) {
             String currShelf = BookCataloguePreferences.getString(BooksOnBookshelf.PREF_BOOKSHELF, "");
             if (currShelf.isEmpty()) {
-                currShelf = mDbHelper.getBookshelfName(1);
+                currShelf = mDb.getBookshelfName(1);
             }
             String encoded_shelf = ArrayUtils.encodeListItem(currShelf, BOOKSHELF_SEPARATOR);
             Field fe = mFields.getField(R.id.bookshelf);
@@ -398,9 +398,9 @@ public class BookEditFields extends BookDetailsAbstract
                         mEditManager.setDirty(true);
                     } else {
                         // Even though the dialog was terminated, some authors MAY have been updated/added.
-                        mEditManager.getBookData().refreshAuthorList(mDbHelper);
+                        mEditManager.getBookData().refreshAuthorList(mDb);
                     }
-                    // We do the fixup here because the user may have edited or merged authors; this will
+                    // We do the fix here because the user may have edited or merged authors; this will
                     // have already been applied to the database so no update is necessary, but we do need
                     // to update the data we display.
                     boolean oldDirty = mEditManager.isDirty();
@@ -421,7 +421,7 @@ public class BookEditFields extends BookDetailsAbstract
     @Override
     protected void populateAuthorListField() {
         ArrayList<Author> list = mEditManager.getBookData().getAuthors();
-        if (list.size() != 0 && Utils.pruneList(mDbHelper, list)) {
+        if (list.size() != 0 && Utils.pruneList(mDb, list)) {
             mEditManager.setDirty(true);
             mEditManager.getBookData().setAuthorList(list);
         }

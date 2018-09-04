@@ -226,7 +226,7 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 
             String newText = null;
             Utils.pruneSeriesList(series);
-            Utils.pruneList(mDbHelper, series);
+            Utils.pruneList(mDb, series);
             int seriesCount = series.size();
             if (seriesCount > 0) {
                 StringBuilder builder = new StringBuilder();
@@ -326,7 +326,7 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
      * @param rowId Database row _id of the loaned book
      */
     private void showLoanedInfo(Long rowId) {
-        String personLoanedTo = mDbHelper.fetchLoanByBook(rowId);
+        String personLoanedTo = mDb.fetchLoanByBook(rowId);
         TextView textView = getView().findViewById(R.id.who);
         if (personLoanedTo != null) {
             textView.setVisibility(View.VISIBLE);
@@ -352,7 +352,7 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
             btn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    BookUtils.setRead(mDbHelper, book, isChecked);
+                    BookUtils.setRead(mDb, book, isChecked);
                 }
             });
         }

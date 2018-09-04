@@ -204,8 +204,8 @@ public class DbSync {
 		 * - if there are other SH locks, wait for one to be release and loop.
 		 */
 		public SyncLock getExclusiveLock() {
-			final Thread t = Thread.currentThread();
-			//long t0 = System.currentTimeMillis();
+			final Thread ourThread = Thread.currentThread();
+			long t0 = System.currentTimeMillis();
 			// Synchronize with other code
 			mLock.lock();
 			try {
@@ -219,7 +219,7 @@ public class DbSync {
 						if (mSharedOwners.size() == 0)
 							return mExclusiveLock;
 						// Check for one lock, and it being this thread.
-						if (mSharedOwners.size() == 1 && mSharedOwners.containsValue(t)) {
+						if (mSharedOwners.size() == 1 && mSharedOwners.containsValue(ourThread)) {
 							// One locker, and it is us...so upgrade is OK.
 							return mExclusiveLock;
 						}
@@ -233,11 +233,13 @@ public class DbSync {
 					}
 				}				
 			} finally {
-				//long t1 = System.currentTimeMillis();
-				//if (mLock.isHeldByCurrentThread())
-				//	System.out.println(t.getName() + " waited " + (t1 - t0) + "ms for EXCLUSIVE access");
-				//else
-				//	System.out.println(t.getName() + " waited " + (t1 - t0) + "ms AND FAILED TO GET EXCLUSIVE access");
+				if (BuildConfig.DEBUG) {
+					long t1 = System.currentTimeMillis();
+					if (mLock.isHeldByCurrentThread())
+						System.out.println(ourThread.getName() + " waited " + (t1 - t0) + "ms for EXCLUSIVE access");
+					else
+						System.out.println(ourThread.getName() + " waited " + (t1 - t0) + "ms AND FAILED TO GET EXCLUSIVE access");
+				}
 			}
 		}
 		/**
@@ -382,7 +384,8 @@ public class DbSync {
 		/**
 		 * Locking-aware wrapper for underlying database method.
 		 */
-		SynchronizedCursor rawQueryWithFactory(SynchronizedCursorFactory factory, String sql, String[] selectionArgs, String editTable) {
+		SynchronizedCursor rawQueryWithFactory(SynchronizedCursorFactory factory, String sql, String[] selectionArgs,
+                                               @SuppressWarnings("SameParameterValue") String editTable) {
 			SyncLock l = null;
 			if (mTxLock == null)
 				l = mSync.getSharedLock();
@@ -630,6 +633,7 @@ public class DbSync {
                 System.gc();
                 Field f;
                 try {
+                    //noinspection JavaReflectionMemberAccess
                     f = SQLiteClosable.class.getDeclaredField("mReferenceCount");
                     f.setAccessible(true);
                     int refs = (Integer) f.get(db); //IllegalAccessException
@@ -792,8 +796,8 @@ public class DbSync {
 	public static class SynchronizedCursor extends SQLiteCursor {
 		private final Synchronizer mSync;
 
-		public SynchronizedCursor(SQLiteCursorDriver driver,
-								  String editTable, SQLiteQuery query, Synchronizer sync) {
+		SynchronizedCursor(SQLiteCursorDriver driver,
+                           String editTable, SQLiteQuery query, Synchronizer sync) {
 			super(driver, editTable, query);
 			mSync = sync;
 		}

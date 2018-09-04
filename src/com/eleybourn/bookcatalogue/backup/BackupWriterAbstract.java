@@ -215,7 +215,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 //	private void writeBooks(final BackupWriterListener listener, final int backupFlags, final Date since) throws IOException {
 //		// This is an estimate only; we actually don't know how many covers
 //		// there are in the backup.
-//		listener.setMax((int) (mDbHelper.getBookCount() * 2 + 1));
+//		listener.setMax((int) (mDb.getBookCount() * 2 + 1));
 //
 //		Exporter.ExportListener exportListener = new Exporter.ExportListener() {
 //			private int mLastPos = 0;

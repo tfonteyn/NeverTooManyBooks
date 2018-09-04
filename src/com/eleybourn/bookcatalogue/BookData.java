@@ -178,7 +178,6 @@ public class BookData extends DataManager {
         CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         db.open();
         try {
-            ;
             try(BooksCursor book = db.fetchBookById(getRowId())) {
                 // Put all cursor fields in collection
                 putAll(book);
@@ -348,7 +347,6 @@ public class BookData extends DataManager {
      * @return The list
      */
     private String getBookshelfListFromDb(CatalogueDBAdapter db) {
-        ;
         try(Cursor bookshelves = db.fetchAllBookshelvesByBook(getRowId())) {
             StringBuilder bookshelves_list = new StringBuilder();
             while (bookshelves.moveToNext()) {

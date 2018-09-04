@@ -57,7 +57,7 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
     /**
      * Database instance
      */
-    protected CatalogueDBAdapter mDbHelper;
+    protected CatalogueDBAdapter mDb;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,8 +73,8 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
             throw new RuntimeException("Activity " + context.getClass().getSimpleName() + " must implement BookEditManager");
 
         mEditManager = (BookEditManager) context;
-        mDbHelper = new CatalogueDBAdapter(context);
-        mDbHelper.open();
+        mDb = new CatalogueDBAdapter(context);
+        mDb.open();
     }
 
     @Override
@@ -146,10 +146,10 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
                     }
                     break;
                 case SHARE_ID:
-                    BookUtils.shareBook(getActivity(), mDbHelper, currRow);
+                    BookUtils.shareBook(getActivity(), mDb, currRow);
                     return true;
                 case DELETE_ID:
-                    BookUtils.deleteBook(getActivity(), mDbHelper, currRow,
+                    BookUtils.deleteBook(getActivity(), mDb, currRow,
                             new Runnable() {
                                 @Override
                                 public void run() {
@@ -158,7 +158,7 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
                             });
                     return true;
                 case DUPLICATE_ID:
-                    BookUtils.duplicateBook(getActivity(), mDbHelper, currRow);
+                    BookUtils.duplicateBook(getActivity(), mDb, currRow);
                     return true;
                 case EDIT_OPTIONS_ID:
                     BookEdit.editBook(getActivity(), currRow, BookEdit.TAB_EDIT);
@@ -229,8 +229,6 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
 
     @Override
     public void onResume() {
-        //double t0 = System.currentTimeMillis();
-
         super.onResume();
 
         // Load the data and preserve the isDirty() setting
@@ -247,16 +245,12 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
                 mEditManager.setDirty(true);
             }
         });
-        //System.out.println("BEFA resume: " + (System.currentTimeMillis() - t0));
     }
 
-    /**
-     * Cleanup
-     */
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mDbHelper.close();
+        mDb.close();
     }
 
     @Override

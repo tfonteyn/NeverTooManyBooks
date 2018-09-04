@@ -119,7 +119,7 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
         Tracker.enterOnCreate(this);
         try {
             super.onActivityCreated(savedInstanceState);
-            String user = mDbHelper.fetchLoanByBook(mEditManager.getBookData().getRowId());
+            String user = mDb.fetchLoanByBook(mEditManager.getBookData().getRowId());
             if (user == null) {
                 loanTo();
             } else {
@@ -187,7 +187,7 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
         String friend = mUserText.getText().toString();
         BookData values = mEditManager.getBookData();
         values.putString(ColumnNames.KEY_LOANED_TO, friend);
-        mDbHelper.createLoan(values, true);
+        mDb.createLoan(values, true);
         return friend;
     }
 
@@ -195,7 +195,7 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
      * Delete the user and book combination as a loan from the database
      */
     private void removeLoan() {
-        mDbHelper.deleteLoan(mEditManager.getBookData().getRowId(), true);
+        mDb.deleteLoan(mEditManager.getBookData().getRowId(), true);
         return;
     }
 

@@ -118,7 +118,7 @@ public class ExportThread extends ManagedTask {
 //		
 //		StringBuilder row = new StringBuilder();
 //		
-//		BooksCursor books = mDbHelper.exportBooks();
+//		BooksCursor books = mDb.exportBooks();
 //		BooksRowView rv = books.getRowView();
 //
 //		try {
@@ -169,7 +169,7 @@ public class ExportThread extends ManagedTask {
 //						String anthology = books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_ANTHOLOGY_MASK));
 //						String anthology_titles = "";
 //						if (anthology.equals(CatalogueDBAdapter.ANTHOLOGY_MULTIPLE_AUTHORS + "") || anthology.equals(CatalogueDBAdapter.ANTHOLOGY_IS_ANTHOLOGY + "")) {
-//							Cursor titles = mDbHelper.fetchAnthologyTitlesByBook(id);
+//							Cursor titles = mDb.fetchAnthologyTitlesByBook(id);
 //							try {
 //								if (titles.moveToFirst()) {
 //									do { 
@@ -185,7 +185,7 @@ public class ExportThread extends ManagedTask {
 //						}
 //						String title = books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_TITLE));
 //						//Display the selected bookshelves
-//						Cursor bookshelves = mDbHelper.fetchAllBookshelvesByBook(id);
+//						Cursor bookshelves = mDb.fetchAllBookshelvesByBook(id);
 //						String bookshelves_id_text = "";
 //						String bookshelves_name_text = "";
 //						while (bookshelves.moveToNext()) {
@@ -194,8 +194,8 @@ public class ExportThread extends ManagedTask {
 //						}
 //						bookshelves.close();
 //
-//						String authorDetails = Convert.encodeList( mDbHelper.getBookAuthorList(id), '|' );
-//						String seriesDetails = Convert.encodeList( mDbHelper.getBookSeriesList(id), '|' );
+//						String authorDetails = Convert.encodeList( mDb.getBookAuthorList(id), '|' );
+//						String seriesDetails = Convert.encodeList( mDb.getBookSeriesList(id), '|' );
 //
 //						row.setLength(0);
 //						row.append("\"" + formatCell(id) + "\",");

@@ -177,7 +177,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
             }
         });
 
-        ArrayAdapter<String> author_adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, mDbHelper.getAllAuthors());
+        ArrayAdapter<String> author_adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, mDb.getAllAuthors());
         mAuthorText = getView().findViewById(R.id.add_author);
         mAuthorText.setAdapter(author_adapter);
         if (mSame.isChecked()) {

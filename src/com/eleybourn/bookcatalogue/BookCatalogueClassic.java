@@ -86,7 +86,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	private static final int LIST_THUMBNAIL_SIZE=60;
 	private static final String BKEY_ISBN = "isbn";
 
-	private CatalogueDBAdapter mDbHelper;
+	private CatalogueDBAdapter mDb;
 	private static final int SORT_BY_AUTHOR_EXPANDED = MenuHandler.FIRST + 1;
 	private static final int SORT_BY_AUTHOR_COLLAPSED = MenuHandler.FIRST + 2;
 	private static final int SORT_BY = MenuHandler.FIRST + 3;
@@ -174,8 +174,8 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			// This sets the search capability to local (application) search
 			setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 			setContentView(R.layout.list_authors);
-			mDbHelper = new CatalogueDBAdapter(this);
-			mDbHelper.open();
+			mDb = new CatalogueDBAdapter(this);
+			mDb.open();
 
 			// Did the user search
 			Intent intent = getIntent();
@@ -218,7 +218,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		spinnerAdapter.add(getString(R.string.all_books));
 		pos++;
 
-		try (Cursor bookshelves = mDbHelper.fetchAllBookshelves()) {
+		try (Cursor bookshelves = mDb.fetchAllBookshelves()) {
 			if (bookshelves.moveToFirst()) {
 				do {
 					String this_bookshelf = bookshelves.getString(1);
@@ -426,7 +426,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			 */
 			@Override
 			protected Cursor getChildrenCursor(Cursor groupCursor) {
-				if (mDbHelper == null) // We are terminating
+				if (mDb == null) // We are terminating
 					return null;
 
 				// Get the DB cursor
@@ -618,19 +618,19 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
 			if (search_query.isEmpty()) {
-				return mDbHelper.fetchAllBooksByChar(groupCursor.getString(mGroupIdColumnIndex), bookshelf, "");
+				return mDb.fetchAllBooksByChar(groupCursor.getString(mGroupIdColumnIndex), bookshelf, "");
 			} else {
-				return mDbHelper.searchBooksByChar(search_query, groupCursor.getString(mGroupIdColumnIndex), bookshelf);
+				return mDb.searchBooksByChar(search_query, groupCursor.getString(mGroupIdColumnIndex), bookshelf);
 			}
 		}
 		@Override
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
 				// Return all books (for the bookshelf)
-				mCursor = mDbHelper.fetchAllBookChars(bookshelf);
+				mCursor = mDb.fetchAllBookChars(bookshelf);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDbHelper.searchBooksChars(search_query, bookshelf);
+				mCursor = mDb.searchBooksChars(search_query, bookshelf);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
@@ -652,16 +652,16 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(final Cursor groupCursor) {
-			return mDbHelper.fetchAllBooksByAuthor(groupCursor.getInt(mGroupIdColumnIndex), bookshelf, search_query, false);
+			return mDb.fetchAllBooksByAuthor(groupCursor.getInt(mGroupIdColumnIndex), bookshelf, search_query, false);
 		}
 		@Override
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
 				// Return all books for the given bookshelf
-				mCursor = mDbHelper.fetchAllAuthors(bookshelf);
+				mCursor = mDb.fetchAllAuthors(bookshelf);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDbHelper.searchAuthors(search_query, bookshelf);
+				mCursor = mDb.searchAuthors(search_query, bookshelf);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
@@ -683,16 +683,16 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
-			return mDbHelper.fetchAllBooksByAuthor(groupCursor.getInt(mGroupIdColumnIndex), bookshelf, search_query, false);
+			return mDb.fetchAllBooksByAuthor(groupCursor.getInt(mGroupIdColumnIndex), bookshelf, search_query, false);
 		}
 		@Override
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
 				// Return all books for the given bookshelf
-				mCursor = mDbHelper.fetchAllAuthors(bookshelf, false, false);
+				mCursor = mDb.fetchAllAuthors(bookshelf, false, false);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDbHelper.searchAuthors(search_query, bookshelf, false, false);
+				mCursor = mDb.searchAuthors(search_query, bookshelf, false, false);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
@@ -714,16 +714,16 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
-			return mDbHelper.fetchAllBooksByAuthor(groupCursor.getInt(mGroupIdColumnIndex), bookshelf, search_query, true);
+			return mDb.fetchAllBooksByAuthor(groupCursor.getInt(mGroupIdColumnIndex), bookshelf, search_query, true);
 		}
 		@Override
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
 				// Return all books for the given bookshelf
-				mCursor = mDbHelper.fetchAllAuthors(bookshelf, true, true);
+				mCursor = mDb.fetchAllAuthors(bookshelf, true, true);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDbHelper.searchAuthors(search_query, bookshelf, true, true);
+				mCursor = mDb.searchAuthors(search_query, bookshelf, true, true);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
@@ -745,14 +745,14 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
-			return mDbHelper.fetchAllBooksBySeries(groupCursor.getString(groupCursor.getColumnIndex(KEY_SERIES_NAME)), bookshelf, search_query);
+			return mDb.fetchAllBooksBySeries(groupCursor.getString(groupCursor.getColumnIndex(KEY_SERIES_NAME)), bookshelf, search_query);
 		}
 		@Override
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
-				mCursor = mDbHelper.fetchAllSeries(bookshelf, true);
+				mCursor = mDb.fetchAllSeries(bookshelf, true);
 			} else {
-				mCursor = mDbHelper.searchSeries(search_query, bookshelf);
+				mCursor = mDb.searchSeries(search_query, bookshelf);
 			}
 			BookCatalogueClassic.this.startManagingCursor(mCursor);
 			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
@@ -775,11 +775,11 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
-			return mDbHelper.fetchAllBooksByLoan(groupCursor.getString(mGroupIdColumnIndex), search_query);
+			return mDb.fetchAllBooksByLoan(groupCursor.getString(mGroupIdColumnIndex), search_query);
 		}
 		@Override
 		public Cursor newGroupCursor() {
-			mCursor = mDbHelper.fetchAllLoans();
+			mCursor = mDb.fetchAllLoans();
 			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
 		}
@@ -800,11 +800,11 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
-			return mDbHelper.fetchAllBooksByRead(groupCursor.getString(mGroupIdColumnIndex), bookshelf, search_query);
+			return mDb.fetchAllBooksByRead(groupCursor.getString(mGroupIdColumnIndex), bookshelf, search_query);
 		}
 		@Override
 		public Cursor newGroupCursor() {
-			mCursor = mDbHelper.fetchAllUnreadPsuedo();
+			mCursor = mDb.fetchAllUnreadPsuedo();
 			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
 		}
@@ -826,19 +826,19 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
 			if (search_query.isEmpty()) {
-				return mDbHelper.fetchAllBooksByGenre(groupCursor.getString(mGroupIdColumnIndex), bookshelf, "");
+				return mDb.fetchAllBooksByGenre(groupCursor.getString(mGroupIdColumnIndex), bookshelf, "");
 			} else {
-				return mDbHelper.searchBooksByGenre(search_query, groupCursor.getString(mGroupIdColumnIndex), bookshelf);
+				return mDb.searchBooksByGenre(search_query, groupCursor.getString(mGroupIdColumnIndex), bookshelf);
 			}
 		}
 		@Override
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
 				// Return all books (for the bookshelf)
-				mCursor = mDbHelper.fetchAllGenres(bookshelf);
+				mCursor = mDb.fetchAllGenres(bookshelf);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDbHelper.searchGenres(search_query, bookshelf);
+				mCursor = mDb.searchGenres(search_query, bookshelf);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
@@ -861,19 +861,19 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
 			if (search_query.isEmpty()) {
-				return mDbHelper.fetchAllBooksByDatePublished(groupCursor.getString(mGroupIdColumnIndex), bookshelf, "");
+				return mDb.fetchAllBooksByDatePublished(groupCursor.getString(mGroupIdColumnIndex), bookshelf, "");
 			} else {
-				return mDbHelper.searchBooksByDatePublished(search_query, groupCursor.getString(mGroupIdColumnIndex), bookshelf);
+				return mDb.searchBooksByDatePublished(search_query, groupCursor.getString(mGroupIdColumnIndex), bookshelf);
 			}
 		}
 		@Override
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
 				// Return all books (for the bookshelf)
-				mCursor = mDbHelper.fetchAllDatePublished(bookshelf);
+				mCursor = mDb.fetchAllDatePublished(bookshelf);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDbHelper.searchDatePublished(search_query, bookshelf);
+				mCursor = mDb.searchDatePublished(search_query, bookshelf);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
 			return mCursor;
@@ -888,15 +888,15 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 * Build the tree view
 	 */
 	private void fillData() {
-		//check and reset mDbHelper. Avoid leaking cursors. Each one is 1MB (allegedly)!
+		//check and reset mDb. Avoid leaking cursors. Each one is 1MB (allegedly)!
 		// so we're not interested in the Cursor returned, only in the fact that
 		// the db does the work ?? AND that we don't leak the Cursor
 		//FIXME: is there any real reason to run a SELECT and then discard it ??
-		try (Cursor c = mDbHelper.fetchAllAuthors(bookshelf)){
+		try (Cursor c = mDb.fetchAllAuthors(bookshelf)){
 		} catch (NullPointerException e) {
 			//reset
-			mDbHelper = new CatalogueDBAdapter(this);
-			mDbHelper.open();
+			mDb = new CatalogueDBAdapter(this);
+			mDb.open();
 		}
 
 		ViewManager vm;
@@ -983,7 +983,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		/* Add number to bookshelf */
 		TextView mBookshelfNumView = findViewById(R.id.bookshelf_num);
 		try {
-			mBookshelfNumView.setText(BookCatalogueApp.getResourceString(R.string.brackets,mDbHelper.countBooks(bookshelf)));
+			mBookshelfNumView.setText(BookCatalogueApp.getResourceString(R.string.brackets, mDb.countBooks(bookshelf)));
 		} catch (IllegalStateException e) {
 			Logger.logError(e);
 		}
@@ -1436,11 +1436,11 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		switch(item.getItemId()) {
 
 		case DELETE_ID:
-			int res = StandardDialogs.deleteBookAlert(this, mDbHelper, info.id, new Runnable() {
+			int res = StandardDialogs.deleteBookAlert(this, mDb, info.id, new Runnable() {
 				@Override
 				public void run() {
-					mDbHelper.purgeAuthors();
-					mDbHelper.purgeSeries();
+					mDb.purgeAuthors();
+					mDb.purgeSeries();
 					fillData();
 				}});
 			if (res != 0)
@@ -1480,11 +1480,11 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				if (info.id==-1) {
 					Toast.makeText(this, R.string.cannot_edit_system, Toast.LENGTH_LONG).show();
 				} else {
-					Series s = mDbHelper.getSeriesById(info.id);
-					EditSeriesDialog d = new EditSeriesDialog(this, mDbHelper, new Runnable() {
+					Series s = mDb.getSeriesById(info.id);
+					EditSeriesDialog d = new EditSeriesDialog(this, mDb, new Runnable() {
 						@Override
 						public void run() {
-							mDbHelper.purgeSeries();
+							mDb.purgeSeries();
 							regenGroups();
 						}});
 					d.editSeries(s);
@@ -1493,7 +1493,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			}
 		case DELETE_SERIES_ID:
 			{
-				StandardDialogs.deleteSeriesAlert(this, mDbHelper, mDbHelper.getSeriesById(info.id), new Runnable() {
+				StandardDialogs.deleteSeriesAlert(this, mDb, mDb.getSeriesById(info.id), new Runnable() {
 					@Override
 					public void run() {
 						regenGroups();
@@ -1502,13 +1502,13 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			}
 		case EDIT_AUTHOR_ID:
 			{
-				EditAuthorDialog d = new EditAuthorDialog(this, mDbHelper, new Runnable() {
+				EditAuthorDialog d = new EditAuthorDialog(this, mDb, new Runnable() {
 					@Override
 					public void run() {
-						mDbHelper.purgeAuthors();
+						mDb.purgeAuthors();
 						regenGroups();
 					}});
-				d.editAuthor(mDbHelper.getAuthorById(info.id));
+				d.editAuthor(mDb.getAuthorById(info.id));
 				break;
 			}
 		}
@@ -1582,31 +1582,31 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 						case SORT_TITLE:
                         {
 							justAdded = intent.getStringExtra(BookEdit.ADDED_TITLE);
-							int position = mDbHelper.fetchBookPositionByTitle(justAdded, bookshelf);
+							int position = mDb.fetchBookPositionByTitle(justAdded, bookshelf);
 							adjustCurrentGroup(position, 1, true, false);
 							break;
 						}
 						case SORT_AUTHOR: {
 							justAdded = intent.getStringExtra(BookEdit.ADDED_AUTHOR);
-							int position = mDbHelper.fetchAuthorPositionByName(justAdded, bookshelf);
+							int position = mDb.fetchAuthorPositionByName(justAdded, bookshelf);
 							adjustCurrentGroup(position, 1, true, false);
 							break;
 						}
 						case SORT_AUTHOR_GIVEN: {
 							justAdded = intent.getStringExtra(BookEdit.ADDED_AUTHOR);
-							int position = mDbHelper.fetchAuthorPositionByGivenName(justAdded, bookshelf);
+							int position = mDb.fetchAuthorPositionByGivenName(justAdded, bookshelf);
 							adjustCurrentGroup(position, 1, true, false);
 							break;
 						}
 						case SORT_SERIES: {
 							justAdded = intent.getStringExtra(BookEdit.ADDED_SERIES);
-							int position = mDbHelper.fetchSeriesPositionBySeries(justAdded, bookshelf);
+							int position = mDb.fetchSeriesPositionBySeries(justAdded, bookshelf);
 							adjustCurrentGroup(position, 1, true, false);
 							break;
 						}
 						case SORT_GENRE: {
 							justAdded = intent.getStringExtra(BookEdit.ADDED_GENRE);
-							int position = mDbHelper.fetchGenrePositionByGenre(justAdded, bookshelf);
+							int position = mDb.fetchGenrePositionByGenre(justAdded, bookshelf);
 							adjustCurrentGroup(position, 1, true, false);
 							break;
 						}
@@ -1657,9 +1657,9 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	@Override
 	protected void onDestroy() {
 		try {
-			if (mDbHelper != null) {
-				mDbHelper.close();
-				mDbHelper = null;
+			if (mDb != null) {
+				mDb.close();
+				mDb = null;
 			}
 		} catch (RuntimeException ignored) {}
 		if (mTaskQueue != null) {

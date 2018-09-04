@@ -271,7 +271,6 @@ class ImportAllTask extends GenericTask {
 	private String translateBookshelf(CatalogueDBAdapter db, String grShelfName) {
 		if (mBookshelfLookup == null) {
 			mBookshelfLookup = new Hashtable<>();
-			;
 			try(Cursor c = db.fetchAllBookshelves()) {
 				int bsCol = c.getColumnIndex(ColumnNames.KEY_BOOKSHELF);
 				while (c.moveToNext()) {

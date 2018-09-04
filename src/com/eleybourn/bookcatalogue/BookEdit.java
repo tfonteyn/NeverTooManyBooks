@@ -192,7 +192,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
      *
      * @param a         current activity from which we start
      * @param id        The id of the book to view
-     * @param listTable (Optional) name of the temp table comtaining a list of book
+     * @param listTable (Optional) name of the temp table containing a list of book
      *                  IDs.
      * @param position  (Optional) position in underlying book list. Only used in
      *                  read-only view.
@@ -437,9 +437,9 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 
     /**
      * Close the list object (frees statements) and if we are finishing, delete the temp table.
-     * <p>
+     *
      * This is an ESSENTIAL step; for some reason, in Android 2.1 if these statements are not
-     * cleaned up, then the underlying SQLiteDatabase gets double-dereferenced, resulting in
+     * cleaned up, then the underlying SQLiteDatabase gets double-dereference'd, resulting in
      * the database being closed by the deeply dodgy auto-close code in Android.
      */
     @Override

@@ -4382,7 +4382,6 @@ public class CatalogueDBAdapter {
 	
 	public long getBookCount() {
 		String sql = "select Count(*) From " + DatabaseDefinitions.TBL_BOOKS.ref();
-		;
 		try (Cursor c = mDb.rawQuery(sql)) {
 			c.moveToFirst();
 			return c.getLong(0);

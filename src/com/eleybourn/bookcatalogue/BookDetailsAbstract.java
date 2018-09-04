@@ -314,7 +314,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
     public void onDestroy() {
         Tracker.enterOnDestroy(this);
         super.onDestroy();
-        mDbHelper.close();
+        mDb.close();
         Tracker.exitOnDestroy(this);
     }
 
@@ -514,7 +514,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
         if (rowId == null || rowId == 0)
             return ImageUtils.getTempThumbnail();
         else
-            return ImageUtils.fetchThumbnailByUuid(mDbHelper.getBookUuid(rowId));
+            return ImageUtils.fetchThumbnailByUuid(mDb.getBookUuid(rowId));
     }
 
     /**
@@ -560,7 +560,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
             newText = getResources().getString(R.string.set_series);
         } else {
             boolean trimmed = Utils.pruneSeriesList(list);
-            trimmed |= Utils.pruneList(mDbHelper, list);
+            trimmed |= Utils.pruneList(mDb, list);
             if (trimmed) {
                 mEditManager.getBookData().setSeriesList(list);
             }
@@ -621,7 +621,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
         final Long rowId = mEditManager.getBookData().getRowId();
         if (rowId != 0) {
             try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(this.getContext())) {
-                coversDbHelper.deleteBookCover(mDbHelper.getBookUuid(rowId));
+                coversDbHelper.deleteBookCover(mDb.getBookUuid(rowId));
             } catch (Exception e) {
                 Logger.logError(e, "Error cleaning up cached cover images");
             }

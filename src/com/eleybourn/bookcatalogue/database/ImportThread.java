@@ -202,12 +202,12 @@ public class ImportThread extends ManagedTask {
 //		try {
 //			while (row < export.size() && !isCancelled()) {
 //				if (inTx && txRowCount > 10) {
-//					mDbHelper.setTransactionSuccessful();
-//					mDbHelper.endTransaction(txLock);
+//					mDb.setTransactionSuccessful();
+//					mDb.endTransaction(txLock);
 //					inTx = false;
 //				}
 //				if (!inTx) {
-//					txLock = mDbHelper.startTransaction(true);
+//					txLock = mDb.startTransaction(true);
 //					inTx = true;
 //					txRowCount = 0;
 //				}
@@ -286,7 +286,7 @@ public class ImportThread extends ManagedTask {
 //
 //					// Now build the array for authors
 //					ArrayList<Author> aa = Convert.decodeList(authorDetails, '|', false);
-//					Utils.pruneList(mDbHelper, aa);
+//					Utils.pruneList(mDb, aa);
 //					values.putSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, aa);
 //				}
 //
@@ -311,7 +311,7 @@ public class ImportThread extends ManagedTask {
 //					// Handle the series
 //					ArrayList<Series> sa = Convert.decodeList(seriesDetails, '|', false);
 //					Utils.pruneSeriesList(sa);
-//					Utils.pruneList(mDbHelper, sa);
+//					Utils.pruneList(mDb, sa);
 //					values.putSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY, sa);				
 //				}
 //				
@@ -324,7 +324,7 @@ public class ImportThread extends ManagedTask {
 //				try {
 //					if (!hasUuid && !hasNumericId) {
 //						// Always import empty IDs...even if they are duplicates.
-//						Long id = mDbHelper.createBook(values);
+//						Long id = mDb.createBook(values);
 //						values.putString(CatalogueDBAdapter.KEY_ROWID, id.toString());
 //						// Would be nice to import a cover, but with no ID/UUID thats not possible
 //						//mImportCreated++;
@@ -337,7 +337,7 @@ public class ImportThread extends ManagedTask {
 //
 //						// Let the UUID trump the ID; we may be importing someone else's list with bogus IDs
 //						if (hasUuid) {
-//							Long l = mDbHelper.getBookIdFromUuid(uuidVal);
+//							Long l = mDb.getBookIdFromUuid(uuidVal);
 //							if (l != 0) {
 //								exists = true;
 //								idLong = l;
@@ -345,19 +345,19 @@ public class ImportThread extends ManagedTask {
 //								exists = false;
 //								// We have a UUID, but book does not exist. We will create a book.
 //								// Make sure the ID (if present) is not already used.
-//								if (hasNumericId && mDbHelper.checkBookExists(idLong))
+//								if (hasNumericId && mDb.checkBookExists(idLong))
 //									idLong = 0L;
 //							}
 //
 //						} else {
-//							exists = mDbHelper.checkBookExists(idLong);							
+//							exists = mDb.checkBookExists(idLong);
 //						}
 //
 //						if (exists) {
-//							mDbHelper.updateBook(idLong, values, false);								
+//							mDb.updateBook(idLong, values, false);
 //							//mImportUpdated++;
 //						} else {
-//							newId = mDbHelper.createBook(idLong, values);
+//							newId = mDb.createBook(idLong, values);
 //							//mImportCreated++;
 //							values.putString(CatalogueDBAdapter.KEY_ROWID, newId.toString());							
 //							idLong = newId;
@@ -383,8 +383,8 @@ public class ImportThread extends ManagedTask {
 //
 //				if (values.containsKey(CatalogueDBAdapter.KEY_LOANED_TO) && !values.get(CatalogueDBAdapter.KEY_LOANED_TO).equals("")) {
 //					int id = Integer.parseInt(values.getString(CatalogueDBAdapter.KEY_ROWID));
-//					mDbHelper.deleteLoan(id);
-//					mDbHelper.createLoan(values);
+//					mDb.deleteLoan(id);
+//					mDb.createLoan(values);
 //				}
 //
 //				if (values.containsKey(CatalogueDBAdapter.KEY_ANTHOLOGY_MASK)) {
@@ -397,7 +397,7 @@ public class ImportThread extends ManagedTask {
 //					if (anthology == CatalogueDBAdapter.ANTHOLOGY_MULTIPLE_AUTHORS || anthology == CatalogueDBAdapter.ANTHOLOGY_IS_ANTHOLOGY) {
 //						int id = Integer.parseInt(values.getString(CatalogueDBAdapter.KEY_ROWID));
 //						// We have anthology details, delete the current details.
-//						mDbHelper.deleteAnthologyTitles(id);
+//						mDb.deleteAnthologyTitles(id);
 //						int oldi = 0;
 //						String anthology_titles = values.getString("anthology_titles");
 //						try {
@@ -409,7 +409,7 @@ public class ImportThread extends ManagedTask {
 //								if (j > -1) {
 //									String anth_title = extracted_title.substring(0, j).trim();
 //									String anth_author = extracted_title.substring((j+1)).trim();
-//									mDbHelper.createAnthologyTitle(id, anth_author, anth_title, true);
+//									mDb.createAnthologyTitle(id, anth_author, anth_title, true);
 //								}
 //								oldi = i + 1;
 //								i = anthology_titles.indexOf("|", oldi);
@@ -434,14 +434,14 @@ public class ImportThread extends ManagedTask {
 //			throw new RuntimeException(e);
 //		} finally {
 //			if (inTx) {
-//				mDbHelper.setTransactionSuccessful();
-//				mDbHelper.endTransaction(txLock);
+//				mDb.setTransactionSuccessful();
+//				mDb.endTransaction(txLock);
 //			}
-//			mDbHelper.purgeAuthors();
-//			mDbHelper.purgeSeries();
+//			mDb.purgeAuthors();
+//			mDb.purgeSeries();
 //		}
 //		try {
-//			mDbHelper.analyzeDb();
+//			mDb.analyzeDb();
 //		} catch (Exception e) {
 //			// Do nothing. Not a critical step.
 //			Logger.logError(e);
@@ -581,7 +581,7 @@ public class ImportThread extends ManagedTask {
 //		if (orig == null || !orig.exists() || orig.length() == 0)
 //			return;
 //
-//		String newUuid = mDbHelper.getBookUuid(newId);
+//		String newUuid = mDb.getBookUuid(newId);
 //
 //		renameFileToCoverImageIfMissing(orig, newUuid);
 //	}
@@ -600,7 +600,7 @@ public class ImportThread extends ManagedTask {
 //		if (orig == null || !orig.exists() || orig.length() == 0)
 //			return;
 //
-//		String newUuid = mDbHelper.getBookUuid(newId);
+//		String newUuid = mDb.getBookUuid(newId);
 //
 //		copyFileToCoverImageIfMissing(orig, newUuid);
 //	}

@@ -513,7 +513,7 @@ public class BookISBNSearch extends ActivityWithTasks {
 		// If the book already exists, ask if the user wants to continue
 		try {
 			if (!isbn.equals("")) {
-				Cursor book = mDbHelper.fetchBookByISBN(isbn);
+				Cursor book = mDb.fetchBookByISBN(isbn);
 				int rows = book.getCount();
 				if (rows != 0) {
 
