@@ -59,14 +59,14 @@ public class TaskListActivity extends BindableItemListActivity {
             TaskListActivity.this.refreshData();
         }
     };
-    private CatalogueDBAdapter m_db = null;
-    private TasksCursor m_cursor;
+    private CatalogueDBAdapter mDb = null;
+    private TasksCursor mCursor;
 
     /**
      * Constructor. Give superclass the list view ID.
      */
     public TaskListActivity() {
-        super(R.layout.task_list);
+        super(R.layout.activity_admin_task_list);
     }
 
     @Override
@@ -76,8 +76,8 @@ public class TaskListActivity extends BindableItemListActivity {
             this.setTitle(R.string.background_tasks);
 
             // Get a DB adapter
-            m_db = new CatalogueDBAdapter(this);
-            m_db.open();
+            mDb = new CatalogueDBAdapter(this);
+            mDb.open();
             //When any Event is added/changed/deleted, update the list. Lazy, yes.
             BookCatalogueApp.getQueueManager().registerTaskListener(m_OnTaskChangeListener);
 
@@ -122,7 +122,7 @@ public class TaskListActivity extends BindableItemListActivity {
             }
         }));
 
-        task.addContextMenuItems(this, parent, v, position, id, items, m_db);
+        task.addContextMenuItems(this, parent, v, position, id, items, mDb);
 
         if (items.size() > 0) {
             showContextDialogue(this.getString(R.string.select_an_action), items);
@@ -148,7 +148,7 @@ public class TaskListActivity extends BindableItemListActivity {
     @Override
     public void bindViewToItem(Context context, View view, BindableItemSQLiteCursor cursor, BindableItem bindable) {
         ViewTagger.setTag(view, R.id.TAG_TASK, bindable);
-        bindable.bindView(view, context, cursor, m_db);
+        bindable.bindView(view, context, cursor, mDb);
     }
 
     /**
@@ -156,8 +156,8 @@ public class TaskListActivity extends BindableItemListActivity {
      */
     @Override
     protected BindableItemSQLiteCursor getBindableItemCursor(Bundle savedInstanceState) {
-        m_cursor = QueueManager.getQueueManager().getTasks(TaskCursorSubtype.all);
-        return m_cursor;
+        mCursor = QueueManager.getQueueManager().getTasks(TaskCursorSubtype.all);
+        return mCursor;
     }
 
     /**
@@ -169,15 +169,15 @@ public class TaskListActivity extends BindableItemListActivity {
             super.onDestroy();
         } catch (Exception e) {/* Ignore */}
         try {
-            if (m_db != null)
-                m_db.close();
+            if (mDb != null)
+                mDb.close();
         } catch (Exception e) {/* Ignore */}
         try {
             BookCatalogueApp.getQueueManager().unregisterTaskListener(m_OnTaskChangeListener);
         } catch (Exception e) {/* Ignore */}
         try {
-            if (m_cursor != null)
-                m_cursor.close();
+            if (mCursor != null)
+                mCursor.close();
         } catch (Exception e) {/* Ignore */}
     }
 

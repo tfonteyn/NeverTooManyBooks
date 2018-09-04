@@ -50,15 +50,15 @@ import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GO
  */
 public class SearchBooksApiHandler extends ApiHandler {
 	/** List of GoodreadsWork objects that result from a search */
-	private ArrayList<GoodreadsWork> m_works = null;
+	private ArrayList<GoodreadsWork> mWorks = null;
 	/** Starting result # (for multi-page result sets). We dont use (yet). */
-	private Long m_resultsStart;
+	private Long mResultsStart;
 	/** Ending result # (for multi-page result sets). We dont use (yet). */
-	private Long m_resultsEnd;
+	private Long mResultsEnd;
 	/** Total results available, as opposed to number returned on firt page. */
-	private Long m_totalResults;
+	private Long mTotalResults;
 	/** Transient global data for current work in search results. */
-	private GoodreadsWork m_currWork;
+	private GoodreadsWork mCurrentWork;
 
 	public SearchBooksApiHandler(GoodreadsManager manager) {
 		super(manager);
@@ -81,26 +81,29 @@ public class SearchBooksApiHandler extends ApiHandler {
         parameters.add(new BasicNameValuePair("key", mManager.getDeveloperKey()));
     
         post.setEntity(new UrlEncodedFormEntity(parameters));
-        m_works = new ArrayList<>();
+        mWorks = new ArrayList<>();
 
         // Get a handler and run query.
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);
         mManager.execute(post, handler, false);
 
         // Return parsed results.
-        return m_works;
+        return mWorks;
 	}
 
+	@SuppressWarnings("unused")
 	public long getResultsStart() {
-		return m_resultsStart;
+		return mResultsStart;
 	}
 
+	@SuppressWarnings("unused")
 	public long getTotalResults() {
-		return m_totalResults;
+		return mTotalResults;
 	}
 
+	@SuppressWarnings("unused")
 	public long getResultsEnd() {
-		return m_resultsEnd;
+		return mResultsEnd;
 	}
 
 	/*
@@ -257,6 +260,7 @@ public class SearchBooksApiHandler extends ApiHandler {
 	/**
 	 * Setup filters to process the XML parts we care about.
 	 */
+	@SuppressWarnings("ConstantConditions")
 	private void buildFilters() {
 		/*
 		   Stuff we care about
@@ -334,19 +338,19 @@ public class SearchBooksApiHandler extends ApiHandler {
 	private final XmlHandler mHandleResultsStart = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
-			m_resultsStart = Long.parseLong(context.body);
+			mResultsStart = Long.parseLong(context.body);
 		}
 	};
 	private final XmlHandler mHandleResultsEnd = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
-			m_resultsEnd = Long.parseLong(context.body);
+			mResultsEnd = Long.parseLong(context.body);
 		}
 	};
 	private final XmlHandler mHandleTotalResults = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
-			m_totalResults = Long.parseLong(context.body);
+			mTotalResults = Long.parseLong(context.body);
 		}
 	};
 	
@@ -356,7 +360,7 @@ public class SearchBooksApiHandler extends ApiHandler {
 	private final XmlHandler mHandleWorkStart = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
-			m_currWork = new GoodreadsWork();
+			mCurrentWork = new GoodreadsWork();
 		}
 	};
 	/**
@@ -365,22 +369,22 @@ public class SearchBooksApiHandler extends ApiHandler {
 	private final XmlHandler mHandleWorkEnd = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
-			//m_currWork.requestImage();
-			m_works.add(m_currWork);
-			m_currWork = null;
+			//mCurrentWork.requestImage();
+			mWorks.add(mCurrentWork);
+			mCurrentWork = null;
 		}
 	};
 	private final XmlHandler mHandleWorkId = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
-			m_currWork.workId = Long.parseLong(context.body);
+			mCurrentWork.workId = Long.parseLong(context.body);
 		}
 	};
 	private final XmlHandler mHandlePubDay = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
 			try {
-				m_currWork.pubDay = Long.parseLong(context.body);					
+				mCurrentWork.pubDay = Long.parseLong(context.body);
 			} catch (Exception ignored) {}
         }
 	};
@@ -388,7 +392,7 @@ public class SearchBooksApiHandler extends ApiHandler {
 		@Override
 		public void process(ElementContext context) {
 			try {
-				m_currWork.pubMonth = Long.parseLong(context.body);
+				mCurrentWork.pubMonth = Long.parseLong(context.body);
 			} catch (Exception ignored) {}
         }
 	};
@@ -396,44 +400,44 @@ public class SearchBooksApiHandler extends ApiHandler {
 		@Override
 		public void process(ElementContext context) {
 			try {
-				m_currWork.pubYear = Long.parseLong(context.body);
+				mCurrentWork.pubYear = Long.parseLong(context.body);
 			} catch (Exception ignored) {}
         }
 	};
 	private final XmlHandler mHandleBookId = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
-			m_currWork.bookId = Long.parseLong(context.body);
+			mCurrentWork.bookId = Long.parseLong(context.body);
 		}
 	};
 	private final XmlHandler mHandleBookTitle = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
-			m_currWork.title = context.body;
+			mCurrentWork.title = context.body;
 		}
 	};
 	private final XmlHandler mHandleAuthorId = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
-			m_currWork.authorId = Long.parseLong(context.body);
+			mCurrentWork.authorId = Long.parseLong(context.body);
 		}
 	};
 	private final XmlHandler mHandleAuthorName = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
-			m_currWork.authorName = context.body;
+			mCurrentWork.authorName = context.body;
 		}
 	};
 	private final XmlHandler mHandleImageUrl = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
-			m_currWork.imageUrl = context.body;
+			mCurrentWork.imageUrl = context.body;
 		}
 	};
 	private final XmlHandler mHandleSmallImageUrl = new XmlHandler(){
 		@Override
 		public void process(ElementContext context) {
-			m_currWork.smallImageUrl = context.body;
+			mCurrentWork.smallImageUrl = context.body;
 		}
 	};
 		

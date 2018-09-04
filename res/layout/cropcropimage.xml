@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="vertical"
+    android:padding="@dimen/padding_border_double">
 
     <view
         android:id="@+id/image"
         class="com.eleybourn.bookcatalogue.cropper.CropImageView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/buttonbar_cancel_save"
-        android:layout_alignParentTop="true" />
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
     <include
         android:id="@+id/buttonbar_cancel_save"
         layout="@layout/inc_buttonbar_cancel_save"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"/>
-</RelativeLayout>
+        android:layout_height="wrap_content"/>
+</LinearLayout>

@@ -58,12 +58,12 @@ public class TextFieldEditor extends AlertDialog {
 	 * 
 	 * @param context		Calling context
 	 */
-	protected TextFieldEditor(Context context) {
+	TextFieldEditor(Context context) {
 		super(context);
 
 		// Get the layout
 		LayoutInflater inf = this.getLayoutInflater();
-		View root = inf.inflate(R.layout.text_field_editor_dialog, null);
+		View root = inf.inflate(R.layout.dialog_edit_textfield, null);
 
 		// Setup the layout
 		setView(root);
@@ -96,6 +96,7 @@ public class TextFieldEditor extends AlertDialog {
 			}});	
 		
 		// Make sure the buttons move if the keyboard appears
+		//noinspection ConstantConditions
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 	}
 

@@ -53,7 +53,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 
 	@Override
 	protected int getLayoutId(){
-		return R.layout.administration_librarything;
+		return R.layout.activity_admin_librarything;
 	}
 
 	@Override

@@ -56,6 +56,9 @@ import java.util.concurrent.CountDownLatch;
 public class CropCropImage extends CropMonitoredActivity {
 	// private static final String TAG = "CropImage";
 
+    @SuppressWarnings("FieldCanBeLocal")
+    private final boolean DO_FACE_DETECTION = false;
+
 	public static final String BKEY_CIRCLE_CROP = "circleCrop";
     public static final String BKEY_IMAGE_PATH = "image-path";
     public static final String BKEY_OUTPUT = "output";
@@ -85,9 +88,7 @@ public class CropCropImage extends CropMonitoredActivity {
 	private boolean mScaleUp = true;
 	// Flag indicating if default crop rect is whole image
 	private boolean mCropWholeImage = false;
-	// Flag
-	@SuppressWarnings("FieldCanBeLocal")
-	private final boolean DO_FACE_DETECTION = false;
+
 
 	boolean mWaitingToPick; // Whether we are wait the user to pick a face.
 	boolean mSaving; // Whether the "save" button is already clicked.
@@ -354,29 +355,29 @@ public class CropCropImage extends CropMonitoredActivity {
 		/* else {
 			 * Bundle extras = new Bundle(); extras.putString("rect",
 			 * mCrop.getCropRect().toString());
-			 * 
+			 *
 			 * File oldPath = new File(mImage.getDataPath()); File directory =
 			 * new File(oldPath.getParent());
-			 * 
+			 *
 			 * int x = 0; String fileName = oldPath.getName(); fileName =
 			 * fileName.substring(0, fileName.lastIndexOf("."));
-			 * 
+			 *
 			 * // Try file-1.jpg, file-2.jpg, ... until we find a filename which
 			 * // does not exist yet. while (true) { x += 1; String candidate =
 			 * directory.toString() + "/" + fileName + "-" + x + ".jpg"; boolean
 			 * exists = (new File(candidate)).exists(); if (!exists) { break; }
 			 * }
-			 * 
+			 *
 			 * try { Uri newUri = ImageManager.addImage( mContentResolver,
 			 * mImage.getTitle(), mImage.getDateTaken(), null, // TODO this null
 			 * is going to cause us to lose // the location (gps). 0, // TODO
 			 * this is going to cause the orientation // to reset.
 			 * directory.toString(), fileName + "-" + x + ".jpg");
-			 * 
+			 *
 			 * Cancelable<Void> cancelable = ImageManager.storeImage( newUri,
 			 * mContentResolver, 0, // TODO fix this orientation croppedImage,
 			 * null);
-			 * 
+			 *
 			 * cancelable.get(); setResult(RESULT_OK, new Intent()
 			 * .setAction(newUri.toString()) .putExtras(extras)); } catch
 			 * (Exception ex) { // basically ignore this or put up // some ui
@@ -455,7 +456,7 @@ public class CropCropImage extends CropMonitoredActivity {
 			mImageView.add(hv);
 		}
 
-		// Create a default HightlightView if we found no face in the picture.
+		// Create a default HighlightView if we found no face in the picture.
 		private void makeDefault() {
 			CropHighlightView hv = new CropHighlightView(mImageView);
 
@@ -565,12 +566,12 @@ public class CropCropImage extends CropMonitoredActivity {
 
 		if (remaining == NO_STORAGE_ERROR) {
 			if (Environment.MEDIA_CHECKING.equals(Environment.getExternalStorageState())) {
-				noStorageText = "Preparing card";
+				noStorageText = activity.getString(R.string.storage_error_preparing_card);
 			} else {
-				noStorageText = "No storage card";
+				noStorageText = activity.getString(R.string.storage_error_no_card);
 			}
 		} else if (remaining < 1) {
-			noStorageText = "Not enough space";
+			noStorageText = activity.getString(R.string.storage_error_no_space);
 		}
 
 		if (noStorageText != null) {

@@ -15,15 +15,15 @@
         android:id="@+id/bookshelf"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
         android:hint="@string/bookshelf"
-        android:inputType="text"
-        android:layout_below="@id/toolbar"/>
+        android:inputType="text" />
 
     <include
         android:id="@+id/buttonbar_cancel_save"
         layout="@layout/inc_buttonbar_cancel_save"
         android:layout_width="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

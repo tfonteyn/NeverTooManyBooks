@@ -49,9 +49,10 @@ import java.util.ArrayList;
  */
 public class FileChooserFragment extends Fragment implements FileListerListener {
 	private File mRootPath;
-	protected static final String ARG_ROOT_PATH = "rootPath";
-	protected static final String ARG_FILE_NAME = "fileName";
-	protected static final String ARG_LIST = "list";
+	protected static final String BKEY_ROOT_PATH = "rootPath";
+	protected static final String BKEY_FILE_NAME = "fileName";
+	protected static final String BKEY_LIST = "list";
+
 	// Create an empty one in case we are rotated before generated.
 	protected ArrayList<FileDetails> mList = new ArrayList<>();
 
@@ -82,8 +83,8 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 		// Build the fragment and save the details
 		FileChooserFragment frag = new FileChooserFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_ROOT_PATH, path);
-        args.putString(ARG_FILE_NAME, fileName);
+        args.putString(BKEY_ROOT_PATH, path);
+        args.putString(BKEY_FILE_NAME, fileName);
         frag.setArguments(args);
 
         return frag;
@@ -127,15 +128,15 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 
 		// If it's new, just build from scratch, otherwise, get the saved directory and list
 		if (savedInstanceState == null) {
-			mRootPath = new File(getArguments().getString(ARG_ROOT_PATH));
-			String fileName = getArguments().getString(ARG_FILE_NAME);
-			EditText et = root.findViewById(R.id.file_name);
-			et.setText(fileName);
+			mRootPath = new File(getArguments().getString(BKEY_ROOT_PATH));
+			String fileName = getArguments().getString(BKEY_FILE_NAME);
+			EditText filenameField = root.findViewById(R.id.file_name);
+			filenameField.setText(fileName);
 			((TextView) root.findViewById(R.id.path)).setText(mRootPath.getAbsolutePath());
 			tellActivityPathChanged();
 		} else {
-			mRootPath = new File(savedInstanceState.getString(ARG_ROOT_PATH));
-			ArrayList<FileDetails> list = savedInstanceState.getParcelableArrayList(ARG_LIST);
+			mRootPath = new File(savedInstanceState.getString(BKEY_ROOT_PATH));
+			ArrayList<FileDetails> list = savedInstanceState.getParcelableArrayList(BKEY_LIST);
 			this.onGotFileList(mRootPath, list);
 		}
 	}
@@ -167,8 +168,8 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 	@Override
 	public void onSaveInstanceState(@NonNull Bundle state) {
 		super.onSaveInstanceState(state);
-		state.putString(ARG_ROOT_PATH, mRootPath.getAbsolutePath());
-		state.putParcelableArrayList(ARG_LIST, mList);
+		state.putString(BKEY_ROOT_PATH, mRootPath.getAbsolutePath());
+		state.putParcelableArrayList(BKEY_LIST, mList);
 	}
 
 	/**

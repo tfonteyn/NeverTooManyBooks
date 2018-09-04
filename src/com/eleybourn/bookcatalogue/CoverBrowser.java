@@ -166,7 +166,7 @@ public class CoverBrowser {
         mImageFetcher.enqueue(edTask);
 
         // Setup the basic dialog
-        mDialog.setContentView(R.layout.select_edition_cover);
+        mDialog.setContentView(R.layout.dialog_select_edition_cover);
         mDialog.setTitle(R.string.finding_editions);
         mDialog.show();
     }

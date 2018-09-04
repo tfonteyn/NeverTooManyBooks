@@ -46,7 +46,7 @@ public class EditFormatDialog {
 
 	public void edit(final String origFormat) {
 		final Dialog dialog = new BasicDialog(mContext);
-		dialog.setContentView(R.layout.edit_format);
+		dialog.setContentView(R.layout.dialog_edit_format);
 		dialog.setTitle(R.string.edit_format_name);
 
 		AutoCompleteTextView nameView = dialog.findViewById(R.id.name);

@@ -48,7 +48,7 @@ import java.util.TimerTask;
  * @author Philip Warner
  */
 public class SearchCatalogue extends BookCatalogueActivity {
-	private CatalogueDBAdapter mDbHelper;
+	private CatalogueDBAdapter mDb;
 	/** Indicates user has changed something since the last search. */
 	private boolean mSearchDirty = false;
 	/** Timer reset each time the user clicks, in order to detect an idle time */
@@ -56,7 +56,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 	/** Timer object for background idle searches */
 	private Timer mTimer;
 	/** Handle inter-thread messages */
-    private final Handler m_handler = new Handler();
+    private final Handler mSCHandler = new Handler();
 
 	@Override
 	protected int getLayoutId(){
@@ -68,8 +68,8 @@ public class SearchCatalogue extends BookCatalogueActivity {
 		super.onCreate(savedInstanceState);
 
 		// Get the DB and setup the layout.
-		mDbHelper = new CatalogueDBAdapter(this);
-		mDbHelper.open();
+		mDb = new CatalogueDBAdapter(this);
+		mDb.open();
 
 		View layout = this.findViewById(R.id.root);
 		EditText criteria = this.findViewById(R.id.criteria);
@@ -167,7 +167,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 	private final OnClickListener mFtsRebuildListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			mDbHelper.rebuildFts();
+			mDb.rebuildFts();
 		}
 	};
 
@@ -185,13 +185,13 @@ public class SearchCatalogue extends BookCatalogueActivity {
 		// Save time to log how long query takes.
 		long t0 = System.currentTimeMillis();
 
-		//BooksCursor c = mDbHelper.fetchAllBooks(""/*order*/, ""/*bookshelf*/,
+		//BooksCursor c = mDb.fetchAllBooks(""/*order*/, ""/*bookshelf*/,
 		//		"(" + CatalogueDBAdapter.KEY_FAMILY_NAME + " like '%" + author + "%' " + CatalogueDBAdapter.COLLATION + " or " + CatalogueDBAdapter.KEY_GIVEN_NAMES + " like '%" + author + "%' " + CatalogueDBAdapter.COLLATION + ")", 
 		//		"b." + CatalogueDBAdapter.KEY_TITLE + " like '%" + title + "%' " + CatalogueDBAdapter.COLLATION + ",
 		//		""/*searchText*/, ""/*loaned_to*/, ""/*seriesName*/);	
 
 		// Get the cursor
-		try(Cursor c = mDbHelper.searchFts(author, title, criteria)) {
+		try(Cursor c = mDb.searchFts(author, title, criteria)) {
 			if (c == null) {
 				// Null return means searchFts thought parameters were effectively blank
 				tmpMsg = "(enter search criteria)";
@@ -207,7 +207,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 		final String message = tmpMsg;
 
 		// Update the UI in main thread.
-		m_handler.post(new Runnable(){
+		mSCHandler.post(new Runnable(){
 			@Override
 			public void run() {
 				TextView booksFound = SearchCatalogue.this.findViewById(R.id.books_found);
@@ -292,8 +292,8 @@ public class SearchCatalogue extends BookCatalogueActivity {
 	public void onDestroy() {
 		super.onDestroy();
 		try {
-			if (mDbHelper != null)
-				mDbHelper.close();
+			if (mDb != null)
+				mDb.close();
 		} catch (Exception ignored) {}
 		try {
 			stopIdleTimer();

@@ -29,7 +29,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.text.StaticLayout;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -220,7 +219,6 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     public void onCreate(Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
-        StaticLayout s;
         mDbHelper.open();
 
         // Get the extras; we use them a lot

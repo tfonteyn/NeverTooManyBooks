@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.eleybourn.bookcatalogue.utils;
 
 import android.content.Context;
@@ -55,14 +54,15 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-
 public class Utils {
+    private Utils() {
+    }
 
     public static final String APP_NAME = "Book Catalogue";
     public static final boolean USE_LT = true;
     public static final boolean USE_BARCODE = true;
-    private Utils() {
-    }
+
+
     //public static final String APP_NAME = "DVD Catalogue";
     //public static final String LOCATION = "dvdCatalogue";
     //public static final String DATABASE_NAME = "dvd_catalogue";

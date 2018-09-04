@@ -111,7 +111,7 @@ public class HintManager {
 
 		// Build the hint dialog
 		final Dialog dialog = new BasicDialog(context, false);
-		dialog.setContentView(R.layout.hint_dialogue);
+		dialog.setContentView(R.layout.dialog_hint);
         dialog.setTitle(R.string.hint);
 
 		// Setup the message

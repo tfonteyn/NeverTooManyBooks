@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.utils;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.Series;
@@ -255,8 +256,9 @@ public class ArrayUtils<T> {
      * @param i		Intent containing list
      * @param key   element to get
      *
-     * @return		List
+     * @return		List, or null when not present in the intent extras
      */
+    @Nullable
     @SuppressWarnings("unchecked")
     public static <T> ArrayList<T> getListFromIntentExtras(Intent i, String key) {
         return (ArrayList<T>) i.getSerializableExtra(key);

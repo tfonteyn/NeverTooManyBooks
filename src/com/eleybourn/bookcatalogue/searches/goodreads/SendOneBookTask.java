@@ -46,7 +46,7 @@ public class SendOneBookTask extends GenericTask {
 	private static final long serialVersionUID = 8585857100291691934L;
 
 	/** ID of book to send */
-	private final long m_bookId;
+	private final long mBookId;
 
 	/**
 	 * Constructor. Save book ID.
@@ -55,7 +55,7 @@ public class SendOneBookTask extends GenericTask {
 	 */
 	public SendOneBookTask(long bookId) {
 		super(BookCatalogueApp.getResourceString(R.string.send_book_to_goodreads, bookId));
-		m_bookId = bookId;
+		mBookId = bookId;
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class SendOneBookTask extends GenericTask {
 		dbHelper.open();
 
 		// Open the cursor for the book
-		final BooksCursor books = dbHelper.getBookForGoodreadsCursor(m_bookId);
+		final BooksCursor books = dbHelper.getBookForGoodreadsCursor(mBookId);
 		final BooksRowView book = books.getRowView();
 
 		try {

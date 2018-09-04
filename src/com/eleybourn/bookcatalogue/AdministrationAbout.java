@@ -50,7 +50,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
 
 	@Override
 	protected int getLayoutId(){
-		return R.layout.administration_about;
+		return R.layout.activity_admin_about;
 	}
 	/**
 	 * Called when the activity is first created. 

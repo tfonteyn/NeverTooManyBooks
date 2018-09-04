@@ -772,7 +772,7 @@ public abstract class BookDetailsAbstract extends BookEditFragmentAbstract {
                 Toast.makeText(c, R.string.cover_corrupt, Toast.LENGTH_LONG).show();
             } else {
                 final Dialog dialog = new BasicDialog(c,false);
-                dialog.setContentView(R.layout.zoom_thumb_dialog);
+                dialog.setContentView(R.layout.dialog_zoom_thumb);
 
                 ImageView cover = new ImageView(getActivity());
                 ImageUtils.fetchFileIntoImageView(thumbFile, cover, mThumbZoomSize, mThumbZoomSize, true);

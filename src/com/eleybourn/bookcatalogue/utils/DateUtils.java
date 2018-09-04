@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.annotation.SuppressLint;
+import android.support.annotation.Nullable;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -114,6 +115,7 @@ public class DateUtils {
      * @param s		String to parse
      * @return		Resulting date if parsed, otherwise null
      */
+    @Nullable
     public static Date parseDate(String s) {
         Date d;
         // First try to parse using strict rules
@@ -129,11 +131,14 @@ public class DateUtils {
      * Attempt to parse a date string based on a range of possible formats; allow
      * for caller to specify if the parsing should be strict or lenient.
      *
+     * If any Exception, returns null
+     *
      * @param s				String to parse
      * @param lenient		True if parsing should be lenient
      *
      * @return				Resulting date if parsed, otherwise null
      */
+    @Nullable
     private static Date parseDate(String s, boolean lenient) {
         Date d;
         for ( SimpleDateFormat sdf : mParseDateFormats ) {

@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -184,14 +185,14 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	}
 
 	/**
-	 * Update the current list
+	 * Replace the current list
 	 */
 	protected void setList(ArrayList<T> newList) {
-		final int savedRow = getListView().getFirstVisiblePosition();
-		View v = getListView().getChildAt(0);
-		final int savedTop = v == null ? 0 : v.getTop();
+		View listView = this.getListView().getChildAt(0);
+		final int savedTop = listView == null ? 0 : listView.getTop();
+        final int savedRow = this.getListView().getFirstVisiblePosition();
 
-		mList = newList;
+		this.mList = newList;
 		// Set up list handling
         this.mAdapter = new ListAdapter(this, mRowViewId, mList);
         setListAdapter(this.mAdapter);
@@ -220,22 +221,22 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 			setupListener(R.id.cancel, mCancelListener);
 			setupListener(R.id.add, mAddListener);
 
-			// Ask the subclass to setup the list; we need this before 
-			// building the adapter.
+			// Ask the subclass to setup the list; we need this before building the adapter.
 			if (savedInstanceState != null && mKey != null && savedInstanceState.containsKey(mKey)) {
 				mList = ArrayUtils.getListFromBundle(savedInstanceState, mKey);
 			}
-
+			// not in bundle ? check the intent
 			if (mList == null) {
-				mList = ArrayUtils.getListFromIntentExtras(getIntent(), mKey);
-
-				if (mList == null)
-					mList = getList();
-
-				if (mList == null) {
-					throw new RuntimeException("Unable to find list key '" + mKey + "' in passed data");
-				}
-			}		
+                mList = ArrayUtils.getListFromIntentExtras(getIntent(), mKey);
+            }
+            // still nothing ? then ask subclass explicitly
+            if (mList == null) {
+                mList = getList();
+            }
+            // sigh... give up
+            if (mList == null) {
+                throw new RuntimeException("Unable to find list key '" + mKey + "' in passed intent extras");
+            }
 
 			// Set up list handling
 	        this.mAdapter = new ListAdapter(this, mRowViewId, mList);
@@ -315,51 +316,35 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	/**
 	 * Utility routine to setup a listener for the specified view id
 	 * 
-	 * @param id	Resource ID
-	 * @param l		Listener
-	 * 
-	 * @return		true if resource present, false if not
+	 * @param id    Resource ID
+	 * @param l        Listener
 	 */
-	private boolean setupListener(int id, OnClickListener l) {
+	private void setupListener(int id, OnClickListener l) {
 		View v = this.findViewById(id);
-		if (v == null)
-			return false;
+		if (v == null) {
+            return;
+        }
 		v.setOnClickListener(l);
-		return true;
-	}
+    }
 
 	/**
-	 * Utility routine to set a TextView to a string, or hide it on failure.
+	 * Utility routine to set a TextView to a string, or hide it.
 	 * 
 	 * @param id	View ID
 	 * @param s		String to set
 	 */
-	protected void setTextOrHideView(View v, int id, String s) {
-		if (v != null && v.getId() != id)
-			v = v.findViewById(id);
-		setTextOrHideView(v,s);
+    protected void setTextOrHideView(int id, @Nullable String s) {
+        TextView v = this.findViewById(id);
+        if (v == null) {
+            return;
+        }
+        if (s == null || s.isEmpty()) {
+            v.setVisibility(View.GONE);
+            return;
+        }
+        v.setText(s);
 	}
-	
-	protected void setTextOrHideView(View v, String s) {
-		// If view is not present, just exit
-		if (v == null)
-			return;
-		try {
-			if (s != null && !s.isEmpty()) {
-				((TextView)v).setText(s);
-				return;			
-			}
-		} catch (Exception e) {
-			Logger.logError(e);
-		}
-        // If we get here, something went wrong.
-		v.setVisibility(View.GONE);
-	}
-	
-	protected void setTextOrHideView(int id, String s) {
-		setTextOrHideView(this.findViewById(id), id, s);
-	}
-	
+
 	/**
 	 * Handle 'Save'
 	 */
@@ -509,25 +494,21 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 
         @NonNull
         @Override
-        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+        public View getView(int position, View v, @NonNull ViewGroup parent) {
         	// Get the view; if not defined, load it.
-            View v = convertView;
             if (v == null) {
                 LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                //noinspection ConstantConditions
                 v = vi.inflate(mRowViewId, null);
             }
             
             // Save this views position
             ViewTagger.setTag(v, R.id.TAG_POSITION, position);
-
-            {
-            	// Giving the whole row ad onClickListener seems to interfere
-            	// with drag/drop.
-            	View details = v.findViewById(R.id.row_details);
-            	if (details != null) {
-                    details.setOnClickListener(mRowClickListener);
-                    details.setFocusable(false);
-            	}
+            // Giving the whole row ad onClickListener seems to interfere with drag/drop.
+            View details = v.findViewById(R.id.row_details);
+            if (details != null) {
+                details.setOnClickListener(mRowClickListener);
+                details.setFocusable(false);
             }
 
             // Get the object, if not null, do some processing

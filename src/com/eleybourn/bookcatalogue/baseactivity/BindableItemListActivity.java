@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * TaskQueue is free software: you can redistribute it and/or modify
@@ -42,127 +42,127 @@ import java.util.ArrayList;
  * of Activity. If this code needs changes either update it's subclasses OR update the code in TaskQueue
  * and re-copy the file.
  * NOTE!!!!!
- * 
- * @author pjw
  *
+ * @author pjw
  */
 public abstract class BindableItemListActivity extends BookCatalogueListActivity implements BindableItemBinder {
-	/** The resource ID for the base view */
-	private final int mBaseViewId;
+    /**
+     * The resource ID for the base view
+     */
+    private final int mBaseViewId;
+    /**
+     * Cursor of book IDs
+     */
+    protected BindableItemSQLiteCursor mBindableItems;
+    /**
+     * Adapter for list
+     */
+    BindableItemCursorAdapter mListAdapter;
 
-	/**
-	 * Constructor; this will be called by the subclass to set the resource IDs.
-	 * 
-	 * @param baseViewId	Resource id of base view
-	 */
-	public BindableItemListActivity(int baseViewId) {
-		mBaseViewId = baseViewId;
-	}
+    /**
+     * Constructor; this will be called by the subclass to set the resource IDs.
+     *
+     * @param baseViewId Resource id of base view
+     */
+    public BindableItemListActivity(int baseViewId) {
+        mBaseViewId = baseViewId;
+    }
 
-	/** Cursor of book IDs */
-	protected BindableItemSQLiteCursor mBindableItems;
+    /**
+     * Subclass MUST implement to return the cursor that will be used to select TaskNotes to display. This
+     * is called from onCreate().
+     *
+     * @param savedInstanceState state info passed to onCreate()
+     *
+     * @return TaskNotesCursor to use
+     */
+    protected abstract BindableItemSQLiteCursor getBindableItemCursor(Bundle savedInstanceState);
 
-	/** Adapter for list */
-	BindableItemCursorAdapter	m_listAdapter;
-	
-	/**
-	 * Subclass MUST implement to return the cursor that will be used to select TaskNotes to display. This
-	 * is called from onCreate().
-	 * 
-	 * @param savedInstanceState	state info passed to onCreate()
-	 *
-	 * @return TaskNotesCursor to use
-	 */
-	protected abstract BindableItemSQLiteCursor getBindableItemCursor(Bundle savedInstanceState);
+    @Override
+    protected int getLayoutId() {
+        return mBaseViewId;
+    }
 
-	@Override
-	protected int getLayoutId() {
-		return mBaseViewId;
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		//try {
+        // Add handlers for 'Save' and 'Cancel'
+        //setupListener(R.id.confirm, mSaveListener);
+        //setupListener(R.id.cancel, mCancelListener);
 
-			// Add handlers for 'Save' and 'Cancel'
-			//setupListener(R.id.confirm, mSaveListener);
-			//setupListener(R.id.cancel, mCancelListener);
+        mBindableItems = getBindableItemCursor(savedInstanceState);
 
-			mBindableItems = getBindableItemCursor(savedInstanceState);
+        // Set up list handling
+        mListAdapter = new BindableItemCursorAdapter(this, this, mBindableItems);
 
-			// Set up list handling
-			m_listAdapter = new BindableItemCursorAdapter(this, this, mBindableItems);
-			//m_listAdapter.setViewBinder(m_viewBinder);
+        setListAdapter(mListAdapter);
 
-			setListAdapter(m_listAdapter);
+        ListView lv = this.findViewById(android.R.id.list);
 
-			ListView lv = this.findViewById(android.R.id.list);
+        lv.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                BindableItemListActivity.this.onListItemClick(parent, v, position, id);
+            }
+        });
+        lv.setOnItemLongClickListener(new OnItemLongClickListener() {
 
-			lv.setOnItemClickListener( new OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-					BindableItemListActivity.this.onListItemClick(parent, v, position, id);
-				}
-			});
-			lv.setOnItemLongClickListener( new OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
+                return BindableItemListActivity.this.onListItemLongClick(parent, v, position, id);
+            }
+        });
+    }
 
-				@Override
-				public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
-					return BindableItemListActivity.this.onListItemLongClick(parent, v, position, id);
-				}
-			});
+    protected void refreshData() {
+        mBindableItems.requery();
+        mListAdapter.notifyDataSetChanged();
+    }
 
-		//} catch (Exception e) {
-		//	Logger.logError(e);
-		//}
-	}
+    public void onListItemClick(AdapterView<?> parent, View v, int position, long id) {
+    }
 
-	protected void refreshData() {
-		mBindableItems.requery();
-		m_listAdapter.notifyDataSetChanged();
-	}
+    public boolean onListItemLongClick(@SuppressWarnings("unused") AdapterView<?> parent,
+                                       @SuppressWarnings("unused") View v,
+                                       @SuppressWarnings("unused") int position,
+                                       @SuppressWarnings("unused") long id) {
+        return false;
+    }
 
-	public void onListItemClick(AdapterView<?> parent, View v, int position, long id) {}
+    /**
+     * Utility routine to display an array of ContextDialogItems in an alert.
+     *
+     * @param title Title of Alert
+     * @param items Items to display
+     */
+    protected void showContextDialogue(int title, ArrayList<ContextDialogItem> items) {
+        showContextDialogue(getResources().getString(title), items);
+    }
 
-    public boolean onListItemLongClick(AdapterView<?> parent, View v, int position, long id) { return false; }
+    /**
+     * Utility routine to display an array of ContextDialogItems in an alert.
+     *
+     * @param title Title of Alert
+     * @param items Items to display
+     */
+    protected void showContextDialogue(String title, ArrayList<ContextDialogItem> items) {
+        if (items.size() > 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(title);
 
-	//public abstract void bindListItem(View view, Context context, TasksCursor cursor) ;
+            final ContextDialogItem[] itemArray = new ContextDialogItem[items.size()];
+            items.toArray(itemArray);
 
-
-	/**
-	 * Utility routine to display an array of ContextDialogItems in an alert.
-	 *
-	 * @param title		Title of Alert
-	 * @param items		Items to display
-	 */
-	protected void showContextDialogue(int title, ArrayList<ContextDialogItem> items) {
-		showContextDialogue(getResources().getString(title), items);
-	}
-
-	/**
-	 * Utility routine to display an array of ContextDialogItems in an alert.
-	 * 
-	 * @param title		Title of Alert
-	 * @param items		Items to display
-	 */
-	protected void showContextDialogue(String title, ArrayList<ContextDialogItem> items) {
-		if (items.size() > 0) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle(title);
-
-			final ContextDialogItem[] itemArray = new ContextDialogItem[items.size()];
-			items.toArray(itemArray);
-	
-			builder.setItems(itemArray, new DialogInterface.OnClickListener() {
-			    public void onClick(DialogInterface dialog, int item) {
-			    	itemArray[item].handler.run();
-			    }
-			});
-			AlertDialog alert = builder.create();
-			alert.show();
-		}		
-	}
+            builder.setItems(itemArray, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int item) {
+                    itemArray[item].handler.run();
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+    }
 
 
 }

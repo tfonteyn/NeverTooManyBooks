@@ -176,7 +176,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
                 if (c != null) {
                     mTaskManager = c.getManager();
                 } else {
-                    Logger.logError(new RuntimeException("Have ID, but can not find controller getting TaskManager"));
+                    Logger.logError(new RuntimeException("Have ID("+mTaskManagerId+"), but can not find controller getting TaskManager"));
                 }
             } //else {
             //Logger.logError(new RuntimeException("Task manager requested, but no ID available"));
@@ -310,8 +310,9 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        if (mTaskManagerId != 0)
+        if (mTaskManagerId != 0) {
             outState.putLong(ActivityWithTasks.BKEY_TASK_MANAGER_ID, mTaskManagerId);
+        }
     }
 
     /**

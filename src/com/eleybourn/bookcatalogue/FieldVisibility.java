@@ -52,7 +52,7 @@ public class FieldVisibility extends BookCatalogueActivity {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.field_visibility;
+        return R.layout.activity_admin_field_visibility;
     }
 
     @Override

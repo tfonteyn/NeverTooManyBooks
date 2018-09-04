@@ -43,7 +43,7 @@ import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_RO
 public class BooksCursor extends TrackedCursor implements AutoCloseable {
 
 	/** HashMap of selected book IDs */
-	private final Hashtable<Long,Boolean> m_selections = new Hashtable<>();
+	private final Hashtable<Long,Boolean> mSelections = new Hashtable<>();
 
 	/**
 	 * Constructor
@@ -60,15 +60,15 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
 	 */
 	public boolean getIsSelected() {
 		Long id = getId();
-		if (m_selections.containsKey(id)) {
-			return m_selections.get(id);			
+		if (mSelections.containsKey(id)) {
+			return mSelections.get(id);
 		} else {
 			return false;
 		}
 	}
 
 	public void setIsSelected(boolean selected) {
-		m_selections.put(getId(), selected);
+		mSelections.put(getId(), selected);
 	}
 	
 	/**
@@ -130,7 +130,7 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
 	@Override
 	public void close() {
 		super.close();
-		m_selections.clear();
+		mSelections.clear();
 		mView = null;
 	}
 }

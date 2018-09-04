@@ -35,15 +35,16 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  * @author Philip Warner
  */
 public class MenuHandler {
-    public static final int FIRST = Menu.FIRST + 13;
 
     private static final int MENU_ADD_BOOK = Menu.FIRST + 1;
     private static final int MENU_ITEM_ADD_BOOK_MANUAL = Menu.FIRST + 2;
     private static final int MENU_ITEM_ADD_BOOK_BARCODE = Menu.FIRST + 3;
     private static final int MENU_ITEM_ADD_BOOK_ISBN = Menu.FIRST + 4;
     private static final int MENU_ITEM_ADD_BOOK_NAMES = Menu.FIRST + 5;
-
     private static final int MENU_ITEM_SEARCH = Menu.FIRST + 6;
+
+    // must have a higher offset then the last one listed above
+    public static final int FIRST = Menu.FIRST + 13;
 
     /**
      * Construct & init.

@@ -61,8 +61,8 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	/** Key to store optional task ID hen activity is started */
 	private static final String KEY_TASK_ID = "GoodreadsExportFailuresActivity.TaskId";
 	/** DB connection */
-	private CatalogueDBAdapter m_db = null;
-	private BindableItemSQLiteCursor m_cursor;
+	private CatalogueDBAdapter mDb = null;
+	private BindableItemSQLiteCursor mCursor;
 	/** Task ID, if provided in intent */
 	private long mTaskId = 0;
 
@@ -77,8 +77,8 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	@Override 
 	public void onCreate(Bundle savedInstanceState) {
 		// Get a DB adapter
-		m_db = new CatalogueDBAdapter(this);
-		m_db.open();
+		mDb = new CatalogueDBAdapter(this);
+		mDb.open();
 
 		Intent i = getIntent();
 		if (i != null && i.hasExtra(KEY_TASK_ID)) {
@@ -126,7 +126,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	 */
 	private void updateHeader() {
 		TextView head = this.findViewById(R.id.events_found);
-		head.setText(getResources().getString(R.string.events_found,m_cursor.getCount()));
+		head.setText(getResources().getString(R.string.events_found, mCursor.getCount()));
 	}
 
 	/**
@@ -169,7 +169,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 			Logger.logError("event was null");
 			return;
 		}
-		event.addContextMenuItems(this, parent, v, position, id, items, m_db);
+		event.addContextMenuItems(this, parent, v, position, id, items, mDb);
 
 		if (items.size() > 0) {
 			showContextDialogue(R.string.select_an_action, items);
@@ -194,14 +194,14 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 			super.onDestroy();
 		} catch (Exception e) {/* Ignore */}
 		try {
-			if (m_cursor != null) {
-				m_cursor.close();
-				m_cursor = null;
+			if (mCursor != null) {
+				mCursor.close();
+				mCursor = null;
 			}
 		} catch (Exception e) {/* Ignore */}
 		try {
-			if (m_db != null)
-				m_db.close();
+			if (mDb != null)
+				mDb.close();
 		} catch (Exception e) {/* Ignore */}
 		try {
 			BookCatalogueApp.getQueueManager().unregisterEventListener(m_OnEventChangeListener);					
@@ -222,7 +222,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	@Override
 	public void bindViewToItem(Context context, View view, BindableItemSQLiteCursor cursor, BindableItem bindable) {
 		ViewTagger.setTag(view, R.id.TAG_EVENT, bindable);
-		bindable.bindView(view, context, cursor, m_db);
+		bindable.bindView(view, context, cursor, mDb);
 	}
 
 	/**
@@ -231,11 +231,11 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	@Override
 	protected BindableItemSQLiteCursor getBindableItemCursor(Bundle savedInstanceState) {
 		if (mTaskId == 0)
-			m_cursor = BookCatalogueApp.getQueueManager().getAllEvents();
+			mCursor = BookCatalogueApp.getQueueManager().getAllEvents();
 		else
-			m_cursor = BookCatalogueApp.getQueueManager().getTaskEvents(mTaskId);
+			mCursor = BookCatalogueApp.getQueueManager().getTaskEvents(mTaskId);
 
-		return m_cursor;
+		return mCursor;
 	}
 	
 	/** 

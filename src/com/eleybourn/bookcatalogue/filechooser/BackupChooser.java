@@ -27,7 +27,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.backup.Importer;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.ExportSettings;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.OnExportTypeSelectionDialogResultListener;
@@ -51,12 +50,13 @@ import java.util.Date;
 public class BackupChooser extends FileChooser implements
         OnMessageDialogResultListener,
         OnImportTypeSelectionDialogResultListener, OnExportTypeSelectionDialogResultListener {
-    /**
-     * Used when saving state
-     */
-    private final static String STATE_BACKUP_FILE = "BackupFileSpec";
+
+    // Used when saving state
+    private final static String BKEY_FILENAME = "BackupFileSpec";
+    // saving or opening
     private static final int TASK_ID_SAVE = 1;
     private static final int TASK_ID_OPEN = 2;
+
     private static final int DIALOG_OPEN_IMPORT_TYPE = 1;
     /**
      * The backup file that will be created (if saving)
@@ -67,14 +67,10 @@ public class BackupChooser extends FileChooser implements
         super.onCreate(savedInstanceState);
 
         // Set the correct title
-        if (isSaveDialog()) {
-            this.setTitle(R.string.backup_to_archive);
-        } else {
-            this.setTitle(R.string.import_from_archive);
-        }
+        this.setTitle(isSaveDialog() ? R.string.backup_to_archive : R.string.import_from_archive);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_BACKUP_FILE)) {
-            mBackupFile = new File(savedInstanceState.getString(STATE_BACKUP_FILE));
+        if (savedInstanceState != null && savedInstanceState.containsKey(BKEY_FILENAME)) {
+            mBackupFile = new File(savedInstanceState.getString(BKEY_FILENAME));
         }
     }
 
@@ -112,9 +108,8 @@ public class BackupChooser extends FileChooser implements
      */
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        // We need the backup file, if set
         if (mBackupFile != null) {
-            outState.putString(STATE_BACKUP_FILE, mBackupFile.getAbsolutePath());
+            outState.putString(BKEY_FILENAME, mBackupFile.getAbsolutePath());
         }
     }
 
@@ -138,50 +133,55 @@ public class BackupChooser extends FileChooser implements
 
     @Override
     public void onTaskFinished(SimpleTaskQueueProgressFragment fragment, int taskId, boolean success, boolean cancelled, FragmentTask task) {
-        // Is it a task we care about?
-        if (taskId == TASK_ID_SAVE) {
-            if (!success) {
-                String msg = getString(R.string.backup_failed)
-                        + " " + getString(R.string.please_check_sd_writable)
-                        + "\n\n" + getString(R.string.if_the_problem_persists);
 
-                MessageDialogFragment frag = MessageDialogFragment.newInstance(0,
+        // Is it a task we care about?
+        switch (taskId) {
+            case TASK_ID_SAVE: {
+                if (!success) {
+                    String msg = getString(R.string.backup_failed)
+                            + " " + getString(R.string.please_check_sd_writable)
+                            + "\n\n" + getString(R.string.if_the_problem_persists);
+
+                    MessageDialogFragment frag = MessageDialogFragment.newInstance(0,
+                            R.string.backup_to_archive, msg, android.R.string.ok, 0, 0);
+                    frag.show(getSupportFragmentManager(), null);
+                    // Just return; user may want to try again
+                    return;
+                }
+                if (cancelled) {
+                    // Just return; user may want to try again
+                    return;
+                }
+                // Show a helpful message
+                String msg = getString(R.string.archive_complete_details, mBackupFile.getParent(), mBackupFile.getName(), Convert.formatFileSize(mBackupFile.length()));
+                MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_SAVE,
                         R.string.backup_to_archive, msg, android.R.string.ok, 0, 0);
                 frag.show(getSupportFragmentManager(), null);
-                // Just return; user may want to try again
-                return;
+                break;
             }
-            if (cancelled) {
-                // Just return; user may want to try again
-                return;
-            }
-            // Show a helpful message
-            String msg = getString(R.string.archive_complete_details, mBackupFile.getParent(), mBackupFile.getName(), Convert.formatFileSize(mBackupFile.length()));
-            MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_SAVE,
-                    R.string.backup_to_archive, msg, android.R.string.ok, 0, 0);
-            frag.show(getSupportFragmentManager(), null);
 
-        } else if (taskId == TASK_ID_OPEN) {
-            if (!success) {
-                String msg = getString(R.string.import_failed)
-                        + " " + getString(R.string.please_check_sd_readable)
-                        + "\n\n" + getString(R.string.if_the_problem_persists);
+            case TASK_ID_OPEN: {
+                if (!success) {
+                    String msg = getString(R.string.import_failed)
+                            + " " + getString(R.string.please_check_sd_readable)
+                            + "\n\n" + getString(R.string.if_the_problem_persists);
 
-                MessageDialogFragment frag = MessageDialogFragment.newInstance(0,
-                        R.string.import_from_archive, msg, android.R.string.ok, 0, 0);
+                    MessageDialogFragment frag = MessageDialogFragment.newInstance(0,
+                            R.string.import_from_archive, msg, android.R.string.ok, 0, 0);
+                    frag.show(getSupportFragmentManager(), null);
+                    // Just return; user may want to try again
+                    return;
+                }
+                if (cancelled) {
+                    // Just return; user may want to try again
+                    return;
+                }
+
+                MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_OPEN,
+                        R.string.import_from_archive, R.string.import_complete, android.R.string.ok, 0, 0);
                 frag.show(getSupportFragmentManager(), null);
-                // Just return; user may want to try again
-                return;
+                break;
             }
-            if (cancelled) {
-                // Just return; user may want to try again
-                return;
-            }
-
-            MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_OPEN,
-                    R.string.import_from_archive, R.string.import_complete, android.R.string.ok, 0, 0);
-            frag.show(getSupportFragmentManager(), null);
-
         }
     }
 
@@ -231,13 +231,7 @@ public class BackupChooser extends FileChooser implements
                 if (settings.dateFrom == null) {
                     String lastBackup = BookCataloguePreferences.getLastBackupDate();
                     if (lastBackup != null && !lastBackup.isEmpty()) {
-                        try {
-                            settings.dateFrom = DateUtils.parseDate(lastBackup);
-                        } catch (Exception e) {
-                            // Just ignore; backup everything
-                            Logger.logError(e);
-                            settings.dateFrom = null;
-                        }
+                        settings.dateFrom = DateUtils.parseDate(lastBackup);
                     } else {
                         settings.dateFrom = null;
                     }

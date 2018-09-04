@@ -40,7 +40,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 public class AdministrationDonate extends BookCatalogueActivity {
 	@Override
 	protected int getLayoutId(){
-		return R.layout.administration_donate;
+		return R.layout.activity_admin_donate;
 	}
 	/**
 	 * Called when the activity is first created. 

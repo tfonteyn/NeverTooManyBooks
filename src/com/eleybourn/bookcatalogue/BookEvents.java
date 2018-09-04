@@ -71,7 +71,7 @@ public class BookEvents {
 	public static class BookEvent extends Event {
 		private static final long serialVersionUID = 74746691665235897L;
 
-		final long m_bookId;
+		final long mBookId;
 
 		/**
 		 * Constructor
@@ -81,7 +81,7 @@ public class BookEvents {
 		 */
 		BookEvent(long bookId, String description) {
 			super(description);
-			m_bookId = bookId;
+			mBookId = bookId;
 		}
 
 		/**
@@ -93,7 +93,7 @@ public class BookEvents {
 		 */
 		BookEvent(long bookId, String description, Exception e) {
 			super(description, e);
-			m_bookId = bookId;
+			mBookId = bookId;
 		}
 
 		/**
@@ -102,7 +102,7 @@ public class BookEvents {
 		 * @return	ID of related book.
 		 */
 		public long getBookId() {
-			return m_bookId;			
+			return mBookId;
 		}
 
 		/**
@@ -161,7 +161,7 @@ public class BookEvents {
 			holder.event = this;
 			holder.rowId = cursor.getId();
 
-			ArrayList<Author> authors = db.getBookAuthorList(m_bookId);
+			ArrayList<Author> authors = db.getBookAuthorList(mBookId);
 			String author;
 			if (authors.size() > 0) {
 				author = authors.get(0).getDisplayName();
@@ -173,7 +173,7 @@ public class BookEvents {
 
 			String title;
 			try {
-				title = db.getBookTitle(m_bookId);
+				title = db.getBookTitle(mBookId);
 			} catch (SQLiteDoneException e) {
 				title = context.getString(R.string.this_book_deleted_uc);
 			}
@@ -265,7 +265,7 @@ public class BookEvents {
 		 */
 		public void retry() {
 			QueueManager qm = BookCatalogueApp.getQueueManager();
-			SendOneBookTask task = new SendOneBookTask(m_bookId);
+			SendOneBookTask task = new SendOneBookTask(mBookId);
 			// TODO: MAKE IT USE THE SAME QUEUE? Why????
 			qm.enqueueTask(task, BcQueueManager.QUEUE_SMALL_JOBS, 0);
 			qm.deleteEvent(this.getId());
@@ -282,7 +282,7 @@ public class BookEvents {
 			// get book details
 			final BookEventHolder holder = ViewTagger.getTag(view, R.id.TAG_BOOK_EVENT_HOLDER);
 			final CatalogueDBAdapter db = (CatalogueDBAdapter)appInfo;
-			final BooksCursor booksCursor = db.getBookForGoodreadsCursor(m_bookId);
+			final BooksCursor booksCursor = db.getBookForGoodreadsCursor(mBookId);
 			final BooksRowView book = booksCursor.getRowView();
 			try {
 				// Hide parts of view based on current book details.
@@ -292,7 +292,7 @@ public class BookEvents {
 					} else {
 						holder.retry.setVisibility(View.VISIBLE);
 						ViewTagger.setTag(holder.retry, this);
-						holder.retry.setOnClickListener(m_retryButtonListener);
+						holder.retry.setOnClickListener(mRetryButtonListener);
 					}
 				} else {
 					holder.retry.setVisibility(View.GONE);
@@ -314,7 +314,7 @@ public class BookEvents {
 			super.addContextMenuItems(ctx, parent, v, position, id, items, appInfo);
 
 			final CatalogueDBAdapter db = (CatalogueDBAdapter)appInfo;
-			final BooksCursor booksCursor = db.getBookForGoodreadsCursor(m_bookId);
+			final BooksCursor booksCursor = db.getBookForGoodreadsCursor(mBookId);
 			try {
 				final BooksRowView book = booksCursor.getRowView();
 				if (booksCursor.moveToFirst()) {
@@ -341,7 +341,7 @@ public class BookEvents {
     /**
 	 * Method to retry sending a book to goodreads.
 	 */
-	private static final OnClickListener m_retryButtonListener = new OnClickListener() {
+	private static final OnClickListener mRetryButtonListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			BookEvent.BookEventHolder holder = ViewTagger.getTag(v, R.id.TAG_BOOK_EVENT_HOLDER);

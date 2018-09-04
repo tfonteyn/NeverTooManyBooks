@@ -116,7 +116,7 @@ public class PartialDatePicker extends AlertDialog {
 
         // Get the layout
         LayoutInflater inf = this.getLayoutInflater();
-        View root = inf.inflate(R.layout.partial_date_picker, null);
+        View root = inf.inflate(R.layout.dialog_partial_date_picker, null);
 
         // Ensure components match current locale order
         reorderPickers(root);

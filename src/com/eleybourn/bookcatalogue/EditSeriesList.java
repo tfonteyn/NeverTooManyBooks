@@ -79,6 +79,8 @@ public class EditSeriesList extends EditObjectList<Series> {
                     mDbHelper.fetchAllSeriesArray());
             ((AutoCompleteTextView) this.findViewById(R.id.series)).setAdapter(mSeriesAdapter);
 
+            getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         } catch (Exception e) {
             Logger.logError(e);
         }
@@ -86,49 +88,34 @@ public class EditSeriesList extends EditObjectList<Series> {
 
     @Override
     protected void onAdd(View v) {
-        AutoCompleteTextView t = EditSeriesList.this.findViewById(R.id.series);
-        String s = t.getText().toString().trim();
-        if (!s.isEmpty()) {
-            EditText et = EditSeriesList.this.findViewById(R.id.series_num);
-            String n = et.getText().toString();
-            if (n == null)
-                n = "";
-            Series series = new Series(t.getText().toString(), n);
+        AutoCompleteTextView seriesField = EditSeriesList.this.findViewById(R.id.series);
+        String seriesTitle = seriesField.getText().toString().trim();
+        if (!seriesTitle.isEmpty()) {
+            EditText numberField = EditSeriesList.this.findViewById(R.id.series_num);
+            Series series = new Series(seriesTitle, numberField.getText().toString());
             series.id = mDbHelper.lookupSeriesId(series);
-            boolean foundMatch = false;
-            try {
-                for (int i = 0; i < mList.size() && !foundMatch; i++) {
-                    if (series.name.equals(mList.get(i).name) && series.number.equals(mList.get(i).number)) {
-                        foundMatch = true;
-                    }
+            for (Series s : mList) {
+                if (s.id == series.id || (s.name.equals(series.name) && s.number.equals(series.number))) {
+                    Toast.makeText(EditSeriesList.this, getResources().getString(R.string.series_already_in_list), Toast.LENGTH_LONG).show();
+                    return;
                 }
-            } catch (NullPointerException e) {
-                Logger.logError(e, "while adding series");
-            }
-            if (foundMatch) {
-                Toast.makeText(EditSeriesList.this, getResources().getString(R.string.series_already_in_list), Toast.LENGTH_LONG).show();
-                return;
             }
             mList.add(series);
             mAdapter.notifyDataSetChanged();
-            t.setText("");
-            et.setText("");
+            seriesField.setText("");
+            numberField.setText("");
         } else {
             Toast.makeText(EditSeriesList.this, getResources().getString(R.string.series_is_blank), Toast.LENGTH_LONG).show();
         }
     }
 
     @Override
-    protected void onRowClick(View target, int position, final Series object) {
-        editSeries(object);
-    }
-
-    private void editSeries(final Series series) {
+    protected void onRowClick(View target, int position, final Series series) {
         final Dialog dialog = new BasicDialog(this);
-        dialog.setContentView(R.layout.edit_book_series);
+        dialog.setContentView(R.layout.dialog_edit_book_series);
         dialog.setTitle(R.string.edit_book_series);
 
-        setTextOrHideView(dialog.findViewById(R.id.booktitle), mBookTitle);
+        setTextOrHideView(R.id.booktitle, mBookTitle);
 
         AutoCompleteTextView seriesNameField = dialog.findViewById(R.id.series);
         seriesNameField.setText(series.name);

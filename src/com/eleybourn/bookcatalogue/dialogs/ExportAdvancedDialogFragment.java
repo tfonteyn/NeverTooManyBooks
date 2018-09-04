@@ -108,7 +108,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
     	mDialogId = getArguments().getInt(DIALOG_ID);
     	mFile = new File(getArguments().getString(FILE_SPEC));
 
-        View v = getActivity().getLayoutInflater().inflate(R.layout.export_advanced_options, null);
+        View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_export_advanced_options, null);
 		AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(v).setTitle(R.string.advanced_options).create();
 		alertDialog.setIcon(android.R.drawable.ic_menu_help);
 		alertDialog.setCanceledOnTouchOutside(false);

@@ -255,17 +255,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             mDb = new CatalogueDBAdapter(this);
             mDb.open();
 
-            // Extract the sort type from the bundle. getInt will return 0 if there is no attribute
-            // sort (which is exactly what we want)
-            try {
-                // Restore bookshelf and position
-                mCurrentBookshelf = BookCataloguePreferences.getString(PREF_BOOKSHELF, mCurrentBookshelf);
-                mTopRow = BookCataloguePreferences.getInt(PREF_TOP_ROW, 0);
-                mTopRowTop = BookCataloguePreferences.getInt(PREF_TOP_ROW_TOP, 0);
-            } catch (Exception ignore) {
-                Logger.logError(ignore);
-            }
-
+            // Restore bookshelf and position
+            mCurrentBookshelf = BookCataloguePreferences.getString(PREF_BOOKSHELF, mCurrentBookshelf);
+            mTopRow = BookCataloguePreferences.getInt(PREF_TOP_ROW, 0);
+            mTopRowTop = BookCataloguePreferences.getInt(PREF_TOP_ROW_TOP, 0);
 
             // Restore view style
             refreshStyle();
@@ -907,7 +900,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         }
     }
 
-    /** setup/refresh the BookShel list in the Spinner */
+    /** setup/refresh the BookShelf list in the Spinner */
     private void populateBookShelfSpinner() {
         mBookshelfAdapter.clear();
         // Add the default All Books bookshelf

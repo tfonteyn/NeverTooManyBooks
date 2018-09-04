@@ -90,27 +90,27 @@ public class OwnedBookCreateHandler extends ApiHandler {
 		private static final String OWNED_BOOK_ID = "id";
 		private static final String WORK_ID = "work-id";
 
-		final StringBuilder m_builder = new StringBuilder();
-		int m_bookId = 0;
-		//int m_ownedBookId = 0;
-		//int m_workId = 0;
+		final StringBuilder mBuilder = new StringBuilder();
+		int mBookId = 0;
+		//int mOwnedBookId = 0;
+		//int mWorkId = 0;
 
 		@Override
 		public void characters(char[] ch, int start, int length) throws SAXException {
 			super.characters(ch, start, length);
-			m_builder.append(ch, start, length);
+			mBuilder.append(ch, start, length);
 		}
 
 		public int getBookId() {
-			return m_bookId;
+			return mBookId;
 		}
 
 		//public int getOwnedBookId() {
-		//	return m_ownedBookId;
+		//	return mOwnedBookId;
 		//}
 		//
 		//public int getWorkId() {
-		//	return m_workId;
+		//	return mWorkId;
 		//}
 
 		@Override
@@ -118,7 +118,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 			super.startElement(uri, localName, name, attributes);
 
 			// reset the string. See note in endElement() for a discussion.
-			m_builder.setLength(0);
+			mBuilder.setLength(0);
 
 		}
 
@@ -127,19 +127,20 @@ public class OwnedBookCreateHandler extends ApiHandler {
 			super.endElement(uri, localName, name);
 
 			if (localName.equalsIgnoreCase(BOOK_ID)) {
-				m_bookId = Integer.parseInt( m_builder.toString() );
-			} else if (localName.equalsIgnoreCase(OWNED_BOOK_ID)) {
-				//m_ownedBookId = Integer.parseInt( m_builder.toString() );				
-			} else if (localName.equalsIgnoreCase(WORK_ID)) {
-				//m_workId = Integer.parseInt( m_builder.toString() );				
+				mBookId = Integer.parseInt( mBuilder.toString() );
 			}
+			//else if (localName.equalsIgnoreCase(OWNED_BOOK_ID)) {
+				//mOwnedBookId = Integer.parseInt( mBuilder.toString() );
+			//} else if (localName.equalsIgnoreCase(WORK_ID)) {
+				//mWorkId = Integer.parseInt( mBuilder.toString() );
+			//}
 
 			// Note:
 			// Always reset the length. This is not entirely the right thing to do, but works
 			// because we always want strings from the lowest level (leaf) XML elements.
 			// To be completely correct, we should maintain a stack of builders that are pushed and
 			// popped as each startElement/endElement is called. But lets not be pedantic for now.
-			m_builder.setLength(0);
+			mBuilder.setLength(0);
 		}		
 	}
 	

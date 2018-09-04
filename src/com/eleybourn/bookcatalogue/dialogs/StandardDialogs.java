@@ -281,7 +281,7 @@ public class StandardDialogs {
                                         SimpleDialogItem selectedItem,
                                         final SimpleDialogOnClickListener handler) {
         // Get the view and the radio group
-        final View root = inflater.inflate(R.layout.select_list_dialog, null);
+        final View root = inflater.inflate(R.layout.dialog_select_from_list, null);
         TextView msg = root.findViewById(R.id.message);
 
         // Build the base dialog
@@ -454,13 +454,10 @@ public class StandardDialogs {
          * Get a View to display the object
          */
         public View getView(LayoutInflater inflater) {
-            // Create the view
-            View v = inflater.inflate(R.layout.string_list_item, null);
-            // Set the name
-            TextView name = v.findViewById(R.id.name);
+            View view = inflater.inflate(R.layout.string_list_item, null);
+            TextView name = view.findViewById(R.id.name);
             name.setText(mObject.toString());
-            // Return it
-            return v;
+            return view;
         }
 
         public RadioButton getSelector(View v) {

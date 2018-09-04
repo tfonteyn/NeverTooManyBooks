@@ -40,11 +40,11 @@
         </LinearLayout>
     </ScrollView>
 
+    <!-- not sure why layout_marginTop works.. without it, buttons are gone -->
     <include
         android:id="@+id/buttonbar_cancel_update"
         layout="@layout/inc_buttonbar_cancel_update"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-50dip"
-        android:gravity="bottom"/>
+        android:layout_marginTop="-50dip"/>
 </LinearLayout>

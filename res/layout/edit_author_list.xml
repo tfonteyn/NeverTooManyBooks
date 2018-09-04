@@ -1,88 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingEnd="@dimen/padding_border"
+    android:paddingStart="@dimen/padding_border">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/toolbar"
         tools:text="TOOLBAR" />
 
-    <RelativeLayout
+    <TextView
+        android:id="@+id/title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingEnd="@dimen/padding_border"
-        android:paddingStart="@dimen/padding_border">
+        android:layout_height="wrap_content"
+        android:hint="@string/title"
+        android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/title"
+    <LinearLayout
+        android:id="@+id/top_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/title"
+        android:gravity="top"
+        android:orientation="horizontal">
+
+        <AutoCompleteTextView
+            android:id="@+id/author"
+            style="@style/personalNameTextEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:completionThreshold="2"
+            android:hint="@string/author"
+            android:nextFocusDown="@+id/title"
+            android:paddingEnd="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border" />
+
+        <Button
+            android:id="@+id/add"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/add" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonbar_cancel_save"
+        android:layout_below="@+id/top_buttons"
+        android:fillViewport="true">
+
+        <com.eleybourn.bookcatalogue.widgets.TouchListView xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
+            android:id="@+id/android:list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/title"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            tlv:grabber="@+id/grabber"
+            tlv:normal_height="64dip"
+            tlv:remove_mode="none" />
+    </ScrollView>
 
-        <LinearLayout
-            android:id="@+id/top_buttons"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/title"
-            android:gravity="top"
-            android:orientation="horizontal">
+    <TextView
+        android:id="@+id/android:empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonbar_cancel_save"
+        android:layout_below="@+id/top_buttons"
+        android:text="@string/noauthors"
+        android:textSize="16sp" />
 
-            <AutoCompleteTextView
-                android:id="@+id/author"
-                style="@style/personalNameTextEntry"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:completionThreshold="2"
-                android:hint="@string/author"
-                android:nextFocusDown="@+id/title"
-                android:paddingEnd="@dimen/padding_border"
-                android:paddingStart="@dimen/padding_border" />
+    <include
+        android:id="@+id/buttonbar_cancel_save"
+        layout="@layout/inc_buttonbar_cancel_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
 
-            <Button
-                android:id="@+id/add"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/add" />
-        </LinearLayout>
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/buttonbar_cancel_save"
-            android:layout_below="@+id/top_buttons">
-
-            <com.eleybourn.bookcatalogue.widgets.TouchListView xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
-                android:id="@+id/android:list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                tlv:grabber="@+id/grabber"
-                tlv:normal_height="64dip"
-                tlv:remove_mode="none" />
-        </ScrollView>
-
-        <TextView
-            android:id="@+id/android:empty"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/buttonbar_cancel_save"
-            android:layout_below="@+id/top_buttons"
-            android:text="@string/noauthors"
-            android:textSize="16sp" />
-
-        <include
-            android:id="@+id/buttonbar_cancel_save"
-            layout="@layout/inc_buttonbar_cancel_save"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true" />
-
-    </RelativeLayout>
-</LinearLayout>
+</RelativeLayout>

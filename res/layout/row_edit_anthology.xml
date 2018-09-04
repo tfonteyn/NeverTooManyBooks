@@ -6,15 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
-
     <!--
-         NOTE: The outer layout is used because this item appears in a TouchListView which uses the outer element padding, and
-				we want to set our own padding.
+        NOTE:
+        The outer layout is used because this item appears in a TouchListView which uses
+        the outer element padding, and we want to set our own padding.
 
-				With careful analysis, we could probably put padding on the right elements. But this is clearer and easier.
-
+        With careful analysis, we could probably put padding on the right elements.
+        But this is clearer and easier.
     -->
-
     <RelativeLayout
         android:id="@+id/row_real"
         android:layout_width="match_parent"
@@ -25,12 +24,12 @@
 
         <ImageView
             android:id="@id/ROW_DELETE"
-            style="@style/TouchListView_row_delete"
+            style="@style/touch_list_view_row_ic_delete"
             tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/grabber"
-            style="@style/TouchListView_row_grabber"
+            style="@style/touch_list_view_row_ic_grabber"
             app:srcCompat="@drawable/ic_grabber"
             tools:ignore="ContentDescription" />
 

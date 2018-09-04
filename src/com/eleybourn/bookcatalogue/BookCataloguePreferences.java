@@ -30,11 +30,15 @@ public class BookCataloguePreferences {
     public static final String WEBSITE_URL_GOOGLE_BOOKS = "http://books.google.com";
     public static final String WEBSITE_URL_AMAZON_BOOKS_BASE = "http://www.amazon.com";
 
-	/** Underlying SharedPreferences */
-	private static final SharedPreferences m_prefs = getSharedPreferences();
-    public static SharedPreferences getPrefs() {
-        return m_prefs;
-    }
+	/** Static preference object so that we can respond to events relating to changes */
+	private static SharedPreferences mPrefs = null;
+	/** Get (or create) the static shared preferences */
+	public static SharedPreferences getSharedPreferences() {
+		if (mPrefs == null) {
+			mPrefs = BookCatalogueApp.getAppContext().getSharedPreferences(APP_SHARED_PREFERENCES, BookCatalogueApp.MODE_PRIVATE);
+		}
+		return mPrefs;
+	}
 
 	/** Name to use for global preferences; non-global should be moved to appropriate Activity code */
 
@@ -130,14 +134,14 @@ public class BookCataloguePreferences {
 	}
 
 	/* *********************************************************************
-	 * Direct type access to the preferences, until we have get/set for all
+	 * Direct type access to the preferences
 	 ***********************************************************************/
 
 	/** Get a named boolean preference */
 	public static boolean getBoolean(String name, boolean defaultValue) {
 		boolean result;
 		try {
-			result = m_prefs.getBoolean(name, defaultValue);
+			result = mPrefs.getBoolean(name, defaultValue);
 		} catch (Exception e) {
 			result = defaultValue;
 		}
@@ -156,7 +160,7 @@ public class BookCataloguePreferences {
 	public static String getString(String name, String defaultValue) {
 		String result;
 		try {
-			result = m_prefs.getString(name, defaultValue);
+			result = mPrefs.getString(name, defaultValue);
 		} catch (Exception e) {
 			result = defaultValue;
 		}
@@ -175,7 +179,7 @@ public class BookCataloguePreferences {
 	public static int getInt(String name, int defaultValue) {
 		int result;
 		try {
-			result = m_prefs.getInt(name, defaultValue);
+			result = mPrefs.getInt(name, defaultValue);
 		} catch (Exception e) {
 			result = defaultValue;
 		}
@@ -192,16 +196,8 @@ public class BookCataloguePreferences {
 	}
 	/** Get a standard preferences editor for mass updates */
 	public static Editor edit() {
-		return m_prefs.edit();
+		return mPrefs.edit();
 	}
 
-    /** Static preference object so that we can respond to events relating to changes */
-    private static SharedPreferences mPrefs = null;
-    /** Get (or create) the static shared preferences */
-	public static SharedPreferences getSharedPreferences() {
-        if (mPrefs == null) {
-            mPrefs = BookCatalogueApp.getAppContext().getSharedPreferences(APP_SHARED_PREFERENCES, BookCatalogueApp.MODE_PRIVATE);
-        }
-		return mPrefs;
-	}
+
 }

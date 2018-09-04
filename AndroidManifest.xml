@@ -19,7 +19,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -205,14 +204,12 @@
         <activity android:name=".EditAuthorList" />
         <activity android:name=".EditSeriesList" />
 
-
-
-
-
-
+        <!-- cropping an image, either from the cover of a book, or direct from a new scan -->
         <activity android:name=".cropper.CropCropImage" />
 
 
+
+        <!-- and then some GoodReads activities... TODO: satisfy curiosity later -->
         <activity android:name=".searches.goodreads.GoodreadsSearchCriteria" />
         <activity android:name=".searches.goodreads.GoodreadsSearchResults" />
         <activity android:name=".searches.goodreads.GoodreadsExportFailuresActivity" />

@@ -9,19 +9,12 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/toolbar"
-        tools:text="TOOLBAR" />
+        tools:text="TOOLBAR"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
-        <include
-            android:id="@+id/buttonbar_cancel_save"
-            layout="@layout/inc_buttonbar_cancel_save"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"/>
 
         <LinearLayout
             android:id="@+id/browser_fragment"
@@ -30,5 +23,11 @@
             android:layout_above="@+id/buttonbar_cancel_save"
             android:orientation="vertical" />
 
+        <include
+            android:id="@+id/buttonbar_cancel_save"
+            layout="@layout/inc_buttonbar_cancel_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"/>
     </RelativeLayout>
 </LinearLayout>

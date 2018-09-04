@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.eleybourn.bookcatalogue.widgets;
 
 import android.content.Context;
@@ -42,7 +41,7 @@ import com.eleybourn.bookcatalogue.R;
 /**
  * TouchListView from CommonsWare which is based on Android code
  * for TouchInterceptor which was (reputedly) removed in Android 2.2.
- * <p>
+ *
  * https://github.com/timsu/cwac-touchlist
  */
 public class TouchListView extends ListView {

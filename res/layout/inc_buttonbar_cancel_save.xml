@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+        <include
+            android:id="@+id/buttonbar_cancel_save"
+            layout="@layout/inc_buttonbar_cancel_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+            add 'bottom' settings to the include tag, depending on layout used in
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="?android:attr/buttonBarStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_gravity="bottom">
+    android:orientation="horizontal">
 
     <Button
         android:id="@+id/cancel"

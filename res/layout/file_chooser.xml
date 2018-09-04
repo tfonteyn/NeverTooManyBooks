@@ -22,7 +22,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:contentDescription="@string/up_folder"
-            android:text="@string/add"
+            android:text="@string/up_folder"
             app:srcCompat="@drawable/ic_closed_folder_back" />
 
         <ImageView
@@ -32,7 +32,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
-            android:contentDescription="@string/up_folder"
+            android:contentDescription="@string/add"
             android:gravity="center_vertical"
             android:text="@string/add"
             android:visibility="gone"

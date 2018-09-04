@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingEnd="@dimen/padding_border"
+    android:paddingStart="@dimen/padding_border">
+
+    <TextView
+        android:id="@+id/booktitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        tools:text="@string/title" />
+
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/booktitle"
+        android:gravity="top"
+        android:orientation="horizontal">
+
+        <AutoCompleteTextView
+            android:id="@+id/series"
+            style="@style/personalNameTextEntry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:completionThreshold="2"
+            android:hint="@string/series"
+            android:paddingEnd="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border" />
+
+        <EditText
+            android:id="@+id/series_num"
+            android:layout_width="150sp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:hint="@string/series_num"
+            android:inputType="text"
+            android:singleLine="true" />
+    </LinearLayout>
+
+    <include
+        android:id="@+id/buttonbar_cancel_save"
+        layout="@layout/inc_buttonbar_cancel_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/content" />
+
+</RelativeLayout>

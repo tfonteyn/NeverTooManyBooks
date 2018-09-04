@@ -3320,7 +3320,7 @@ public class CatalogueDBAdapter {
 //////////////////////////////////////////
 
 	/** Static Factory object to create the custom cursor */
-	private static final CursorFactory m_booksFactory = new CursorFactory() {
+	private static final CursorFactory mBooksFactory = new CursorFactory() {
 			@Override
 			public Cursor newCursor(
 					SQLiteDatabase db,
@@ -3340,18 +3340,14 @@ public class CatalogueDBAdapter {
 	 * @return			A new TaskExceptionsCursor
 	 */
 	public BooksCursor fetchBooks(String sql, String[] selectionArgs) {
-		return (BooksCursor) mDb.rawQueryWithFactory(m_booksFactory, sql, selectionArgs, "");
+		return (BooksCursor) mDb.rawQueryWithFactory(mBooksFactory, sql, selectionArgs, "");
 	}
-
 
 	/**
 	 * Query to get all book IDs and ISBN for sending to goodreads.
 	 */
 	public BooksCursor getAllBooksForGoodreadsCursor(long startId, boolean updatesOnly) {
-		//if (m_allBooksForGoodreadsStmt == null) {
-		//	m_allBooksForGoodreadsStmt = compileStatement("Select isbn, " + KEY_BOOK + " from " + DB_TB_BOOKS + " Order by " + KEY_BOOK);
-		//}
-		String sql = "Select " + KEY_ISBN + ", " + KEY_ROWID + ", " + DOM_GOODREADS_BOOK_ID + 
+		String sql = "Select " + KEY_ISBN + ", " + KEY_ROWID + ", " + DOM_GOODREADS_BOOK_ID +
 				", " + KEY_NOTES + ", " + KEY_READ + ", " + KEY_READ_END + ", " + KEY_RATING + 
 				" from " + DB_TB_BOOKS + " Where " + KEY_ROWID + " > " + startId;
 		if (updatesOnly) {
@@ -3919,13 +3915,13 @@ public class CatalogueDBAdapter {
 	 * Create a new booklist style
 	 */
 	private SynchronizedStatement mInsertBooklistStyleStmt = null;
-	public long insertBooklistStyle(BooklistStyle s) {
+	public long insertBooklistStyle(BooklistStyle style) {
 		if (mInsertBooklistStyleStmt == null) {
 			final String sql = TBL_BOOK_LIST_STYLES.getInsert(DOM_STYLE) 
 						+ " Values (?)";
 			mInsertBooklistStyleStmt = mStatements.add("mInsertBooklistStyleStmt", sql);
 		}
-		byte[] blob = SerializationUtils.serializeObject(s);
+		byte[] blob = SerializationUtils.serializeObject(style);
 		mInsertBooklistStyleStmt.bindBlob(1, blob);
 		return mInsertBooklistStyleStmt.executeInsert();
 	}
@@ -3934,13 +3930,13 @@ public class CatalogueDBAdapter {
 	 * Update an existing booklist style
 	 */
 	private SynchronizedStatement mUpdateBooklistStyleStmt = null;
-	public void updateBooklistStyle(BooklistStyle s) {
+	public void updateBooklistStyle(BooklistStyle style) {
 		if (mUpdateBooklistStyleStmt == null) {
 			final String sql = TBL_BOOK_LIST_STYLES.getInsertOrReplaceValues(DOM_ID, DOM_STYLE);
 			mUpdateBooklistStyleStmt = mStatements.add("mUpdateBooklistStyleStmt", sql);
 		}
-		byte[] blob = SerializationUtils.serializeObject(s);
-		mUpdateBooklistStyleStmt.bindLong(1, s.getRowId());
+		byte[] blob = SerializationUtils.serializeObject(style);
+		mUpdateBooklistStyleStmt.bindLong(1, style.getRowId());
 		mUpdateBooklistStyleStmt.bindBlob(2, blob);
 		mUpdateBooklistStyleStmt.execute();
 	}

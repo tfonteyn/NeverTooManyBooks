@@ -76,6 +76,9 @@ public class EditAuthorList extends EditObjectList<Author> {
                     android.R.layout.simple_dropdown_item_1line,
                     mDbHelper.getAllAuthors());
             ((AutoCompleteTextView) this.findViewById(R.id.author)).setAdapter(author_adapter);
+
+            getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         } catch (Exception e) {
             Logger.logError(e);
         }
@@ -85,47 +88,33 @@ public class EditAuthorList extends EditObjectList<Author> {
      * Do the work of the onClickListener for the 'Add' button.
      */
     protected void onAdd(View v) {
-        // Get the text
-        AutoCompleteTextView t = EditAuthorList.this.findViewById(R.id.author);
-        String s = t.getText().toString().trim();
-        if (!s.isEmpty()) {
+        AutoCompleteTextView authorField = EditAuthorList.this.findViewById(R.id.author);
+        String authorName = authorField.getText().toString().trim();
+        if (!authorName.isEmpty()) {
             // Get an author and try to find in DB.
-            Author a = new Author(t.getText().toString());
-            a.id = mDbHelper.lookupAuthorId(a);
-
-            //
-            boolean foundMatch = false;
-            for (int i = 0; i < mList.size() && !foundMatch; i++) {
-                if (a.id != 0L) {
-                    if (mList.get(i).id == a.id)
-                        foundMatch = true;
-                } else {
-                    if (a.getDisplayName().equals(mList.get(i).getDisplayName()))
-                        foundMatch = true;
+            Author author = new Author(authorField.getText().toString());
+            author.id = mDbHelper.lookupAuthorId(author);
+            for (Author s : mList) {
+                if (s.id == author.id || s.getDisplayName().equals(author.getDisplayName())) {
+                    Toast.makeText(EditAuthorList.this, getResources().getString(R.string.author_already_in_list), Toast.LENGTH_LONG).show();
+                    return;
                 }
             }
-            if (foundMatch) {
-                Toast.makeText(EditAuthorList.this, getResources().getString(R.string.author_already_in_list), Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            mList.add(a);
+            mList.add(author);
             mAdapter.notifyDataSetChanged();
-            t.setText("");
+            authorField.setText("");
         } else {
             Toast.makeText(EditAuthorList.this, getResources().getString(R.string.author_is_blank), Toast.LENGTH_LONG).show();
         }
     }
 
     @Override
-    protected void onRowClick(View target, int position, final Author object) {
-        editAuthor(object);
-    }
-
-    private void editAuthor(final Author author) {
+    protected void onRowClick(View target, int position, final Author author) {
         final Dialog dialog = new BasicDialog(this);
-        dialog.setContentView(R.layout.edit_author);
+        dialog.setContentView(R.layout.dialog_edit_author);
         dialog.setTitle(R.string.edit_author_details);
+
+        setTextOrHideView(R.id.booktitle, mBookTitle);
 
         EditText familyView = dialog.findViewById(R.id.family_name);
         familyView.setText(author.familyName);

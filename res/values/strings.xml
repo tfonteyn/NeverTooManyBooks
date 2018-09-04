@@ -1063,6 +1063,9 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="waiting_for_idle">(waiting for idle)</string>
     <string name="internet_update_fields">Update Fields</string>
     <string name="done">Done</string>
+    <string name="storage_error_preparing_card">Preparing card</string>
+    <string name="storage_error_no_card">No storage card</string>
+    <string name="storage_error_no_space">Not enough space</string>
 
     <!-- End: Added/Updated in  [Next Version]  -->
 

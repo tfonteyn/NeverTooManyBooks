@@ -49,7 +49,7 @@ public class Help extends BookCatalogueActivity {
 
 	@Override
 	protected int getLayoutId(){
-		return R.layout.administration_help;
+		return R.layout.activity_admin_help;
 	}
 
 	@Override

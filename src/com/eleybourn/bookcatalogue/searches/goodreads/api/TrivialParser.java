@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -51,9 +51,6 @@ public class TrivialParser extends DefaultHandler {
 	public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, name, attributes);
 
-		//for (int i = 0; i < m_depth; i++)
-		//	m_Builder.append(" ");
-
 		m_Builder.append("<");
 		if (uri != null && !uri.isEmpty())
 			m_Builder.append(uri).append(":");
@@ -83,9 +80,6 @@ public class TrivialParser extends DefaultHandler {
 	public void endElement(String uri, String localName, String name) throws SAXException {
 		super.endElement(uri, localName, name);
 
-		//for (int i = 0; i < m_depth; i++)
-		//	m_Builder.append(" ");
-
 		m_Builder.append("</");
 		if (uri != null && !uri.isEmpty())
 			m_Builder.append(uri).append(":");
@@ -96,5 +90,4 @@ public class TrivialParser extends DefaultHandler {
 		}
 		m_Builder.append(">");
 	}
-
 }
