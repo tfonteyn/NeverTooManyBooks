@@ -5,15 +5,14 @@
     android:layout_height="wrap_content"
     android:baselineAligned="false"
     android:gravity="top"
-    android:orientation="horizontal"
-    tools:ignore="HardcodedText, UnusedIds" >
+    android:orientation="horizontal">
 
     <LinearLayout
         android:id="@+id/left_panel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="top"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <CheckBox
             android:id="@+id/checked"
@@ -21,8 +20,7 @@
             android:layout_height="wrap_content"
             android:focusable="false"
             android:text=""
-            android:visibility="gone"
-            />
+            android:visibility="gone" />
     </LinearLayout>
 
     <LinearLayout
@@ -31,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="2"
         android:gravity="top"
-        android:orientation="vertical" 
+        android:orientation="vertical"
         tools:ignore="NestedWeights">
 
         <TextView
@@ -39,65 +37,65 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:hint="Export all books to GoodReads"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:text="Export all books to GoodReads" />
 
         <TextView
             android:id="@+id/state"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:hint="Running (17 events recorded)"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:text="Running (17 events recorded)" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="top"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/retry_info"
+                style="@style/error_message"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:hint="Retry 0 of 17, next at July 20, 2012 17:45:32 GMT"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                style="@style/error_message"/>
+                tools:text="Retry 0 of 17, next at July 20, 2012 17:45:32 GMT" />
 
             <Button
                 android:id="@+id/retry"
+                style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:focusable="false"
-                android:text="@string/retry"
-                style="?android:attr/buttonStyleSmall"/>
+                android:text="@string/retry" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/error"
+            style="@style/error_message"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
 
-            android:hint="Last error: foo bar, not sure what really happened"
+            android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            style="@style/error_message" />
+            tools:text="Last error: foo bar, not sure what really happened" />
 
         <LinearLayout
             android:id="@+id/boring_stuff"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="top"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/job_info"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:text="Job ID 123, Queued at 20 Jul 2012 17:50:23 GMT"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                tools:text="Job ID 123, Queued at 20 Jul 2012 17:50:23 GMT" />
         </LinearLayout>
     </LinearLayout>
 
@@ -106,7 +104,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="top"
-        android:orientation="vertical" >
-    </LinearLayout>
+        android:orientation="vertical" />
 
 </LinearLayout>

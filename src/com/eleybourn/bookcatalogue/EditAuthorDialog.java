@@ -44,6 +44,7 @@ public class EditAuthorDialog {
 		final Dialog dialog = new BasicDialog(mContext);
 		dialog.setContentView(R.layout.dialog_edit_author);
 		dialog.setTitle(R.string.edit_author_details);
+
 		EditText familyView = dialog.findViewById(R.id.family_name);
 		EditText givenView = dialog.findViewById(R.id.given_names);
 		familyView.setText(author.familyName);
@@ -66,6 +67,7 @@ public class EditAuthorDialog {
 				confirmEdit(author, newAuthor);
 			}
 		});
+
 		Button cancelButton = dialog.findViewById(R.id.cancel);
 		cancelButton.setOnClickListener(new View.OnClickListener() {
 			@Override

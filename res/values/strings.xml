@@ -1012,10 +1012,15 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- End: Added/Updated in 5.2.2 -->
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
-    <string name="single_string" translatable="false">%1s</string> <!-- needed for string based ItemEntries properties -->
-    <string name="title_reorder">a|A|an|An|the|The</string>
-    <string name="menu_mark_as_read">Mark as read</string>
-    <string name="menu_mark_as_unread">Mark as unread</string>
+    <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
+    <string name="a_bracket_b_bracket" translatable="false">%1$s (%2$s)</string>
+    <string name="single_string" translatable="false">%1s</string>
+
+    <!-- task/event... could set these to translatable="false" I suppose -->
+    <string name="generic_task_info" >Task ID %1$d, Queued at %2$s</string>
+    <string name="events_found">%1$d Events found</string>
+    <string name="waiting_for_idle">(waiting for idle)</string>
+    <string name="events_recorded">( %1$d events recorded)</string>
 
     <!-- adding more does not require code changes -->
     <string-array name="predefined_formats">
@@ -1034,8 +1039,7 @@ and you can edit the book via the options menu using the menu button or overflow
         <item>Italian</item>
     </string-array>
 
-
-
+    <string name="preferred_theme">Preferred Interface Theme</string>
     <!-- adding more DOES require code changes -->
     <string-array name="supported_themes">
         <item>Dark</item>
@@ -1054,18 +1058,19 @@ and you can edit the book via the options menu using the menu button or overflow
             </p>
         		]]>
     </string>
-    <string name="generic_task_info" translatable="false">Task ID %1$d, Queued at %2$s</string>
-    <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
-    <string name="a_bracket_b_bracket" translatable="false">%1$s (%2$s)</string>
-    <string name="preferred_theme">Preferred Interface Theme</string>
-    <string name="events_found">%1$d Events found</string>
-    <string name="search_with_text">Search: %1$s</string>
-    <string name="waiting_for_idle">(waiting for idle)</string>
-    <string name="internet_update_fields">Update Fields</string>
-    <string name="done">Done</string>
+
     <string name="storage_error_preparing_card">Preparing card</string>
     <string name="storage_error_no_card">No storage card</string>
     <string name="storage_error_no_space">Not enough space</string>
+
+    <string name="title_reorder">a|A|an|An|the|The</string>
+    <string name="menu_mark_as_read">Mark as read</string>
+    <string name="menu_mark_as_unread">Mark as unread</string>
+    <string name="search_with_text">Search: %1$s</string>
+    <string name="internet_update_fields">Update Fields</string>
+    <string name="share_book_i_reading">I\'m reading %1$s by %2$s %3$s %4$s</string>
+    <string name="done">Done</string>
+    <string name="share">Share</string>
 
     <!-- End: Added/Updated in  [Next Version]  -->
 

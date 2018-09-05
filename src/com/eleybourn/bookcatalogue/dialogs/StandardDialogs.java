@@ -25,6 +25,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -60,8 +62,8 @@ public class StandardDialogs {
     /**
      * Show a dialog asking if unsaved edits should be ignored. Finish if so.
      */
-    public static void showConfirmUnsavedEditsDialog(final Activity a, final Runnable r) {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(a);
+    public static void showConfirmUnsavedEditsDialog(@NonNull final Activity activity, @Nullable final Runnable r) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
 
         dialog.setTitle(R.string.details_have_changed);
         dialog.setMessage(R.string.you_have_unsaved_changes);
@@ -73,7 +75,7 @@ public class StandardDialogs {
                 if (r != null) {
                     r.run();
                 } else {
-                    a.finish();
+                    activity.finish();
                 }
             }
         });
@@ -88,7 +90,7 @@ public class StandardDialogs {
         dialog.create().show();
     }
 
-    public static void needLibraryThingAlert(final Context context,
+    public static void needLibraryThingAlert(@NonNull final Context context,
                                              final boolean ltRequired,
                                              final String prefSuffix) {
         boolean showAlert;
@@ -178,14 +180,14 @@ public class StandardDialogs {
     }
 
     public static int deleteBookAlert(Context context,
-                                      final CatalogueDBAdapter dbHelper,
+                                      @NonNull final CatalogueDBAdapter dba,
                                       final long id,
                                       final Runnable onDeleted) {
 
-        ArrayList<Author> authorList = dbHelper.getBookAuthorList(id);
+        ArrayList<Author> authorList = dba.getBookAuthorList(id);
 
         String title;
-        try(Cursor cur = dbHelper.fetchBookById(id)) {
+        try(Cursor cur = dba.fetchBookById(id)) {
             if (cur == null || !cur.moveToFirst())
                 return R.string.unable_to_find_book;
 
@@ -219,7 +221,7 @@ public class StandardDialogs {
                 context.getResources().getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        dbHelper.deleteBook(id);
+                        dba.deleteBook(id);
                         alertDialog.dismiss();
                         onDeleted.run();
                     }
@@ -496,6 +498,4 @@ public class StandardDialogs {
             return v;
         }
     }
-
-
 }

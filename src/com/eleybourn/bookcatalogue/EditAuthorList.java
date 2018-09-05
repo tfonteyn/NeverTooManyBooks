@@ -51,7 +51,7 @@ public class EditAuthorList extends EditObjectList<Author> {
      * Constructor; pass the superclass the main and row based layouts to use.
      */
     public EditAuthorList() {
-        super(ColumnNames.KEY_AUTHOR_ARRAY, R.layout.edit_author_list, R.layout.row_edit_author_list);
+        super(ColumnNames.KEY_AUTHOR_ARRAY, R.layout.activity_edit_list_author, R.layout.row_edit_author_list);
     }
 
     @Override

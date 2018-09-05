@@ -42,8 +42,9 @@
                 android:inputType="number"
                 android:minEms="3"
                 android:text="2000"
+                android:hint="@string/year"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:ignore="HardcodedText,LabelFor" />
+                tools:ignore="HardcodedText" />
 
             <Button
                 android:id="@+id/minus"

@@ -71,7 +71,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	 * 
 	 */
 	public GoodreadsExportFailuresActivity() {
-		super(com.eleybourn.bookcatalogue.R.layout.event_list);
+		super(com.eleybourn.bookcatalogue.R.layout.goodreads_event_list);
 	}
 
 	@Override 

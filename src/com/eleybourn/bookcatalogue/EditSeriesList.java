@@ -44,7 +44,7 @@ public class EditSeriesList extends EditObjectList<Series> {
     private ArrayAdapter<String> mSeriesAdapter;
 
     public EditSeriesList() {
-        super(ColumnNames.KEY_SERIES_ARRAY, R.layout.edit_series_list, R.layout.row_edit_series_list);
+        super(ColumnNames.KEY_SERIES_ARRAY, R.layout.activity_edit_list_series, R.layout.row_edit_series_list);
     }
 
     @Override

@@ -218,7 +218,7 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
      * @param book       BookData to load from
      * @param setAllDone Flag indicating setAll() has already been called on the mFields object
      */
-    abstract protected void onLoadBookDetails(BookData book, boolean setAllDone);
+    abstract protected void onLoadBookDetails(BookData book, @SuppressWarnings("SameParameterValue") boolean setAllDone);
 
     /**
      * Default implementation of code to save existing data to the BookData object

@@ -101,7 +101,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
 			mArchiveHasValidDates = false;
 		}
 
-        View v = getActivity().getLayoutInflater().inflate(R.layout.import_type_selection, null);
+        View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_import_type_selection, null);
 		AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(v).setTitle(R.string.import_from_archive).create();
 		alertDialog.setIcon(android.R.drawable.ic_menu_help);
 		alertDialog.setCanceledOnTouchOutside(false);

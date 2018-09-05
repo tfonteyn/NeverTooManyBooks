@@ -26,6 +26,7 @@ import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BookData;
@@ -46,7 +47,7 @@ import java.io.File;
  */
 public class BookUtils {
 
-	private static final String EXTRA_BOOK_DATA = "bookData";
+	private static final String BKEY_BOOK_DATA = "bookData";
 
 	private BookUtils() {
 	}
@@ -57,14 +58,13 @@ public class BookUtils {
 	 *
 	 * @param rowId The id of the book to copy fields
 	 */
-	public static void duplicateBook(Activity activity, CatalogueDBAdapter db, Long rowId){
-		if (rowId == null || rowId == 0) {
-			Toast.makeText(activity, R.string.this_option_is_not_available_until_the_book_is_saved, Toast.LENGTH_LONG).show();
-		}
-
+	public static void duplicateBook(Activity activity, @NonNull CatalogueDBAdapter dba, Long rowId){
+        if (rowId == null || rowId == 0) {
+            Toast.makeText(activity, R.string.this_option_is_not_available_until_the_book_is_saved, Toast.LENGTH_LONG).show();
+        }
 		Intent i = new Intent(activity, BookEdit.class);
 		Bundle book = new Bundle();
-		try(Cursor thisBook = db.fetchBookById(rowId)) {
+		try(Cursor thisBook = dba.fetchBookById(rowId)) {
 			thisBook.moveToFirst();
 			book.putString(ColumnNames.KEY_TITLE, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_TITLE)));
 			book.putString(ColumnNames.KEY_ISBN, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_ISBN)));
@@ -84,10 +84,11 @@ public class BookUtils {
 			book.putString(ColumnNames.KEY_DESCRIPTION, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_DESCRIPTION)));
 			book.putString(ColumnNames.KEY_GENRE, thisBook.getString(thisBook.getColumnIndex(ColumnNames.KEY_GENRE)));
 			
-			book.putSerializable(ColumnNames.KEY_AUTHOR_ARRAY, db.getBookAuthorList(rowId));
-			book.putSerializable(ColumnNames.KEY_SERIES_ARRAY, db.getBookSeriesList(rowId));
+			book.putSerializable(ColumnNames.KEY_AUTHOR_ARRAY, dba.getBookAuthorList(rowId));
+			book.putSerializable(ColumnNames.KEY_SERIES_ARRAY, dba.getBookSeriesList(rowId));
 			
-			i.putExtra(EXTRA_BOOK_DATA, book);
+			i.putExtra(BKEY_BOOK_DATA, book);
+
 			activity.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_MANUALLY);
 		} catch (CursorIndexOutOfBoundsException e) {
 			Toast.makeText(activity, R.string.unknown_error, Toast.LENGTH_LONG).show();
@@ -99,16 +100,16 @@ public class BookUtils {
 	 * Delete book by its database row _id and close current activity. 
 	 * @param rowId The database id of the book for deleting
 	 */
-	public static void deleteBook(Context context, final CatalogueDBAdapter dbHelper, Long rowId, final Runnable runnable){
+	public static void deleteBook(Context context, @NonNull final CatalogueDBAdapter dba, Long rowId, final Runnable runnable){
 		if (rowId == null || rowId == 0) {
 			Toast.makeText(context, R.string.this_option_is_not_available_until_the_book_is_saved, Toast.LENGTH_LONG).show();
 			return;
 		}
-		int res = StandardDialogs.deleteBookAlert(context, dbHelper, rowId, new Runnable() {
+		int res = StandardDialogs.deleteBookAlert(context, dba, rowId, new Runnable() {
 			@Override
 			public void run() {
-				dbHelper.purgeAuthors();
-				dbHelper.purgeSeries();
+				dba.purgeAuthors();
+				dba.purgeSeries();
 				if (runnable != null)
 					runnable.run();
 			}});
@@ -169,35 +170,32 @@ public class BookUtils {
 		 * it will not post any text unless the user types it.
 		 */
 		Intent share = new Intent(Intent.ACTION_SEND); 
-		//TODO Externalize hardcoded text below to allow translating and simple editing
-		String text = "I'm reading " + title + " by " + author + series + " " + ratingString;
+		String text = context.getString(R.string.share_book_i_reading,title, author, series, ratingString);
 		share.putExtra(Intent.EXTRA_TEXT, text); 
 		share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + image.getPath()));
         share.setType("text/plain");
         
-        context.startActivity(Intent.createChooser(share, "Share"));
+        context.startActivity(Intent.createChooser(share, context.getString(R.string.share)));
 	}
 
 
 	/**
 	 * Update the 'read' status of a book in the database
-	 *  @param dba    database
+	 * @param dba    database
 	 * @param book    book to update
-	 * @param read    true or false
 	 */
-	public static boolean setRead(CatalogueDBAdapter dba, BookData book, boolean read) {
+	public static void setRead(CatalogueDBAdapter dba, BookData book, boolean read) {
         book.putInt(ColumnNames.KEY_READ, read ? 1 : 0);
-		return dba.updateBook(book.getRowId(), book, 0);
+		dba.updateBook(book.getRowId(), book, 0);
 	}
 
     /**
      * Update the 'read' status of a book in the database
-     *  @param dba        database
+	 * @param dba        database
      * @param bookId    book to update
-     * @param read        true or false
-     */
-    public static boolean setRead(CatalogueDBAdapter dba, long bookId, boolean read) {
+	 */
+    public static void setRead(CatalogueDBAdapter dba, long bookId, boolean read) {
         BookData book = new BookData(bookId);
-        return setRead(dba, book, read);
-    }
+		setRead(dba, book, read);
+	}
 }

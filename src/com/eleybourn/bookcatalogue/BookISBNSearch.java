@@ -126,14 +126,14 @@ public class BookISBNSearch extends ActivityWithTasks {
         if (mIsbn == null) {
             switch (mBy) {
                 case BY_ISBN:
-                    return R.layout.isbn_search;
+                    return R.layout.booksearch_by_isbn;
                 case BY_NAME:
-                    return R.layout.name_search;
+                    return R.layout.booksearch_by_name;
                 case BY_SCAN:
-                    return R.layout.isbn_scan;
+                    return R.layout.booksearch_by_scan;
             }
         }
-        return R.layout.isbn_search;
+        return R.layout.booksearch_by_isbn;
     }
 
     /**

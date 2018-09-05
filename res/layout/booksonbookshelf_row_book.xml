@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:scaleType="fitStart" >
+    android:scaleType="fitStart">
 
     <!-- NOTE: layout width/height will be set to a specific value at runtime -->
 
@@ -34,7 +35,8 @@
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/padding_border"
             android:paddingEnd="@dimen/padding_border"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="series_num_long"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -45,7 +47,8 @@
                 android:id="@+id/series_num"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                tools:text="###"/>
 
             <TextView
                 android:id="@+id/title"
@@ -54,7 +57,8 @@
                 android:paddingStart="@dimen/padding_border"
                 android:paddingEnd="@dimen/padding_border"
                 android:singleLine="false"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:text="book title"/>
         </LinearLayout>
 
         <TextView
@@ -64,7 +68,8 @@
             android:paddingStart="@dimen/padding_border"
             android:paddingEnd="@dimen/padding_border"
             android:singleLine="true"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="author name"/>
 
         <TextView
             android:id="@+id/shelves"
@@ -73,7 +78,8 @@
             android:paddingStart="@dimen/padding_border"
             android:paddingEnd="@dimen/padding_border"
             android:singleLine="true"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="shelves I'm on"/>
 
         <TextView
             android:id="@+id/location"
@@ -82,7 +88,8 @@
             android:paddingStart="@dimen/padding_border"
             android:paddingEnd="@dimen/padding_border"
             android:singleLine="true"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="location"/>
 
         <TextView
             android:id="@+id/publisher"
@@ -91,7 +98,8 @@
             android:paddingStart="@dimen/padding_border"
             android:paddingEnd="@dimen/padding_border"
             android:singleLine="true"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="publisher"/>
     </LinearLayout>
 
     <ImageView
@@ -105,6 +113,7 @@
         android:paddingTop="4dp"
         android:paddingEnd="4dp"
         app:srcCompat="@drawable/btn_check_buttonless_off"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
 </LinearLayout>

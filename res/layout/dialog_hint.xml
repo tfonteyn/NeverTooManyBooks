@@ -1,16 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- incompatible with APIL4 android:fadeScrollbars="false" -->
+<?xml version="1.0" encoding="utf-8"?><!-- incompatible with APIL4 android:fadeScrollbars="false" -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_alignParentTop="true" >
+    android:layout_alignParentTop="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingStart="@dimen/padding_border"
-        android:paddingEnd="@dimen/padding_border" >
+        android:paddingEnd="@dimen/padding_border"
+        android:paddingStart="@dimen/padding_border">
 
         <TextView
             android:id="@+id/hint"
@@ -18,15 +17,14 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textIsSelectable="true" />
-	
+
         <CheckBox
             android:id="@+id/hide_hint_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/hint"
             android:focusable="false"
-            android:text="@string/do_not_show_again"
-            />
+            android:text="@string/do_not_show_again" />
 
         <Button
             android:id="@+id/confirm"

@@ -32,10 +32,9 @@
             android:gravity="center"
             android:paddingStart="2dp"
             android:paddingEnd="2dp"
-            android:text="Some text"
+            tools:text="Some text"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textStyle="bold" 
-            tools:ignore="HardcodedText"/>
+            android:textStyle="bold"/>
 
         <ImageView
             android:layout_width="10dp"

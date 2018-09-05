@@ -126,13 +126,17 @@
 
     <!-- BEGIN Usually customized in the language styles.ml -->
     <style name="editorFieldTextStyle" parent="@style/editorFieldTextStyleBase" />
+
     <style name="dataEntryButtonStyle" parent="@style/editorFieldTextStyleBase" />
+
     <style name="localeBasedTextEntry" parent="@style/editorFieldTextStyle">
         <item name="android:inputType">textCapWords</item>
     </style>
 
     <style name="languageTextEntry" parent="@style/localeBasedTextEntry" />
+
     <style name="personalNameTextEntry" parent="@style/localeBasedTextEntry" />
+
     <style name="bookOrSeriesTitleTextEntry" parent="@style/localeBasedTextEntry" />
     <!-- BEGIN Usually customized in the language styles.ml -->
 
@@ -140,7 +144,6 @@
     <style name="seachTextEntry" parent="@style/bookOrSeriesTitleTextEntry">
         <item name="android:inputType">textMultiLine</item>
     </style>
-
 
 
     <!--
@@ -276,6 +279,32 @@
         <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="android:background">?attr/colorPrimary</item>
         <item name="android:theme">@style/ThemeOverlay.AppCompat.ActionBar</item>
+    </style>
+
+    <!-- row, button and blurb for 'options' in a an option list (f.e. on a dialog) -->
+    <style name="option_button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentStart">true</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <style name="option_blurb">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:paddingEnd">20dp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
+    <style name="option_row">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingBottom">12dp</item>
     </style>
 
 

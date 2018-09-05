@@ -52,7 +52,7 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
     private CatalogueDBAdapter mDbHelper;
 
     protected int getLayoutId() {
-        return R.layout.bookshelf_list;
+        return R.layout.activity_edit_list_bookshelf;
     }
 
     @Override
