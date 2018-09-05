@@ -67,7 +67,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
     // - The (subset) of fields relevant to the current book
     private FieldUsages mCurrFieldUsages;
     // DB connection
-    private CatalogueDBAdapter mDbHelper;
+    private CatalogueDBAdapter mDb;
 
     /**
      * Constructor.
@@ -77,8 +77,8 @@ public class UpdateThumbnailsThread extends ManagedTask {
      */
     public UpdateThumbnailsThread(TaskManager manager, FieldUsages requestedFields, TaskListener listener) {
         super(manager);
-        mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-        mDbHelper.open();
+        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+        mDb.open();
 
         mRequestedFields = requestedFields;
         SearchManager.SearchListener mSearchListener = new SearchManager.SearchListener() {
@@ -126,7 +126,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
         }
 
         // ENHANCE: Allow caller to pass cursor (again) so that specific books can be updated (eg. just one book)
-        try (Cursor books = mDbHelper.fetchAllBooks("b." + ColumnNames.KEY_ROWID, "", "", "", "", "", "")) {
+        try (Cursor books = mDb.fetchAllBooks("b." + ColumnNames.KEY_ROWID, "", "", "", "", "", "")) {
             mManager.setMax(this, books.getCount());
             while (books.moveToNext() && !isCancelled()) {
                 // Increment the progress counter
@@ -143,8 +143,8 @@ public class UpdateThumbnailsThread extends ManagedTask {
                 // Get the book UUID
                 mCurrUuid = mOrigData.getString(DatabaseDefinitions.DOM_BOOK_UUID.name);
                 // Get the extra data about the book
-                mOrigData.putSerializable(ColumnNames.KEY_AUTHOR_ARRAY, mDbHelper.getBookAuthorList(mCurrId));
-                mOrigData.putSerializable(ColumnNames.KEY_SERIES_ARRAY, mDbHelper.getBookSeriesList(mCurrId));
+                mOrigData.putSerializable(ColumnNames.KEY_AUTHOR_ARRAY, mDb.getBookAuthorList(mCurrId));
+                mOrigData.putSerializable(ColumnNames.KEY_SERIES_ARRAY, mDb.getBookSeriesList(mCurrId));
 
                 // Grab the searchable fields. Ideally we will have an ISBN but we may not.
                 String isbn = mOrigData.getString(ColumnNames.KEY_ISBN);
@@ -391,7 +391,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
 
         // Update
         if (!newData.isEmpty()) {
-            mDbHelper.updateBook(bookId, new BookData(newData), 0);
+            mDb.updateBook(bookId, new BookData(newData), 0);
         }
 
     }
@@ -414,9 +414,9 @@ public class UpdateThumbnailsThread extends ManagedTask {
      * Cleanup any DB connection etc after main task has run.
      */
     private void cleanup() {
-        if (mDbHelper != null) {
-            mDbHelper.close();
-            mDbHelper = null;
+        if (mDb != null) {
+            mDb.close();
+            mDb = null;
         }
     }
 

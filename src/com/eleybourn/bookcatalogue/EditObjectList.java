@@ -97,13 +97,10 @@ import java.util.ArrayList;
  */
 abstract public class EditObjectList<T extends Serializable> extends BookCatalogueListActivity {
 
-    // List
 	protected ArrayList<T> mList = null;
-	// Adapter used to manage list
 	protected ArrayAdapter<T> mAdapter;
 
-	// DB connection
-	protected CatalogueDBAdapter mDbHelper;
+	protected CatalogueDBAdapter mDb;
 
 	protected String mBookTitle;
 
@@ -213,8 +210,8 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 		super.onCreate(savedInstanceState);
 		try {
 			// Setup the DB
-			mDbHelper = new CatalogueDBAdapter(this);
-			mDbHelper.open();
+			mDb = new CatalogueDBAdapter(this);
+			mDb.open();
 
 			// Add handlers for 'Save', 'Cancel' and 'Add'
 			setupListener(R.id.confirm, mSaveListener);
@@ -597,8 +594,8 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if (mDbHelper != null)
-			mDbHelper.close();
+		if (mDb != null)
+			mDb.close();
 	}
 
 }

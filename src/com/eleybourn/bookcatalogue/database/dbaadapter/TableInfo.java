@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.database.dbaadapter;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DbSync;
 
 import java.util.Hashtable;
@@ -12,6 +13,10 @@ import java.util.Map;
 /**
  * Details of a database table.
  *
+ * This used to be an inner class of {@link CatalogueDBAdapter}
+ * Externalised ONLY because of the size of the class
+ * ONLY used by {@link CatalogueDBAdapter} and {@link DatabaseHelper}
+ *
  * @author Philip Warner
  */
 public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
@@ -20,9 +25,9 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
     public static final int CLASS_TEXT = 2;
     public static final int CLASS_REAL = 3;
     private final Map<String, ColumnInfo> mColumns;
-    private final DbSync.SynchronizedDb mDb;
+    private final DbSync.SynchronizedDb mSyncedDb;
     public TableInfo(DbSync.SynchronizedDb db, String tableName) {
-        mDb = db;
+        mSyncedDb = db;
         mColumns = describeTable(tableName);
     }
 
@@ -51,7 +56,7 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
 
         Map<String, ColumnInfo> cols = new Hashtable<>();
 
-        try(Cursor colCsr = mDb.rawQuery(sql, new String[]{})) {
+        try(Cursor colCsr = mSyncedDb.rawQuery(sql, new String[]{})) {
             if (colCsr == null)
                 throw new IllegalArgumentException();
 

@@ -76,7 +76,7 @@ public class EditSeriesList extends EditObjectList<Series> {
 
             mSeriesAdapter = new ArrayAdapter<>(this,
                     android.R.layout.simple_dropdown_item_1line,
-                    mDbHelper.fetchAllSeriesArray());
+                    mDb.fetchAllSeriesArray());
             ((AutoCompleteTextView) this.findViewById(R.id.series)).setAdapter(mSeriesAdapter);
 
             getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -93,7 +93,7 @@ public class EditSeriesList extends EditObjectList<Series> {
         if (!seriesTitle.isEmpty()) {
             EditText numberField = EditSeriesList.this.findViewById(R.id.series_num);
             Series series = new Series(seriesTitle, numberField.getText().toString());
-            series.id = mDbHelper.lookupSeriesId(series);
+            series.id = mDb.lookupSeriesId(series);
             for (Series s : mList) {
                 if (s.id == series.id || (s.name.equals(series.name) && s.number.equals(series.number))) {
                     Toast.makeText(EditSeriesList.this, getResources().getString(R.string.series_already_in_list), Toast.LENGTH_LONG).show();
@@ -166,17 +166,17 @@ public class EditSeriesList extends EditObjectList<Series> {
             // Same name, different number... just update
             oldSeries.copyFrom(newSeries);
             Utils.pruneSeriesList(mList);
-            Utils.pruneList(mDbHelper, mList);
+            Utils.pruneList(mDb, mList);
             mAdapter.notifyDataSetChanged();
             return;
         }
 
         // Get the new IDs
-        oldSeries.id = mDbHelper.lookupSeriesId(oldSeries);
-        newSeries.id = mDbHelper.lookupSeriesId(newSeries);
+        oldSeries.id = mDb.lookupSeriesId(oldSeries);
+        newSeries.id = mDb.lookupSeriesId(newSeries);
 
         // See if the old series is used in any other books.
-        long nRefs = mDbHelper.getSeriesBookCount(oldSeries);
+        long nRefs = mDb.getSeriesBookCount(oldSeries);
         boolean oldHasOthers = nRefs > (mRowId == 0 ? 0 : 1);
 
         // Case: series is the same (but different case), or is only used in this book
@@ -184,8 +184,8 @@ public class EditSeriesList extends EditObjectList<Series> {
             // Just update with the most recent spelling and format
             oldSeries.copyFrom(newSeries);
             Utils.pruneSeriesList(mList);
-            Utils.pruneList(mDbHelper, mList);
-            mDbHelper.sendSeries(oldSeries);
+            Utils.pruneList(mDb, mList);
+            mDb.sendSeries(oldSeries);
             mAdapter.notifyDataSetChanged();
             return;
         }
@@ -204,7 +204,7 @@ public class EditSeriesList extends EditObjectList<Series> {
             public void onClick(DialogInterface dialog, int which) {
                 oldSeries.copyFrom(newSeries);
                 Utils.pruneSeriesList(mList);
-                Utils.pruneList(mDbHelper, mList);
+                Utils.pruneList(mDb, mList);
                 mAdapter.notifyDataSetChanged();
                 alertDialog.dismiss();
             }
@@ -212,10 +212,10 @@ public class EditSeriesList extends EditObjectList<Series> {
 
         alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                mDbHelper.globalReplaceSeries(oldSeries, newSeries);
+                mDb.globalReplaceSeries(oldSeries, newSeries);
                 oldSeries.copyFrom(newSeries);
                 Utils.pruneSeriesList(mList);
-                Utils.pruneList(mDbHelper, mList);
+                Utils.pruneList(mDb, mList);
                 mAdapter.notifyDataSetChanged();
                 alertDialog.dismiss();
             }

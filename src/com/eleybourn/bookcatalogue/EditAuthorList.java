@@ -74,7 +74,7 @@ public class EditAuthorList extends EditObjectList<Author> {
             // Setup autocomplete for author name
             ArrayAdapter<String> author_adapter = new ArrayAdapter<>(this,
                     android.R.layout.simple_dropdown_item_1line,
-                    mDbHelper.getAllAuthors());
+                    mDb.getAllAuthors());
             ((AutoCompleteTextView) this.findViewById(R.id.author)).setAdapter(author_adapter);
 
             getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -93,7 +93,7 @@ public class EditAuthorList extends EditObjectList<Author> {
         if (!authorName.isEmpty()) {
             // Get an author and try to find in DB.
             Author author = new Author(authorField.getText().toString());
-            author.id = mDbHelper.lookupAuthorId(author);
+            author.id = mDb.lookupAuthorId(author);
             for (Author s : mList) {
                 if (s.id == author.id || s.getDisplayName().equals(author.getDisplayName())) {
                     Toast.makeText(EditAuthorList.this, getResources().getString(R.string.author_already_in_list), Toast.LENGTH_LONG).show();
@@ -161,19 +161,19 @@ public class EditAuthorList extends EditObjectList<Author> {
         }
 
         // Get the new author ID
-        oldAuthor.id = mDbHelper.lookupAuthorId(oldAuthor);
-        newAuthor.id = mDbHelper.lookupAuthorId(newAuthor);
+        oldAuthor.id = mDb.lookupAuthorId(oldAuthor);
+        newAuthor.id = mDb.lookupAuthorId(newAuthor);
 
         // See if the old author is used in any other books.
-        long nRefs = mDbHelper.getAuthorBookCount(oldAuthor) + mDbHelper.getAuthorAnthologyCount(oldAuthor);
+        long nRefs = mDb.getAuthorBookCount(oldAuthor) + mDb.getAuthorAnthologyCount(oldAuthor);
         boolean oldHasOthers = nRefs > (mRowId == 0 ? 0 : 1);
 
         // Case: author is the same, or is only used in this book
         if (newAuthor.id == oldAuthor.id || !oldHasOthers) {
             // Just update with the most recent spelling and format
             oldAuthor.copyFrom(newAuthor);
-            Utils.pruneList(mDbHelper, mList);
-            mDbHelper.sendAuthor(oldAuthor);
+            Utils.pruneList(mDb, mList);
+            mDb.sendAuthor(oldAuthor);
             mAdapter.notifyDataSetChanged();
             return;
         }
@@ -190,7 +190,7 @@ public class EditAuthorList extends EditObjectList<Author> {
         alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, thisBook, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 oldAuthor.copyFrom(newAuthor);
-                Utils.pruneList(mDbHelper, mList);
+                Utils.pruneList(mDb, mList);
                 mAdapter.notifyDataSetChanged();
                 alertDialog.dismiss();
             }
@@ -198,9 +198,9 @@ public class EditAuthorList extends EditObjectList<Author> {
 
         alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                mDbHelper.globalReplaceAuthor(oldAuthor, newAuthor);
+                mDb.globalReplaceAuthor(oldAuthor, newAuthor);
                 oldAuthor.copyFrom(newAuthor);
-                Utils.pruneList(mDbHelper, mList);
+                Utils.pruneList(mDb, mList);
                 mAdapter.notifyDataSetChanged();
                 alertDialog.dismiss();
             }

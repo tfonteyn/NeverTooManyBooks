@@ -45,7 +45,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 public class GoodreadsSearchCriteria extends BookCatalogueActivity {
 	private static final String EXTRA_BOOK_ID = "bookId";
 
-	private CatalogueDBAdapter mDbHelper;
+	private CatalogueDBAdapter mDb;
 	private long mBookId = 0;
 
 	@Override
@@ -58,8 +58,8 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
 		super.onCreate(savedInstanceState);
 
 		// Setup DB and layout.
-		mDbHelper = new CatalogueDBAdapter(this);
-		mDbHelper.open();
+		mDb = new CatalogueDBAdapter(this);
+		mDb.open();
 
 		// Initial value; try to build from passed book, if available.
 		String criteria = "";
@@ -74,7 +74,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
 		// If we have a book, fill in criteria AND try a search
 		if (mBookId != 0) {
 			setViewVisibility(R.id.original_details, true);
-			final BooksCursor c = mDbHelper.fetchBookById(mBookId);
+			final BooksCursor c = mDb.fetchBookById(mBookId);
 			final BooksRowView book = c.getRowView();
 			try 
 			{
@@ -173,7 +173,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
 	@Override 
 	public void onDestroy() {
 		super.onDestroy();
-		if (mDbHelper != null)
-			mDbHelper.close();
+		if (mDb != null)
+			mDb.close();
 	}
 }

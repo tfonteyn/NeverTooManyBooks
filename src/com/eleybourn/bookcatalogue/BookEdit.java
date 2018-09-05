@@ -67,30 +67,42 @@ import java.util.ArrayList;
  */
 public class BookEdit extends BookCatalogueActivity implements BookEditFragmentAbstract.BookEditManager,
         OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
+
+    /**
+     * Key using in intent to start this class in read-only mode
+     */
+    private static final String KEY_READ_ONLY = "key_read_only";
+
     public static final String BOOK_DATA = "bookData";
     public static final String FLATTENED_BOOKLIST_POSITION = "FlattenedBooklistPosition";
     public static final String FLATTENED_BOOKLIST = "FlattenedBooklist";
+
+    /**
+     * Tabs in order, see {@link #mTabClasses}
+     */
     public static final String TAB = "tab";
     public static final int TAB_EDIT = 0;
     public static final int TAB_EDIT_NOTES = 1;
     public static final int TAB_EDIT_FRIENDS = 2;
     public static final int TAB_EDIT_ANTHOLOGY = 3;
-    public static final String ADDED_HAS_INFO = "ADDED_HAS_INFO";
-    public static final String ADDED_GENRE = "ADDED_GENRE";
-    public static final String ADDED_SERIES = "ADDED_SERIES";
-    public static final String ADDED_TITLE = "ADDED_TITLE";
-    public static final String ADDED_AUTHOR = "ADDED_AUTHOR";
+    /**
+     * Classes used for the Tabs (in order)
+     */
     private static final Class[] mTabClasses = {
             BookEditFields.class,
             BookEditNotes.class,
             BookEditLoaned.class,
             BookEditAnthology.class
     };
-    /**
-     * Key using in intent to start this class in read-only mode
-     */
-    private static final String KEY_READ_ONLY = "key_read_only";
-    private final CatalogueDBAdapter mDbHelper = new CatalogueDBAdapter(this);
+
+    public static final String ADDED_HAS_INFO = "ADDED_HAS_INFO";
+    public static final String ADDED_GENRE = "ADDED_GENRE";
+    public static final String ADDED_SERIES = "ADDED_SERIES";
+    public static final String ADDED_TITLE = "ADDED_TITLE";
+    public static final String ADDED_AUTHOR = "ADDED_AUTHOR";
+
+
+    private final CatalogueDBAdapter mDb = new CatalogueDBAdapter(this);
     private FlattenedBooklist mList = null;
     private GestureDetector mGestureDetector;
     private boolean mIsDirtyFlg = false;
@@ -219,7 +231,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     public void onCreate(Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
-        mDbHelper.open();
+        mDb.open();
 
         // Get the extras; we use them a lot
         Bundle extras = getIntent().getExtras();
@@ -307,8 +319,8 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 // Cleanup because we may have made global changes
-                mDbHelper.purgeAuthors();
-                mDbHelper.purgeSeries();
+                mDb.purgeAuthors();
+                mDb.purgeSeries();
                 // We're done.
                 setResult(Activity.RESULT_OK);
 
@@ -342,7 +354,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         if (extras != null) {
             String list = extras.getString(FLATTENED_BOOKLIST);
             if (list != null && !list.isEmpty()) {
-                mList = new FlattenedBooklist(mDbHelper.getDb(), list);
+                mList = new FlattenedBooklist(mDb.getDb(), list);
                 // Check to see it really exists. The underlying table
                 // disappeared once in testing
                 // which is hard to explain; it theoretically should only happen
@@ -431,7 +443,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     protected void onDestroy() {
         Tracker.enterOnDestroy(this);
         super.onDestroy();
-        mDbHelper.close();
+        mDb.close();
         Tracker.exitOnDestroy(this);
     }
 
@@ -625,7 +637,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
             String isbn = mBookData.getString(ColumnNames.KEY_ISBN);
             /* Check if the book currently exists */
             if (!isbn.isEmpty()) {
-                if (mDbHelper.checkIsbnExists(isbn, true)) {
+                if (mDb.checkIsbnExists(isbn, true)) {
                     /*
                      * If it exists, show a dialog and use it to perform the
                      * next action, according to the users choice.
@@ -668,17 +680,17 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
      */
     private void updateOrCreate() {
         if (mRowId == 0) {
-            long id = mDbHelper.createBook(mBookData, 0);
+            long id = mDb.createBook(mBookData, 0);
 
             if (id > 0) {
                 setRowId(id);
                 File thumb = ImageUtils.getTempThumbnail();
-                File real = ImageUtils.fetchThumbnailByUuid(mDbHelper.getBookUuid(mRowId));
+                File real = ImageUtils.fetchThumbnailByUuid(mDb.getBookUuid(mRowId));
                 //noinspection ResultOfMethodCallIgnored
                 thumb.renameTo(real);
             }
         } else {
-            mDbHelper.updateBook(mRowId, mBookData, 0);
+            mDb.updateBook(mRowId, mBookData, 0);
         }
 
         /*
@@ -744,7 +756,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         if (mPublishers == null) {
             mPublishers = new ArrayList<>();
 
-            try (Cursor publisher_cur = mDbHelper.fetchAllPublishers()) {
+            try (Cursor publisher_cur = mDb.fetchAllPublishers()) {
                 final int col = publisher_cur.getColumnIndexOrThrow(ColumnNames.KEY_PUBLISHER);
                 while (publisher_cur.moveToNext()) {
                     mPublishers.add(publisher_cur.getString(col));
@@ -765,7 +777,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         if (mGenres == null) {
             mGenres = new ArrayList<>();
 
-            try (Cursor genre_cur = mDbHelper.fetchAllGenres("")) {
+            try (Cursor genre_cur = mDb.fetchAllGenres("")) {
                 final int col = genre_cur.getColumnIndexOrThrow(ColumnNames.KEY_ROWID);
                 while (genre_cur.moveToNext()) {
                     mGenres.add(genre_cur.getString(col));
@@ -786,7 +798,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         if (mLanguages == null) {
             mLanguages = new ArrayList<>();
 
-            try (Cursor cur = mDbHelper.fetchAllLanguages("")) {
+            try (Cursor cur = mDb.fetchAllLanguages("")) {
                 final int col = cur.getColumnIndexOrThrow(ColumnNames.KEY_ROWID);
                 while (cur.moveToNext()) {
                     String s = cur.getString(col);
@@ -807,7 +819,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
      */
     public ArrayList<String> getFormats() {
         if (mFormats == null) {
-            mFormats = mDbHelper.getFormats();
+            mFormats = mDb.getFormats();
         }
         return mFormats;
     }

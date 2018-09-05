@@ -32,14 +32,14 @@ import java.util.Hashtable;
  */
 public class SqlStatementManager implements AutoCloseable {
 	private final Hashtable<String, SynchronizedStatement> mStatements;
-	private final SynchronizedDb mDb;
+	private final SynchronizedDb mSyncedDb;
 
 	SqlStatementManager() {
 		this(null);
 	}
 
 	public SqlStatementManager(SynchronizedDb db) {
-		mDb = db;
+		mSyncedDb = db;
 		mStatements = new Hashtable<>();
 	}
 
@@ -48,9 +48,9 @@ public class SqlStatementManager implements AutoCloseable {
 	}
 
 	public SynchronizedStatement add(String name, String sql) {
-		if (mDb == null)
+		if (mSyncedDb == null)
 			throw new RuntimeException("Database not set when SqlStatementManager created");
-		return add(mDb, name, sql);
+		return add(mSyncedDb, name, sql);
 	}
 
 	public SynchronizedStatement add(final SynchronizedDb db, final String name, final String sql) {
@@ -63,9 +63,9 @@ public class SqlStatementManager implements AutoCloseable {
 	}
 
 	public SynchronizedStatement addOrGet(String name, String sql) {
-		if (mDb == null)
+		if (mSyncedDb == null)
 			throw new RuntimeException("Database not set when SqlStatementManager created");
-		return addOrGet(mDb, name, sql);
+		return addOrGet(mSyncedDb, name, sql);
 	}
 
 	private SynchronizedStatement addOrGet(final SynchronizedDb db, final String name, final String sql) {

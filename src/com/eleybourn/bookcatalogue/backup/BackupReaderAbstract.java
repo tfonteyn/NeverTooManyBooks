@@ -42,14 +42,14 @@ import java.util.Date;
  * @author pjw
  */
 public abstract class BackupReaderAbstract implements BackupReader {
-	private final CatalogueDBAdapter mDbHelper;
+	private final CatalogueDBAdapter mDb;
 
 	/**
 	 * Constructor
 	 */
 	protected BackupReaderAbstract() {
-		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-		mDbHelper.open();
+		mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+		mDb.open();
 	}
 
 	/**
@@ -178,7 +178,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
 			Logger.logError(e, "Unable to restore style");
 		}
 		if (s != null) {
-			s.saveToDb(mDbHelper);
+			s.saveToDb(mDb);
 		}
 	}
 
@@ -187,7 +187,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
 	 */
 	@Override
 	public void close() throws IOException {
-		mDbHelper.close();
+		mDb.close();
 	}
 
 }

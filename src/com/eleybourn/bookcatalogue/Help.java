@@ -45,7 +45,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  */
 public class Help extends BookCatalogueActivity {
 	private Resources res;
-	private CatalogueDBAdapter mDbHelper;
+	private CatalogueDBAdapter mDb;
 
 	@Override
 	protected int getLayoutId(){
@@ -58,8 +58,8 @@ public class Help extends BookCatalogueActivity {
 		try {
 			setTitle(R.string.app_name);
 			// Needed for sending com.eleybourn.bookcatalogue.debug info...
-			mDbHelper = new CatalogueDBAdapter(this);
-			mDbHelper.open();
+			mDb = new CatalogueDBAdapter(this);
+			mDb.open();
 			
 			res = getResources();
 			
@@ -87,7 +87,7 @@ public class Help extends BookCatalogueActivity {
 			sendInfo.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					DebugReport.sendDebugInfo(Help.this, mDbHelper);
+					DebugReport.sendDebugInfo(Help.this, mDb);
 				}
 			});
 			
@@ -142,7 +142,7 @@ public class Help extends BookCatalogueActivity {
 	public void onDestroy() {
 		super.onDestroy();
 		try {
-			mDbHelper.close();
+			mDb.close();
 		} catch (Exception e) {
 			Logger.logError(e);
 		}

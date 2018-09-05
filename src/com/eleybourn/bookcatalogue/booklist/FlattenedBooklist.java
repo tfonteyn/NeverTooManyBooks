@@ -22,7 +22,7 @@ public class FlattenedBooklist implements AutoCloseable {
 	/** Underlying temporary table definition */
 	private TableDefinition mTable;
 	/** Connection to db; we need this to keep the table alive */
-	private SynchronizedDb mDb;
+	private SynchronizedDb mSyncedDb;
 	/** Default position (before start) */
 	private long mPosition = -1;
 	/** Book ID from the currently selected row */
@@ -60,9 +60,9 @@ public class FlattenedBooklist implements AutoCloseable {
 	 * @param table	Table definition
 	 */
 	private void init(SynchronizedDb db, TableDefinition table) {
-		mDb = db;
+		mSyncedDb = db;
 		mTable = table;
-		mStatements = new SqlStatementManager(mDb);
+		mStatements = new SqlStatementManager(mSyncedDb);
 	}
 
 	public TableDefinition getTable() {
@@ -85,7 +85,7 @@ public class FlattenedBooklist implements AutoCloseable {
 	 * Cleanup the underlying table
 	 */
 	public void deleteData() {
-		mTable.drop(mDb);
+		mTable.drop(mSyncedDb);
 		mTable.close();
 	}
 
@@ -117,7 +117,7 @@ public class FlattenedBooklist implements AutoCloseable {
 	 * as a result.
 	 */
 	public boolean exists() {
-		return mTable.exists(mDb);
+		return mTable.exists(mSyncedDb);
 	}
 
 	/**

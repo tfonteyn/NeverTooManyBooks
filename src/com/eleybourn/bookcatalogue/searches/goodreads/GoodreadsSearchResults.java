@@ -48,14 +48,11 @@ import java.util.ArrayList;
  * @author Philip Warner
  */
 public class GoodreadsSearchResults extends BookCatalogueListActivity {
-	//private static Integer mIdCounter = 0;
-	//private int mId = 0;
 
 	public static final String SEARCH_CRITERIA = "criteria";
 
-	private CatalogueDBAdapter mDbHelper;
+	private CatalogueDBAdapter mDb;
 	private ArrayList<GoodreadsWork> mList = new ArrayList<>();
-    private String mCriteria;
 	private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("gr-covers");
 
 	@Override
@@ -67,24 +64,15 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		//synchronized(mIdCounter) {
-		//	mId = ++mIdCounter;
-		//}
-		
-		// Basic setup
-		mDbHelper = new CatalogueDBAdapter(this);
-		mDbHelper.open();
+		mDb = new CatalogueDBAdapter(this);
+		mDb.open();
 
 		// Look for search criteria
-		Bundle extras = this.getIntent().getExtras();
-
-		if (extras != null && extras.containsKey(SEARCH_CRITERIA)) {
-			mCriteria = extras.getString(SEARCH_CRITERIA).trim();
-		}
+		String criteria = getIntent().getStringExtra(SEARCH_CRITERIA);
 
 		// If we have criteria, do a search. Otherwise complain and finish.
-		if (!mCriteria.isEmpty()) {
-			doSearch();
+		if (criteria != null && !criteria.isEmpty()) {
+			doSearch(criteria);
 		} else {
 			Toast.makeText(this, getString(R.string.please_enter_search_criteria), Toast.LENGTH_LONG).show();
 			finish();
@@ -95,7 +83,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 	/**
 	 * Perform the search.
 	 */
-	private void doSearch() {
+	private void doSearch(@NonNull String criteria) {
 		// Get the GR stuff we need
 		GoodreadsManager grMgr = new GoodreadsManager();
 		SearchBooksApiHandler searcher = new SearchBooksApiHandler(grMgr);
@@ -103,7 +91,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 		// Run the search
 		ArrayList<GoodreadsWork> works;
 		try {
-			works = searcher.search(mCriteria);
+			works = searcher.search(criteria.trim());
 		} catch (Exception e) {
 			Logger.logError(e, "Failed when searching goodreads");
 			Toast.makeText(this, getString(R.string.error_while_searching) + " " + getString(R.string.if_the_problem_persists), Toast.LENGTH_LONG).show();
@@ -219,8 +207,8 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 	@Override 
 	public void onDestroy() {
 		super.onDestroy();
-		if (mDbHelper != null)
-			mDbHelper.close();
+		if (mDb != null)
+			mDb.close();
 	}
 
 }

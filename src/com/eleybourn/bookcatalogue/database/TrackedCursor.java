@@ -188,6 +188,7 @@ public class TrackedCursor extends SynchronizedCursor  implements Closeable{
 				for(WeakReference<TrackedCursor> r : mCursors) {
 					TrackedCursor c = r.get();
 					if (c != null) {
+						//noinspection UnusedAssignment
 						count++;
 					} else {
 						list.add(r);

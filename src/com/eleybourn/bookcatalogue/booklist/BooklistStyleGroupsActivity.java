@@ -27,7 +27,6 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.EditObjectList;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyleGroupsActivity.GroupWrapper;
@@ -57,9 +56,6 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 	/** Copy of flag passed by calling activity to indicate changes made here should be saved on exit */
 	private boolean mSaveToDb = true;
 
-	/** Database connection, if used */
-	private CatalogueDBAdapter mDb = null;
-	
 	/**
 	 * Constructor
 	 */
@@ -190,26 +186,6 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 	}
 
 	/**
-	 * Cleanup
-	 */
-	@Override 
-	protected void onDestroy() {
-		super.onDestroy();
-		if (mDb != null)
-			mDb.close();
-	}
-
-	/**
-	 * Get/create the database connection as necessary.
-	 */
-	private CatalogueDBAdapter getDb() {
-		if (mDb == null)
-			mDb = new CatalogueDBAdapter(this);
-		mDb.open();
-		return mDb;
-	}
-
-	/**
 	 * Save the style in the resulting Intent
 	 */
 	@Override
@@ -233,8 +209,9 @@ public class BooklistStyleGroupsActivity extends EditObjectList<GroupWrapper> {
 		intent.putExtra(BKEY_STYLE, mStyle);
 
 		// Save to DB if necessary
-		if (mSaveToDb)
-			mStyle.saveToDb(getDb());
+		if (mSaveToDb) {
+			mStyle.saveToDb(mDb);
+		}
 
 		return true;
 	}

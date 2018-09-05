@@ -100,14 +100,23 @@ public class CoversDbHelper implements AutoCloseable {
     private static final TableDefinition TBL_IMAGE = new TableDefinition("image",
             DOM_ID, DOM_TYPE, DOM_IMAGE, DOM_DATE, DOM_WIDTH, DOM_HEIGHT, DOM_SIZE, DOM_FILENAME);
     private static final TableDefinition[] TABLES = new TableDefinition[]{TBL_IMAGE};
+
     /**
-     * every method in this class MUST test on != null
+     * We *try* to connect in the Constructor. But this can fail and is (it seems) not fatal.
+     * So before using it, every method in this class MUST test on != null
      */
-    private static SynchronizedDb mSharedDb;
+    private static SynchronizedDb mSyncedDb;
+
     /**
-     * close() will only really close if 0 is reached
+     * close() will only really close if 0 is reached, note this is NOT a debug count!
+     * But.... we normally use this class as a singleton...
+     * So... won't increase/decrease when using only singletons
+     * Will be used if you create "new" instances yourself, so it's a nice debug as well.
      */
     private static Integer mCountToGetInstance = 0;
+    /**
+     * Our singleton
+     */
     private static CoversDbHelper mInstance;
 
     static {
@@ -143,7 +152,7 @@ public class CoversDbHelper implements AutoCloseable {
      * Constructor. Fill in required fields.
      */
     private CoversDbHelper(Context context) {
-        if (mSharedDb == null) {
+        if (mSyncedDb == null) {
             SQLiteOpenHelper mHelper = new CoversHelper(context,
                     StorageUtils.getFile(COVERS_DATABASE_NAME).getAbsolutePath(),
                     mTrackedCursorFactory,
@@ -151,7 +160,7 @@ public class CoversDbHelper implements AutoCloseable {
 
             // Try to connect.
             try {
-                mSharedDb = new SynchronizedDb(mHelper, mSynchronizer);
+                mSyncedDb = new SynchronizedDb(mHelper, mSynchronizer);
             } catch (Exception e) {
                 // Assume exception means DB corrupt. Log, rename, and retry
                 Logger.logError(e, "Failed to open covers db");
@@ -162,7 +171,7 @@ public class CoversDbHelper implements AutoCloseable {
 
                 // Connect again...
                 try {
-                    mSharedDb = new SynchronizedDb(mHelper, mSynchronizer);
+                    mSyncedDb = new SynchronizedDb(mHelper, mSynchronizer);
                 } catch (Exception e2) {
                     // If we fail a second time (creating a new DB), then just give up.
                     Logger.logError(e2, "Covers database unavailable");
@@ -183,17 +192,17 @@ public class CoversDbHelper implements AutoCloseable {
 //	 * Delete the named 'file'
 //	 */
 //	public void deleteFile(final String filename) {
-//	    if (mSharedDb == null) {
+//	    if (mSyncedDb == null) {
 //            return;
 //        }
 //
-//        SyncLock txLock = mSharedDb.beginTransaction(true);
+//        SyncLock txLock = mSyncedDb.beginTransaction(true);
 //        try {
-//            mSharedDb.execSQL("Drop table " + TBL_IMAGE);
-//            DbUtils.createTables(mSharedDb, new TableDefinition[]{TBL_IMAGE}, true);
-//            mSharedDb.setTransactionSuccessful();
+//            mSyncedDb.execSQL("Drop table " + TBL_IMAGE);
+//            DbUtils.createTables(mSyncedDb, new TableDefinition[]{TBL_IMAGE}, true);
+//            mSyncedDb.setTransactionSuccessful();
 //        } finally {
-//            mSharedDb.endTransaction(txLock);
+//            mSyncedDb.endTransaction(txLock);
 //        }
 //	}
 
@@ -231,10 +240,10 @@ public class CoversDbHelper implements AutoCloseable {
             }
 
             if (mCountToGetInstance == 0) {
-                if (mSharedDb != null) {
+                if (mSyncedDb != null) {
                     mStatements.close();
-                    mSharedDb.close();
-                    mSharedDb = null;
+                    mSyncedDb.close();
+                    mSyncedDb = null;
                 }
             }
         }
@@ -246,10 +255,10 @@ public class CoversDbHelper implements AutoCloseable {
 //	 * @return	byte[] of image data
 //	 */
 //	public boolean isEntryValid(String filename, Date lastModified) {
-//        if (mSharedDb == null) {
+//        if (mSyncedDb == null) {
 //            return false;
 //        }
-//		Cursor c = mSharedDb.query(TBL_IMAGE.getName(), new String[]{DOM_ID.name}, DOM_FILENAME + "=? and " + DOM_DATE + " > ?",
+//		Cursor c = mSyncedDb.query(TBL_IMAGE.getName(), new String[]{DOM_ID.name}, DOM_FILENAME + "=? and " + DOM_DATE + " > ?",
 //								new String[]{filename, DateUtils.toSqlDateTime(lastModified)}, null, null, null);
 //		try {
 //			return c.moveToFirst();
@@ -259,23 +268,23 @@ public class CoversDbHelper implements AutoCloseable {
 //	}
 
     public void deleteBookCover(final String bookHash) {
-        if (mSharedDb == null) {
+        if (mSyncedDb == null) {
             return;
         }
 
         if (mDeleteBookCoversStmt == null) {
             String sql = "Delete From " + TBL_IMAGE + " Where " + DOM_FILENAME + " LIKE ?";
-            mDeleteBookCoversStmt = mStatements.add(mSharedDb, "mDeleteBookCoversStmt", sql);
+            mDeleteBookCoversStmt = mStatements.add(mSyncedDb, "mDeleteBookCoversStmt", sql);
         }
 
         mDeleteBookCoversStmt.bindString(1, bookHash + "%");
 
-        SyncLock txLock = mSharedDb.beginTransaction(true);
+        SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
             mDeleteBookCoversStmt.execute();
-            mSharedDb.setTransactionSuccessful();
+            mSyncedDb.setTransactionSuccessful();
         } finally {
-            mSharedDb.endTransaction(txLock);
+            mSyncedDb.endTransaction(txLock);
         }
     }
 
@@ -285,11 +294,11 @@ public class CoversDbHelper implements AutoCloseable {
      * @return byte[] of image data
      */
     public final byte[] getFile(final String filename, final Date lastModified) {
-        if (mSharedDb == null) {
+        if (mSyncedDb == null) {
             return null;
         }
 
-        try (Cursor c = mSharedDb.query(TBL_IMAGE.getName(),
+        try (Cursor c = mSyncedDb.query(TBL_IMAGE.getName(),
                 new String[]{DOM_IMAGE.name},
                 DOM_FILENAME + "=? and " + DOM_DATE + " > ?",
                 new String[]{filename, DateUtils.toSqlDateTime(lastModified)},
@@ -306,7 +315,7 @@ public class CoversDbHelper implements AutoCloseable {
      * Save the passed bitmap to a 'file'
      */
     public void saveFile(final Bitmap bm, final String filename) {
-        if (mSharedDb == null) {
+        if (mSyncedDb == null) {
             return;
         }
 
@@ -318,13 +327,13 @@ public class CoversDbHelper implements AutoCloseable {
     }
 
     private void saveFile(final String filename, final int height, final int width, final byte[] bytes) {
-        if (mSharedDb == null) {
+        if (mSyncedDb == null) {
             return;
         }
 
         if (mExistsStmt == null) {
             String sql = "Select Count(" + DOM_ID + ") From " + TBL_IMAGE + " Where " + DOM_FILENAME + " = ?";
-            mExistsStmt = mStatements.add(mSharedDb, "mExistsStmt", sql);
+            mExistsStmt = mStatements.add(mSyncedDb, "mExistsStmt", sql);
         }
 
         ContentValues cv = new ContentValues();
@@ -341,28 +350,28 @@ public class CoversDbHelper implements AutoCloseable {
         mExistsStmt.bindString(1, filename);
         long rows;
 
-        SyncLock txLock = mSharedDb.beginTransaction(true);
+        SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
             if (mExistsStmt.simpleQueryForLong() == 0) {
-                rows = mSharedDb.insert(TBL_IMAGE.getName(), null, cv);
+                rows = mSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
             } else {
-                rows = mSharedDb.update(TBL_IMAGE.getName(), cv, DOM_FILENAME.name + " = ?", new String[]{filename});
+                rows = mSyncedDb.update(TBL_IMAGE.getName(), cv, DOM_FILENAME.name + " = ?", new String[]{filename});
             }
             if (rows == 0)
                 throw new RuntimeException("Failed to insert data");
-            mSharedDb.setTransactionSuccessful();
+            mSyncedDb.setTransactionSuccessful();
         } finally {
-            mSharedDb.endTransaction(txLock);
+            mSyncedDb.endTransaction(txLock);
         }
     }
 
     public void eraseCoverCache() {
-        if (mSharedDb == null) {
+        if (mSyncedDb == null) {
             return;
         }
         if (mEraseCoverCacheStmt == null) {
             String sql = "Delete From " + TBL_IMAGE;
-            mEraseCoverCacheStmt = mStatements.add(mSharedDb, "mEraseCoverCacheStmt", sql);
+            mEraseCoverCacheStmt = mStatements.add(mSyncedDb, "mEraseCoverCacheStmt", sql);
         }
         mEraseCoverCacheStmt.execute();
     }
@@ -378,7 +387,8 @@ public class CoversDbHelper implements AutoCloseable {
      *
      * @return Bitmap (if cached) or NULL (if not cached)
      */
-    public Bitmap fetchCachedImageIntoImageView(final File originalFile, final ImageView destView, final String hash, final int maxWidth, final int maxHeight) {
+    public Bitmap fetchCachedImageIntoImageView(final File originalFile, final ImageView destView,
+                                                final String hash, final int maxWidth, final int maxHeight) {
         return fetchCachedImageIntoImageView(originalFile, destView, getThumbnailCoverCacheId(hash, maxWidth, maxHeight));
     }
 
@@ -391,8 +401,9 @@ public class CoversDbHelper implements AutoCloseable {
      *
      * @return Bitmap (if cached) or NULL (if not cached)
      */
-    public Bitmap fetchCachedImageIntoImageView(final File originalFile, final ImageView destView, final String cacheId) {
-        if (mSharedDb == null) {
+    public Bitmap fetchCachedImageIntoImageView(final File originalFile, final ImageView destView,
+                                                final String cacheId) {
+        if (mSyncedDb == null) {
             return null;
         }
 
@@ -441,25 +452,25 @@ public class CoversDbHelper implements AutoCloseable {
      * Erase all cached images relating to the passed book UUID.
      */
     public void eraseCachedBookCover(String uuid) {
-        if (mSharedDb == null) {
+        if (mSyncedDb == null) {
             return;
         }
         // We use encodeString here because it's possible a user screws up the data and imports
         // bad UUIDs...this has happened.
         String sql = DOM_FILENAME + " glob '" + CatalogueDBAdapter.encodeString(uuid) + ".*'";
-        mSharedDb.delete(TBL_IMAGE.getName(), sql, CatalogueDBAdapter.EMPTY_STRING_ARRAY);
+        mSyncedDb.delete(TBL_IMAGE.getName(), sql, CatalogueDBAdapter.EMPTY_STRING_ARRAY);
     }
 
     /**
      * Analyze the database
      */
     public void analyze() {
-        if (mSharedDb == null) {
+        if (mSyncedDb == null) {
             return;
         }
         // Don't do VACUUM -- it's a complete rebuild
-        //mSharedDb.execSQL("vacuum");
-        mSharedDb.execSQL("analyze");
+        //mSyncedDb.execSQL("vacuum");
+        mSyncedDb.execSQL("analyze");
     }
 
     private static class CoversHelper extends SQLiteOpenHelper {

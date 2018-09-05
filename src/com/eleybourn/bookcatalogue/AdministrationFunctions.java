@@ -63,11 +63,10 @@ public class AdministrationFunctions extends ActivityWithTasks {
     private static final int ACTIVITY_BOOKSHELF = 1;
     private static final int ACTIVITY_FIELD_VISIBILITY = 2;
 
+    private static final String BKEY_DO_AUTO = "do_auto";
     private static final String BVAL_EXPORT = "export";
-    private static final String BKEYL_DO_AUTO = "do_auto";
 
-
-    private CatalogueDBAdapter mDbHelper;
+    private CatalogueDBAdapter mDb;
     private boolean finish_after = false;
     private boolean mExportOnStartup = false;
 
@@ -94,12 +93,12 @@ public class AdministrationFunctions extends ActivityWithTasks {
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.administration_label);
 
-            mDbHelper = new CatalogueDBAdapter(this);
-            mDbHelper.open();
+            mDb = new CatalogueDBAdapter(this);
+            mDb.open();
 
             Bundle extras = getIntent().getExtras();
-            if (extras != null && extras.containsKey(BKEYL_DO_AUTO)) {
-                String val = extras.getString(BKEYL_DO_AUTO);
+            if (extras != null && extras.containsKey(BKEY_DO_AUTO)) {
+                String val = extras.getString(BKEY_DO_AUTO);
                 if (val != null) {
                     switch (val) {
                         case BVAL_EXPORT:
@@ -349,7 +348,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mDbHelper.backupDbFile();
+                    mDb.backupDbFile();
                     Toast.makeText(AdministrationFunctions.this, R.string.backup_success, Toast.LENGTH_LONG).show();
                 }
             });
@@ -501,7 +500,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mDbHelper.close();
+        mDb.close();
     }
 
     @Override

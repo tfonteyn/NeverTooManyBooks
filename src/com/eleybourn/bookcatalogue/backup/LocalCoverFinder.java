@@ -40,14 +40,14 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 	/** The root path to search for files */
 	private final String mSrc;
     private final boolean mIsForeign;
-	private final CatalogueDBAdapter mDbHelper;
+	private final CatalogueDBAdapter mDb;
 
 	public LocalCoverFinder(String srcPath, String dstPath) {
 		mSrc = srcPath;
 		mIsForeign = !mSrc.equals(dstPath);
 
-		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-		mDbHelper.open();
+		mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+		mDb.open();
 	}
 	
 	public void copyOrRenameCoverFile(String srcUuid, long srcId, long dstId) throws IOException {
@@ -189,7 +189,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 		if (orig == null || !orig.exists() || orig.length() == 0)
 			return;
 
-		String newUuid = mDbHelper.getBookUuid(newId);
+		String newUuid = mDb.getBookUuid(newId);
 
 		renameFileToCoverImageIfMissing(orig, newUuid);
 	}
@@ -207,7 +207,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 		if (orig == null || !orig.exists() || orig.length() == 0)
 			return;
 
-		String newUuid = mDbHelper.getBookUuid(newId);
+		String newUuid = mDb.getBookUuid(newId);
 
 		copyFileToCoverImageIfMissing(orig, newUuid);
 	}

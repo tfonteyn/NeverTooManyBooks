@@ -59,7 +59,11 @@ import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.OLD_KE
 
 
 /**
- * This is a specific version of the SQLiteOpenHelper class. It handles onCreate and onUpgrade events
+ * This is a specific version of {@link SQLiteOpenHelper}. It handles {@link #onCreate} and {@link #onUpgrade}
+ *
+ * This used to be an inner class of {@link CatalogueDBAdapter}
+ * Externalised ONLY because of the size of the class
+ * ONLY used by {@link CatalogueDBAdapter}
  *
  * @author evan
  */
@@ -172,6 +176,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
     }
+
     // We tried 'Collate UNICODE' but it seemed to be case sensitive. We ended
     // up with 'Ursula Le Guin' and 'Ursula le Guin'.
     //
@@ -513,13 +518,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(DATABASE_CREATE_BOOK_SERIES);
         createIndices(db);
 
-        DbSync.SynchronizedDb sdb = new DbSync.SynchronizedDb(db, mSynchronizer);
+        DbSync.SynchronizedDb syncedDb = new DbSync.SynchronizedDb(db, mSynchronizer);
 
-        DatabaseDefinitions.TBL_BOOK_LIST_NODE_SETTINGS.createAll(sdb, true);
-        DatabaseDefinitions.TBL_BOOKS_FTS.create(sdb, false);
-        DatabaseDefinitions.TBL_BOOK_LIST_STYLES.createAll(sdb, true);
+        DatabaseDefinitions.TBL_BOOK_LIST_NODE_SETTINGS.createAll(syncedDb, true);
+        DatabaseDefinitions.TBL_BOOKS_FTS.create(syncedDb, false);
+        DatabaseDefinitions.TBL_BOOK_LIST_STYLES.createAll(syncedDb, true);
 
-        createTriggers(sdb);
+        createTriggers(syncedDb);
     }
 
     /**
@@ -1369,23 +1374,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL("INSERT INTO " + DB_TB_BOOKS + " Select * FROM books_tmp");
             db.execSQL("DROP TABLE books_tmp");
         }
-        DbSync.SynchronizedDb sdb = new DbSync.SynchronizedDb(db, mSynchronizer);
+        DbSync.SynchronizedDb syncedDb = new DbSync.SynchronizedDb(db, mSynchronizer);
         if (curVersion == 65) {
             curVersion++;
-            DatabaseDefinitions.TBL_BOOK_LIST_NODE_SETTINGS.drop(sdb);
-            DatabaseDefinitions.TBL_BOOK_LIST_NODE_SETTINGS.create(sdb, true);
-            DatabaseDefinitions.TBL_BOOK_LIST_NODE_SETTINGS.createIndices(sdb);
+            DatabaseDefinitions.TBL_BOOK_LIST_NODE_SETTINGS.drop(syncedDb);
+            DatabaseDefinitions.TBL_BOOK_LIST_NODE_SETTINGS.create(syncedDb, true);
+            DatabaseDefinitions.TBL_BOOK_LIST_NODE_SETTINGS.createIndices(syncedDb);
         }
         if (curVersion == 66) {
             curVersion++;
-            DatabaseDefinitions.TBL_BOOKS_FTS.drop(sdb);
-            DatabaseDefinitions.TBL_BOOKS_FTS.create(sdb, false);
+            DatabaseDefinitions.TBL_BOOKS_FTS.drop(syncedDb);
+            DatabaseDefinitions.TBL_BOOKS_FTS.create(syncedDb, false);
             StartupActivity.scheduleFtsRebuild();
         }
         if (curVersion == 67) {
             curVersion++;
-            DatabaseDefinitions.TBL_BOOK_LIST_STYLES.drop(sdb);
-            DatabaseDefinitions.TBL_BOOK_LIST_STYLES.createAll(sdb, true);
+            DatabaseDefinitions.TBL_BOOK_LIST_STYLES.drop(syncedDb);
+            DatabaseDefinitions.TBL_BOOK_LIST_STYLES.createAll(syncedDb, true);
         }
         if (curVersion == 68) {
             curVersion++;
@@ -1395,12 +1400,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             curVersion = 71;
             db.execSQL("ALTER TABLE " + DB_TB_BOOKS + " RENAME TO books_tmp");
             db.execSQL(DATABASE_CREATE_BOOKS_81);
-            copyTableSafely(sdb, "books_tmp", DB_TB_BOOKS);
+            copyTableSafely(syncedDb, "books_tmp", DB_TB_BOOKS);
             db.execSQL("DROP TABLE books_tmp");
         }
         if (curVersion == 71) {
             curVersion++;
-            renameIdFilesToHash(sdb);
+            renameIdFilesToHash(syncedDb);
             // A bit of presumption here...
             mMessage += "New in v4.0 - Updates courtesy of (mainly) Philip Warner (a.k.a Grunthos) -- blame him, politely, if it toasts your data\n\n";
             mMessage += "* New look, new startup page\n\n";
@@ -1487,12 +1492,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             final String tempName = "books_series_tmp";
             db.execSQL("ALTER TABLE " + DB_TB_BOOK_SERIES + " RENAME TO " + tempName);
             db.execSQL(DATABASE_CREATE_BOOK_SERIES);
-            copyTableSafely(sdb, tempName, DB_TB_BOOK_SERIES);
+            copyTableSafely(syncedDb, tempName, DB_TB_BOOK_SERIES);
             db.execSQL("DROP TABLE " + tempName);
         }
         if (curVersion == 81) {
             curVersion++;
-            recreateAndReloadTable(sdb, DB_TB_BOOKS, DATABASE_CREATE_BOOKS);
+            recreateAndReloadTable(syncedDb, DB_TB_BOOKS, DATABASE_CREATE_BOOKS);
         }
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -1503,7 +1508,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Rebuild all indices
         createIndices(db);
         // Rebuild all triggers
-        createTriggers(sdb);
+        createTriggers(syncedDb);
 
         //TODO: NOTE: END OF UPDATE
     }

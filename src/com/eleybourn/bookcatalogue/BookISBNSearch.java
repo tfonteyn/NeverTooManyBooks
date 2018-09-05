@@ -96,7 +96,7 @@ public class BookISBNSearch extends ActivityWithTasks {
     private EditText mTitleText;
     private AutoCompleteTextView mAuthorText;
     private ArrayAdapter<String> mAuthorAdapter = null;
-    private CatalogueDBAdapter mDbHelper;
+    private CatalogueDBAdapter mDb;
     private String mAuthor;
     private String mTitle;
     private String mIsbn;
@@ -164,8 +164,8 @@ public class BookISBNSearch extends ActivityWithTasks {
 
             LibraryThingManager.showLtAlertIfNecessary(this, false, "search");
 
-            mDbHelper = new CatalogueDBAdapter(this);
-            mDbHelper.open();
+            mDb = new CatalogueDBAdapter(this);
+            mDb.open();
 
             if (savedInstanceState != null) {
                 mSearchManagerId = savedInstanceState.getLong(BKEY_SEARCH_MANAGER_ID);
@@ -622,7 +622,7 @@ public class BookISBNSearch extends ActivityWithTasks {
                         SoundManager.beepHigh();
                     }
                     // See if ISBN exists in catalogue
-                    final long existingId = mDbHelper.getIdFromIsbn(isbn, true);
+                    final long existingId = mDb.getIdFromIsbn(isbn, true);
                     if (existingId > 0) {
                         // Verify - this can be a dangerous operation
                         AlertDialog alertDialog = new AlertDialog.Builder(this)
@@ -760,8 +760,8 @@ public class BookISBNSearch extends ActivityWithTasks {
     protected void onDestroy() {
         Tracker.enterOnDestroy(this);
         super.onDestroy();
-        if (mDbHelper != null)
-            mDbHelper.close();
+        if (mDb != null)
+            mDb.close();
         Tracker.exitOnDestroy(this);
     }
 
@@ -831,7 +831,7 @@ public class BookISBNSearch extends ActivityWithTasks {
         mAuthorText = findViewById(R.id.author);
         if (mAuthorText != null) {
             // Get all known authors and build a hash of the names
-            final ArrayList<String> authors = mDbHelper.getAllAuthors();
+            final ArrayList<String> authors = mDb.getAllAuthors();
             final HashSet<String> uniqueNames = new HashSet<>();
             for (String s : authors)
                 uniqueNames.add(s.toUpperCase());

@@ -145,7 +145,11 @@ public class GetThumbnailTask implements SimpleTask {
     }
 
     /**
-     * Do the image manipulation. We wait at start to prevent a flood of images from hitting the UI thread.
+     * Do the image manipulation.
+     *
+     * Code commented out for now: We wait at start to prevent a flood of images from hitting the UI thread.
+     *
+     * TODO: fetchBookCoverIntoImageView is an expensive operation. Make sure its still needed.
      */
     @Override
     public void run(SimpleTaskContext taskContext) {
@@ -155,9 +159,6 @@ public class GetThumbnailTask implements SimpleTask {
 			} catch (InterruptedException e) {
 			}
 			*/
-        //
-        // TODO: fetchBookCoverIntoImageView is an expensive operation. Make sure its still needed.
-        //
 
         // Get the view we are targeting and make sure it is valid
         ImageView v = mView.get();

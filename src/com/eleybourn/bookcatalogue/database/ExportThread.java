@@ -23,10 +23,11 @@ public class ExportThread extends ManagedTask {
 
     private static final String EXPORT_FILE_NAME = "export.csv";
     private static final String EXPORT_TEMP_FILE_NAME = "export.tmp";
-    private static String UTF8 = "utf8";
-    private static int BUFFER_SIZE = 8192;
-    private final Exporter.ExportListener mOnExportListener = new Exporter.ExportListener() {
 
+//    private static final String UTF8 = "utf8";
+//    private static final int BUFFER_SIZE = 8192;
+
+    private final Exporter.ExportListener mOnExportListener = new Exporter.ExportListener() {
         @Override
         public void onProgress(String message, int position) {
             if (position > 0) {
@@ -47,17 +48,12 @@ public class ExportThread extends ManagedTask {
         }
 
     };
-    private CatalogueDBAdapter mDbHelper;
+    private CatalogueDBAdapter mDb;
 
     public ExportThread(TaskManager ctx) {
         super(ctx);
-        mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-        mDbHelper.open();
-    }
-
-    @Override
-    protected void onThreadFinish() {
-        cleanup();
+        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+        mDb.open();
     }
 
     @Override
@@ -79,6 +75,64 @@ public class ExportThread extends ManagedTask {
             mManager.doToast(getString(R.string.export_failed_sdcard));
         }
 
+        // was commented out in version 5.2.2.
+        // not removed, but moved to a private method (untested obviously) so i can physically more onRun in the file
+        //someThingOnRunUsedTo();
+    }
+
+    @Override
+    protected void onThreadFinish() {
+        cleanup();
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        cleanup();
+        super.finalize();
+    }
+
+    private void cleanup() {
+        if (mDb != null) {
+            mDb.close();
+            mDb = null;
+        }
+    }
+
+    /**
+     * Backup the current file
+     */
+    private void renameFiles() {
+        File temp = StorageUtils.getFile(EXPORT_TEMP_FILE_NAME);
+        if (isCancelled()) {
+            if (temp.exists())
+                //noinspection ResultOfMethodCallIgnored
+                temp.delete();
+        } else {
+            String fmt = "export.%s.csv";
+            File fLast = StorageUtils.getFile(String.format(fmt, 5));
+            if (fLast.exists())
+                //noinspection ResultOfMethodCallIgnored,ResultOfMethodCallIgnored
+                fLast.delete();
+            for (int i = 4; i > 0; i--) {
+                File fCurr = StorageUtils.getFile(String.format(fmt, i));
+                if (fCurr.exists())
+                    //noinspection ResultOfMethodCallIgnored
+                    fCurr.renameTo(fLast);
+                fLast = fCurr;
+            }
+            File export = StorageUtils.getFile(EXPORT_FILE_NAME);
+            if (export.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                export.renameTo(fLast);
+            }
+            if (temp.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                temp.renameTo(export);
+            }
+        }
+    }
+
+//   private void someThingOnRunUsedTo() {
 //		mManager.doProgress(getString(R.string.export_starting_ellipsis));
 //		boolean displayingStartupMessage = true;
 //
@@ -265,112 +319,63 @@ public class ExportThread extends ManagedTask {
 //			if (books != null)
 //				books.close();
 //		}
-    }
+//    }
 
-    /**
-     * Backup the current file
-     */
-    private void renameFiles() {
-        File temp = StorageUtils.getFile(EXPORT_TEMP_FILE_NAME);
-        if (isCancelled()) {
-            if (temp.exists())
-                //noinspection ResultOfMethodCallIgnored
-                temp.delete();
-        } else {
-            String fmt = "export.%s.csv";
-            File fLast = StorageUtils.getFile(String.format(fmt, 5));
-            if (fLast.exists())
-                //noinspection ResultOfMethodCallIgnored,ResultOfMethodCallIgnored
-                fLast.delete();
-            for (int i = 4; i > 0; i--) {
-                File fCurr = StorageUtils.getFile(String.format(fmt, i));
-                if (fCurr.exists())
-                    //noinspection ResultOfMethodCallIgnored
-                    fCurr.renameTo(fLast);
-                fLast = fCurr;
-            }
-            File export = StorageUtils.getFile(EXPORT_FILE_NAME);
-            if (export.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                export.renameTo(fLast);
-            }
-            if (temp.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                temp.renameTo(export);
-            }
-        }
-    }
 
-    /**
-     * Double quote all "'s and remove all newlines
-     *
-     * @param cell The cell the format
-     *
-     * @return The formatted cell
-     */
-    private String formatCell(long cell) {
-        String newcell = cell + "";
-        return formatCell(newcell);
-    }
+//    /**
+//     * Double quote all "'s and remove all newlines
+//     *
+//     * @param cell The cell the format
+//     *
+//     * @return The formatted cell
+//     */
+//    private String formatCell(long cell) {
+//        String newcell = cell + "";
+//        return formatCell(newcell);
+//    }
 
-    /**
-     * Double quote all "'s and remove all newlines
-     *
-     * @param cell The cell the format
-     *
-     * @return The formatted cell
-     */
-    private String formatCell(String cell) {
-        try {
-            if (cell.equals("null") || cell.trim().isEmpty()) {
-                return "";
-            }
-            StringBuilder bld = new StringBuilder();
-            int endPos = cell.length() - 1;
-            int pos = 0;
-            while (pos <= endPos) {
-                char c = cell.charAt(pos);
-                switch (c) {
-                    case '\r':
-                        bld.append("\\r");
-                        break;
-                    case '\n':
-                        bld.append("\\n");
-                        break;
-                    case '\t':
-                        bld.append("\\t");
-                        break;
-                    case '"':
-                        bld.append("\"\"");
-                        break;
-                    case '\\':
-                        bld.append("\\\\");
-                        break;
-                    default:
-                        bld.append(c);
-                }
-                pos++;
-
-            }
-            return bld.toString();
-        } catch (NullPointerException e) {
-            return "";
-        }
-    }
-
-    /**
-     * Cleanup any DB connection etc after main task has run.
-     */
-    private void cleanup() {
-        if (mDbHelper != null) {
-            mDbHelper.close();
-            mDbHelper = null;
-        }
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        cleanup();
-        super.finalize();
-    }
+//    /**
+//     * Double quote all "'s and remove all newlines
+//     *
+//     * @param cell The cell the format
+//     *
+//     * @return The formatted cell
+//     */
+//    private String formatCell(String cell) {
+//        try {
+//            if (cell.equals("null") || cell.trim().isEmpty()) {
+//                return "";
+//            }
+//            StringBuilder bld = new StringBuilder();
+//            int endPos = cell.length() - 1;
+//            int pos = 0;
+//            while (pos <= endPos) {
+//                char c = cell.charAt(pos);
+//                switch (c) {
+//                    case '\r':
+//                        bld.append("\\r");
+//                        break;
+//                    case '\n':
+//                        bld.append("\\n");
+//                        break;
+//                    case '\t':
+//                        bld.append("\\t");
+//                        break;
+//                    case '"':
+//                        bld.append("\"\"");
+//                        break;
+//                    case '\\':
+//                        bld.append("\\\\");
+//                        break;
+//                    default:
+//                        bld.append(c);
+//                }
+//                pos++;
+//
+//            }
+//            return bld.toString();
+//        } catch (NullPointerException e) {
+//            return "";
+//        }
+//    }
 }

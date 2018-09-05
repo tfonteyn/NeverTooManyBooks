@@ -34,13 +34,13 @@ import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 public class EditFormatDialog {
 	private final Context mContext;
 	private final ArrayAdapter<String> mAdapter;
-	private final CatalogueDBAdapter mDbHelper;
+	private final CatalogueDBAdapter mDb;
 	private final Runnable mOnChanged;
 
-	EditFormatDialog(Context context, CatalogueDBAdapter dbHelper, final Runnable onChanged) {
-		mDbHelper = dbHelper;
+	EditFormatDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
+		mDb = db;
 		mContext = context;
-		mAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDbHelper.getFormats());
+		mAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDb.getFormats());
 		mOnChanged = onChanged;
 	}
 
@@ -95,7 +95,7 @@ public class EditFormatDialog {
 			Logger.logError(e);
 		}
 
-		mDbHelper.globalReplaceFormat(oldFormat, newFormat);
+		mDb.globalReplaceFormat(oldFormat, newFormat);
 
 		mOnChanged.run();
 	}

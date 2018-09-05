@@ -32,7 +32,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.EditObjectList;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -50,10 +49,6 @@ import java.util.Objects;
  * @author Philip Warner
  */
 public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
-    /**
-     * Database connection
-     */
-    private CatalogueDBAdapter mDb;
     /**
      * The row being edited. Set when an individual style is edited
      */
@@ -74,17 +69,13 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         try {
-            // Superclass will call getList() which needs DB, so create DB before calling superclass.
-            mDb = new CatalogueDBAdapter(this);
-            mDb.open();
-
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.preferred_styles);
 
             // We want context menus to be available
             registerForContextMenu(getListView());
 
-            //mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, mDbHelper.fetchAllSeriesArray());
+            //mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, mDb.fetchAllSeriesArray());
             //((AutoCompleteTextView)this.findViewById(R.id.series)).setAdapter(mAdapter);
 
             if (savedInstanceState == null) {
@@ -102,7 +93,7 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
     protected ArrayList<BooklistStyle> getList() {
         ArrayList<BooklistStyle> styles = new ArrayList<>();
         // get the preferred styles first
-        for (BooklistStyle s : BooklistStyles.getAllStyles(mDb)) {
+        for (BooklistStyle s : BooklistStyles.getAllStyles(this.mDb)) {
             styles.add(s);
         }
         return styles;
@@ -308,13 +299,6 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
             // Do our best to recover
             setList(getList());
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mDb != null)
-            mDb.close();
     }
 
     /**

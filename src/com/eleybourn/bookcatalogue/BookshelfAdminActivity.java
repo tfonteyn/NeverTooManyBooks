@@ -49,7 +49,7 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
     private static final int INSERT_ID = Menu.FIRST;
     private static final int DELETE_ID = Menu.FIRST + 1;
 
-    private CatalogueDBAdapter mDbHelper;
+    private CatalogueDBAdapter mDb;
 
     protected int getLayoutId() {
         return R.layout.activity_edit_list_bookshelf;
@@ -59,8 +59,8 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_manage_bs);
-        mDbHelper = new CatalogueDBAdapter(this);
-        mDbHelper.open();
+        mDb = new CatalogueDBAdapter(this);
+        mDb.open();
         fillBookshelves();
         registerForContextMenu(getListView());
     }
@@ -68,7 +68,7 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
     private void fillBookshelves() {
         //FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
         //FIXME Use the new {@link android.content.CursorLoader} class with {@link LoaderManager} instead
-        Cursor bookshelfCursor = mDbHelper.fetchAllBookshelves();
+        Cursor bookshelfCursor = mDb.fetchAllBookshelves();
         startManagingCursor(bookshelfCursor);
 
         // Now create a simple cursor adapter and set it to display
@@ -111,7 +111,7 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
             case DELETE_ID:
                 AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
                 if (info.id != 1) {
-                    mDbHelper.deleteBookshelf(info.id);
+                    mDb.deleteBookshelf(info.id);
                     fillBookshelves();
                 } else {
                     Toast.makeText(this, R.string.delete_1st_bs, Toast.LENGTH_LONG).show();
@@ -138,6 +138,6 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mDbHelper.close();
+        mDb.close();
     }
 }

@@ -34,7 +34,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  */
 public class BookshelfEditActivity extends BookCatalogueActivity {
 
-    private CatalogueDBAdapter mDbHelper;
+    private CatalogueDBAdapter mDb;
 
 	private EditText mBookshelfText;
 	private Button mConfirmButton;
@@ -52,8 +52,8 @@ public class BookshelfEditActivity extends BookCatalogueActivity {
 			super.onCreate(savedInstanceState);
 			this.setTitle(R.string.title_edit_bs);
 
-			mDbHelper = new CatalogueDBAdapter(this);
-			mDbHelper.open();
+			mDb = new CatalogueDBAdapter(this);
+			mDb.open();
 			
 			mRowId = savedInstanceState != null ? savedInstanceState.getLong(ColumnNames.KEY_ROWID) : null;
 			if (mRowId == null) {
@@ -87,7 +87,7 @@ public class BookshelfEditActivity extends BookCatalogueActivity {
 	
 	private void populateFields() {
 		if (mRowId != null && mRowId > 0) {
-			mBookshelfText.setText(mDbHelper.getBookshelfName(mRowId));
+			mBookshelfText.setText(mDb.getBookshelfName(mRowId));
 			mConfirmButton.setText(R.string.save);
 		} else {
 			mConfirmButton.setText(R.string.add);
@@ -112,20 +112,20 @@ public class BookshelfEditActivity extends BookCatalogueActivity {
 	private void saveState() {
 		String bookshelf = mBookshelfText.getText().toString().trim();
 		if (mRowId == null || mRowId == 0) {
-			long id = mDbHelper.createBookshelf(bookshelf);
+			long id = mDb.createBookshelf(bookshelf);
 			if (id > 0) {
 				mRowId = id;
 			}
 		} else {
-			mDbHelper.updateBookshelf(mRowId, bookshelf);
+			mDb.updateBookshelf(mRowId, bookshelf);
 		}
 	}
 	
 	@Override
 	protected void onDestroy(){
-		if (mDbHelper != null) {
-			mDbHelper.close();
-			mDbHelper = null;
+		if (mDb != null) {
+			mDb.close();
+			mDb = null;
 		}
 		super.onDestroy();
 	}

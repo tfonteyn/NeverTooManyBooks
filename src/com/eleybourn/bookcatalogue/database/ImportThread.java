@@ -22,10 +22,13 @@ import java.io.IOException;
  */
 public class ImportThread extends ManagedTask {
 	public static String UTF8 = "utf8";
-	public static int BUFFER_SIZE = 8192;
+
+	// used in some commented out methods.
+	@SuppressWarnings("unused")
+	private static final int BUFFER_SIZE = 8192;
 
     private final String mFileSpec;
-    private CatalogueDBAdapter mDbHelper;
+    private CatalogueDBAdapter mDb;
 	private final LocalCoverFinder mCoverFinder;
 	
 	public static class ImportException extends RuntimeException {
@@ -43,8 +46,8 @@ public class ImportThread extends ManagedTask {
 		//     http://code.google.com/p/android/issues/detail?id=4961
 		mFileSpec = mFile.getAbsolutePath();
 
-		mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-		mDbHelper.open();
+		mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+		mDb.open();
 
 		mCoverFinder = new LocalCoverFinder(mFile.getParent(),
 				StorageUtils.getSharedStorage().getAbsolutePath());
@@ -141,9 +144,9 @@ public class ImportThread extends ManagedTask {
      * Cleanup any DB connection etc after main task has run.
      */
     private void cleanup() {
-        if (mDbHelper != null) {
-            mDbHelper.close();
-            mDbHelper = null;
+        if (mDb != null) {
+            mDb.close();
+            mDb = null;
         }
     }
 
@@ -522,7 +525,7 @@ public class ImportThread extends ManagedTask {
 //			in = new FileInputStream(orig);
 //			out = new FileOutputStream(newFile);
 //			// Get a buffer
-//			byte[] buffer = new byte[8192];
+//			byte[] buffer = new byte[BUFFER_SIZE];
 //			int nRead = 0;
 //			// Copy
 //			while( (nRead = in.read(buffer)) > 0){

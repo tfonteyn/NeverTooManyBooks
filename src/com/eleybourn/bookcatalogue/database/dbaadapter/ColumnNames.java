@@ -2,10 +2,11 @@ package com.eleybourn.bookcatalogue.database.dbaadapter;
 
 /* This is the list of all column names as static variables for reference
  *
+ * This used to be an inner class of {@link CatalogueDBAdapter}
+ * was not just used in there, but also (abused?) as Bundle keys passed around in the Extras
+ *
  * NOTE!!! Because Java String comparisons are not case-insensitive, it is
  * important that ALL these fields be listed in LOWER CASE.
- *
- * NOTE 2: these are also used (abused?) as Bundle keys passed around in the Extras
  *
  * Let's try to keep these alphabetically ?
  */

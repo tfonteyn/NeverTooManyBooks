@@ -45,14 +45,14 @@ import java.util.Date;
  * @author pjw
  */
 public abstract class BackupWriterAbstract implements BackupWriter {
-    private final CatalogueDBAdapter mDbHelper;
+    private final CatalogueDBAdapter mDb;
 
     /**
      * Constructor
      */
     protected BackupWriterAbstract() {
-        mDbHelper = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-        mDbHelper.open();
+        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+        mDb.open();
     }
 
     /**
@@ -65,7 +65,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
             // Estimate the total steps
             int estTotal = 1;
             // First, see how many books in total
-            final int maxBooks = (int) mDbHelper.getBookCount();
+            final int maxBooks = (int) mDb.getBookCount();
 
             int coverCount;
             if ((backupFlags & Exporter.EXPORT_COVERS) != 0)
@@ -135,7 +135,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
     private File generateBooks(final BackupWriterListener listener, final int backupFlags, final Date since, final int numCovers) throws IOException {
         // This is an estimate only; we actually don't know how many covers
         // there are in the backup.
-        listener.setMax((int) (mDbHelper.getBookCount() * 2 + 1));
+        listener.setMax((int) (mDb.getBookCount() * 2 + 1));
 
         Exporter.ExportListener exportListener = new Exporter.ExportListener() {
             private int mLastPos = 0;
@@ -279,7 +279,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
         String fmt_noskip = BookCatalogueApp.getResourceString(R.string.covers_progress);
         String fmt_skip = BookCatalogueApp.getResourceString(R.string.covers_progress_incr);
 
-        try (Cursor c = mDbHelper.getUuidList()) {
+        try (Cursor c = mDb.getUuidList()) {
             final int uuidCol = c.getColumnIndex(DatabaseDefinitions.DOM_BOOK_UUID.toString());
             while (c.moveToNext() && !listener.isCancelled()) {
                 File cover = ImageUtils.fetchThumbnailByUuid(c.getString(uuidCol));
@@ -325,7 +325,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
      * Save all USER styles
      */
     private void writeStyles(final BackupWriterListener listener) throws IOException {
-        BooklistStyles styles = BooklistStyles.getAllStyles(mDbHelper);
+        BooklistStyles styles = BooklistStyles.getAllStyles(mDb);
         for (BooklistStyle style : styles) {
             if (style.isUserDefined()) {
                 putBooklistStyle(style);
@@ -339,6 +339,6 @@ public abstract class BackupWriterAbstract implements BackupWriter {
      */
     @Override
     public void close() throws IOException {
-        mDbHelper.close();
+        mDb.close();
     }
 }

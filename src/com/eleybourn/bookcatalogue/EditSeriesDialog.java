@@ -34,13 +34,13 @@ import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 public class EditSeriesDialog {
 	private final Context mContext;
 	private final ArrayAdapter<String> mSeriesAdapter;
-	private final CatalogueDBAdapter mDbHelper;
+	private final CatalogueDBAdapter mDb;
 	private final Runnable mOnChanged;
 
-	EditSeriesDialog(Context context, CatalogueDBAdapter dbHelper, final Runnable onChanged) {
-		mDbHelper = dbHelper;
+	EditSeriesDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
+		mDb = db;
 		mContext = context;
-		mSeriesAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDbHelper.fetchAllSeriesArray());
+		mSeriesAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDb.fetchAllSeriesArray());
 		mOnChanged = onChanged;
 	}
 
@@ -97,19 +97,19 @@ public class EditSeriesDialog {
 		}
 
 		// Get the new IDs
-		oldSeries.id = mDbHelper.lookupSeriesId(oldSeries);
-		newSeries.id = mDbHelper.lookupSeriesId(newSeries);
+		oldSeries.id = mDb.lookupSeriesId(oldSeries);
+		newSeries.id = mDb.lookupSeriesId(newSeries);
 
 		// Case: series is the same (but different case)
 		if (newSeries.id == oldSeries.id) {
 			// Just update with the most recent spelling and format
 			oldSeries.copyFrom(newSeries);
-			mDbHelper.sendSeries(oldSeries);
+			mDb.sendSeries(oldSeries);
 			mOnChanged.run();
 			return;
 		}
 
-		mDbHelper.globalReplaceSeries(oldSeries, newSeries);
+		mDb.globalReplaceSeries(oldSeries, newSeries);
 		oldSeries.copyFrom(newSeries);
 		mOnChanged.run();
 	}

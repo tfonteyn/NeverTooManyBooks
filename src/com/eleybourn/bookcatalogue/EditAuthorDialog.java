@@ -31,11 +31,11 @@ import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 
 public class EditAuthorDialog {
 	private final Context mContext;
-	private final CatalogueDBAdapter mDbHelper;
+	private final CatalogueDBAdapter mDb;
 	private final Runnable mOnChanged;
 
 	EditAuthorDialog(Context context, CatalogueDBAdapter dbHelper, final Runnable onChanged) {
-		mDbHelper = dbHelper;
+		mDb = dbHelper;
 		mContext = context;
 		mOnChanged = onChanged;
 	}
@@ -90,16 +90,16 @@ public class EditAuthorDialog {
 		}
 
 		// Get the new author ID
-		oldAuthor.id = mDbHelper.lookupAuthorId(oldAuthor);
-		newAuthor.id = mDbHelper.lookupAuthorId(newAuthor);
+		oldAuthor.id = mDb.lookupAuthorId(oldAuthor);
+		newAuthor.id = mDb.lookupAuthorId(newAuthor);
 
 		// Case: author is the same, or is only used in this book
 		if (newAuthor.id == oldAuthor.id) {
 			// Just update with the most recent spelling and format
 			oldAuthor.copyFrom(newAuthor);
-			mDbHelper.sendAuthor(oldAuthor);
+			mDb.sendAuthor(oldAuthor);
 		} else {
-			mDbHelper.globalReplaceAuthor(oldAuthor, newAuthor);
+			mDb.globalReplaceAuthor(oldAuthor, newAuthor);
 			oldAuthor.copyFrom(newAuthor);
 		}
 		mOnChanged.run();
