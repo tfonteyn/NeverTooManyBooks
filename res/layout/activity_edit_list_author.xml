@@ -55,7 +55,7 @@
         android:fillViewport="true">
 
         <com.eleybourn.bookcatalogue.widgets.TouchListView xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
-            android:id="@+id/android:list"
+            android:id="@id/android:list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
@@ -65,7 +65,7 @@
     </ScrollView>
 
     <TextView
-        android:id="@+id/android:empty"
+        android:id="@id/android:empty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/buttonbar_cancel_save"

@@ -79,7 +79,7 @@ import java.util.ArrayList;
  * for TouchInterceptor which was (reputedly) removed in Android 2.2.
  * 
  * For this code to work, the  main view must contain:
- * - a TouchListView with id = @+id/android:list
+ * - a TouchListView with id = @id/android:list
  * - the TouchListView must have the following attributes:
  * 		tlv:ic_grabber="@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
  *		tlv:remove_mode="none"

@@ -75,7 +75,7 @@
         android:layout_above="@+id/file_name" />
 
     <com.eleybourn.bookcatalogue.widgets.FastScrollListView
-        android:id="@+id/android:list"
+        android:id="@id/android:list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/footer_divider"

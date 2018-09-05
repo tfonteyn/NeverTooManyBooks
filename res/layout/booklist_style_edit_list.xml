@@ -30,7 +30,7 @@
         android:paddingStart="@dimen/padding_border">
 
         <com.eleybourn.bookcatalogue.widgets.TouchListView xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
-            android:id="@+id/android:list"
+            android:id="@id/android:list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fadingEdge="none"
@@ -40,7 +40,7 @@
             tlv:remove_mode="none" />
 
         <TextView
-            android:id="@+id/android:empty"
+            android:id="@id/android:empty"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/noseries"
