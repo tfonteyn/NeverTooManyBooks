@@ -27,6 +27,7 @@ import android.database.CursorIndexOutOfBoundsException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BookData;
@@ -165,14 +166,19 @@ public class BookUtils {
 			ratingString = "(" + ratingString + ")";
 		}
 
-		/*
+
+		// prepare the cover to post
+        Uri coverURI = FileProvider.getUriForFile(context, GenericFileProvider.AUTHORITY, image);
+
+        /*
+        FIXME: check this
 		 * There's a problem with the facebook app in android, so despite it being shown on the list
 		 * it will not post any text unless the user types it.
 		 */
 		Intent share = new Intent(Intent.ACTION_SEND); 
 		String text = context.getString(R.string.share_book_i_reading,title, author, series, ratingString);
 		share.putExtra(Intent.EXTRA_TEXT, text); 
-		share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + image.getPath()));
+		share.putExtra(Intent.EXTRA_STREAM, coverURI);
         share.setType("text/plain");
         
         context.startActivity(Intent.createChooser(share, context.getString(R.string.share)));

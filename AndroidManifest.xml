@@ -46,7 +46,19 @@
 
         <provider
             android:name=".SearchSuggestionProvider"
-            android:authorities="com.eleybourn.bookcatalogue.SearchSuggestionProvider" />
+            android:authorities="com.eleybourn.bookcatalogue.SearchSuggestionProvider"
+            android:exported="false" />
+
+        <!-- Authority same as set in GenericFileProvider.class -->
+        <provider
+            android:name=".utils.GenericFileProvider"
+            android:authorities="com.eleybourn.bookcatalogue.GenericFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
 
         <activity
             android:name="org.acra.CrashReportDialog"
@@ -156,13 +168,13 @@
 
         <!-- BEGIN - Edit book list styles -->
         <!-- List -->
-        <activity android:name=".booklist.BooklistStylesActivity" />
+        <activity android:name=".booklist.BooklistStylesListActivity" />
         <!-- Detail -->
         <activity
             android:name=".booklist.BooklistStylePropertiesActivity"
             android:windowSoftInputMode="stateHidden" />
         <!-- grouping editor for detail -->
-        <activity android:name=".booklist.BooklistStyleGroupsActivity" />
+        <activity android:name=".booklist.BooklistStyleGroupsListActivity" />
         <!-- END - Edit book list styles -->
 
         <!-- AdministrationFunctions:Data Import/Export -->
@@ -201,8 +213,8 @@
 
         <!-- Edit a book + the related author/series -->
         <activity android:name=".BookEdit" />
-        <activity android:name=".EditAuthorList" />
-        <activity android:name=".EditSeriesList" />
+        <activity android:name=".EditAuthorListActivity" />
+        <activity android:name=".EditSeriesListActivity" />
 
         <!-- cropping an image, either from the cover of a book, or direct from a new scan -->
         <activity android:name=".cropper.CropCropImage" />
