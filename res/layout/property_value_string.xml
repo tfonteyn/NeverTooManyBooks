@@ -2,13 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/propertyValue"
+    android:gravity="top"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="5sp"
+        android:paddingTop="@dimen/padding_border"
         android:textAppearance="?android:attr/textAppearanceMedium"
         tools:text="Some name" />
 
@@ -24,9 +25,6 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         tools:ignore="LabelFor,TextFields" />
 
-    <ImageView
-        style="@style/propertyDivider"
-        android:src="?android:attr/dividerHorizontal"
-        tools:ignore="ContentDescription" />
+    <View style="@style/listDivider" />
 
 </LinearLayout>

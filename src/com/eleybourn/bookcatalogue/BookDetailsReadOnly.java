@@ -9,10 +9,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
@@ -24,18 +24,6 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_FORMAT;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ISBN;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_LOCATION;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_NOTES;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PAGES;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_RATING;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ_END;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ_START;
-
 /**
  * Class for representing read-only book details.
  *
@@ -43,7 +31,7 @@ import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_RE
  *
  * Fragment !
  */
-public class BookDetailsReadOnly extends BookDetailsAbstract {
+public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,10 +43,9 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
         /* In superclass onCreate method we initialize fields, background,
-         * display metrics and other. So see superclass onCreate method. */
+         * display metrics and other. So see super.onActivityCreated */
+        super.onActivityCreated(savedInstanceState);
 
         // Set additional (non book details) fields before their populating
         addFields();
@@ -155,6 +142,7 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
 
     /**
      * FIXME: is this *really* the best way to do this ? Surely this can be done better/faster ?
+     * ArrayAdapter...
      *
      */
     protected void populateAnthologyListField(BookData book) {
@@ -251,15 +239,15 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
      */
     private void addFields() {
         // From 'My comments' tab
-        mFields.add(R.id.rating, KEY_RATING, null);
-        mFields.add(R.id.notes, KEY_NOTES, null)
+        mFields.add(R.id.rating, ColumnNames.KEY_RATING, null);
+        mFields.add(R.id.notes, ColumnNames.KEY_NOTES, null)
                 .setShowHtml(true);
-        mFields.add(R.id.read_start, KEY_READ_START, null, new Fields.DateFieldFormatter());
-        mFields.add(R.id.read_end, KEY_READ_END, null, new Fields.DateFieldFormatter());
-        mFields.add(R.id.location, KEY_LOCATION, null);
+        mFields.add(R.id.read_start, ColumnNames.KEY_READ_START, null, new Fields.DateFieldFormatter());
+        mFields.add(R.id.read_end, ColumnNames.KEY_READ_END, null, new Fields.DateFieldFormatter());
+        mFields.add(R.id.location, ColumnNames.KEY_LOCATION, null);
         // Make sure the label is hidden when the ISBN is
-        mFields.add(R.id.isbn_label, "", KEY_ISBN, null);
-        mFields.add(R.id.publishing_details, "", KEY_PUBLISHER, null);
+        mFields.add(R.id.isbn_label, "", ColumnNames.KEY_ISBN, null);
+        mFields.add(R.id.publishing_details, "", ColumnNames.KEY_PUBLISHER, null);
     }
 
     /**
@@ -268,14 +256,14 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
      */
     private void formatFormatSection(BookData book) {
         Field field = mFields.getField(R.id.pages);
-        String value = book.getString(KEY_PAGES);
+        String value = book.getString(ColumnNames.KEY_PAGES);
         boolean isExist = value != null && !value.isEmpty();
         if (isExist) { //If 'pages' field is set format it
             field.setValue(getString(R.string.book_details_readonly_pages, value));
         }
         // Format 'format' field
         field = mFields.getField(R.id.format);
-        value = book.getString(KEY_FORMAT);
+        value = book.getString(ColumnNames.KEY_FORMAT);
         if (isExist && value != null && !value.isEmpty()) {
             /* Surround 'format' field with braces if 'pages' field is set
              * and 'format' field is not empty */
@@ -288,9 +276,9 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
      * of 'publisher' and 'date published' fields.
      */
     private void formatPublishingSection(BookData book) {
-        String date = book.getString(KEY_DATE_PUBLISHED);
+        String date = book.getString(ColumnNames.KEY_DATE_PUBLISHED);
         boolean hasDate = date != null && !date.isEmpty();
-        String pub = book.getString(KEY_PUBLISHER);
+        String pub = book.getString(ColumnNames.KEY_PUBLISHER);
         boolean hasPub = pub != null && !pub.isEmpty();
         String value;
 
@@ -340,16 +328,14 @@ public class BookDetailsReadOnly extends BookDetailsAbstract {
     /**
      * Sets read status of the book if needed. Shows green tick if book is read.
      *
-     * @param book Cursor containing information of the book from database
+     * @param book  the book
      */
     private void showReadStatus(final BookData book) {
-        final ToggleButton btn = getView().findViewById(R.id.read);
-        if (!FieldVisibility.isVisible(KEY_READ)) {
-            btn.setVisibility(View.GONE);
-        } else {
-            btn.setSelected(book.isRead());
-            btn.setVisibility(View.VISIBLE);
-            btn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        if (FieldVisibility.isVisible(ColumnNames.KEY_READ)) {
+            final CompoundButton readField = getView().findViewById(R.id.read);
+            // set initial display state, REMINDER: setSelected will NOT update the GUI...
+            readField.setChecked(book.isRead());
+            readField.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     BookUtils.setRead(mDb, book, isChecked);

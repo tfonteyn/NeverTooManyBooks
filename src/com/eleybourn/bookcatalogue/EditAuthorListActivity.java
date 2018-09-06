@@ -39,45 +39,45 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-public class EditSeriesList extends EditObjectList<Series> {
+/**
+ * Activity to edit a list of authors provided in an ArrayList<Author> and
+ * return an updated list.
+ *
+ * @author Philip Warner
+ */
+public class EditAuthorListActivity extends EditObjectListActivity<Author> {
 
-    private ArrayAdapter<String> mSeriesAdapter;
-
-    public EditSeriesList() {
-        super(ColumnNames.KEY_SERIES_ARRAY, R.layout.activity_edit_list_series, R.layout.row_edit_series_list);
+    /**
+     * Constructor; pass the superclass the main and row based layouts to use.
+     */
+    public EditAuthorListActivity() {
+        super(ColumnNames.KEY_AUTHOR_ARRAY, R.layout.activity_edit_list_author, R.layout.row_edit_author_list);
     }
 
     @Override
-    protected void onSetupView(View target, Series object) {
+    protected void onSetupView(View target, Author object, int position) {
         if (object != null) {
-            TextView dt = target.findViewById(R.id.row_series);
-            if (dt != null)
-                dt.setText(object.getDisplayName());
-
-            TextView st = target.findViewById(R.id.row_series_sort);
-            if (st != null) {
-                if (object.getDisplayName().equals(object.getSortName())) {
-                    st.setVisibility(View.GONE);
-                } else {
-                    st.setVisibility(View.VISIBLE);
-                    st.setText(object.getSortName());
-                }
+            TextView at = target.findViewById(R.id.row_author);
+            if (at != null) {
+                at.setText(object.getDisplayName());
             }
-            TextView et = target.findViewById(R.id.row_series_num);
-            if (et != null)
-                et.setText(object.number);
+            at = target.findViewById(R.id.row_author_sort);
+            if (at != null) {
+                at.setText(object.getSortName());
+            }
         }
     }
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
+        this.setTitle(mBookTitle);
 
-            mSeriesAdapter = new ArrayAdapter<>(this,
+        try {
+            // Setup autocomplete for author name
+            ArrayAdapter<String> author_adapter = new ArrayAdapter<>(this,
                     android.R.layout.simple_dropdown_item_1line,
-                    mDb.fetchAllSeriesArray());
-            ((AutoCompleteTextView) this.findViewById(R.id.series)).setAdapter(mSeriesAdapter);
+                    mDb.getAllAuthors());
+            ((AutoCompleteTextView) this.findViewById(R.id.author)).setAdapter(author_adapter);
 
             getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
@@ -86,60 +86,59 @@ public class EditSeriesList extends EditObjectList<Series> {
         }
     }
 
-    @Override
+    /**
+     * Do the work of the onClickListener for the 'Add' button.
+     */
     protected void onAdd(View v) {
-        AutoCompleteTextView seriesField = EditSeriesList.this.findViewById(R.id.series);
-        String seriesTitle = seriesField.getText().toString().trim();
-        if (!seriesTitle.isEmpty()) {
-            EditText numberField = EditSeriesList.this.findViewById(R.id.series_num);
-            Series series = new Series(seriesTitle, numberField.getText().toString());
-            series.id = mDb.lookupSeriesId(series);
-            for (Series s : mList) {
-                if (s.id == series.id || (s.name.equals(series.name) && s.number.equals(series.number))) {
-                    Toast.makeText(EditSeriesList.this, getResources().getString(R.string.series_already_in_list), Toast.LENGTH_LONG).show();
+        AutoCompleteTextView authorField = EditAuthorListActivity.this.findViewById(R.id.author);
+        String authorName = authorField.getText().toString().trim();
+        if (!authorName.isEmpty()) {
+            // Get an author and try to find in DB.
+            Author author = new Author(authorField.getText().toString());
+            author.id = mDb.lookupAuthorId(author);
+            for (Author s : mList) {
+                if (s.id == author.id || s.getDisplayName().equals(author.getDisplayName())) {
+                    Toast.makeText(EditAuthorListActivity.this, getResources().getString(R.string.author_already_in_list), Toast.LENGTH_LONG).show();
                     return;
                 }
             }
-            mList.add(series);
+            mList.add(author);
             mAdapter.notifyDataSetChanged();
-            seriesField.setText("");
-            numberField.setText("");
+            authorField.setText("");
         } else {
-            Toast.makeText(EditSeriesList.this, getResources().getString(R.string.series_is_blank), Toast.LENGTH_LONG).show();
+            Toast.makeText(EditAuthorListActivity.this, getResources().getString(R.string.author_is_blank), Toast.LENGTH_LONG).show();
         }
     }
 
     @Override
-    protected void onRowClick(View target, int position, final Series series) {
+    protected void onRowClick(View target, final Author author, int position) {
         final Dialog dialog = new BasicDialog(this);
-        dialog.setContentView(R.layout.dialog_edit_book_series);
-        dialog.setTitle(R.string.edit_book_series);
+        dialog.setContentView(R.layout.dialog_edit_author);
+        dialog.setTitle(R.string.edit_author_details);
 
         setTextOrHideView(R.id.booktitle, mBookTitle);
 
-        AutoCompleteTextView seriesNameField = dialog.findViewById(R.id.series);
-        seriesNameField.setText(series.name);
-        seriesNameField.setAdapter(mSeriesAdapter);
-
-        EditText seriesNumberField = dialog.findViewById(R.id.series_num);
-        seriesNumberField.setText(series.number);
+        EditText familyView = dialog.findViewById(R.id.family_name);
+        familyView.setText(author.familyName);
+        EditText givenView = dialog.findViewById(R.id.given_names);
+        givenView.setText(author.givenNames);
 
         Button saveButton = dialog.findViewById(R.id.confirm);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AutoCompleteTextView seriesNameField = dialog.findViewById(R.id.series);
-                String newName = seriesNameField.getText().toString().trim();
-                if (newName.isEmpty()) {
-                    Toast.makeText(EditSeriesList.this, R.string.series_is_blank, Toast.LENGTH_LONG).show();
+                EditText familyView = dialog.findViewById(R.id.family_name);
+                String newFamily = familyView.getText().toString().trim();
+                if (newFamily.isEmpty()) {
+                    Toast.makeText(EditAuthorListActivity.this, R.string.author_is_blank, Toast.LENGTH_LONG).show();
                     return;
                 }
 
-                EditText seriesNumberField = dialog.findViewById(R.id.series_num);
-                Series newSeries = new Series(newName, seriesNumberField.getText().toString());
-                confirmEditSeries(series, newSeries);
-
+                EditText givenView = dialog.findViewById(R.id.given_names);
+                String newGiven = givenView.getText().toString();
+                Author newAuthor = new Author(newFamily, newGiven);
                 dialog.dismiss();
+                confirmEditAuthor(author, newAuthor);
             }
         });
         Button cancelButton = dialog.findViewById(R.id.cancel);
@@ -153,57 +152,46 @@ public class EditSeriesList extends EditObjectList<Series> {
         dialog.show();
     }
 
-    private void confirmEditSeries(final Series oldSeries, final Series newSeries) {
+    private void confirmEditAuthor(final Author oldAuthor, final Author newAuthor) {
         // First, deal with a some special cases...
 
-        boolean nameIsSame = (newSeries.name.compareTo(oldSeries.name) == 0);
         // Case: Unchanged.
-        if (nameIsSame && newSeries.number.compareTo(oldSeries.number) == 0) {
-            // No change to anything; nothing to do
-            return;
-        }
-        if (nameIsSame) {
-            // Same name, different number... just update
-            oldSeries.copyFrom(newSeries);
-            Utils.pruneSeriesList(mList);
-            Utils.pruneList(mDb, mList);
-            mAdapter.notifyDataSetChanged();
+        if (newAuthor.familyName.compareTo(oldAuthor.familyName) == 0
+                && newAuthor.givenNames.compareTo(oldAuthor.givenNames) == 0) {
+            // No change; nothing to do
             return;
         }
 
-        // Get the new IDs
-        oldSeries.id = mDb.lookupSeriesId(oldSeries);
-        newSeries.id = mDb.lookupSeriesId(newSeries);
+        // Get the new author ID
+        oldAuthor.id = mDb.lookupAuthorId(oldAuthor);
+        newAuthor.id = mDb.lookupAuthorId(newAuthor);
 
-        // See if the old series is used in any other books.
-        long nRefs = mDb.getSeriesBookCount(oldSeries);
+        // See if the old author is used in any other books.
+        long nRefs = mDb.getAuthorBookCount(oldAuthor) + mDb.getAuthorAnthologyCount(oldAuthor);
         boolean oldHasOthers = nRefs > (mRowId == 0 ? 0 : 1);
 
-        // Case: series is the same (but different case), or is only used in this book
-        if (newSeries.id == oldSeries.id || !oldHasOthers) {
+        // Case: author is the same, or is only used in this book
+        if (newAuthor.id == oldAuthor.id || !oldHasOthers) {
             // Just update with the most recent spelling and format
-            oldSeries.copyFrom(newSeries);
-            Utils.pruneSeriesList(mList);
+            oldAuthor.copyFrom(newAuthor);
             Utils.pruneList(mDb, mList);
-            mDb.sendSeries(oldSeries);
+            mDb.sendAuthor(oldAuthor);
             mAdapter.notifyDataSetChanged();
             return;
         }
 
-        // When we get here, we know the names are genuinely different and the old series is used in more than one place.
-        String format = getResources().getString(R.string.changed_series_how_apply);
+        // When we get here, we know the names are genuinely different and the old author is used in more than one place.
+        String format = getResources().getString(R.string.changed_author_how_apply);
         String allBooks = getResources().getString(R.string.all_books);
         String thisBook = getResources().getString(R.string.this_book);
-        String message = String.format(format, oldSeries.name, newSeries.name, allBooks);
-
+        String message = String.format(format, oldAuthor.getSortName(), newAuthor.getSortName(), allBooks);
         final AlertDialog alertDialog = new AlertDialog.Builder(this).setMessage(message).create();
 
         alertDialog.setTitle(getResources().getString(R.string.scope_of_change));
         alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
         alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, thisBook, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                oldSeries.copyFrom(newSeries);
-                Utils.pruneSeriesList(mList);
+                oldAuthor.copyFrom(newAuthor);
                 Utils.pruneList(mDb, mList);
                 mAdapter.notifyDataSetChanged();
                 alertDialog.dismiss();
@@ -212,9 +200,8 @@ public class EditSeriesList extends EditObjectList<Series> {
 
         alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                mDb.globalReplaceSeries(oldSeries, newSeries);
-                oldSeries.copyFrom(newSeries);
-                Utils.pruneSeriesList(mList);
+                mDb.globalReplaceAuthor(oldAuthor, newAuthor);
+                oldAuthor.copyFrom(newAuthor);
                 Utils.pruneList(mDb, mList);
                 mAdapter.notifyDataSetChanged();
                 alertDialog.dismiss();
@@ -226,7 +213,7 @@ public class EditSeriesList extends EditObjectList<Series> {
 
     @Override
     protected boolean onSave(Intent intent) {
-        final AutoCompleteTextView t = EditSeriesList.this.findViewById(R.id.series);
+        final AutoCompleteTextView t = EditAuthorListActivity.this.findViewById(R.id.author);
         Resources res = this.getResources();
         String s = t.getText().toString().trim();
         if (!s.isEmpty()) {

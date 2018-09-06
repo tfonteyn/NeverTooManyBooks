@@ -464,23 +464,12 @@ public class BooklistRowView {
 	 * Convenience function to retrieve column value.
 	 */
 	private int mReadCol = -2;
-	public boolean getRead() {
+	public boolean isRead() {
 		if (mReadCol < 0) {
 			mReadCol = mCursor.getColumnIndex(DOM_READ.name);
 			if (mReadCol < 0)
 				throw new RuntimeException("Column " + DOM_READ + " not present in cursor");
 		}
 		return mCursor.getLong(mReadCol) == 1;
-	}
-
-
-	/**
-	 * Function used for long click local menu in order to propose, or not, the possibility to mark as read.
-	 * @return true if and only if this book has the read status.
-	 */
-	public boolean isRead() {
-		//
-		int index = mCursor.getColumnIndex(ColumnNames.KEY_READ);
-		return index >= 0 && 0 != mCursor.getInt(index);
 	}
 }

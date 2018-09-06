@@ -39,17 +39,17 @@
 
                 <TextView
                     android:id="@+id/heading"
-                    style="@style/editorFieldHeaderStyle"
+                    style="@style/editorFieldHeader"
                     android:text="@string/author" />
 
                 <Button
                     android:id="@+id/author"
-                    style="@style/dataEntryButtonStyle"
+                    style="@style/dataEntryButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentStart="true"
-                    android:layout_below="@+id/heading"
+                    android:layout_below="@id/heading"
                     android:nextFocusDown="@+id/title" />
             </RelativeLayout>
 
@@ -60,13 +60,13 @@
 
                 <TextView
                     android:id="@+id/heading"
-                    style="@style/editorFieldHeaderStyle"
+                    style="@style/editorFieldHeader"
                     android:text="@string/title" />
 
                 <EditText
                     android:id="@+id/title"
                     style="@style/bookOrSeriesTitleTextEntry"
-                    android:layout_below="@+id/heading"
+                    android:layout_below="@id/heading"
                     android:nextFocusDown="@+id/isbn"
                     tools:ignore="LabelFor" />
             </RelativeLayout>
@@ -79,14 +79,14 @@
 
                 <TextView
                     android:id="@+id/heading"
-                    style="@style/editorFieldHeaderStyle"
+                    style="@style/editorFieldHeader"
                     android:layout_alignParentTop="false"
                     android:layout_centerVertical="true"
                     android:text="@string/isbn" />
 
                 <EditText
                     android:id="@+id/isbn"
-                    style="@style/editorFieldTextStyle"
+                    style="@style/editorFieldText"
                     android:layout_alignParentStart="false"
                     android:layout_toEndOf="@id/heading"
                     android:inputType="text"
@@ -102,17 +102,17 @@
 
                 <TextView
                     android:id="@+id/heading"
-                    style="@style/editorFieldHeaderStyle"
+                    style="@style/editorFieldHeader"
                     android:text="@string/series" />
 
                 <Button
                     android:id="@+id/series"
-                    style="@style/dataEntryButtonStyle"
+                    style="@style/dataEntryButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentStart="true"
-                    android:layout_below="@+id/heading"
+                    android:layout_below="@id/heading"
                     android:nextFocusDown="@+id/publisher" />
             </RelativeLayout>
 
@@ -124,13 +124,13 @@
 
                 <TextView
                     android:id="@+id/heading"
-                    style="@style/editorFieldHeaderStyle"
+                    style="@style/editorFieldHeader"
                     android:text="@string/publisher" />
 
                 <AutoCompleteTextView
                     android:id="@+id/publisher"
                     style="@style/personalNameTextEntry"
-                    android:layout_below="@+id/heading"
+                    android:layout_below="@id/heading"
                     android:completionThreshold="2"
                     android:nextFocusDown="@+id/date_published"
                     tools:ignore="LabelFor" />
@@ -144,17 +144,17 @@
 
                 <TextView
                     android:id="@+id/date_published_heading"
-                    style="@style/editorFieldHeaderStyle"
+                    style="@style/editorFieldHeader"
                     android:text="@string/date_published" />
 
                 <Button
                     android:id="@+id/date_published"
-                    style="@style/dataEntryButtonStyle"
+                    style="@style/dataEntryButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentStart="true"
-                    android:layout_below="@+id/date_published_heading"
+                    android:layout_below="@id/date_published_heading"
                     android:nextFocusDown="@+id/bookshelf" />
             </RelativeLayout>
 
@@ -165,17 +165,17 @@
 
                 <TextView
                     android:id="@+id/heading"
-                    style="@style/editorFieldHeaderStyle"
+                    style="@style/editorFieldHeader"
                     android:text="@string/bookshelves" />
 
                 <Button
                     android:id="@+id/bookshelf"
-                    style="@style/dataEntryButtonStyle"
+                    style="@style/dataEntryButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentStart="true"
-                    android:layout_below="@+id/heading"
+                    android:layout_below="@id/heading"
                     android:nextFocusDown="@+id/pages" />
             </RelativeLayout>
 
@@ -187,13 +187,13 @@
 
                 <TextView
                     android:id="@+id/pages_heading"
-                    style="@style/editorFieldHeaderStyle"
+                    style="@style/editorFieldHeader"
                     android:text="@string/pages" />
 
                 <EditText
                     android:id="@+id/pages"
-                    style="@style/editorFieldTextStyle"
-                    android:layout_below="@+id/pages_heading"
+                    style="@style/editorFieldText"
+                    android:layout_below="@id/pages_heading"
                     android:inputType="number"
                     android:nextFocusDown="@+id/list_price"
                     tools:ignore="LabelFor" />
@@ -207,13 +207,13 @@
 
                 <TextView
                     android:id="@+id/list_price_heading"
-                    style="@style/editorFieldHeaderStyle"
+                    style="@style/editorFieldHeader"
                     android:text="@string/list_price" />
 
                 <EditText
                     android:id="@+id/list_price"
-                    style="@style/editorFieldTextStyle"
-                    android:layout_below="@+id/list_price_heading"
+                    style="@style/editorFieldText"
+                    android:layout_below="@id/list_price_heading"
                     android:inputType="numberDecimal"
                     android:nextFocusDown="@+id/format"
                     tools:ignore="LabelFor" />
@@ -227,7 +227,7 @@
 
                 <TextView
                     android:id="@+id/heading"
-                    style="@style/editorFieldHeaderStyle"
+                    style="@style/editorFieldHeader"
                     android:text="@string/format" />
 
                 <ImageView
@@ -244,8 +244,8 @@
 
                 <AutoCompleteTextView
                     android:id="@+id/format"
-                    style="@style/editorFieldTextStyle"
-                    android:layout_below="@+id/heading"
+                    style="@style/editorFieldText"
+                    android:layout_below="@id/heading"
                     android:layout_centerVertical="true"
                     android:layout_toStartOf="@id/format_button"
                     android:completionThreshold="2"
@@ -262,13 +262,13 @@
 
                 <TextView
                     android:id="@+id/heading"
-                    style="@style/editorFieldHeaderStyle"
+                    style="@style/editorFieldHeader"
                     android:text="@string/genre" />
 
                 <AutoCompleteTextView
                     android:id="@+id/genre"
-                    style="@style/editorFieldTextStyle"
-                    android:layout_below="@+id/heading"
+                    style="@style/editorFieldText"
+                    android:layout_below="@id/heading"
                     android:completionThreshold="2"
                     android:inputType="textCapWords"
                     android:nextFocusDown="@+id/language"
@@ -283,7 +283,7 @@
 
                 <TextView
                     android:id="@+id/heading"
-                    style="@style/editorFieldHeaderStyle"
+                    style="@style/editorFieldHeader"
                     android:text="@string/language" />
 
                 <ImageView
@@ -301,8 +301,8 @@
                 <!-- FIXME: style should be "@style/languageTextEntry" but that made the new button not work ?-->
                 <AutoCompleteTextView
                     android:id="@+id/language"
-                    style="@style/editorFieldTextStyle"
-                    android:layout_below="@+id/heading"
+                    style="@style/editorFieldText"
+                    android:layout_below="@id/heading"
                     android:layout_centerVertical="true"
                     android:layout_toStartOf="@id/language_button"
                     android:completionThreshold="2"
@@ -328,7 +328,7 @@
                 android:text="@string/description"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <View android:id="@+id/description_divider" style="@style/listDivider" />
+            <View style="@style/listDivider" />
 
             <TextView
                 android:id="@+id/description"

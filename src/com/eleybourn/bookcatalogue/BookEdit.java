@@ -68,15 +68,9 @@ import java.util.ArrayList;
 public class BookEdit extends BookCatalogueActivity implements BookEditFragmentAbstract.BookEditManager,
         OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
 
-    /**
-     * Key using in intent to start this class in read-only mode
-     */
-    private static final String KEY_READ_ONLY = "key_read_only";
-
     public static final String BOOK_DATA = "bookData";
     public static final String FLATTENED_BOOKLIST_POSITION = "FlattenedBooklistPosition";
     public static final String FLATTENED_BOOKLIST = "FlattenedBooklist";
-
     /**
      * Tabs in order, see {@link #mTabClasses}
      */
@@ -85,6 +79,15 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     public static final int TAB_EDIT_NOTES = 1;
     public static final int TAB_EDIT_FRIENDS = 2;
     public static final int TAB_EDIT_ANTHOLOGY = 3;
+    public static final String ADDED_HAS_INFO = "ADDED_HAS_INFO";
+    public static final String ADDED_GENRE = "ADDED_GENRE";
+    public static final String ADDED_SERIES = "ADDED_SERIES";
+    public static final String ADDED_TITLE = "ADDED_TITLE";
+    public static final String ADDED_AUTHOR = "ADDED_AUTHOR";
+    /**
+     * Key using in intent to start this class in read-only mode
+     */
+    private static final String KEY_READ_ONLY = "key_read_only";
     /**
      * Classes used for the Tabs (in order)
      */
@@ -94,14 +97,6 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
             BookEditLoaned.class,
             BookEditAnthology.class
     };
-
-    public static final String ADDED_HAS_INFO = "ADDED_HAS_INFO";
-    public static final String ADDED_GENRE = "ADDED_GENRE";
-    public static final String ADDED_SERIES = "ADDED_SERIES";
-    public static final String ADDED_TITLE = "ADDED_TITLE";
-    public static final String ADDED_AUTHOR = "ADDED_AUTHOR";
-
-
     private final CatalogueDBAdapter mDb = new CatalogueDBAdapter(this);
     private FlattenedBooklist mList = null;
     private GestureDetector mGestureDetector;
@@ -224,7 +219,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 
     @Override
     protected int getLayoutId() {
-        return R.layout.edit_book_base;
+        return R.layout.activity_edit_book_base;
     }
 
     @Override
@@ -449,7 +444,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 
     /**
      * Close the list object (frees statements) and if we are finishing, delete the temp table.
-     *
+     * <p>
      * This is an ESSENTIAL step; for some reason, in Android 2.1 if these statements are not
      * cleaned up, then the underlying SQLiteDatabase gets double-dereference'd, resulting in
      * the database being closed by the deeply dodgy auto-close code in Android.
@@ -722,23 +717,27 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     }
 
     /**
-     * Sets title of the parent activity in the next format:<br>
-     * <i>"title"</i>
+     * Sets title of the parent activity depending on show/edit/add
      */
     private void setActivityTitle() {
         ActionBar bar = getSupportActionBar();
         if (bar != null) {
             if (mIsReadOnly && mList != null) {
-                bar.setTitle(mBookData.getString(ColumnNames.KEY_TITLE));
-                //TODO: do we really want this clutter ?
-                bar.setSubtitle(
-                        mBookData.getAuthorTextShort()
-                                + String.format(" (" + getResources().getString(R.string.x_of_y) + ")", mList.getAbsolutePosition(), mList.getCount())
-                );
+                // display a book
+//                bar.setTitle(mBookData.getString(ColumnNames.KEY_TITLE));
+//                bar.setSubtitle(mBookData.getAuthorTextShort()
+//                                + String.format(" (" + getResources().getString(R.string.x_of_y) + ")",
+//                                  mList.getAbsolutePosition(), mList.getCount())
+//                );
+                bar.setTitle(this.getResources().getString(R.string.book_details));
+                bar.setSubtitle(null);
+
             } else if (mBookData.getRowId() > 0) {
+                // editing an existing book
                 bar.setTitle(mBookData.getString(ColumnNames.KEY_TITLE));
                 bar.setSubtitle(mBookData.getAuthorTextShort());
             } else {
+                // new book
                 bar.setTitle(this.getResources().getString(R.string.menu_insert));
                 bar.setSubtitle(null);
             }

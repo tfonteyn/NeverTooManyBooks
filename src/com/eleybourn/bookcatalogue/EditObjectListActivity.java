@@ -23,15 +23,9 @@ package com.eleybourn.bookcatalogue;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -39,7 +33,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueListActivity;
 import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
+import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
 
 import java.io.Serializable;
@@ -56,19 +50,8 @@ import java.util.ArrayList;
  *  - confirm
  *  - add (OPTIONAL)
  *  
- * Row View (must have layout ID set to android:id="@+id/row"):
- *  - ROW_POSITION (OPTIONAL)
- *  - ROW_UP (OPTIONAL)
- *  - ROW_DOWN (OPTIONAL)
- *  - ROW_DELETE (OPTIONAL)
- *  ids.xml has these predefined:
- *  <pre>
- *		<item name="ROW_POSITION" type="id"/>
- *     	<item name="ROW_UP" type="id"/>
- *		<item name="ROW_DOWN" type="id"/>
- *		<item name="ROW_DELETE" type="id"/>
- *     	<item name="TAG_POSITION" type="id" />
- *	</pre>
+ * Row View must have layout ID set to "@+id/row_details" (defined in ids.xml)
+
  * The row view is tagged using TAG_POSITION,, to save the rows position for
  * use when moving the row up/down or deleting it.
  *
@@ -83,29 +66,29 @@ import java.util.ArrayList;
  * - the TouchListView must have the following attributes:
  * 		tlv:ic_grabber="@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
  *		tlv:remove_mode="none"
- *		tlv:normal_height="64dip" ---- or some simlar value
+ *		tlv:normal_height="64dip" ---- or some similar value
  * 
  * Each row view must have:
  * - an ID of @+id/row
  * - an ImageView with an ID of "@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
- * - (OPTIONAL) a subview with an ID of "@+id/row_details"; when clicked, this will result 
- *   in the onRowClick event.
+ * - (OPTIONAL) a subview with an ID of "@+d/row_details"; when clicked, this will result
+ *   in the onRowClick event. If not present, then the onRowClick is set on the "@id/row"
  * 
  * @author Philip Warner
  *
  * @param <T>
  */
-abstract public class EditObjectList<T extends Serializable> extends BookCatalogueListActivity {
+abstract public class EditObjectListActivity<T extends Serializable> extends BookCatalogueListActivity {
 
 	protected ArrayList<T> mList = null;
-	protected ArrayAdapter<T> mAdapter;
+	protected ListAdapter mAdapter;
 
 	protected CatalogueDBAdapter mDb;
 
 	protected String mBookTitle;
 
 	// The key to use in the Bundle to get the array
-	private final String mKey;
+	private final String mBKey;
 	// The resource ID for the base view
 	private final int mBaseViewId;
 	// The resource ID for the row view
@@ -123,19 +106,19 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 
 	/**
 	 * Call to set up the row view.
-	 *
-	 * @param target	The target row view object
-	 * @param object	The object (or type T) from which to draw values.
-	 */
-	abstract protected void onSetupView(View target, T object);
+     * @param target    The target row view object
+     * @param object    The object (or type T) from which to draw values.
+     * @param position
+     */
+	abstract protected void onSetupView(View target, T object, int position);
 
 	/**
 	 * Called when an otherwise inactive part of the row is clicked.
 	 *
-	 * @param target	The view clicked
-	 * @param object	The object associated with this row
-	 */
-	abstract protected void onRowClick(View target, int position, T object);
+     * @param target    The view clicked
+     * @param object    The object associated with this row
+     */
+	abstract protected void onRowClick(View target, T object, int position);
 
 	/**
 	 * Called when user clicks the 'Save' button (if present). Primary task is
@@ -171,12 +154,12 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 
     /**
 	 * Constructor
-	 * 
+	 * @param bkey          The key to use in the Bundle to get the array
 	 * @param baseViewId	Resource id of base view
 	 * @param rowViewId		Resource id of row view
 	 */
-	protected EditObjectList(String key, int baseViewId, int rowViewId) {
-		mKey = key;
+	protected EditObjectListActivity(String bkey, int baseViewId, int rowViewId) {
+		mBKey = bkey;
 		mBaseViewId = baseViewId;
 		mRowViewId = rowViewId;
 	}
@@ -201,6 +184,28 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 			}});
 	}
 
+    /**
+     * bit of a kludge .. {@link SimpleListAdapter} needs to call its super.onSetupView
+     * But we have encapsulation here, and not extension.
+     * So wrap it up in this dummy class.
+     * Still.. eliminated lots of duplicated code
+     */
+    protected class ListAdapter extends SimpleListAdapter<T> {
+        ListAdapter(Context context, int rowViewId, ArrayList<T> items) {
+            super(context, rowViewId, items);
+        }
+
+        @Override
+        protected void onSetupView(View target, T object, int position) {
+            EditObjectListActivity.this.onSetupView(target, object, position);
+        }
+        @Override
+        protected void onRowClick(View v, T object, int position) {
+            EditObjectListActivity.this.onRowClick(v, object, position);
+        }
+    }
+
+    @Override
 	protected int getLayoutId() {
 		return mBaseViewId;
 	}
@@ -219,12 +224,12 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 			setupListener(R.id.add, mAddListener);
 
 			// Ask the subclass to setup the list; we need this before building the adapter.
-			if (savedInstanceState != null && mKey != null && savedInstanceState.containsKey(mKey)) {
-				mList = ArrayUtils.getListFromBundle(savedInstanceState, mKey);
+			if (savedInstanceState != null && mBKey != null && savedInstanceState.containsKey(mBKey)) {
+				mList = ArrayUtils.getListFromBundle(savedInstanceState, mBKey);
 			}
 			// not in bundle ? check the intent
 			if (mList == null) {
-                mList = ArrayUtils.getListFromIntentExtras(getIntent(), mKey);
+                mList = ArrayUtils.getListFromIntentExtras(getIntent(), mBKey);
             }
             // still nothing ? then ask subclass explicitly
             if (mList == null) {
@@ -232,7 +237,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
             }
             // sigh... give up
             if (mList == null) {
-                throw new RuntimeException("Unable to find list key '" + mKey + "' in passed intent extras");
+                throw new RuntimeException("Unable to find list key '" + mBKey + "' in passed intent extras");
             }
 
 			// Set up list handling
@@ -271,7 +276,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 
             final int firstPos = lv.getFirstVisiblePosition();
 
-			T item=mAdapter.getItem(from);				
+			T item=mAdapter.getItem(from);
 			mAdapter.remove(item);
 			mAdapter.insert(item, to);
             onListChanged();
@@ -318,10 +323,9 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	 */
 	private void setupListener(int id, OnClickListener l) {
 		View v = this.findViewById(id);
-		if (v == null) {
-            return;
-        }
-		v.setOnClickListener(l);
+		if (v != null) {
+			v.setOnClickListener(l);
+		}
     }
 
 	/**
@@ -349,7 +353,7 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 		@Override
 		public void onClick(View v) {
 			Intent i = new Intent();
-			i.putExtra(mKey, mList);
+			i.putExtra(mBKey, mList);
 			if (onSave(i)) {
 				setResult(RESULT_OK, i);
 				finish();
@@ -380,196 +384,13 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 	};
 
 	/**
-	 * Find the first ancestor that has the ID R.id.row. This 
-	 * will be the complete row View. Use the TAG on that to get
-	 * the physical row number.
-	 * 
-	 * @param v		View to search from
-	 * 
-	 * @return		The row view.
-	 */
-	private Integer getViewRow(View v) {
-		View pv = v;
-		while(pv.getId() != R.id.row) {
-			ViewParent p = pv.getParent();
-			if (!(p instanceof View))
-				throw new RuntimeException("Could not find row view in view ancestors");
-			pv = (View) p;
-		}
-		Object o = ViewTagger.getTag(pv, R.id.TAG_POSITION);
-		if (o == null)
-			throw new RuntimeException("A view with the tag R.id.row was found, but it is not the view for the row");
-		return (Integer) o;
-	}
-
-	/**
-	 * Handle deletion of a row
-	 */
-	private final OnClickListener mRowDeleteListener = new OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			if (v == null)
-				return;
-
-			int pos = getViewRow(v);
-            mList.remove(pos);
-            mAdapter.notifyDataSetChanged();
-            onListChanged();
-		}
-	};
-
-	/**
-	 * Handle moving a row UP
-	 */
-	private final OnClickListener mRowUpListener = new OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			int pos = getViewRow(v);
-            if (pos == 0)
-            	return;
-            T old = mList.get(pos-1);
-            mList.set(pos-1, mList.get(pos));
-            mList.set(pos, old);
-            mAdapter.notifyDataSetChanged();
-            onListChanged();
-		}
-		
-	};
-
-	/**
-	 * Handle moving a row DOWN
-	 */
-	private final OnClickListener mRowDownListener = new OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			int pos = getViewRow(v);
-            if (pos == (mList.size()-1) )
-            	return;
-            T old = mList.get(pos);
-            mList.set(pos, mList.get(pos+1));
-            mList.set(pos+1, old);
-            mAdapter.notifyDataSetChanged();
-            onListChanged();
-		}
-		
-	};
-
-	/**
-	 * Handle moving a row DOWN
-	 */
-	private final OnClickListener mRowClickListener = new OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			int pos = getViewRow(v);
-			onRowClick(v, pos, mList.get(pos));
-		}
-		
-	};
-
-	/**
-	 * Adapter to manage the rows.
-	 * 
-	 * @author Philip Warner
-	 */
-	final class ListAdapter extends ArrayAdapter<T> {
-
-		// Flag fields to (slightly) optimize lookups and prevent looking for 
-		// fields that are not there.
-		private boolean mCheckedFields = false;
-		private boolean mHasPosition = false;
-		private boolean mHasUp = false;
-		private boolean mHasDown = false;
-		private boolean mHasDelete = false;
-
-        ListAdapter(Context context, int textViewResourceId, ArrayList<T> items) {
-                super(context, textViewResourceId, items);
-        }
-
-        @NonNull
-        @Override
-        public View getView(int position, View v, @NonNull ViewGroup parent) {
-        	// Get the view; if not defined, load it.
-            if (v == null) {
-                LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                //noinspection ConstantConditions
-                v = vi.inflate(mRowViewId, null);
-            }
-            
-            // Save this views position
-            ViewTagger.setTag(v, R.id.TAG_POSITION, position);
-            // Giving the whole row ad onClickListener seems to interfere with drag/drop.
-            View details = v.findViewById(R.id.row_details);
-            if (details != null) {
-                details.setOnClickListener(mRowClickListener);
-                details.setFocusable(false);
-            }
-
-            // Get the object, if not null, do some processing
-            T o = mList.get(position);
-            if (o != null) {
-            	// Try to set position value
-            	if (mHasPosition || !mCheckedFields) {
-	                TextView pt = v.findViewById(R.id.ROW_POSITION);
-	                if(pt != null){
-	                	mHasPosition = true;
-	                	String text = Integer.toString(position+1);
-	                	pt.setText(text);
-	                }
-            	}
-
-            	// Try to set the UP handler
-            	if (mHasUp || !mCheckedFields) {
-                    ImageView up = v.findViewById(R.id.ROW_UP);
-                    if (up != null) {
-                    	up.setOnClickListener(mRowUpListener);
-                    	mHasUp = true;
-                    }
-            	}
-
-            	// Try to set the DOWN handler
-            	if (mHasDown || !mCheckedFields) {
-                    ImageView dn = v.findViewById(R.id.ROW_DOWN);
-                    if (dn != null) {
-                    	dn.setOnClickListener(mRowDownListener);
-                    	mHasDown = true;
-                    }
-            	}
-
-            	// Try to set the DELETE handler
-            	if (mHasDelete || !mCheckedFields) {
-                	ImageView del = v.findViewById(R.id.ROW_DELETE);
-                    if (del != null) {
-        	    		del.setImageResource(android.R.drawable.ic_delete);
-                    	del.setOnClickListener(mRowDeleteListener);   
-                    	mHasDelete = true;
-                    }            		
-            	}
-
-            	// Ask the subclass to set other fields.
-            	try {
-                    onSetupView(v, o);            		
-            	} catch (Exception e) {
-            		Logger.logError(e);
-            	}
-
-                mCheckedFields = true;
-            }
-            return v;
-        }
-	}
-
-	/**
 	 * Ensure that the list is saved.
 	 */
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {    	
     	super.onSaveInstanceState(outState);
     	// save list
-    	outState.putSerializable(mKey, mList);
+    	outState.putSerializable(mBKey, mList);
     }
 
 	/**
@@ -597,5 +418,6 @@ abstract public class EditObjectList<T extends Serializable> extends BookCatalog
 		if (mDb != null)
 			mDb.close();
 	}
+
 
 }

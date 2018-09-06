@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    - displaying the title list on book details
-    - in editing the list of titles on edit-anthology-titles for a book
+    - displaying the title list on book details where we 'inflate' this
+    - in editing the list of titles on edit-anthology-titles for a book in an 'include'
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"

@@ -18,7 +18,7 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/booktitle"
+        android:layout_below="@id/booktitle"
         android:gravity="top"
         android:orientation="horizontal">
 

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/row"
     android:layout_width="match_parent"
@@ -102,17 +101,17 @@
             tools:text="publisher"/>
     </LinearLayout>
 
-    <ImageView
+    <CheckedTextView
         android:id="@+id/read"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:contentDescription="@string/_empty_"
         android:gravity="end"
         android:paddingStart="8dp"
-        android:paddingTop="4dp"
-        android:paddingEnd="4dp"
-        app:srcCompat="@drawable/btn_check_buttonless_off"
+        android:paddingTop="@dimen/padding_border"
+        android:paddingEnd="@dimen/padding_border"
+        android:background="@android:color/transparent"
+        android:checkMark="?android:attr/textCheckMark"
         android:visibility="gone"
         tools:visibility="visible"/>
 

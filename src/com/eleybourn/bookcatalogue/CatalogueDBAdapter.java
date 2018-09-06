@@ -310,7 +310,7 @@ public class CatalogueDBAdapter {
 		}		
 	}
 
-	private static final ArrayList< InstanceRef > mInstances = new ArrayList<>();
+	private static final ArrayList<InstanceRef> mInstances = new ArrayList<>();
 
     /**
      * DEBUG only
@@ -365,7 +365,7 @@ public class CatalogueDBAdapter {
 			synchronized(mInstanceCount) {
 				mInstanceCount++;
 				System.out.println("CatDBA instances: " + mInstanceCount);
-				//addInstance(this); FIXME this crashes ? ...
+				//addInstance(this);
 			}
 		}
 
@@ -416,7 +416,7 @@ public class CatalogueDBAdapter {
 				synchronized(mInstanceCount) {
 					mInstanceCount--;
 					System.out.println("CatDBA instances: " + mInstanceCount);
-					//removeInstance(this); FIXME: something wrong with the addInstance
+					//removeInstance(this);
 				}
 			}
 		}
@@ -2048,8 +2048,7 @@ public class CatalogueDBAdapter {
 	 *
 	 * @return rowId or -1 if failed
 	 */
-	//public long createBook(long id, String author, String title, String isbn, String publisher, String date_published, float rating, String bookshelf, Boolean read, String series, int pages, String series_num, String notes, String list_price, int anthology, String location, String read_start, String read_end, String format, boolean signed, String description, String genre) {
-	public long createBook(long id, BookData values, int flags) {
+	public long createBook(long id, BookData values, @SuppressWarnings("unused") int flags) {
 
 		try {
 			// Make sure we have the target table details
@@ -2523,7 +2522,7 @@ public class CatalogueDBAdapter {
 	 * 
 	 * @return New, filtered, collection
 	 */
-	private ContentValues filterValues(BookData source, TableInfo dest) {
+	private ContentValues filterValues(BookData source, @SuppressWarnings("unused") TableInfo dest) {
 		ContentValues args = new ContentValues();
 
 		Set<String> keys = source.keySet();
@@ -2663,7 +2662,6 @@ public class CatalogueDBAdapter {
 	 * 
 	 * @return true if the note was successfully updated, false otherwise
 	 */
-	@SuppressWarnings("UnusedReturnValue")
 	public boolean updateBook(long rowId, BookData values, int flags) {
 		boolean success;
 
@@ -3216,7 +3214,7 @@ public class CatalogueDBAdapter {
 	 * Delete the passed series
 	 * 
 	 * @param series 	series to delete
-	 * @return true if deleted, false otherwise
+	 * @return true 	if deleted, false otherwise
 	 */
 	@SuppressWarnings("UnusedReturnValue")
 	public boolean deleteSeries(Series series) {
@@ -3234,14 +3232,13 @@ public class CatalogueDBAdapter {
 		setBooksDirtyBySeries(series.id);
 
 		// Delete DB_TB_BOOK_SERIES for this series
-		boolean success1 = mSyncedDb.delete(DB_TB_BOOK_SERIES, KEY_SERIES_ID + " = " + series.id, null) > 0;
+		boolean success1 = (0 < mSyncedDb.delete(DB_TB_BOOK_SERIES, KEY_SERIES_ID + " = " + series.id, null));
 		
-		boolean success2 = false;
-		if (success1)
-			// Cleanup all series
-			success2 = purgeSeries();
-		
-		return success1 || success2;
+		if (success1) {
+			// Cleanup all series, ignore result
+			purgeSeries();
+		}
+		return success1;
 	}
 	
 	/** 
@@ -3820,11 +3817,7 @@ public class CatalogueDBAdapter {
     	// Be cautious; other threads may call this and set parameters.
     	synchronized(mGetBookUuidQuery) {
     		mGetBookUuidQuery.bindLong(1, id);
-    		//try {
-            	return mGetBookUuidQuery.simpleQueryForString();    			
-    		//} catch (SQLiteDoneException e) {
-    		//	return null;
-    		//}
+            return mGetBookUuidQuery.simpleQueryForString();
     	}
     }
     
@@ -3840,11 +3833,7 @@ public class CatalogueDBAdapter {
     	// Be cautious; other threads may call this and set parameters.
     	synchronized(mGetBookUpdateDateQuery) {
     		mGetBookUpdateDateQuery.bindLong(1, bookId);
-    		//try {
-            	return mGetBookUpdateDateQuery.simpleQueryForString();    			
-    		//} catch (SQLiteDoneException e) {
-    		//	return null;
-    		//}
+           	return mGetBookUpdateDateQuery.simpleQueryForString();
     	}
     }
     
@@ -3862,7 +3851,6 @@ public class CatalogueDBAdapter {
     		mGetBookTitleQuery.bindLong(1, id);
         	return mGetBookTitleQuery.simpleQueryForString();
     	}
-
     }
     
     /**
@@ -4197,7 +4185,10 @@ public class CatalogueDBAdapter {
 	 * 
 	 */
 	public void rebuildFts() {
-		long t0 = System.currentTimeMillis();
+		long t0;
+		if (DEBUG && BuildConfig.DEBUG) {
+			t0 = System.currentTimeMillis();
+		}
 		boolean gotError = false;
 
 		// Make a copy of the FTS table definition for our temp table.
@@ -4257,8 +4248,7 @@ public class CatalogueDBAdapter {
 		}
 
 		if (DEBUG && BuildConfig.DEBUG) {
-			long t1 = System.currentTimeMillis();
-			System.out.println("books reindexed in " + (t1 - t0) + "ms");
+			System.out.println("books reindexed in " + (System.currentTimeMillis() - t0) + "ms");
 		}
 	}
 

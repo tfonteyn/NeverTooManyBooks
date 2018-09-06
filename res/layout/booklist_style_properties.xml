@@ -24,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/buttonbar_cancel_save"
-        android:layout_below="@+id/toolbar" >
+        android:layout_below="@id/toolbar" >
 
         <!--
              NOTE: This view (id=body) will be EMPTIED by the activity that uses this layout

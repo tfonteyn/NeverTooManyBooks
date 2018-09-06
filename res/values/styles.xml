@@ -1,110 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Each base style and its children are divided by these comment headers
-    **************************************************************************************
+    <!--   "xxxx_base" are not meant to be used in layouts -->
+
+
+    <!-- *******************************************************************************
+        Page section headers and dividers
     -->
-    <!-- Style for item in preferences lists -->
-    <style name="prefs_item">
+
+    <style name="header_base">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="paddingStart">@dimen/padding_prefs_item</item>
-        <item name="android:drawablePadding">20dp</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-    <!--
-    **************************************************************************************
-    -->
-    <!-- Style for headers in preferences lists -->
-    <style name="prefs_header">
+        <item name="android:paddingStart">@dimen/padding_border</item>
+        <item name="android:paddingTop">@dimen/padding_border_double</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">@dimen/padding_border</item>
-        <item name="paddingStart">@dimen/padding_border</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
-    <!--
-    **************************************************************************************
-    -->
+
+    <style name="prefsHeader" parent="header_base" />
+
+    <style name="propertyGroupHeading" parent="header_base">
+        <item name="android:drawableBottom">?android:attr/dividerHorizontal</item>
+    </style>
+
+    <!-- your basic horizontal divider line -->
     <style name="listDivider">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
-        <item name="android:background">?android:attr/listDivider</item>
+        <item name="android:background">?android:attr/dividerHorizontal</item>
         <item name="android:paddingBottom">2dp</item>
         <item name="android:paddingTop">2dp</item>
     </style>
-    <!--
-    **************************************************************************************
-    -->
-    <!-- Style for key of isbn search keyboard -->
-    <style name="isbn_search_key">
-        <item name="android:layout_width">@dimen/isbn_key_size</item>
-        <item name="android:layout_height">@dimen/isbn_key_size</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-    </style>
 
-    <!--
-    **************************************************************************************
+    <!-- *******************************************************************************
+        Field labels and their text *display* fields
     -->
-    <!-- Style for detail titles in read-only book details -->
-    <style name="bookDetailsTitlesStyle">
+
+    <!-- field label in read-only book details -->
+    <style name="bookDetailLabel">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <!--
-**************************************************************************************
--->
-    <!-- Style for text details in read-only book details -->
-    <style name="bookDetailsTextStyle">
-        <item name="android:textIsSelectable">true</item>
+    <!-- text field in read-only book details -->
+    <style name="bookDetailText">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingLeft">@dimen/padding_book_details_info</item>
+        <item name="android:paddingStart">@dimen/padding_book_details_text</item>
+        <item name="android:textIsSelectable">true</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
-    <style name="fileDetailsTextStyle" parent="bookDetailsTextStyle">
-        <!--  selectable makes clicking not work well -->
-        <item name="android:textIsSelectable">false</item>
-    </style>
-
-    <!--
-    **************************************************************************************
-    -->
-    <!-- Style for text header data (typically title/author) in read-only book details -->
-    <style name="bookDetailsHeaderStyle">
-        <item name="android:textIsSelectable">true</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-    </style>
-
-    <!--
-    **************************************************************************************
-    -->
-    <!-- Style for smaller text header data (typically isbn/pages) in read-only book details -->
-    <style name="bookDetailsMinorDetailStyle">
-        <item name="android:textIsSelectable">true</item>
+    <style name="bookMinorDetailText">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textIsSelectable">true</item>
     </style>
 
-    <style name="fileDetailsMinorDetailStyle" parent="bookDetailsMinorDetailStyle">
+    <!-- filename -->
+    <style name="fileNameText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!--  selectable makes clicking not work well -->
+        <item name="android:textIsSelectable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <!-- file info -->
+    <style name="fileInfoText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
         <!--  selectable makes clicking not work well -->
         <item name="android:textIsSelectable">false</item>
     </style>
 
-    <!--
-    **************************************************************************************
+    <!-- *******************************************************************************
+        Field labels (if different from above) and their *edit* fields
     -->
-
-    <style name="editorFieldHeaderStyle">
+    <style name="editorFieldHeader">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
@@ -112,10 +94,7 @@
         <item name="android:layout_alignParentStart">true</item>
     </style>
 
-    <!--
-    **************************************************************************************
-    -->
-    <style name="editorFieldTextStyleBase">
+    <style name="editorFieldTextBase">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
@@ -123,13 +102,16 @@
         <item name="android:hint">@string/notset</item>
     </style>
 
+    <!-- BEGIN Usually customized in the language styles.ml for localised differences -->
 
-    <!-- BEGIN Usually customized in the language styles.ml -->
-    <style name="editorFieldTextStyle" parent="@style/editorFieldTextStyleBase" />
+    <!-- a simple text field -->
+    <style name="editorFieldText" parent="@style/editorFieldTextBase" />
 
-    <style name="dataEntryButtonStyle" parent="@style/editorFieldTextStyleBase" />
+    <!-- a button with 'data' displayed on it, a click leads to a screen to edit that data -->
+    <style name="dataEntryButton" parent="@style/editorFieldTextBase" />
 
-    <style name="localeBasedTextEntry" parent="@style/editorFieldTextStyle">
+    <!-- not directly to be used, but the base for the ones below -->
+    <style name="localeBasedTextEntry" parent="@style/editorFieldText">
         <item name="android:inputType">textCapWords</item>
     </style>
 
@@ -138,11 +120,43 @@
     <style name="personalNameTextEntry" parent="@style/localeBasedTextEntry" />
 
     <style name="bookOrSeriesTitleTextEntry" parent="@style/localeBasedTextEntry" />
-    <!-- BEGIN Usually customized in the language styles.ml -->
+
+    <style name="bookFormatTextEntry" parent="@style/localeBasedTextEntry" />
+
+    <!-- BEGIN Usually customized in the language styles.ml for localised differences -->
 
 
-    <style name="seachTextEntry" parent="@style/bookOrSeriesTitleTextEntry">
+    <!--
+    Specific, yet general (arf)
+    -->
+
+    <!-- specific for Searches, allow multiline + avoid using the oddball name -->
+    <style name="searchTextEntry" parent="@style/bookOrSeriesTitleTextEntry">
         <item name="android:inputType">textMultiLine</item>
+    </style>
+
+    <!-- Style for key of isbn search keyboard -->
+    <style name="isbnSearchKey">
+        <item name="android:layout_width">75dp</item>
+        <item name="android:layout_height">75dp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    </style>
+
+    <!--
+    **************************************************************************************
+    -->
+
+
+
+
+    <!-- Style for item in preferences lists -->
+    <style name="prefsItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">@dimen/padding_prefs_item</item>
+        <item name="android:drawablePadding">@dimen/padding_prefs_item</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
 
@@ -150,12 +164,10 @@
     **************************************************************************************
     -->
     <style name="propertyValue">
-        <!-- <item name="android:background">#40000000</item> -->
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="paddingStart">@dimen/padding_border</item>
-        <item name="paddingEnd">@dimen/padding_border_double</item>
-        <item name="android:gravity">top</item>
+        <item name="android:paddingStart">@dimen/padding_border</item>
+        <item name="android:paddingEnd">@dimen/padding_border_double</item>
     </style>
 
 
@@ -174,10 +186,13 @@
     <!--
     **************************************************************************************
     -->
-    <style name="bookshelf_spinner">
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-    </style>
 
+    <style name="toolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.ActionBar</item>
+    </style>
     <!--
     **************************************************************************************
     -->
@@ -193,8 +208,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingBottom">@dimen/padding_border</item>
-        <item name="paddingStart">@dimen/padding_border_triple</item>
-        <item name="paddingEnd">@dimen/padding_border_triple</item>
+        <item name="android:paddingStart">@dimen/padding_border_triple</item>
+        <item name="android:paddingEnd">@dimen/padding_border_triple</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:textColor">@color/link_blue</item>
     </style>
@@ -205,49 +220,9 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center</item>
-        <item name="android:paddingBottom">20dp</item>
+        <item name="android:paddingBottom">@dimen/padding_border_quad</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:textColor">@color/link_donate</item>
-    </style>
-
-    <style name="readToggleButton">
-        <item name="android:layout_width">30dp</item>
-        <item name="android:layout_height">45dp</item>
-        <item name="android:layout_alignParentEnd">true</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_gravity">top|end</item>
-        <item name="android:drawableTop">?android:attr/textCheckMark</item>
-        <item name="android:padding">0dp</item>
-        <item name="android:textOn">@string/_empty_</item>
-        <item name="android:textOff">@string/_empty_</item>
-        <item name="android:visibility">visible</item>
-    </style>
-
-    <style name="propertyDivider">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
-    <style name="touch_list_view_row_ic_delete">
-        <item name="android:layout_width">25dp</item>
-        <item name="android:layout_height">25dp</item>
-        <item name="android:layout_alignParentBottom">true</item>
-        <item name="android:layout_alignParentStart">true</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
-        <item name="android:focusableInTouchMode">false</item>
-        <item name="android:gravity">start</item>
-        <item name="android:paddingEnd">@dimen/padding_border</item>
-        <item name="android:paddingStart">@dimen/padding_border</item>
-    </style>
-
-    <style name="touch_list_view_row_ic_grabber">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_alignParentBottom">true</item>
-        <item name="android:layout_alignParentEnd">true</item>
-        <item name="android:layout_alignParentTop">true</item>
     </style>
 
     <style name="anthologyTitle">
@@ -274,13 +249,34 @@
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="toolbar">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="android:background">?attr/colorPrimary</item>
-        <item name="android:theme">@style/ThemeOverlay.AppCompat.ActionBar</item>
+    <!--
+        TouchListView icons
+    -->
+    <style name="touch_list_view_row_ic_delete">
+        <item name="android:layout_width">25dp</item>
+        <item name="android:layout_height">25dp</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentStart">true</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:gravity">start</item>
+        <item name="android:paddingEnd">@dimen/padding_border</item>
+        <item name="android:paddingStart">@dimen/padding_border</item>
     </style>
 
+    <style name="touch_list_view_row_ic_grabber">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentEnd">true</item>
+    </style>
+    <!--
+    **************************************************************************************
+    -->
     <!-- row, button and blurb for 'options' in a an option list (f.e. on a dialog) -->
     <style name="option_button">
         <item name="android:layout_width">wrap_content</item>
@@ -295,8 +291,8 @@
     <style name="option_blurb">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">20dp</item>
-        <item name="android:paddingEnd">20dp</item>
+        <item name="android:paddingStart">@dimen/padding_border_quad</item>
+        <item name="android:paddingEnd">@dimen/padding_border_quad</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
@@ -306,6 +302,7 @@
         <item name="android:orientation">vertical</item>
         <item name="android:paddingBottom">12dp</item>
     </style>
-
-
+    <!--
+    **************************************************************************************
+    -->
 </resources>

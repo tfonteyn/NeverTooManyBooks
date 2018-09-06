@@ -384,7 +384,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		
 		//add author
 		t.clickOnText("Set Authors");
-		t.assertCurrentActivity("Expected EditAuthorList activity", "EditAuthorList");
+		t.assertCurrentActivity("Expected EditAuthorListActivity activity", "EditAuthorListActivity");
 		
 		EditText author = t.getEditText(0);
 		t.enterText(author, "XXX");

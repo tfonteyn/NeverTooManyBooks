@@ -32,7 +32,7 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
-import com.eleybourn.bookcatalogue.booklist.BooklistStylesActivity;
+import com.eleybourn.bookcatalogue.booklist.BooklistStylesListActivity;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.database.ExportThread;
 import com.eleybourn.bookcatalogue.database.ImportThread;
@@ -407,7 +407,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
      * Load the Edit Book List Styles Activity
      */
     private void manageBooklistStyles() {
-        BooklistStylesActivity.startActivity(AdministrationFunctions.this);
+        BooklistStylesListActivity.startActivity(AdministrationFunctions.this);
     }
 
     /**

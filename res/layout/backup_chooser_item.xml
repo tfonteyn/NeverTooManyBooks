@@ -20,42 +20,30 @@
 
     <TextView
         android:id="@+id/name"
-        style="@style/fileDetailsTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/fileNameText"
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/padding_border"
         android:layout_toEndOf="@id/icon"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
         tools:text="fred.txt" />
 
     <TextView
         android:id="@+id/details"
-        style="@style/fileDetailsMinorDetailStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/fileInfoText"
         android:layout_below="@id/name"
+        android:paddingEnd="@dimen/padding_book_details_text"
+        android:paddingStart="@dimen/padding_book_details_text"
         android:layout_marginTop="@dimen/padding_border"
         android:layout_toEndOf="@id/icon"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:paddingEnd="@dimen/padding_book_details_info"
-        android:paddingStart="@dimen/padding_book_details_info"
         tools:text="1023 books" />
 
     <TextView
         android:id="@+id/date"
-        style="@style/fileDetailsMinorDetailStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/fileInfoText"
         android:layout_below="@id/details"
+        android:paddingEnd="@dimen/padding_book_details_text"
+        android:paddingStart="@dimen/padding_book_details_text"
         android:layout_marginTop="@dimen/padding_border"
         android:layout_toEndOf="@id/icon"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:paddingEnd="@dimen/padding_book_details_info"
-        android:paddingStart="@dimen/padding_book_details_info"
         tools:text="1 Jan, 2011 17:54:32" />
 
 </RelativeLayout>

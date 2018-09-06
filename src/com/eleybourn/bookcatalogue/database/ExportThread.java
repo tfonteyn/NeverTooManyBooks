@@ -261,7 +261,7 @@ public class ExportThread extends ManagedTask {
 //						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_RATING))) + "\",");
 //						row.append("\"" + formatCell(bookshelves_id_text) + "\",");
 //						row.append("\"" + formatCell(bookshelves_name_text) + "\",");
-//						row.append("\"" + formatCell(rv.getRead()) + "\",");
+//						row.append("\"" + formatCell(rv.isRead()) + "\",");
 //						row.append("\"" + formatCell(seriesDetails) + "\",");
 //						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_PAGES))) + "\",");
 //						row.append("\"" + formatCell(rv.getNotes()) + "\",");

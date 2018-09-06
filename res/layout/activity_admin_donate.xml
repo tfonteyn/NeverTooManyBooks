@@ -28,7 +28,7 @@
                 android:id="@+id/url"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="20dp"
+                android:paddingBottom="@dimen/padding_border_quad"
                 android:text="@string/donate"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -41,7 +41,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:paddingBottom="20dp"
+                android:paddingBottom="@dimen/padding_border_quad"
                 android:text="@string/dash_or_dash"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 

@@ -1,49 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="TAG_ORIGINAL_VALUE" type="id" />
-
     <item name="TAG_EVENT" type="id" />
     <item name="TAG_HOLDER" type="id" />
-    <item name="TAG_TASK" type="id" />
-    <item name="TAG_TASK_ID" type="id" />
     <item name="TAG_BOOK_EVENT_HOLDER" type="id" />
-    <item name="TAG_TASK_HOLDER" type="id" />
     <item name="TAG_PROPERTY" type="id" />
     <item name="TAG_DIALOG_ITEM" type="id" />
-
-    <item name="FIELD_CHECKBOX" type="id" />
-
-    <item name="NOTIFICATION" type="id" />
-
     <item name="TAG_GOODREADS_WORK" type="id" />
-
     <item name="TAG_GET_THUMBNAIL_TASK" type="id" />
 
-    <item name="MENU_DELETE_BOOK" type="id"/>
-    <item name="MENU_EDIT_BOOK" type="id"/>
-    <item name="MENU_EDIT_BOOK_NOTES" type="id"/>
-    <item name="MENU_EDIT_BOOK_FRIENDS" type="id"/>
-    <item name="MENU_SEND_BOOK_TO_GR" type="id"/>
-    <item name="MENU_EDIT_AUTHOR" type="id"/>
-    <item name="MENU_EDIT_FORMAT" type="id"/>
-    <item name="MENU_DELETE_SERIES" type="id"/>
-    <item name="MENU_EDIT_SERIES" type="id"/>
-    <item name="MENU_DELETE_STYLE" type="id"/>
-    <item name="MENU_EDIT_STYLE" type="id"/>
-    <item name="MENU_CLONE_STYLE" type="id"/>
+    <item name="TAG_TASK" type="id" />
+    <item name="TAG_TASK_ID" type="id" />
+    <item name="TAG_TASK_HOLDER" type="id" />
+
+    <!-- BEGIN predefined menu items, for context menus -->
+    <item name="MENU_BOOK_DELETE" type="id"/>
+    <item name="MENU_BOOK_EDIT" type="id"/>
+    <item name="MENU_BOOK_EDIT_NOTES" type="id"/>
+    <item name="MENU_BOOK_EDIT_LOANS" type="id"/>
+    <item name="MENU_BOOK_SEND_TO_GOODREADS" type="id"/>
+
+    <item name="MENU_AUTHOR_EDIT" type="id"/>
+
+    <item name="MENU_FORMAT_EDIT" type="id"/>
+
+    <item name="MENU_SERIES_DELETE" type="id"/>
+    <item name="MENU_SERIES_EDIT" type="id"/>
+
+    <item name="MENU_STYLE_DELETE" type="id"/>
+    <item name="MENU_STYLE_EDIT" type="id"/>
+    <item name="MENU_STYLE_CLONE" type="id"/>
+
     <item name="MENU_MARK_AS_READ" type="id"/>
     <item name="MENU_MARK_AS_UNREAD" type="id"/>
 
     <item name="MENU_AMAZON_BOOKS_IN_SERIES" type="id"/>
     <item name="MENU_AMAZON_BOOKS_BY_AUTHOR" type="id"/>
     <item name="MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES" type="id"/>
+    <!-- BEGIN predefined menu items, for context menus -->
 
-    <!-- used by {@link SimpleListAdapter} {@link EditObjectList} -->
+    <!-- BEGIN used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
+    <item name="row_details" type="id"/>
+    <item name="row" type="id"/>
     <item name="ROW_POSITION" type="id"/>
     <item name="ROW_UP" type="id"/>
     <item name="ROW_DOWN" type="id"/>
     <item name="ROW_DELETE" type="id"/>
     <item name="TAG_POSITION" type="id" />
-    <!-- end of used by {@link SimpleListAdapter} -->
+    <!-- END used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
+
+    <item name="UPDATE_FROM_INTERNET_FIELD_CHECKBOX" type="id" />
+    <item name="NOTIFICATION" type="id" />
 
 </resources>

@@ -53,14 +53,15 @@
                     android:paddingEnd="@dimen/padding_border"
                     android:paddingStart="@dimen/padding_border"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    tools:text="the search text" />
 
                 <TextView
                     android:id="@+id/bookshelf_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:layout_below="@+id/search_text"
+                    android:layout_below="@id/search_text"
                     android:paddingEnd="@dimen/padding_border"
                     android:paddingStart="@dimen/padding_border"
                     android:textAppearance="?android:attr/textAppearanceSmall"
@@ -74,7 +75,8 @@
                     android:paddingEnd="@dimen/padding_border"
                     android:paddingStart="@dimen/padding_border"
                     android:singleLine="true"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    tools:text="level 1 text"/>
 
                 <TextView
                     android:id="@+id/level_2_text"
@@ -84,13 +86,15 @@
                     android:paddingEnd="@dimen/padding_border"
                     android:paddingStart="@dimen/padding_border"
                     android:singleLine="true"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    tools:text="level 2 text"/>
             </RelativeLayout>
 
             <View
                 android:id="@+id/header_divider"
                 style="@style/listDivider"
-                android:layout_below="@id/header" />
+                android:layout_below="@id/header"
+                android:paddingBottom="2dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -126,4 +130,3 @@
         app:headerLayout="@layout/booksonbookshelf_nav_header"
         app:menu="@menu/drawer_view" />
 </android.support.v4.widget.DrawerLayout>
-

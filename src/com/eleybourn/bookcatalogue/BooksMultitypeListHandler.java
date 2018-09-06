@@ -27,6 +27,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckedTextView;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout.LayoutParams;
@@ -309,39 +310,38 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
         try {
             boolean hasSeries = rowView.hasSeriesId() && rowView.getSeriesId() > 0;
             boolean hasAuthor = rowView.hasAuthorId() ? rowView.getAuthorId() > 0 : rowView.getKind() == RowKinds.ROW_KIND_BOOK;
-            boolean isRead = rowView.isRead();
 
             switch (rowView.getKind()) {
                 case ROW_KIND_BOOK: {
-                    addMenuItem(menu, R.id.MENU_DELETE_BOOK, R.string.menu_delete, android.R.drawable.ic_menu_delete);
-                    addMenuItem(menu, R.id.MENU_EDIT_BOOK, R.string.edit_book, android.R.drawable.ic_menu_edit);
-                    addMenuItem(menu, R.id.MENU_EDIT_BOOK_NOTES, R.string.edit_book_notes, R.drawable.ic_menu_compose_holo_dark);
-                    addMenuItem(menu, R.id.MENU_EDIT_BOOK_FRIENDS, R.string.edit_book_friends, R.drawable.ic_menu_cc_holo_dark);
-                    if (!isRead) {
-                        addMenuItem(menu, R.id.MENU_MARK_AS_READ, R.string.menu_mark_as_read, R.drawable.btn_check_clipped);
-                    } else {
+                    addMenuItem(menu, R.id.MENU_BOOK_DELETE, R.string.menu_delete, android.R.drawable.ic_menu_delete);
+                    addMenuItem(menu, R.id.MENU_BOOK_EDIT, R.string.edit_book, android.R.drawable.ic_menu_edit);
+                    addMenuItem(menu, R.id.MENU_BOOK_EDIT_NOTES, R.string.edit_book_notes, R.drawable.ic_menu_compose_holo_dark);
+                    addMenuItem(menu, R.id.MENU_BOOK_EDIT_LOANS, R.string.edit_book_friends, R.drawable.ic_menu_cc_holo_dark);
+                    if (rowView.isRead()) {
                         addMenuItem(menu, R.id.MENU_MARK_AS_UNREAD, R.string.menu_mark_as_unread, R.drawable.btn_uncheck_clipped);
+                    } else {
+                        addMenuItem(menu, R.id.MENU_MARK_AS_READ, R.string.menu_mark_as_read, R.drawable.btn_check_clipped);
                     }
-                    addMenuItem(menu, R.id.MENU_SEND_BOOK_TO_GR, R.string.edit_book_send_to_gr, R.drawable.ic_menu_goodreads_holo_dark);
+                    addMenuItem(menu, R.id.MENU_BOOK_SEND_TO_GOODREADS, R.string.edit_book_send_to_gr, R.drawable.ic_menu_goodreads_holo_dark);
                     break;
                 }
                 case ROW_KIND_AUTHOR: {
-                    addMenuItem(menu, R.id.MENU_EDIT_AUTHOR, R.string.menu_edit_author, android.R.drawable.ic_menu_edit);
+                    addMenuItem(menu, R.id.MENU_AUTHOR_EDIT, R.string.menu_edit_author, android.R.drawable.ic_menu_edit);
                     addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.string.amazon_books_by_author, R.drawable.ic_menu_cc_holo_dark);
                     break;
                 }
                 case ROW_KIND_SERIES: {
                     long id = rowView.getSeriesId();
                     if (id != 0) {
-                        addMenuItem(menu, R.id.MENU_DELETE_SERIES, R.string.menu_delete_series, android.R.drawable.ic_menu_delete);
-                        addMenuItem(menu, R.id.MENU_EDIT_SERIES, R.string.menu_edit_series, android.R.drawable.ic_menu_edit);
+                        addMenuItem(menu, R.id.MENU_SERIES_DELETE, R.string.menu_delete_series, android.R.drawable.ic_menu_delete);
+                        addMenuItem(menu, R.id.MENU_SERIES_EDIT, R.string.menu_edit_series, android.R.drawable.ic_menu_edit);
                     }
                     break;
                 }
                 case ROW_KIND_FORMAT: {
                     String format = rowView.getFormat();
                     if (format != null && !format.isEmpty()) {
-                        addMenuItem(menu, R.id.MENU_EDIT_FORMAT, R.string.menu_edit_format, android.R.drawable.ic_menu_edit);
+                        addMenuItem(menu, R.id.MENU_FORMAT_EDIT, R.string.menu_edit_format, android.R.drawable.ic_menu_edit);
                     }
                     break;
                 }
@@ -399,7 +399,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
     public boolean onContextItemSelected(CatalogueDBAdapter db, BooklistRowView rowView, final Activity context, final CatalogueDBAdapter dba, final int itemId) {
         switch (itemId) {
 
-            case R.id.MENU_DELETE_BOOK:
+            case R.id.MENU_BOOK_DELETE:
                 // Show the standard dialog
                 int res = StandardDialogs.deleteBookAlert(context, dba, rowView.getBookId(), new Runnable() {
                     @Override
@@ -418,17 +418,17 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                     Toast.makeText(context, res, Toast.LENGTH_LONG).show();
                 return true;
 
-            case R.id.MENU_EDIT_BOOK:
+            case R.id.MENU_BOOK_EDIT:
                 // Start the activity in the correct tab
                 BookEdit.editBook(context, rowView.getBookId(), BookEdit.TAB_EDIT);
                 return true;
 
-            case R.id.MENU_EDIT_BOOK_NOTES:
+            case R.id.MENU_BOOK_EDIT_NOTES:
                 // Start the activity in the correct tab
                 BookEdit.editBook(context, rowView.getBookId(), BookEdit.TAB_EDIT_NOTES);
                 return true;
 
-            case R.id.MENU_EDIT_BOOK_FRIENDS:
+            case R.id.MENU_BOOK_EDIT_LOANS:
                 // Start the activity in the correct tab
                 BookEdit.editBook(context, rowView.getBookId(), BookEdit.TAB_EDIT_FRIENDS);
                 return true;
@@ -452,7 +452,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                 return true;
             }
 
-            case R.id.MENU_SEND_BOOK_TO_GR:
+            case R.id.MENU_BOOK_SEND_TO_GOODREADS:
                 // Get a GoodreadsManager and make sure we are authorized.
                 // TODO: This does network traffic on main thread and will ALWAYS die in Android 4.2+. Should mimic code in GoodreadsUtils.sendBooksToGoodreads(...)
                 GoodreadsManager grMgr = new GoodreadsManager();
@@ -469,7 +469,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                 qm.enqueueTask(task, BcQueueManager.QUEUE_MAIN, 0);
                 return true;
 
-            case R.id.MENU_EDIT_SERIES: {
+            case R.id.MENU_SERIES_EDIT: {
                 long id = rowView.getSeriesId();
                 if (id == -1) {
                     Toast.makeText(context, R.string.cannot_edit_system, Toast.LENGTH_LONG).show();
@@ -490,7 +490,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                 }
                 break;
             }
-            case R.id.MENU_DELETE_SERIES: {
+            case R.id.MENU_SERIES_DELETE: {
                 long id = rowView.getSeriesId();
                 StandardDialogs.deleteSeriesAlert(context, dba, dba.getSeriesById(id), new Runnable() {
                     @Override
@@ -504,7 +504,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                 });
                 break;
             }
-            case R.id.MENU_EDIT_AUTHOR: {
+            case R.id.MENU_AUTHOR_EDIT: {
                 long id = rowView.getAuthorId();
                 EditAuthorDialog d = new EditAuthorDialog(context, dba, new Runnable() {
                     @Override
@@ -520,7 +520,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                 d.editAuthor(dba.getAuthorById(id));
                 break;
             }
-            case R.id.MENU_EDIT_FORMAT: {
+            case R.id.MENU_FORMAT_EDIT: {
                 String format = rowView.getFormat();
                 EditFormatDialog d = new EditFormatDialog(context, dba, new Runnable() {
                     @Override
@@ -655,16 +655,16 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
          */
         TextView seriesNumLong;
         /**
-         * Pointer to the view that stores the series number in PORTRAIT mode
+         * the "I've read it" checkbox
          */
-        ImageView read;
+        CheckedTextView readField;
         /**
          * The current task to get book extra info for this view. Can be null if none.
          */
         GetBookExtrasTask extrasTask;
 
         @Override
-        public void map(BooklistRowView rowView, View v) {
+        public void map(final BooklistRowView rowView, final View v) {
             final BooklistStyle style = rowView.getStyle();
 
             float scale = 1.0f;
@@ -678,12 +678,20 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
             seriesNumLong = v.findViewById(R.id.series_num_long);
 
             final int iconSize = (int) (title.getTextSize() * scale);
-            read = v.findViewById(R.id.read);
+            readField = v.findViewById(R.id.read);
             LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, iconSize);
-            read.setMaxHeight(iconSize);
-            read.setMaxWidth(iconSize);
-            read.setLayoutParams(lp);
-            read.setScaleType(ScaleType.CENTER);
+            readField.setMaxHeight(iconSize);
+            readField.setMaxWidth(iconSize);
+            readField.setLayoutParams(lp);
+
+            //FIXME: to set the read status from here, we need the database... or the context...
+//            read.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                      readField.setChecked(!readField.isChecked());
+//                      BookUtils.setRead(mDb, book, readField.isChecked());
+//                }
+//            });
 
             if (!rowView.hasSeries()) {
                 seriesNum.setVisibility(View.GONE);
@@ -770,13 +778,8 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                 }
             }
 
-            // READ
-            if (rowView.getRead()) {
-                read.setVisibility(View.VISIBLE);
-                read.setImageResource(R.drawable.btn_check_clipped);
-            } else {
-                read.setVisibility(View.GONE);
-            }
+            // Read
+            readField.setSelected(rowView.isRead());
 
             // Thumbnail
             if ((extras & BooklistStyle.EXTRAS_THUMBNAIL) != 0)

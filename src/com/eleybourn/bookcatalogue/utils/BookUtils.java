@@ -178,24 +178,26 @@ public class BookUtils {
         context.startActivity(Intent.createChooser(share, context.getString(R.string.share)));
 	}
 
-
-	/**
-	 * Update the 'read' status of a book in the database
-	 * @param dba    database
-	 * @param book    book to update
-	 */
-	public static void setRead(CatalogueDBAdapter dba, BookData book, boolean read) {
-        book.putInt(ColumnNames.KEY_READ, read ? 1 : 0);
-		dba.updateBook(book.getRowId(), book, 0);
-	}
-
     /**
      * Update the 'read' status of a book in the database
-	 * @param dba        database
-     * @param bookId    book to update
+     * The 'book' will have its 'read' status updated ONLY if the update went through.
+     *
+	 * @param dba     database
+     * @param book    book to update
+     *
+     * @return    true/false as result from database update
 	 */
-    public static void setRead(CatalogueDBAdapter dba, long bookId, boolean read) {
-        BookData book = new BookData(bookId);
-		setRead(dba, book, read);
+    public static boolean setRead(CatalogueDBAdapter dba, BookData book, boolean read) {
+        int prev = book.getInt(ColumnNames.KEY_READ);
+        book.putInt(ColumnNames.KEY_READ, read ? 1 : 0);
+		if (!dba.updateBook(book.getRowId(), book, 0)) {
+            book.putInt(ColumnNames.KEY_READ, prev);
+            return false;
+        }
+        return true;
 	}
+	
+	public static boolean setRead(CatalogueDBAdapter dba, long bookId, boolean read) {
+        return dba.updateBook(bookId, new BookData((bookId)), 0);
+    }
 }

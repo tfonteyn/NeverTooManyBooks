@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@id/book_details"
                 android:layout_alignEnd="@id/book_details"
-                android:layout_below="@+id/book_details"
+                android:layout_below="@id/book_details"
                 android:text="@string/book_details_blurb"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </RelativeLayout>
@@ -95,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/cover_images"
                 android:layout_alignEnd="@+id/cover_images"
-                android:layout_below="@+id/cover_images"
+                android:layout_below="@id/cover_images"
                 android:text="@string/cover_images_blurb"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </RelativeLayout>

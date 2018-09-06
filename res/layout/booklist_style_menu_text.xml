@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="@dimen/padding_border_double"
-    android:paddingStart="20dp"
-    android:paddingEnd="20dp"
+    android:paddingStart="@dimen/padding_border_quad"
+    android:paddingEnd="@dimen/padding_border_quad"
     android:singleLine="false"
     android:textAppearance="?android:attr/textAppearanceMedium" />

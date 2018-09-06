@@ -25,16 +25,11 @@
         <ImageView
             android:id="@id/ROW_DELETE"
             style="@style/touch_list_view_row_ic_delete"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/grabber"
-            style="@style/touch_list_view_row_ic_grabber"
-            app:srcCompat="@drawable/ic_grabber"
+            app:srcCompat="@android:drawable/ic_delete"
             tools:ignore="ContentDescription" />
 
         <include
-            android:id="@+id/row_details"
+            android:id="@id/row_details"
             layout="@layout/row_anthology"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,6 +38,12 @@
             android:layout_toEndOf="@id/ROW_DELETE"
             android:layout_toStartOf="@id/grabber"
             android:padding="2dp" />
+
+        <ImageView
+            android:id="@+id/grabber"
+            style="@style/touch_list_view_row_ic_grabber"
+            app:srcCompat="@drawable/ic_grabber"
+            tools:ignore="ContentDescription" />
     </RelativeLayout>
 
 </LinearLayout>

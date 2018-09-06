@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="editorFieldTextStyle" parent="@style/editorFieldTextStyleBase">
+    <style name="editorFieldText" parent="@style/editorFieldTextBase">
         <!-- empty -->
     </style>
 
-    <style name="dataEntryButtonStyle" parent="@style/editorFieldTextStyleBase">
+    <style name="dataEntryButton" parent="@style/editorFieldTextBase">
         <!-- empty -->
     </style>
 
-    <style name="localeBasedTextEntry" parent="@style/editorFieldTextStyle">
+    <style name="localeBasedTextEntry" parent="@style/editorFieldText">
         <!-- empty -->
     </style>
 
@@ -24,6 +24,8 @@
     <style name="bookOrSeriesTitleTextEntry" parent="@style/localeBasedTextEntry">
         <item name="android:inputType">text</item>
     </style>
-
+    <style name="bookFormatTextEntry" parent="@style/localeBasedTextEntry">
+        <item name="android:inputType">text</item>
+    </style>
 </resources>
 

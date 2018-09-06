@@ -105,7 +105,7 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.edit_book_loan_base, container, false);
+        return inflater.inflate(R.layout.fragment_edit_book_loan_base, container, false);
     }
 
     /**
@@ -137,7 +137,7 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
         ScrollView sv = getView().findViewById(R.id.root);
         sv.removeAllViews();
         LayoutInflater inf = getActivity().getLayoutInflater();
-        inf.inflate(R.layout.edit_book_loan, sv);
+        inf.inflate(R.layout.fragment_edit_book_loan_to, sv);
 
         AutoCompleteTextView mUserText = sv.findViewById(R.id.loan_to_who);
         try {
@@ -164,7 +164,7 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
         ScrollView sv = getView().findViewById(R.id.root);
         sv.removeAllViews();
         LayoutInflater inf = getActivity().getLayoutInflater();
-        inf.inflate(R.layout.edit_book_loaned, sv);
+        inf.inflate(R.layout.fragment_edit_book_loaned, sv);
 
         TextView mWhoText = sv.findViewById(R.id.who);
         mWhoText.setText(user);

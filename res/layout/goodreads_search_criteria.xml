@@ -101,7 +101,7 @@
 
             <EditText
                 android:id="@+id/search_text"
-                style="@style/seachTextEntry"
+                style="@style/searchTextEntry"
                 android:layout_width="match_parent"
                 android:layout_height="0dip"
                 android:layout_weight="1"

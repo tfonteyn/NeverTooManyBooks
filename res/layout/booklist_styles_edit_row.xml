@@ -5,64 +5,33 @@
     android:id="@+id/row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
-    <!--
-        NOTE:
-        The outer layout is used because this item appears in a TouchListView which uses
-        the outer element padding, and we want to set our own padding.
+    android:orientation="vertical">
 
-        With careful analysis, we could probably put padding on the right elements.
-        But this is clearer and easier.
-    -->
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/row_real"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        tools:ignore="UselessParent">
+        android:orientation="horizontal">
 
-        <!-- Used to be the id=ROW_DELETE item. Now deletions are handled via context menu. -->
-
-        <ImageView
+        <CheckedTextView
             android:id="@+id/preferred"
-            android:layout_width="45dp"
-            android:layout_height="25dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_centerVertical="true"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:paddingLeft="@dimen/padding_border_double"
-            android:paddingRight="@dimen/padding_border_double"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/grabber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_centerVertical="true"
-            app:srcCompat="@drawable/ic_grabber"
-            tools:ignore="ContentDescription"
-            style="@style/touch_list_view_row_ic_grabber" />
+            android:checkMark="?android:attr/textCheckMark"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:paddingEnd="@dimen/padding_border_double"
+            android:paddingStart="@dimen/padding_border_double" />
 
-        <View
-            android:id="@+id/top_divider"
-            style="@style/listDivider"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true" />
-
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <RelativeLayout
             android:id="@+id/row_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentTop="true"
-            android:layout_below="@+id/top_divider"
             android:layout_toEndOf="@id/preferred"
             android:layout_toStartOf="@id/grabber"
             android:orientation="vertical"
@@ -77,37 +46,41 @@
                 android:ellipsize="marquee"
                 android:gravity="start"
                 android:singleLine="false"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:text="style name" />
 
             <TextView
                 android:id="@+id/groups"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/name"
+                android:layout_below="@id/name"
                 android:ellipsize="marquee"
                 android:gravity="start"
                 android:singleLine="false"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                tools:text="groups" />
 
             <TextView
                 android:id="@+id/kind"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/groups"
+                android:layout_below="@id/groups"
                 android:ellipsize="marquee"
                 android:gravity="start"
-                android:paddingEnd="5sp"
-                android:paddingStart="5sp"
+                android:paddingEnd="10sp"
+                android:paddingStart="10sp"
                 android:singleLine="true"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                tools:text="kind" />
         </RelativeLayout>
 
-        <View
-            style="@style/listDivider"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/row_details" />
+        <ImageView
+            android:id="@+id/grabber"
+            style="@style/touch_list_view_row_ic_grabber"
+            app:srcCompat="@drawable/ic_grabber"
+            tools:ignore="ContentDescription" />
+
     </RelativeLayout>
 
+    <View style="@style/listDivider" />
 </LinearLayout>

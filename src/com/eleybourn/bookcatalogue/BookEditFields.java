@@ -64,7 +64,7 @@ import com.eleybourn.bookcatalogue.utils.ViewUtils;
 import java.util.ArrayList;
 
 
-public class BookEditFields extends BookDetailsAbstract
+public class BookEditFields extends BookDetailsFragmentAbstract
         implements OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
 
     /**
@@ -83,7 +83,7 @@ public class BookEditFields extends BookDetailsAbstract
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.edit_book_fields, container, false);
+        return inflater.inflate(R.layout.fragment_edit_book_fields, container, false);
     }
 
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -109,7 +109,7 @@ public class BookEditFields extends BookDetailsAbstract
                     .setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent i = new Intent(getActivity(), EditAuthorList.class);
+                            Intent i = new Intent(getActivity(), EditAuthorListActivity.class);
                             i.putExtra(ColumnNames.KEY_AUTHOR_ARRAY, mEditManager.getBookData().getAuthors());
                             i.putExtra(ColumnNames.KEY_ROWID, mEditManager.getBookData().getRowId());
                             i.putExtra(ColumnNames.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
@@ -122,7 +122,7 @@ public class BookEditFields extends BookDetailsAbstract
                     .setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent i = new Intent(getActivity(), EditSeriesList.class);
+                            Intent i = new Intent(getActivity(), EditSeriesListActivity.class);
                             i.putExtra(ColumnNames.KEY_SERIES_ARRAY, mEditManager.getBookData().getSeries());
                             i.putExtra(ColumnNames.KEY_ROWID, mEditManager.getBookData().getRowId());
                             i.putExtra(ColumnNames.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());

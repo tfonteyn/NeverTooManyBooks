@@ -125,7 +125,7 @@ public class Utils {
      *
      * @return InputStream
      */
-    static public InputStream getInputStream(URL url) throws UnknownHostException {
+    public static InputStream getInputStream(URL url) throws UnknownHostException {
 
         synchronized (url) {
 

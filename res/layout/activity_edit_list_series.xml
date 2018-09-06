@@ -26,7 +26,7 @@
         android:id="@+id/top_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/title"
+        android:layout_below="@id/title"
         android:orientation="horizontal">
 
         <AutoCompleteTextView
@@ -60,7 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/buttonbar_cancel_save"
-        android:layout_below="@+id/top_buttons"
+        android:layout_below="@id/top_buttons"
         android:fillViewport="true">
 
         <com.eleybourn.bookcatalogue.widgets.TouchListView xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
@@ -78,7 +78,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/buttonbar_cancel_save"
-        android:layout_below="@+id/top_buttons"
+        android:layout_below="@id/top_buttons"
         android:text="@string/noseries"
         android:textSize="16sp" />
 

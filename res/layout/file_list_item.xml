@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/row"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -19,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/name"
+        android:layout_below="@id/name"
         android:layout_marginTop="4dp"
         android:text="@string/updated"
         android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -41,7 +42,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/updated_label"
+        android:layout_below="@id/updated_label"
         android:layout_marginTop="4dp"
         android:text="@string/size"
         android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -88,6 +89,6 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@+id/path_info" />
+        android:layout_below="@id/path_info" />
 
 </RelativeLayout>

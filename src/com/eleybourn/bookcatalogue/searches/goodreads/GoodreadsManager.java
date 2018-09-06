@@ -820,7 +820,7 @@ public class GoodreadsManager {
             // Now update the remaining review details.
             try {
                 // Do not sync Notes<->Review. We will add a 'Review' field later.
-                //this.updateReview(reviewId, books.getRead() != 0, books.getReadEnd(), books.getNotes(), ((int)books.getRating()) );
+                //this.updateReview(reviewId, books.isRead() != 0, books.getReadEnd(), books.getNotes(), ((int)books.getRating()) );
                 this.updateReview(reviewId, books.getRead() != 0, books.getReadEnd(), null, ((int) books.getRating()));
             } catch (BookNotFoundException e) {
                 return ExportDisposition.error;

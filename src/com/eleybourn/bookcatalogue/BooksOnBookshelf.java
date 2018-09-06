@@ -63,7 +63,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStylePropertiesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
-import com.eleybourn.bookcatalogue.booklist.BooklistStylesActivity;
+import com.eleybourn.bookcatalogue.booklist.BooklistStylesListActivity;
 import com.eleybourn.bookcatalogue.database.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -523,7 +523,12 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             bookCounts.setVisibility(View.GONE);
         }
 
-        long t0 = System.currentTimeMillis();
+        long t0;
+        if (DEBUG && BuildConfig.DEBUG) {
+            //noinspection UnusedAssignment
+            t0 = System.currentTimeMillis();
+        }
+
         // Save the old list so we can close it later, and set the new list locally
         BooklistPseudoCursor oldList = mList;
         mList = newList;
@@ -678,8 +683,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             oldList.close();
         }
         if (DEBUG && BuildConfig.DEBUG) {
-            long t1 = System.currentTimeMillis();
-            System.out.println("displayList: " + (t1 - t0));
+            System.out.println("displayList: " + (System.currentTimeMillis() - t0));
         }
     }
 
@@ -1162,7 +1166,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             @Override
             public void onClick(View v) {
                 sortDialog.dismiss();
-                BooklistStylesActivity.startActivity(BooksOnBookshelf.this);
+                BooklistStylesListActivity.startActivity(BooksOnBookshelf.this);
             }
         });
     }
@@ -1244,10 +1248,18 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         @Override
         public void run(SimpleTaskContext taskContext) {
             try {
-                long t0 = System.currentTimeMillis();
+                long t0;
+                if (DEBUG && BuildConfig.DEBUG) {
+                    //noinspection UnusedAssignment
+                    t0 = System.currentTimeMillis();
+                }
                 // Build the underlying data
                 BooklistBuilder b = buildBooklist(mIsFullRebuild);
-                long t1 = System.currentTimeMillis();
+                long t1;
+                if (DEBUG && BuildConfig.DEBUG) {
+                    //noinspection UnusedAssignment
+                    t1 = System.currentTimeMillis();
+                }
                 // Try to sync the previously selected book ID
                 if (mMarkBookId != 0) {
                     // get all positions of the book
@@ -1291,27 +1303,49 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 //						// Now find the position it will occupy in the view
 //						mTargetPos = b.getPosition(targetRow);
                     }
-                } else
+                } else {
                     mTargetRows = null;
-                long t2 = System.currentTimeMillis();
+                }
+                long t2;
+                if (DEBUG && BuildConfig.DEBUG) {
+                    //noinspection UnusedAssignment
+                    t2 = System.currentTimeMillis();
+                }
 
                 // Now we have expanded groups as needed, get the list cursor
                 mTempList = b.getList();
 
-                // Clear it so it wont be reused.
+                // Clear it so it won't be reused.
                 mMarkBookId = 0;
 
+                long t3;
+                if (DEBUG && BuildConfig.DEBUG) {
+                    //noinspection UnusedAssignment
+                    t3 = System.currentTimeMillis();
+                }
                 // get a count() from the cursor in background task because the setAdapter() call
                 // will do a count() and potentially block the UI thread while it pages through the
                 // entire cursor. If we do it here, subsequent calls will be fast.
-                long t3 = System.currentTimeMillis();
+                @SuppressWarnings("UnusedAssignment")
                 int count = mTempList.getCount();
-                long t4 = System.currentTimeMillis();
-                mUniqueBooks = mTempList.getUniqueBookCount();
-                long t5 = System.currentTimeMillis();
-                mTotalBooks = mTempList.getBookCount();
-                long t6 = System.currentTimeMillis();
 
+                long t4;
+                if (DEBUG && BuildConfig.DEBUG) {
+                    //noinspection UnusedAssignment
+                    t4 = System.currentTimeMillis();
+                }
+                mUniqueBooks = mTempList.getUniqueBookCount();
+                long t5;
+                if (DEBUG && BuildConfig.DEBUG) {
+                    //noinspection UnusedAssignment
+                    t5 = System.currentTimeMillis();
+                }
+                mTotalBooks = mTempList.getBookCount();
+                long t6;
+                if (DEBUG && BuildConfig.DEBUG) {
+                    //noinspection UnusedAssignment
+                    t6 = System.currentTimeMillis();
+                }
                 if (DEBUG && BuildConfig.DEBUG) {
                     System.out.println("Build: " + (t1 - t0));
                     System.out.println("Position: " + (t2 - t1));

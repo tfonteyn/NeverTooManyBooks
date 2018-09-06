@@ -144,9 +144,9 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
      * Start editing the groups.
      */
     public void startGroupsActivity() {
-        Intent i = new Intent(this, BooklistStyleGroupsActivity.class);
-        i.putExtra(BooklistStyleGroupsActivity.BKEY_STYLE, mStyle);
-        i.putExtra(BooklistStyleGroupsActivity.BKEY_SAVE_TO_DATABASE, false);
+        Intent i = new Intent(this, BooklistStyleGroupsListActivity.class);
+        i.putExtra(BooklistStyleGroupsListActivity.BKEY_STYLE, mStyle);
+        i.putExtra(BooklistStyleGroupsListActivity.BKEY_SAVE_TO_DATABASE, false);
         startActivityForResult(i, UniqueId.ACTIVITY_BOOKLIST_STYLE_GROUPS);
     }
 
@@ -177,10 +177,10 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
         switch (requestCode) {
             case UniqueId.ACTIVITY_BOOKLIST_STYLE_GROUPS:
                 // When groups have been edited, copy them to this style.
-                if (intent != null && intent.hasExtra(BooklistStyleGroupsActivity.BKEY_STYLE)) {
+                if (intent != null && intent.hasExtra(BooklistStyleGroupsListActivity.BKEY_STYLE)) {
                     BooklistStyle editedStyle = null;
                     try {
-                        editedStyle = (BooklistStyle) intent.getSerializableExtra(BooklistStyleGroupsActivity.BKEY_STYLE);
+                        editedStyle = (BooklistStyle) intent.getSerializableExtra(BooklistStyleGroupsListActivity.BKEY_STYLE);
                     } catch (Exception e) {
                         Logger.logError(e);
                     }

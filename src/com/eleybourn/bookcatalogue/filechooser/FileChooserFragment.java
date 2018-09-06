@@ -184,12 +184,12 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 		}
 
 		@Override
-		protected void onSetupView(FileDetails fileDetails, int position, View target) {
+		protected void onSetupView(View target, FileDetails fileDetails, int position) {
 			fileDetails.onSetupView(getActivity(), position, target);
 		}
 
 		@Override
-		protected void onRowClick(FileDetails fileDetails, int position, View v) {
+		protected void onRowClick(View v, FileDetails fileDetails, int position) {
 			if (fileDetails != null) {
 				if (fileDetails.getFile().isDirectory()) {
 					mRootPath = fileDetails.getFile();

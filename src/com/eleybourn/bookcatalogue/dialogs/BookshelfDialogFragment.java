@@ -40,7 +40,7 @@ import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 
 import java.util.ArrayList;
 
-import static com.eleybourn.bookcatalogue.BookDetailsAbstract.BOOKSHELF_SEPARATOR;
+import static com.eleybourn.bookcatalogue.BookDetailsFragmentAbstract.BOOKSHELF_SEPARATOR;
 
 /**
  * Fragment wrapper for the Bookshelf list

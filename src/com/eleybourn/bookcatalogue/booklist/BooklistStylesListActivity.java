@@ -28,11 +28,11 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageView;
+import android.widget.CheckedTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eleybourn.bookcatalogue.EditObjectList;
+import com.eleybourn.bookcatalogue.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -40,15 +40,13 @@ import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 /**
- * Activity to edit the list of styles and enable/disable their presence in the
- * styles menu.
+ * Activity to edit the list of styles and enable/disable their presence in the styles menu.
  *
  * @author Philip Warner
  */
-public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
+public class BooklistStylesListActivity extends EditObjectListActivity<BooklistStyle> {
     /**
      * The row being edited. Set when an individual style is edited
      */
@@ -57,12 +55,12 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
     /**
      * Constructor
      */
-    public BooklistStylesActivity() {
+    public BooklistStylesListActivity() {
         super(null, R.layout.booklist_styles_edit_list, R.layout.booklist_styles_edit_row);
     }
 
     public static void startActivity(Activity from) {
-        Intent i = new Intent(from, BooklistStylesActivity.class);
+        Intent i = new Intent(from, BooklistStylesListActivity.class);
         from.startActivityForResult(i, UniqueId.ACTIVITY_BOOKLIST_STYLES);
     }
 
@@ -107,35 +105,30 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
     }
 
     @Override
-    protected void onSetupView(View target, BooklistStyle style) {
+    protected void onSetupView(View target, BooklistStyle style, int position) {
         Holder holder;
         holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
         if (holder == null) {
             holder = new Holder();
+            holder.preferred = target.findViewById(R.id.preferred);
             holder.name = target.findViewById(R.id.name);
             holder.groups = target.findViewById(R.id.groups);
             holder.kind = target.findViewById(R.id.kind);
-            holder.preferred = target.findViewById(R.id.preferred);
             // Tag relevant views
-            ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);
             ViewTagger.setTag(holder.preferred, R.id.TAG_HOLDER, holder);
+            ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);
 
-            // Make it flash
-            //target.setBackgroundResource(android.R.drawable.list_selector_background);
-
-            // Handle clicks on the tick/cross
+            // Handle clicks on the CheckedTextView
             holder.preferred.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Holder h = ViewTagger.getTag(v, R.id.TAG_HOLDER);
-                    boolean newPref = !Objects.requireNonNull(h).style.isPreferred();
-                    h.style.setPreferred(newPref);
-                    if (newPref) {
-                        h.preferred.setImageResource(R.drawable.btn_check_clipped);
-                    } else {
-                        h.preferred.setImageResource(android.R.drawable.ic_delete);
+                    if (h != null) {
+                        boolean newStatus = !h.style.isPreferred();
+                        h.style.setPreferred(newStatus);
+                        h.preferred.setChecked(newStatus);
+                        onListChanged();
                     }
-                    onListChanged();
                 }
             });
         }
@@ -144,58 +137,58 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
         holder.style = style;
         holder.name.setText(style.getDisplayName());
         holder.groups.setText(style.getGroupListDisplayNames());
+        holder.preferred.setChecked(style.isPreferred());
 
         if (style.isUserDefined())
             holder.kind.setText(R.string.user_defined);
         else
             holder.kind.setText(R.string.builtin);
-
-        if (style.isPreferred()) {
-            holder.preferred.setImageResource(R.drawable.btn_check_clipped);
-        } else {
-            holder.preferred.setImageResource(android.R.drawable.ic_delete);
-        }
     }
 
+//    @Override
+//    protected void onListItemClick(ListView l, View v, int position, long id) {
+//        super.onListItemClick(l, v, position, id);
+//    }
+
     /**
-     * Use the RowClick ti present a pseudo context menu.
+     * TODO: is this a good idea ? wouldn't we expect a 'real' context menu ?
+     * Use the RowClick to present a pseudo context menu.
      */
     @Override
-    protected void onRowClick(View target, final int position, final BooklistStyle style) {
+    protected void onRowClick(View target, final BooklistStyle style, final int position) {
         // Build the array of menu items based on the style we are editing
         final ArrayList<ContextItem> items = new ArrayList<>();
         if (style.isUserDefined()) {
-            items.add(new ContextItem(R.string.delete_style, R.id.MENU_DELETE_STYLE));
-            items.add(new ContextItem(R.string.edit_style, R.id.MENU_EDIT_STYLE));
+            items.add(new ContextItem(R.string.delete_style, R.id.MENU_STYLE_DELETE));
+            items.add(new ContextItem(R.string.edit_style, R.id.MENU_STYLE_EDIT));
         }
-        items.add(new ContextItem(R.string.clone_style, R.id.MENU_CLONE_STYLE));
+        items.add(new ContextItem(R.string.clone_style, R.id.MENU_STYLE_CLONE));
 
         // Turn the list into an array
-        CharSequence[] csa = new CharSequence[items.size()];
-        for (int i = 0; i < items.size(); i++)
-            csa[i] = items.get(i);
+        CharSequence[] csa = items.toArray(new CharSequence[items.size()]);
 
         // Show the dialog
-        final AlertDialog dialog = new AlertDialog.Builder(getLayoutInflater().getContext()).setItems(csa, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (items.get(which).getId()) {
-                    case R.id.MENU_DELETE_STYLE:
-                        style.deleteFromDb(mDb);
-                        setList(getList()); // Refresh the list
-                        dialog.dismiss();
-                        return;
-                    case R.id.MENU_EDIT_STYLE:
-                        editStyle(position, style, false);
-                        dialog.dismiss();
-                        return;
-                    case R.id.MENU_CLONE_STYLE:
-                        editStyle(position, style, true);
-                        dialog.dismiss();
-                        return;
-                }
-            }
-        }).create();
+        final AlertDialog dialog = new AlertDialog.Builder(getLayoutInflater().getContext())
+                .setItems(csa, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (items.get(which).getId()) {
+                            case R.id.MENU_STYLE_DELETE:
+                                style.deleteFromDb(mDb);
+                                setList(getList()); // Refresh the list
+                                dialog.dismiss();
+                                return;
+                            case R.id.MENU_STYLE_EDIT:
+                                editStyle(position, style, false);
+                                dialog.dismiss();
+                                return;
+                            case R.id.MENU_STYLE_CLONE:
+                                editStyle(position, style, true);
+                                dialog.dismiss();
+                                return;
+                        }
+                    }
+                }).create();
 
         dialog.show();
     }
@@ -230,13 +223,9 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
 
     @Override
     protected void onListChanged() {
-        // Save the order whenever the list is modified.
         BooklistStyles.SaveMenuOrder(mList);
     }
 
-    /**
-     * Handle the results from a called activity
-     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -308,10 +297,10 @@ public class BooklistStylesActivity extends EditObjectList<BooklistStyle> {
      */
     private class Holder {
         BooklistStyle style;
+        CheckedTextView preferred;
         TextView name;
         TextView groups;
         TextView kind;
-        ImageView preferred;
     }
 
     /**

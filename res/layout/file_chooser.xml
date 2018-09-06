@@ -8,6 +8,7 @@
     android:paddingEnd="@dimen/padding_border"
     android:paddingStart="@dimen/padding_border">
 
+    <!-- single line at the top with 'up' directory (or add) and the directory name -->
     <RelativeLayout
         android:id="@+id/path_details"
         android:layout_width="match_parent"
@@ -55,7 +56,22 @@
     <View
         android:id="@+id/header_divider"
         style="@style/listDivider"
-        android:layout_below="@+id/path_details" />
+        android:layout_below="@id/path_details" />
+
+    <com.eleybourn.bookcatalogue.widgets.FastScrollListView
+        android:id="@id/android:list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/footer_divider"
+        android:layout_below="@id/header_divider"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <View
+        android:id="@+id/footer_divider"
+        style="@style/listDivider"
+        android:layout_above="@+id/file_name" />
 
     <EditText
         android:id="@+id/file_name"
@@ -68,20 +84,5 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         tools:text="fred.bcbk"
         tools:ignore="LabelFor" />
-
-    <View
-        android:id="@+id/footer_divider"
-        style="@style/listDivider"
-        android:layout_above="@+id/file_name" />
-
-    <com.eleybourn.bookcatalogue.widgets.FastScrollListView
-        android:id="@id/android:list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/footer_divider"
-        android:layout_below="@+id/header_divider"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

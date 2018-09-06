@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/buttonbar_cancel_save"
-            android:layout_below="@+id/tabpanel"
+            android:layout_below="@id/tabpanel"
             android:gravity="fill"
             android:orientation="horizontal" />
 

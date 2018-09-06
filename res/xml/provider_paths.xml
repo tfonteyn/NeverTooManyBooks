@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- FIXME: the cover images really should not be in the root directory...
+    we should do an 'upgrade' and move them to a new sub-folder and list that one below.
+    -->
+    <external-path name="external_files" path="./bookCatalogue/"/>
+</paths>

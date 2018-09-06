@@ -81,7 +81,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 
     /**
      * Handle drop events; also preserves current position.
-     * TODO: I've been quick&dirty... copied from EditObjectList.. should be unified ?
+     * TODO: I've been quick&dirty... copied from EditObjectListActivity.. should be unified ?
      */
     private final TouchListView.DropListener mDropListener = new TouchListView.DropListener() {
 
@@ -137,7 +137,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.edit_book_anthology, container, false);
+        return inflater.inflate(R.layout.fragment_edit_book_anthology, container, false);
     }
 
     /**
@@ -479,7 +479,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
         }
 
         @Override
-        protected void onSetupView(AnthologyTitle anthology, int position, View target) {
+        protected void onSetupView(View target, AnthologyTitle anthology, int position) {
             TextView author = target.findViewById(R.id.row_author);
             author.setText(anthology.getAuthor().getDisplayName());
             TextView title = target.findViewById(R.id.row_title);
@@ -487,7 +487,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
         }
 
         @Override
-        protected void onRowClick(AnthologyTitle anthology, int position, View v) {
+        protected void onRowClick(View v, AnthologyTitle anthology, int position) {
             mEditPosition = position;
             mTitleText.setText(anthology.getTitle());
             mAuthorText.setText(anthology.getAuthor().getDisplayName());

@@ -25,13 +25,14 @@
         <ImageView
             android:id="@id/ROW_DELETE"
             style="@style/touch_list_view_row_ic_delete"
+            app:srcCompat="@android:drawable/ic_delete"
             tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/grabber"
+            style="@style/touch_list_view_row_ic_grabber"
             app:srcCompat="@drawable/ic_grabber"
-            tools:ignore="ContentDescription"
-            style="@style/touch_list_view_row_ic_grabber" />
+            tools:ignore="ContentDescription" />
 
         <RelativeLayout
             android:id="@+id/row_details"
@@ -61,7 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_below="@+id/row_author"
+                android:layout_below="@id/row_author"
                 android:ellipsize="marquee"
                 android:gravity="start"
                 android:paddingEnd="@dimen/padding_border"

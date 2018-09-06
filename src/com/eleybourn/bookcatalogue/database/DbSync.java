@@ -475,6 +475,8 @@ public class DbSync {
 
 		/**
 		 * Locking-aware wrapper for underlying database method.
+		 *
+		 * @return the number of rows affected
 		 */
 		public int delete(String table, String whereClause, String[] whereArgs) {
 			SyncLock l = null;

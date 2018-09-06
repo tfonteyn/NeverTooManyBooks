@@ -28,64 +28,70 @@
                 <!-- Read -->
                 <ToggleButton
                     android:id="@+id/read"
-                    style="@style/readToggleButton"
+                    android:layout_width="30dp"
+                    android:layout_height="45dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_gravity="top|end"
                     android:background="@android:color/transparent"
-                    tools:ignore="ContentDescription" />
+                    android:button="?android:attr/textCheckMark"
+                    android:padding="0dp"
+                    android:textOff="@string/_empty_"
+                    android:textOn="@string/_empty_"
+                    android:contentDescription="@string/read"/>
 
                 <!-- Title -->
-
                 <TextView
                     android:id="@+id/title"
-                    style="@style/bookDetailsHeaderStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:layout_alignWithParentIfMissing="true"
                     android:layout_toStartOf="@id/read"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textIsSelectable="true"
                     android:textStyle="italic"
                     tools:text="Anna Karenina" />
 
                 <!-- Author -->
-
                 <TextView
                     android:id="@+id/author"
-                    style="@style/bookDetailsTextStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/title"
                     android:layout_marginTop="@dimen/padding_border"
                     android:paddingBottom="8dp"
-                    tools:text="Lev Tolstoy" />
+                    android:textIsSelectable="true"
+                    tools:text="by Lev Tolstoy" />
 
                 <LinearLayout
                     android:id="@+id/rating_wrapper"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/author">
+                    android:layout_below="@id/author">
 
                     <RatingBar
                         android:id="@+id/rating"
                         style="?android:attr/ratingBarStyleIndicator"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/padding_book_details_info"
+                        android:layout_marginStart="@dimen/padding_book_details_text"
                         android:numStars="5"
                         android:paddingBottom="8dp" />
                 </LinearLayout>
 
                 <!-- ISBN -->
-
                 <LinearLayout
                     android:id="@+id/row_isbn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/rating_wrapper"
+                    android:layout_below="@id/rating_wrapper"
                     android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/isbn_label"
-                        style="@style/bookDetailsTitlesStyle"
+                        style="@style/bookDetailLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingEnd="6dp"
@@ -94,24 +100,23 @@
 
                     <TextView
                         android:id="@+id/isbn"
-                        style="@style/bookDetailsMinorDetailStyle"
+                        style="@style/bookMinorDetailText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         tools:text="97834579862" />
                 </LinearLayout>
 
                 <!-- Pages & Format -->
-
                 <LinearLayout
                     android:id="@+id/row_format"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/row_isbn"
+                    android:layout_below="@id/row_isbn"
                     android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/pages"
-                        style="@style/bookDetailsMinorDetailStyle"
+                        style="@style/bookMinorDetailText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingEnd="6dp"
@@ -120,7 +125,7 @@
 
                     <TextView
                         android:id="@+id/format"
-                        style="@style/bookDetailsMinorDetailStyle"
+                        style="@style/bookMinorDetailText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         tools:text="(Hardcover)" />
@@ -162,7 +167,7 @@
             tools:visibility="visible">
 
             <TextView
-                style="@style/bookDetailsTitlesStyle"
+                style="@style/bookDetailLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/anthology_titles" />
@@ -182,31 +187,33 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/anthology_titlelist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone"
-            tools:visibility="visible">
-        </LinearLayout>
+            tools:visibility="visible" />
 
         <!-- Series -->
         <TextView
             android:id="@+id/lbl_series"
-            style="@style/bookDetailsTitlesStyle"
+            style="@style/bookDetailLabel"
             android:text="@string/series" />
+
         <TextView
             android:id="@+id/series"
-            style="@style/bookDetailsTextStyle"
+            style="@style/bookDetailText"
             android:singleLine="false"
             tools:text="Series name (1)\nSeries name (2)" />
 
         <!-- Publishing -->
         <TextView
             android:id="@+id/lbl_publishing"
-            style="@style/bookDetailsTitlesStyle"
+            style="@style/bookDetailLabel"
             android:text="@string/book_details_readonly_publishing" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -214,7 +221,7 @@
 
             <TextView
                 android:id="@+id/publishing_details"
-                style="@style/bookDetailsTextStyle"
+                style="@style/bookDetailText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="Publisher name, Jan 25, 2012" />
@@ -224,58 +231,55 @@
         <!-- Book Shelves -->
         <TextView
             android:id="@+id/lbl_bookshelves"
-            style="@style/bookDetailsTitlesStyle"
+            style="@style/bookDetailLabel"
             android:text="@string/bookshelves" />
+
         <TextView
             android:id="@+id/bookshelf"
-            style="@style/bookDetailsTextStyle"
+            style="@style/bookDetailText"
             tools:text="The best books, Wanted" />
 
         <!-- Genre -->
         <TextView
             android:id="@+id/lbl_genre"
-            style="@style/bookDetailsTitlesStyle"
+            style="@style/bookDetailLabel"
             android:text="@string/genre" />
+
         <TextView
             android:id="@+id/genre"
-            style="@style/bookDetailsTextStyle"
+            style="@style/bookDetailText"
             tools:text="Science Fiction" />
+
+        <!-- Language -->
+        <TextView
+            android:id="@+id/lbl_language"
+            style="@style/bookDetailLabel"
+            android:text="@string/language" />
+
+        <TextView
+            android:id="@+id/language"
+            style="@style/bookDetailText"
+            tools:text="Quenya" />
 
         <View style="@style/listDivider" />
 
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <!-- Language -->
-            <TableRow
-                android:id="@+id/row_language"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/lbl_language"
-                    style="@style/bookDetailsTitlesStyle"
-                    android:text="@string/language" />
-
-                <TextView
-                    android:id="@+id/language"
-                    style="@style/bookDetailsTextStyle"
-                    tools:text="Quenya" />
-            </TableRow>
             <!-- List price -->
             <TableRow
                 android:id="@+id/row_list_price"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                tools:ignore="UselessParent">
 
                 <TextView
-                    style="@style/bookDetailsTitlesStyle"
+                    style="@style/bookDetailLabel"
                     android:text="@string/list_price" />
 
                 <TextView
                     android:id="@+id/list_price"
-                    style="@style/bookDetailsTextStyle"
+                    style="@style/bookDetailText"
                     android:layout_weight="1"
                     tools:text="45" />
             </TableRow>
@@ -294,15 +298,14 @@
         <View style="@style/listDivider" />
 
         <!-- Notes -->
-
         <TextView
             android:id="@+id/lbl_notes"
-            style="@style/bookDetailsTitlesStyle"
+            style="@style/bookDetailLabel"
             android:text="@string/edit_book_notes" />
 
         <TextView
             android:id="@+id/notes"
-            style="@style/bookDetailsTextStyle"
+            style="@style/bookDetailText"
             tools:text="The best book of all times" />
 
         <TableLayout
@@ -317,31 +320,30 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    style="@style/bookDetailsTitlesStyle"
+                    style="@style/bookDetailLabel"
                     android:layout_width="wrap_content"
                     android:text="@string/signed" />
 
                 <TextView
                     android:id="@+id/signed"
-                    style="@style/bookDetailsTextStyle"
+                    style="@style/bookDetailText"
                     android:text="@string/no" />
 
             </LinearLayout>
 
             <!-- Start and end of reading -->
-
             <TableRow
                 android:id="@+id/row_read_start"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <TextView
-                    style="@style/bookDetailsTitlesStyle"
+                    style="@style/bookDetailLabel"
                     android:text="@string/read_start" />
 
                 <TextView
                     android:id="@+id/read_start"
-                    style="@style/bookDetailsTextStyle"
+                    style="@style/bookDetailText"
                     android:layout_weight="1"
                     tools:text="Nov 10, 2011" />
             </TableRow>
@@ -352,12 +354,12 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    style="@style/bookDetailsTitlesStyle"
+                    style="@style/bookDetailLabel"
                     android:text="@string/read_end" />
 
                 <TextView
                     android:id="@+id/read_end"
-                    style="@style/bookDetailsTextStyle"
+                    style="@style/bookDetailText"
                     android:layout_weight="1"
                     tools:text="Dec 15, 2011" />
             </TableRow>
@@ -370,12 +372,12 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    style="@style/bookDetailsTitlesStyle"
+                    style="@style/bookDetailLabel"
                     android:text="@string/location_of_book" />
 
                 <TextView
                     android:id="@+id/location"
-                    style="@style/bookDetailsTextStyle"
+                    style="@style/bookDetailText"
                     android:layout_weight="1"
                     tools:text="Library" />
             </TableRow>
@@ -383,12 +385,11 @@
 
         <TextView
             android:id="@+id/who"
-            style="@style/bookDetailsTextStyle"
+            style="@style/bookDetailText"
             android:hint="@string/notset"
             android:visibility="gone" />
 
         <!-- Description -->
-
         <TextView
             android:id="@+id/descriptionLabel"
             android:layout_width="match_parent"
@@ -397,7 +398,9 @@
             android:text="@string/description"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <View android:id="@+id/description_divider" style="@style/listDivider" />
+        <View
+            android:id="@+id/description_divider"
+            style="@style/listDivider" />
 
         <TextView
             android:id="@+id/description"
@@ -405,6 +408,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textIsSelectable="true"
+            android:linksClickable="true"
             tools:text="I hereby nominate Lizard the humongous football player and Sylphide the mysterious ballerina as two of my favorite characters of 2012. Rarely have such elite and outsize personalities felt so true on the page--a joy to be with, worth rooting for." />
     </LinearLayout>
 

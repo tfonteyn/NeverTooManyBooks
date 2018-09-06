@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.utils;
 
+import android.support.annotation.Nullable;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -57,6 +58,7 @@ public class ViewTagger {
      *
      * @return ViewTagger object
      */
+    @Nullable
     private static ViewTagger getTagger(View v, boolean autoCreate) {
         // See if we have one already
         Object o = v.getTag();
@@ -81,6 +83,7 @@ public class ViewTagger {
      *
      * @param v View from which to retrieve tag
      */
+    @Nullable
     public static Object getTag(View v) {
         ViewTagger tagger = getTagger(v, false);
         if (tagger == null)

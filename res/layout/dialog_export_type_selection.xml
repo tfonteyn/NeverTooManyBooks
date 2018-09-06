@@ -32,7 +32,7 @@
                 android:id="@+id/all_books_blurb"
                 style="@style/option_blurb"
                 android:layout_alignStart="@id/all_books"
-                android:layout_below="@+id/all_books"
+                android:layout_below="@id/all_books"
                 android:text="@string/export_all_blurb" />
         </RelativeLayout>
 
@@ -49,7 +49,7 @@
                 android:id="@+id/export_advanced_blurb"
                 style="@style/option_blurb"
                 android:layout_alignStart="@+id/advanced_options"
-                android:layout_below="@+id/advanced_options"
+                android:layout_below="@id/advanced_options"
                 android:text="@string/export_advanced_blurb" />
         </RelativeLayout>
     </LinearLayout>

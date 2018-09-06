@@ -38,6 +38,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
         return 0;
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 

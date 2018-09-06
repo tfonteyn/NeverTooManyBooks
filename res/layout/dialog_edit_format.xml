@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:completionThreshold="2"
         android:hint="@string/format"
-        style="@style/bookOrSeriesTitleTextEntry"
+        style="@style/bookFormatTextEntry"
         android:paddingStart="@dimen/padding_border"
         android:paddingEnd="@dimen/padding_border"/>
 
