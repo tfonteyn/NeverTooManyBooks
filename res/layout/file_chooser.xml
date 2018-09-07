@@ -58,14 +58,15 @@
         style="@style/listDivider"
         android:layout_below="@id/path_details" />
 
-    <com.eleybourn.bookcatalogue.widgets.FastScrollListView
+    <ListView
         android:id="@id/android:list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/footer_divider"
         android:layout_below="@id/header_divider"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
+        android:paddingEnd="@dimen/padding_border_double"
+        android:paddingStart="@dimen/padding_border_double"
+        android:fastScrollEnabled="true"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <View

@@ -49,11 +49,12 @@
         android:layout_below="@id/bookshelf_label"
         android:orientation="vertical">
 
-        <com.eleybourn.bookcatalogue.widgets.FastScrollExpandableListView
+        <ExpandableListView
             android:id="@id/android:list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:fastScrollEnabled="true"/>
 
         <TextView
             android:id="@id/android:empty"

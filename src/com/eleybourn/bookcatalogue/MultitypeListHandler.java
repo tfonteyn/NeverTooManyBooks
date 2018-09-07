@@ -89,7 +89,7 @@ public interface MultitypeListHandler {
     View getView(Cursor cursor, LayoutInflater inflater, View convertView, ViewGroup parent);
 	
 	/**
-	 * Get the text to display in FastScroller for row at current cursor position
+	 * Get the text to display in ListView for row at current cursor position
 	 *
 	 * @param cursor	Cursor, correctly positioned.
 	 * 

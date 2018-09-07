@@ -559,7 +559,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         lv.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
 
-        // Force a rebuild of FastScroller
+        // Force a rebuild of ListView
         lv.setFastScrollEnabled(false);
         lv.setFastScrollEnabled(true);
 

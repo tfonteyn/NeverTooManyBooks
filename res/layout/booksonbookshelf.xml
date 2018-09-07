@@ -113,11 +113,12 @@
                 android:layout_below="@id/header_divider"
                 android:orientation="vertical">
 
-                <com.eleybourn.bookcatalogue.widgets.FastScrollListView
+                <ListView
                     android:id="@id/android:list"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:fastScrollEnabled="true"/>
 
                 <TextView
                     android:id="@id/android:empty"

@@ -63,7 +63,6 @@ import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
-import com.eleybourn.bookcatalogue.widgets.FastScrollExpandableListView;
 
 import net.philipwarner.taskqueue.QueueManager;
 
@@ -315,7 +314,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		public int[] getTo() { return mTo; }
 		/**
 		 * Method to return the group cursor column that contains text that can be used
-		 * to derive the section name used by the FastScroller overlay.
+		 * to derive the section name used by the ListView overlay.
 		 *
 		 * @return	column number
 		 */
@@ -556,13 +555,13 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				setGroupCursor(newGroupCursor());
 				notifyDataSetChanged();
 				// Reset the scroller, just in case
-				FastScrollExpandableListView fselv = (FastScrollExpandableListView)BookCatalogueClassic.this.getExpandableListView();
+				ExpandableListView fselv = BookCatalogueClassic.this.getExpandableListView();
 				fselv.setFastScrollEnabled(false);
 				fselv.setFastScrollEnabled(true);
 			}
 
 			/**
-			 * Get section names for the FastScroller. We just return all the groups.
+			 * Get section names for the ListView. We just return all the groups.
 			 */
 			@Override
 			public Object[] getSections() {
@@ -1693,11 +1692,11 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 
 
 	/**
-	 * When the adapter is changed, we need to rebuild the FastScroller.
+	 * When the adapter is changed, we need to rebuild the ListView.
 	 */
 	public void adapterChanged() {
 		// Reset the fast scroller
-		FastScrollExpandableListView lv = (FastScrollExpandableListView)this.getExpandableListView();
+		ExpandableListView lv = this.getExpandableListView();
 		lv.setFastScrollEnabled(false);
 		lv.setFastScrollEnabled(true);
 	}

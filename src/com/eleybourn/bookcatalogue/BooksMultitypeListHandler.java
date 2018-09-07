@@ -128,7 +128,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
     }
 
     /**
-     * Get the text to display in the FastScroller for the row at the current cursor position.
+     * Get the text to display in the ListView for the row at the current cursor position.
      */
     public String[] getSectionText(Cursor c) {
         BooklistRowView rowView = ((BooklistSupportProvider) c).getRowView();
