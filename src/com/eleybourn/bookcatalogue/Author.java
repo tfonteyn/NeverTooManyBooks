@@ -1,7 +1,7 @@
 /*
  * @copyright 2011 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -28,97 +28,106 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Class to hold author data. Used in lists and import/export.
- * 
+ *
  * @author Philip Warner
  */
 public class Author implements Serializable, Utils.ItemWithIdFixup {
-	private static final long serialVersionUID = 4597779234440821872L;
+    private static final long serialVersionUID = 4597779234440821872L;
+    public String familyName;
+    public String givenNames;
+    public long id;
 
-	public String 	familyName;
-	public String 	givenNames;
-	public long		id;
+    /**
+     * Constructor that will attempt to parse a single string into an author name.
+     */
+    public Author(String name) {
+        id = 0;
+        fromString(name);
+    }
 
-	/**
-	 * Constructor that will attempt to parse a single string into an author name.
-	 */
-	public Author(String name) {
-		id = 0;
-		fromString(name);
-	}
+    /**
+     * Constructor without ID.
+     *
+     * @param family Family name
+     * @param given  Given names
+     */
+    Author(String family, String given) {
+        this(0L, family, given);
+    }
 
-	/**
-	 * Constructor without ID.
-	 * 
-	 * @param family	Family name
-	 * @param given		Given names
-	 */
-	Author(String family, String given) {
-		this(0L, family, given);
-	}
+    /**
+     * Constructor
+     *
+     * @param id     ID of author in DB (0 if not in DB)
+     * @param family Family name
+     * @param given  Given names
+     */
+    Author(long id, String family, String given) {
+        this.id = id;
+        familyName = family.trim();
+        givenNames = given.trim();
+    }
 
-	/**
-	 * Constructor
-	 *
-	 * @param id		ID of author in DB (0 if not in DB)
-	 * @param family	Family name
-	 * @param given		Given names
-	 */
-	Author(long id, String family, String given) {
-		this.id = id;
-		familyName = family.trim();
-		givenNames = given.trim();
-	}
+    /**
+     * Constructor using a Parcel.
+     */
+    private Author(Parcel in) {
+        familyName = in.readString();
+        givenNames = in.readString();
+        id = in.readLong();
+    }
 
-	/**
-	 * Return the 'human readable' version of the name (eg. 'Iassc Asimov').
-	 * 
-	 * @return	formatted name
-	 */
-	public String getDisplayName() {
-		if (givenNames != null && !givenNames.isEmpty())
-			return givenNames + " " + familyName;
-		else
-			return familyName;
-	}
+    /**
+     * Return the 'human readable' version of the name (eg. 'Iassc Asimov').
+     *
+     * @return formatted name
+     */
+    public String getDisplayName() {
+        if (givenNames != null && !givenNames.isEmpty())
+            return givenNames + " " + familyName;
+        else
+            return familyName;
+    }
 
-	/**
-	 * Return the name in a sortable form (eg. 'Asimov, Iassc')
-	 * 
-	 * @return	formatted name
-	 */
-	public String getSortName() {
-		if (givenNames != null && !givenNames.isEmpty())
-			return familyName + ", " + givenNames;
-		else
-			return familyName;
-	}
+    /**
+     * Return the name in a sortable form (eg. 'Asimov, Iassc')
+     *
+     * @return formatted name
+     */
+    public String getSortName() {
+        if (givenNames != null && !givenNames.isEmpty())
+            return familyName + ", " + givenNames;
+        else
+            return familyName;
+    }
 
-	// Support for encoding to a text file
-	@Override
-	public String toString() {
-		// Always use givenNames even if blanks because we need to KNOW they are blank. There
-		// is a slim chance that family name may contain spaces (eg. 'Anonymous Anarchists').
-		return ArrayUtils.encodeListItem(familyName, ',') + ", " + ArrayUtils.encodeListItem(givenNames, ',');
-	}
+    // Support for encoding to a text file
+    @Override
+    public String toString() {
+        // Always use givenNames even if blanks because we need to KNOW they are blank. There
+        // is a slim chance that family name may contain spaces (eg. 'Anonymous Anarchists').
+        return ArrayUtils.encodeListItem(familyName, ',') + ", " + ArrayUtils.encodeListItem(givenNames, ',');
+    }
 
-	//@Override
-	private void fromString(String s) {
-		ArrayList<String> sa = ArrayUtils.decodeList(s, ',');
-		if (sa != null && sa.size() > 0) {
-			if (sa.size() < 2) {
-				// We have a name with no comma. Parse it the usual way.
-				String[] names = CatalogueDBAdapter.processAuthorName(s);
-				familyName = names[0];
-				givenNames = names[1];
-			} else {
-				familyName = sa.get(0).trim();
-				givenNames = sa.get(1).trim();			
-			}
-		}
-	}
+    //@Override
+    private void fromString(String s) {
+        ArrayList<String> sa = ArrayUtils.decodeList(s, ',');
+        if (sa != null && sa.size() > 0) {
+            if (sa.size() < 2) {
+                // We have a name with no comma. Parse it the usual way.
+                String[] names = CatalogueDBAdapter.processAuthorName(s);
+                familyName = names[0];
+                givenNames = names[1];
+            } else {
+                familyName = sa.get(0).trim();
+                givenNames = sa.get(1).trim();
+            }
+        }
+    }
 
 	/**
 	 * Support for creation via Parcelable. This is primarily useful for passing
@@ -137,40 +146,44 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
 
     /**
      * Replace local details from another author
-     * 
-     * @param source	Author to copy
+     *
+     * @param source Author to copy
      */
     void copyFrom(Author source) {
-		familyName = source.familyName;
-		givenNames = source.givenNames;
-		id = source.id;    	
+        familyName = source.familyName;
+        givenNames = source.givenNames;
+        id = source.id;
+    }
+
+    @Override
+    public long fixupId(CatalogueDBAdapter db) {
+        this.id = db.lookupAuthorId(this);
+        return this.id;
+    }
+
+    @Override
+    public long getId() {
+        return id;
     }
 
     /**
-     * Constructor using a Parcel.
+     * Each author is defined exactly by a unique ID.
      */
-    private Author(Parcel in) {
-    	familyName = in.readString();
-    	givenNames = in.readString();
-    	id = in.readLong();
+    @Override
+    public boolean isUniqueById() {
+        return true;
     }
 
-	@Override
-	public long fixupId(CatalogueDBAdapter db) {
-		this.id = db.lookupAuthorId(this);
-		return this.id;
-	}
-	
-	@Override
-	public long getId() {
-		return id;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Author author = (Author) o;
+        return id == author.id;
+    }
 
-	/**
-	 * Each author is defined exactly by a unique ID.
-	 */
-	@Override
-	public boolean isUniqueById() {
-		return true;
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
