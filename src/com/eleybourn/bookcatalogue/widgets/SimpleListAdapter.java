@@ -23,7 +23,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.ArrayAdapter;
@@ -63,19 +62,34 @@ import java.util.ArrayList;
 public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     private final int mRowViewId;
     private final ArrayList<T> mItems;
-    private final OnClickListener mRowClickListener = new OnClickListener() {
+
+    private final View.OnLongClickListener mRowLongClickListener = new View.OnLongClickListener() {
         @Override
-        public void onClick(View v) {
+        public boolean onLongClick(View view) {
             try {
-                int pos = getViewRow(v);
+                int pos = getViewRow(view);
                 T item = getItem(pos);
-                onRowClick(v, item, pos);
+                return onRowLongClick(view, item, pos);
+            } catch (Exception e) {
+                Logger.logError(e);
+            }
+            return false;
+        }
+    };
+    private final View.OnClickListener mRowClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            try {
+                int pos = getViewRow(view);
+                T item = getItem(pos);
+                onRowClick(view, item, pos);
             } catch (Exception e) {
                 Logger.logError(e);
             }
         }
     };
-    private final OnClickListener mRowDeleteListener = new OnClickListener() {
+
+    private final View.OnClickListener mRowDeleteListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             try {
@@ -92,7 +106,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             }
         }
     };
-    private final OnClickListener mRowDownListener = new OnClickListener() {
+    private final View.OnClickListener mRowDownListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             int pos = getViewRow(v);
@@ -112,7 +126,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             }
         }
     };
-    private final OnClickListener mRowUpListener = new OnClickListener() {
+    private final View.OnClickListener mRowUpListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             int pos = getViewRow(v);
@@ -152,10 +166,26 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     protected void onListChanged() {
     }
 
+    /**
+     *
+     * @param view      on which we clicked
+     * @param object    the item itself
+     * @return          true when handled
+     */
     @SuppressWarnings({"WeakerAccess", "unused"})
-    protected void onRowClick(View v, T object, int position) {
+    protected void onRowClick(View view, T object, int position) {
     }
 
+    /**
+     *
+     * @param view      on which we long clicked
+     * @param object    the item itself
+     * @return          true when handled
+     */
+    @SuppressWarnings({"WeakerAccess", "unused"})
+    protected boolean onRowLongClick(View view, T object, int position) {
+        return true;
+    }
     /**
      *
      * @return  true if delete is allowed to happen
@@ -200,14 +230,17 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
         // Save this views position
         ViewTagger.setTag(convertView, R.id.TAG_POSITION, position);
+
         // Giving the whole row an onClickListener seems to interfere with drag/drop.
-        View details = convertView.findViewById(R.id.row_details);
-        if (details == null) {
-            details = convertView.findViewById(R.id.row);
+        View row = convertView.findViewById(R.id.row_details);
+        if (row == null) {
+            // but if we did not define a details row, try row anyhow
+            row = convertView.findViewById(R.id.row);
         }
-        if (details != null) {
-            details.setOnClickListener(mRowClickListener);
-            details.setFocusable(false);
+        if (row != null) {
+            row.setOnLongClickListener(mRowLongClickListener);
+            row.setOnClickListener(mRowClickListener);
+            row.setFocusable(false);
         }
 
         // If the object is not null, do some processing
