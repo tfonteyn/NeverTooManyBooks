@@ -790,7 +790,7 @@ public class DbSync {
 		
 		public void finalize() {
 			if (!mIsClosed)
-				Logger.logError(new RuntimeException("Finalizing non-closed statement")); // + mSql));
+				Logger.logError(new RuntimeException("Finalizing non-closed statement: " + mSql));
 			// Try to close the underlying statement.
 			try {
 				mStatement.close();
