@@ -41,6 +41,7 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_GENRE
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_KIND;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_LEVEL;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_PUBLICATION_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_READ;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_SERIES_ID;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_SERIES_NAME;
@@ -269,7 +270,7 @@ public class BooklistRowView {
 			if (mAbsPosCol < 0)
 				throw new RuntimeException("Column " + name + " not present in cursor");
 		}
-		return mCursor.getInt(mAbsPosCol);			
+		return mCursor.getInt(mAbsPosCol);
 	}
 
 	/**
@@ -387,7 +388,19 @@ public class BooklistRowView {
 		}
 		return mCursor.getString(mAuthorCol);
 	}
-	/**
+    /**
+     * Convenience function to retrieve column value.
+     */
+    private int mPublisherCol = -2;
+    public String getPublisherName() {
+        if (mPublisherCol < 0) {
+            mPublisherCol = mCursor.getColumnIndex(DOM_PUBLISHER.name);
+            if (mPublisherCol < 0)
+                throw new RuntimeException("Column " + DOM_PUBLISHER + " not present in cursor");
+        }
+        return mCursor.getString(mPublisherCol);
+    }
+    /**
 	 * Convenience function to retrieve column value.
 	 */
 	private int mLevelCol = -2;

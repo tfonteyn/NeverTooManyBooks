@@ -64,6 +64,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_AUTHOR_ID;
@@ -2904,7 +2905,7 @@ public class CatalogueDBAdapter {
 				+ TBL_BOOKS + "." + DOM_ID + " = " + bookId;
 		mSyncedDb.execSQL(sql);
 	}
-	
+
 	/**
 	 * Utility routine to set all books referencing a given author as dirty.
 	 */
@@ -3548,7 +3549,25 @@ public class CatalogueDBAdapter {
     	}
 
     }
-    
+
+	public void globalReplacePublisher(@NonNull Publisher oldPublisher, @NonNull Publisher newPublisher) {
+		if (Objects.equals(oldPublisher, newPublisher))
+			return;
+
+		SyncLock l = mSyncedDb.beginTransaction(true);
+		try {
+			String sql;
+			// Update books but prevent duplicate index errors
+			sql = "Update " + DB_TB_BOOKS + " Set " + KEY_PUBLISHER + " = '" + encodeString(newPublisher.name)
+					+ "', " + DOM_LAST_UPDATE_DATE + " = current_timestamp "
+					+ " Where " + KEY_PUBLISHER + " = '" + encodeString(oldPublisher.name) + "'";
+			mSyncedDb.execSQL(sql);
+
+			mSyncedDb.setTransactionSuccessful();
+		} finally {
+			mSyncedDb.endTransaction(l);
+		}
+	}
     public void globalReplaceAuthor(Author oldAuthor, Author newAuthor) {
 		// Create or update the new author
 		if (newAuthor.id == 0)

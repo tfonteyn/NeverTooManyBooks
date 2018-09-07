@@ -28,8 +28,6 @@ import java.util.Date;
  * Class for representing read-only book details.
  *
  * @author n.silin
- *
- * Fragment !
  */
 public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
 
@@ -226,6 +224,7 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
                 }
                 newText = builder.toString();
             }
+            //FIXME: html causes colour to change making 'Light' theme display very faint
             mFields.getField(R.id.series)
                     .setShowHtml(true)
                     .setValue(newText);

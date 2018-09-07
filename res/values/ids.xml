@@ -22,6 +22,8 @@
 
     <item name="MENU_AUTHOR_EDIT" type="id"/>
 
+    <item name="MENU_PUBLISHER_EDIT" type="id"/>
+
     <item name="MENU_FORMAT_EDIT" type="id"/>
 
     <item name="MENU_SERIES_DELETE" type="id"/>

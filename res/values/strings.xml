@@ -1056,21 +1056,6 @@ and you can edit the book via the options menu using the menu button or overflow
              * Read contacts\n
             ]]>
     </string>
-
-    <string name="storage_error_preparing_card">Preparing card</string>
-    <string name="storage_error_no_card">No storage card</string>
-    <string name="storage_error_no_space">Not enough space</string>
-
-    <string name="title_reorder">a|A|an|An|the|The</string>
-    <string name="menu_mark_as_read">Mark as read</string>
-    <string name="menu_mark_as_unread">Mark as unread</string>
-    <string name="search_with_text">Search: %1$s</string>
-    <string name="internet_update_fields">Update Fields</string>
-    <string name="share_book_i_reading">I\'m reading %1$s by %2$s %3$s %4$s</string>
-    <string name="done">Done</string>
-    <string name="share">Share</string>
-    <string name="local_websites_urls">Local websites</string>
-    <string name="google_books">Google Books</string>
     <string name="amazon_host_blurb">
         <![CDATA[
             You can set your local Amazon website.
@@ -1078,13 +1063,39 @@ and you can edit the book via the options menu using the menu button or overflow
             Example: https://www.amazon.co.uk\n
             ]]>
     </string>
-    <string name="googlebooks_host_blurb">
+    <string name="google_books_host_blurb">
         <![CDATA[
             You can set your local Google Books website.
             Make sure it\'s a valid format, or searches will fail.\n\n
             Example: https://books.google.co.uk\n
             ]]>
     </string>
+
+    <string name="storage_error_preparing_card">Preparing card</string>
+    <string name="storage_error_no_card">No storage card</string>
+    <string name="storage_error_no_space">Not enough space</string>
+
+    <string name="title_reorder">a|A|an|An|the|The</string>
+
+    <string name="menu_mark_as_read">Mark as read</string>
+    <string name="menu_mark_as_unread">Mark as unread</string>
+
+    <string name="menu_edit_publisher">Edit Publisher&#8230;</string>
+    <string name="publisher_is_blank">Publisher field is blank</string>
+    <string name="edit_publisher_details">Edit Publisher Details</string>
+
+
+    <string name="search_with_text">Search: %1$s</string>
+    <string name="internet_update_fields">Update Fields</string>
+    <string name="share">Share</string>
+    <string name="share_book_i_reading">I\'m reading %1$s by %2$s %3$s %4$s</string>
+    <string name="done">Done</string>
+    <string name="local_websites_urls">Local websites</string>
+    <string name="google_books">Google Books</string>
+
+
+
+
     <!-- End: Added/Updated in  [Next Version]  -->
 
 </resources>

@@ -545,7 +545,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
 
     /**
      * Populate Series field by data
-     * If there is no data shows "Set series..." text defined in resources.
+     * If there is no data shows "Set series..."
      */
     protected void populateSeriesListField() {
         String newText;

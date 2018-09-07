@@ -16,7 +16,7 @@
         android:id="@+id/url_lbl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/googlebooks_host_blurb"
+        android:text="@string/google_books_host_blurb"
         android:textIsSelectable="true" />
 
     <EditText

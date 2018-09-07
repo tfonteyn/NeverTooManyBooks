@@ -308,9 +308,6 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
      */
     public void buildContextMenu(BooklistRowView rowView, ArrayList<SimpleDialogItem> menu) {
         try {
-            boolean hasSeries = rowView.hasSeriesId() && rowView.getSeriesId() > 0;
-            boolean hasAuthor = rowView.hasAuthorId() ? rowView.getAuthorId() > 0 : rowView.getKind() == RowKinds.ROW_KIND_BOOK;
-
             switch (rowView.getKind()) {
                 case ROW_KIND_BOOK: {
                     addMenuItem(menu, R.id.MENU_BOOK_DELETE, R.string.menu_delete, android.R.drawable.ic_menu_delete);
@@ -327,7 +324,10 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                 }
                 case ROW_KIND_AUTHOR: {
                     addMenuItem(menu, R.id.MENU_AUTHOR_EDIT, R.string.menu_edit_author, android.R.drawable.ic_menu_edit);
-                    addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.string.amazon_books_by_author, R.drawable.ic_menu_cc_holo_dark);
+                    break;
+                }
+                case ROW_KIND_PUBLISHER: {
+                    addMenuItem(menu, R.id.MENU_PUBLISHER_EDIT, R.string.menu_edit_publisher, android.R.drawable.ic_menu_edit);
                     break;
                 }
                 case ROW_KIND_SERIES: {
@@ -346,11 +346,19 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                     break;
                 }
             }
-            if (hasAuthor)
+
+            // add search by author ?
+            boolean hasAuthor = (rowView.hasAuthorId() && rowView.getAuthorId() > 0);
+            if (hasAuthor) {
                 addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.string.amazon_books_by_author, R.drawable.ic_www_search_2_holo_dark);
+            }
+
+            // add search by series ?
+            boolean hasSeries = (rowView.hasSeriesId() && rowView.getSeriesId() > 0);
             if (hasSeries) {
-                if (hasAuthor)
+                if (hasAuthor) {
                     addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, R.string.amazon_books_by_author_in_series, R.drawable.ic_www_search_2_holo_dark);
+                }
                 addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.string.amazon_books_in_series, R.drawable.ic_www_search_2_holo_dark);
             }
         } catch (Exception e) {
@@ -520,6 +528,21 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                 d.editAuthor(dba.getAuthorById(id));
                 break;
             }
+            case R.id.MENU_PUBLISHER_EDIT: {
+                String name = rowView.getPublisherName();
+                EditPublisherDialog d = new EditPublisherDialog(context, dba, new Runnable() {
+                    @Override
+                    public void run() {
+                        // Let the Activity know
+                        if (context instanceof BooklistChangeListener) {
+                            final BooklistChangeListener l = (BooklistChangeListener) context;
+                            l.onBooklistChange(BooklistChangeListener.FLAG_PUBLISHER);
+                        }
+                    }
+                });
+                d.editPublisher(new Publisher(name));
+                break;
+            }
             case R.id.MENU_FORMAT_EDIT: {
                 String format = rowView.getFormat();
                 EditFormatDialog d = new EditFormatDialog(context, dba, new Runnable() {
@@ -551,6 +574,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
         int FLAG_AUTHOR = 1;
         int FLAG_SERIES = 2;
         int FLAG_FORMAT = 4;
+        int FLAG_PUBLISHER = 8;
 
         void onBooklistChange(int flags);
     }
