@@ -67,6 +67,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
+import static android.media.MediaFormat.KEY_LANGUAGE;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_AUTHOR_NAME;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_BOOK;
@@ -3568,6 +3569,25 @@ public class CatalogueDBAdapter {
 			mSyncedDb.endTransaction(l);
 		}
 	}
+
+    public void globalReplaceLanguage(@NonNull String oldLanguage, @NonNull String newLanguage) {
+        if (Objects.equals(oldLanguage, newLanguage))
+            return;
+
+        SyncLock l = mSyncedDb.beginTransaction(true);
+        try {
+            String sql;
+            // Update books but prevent duplicate index errors
+            sql = "Update " + DB_TB_BOOKS + " Set " + KEY_LANGUAGE + " = '" + encodeString(newLanguage)
+                    + "', " + DOM_LAST_UPDATE_DATE + " = current_timestamp "
+                    + " Where " + KEY_LANGUAGE + " = '" + encodeString(oldLanguage) + "'";
+            mSyncedDb.execSQL(sql);
+
+            mSyncedDb.setTransactionSuccessful();
+        } finally {
+            mSyncedDb.endTransaction(l);
+        }
+    }
     public void globalReplaceAuthor(Author oldAuthor, Author newAuthor) {
 		// Create or update the new author
 		if (newAuthor.id == 0)

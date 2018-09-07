@@ -44,7 +44,7 @@ public class EditSeriesDialog {
 		mOnChanged = onChanged;
 	}
 
-	public void editSeries(final Series series) {
+	public void edit(final Series series) {
 		final Dialog dialog = new BasicDialog(mContext);
 		dialog.setContentView(R.layout.dialog_edit_series);
 		dialog.setTitle(R.string.edit_series);

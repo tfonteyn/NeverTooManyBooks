@@ -1084,6 +1084,9 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="publisher_is_blank">Publisher field is blank</string>
     <string name="edit_publisher_details">Edit Publisher Details</string>
 
+    <string name="menu_edit_language">Edit Language&#8230;</string>
+    <string name="language_is_blank">Language field is blank</string>
+    <string name="edit_language_details">Edit Language Details</string>
 
     <string name="search_with_text">Search: %1$s</string>
     <string name="internet_update_fields">Update Fields</string>

@@ -1487,7 +1487,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 							mDb.purgeSeries();
 							regenGroups();
 						}});
-					d.editSeries(s);
+					d.edit(s);
 				}
 				break;
 			}
@@ -1508,7 +1508,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 						mDb.purgeAuthors();
 						regenGroups();
 					}});
-				d.editAuthor(mDb.getAuthorById(info.id));
+				d.edit(mDb.getAuthorById(info.id));
 				break;
 			}
 		}

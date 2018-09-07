@@ -327,7 +327,17 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                     break;
                 }
                 case ROW_KIND_PUBLISHER: {
-                    addMenuItem(menu, R.id.MENU_PUBLISHER_EDIT, R.string.menu_edit_publisher, android.R.drawable.ic_menu_edit);
+                    String publisher = rowView.getPublisherName();
+                    if (publisher != null && !publisher.isEmpty()) {
+                        addMenuItem(menu, R.id.MENU_PUBLISHER_EDIT, R.string.menu_edit_publisher, android.R.drawable.ic_menu_edit);
+                    }
+                    break;
+                }
+                case ROW_KIND_LANGUAGE: {
+                    String language = rowView.getLanguage();
+                    if (language != null && !language.isEmpty()) {
+                        addMenuItem(menu, R.id.MENU_LANGUAGE_EDIT, R.string.menu_edit_language, android.R.drawable.ic_menu_edit);
+                    }
                     break;
                 }
                 case ROW_KIND_SERIES: {
@@ -494,7 +504,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                             }
                         }
                     });
-                    d.editSeries(s);
+                    d.edit(s);
                 }
                 break;
             }
@@ -525,7 +535,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                         }
                     }
                 });
-                d.editAuthor(dba.getAuthorById(id));
+                d.edit(dba.getAuthorById(id));
                 break;
             }
             case R.id.MENU_PUBLISHER_EDIT: {
@@ -540,7 +550,22 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                         }
                     }
                 });
-                d.editPublisher(new Publisher(name));
+                d.edit(new Publisher(name));
+                break;
+            }
+            case R.id.MENU_LANGUAGE_EDIT: {
+                String language = rowView.getLanguage();
+                EditLanguageDialog d = new EditLanguageDialog(context, dba, new Runnable() {
+                    @Override
+                    public void run() {
+                        // Let the Activity know
+                        if (context instanceof BooklistChangeListener) {
+                            final BooklistChangeListener l = (BooklistChangeListener) context;
+                            l.onBooklistChange(BooklistChangeListener.FLAG_LANGUAGE);
+                        }
+                    }
+                });
+                d.edit(language);
                 break;
             }
             case R.id.MENU_FORMAT_EDIT: {
@@ -575,6 +600,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
         int FLAG_SERIES = 2;
         int FLAG_FORMAT = 4;
         int FLAG_PUBLISHER = 8;
+        int FLAG_LANGUAGE = 16;
 
         void onBooklistChange(int flags);
     }

@@ -32,24 +32,24 @@ import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 /**
  * TODO: unify with {@link EditAuthorDialog}
  */
-public class EditPublisherDialog {
+public class EditLanguageDialog {
 	private final Context mContext;
 	private final CatalogueDBAdapter mDb;
 	private final Runnable mOnChanged;
 
-	EditPublisherDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
+	EditLanguageDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
 		mDb = db;
 		mContext = context;
 		mOnChanged = onChanged;
 	}
 
-	public void edit(final Publisher publisher) {
+	public void edit(final String language) {
 		final Dialog dialog = new BasicDialog(mContext);
-		dialog.setContentView(R.layout.dialog_edit_publisher);
-		dialog.setTitle(R.string.edit_publisher_details);
+		dialog.setContentView(R.layout.dialog_edit_language);
+		dialog.setTitle(R.string.edit_language_details);
 
 		EditText familyView = dialog.findViewById(R.id.name);
-		familyView.setText(publisher.name);
+		familyView.setText(language);
 
 		Button saveButton = dialog.findViewById(R.id.confirm);
 		saveButton.setOnClickListener(new View.OnClickListener() {
@@ -58,12 +58,11 @@ public class EditPublisherDialog {
 				EditText nameView = dialog.findViewById(R.id.name);
 				String newName = nameView.getText().toString().trim();
 				if (newName.isEmpty()) {
-					Toast.makeText(mContext, R.string.publisher_is_blank, Toast.LENGTH_LONG).show();
+					Toast.makeText(mContext, R.string.language_is_blank, Toast.LENGTH_LONG).show();
 					return;
 				}
-				Publisher newPublisher = new Publisher(newName);
 				dialog.dismiss();
-				confirmEdit(publisher, newPublisher);
+				confirmEdit(language, newName);
 			}
 		});
 
@@ -78,17 +77,16 @@ public class EditPublisherDialog {
 		dialog.show();
 	}
 	
-	private void confirmEdit(final Publisher oldPublisher, final Publisher newPublisher) {
+	private void confirmEdit(String oldName, final String newName) {
 		// First, deal with a some special cases...
 		
 		// Case: Unchanged.
-		if (newPublisher.name.compareTo(oldPublisher.name) == 0) {
-			// No change; nothing to do
+		if (newName.equals(oldName)) {
 			return;
 		}
 
-		mDb.globalReplacePublisher(oldPublisher, newPublisher);
-		oldPublisher.copyFrom(newPublisher);
+		mDb.globalReplaceLanguage(oldName, newName);
+		oldName = newName;
 
 		mOnChanged.run();
 	}

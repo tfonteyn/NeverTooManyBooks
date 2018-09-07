@@ -39,6 +39,7 @@ import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_FORMAT;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_GENRE;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_KIND;
+import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_LANGUAGE;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_LEVEL;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_PUBLICATION_MONTH;
 import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_PUBLISHER;
@@ -399,6 +400,19 @@ public class BooklistRowView {
                 throw new RuntimeException("Column " + DOM_PUBLISHER + " not present in cursor");
         }
         return mCursor.getString(mPublisherCol);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    private int mLanguageCol = -2;
+    public String getLanguage() {
+        if (mLanguageCol < 0) {
+            mLanguageCol = mCursor.getColumnIndex(DOM_LANGUAGE.name);
+            if (mLanguageCol < 0)
+                throw new RuntimeException("Column " + DOM_LANGUAGE + " not present in cursor");
+        }
+        return mCursor.getString(mLanguageCol);
     }
     /**
 	 * Convenience function to retrieve column value.

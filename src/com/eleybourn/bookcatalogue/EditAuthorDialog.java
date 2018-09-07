@@ -40,7 +40,7 @@ public class EditAuthorDialog {
 		mOnChanged = onChanged;
 	}
 
-	public void editAuthor(final Author author) {
+	public void edit(final Author author) {
 		final Dialog dialog = new BasicDialog(mContext);
 		dialog.setContentView(R.layout.dialog_edit_author);
 		dialog.setTitle(R.string.edit_author_details);
