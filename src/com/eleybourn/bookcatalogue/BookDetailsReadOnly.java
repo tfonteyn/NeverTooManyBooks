@@ -254,19 +254,24 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
      * of 'pages' and 'format' fields.
      */
     private void formatFormatSection(BookData book) {
-        Field field = mFields.getField(R.id.pages);
-        String value = book.getString(ColumnNames.KEY_PAGES);
-        boolean isExist = value != null && !value.isEmpty();
-        if (isExist) { //If 'pages' field is set format it
-            field.setValue(getString(R.string.book_details_readonly_pages, value));
+        // Number of pages
+        Field pagesField = mFields.getField(R.id.pages);
+        String pages = book.getString(ColumnNames.KEY_PAGES);
+        boolean hasPages = pages != null && !pages.isEmpty();
+        if (hasPages) {
+            pagesField.setValue(getString(R.string.book_details_readonly_pages, pages));
         }
-        // Format 'format' field
-        field = mFields.getField(R.id.format);
-        value = book.getString(ColumnNames.KEY_FORMAT);
-        if (isExist && value != null && !value.isEmpty()) {
-            /* Surround 'format' field with braces if 'pages' field is set
-             * and 'format' field is not empty */
-            field.setValue(getString(R.string.brackets, value));
+
+        // 'format' field
+        Field formatField = mFields.getField(R.id.format);
+        String format = book.getString(ColumnNames.KEY_FORMAT);
+        boolean hasFormat = format != null && !format.isEmpty();
+        if (hasFormat) {
+            if (hasPages) {
+                formatField.setValue(getString(R.string.brackets, format));
+            } else {
+                formatField.setValue(format);
+            }
         }
     }
 
