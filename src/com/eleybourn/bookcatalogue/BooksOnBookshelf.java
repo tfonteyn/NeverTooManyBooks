@@ -272,6 +272,16 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             // use the custom fast scroller (the ListView in the XML is our custom version).
             getListView().setFastScrollEnabled(true);
 
+//            FloatingActionButton floatingAddButton = findViewById(R.id.floatingAddButton);
+//            floatingAddButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
+//                            .setAction("Action", null).show();
+//                }
+//            });
+//            floatingAddButton.show();
+
             // Handle item click events
             getListView().setOnItemClickListener(new OnItemClickListener() {
                 @Override
@@ -363,6 +373,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             case R.id.nav_search:
                 startActivity(new Intent(this, SearchCatalogue.class));
                 return true;
+            case R.id.nav_manage_bookshelves:
+                startActivity(new Intent(this, BookshelfAdminActivity.class));
+                break;
             case R.id.nav_booklist_prefs:
                 startActivity(new Intent(this, BooklistPreferencesActivity.class));
                 return true;
@@ -400,6 +413,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      * @param position Position of view in listView
      * @param rowId    _id field from cursor
      */
+    @SuppressWarnings("unused")
     private void handleItemClick(AdapterView<?> parent, View view, int position, long rowId) {
         // Move the cursor to the position
         mList.moveToPosition(position);

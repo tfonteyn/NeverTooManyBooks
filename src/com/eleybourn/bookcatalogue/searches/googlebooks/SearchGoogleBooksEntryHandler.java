@@ -24,6 +24,7 @@ import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
+import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
@@ -126,7 +127,6 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
 	private static final String GENRE = "subject";
 	private static final String DESCRIPTION = "description";
 
-	static final String THUMBNAIL_KEY = "__thumbnail";
 
 	SearchGoogleBooksEntryHandler(Bundle values, boolean fetchThumbnail) {
 		mValues = values;
@@ -193,7 +193,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
 				String thumbnail = attributes.getValue("", "href");
 				String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, "_GB");
 				if (fileSpec.length() > 0)
-					ArrayUtils.appendOrAdd(mValues, THUMBNAIL_KEY, fileSpec);
+					ArrayUtils.appendOrAdd(mValues, SearchManager.BKEY_THUMBNAIL_SEARCHES, fileSpec);
 			}
 		}
 	}

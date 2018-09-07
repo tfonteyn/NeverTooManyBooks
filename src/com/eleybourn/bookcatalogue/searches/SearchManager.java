@@ -75,6 +75,9 @@ public class SearchManager implements TaskManagerListener {
 	// ENHANCE: Allow user to change the default search data priority
 	private static final int[] mDefaultReliabilityOrder = new int[] {SEARCH_GOODREADS, SEARCH_AMAZON, SEARCH_GOOGLE, SEARCH_LIBRARY_THING};
 
+	/** bundle key for thumbnail searches */
+	public static final String BKEY_THUMBNAIL_SEARCHES = "__thumbnail";
+
 	/** Flags applicable to *current* search */
 	private int mSearchFlags;
 
@@ -384,7 +387,7 @@ public class SearchManager implements TaskManagerListener {
 							}
 						}
 						break;
-					case "__thumbnail":
+					case SearchManager.BKEY_THUMBNAIL_SEARCHES:
 						appendData(k, bookData, mBookData);
 						break;
 				}
@@ -649,8 +652,11 @@ public class SearchManager implements TaskManagerListener {
 	 * 	STATIC Object for passing messages from background tasks to activities that may be recreated 
 	 *
 	 *  This object handles all underlying OnTaskEndedListener messages for every instance of this class.
+     *
+     *  REMINDER: must be public or compile fails... lint is to eager here.
 	 */
-	public static class TaskSwitch extends MessageSwitch<SearchListener, SearchController> {}
+	@SuppressWarnings("WeakerAccess")
+    public static class TaskSwitch extends MessageSwitch<SearchListener, SearchController> {}
 
     private static final TaskSwitch mMessageSwitch = new TaskSwitch();
 	public static TaskSwitch getMessageSwitch() { return mMessageSwitch; }

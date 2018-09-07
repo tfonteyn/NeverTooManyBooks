@@ -24,7 +24,10 @@ import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.Series;
+import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -43,15 +46,6 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_DETAILS;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_FORMAT;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ISBN;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PAGES;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_DETAILS;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TITLE;
 import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.BOOK_ID;
 import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.BOOK_URL;
 import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.IMAGE;
@@ -79,6 +73,9 @@ import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHand
  */
 public abstract class ShowBookApiHandler extends ApiHandler {
 
+    private static final String GOODREADS_RESPONSE = "GoodreadsResponse";
+    private static final String BOOK = "book";
+    private static final String BVAL_FORMAT_EBOOK = "Ebook";
     /**
      * Flag to indicate if request should be signed. Signed requests via ISB cause server errors
      * and unsigned requests do not return review (not a big problem for searches)
@@ -474,7 +471,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         if (mBook.containsKey(ISBN13)) {
             String s = mBook.getString(ISBN13);
             if (s.length() == 13)
-                mBook.putString(KEY_ISBN, s);
+                mBook.putString(ColumnNames.KEY_ISBN, s);
         }
 
         // TODO: Evaluate if ShowBook should store GR book ID.
@@ -489,65 +486,65 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             String bestImage = null;
             if (mBook.containsKey(IMAGE)) {
                 bestImage = mBook.getString(IMAGE);
-                if (bestImage.contains("nocover") && mBook.containsKey(SMALL_IMAGE)) {
+                if (bestImage.contains(UniqueId.BKEY_NOCOVER) && mBook.containsKey(SMALL_IMAGE)) {
                     bestImage = mBook.getString(SMALL_IMAGE);
-                    if (bestImage.contains("nocover"))
+                    if (bestImage.contains(UniqueId.BKEY_NOCOVER))
                         bestImage = null;
                 }
             }
             if (bestImage != null) {
-                String filename = ImageUtils.saveThumbnailFromUrl(bestImage, "_GR");
+                String filename = ImageUtils.saveThumbnailFromUrl(bestImage, UniqueId.GOODREADS_FILENAME_SUFFIX);
                 if (filename.length() > 0)
-                    ArrayUtils.appendOrAdd(mBook, "__thumbnail", filename);
+                    ArrayUtils.appendOrAdd(mBook, SearchManager.BKEY_THUMBNAIL_SEARCHES, filename);
             }
         }
 
         /* Build the pub date based on the components */
-        GoodreadsManager.buildDate(mBook, PUBLICATION_YEAR, PUBLICATION_MONTH, PUBLICATION_DAY, KEY_DATE_PUBLISHED);
+        GoodreadsManager.buildDate(mBook, PUBLICATION_YEAR, PUBLICATION_MONTH, PUBLICATION_DAY, ColumnNames.KEY_DATE_PUBLISHED);
 
         if (mBook.containsKey(IS_EBOOK) && mBook.getBoolean(IS_EBOOK))
-            mBook.putString(KEY_FORMAT, "Ebook");
+            mBook.putString(ColumnNames.KEY_FORMAT, BVAL_FORMAT_EBOOK);
 
         /*
          * Cleanup the title by removing series name, if present
          */
-        if (mBook.containsKey(KEY_TITLE)) {
-            String thisTitle = mBook.getString(KEY_TITLE);
+        if (mBook.containsKey(ColumnNames.KEY_TITLE)) {
+            String thisTitle = mBook.getString(ColumnNames.KEY_TITLE);
             Series.SeriesDetails details = Series.findSeries(thisTitle);
             if (details != null && details.name.length() > 0) {
                 if (mSeries == null)
                     mSeries = new ArrayList<>();
                 mSeries.add(new Series(details.name, details.position));
                 // Tempting to replace title with ORIG_TITLE, but that does bad things to translations (it used the original language)
-                mBook.putString(KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
+                mBook.putString(ColumnNames.KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
                 //if (mBook.containsKey(ORIG_TITLE)) {
-                //	mBook.putString(CatalogueDBAdapter.KEY_TITLE, mBook.getString(ORIG_TITLE));
+                //	mBook.putString(ColumnNames.KEY_TITLE, mBook.getString(ORIG_TITLE));
                 //} else {
-                //	mBook.putString(CatalogueDBAdapter.KEY_TITLE, thisTitle.substring(0, details.startChar-1));
+                //	mBook.putString(ColumnNames.KEY_TITLE, thisTitle.substring(0, details.startChar-1));
                 //}
             }
         } else if (mBook.containsKey(ORIG_TITLE)) {
-            mBook.putString(KEY_TITLE, mBook.getString(ORIG_TITLE));
+            mBook.putString(ColumnNames.KEY_TITLE, mBook.getString(ORIG_TITLE));
         }
 
         // ENHANCE Store WORK_ID = "__work_id" into GR_WORK_ID;
         // ENHANCE: Store ORIGINAL_PUBLICATION_DATE in database
 
         // If no published date, try original date
-        if (!mBook.containsKey(KEY_DATE_PUBLISHED)) {
+        if (!mBook.containsKey(ColumnNames.KEY_DATE_PUBLISHED)) {
             String origDate = GoodreadsManager.buildDate(mBook, ORIG_PUBLICATION_YEAR, ORIG_PUBLICATION_MONTH, ORIG_PUBLICATION_DAY, null);
             if (origDate != null && origDate.length() > 0)
-                mBook.putString(KEY_DATE_PUBLISHED, origDate);
+                mBook.putString(ColumnNames.KEY_DATE_PUBLISHED, origDate);
         }
 
         //public static final String RATING = "__rating";
         //public static final String BOOK_URL = "__url";
 
         if (mAuthors != null && mAuthors.size() > 0)
-            mBook.putString(KEY_AUTHOR_DETAILS, ArrayUtils.getAuthorUtils().encodeList(mAuthors, '|'));
+            mBook.putString(ColumnNames.KEY_AUTHOR_DETAILS, ArrayUtils.getAuthorUtils().encodeList(mAuthors, '|'));
 
         if (mSeries != null && mSeries.size() > 0)
-            mBook.putString(KEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(mSeries, '|'));
+            mBook.putString(ColumnNames.KEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(mSeries, '|'));
 
         if (mShelves != null && mShelves.size() > 0)
             mBook.putStringArrayList(SHELVES, mShelves);
@@ -638,69 +635,69 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 			</GoodreadsResponse>
 		 */
 
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "id")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "id")
                 .setEndAction(mHandleLong, BOOK_ID);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "title")
-                .setEndAction(mHandleText, KEY_TITLE);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "isbn")
-                .setEndAction(mHandleText, KEY_ISBN);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "isbn13")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "title")
+                .setEndAction(mHandleText, ColumnNames.KEY_TITLE);
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "isbn")
+                .setEndAction(mHandleText, ColumnNames.KEY_ISBN);
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "isbn13")
                 .setEndAction(mHandleText, ISBN13);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "image_url")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "image_url")
                 .setEndAction(mHandleText, IMAGE);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "small_image_url")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "small_image_url")
                 .setEndAction(mHandleText, SMALL_IMAGE);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "publication_year")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "publication_year")
                 .setEndAction(mHandleLong, PUBLICATION_YEAR);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "publication_month")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "publication_month")
                 .setEndAction(mHandleLong, PUBLICATION_MONTH);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "publication_day")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "publication_day")
                 .setEndAction(mHandleLong, PUBLICATION_DAY);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "publisher")
-                .setEndAction(mHandleText, KEY_PUBLISHER);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "is_ebook")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "publisher")
+                .setEndAction(mHandleText, ColumnNames.KEY_PUBLISHER);
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "is_ebook")
                 .setEndAction(mHandleBoolean, IS_EBOOK);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "description")
-                .setEndAction(mHandleText, KEY_DESCRIPTION);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "id")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "description")
+                .setEndAction(mHandleText, ColumnNames.KEY_DESCRIPTION);
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "work", "id")
                 .setEndAction(mHandleLong, WORK_ID);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "original_publication_day")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "work", "original_publication_day")
                 .setEndAction(mHandleLong, ORIG_PUBLICATION_DAY);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "original_publication_month")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "work", "original_publication_month")
                 .setEndAction(mHandleLong, ORIG_PUBLICATION_MONTH);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "original_publication_year")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "work", "original_publication_year")
                 .setEndAction(mHandleLong, ORIG_PUBLICATION_YEAR);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "work", "original_title")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "work", "original_title")
                 .setEndAction(mHandleText, ORIG_TITLE);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "average_rating")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "average_rating")
                 .setEndAction(mHandleFloat, RATING);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "num_pages")
-                .setEndAction(mHandleLong, KEY_PAGES);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "format")
-                .setEndAction(mHandleText, KEY_FORMAT);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "url")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "num_pages")
+                .setEndAction(mHandleLong, ColumnNames.KEY_PAGES);
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "format")
+                .setEndAction(mHandleText, ColumnNames.KEY_FORMAT);
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "url")
                 .setEndAction(mHandleText, BOOK_URL);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "authors", "author")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "authors", "author")
                 .setStartAction(mHandleAuthorStart)
                 .setEndAction(mHandleAuthorEnd);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "authors", "author", "id")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "authors", "author", "id")
                 .setEndAction(mHandleAuthorId);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "authors", "author", "name")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "authors", "author", "name")
                 .setEndAction(mHandleAuthorName);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "my_review", "id")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "my_review", "id")
                 .setEndAction(mHandleLong, REVIEW_ID);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "my_review", "shelves")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "my_review", "shelves")
                 .setStartAction(mHandleShelvesStart);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "my_review", "shelves", "shelf")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "my_review", "shelves", "shelf")
                 .setStartAction(mHandleShelf);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "series_works", "series_work")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "series_works", "series_work")
                 .setStartAction(mHandleSeriesStart)
                 .setEndAction(mHandleSeriesEnd);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "series_works", "series_work", "user_position")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "series_works", "series_work", "user_position")
                 .setEndAction(mHandleSeriesPosition);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "series_works", "series_work", "series", "id")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "series_works", "series_work", "series", "id")
                 .setEndAction(mHandleSeriesId);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "book", "series_works", "series_work", "series", "title")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, BOOK, "series_works", "series_work", "series", "title")
                 .setEndAction(mHandleSeriesName);
     }
 

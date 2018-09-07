@@ -42,8 +42,10 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogFileItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickListener;
 import com.eleybourn.bookcatalogue.filechooser.BackupChooser;
+import com.eleybourn.bookcatalogue.searches.amazon.AdministrationAmazon;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegister;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
+import com.eleybourn.bookcatalogue.searches.googlebooks.AdministrationGoogleBooks;
 import com.eleybourn.bookcatalogue.searches.librarything.AdministrationLibraryThing;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.ManagedTask;
@@ -125,19 +127,6 @@ public class AdministrationFunctions extends ActivityWithTasks {
      * 4. Advanced Options
      */
     private void setupAdminPage() {
-        /* Bookshelf Link */
-        {
-            View v = findViewById(R.id.bookshelf_label);
-            // Make line flash when clicked.
-            v.setBackgroundResource(android.R.drawable.list_selector_background);
-            v.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    manageBookshelves();
-                }
-            });
-        }
-
         /* Manage Field Visibility */
         {
             View v = findViewById(R.id.fields_label);
@@ -298,6 +287,34 @@ public class AdministrationFunctions extends ActivityWithTasks {
             });
         }
 
+        /* Amazon url */
+        {
+            View v = findViewById(R.id.amazon_url);
+            // Make line flash when clicked.
+            v.setBackgroundResource(android.R.drawable.list_selector_background);
+            v.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(AdministrationFunctions.this, AdministrationAmazon.class);
+                    startActivity(i);
+                }
+            });
+        }
+
+        /* Google Books url */
+        {
+            View v = findViewById(R.id.googlebooks_url);
+            // Make line flash when clicked.
+            v.setBackgroundResource(android.R.drawable.list_selector_background);
+            v.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(AdministrationFunctions.this, AdministrationGoogleBooks.class);
+                    startActivity(i);
+                }
+            });
+        }
+
         /* Background Tasks */
         {
             View v = findViewById(R.id.background_tasks_label);
@@ -385,14 +402,6 @@ public class AdministrationFunctions extends ActivityWithTasks {
                     }
                 });
         alertDialog.show();
-    }
-
-    /**
-     * Load the Bookshelf Activity
-     */
-    private void manageBookshelves() {
-        Intent i = new Intent(this, BookshelfAdminActivity.class);
-        startActivityForResult(i, ACTIVITY_BOOKSHELF);
     }
 
     /**

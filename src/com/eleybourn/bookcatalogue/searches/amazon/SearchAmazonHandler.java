@@ -26,6 +26,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
@@ -268,7 +269,7 @@ public class SearchAmazonHandler extends DefaultHandler {
         if (mFetchThumbnail && mThumbnailUrl.length() > 0) {
             String fileSpec = ImageUtils.saveThumbnailFromUrl(mThumbnailUrl, "_AM");
             if (fileSpec.length() > 0)
-                ArrayUtils.appendOrAdd(mBookData, "__thumbnail", fileSpec);
+                ArrayUtils.appendOrAdd(mBookData, SearchManager.BKEY_THUMBNAIL_SEARCHES, fileSpec);
         }
     }
 

@@ -11,6 +11,7 @@ import com.eleybourn.bookcatalogue.ThumbnailCacheWriterTask;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.searches.SearchManager;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -343,9 +344,9 @@ public class ImageUtils {
      * and delete the others. Finally, remove the key.
      */
     public static void cleanupThumbnails(Bundle result) {
-        if (result != null && result.containsKey("__thumbnail")) {
+        if (result != null && result.containsKey(SearchManager.BKEY_THUMBNAIL_SEARCHES)) {
             // Parse the list
-            String s = result.getString("__thumbnail");
+            String s = result.getString(SearchManager.BKEY_THUMBNAIL_SEARCHES);
             if (s != null) {
                 ArrayList<String> files = ArrayUtils.decodeList(s, '|');
 
@@ -391,7 +392,7 @@ public class ImageUtils {
                     file.renameTo(getTempThumbnail());
                 }
                 // Finally, cleanup the data
-                result.remove("__thumbnail");
+                result.remove(SearchManager.BKEY_THUMBNAIL_SEARCHES);
                 result.putBoolean(ColumnNames.KEY_THUMBNAIL, true);
             }
         }

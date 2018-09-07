@@ -20,15 +20,12 @@ public class BookCataloguePreferences {
 	public static final String APP_SHARED_PREFERENCES = "bookCatalogue";
 
 
-
-	//FIXME: check if these need upgrading to https!
+	//FIXME: check if these need upgrading to https! If not, then move these back to the Manager class of their service
     // any https in the code was left as-is.
 	public static final String WEBSITE_URL_EN_WIKIPEDIA_ORG = "http://en.wikipedia.org";
     public static final String WEBSITE_URL_LIBRARYTHING = "http://www.librarything.com";
     public static final String WEBSITE_URL_LIBRARYTHING_COVERS = "http://covers.librarything.com";
     public static final String WEBSITE_URL_GOOGLE_SCHEMAS = "http://schemas.google.co";
-    public static final String WEBSITE_URL_GOOGLE_BOOKS = "http://books.google.com";
-    public static final String WEBSITE_URL_AMAZON_BOOKS_BASE = "http://www.amazon.com";
 
 	/** Static preference object so that we can respond to events relating to changes */
 	private static SharedPreferences mPrefs = null;
@@ -198,6 +195,4 @@ public class BookCataloguePreferences {
 	public static Editor edit() {
 		return mPrefs.edit();
 	}
-
-
 }

@@ -27,6 +27,17 @@
                 style="@style/toolbar"
                 tools:text="TOOLBAR" />
 
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/floatingAddButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                app:fabSize="mini"
+                android:src="@android:drawable/ic_menu_add"
+                android:layout_margin="16dp" />
+            <!--android:layout_gravity="end|bottom"-->
+
             <!-- the header with the Bookshelf Spinner and information lines -->
             <RelativeLayout
                 android:id="@+id/header"
@@ -115,9 +126,11 @@
                     android:text="@string/nobooks"
                     android:textSize="16sp" />
             </LinearLayout>
+
         </RelativeLayout>
 
     </FrameLayout>
+
     <!-- Container for contents of drawer
          use NavigationView to make configuration easier
     -->
@@ -127,6 +140,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:headerLayout="@layout/booksonbookshelf_nav_header"
+        app:headerLayout="@layout/nav__panel_header"
         app:menu="@menu/drawer_view" />
 </android.support.v4.widget.DrawerLayout>

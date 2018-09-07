@@ -1017,9 +1017,8 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="single_string" translatable="false">%1s</string>
 
     <!-- task/event... could set these to translatable="false" I suppose -->
-    <string name="generic_task_info" >Task ID %1$d, Queued at %2$s</string>
+    <string name="generic_task_info">Task ID %1$d, Queued at %2$s</string>
     <string name="events_found">%1$d Events found</string>
-    <string name="waiting_for_idle">(waiting for idle)</string>
     <string name="events_recorded">( %1$d events recorded)</string>
 
     <!-- adding more does not require code changes -->
@@ -1049,14 +1048,13 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- TODO  need better info here-->
     <string name="app_permissions_info">
         <![CDATA[
-            <p>To function we need permissions....\n
+            To function we need permissions....\n
             Mandatory:\n
              * Storage\n
             \n
             Optional:\n
              * Read contacts\n
-            </p>
-        		]]>
+            ]]>
     </string>
 
     <string name="storage_error_preparing_card">Preparing card</string>
@@ -1071,7 +1069,22 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="share_book_i_reading">I\'m reading %1$s by %2$s %3$s %4$s</string>
     <string name="done">Done</string>
     <string name="share">Share</string>
-
+    <string name="local_websites_urls">Local websites</string>
+    <string name="google_books">Google Books</string>
+    <string name="amazon_host_blurb">
+        <![CDATA[
+            You can set your local Amazon website.
+            Make sure it\'s a valid format, or searches will fail.\n\n
+            Example: https://www.amazon.co.uk\n
+            ]]>
+    </string>
+    <string name="googlebooks_host_blurb">
+        <![CDATA[
+            You can set your local Google Books website.
+            Make sure it\'s a valid format, or searches will fail.\n\n
+            Example: https://books.google.co.uk\n
+            ]]>
+    </string>
     <!-- End: Added/Updated in  [Next Version]  -->
 
 </resources>

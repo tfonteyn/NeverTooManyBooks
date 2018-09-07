@@ -28,6 +28,7 @@ import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -635,7 +636,7 @@ public class LibraryThingManager {
 		// Save it with an _LT suffix
 		String fileSpec = ImageUtils.saveThumbnailFromUrl(url, "_LT_" + size + "_" + isbn);
 		if (fileSpec.length() > 0 && bookData != null) {
-			ArrayUtils.appendOrAdd(bookData, "__thumbnail", fileSpec);
+			ArrayUtils.appendOrAdd(bookData, SearchManager.BKEY_THUMBNAIL_SEARCHES, fileSpec);
 		}
 		return fileSpec;
 	}

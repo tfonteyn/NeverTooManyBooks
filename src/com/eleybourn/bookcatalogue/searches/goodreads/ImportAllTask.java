@@ -25,7 +25,9 @@ import android.database.Cursor;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.Author;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
+import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.BcQueueManager;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -67,9 +69,8 @@ import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiH
  */
 class ImportAllTask extends GenericTask {
 	private static final long serialVersionUID = -3535324410982827612L;
-	private static final String NOCOVER = "nocover";
 
-	/** Current position in entire list of reviews */
+    /** Current position in entire list of reviews */
 	private int mPosition;
 	/** Total number of reviews user has */
 	private int mTotalBooks;
@@ -189,7 +190,7 @@ class ImportAllTask extends GenericTask {
 					return false;
 
 				if (mUpdatesAfter != null && review.containsKey(ListReviewsFieldNames.UPDATED)) {
-					if (mUpdatesAfter.compareTo(review.getString(ListReviewsFieldNames.UPDATED)) > 0)
+					if (review.getString(ListReviewsFieldNames.UPDATED).compareTo(mUpdatesAfter) > 0)
 						return true;
 				}
 
@@ -418,17 +419,19 @@ class ImportAllTask extends GenericTask {
         	addStringIfNonBlank(review, ListReviewsFieldNames.ADDED, book, DOM_ADDED_DATE.name);
         	// Also fetch thumbnail if add
         	String thumbnail;
-        	if (review.containsKey(ListReviewsFieldNames.LARGE_IMAGE) && !review.getString(ListReviewsFieldNames.LARGE_IMAGE).toLowerCase().contains(NOCOVER)) {
+        	if (review.containsKey(ListReviewsFieldNames.LARGE_IMAGE)
+					&& !review.getString(ListReviewsFieldNames.LARGE_IMAGE).toLowerCase().contains(UniqueId.BKEY_NOCOVER)) {
         		thumbnail = review.getString(ListReviewsFieldNames.LARGE_IMAGE);
-        	} else if (review.containsKey(ListReviewsFieldNames.SMALL_IMAGE) && !review.getString(ListReviewsFieldNames.SMALL_IMAGE).toLowerCase().contains(NOCOVER)) {
+        	} else if (review.containsKey(ListReviewsFieldNames.SMALL_IMAGE)
+					&& !review.getString(ListReviewsFieldNames.SMALL_IMAGE).toLowerCase().contains(UniqueId.BKEY_NOCOVER)) {
         		thumbnail = review.getString(ListReviewsFieldNames.SMALL_IMAGE);        		
         	} else {
         		thumbnail = null;
         	}
         	if (thumbnail != null) {
-    			String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, "_GR");
+    			String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, UniqueId.GOODREADS_FILENAME_SUFFIX);
     			if (fileSpec.length() > 0)
-    				book.appendOrAdd( "__thumbnail", fileSpec);
+    				book.appendOrAdd(SearchManager.BKEY_THUMBNAIL_SEARCHES, fileSpec);
     			book.cleanupThumbnails();        		
         	}
         }

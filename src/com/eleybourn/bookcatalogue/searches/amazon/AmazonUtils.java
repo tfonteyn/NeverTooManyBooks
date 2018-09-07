@@ -10,7 +10,6 @@ import com.amazon.device.associates.AssociatesAPI;
 import com.amazon.device.associates.LinkService;
 import com.amazon.device.associates.OpenSearchPageRequest;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -28,16 +27,17 @@ import java.net.URLEncoder;
  */
 public class AmazonUtils {
 
-	private static final String AMAZON_BOOKS_BASE = BookCataloguePreferences.WEBSITE_URL_AMAZON_BOOKS_BASE + "/gp/search?index=books";
-	private static final String AMAZON_LINK_EXTRAS = "&tag=bookcatalogue-20&linkCode=da5";
-	private static final String AMAZON_KEY = "bookcatalogue.amazon.appkey";
+	private static final String SUFFIX_BASE_URL = "/gp/search?index=books";
+	private static final String SUFFIX_EXTRAS = "&tag=bookcatalogue-20&linkCode=da5";
+
+	// key into the Manifest meta-data
+	private static final String AMAZON_KEY = "amazon.appkey";
 
 	private static final String UTF8 = "UTF-8";
 
 	private static void openLink(Activity context, String author, String series) {
 		// Build the URL and args
-		String url = AMAZON_BOOKS_BASE;
-		
+		String url = AmazonManager.getBaseURL() + SUFFIX_BASE_URL;
 		author = cleanupSearchString(author);
 		series = cleanupSearchString(series);
 
@@ -64,7 +64,7 @@ public class AmazonUtils {
 			}
 		} catch (Exception e) {
 			Logger.logError(e, "Unable to use Amazon API");
-			Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(url + AMAZON_LINK_EXTRAS));
+			Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(url + SUFFIX_EXTRAS));
 			context.startActivity(loadweb);					
 		}
 	}

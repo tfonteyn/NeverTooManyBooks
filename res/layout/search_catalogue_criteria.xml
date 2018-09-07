@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
@@ -8,160 +8,102 @@
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar"
-        tools:text="TOOLBAR" />
+        style="@style/toolbar" />
 
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="top"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        android:fillViewport="true">
 
         <LinearLayout
-            android:id="@+id/header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:orientation="vertical"
-            android:paddingLeft="@dimen/padding_border"
-            android:paddingRight="@dimen/padding_border">
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/original_details"
+            <TextView
+                android:id="@+id/criteria_lbl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:labelFor="@id/criteria"
+                android:text="@string/search_criteria" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+            <EditText
+                android:id="@+id/criteria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:singleLine="false" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/search_criteria"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
+            <TextView
+                android:id="@+id/author_lbl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:labelFor="@id/author"
+                android:text="@string/author" />
 
-                    <EditText
-                        android:id="@+id/criteria"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dip"
-                        android:layout_weight="1"
-                        android:inputType="textMultiLine"
-                        android:singleLine="false"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        tools:ignore="LabelFor" />
-                </LinearLayout>
+            <EditText
+                android:id="@+id/author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:singleLine="false" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+            <TextView
+                android:id="@+id/title_lbl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:labelFor="@id/title"
+                android:text="@string/title" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/author"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
+            <EditText
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:singleLine="false" />
 
-                    <EditText
-                        android:id="@+id/author"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dip"
-                        android:layout_weight="1"
-                        android:inputType="textMultiLine"
-                        android:singleLine="false"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        tools:ignore="LabelFor" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/title"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-                    <EditText
-                        android:id="@+id/title"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dip"
-                        android:layout_weight="1"
-                        android:inputType="textMultiLine"
-                        android:singleLine="false"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        tools:ignore="LabelFor" />
-                </LinearLayout>
-
-                <View style="@style/listDivider" />
-            </LinearLayout>
+            <View style="@style/listDivider" />
 
             <TextView
                 android:id="@+id/books_found"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/padding_border"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                tools:text="# books found" />
 
-            <View
-                style="@style/listDivider"
-                android:layout_height="2dp"
-                android:paddingBottom="2dp" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/footer"
-            android:layout_width="match_parent"
+    </ScrollView>
+
+    <View style="@style/listDivider" />
+
+    <LinearLayout
+        android:id="@+id/buttonbar"
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/rebuild"
+            style="?android:attr/buttonBarNeutralButtonStyle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:orientation="vertical"
-            android:paddingLeft="@dimen/padding_border"
-            android:paddingRight="@dimen/padding_border">
+            android:layout_gravity="center_vertical|start"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:text="@string/rebuild_fts"
+            android:visibility="gone" />
 
-            <View style="@style/listDivider" />
-
-            <Button
-                android:id="@+id/rebuild"
-                style="?android:attr/buttonBarNeutralButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:focusable="false"
-                android:text="@string/rebuild_fts" />
-
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                style="?android:attr/buttonBarStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/cancel"
-                    style="?android:attr/buttonBarNegativeButtonStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|center_vertical"
-                    android:layout_weight="1"
-                    android:focusable="false"
-                    android:text="@android:string/cancel" />
-
-                <Button
-                    android:id="@+id/search"
-                    style="?android:attr/buttonBarPositiveButtonStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|end"
-                    android:layout_weight="1"
-                    android:focusable="false"
-                    android:text="@android:string/search_go" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </RelativeLayout>
-</LinearLayout>
+        <Button
+            android:id="@+id/search"
+            style="?android:attr/buttonBarPositiveButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_weight="1"
+            android:text="@string/show_results" />
+    </LinearLayout>
+</RelativeLayout>

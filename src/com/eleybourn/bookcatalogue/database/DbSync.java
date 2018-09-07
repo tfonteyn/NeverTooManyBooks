@@ -50,6 +50,12 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Philip Warner
  */
 public class DbSync {
+
+	/**
+	 *  Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
+	 */
+	private static final boolean DEBUG = false;
+
 	/**
 	 * Implementation of a Readers/Writer lock that is fully reentrant.
 	 * 
@@ -205,7 +211,10 @@ public class DbSync {
 		 */
 		public SyncLock getExclusiveLock() {
 			final Thread ourThread = Thread.currentThread();
-			long t0 = System.currentTimeMillis();
+			long t0;
+			if (DEBUG && BuildConfig.DEBUG) {
+                t0 = System.currentTimeMillis();
+            }
 			// Synchronize with other code
 			mLock.lock();
 			try {
@@ -233,8 +242,9 @@ public class DbSync {
 					}
 				}				
 			} finally {
-				if (BuildConfig.DEBUG) {
-					long t1 = System.currentTimeMillis();
+				if (DEBUG && BuildConfig.DEBUG) {
+                    //noinspection UnusedAssignment
+                    long t1 = System.currentTimeMillis();
 					if (mLock.isHeldByCurrentThread())
 						System.out.println(ourThread.getName() + " waited " + (t1 - t0) + "ms for EXCLUSIVE access");
 					else

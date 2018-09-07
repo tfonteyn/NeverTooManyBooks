@@ -3,12 +3,13 @@ package com.eleybourn.bookcatalogue.searches.googlebooks;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Objects;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -17,12 +18,25 @@ import javax.xml.parsers.SAXParserFactory;
 
 public class GoogleBooksManager {
 
+    private static final String PREFS_HOST_URL = "GoogleBooksManager.hostUrl";
+
+	public static void setBaseURL(String url) {
+	    if (BuildConfig.DEBUG) {
+	        System.out.println("GoogleBooksManager new base url: " + url);
+        }
+        BookCataloguePreferences.setString(PREFS_HOST_URL, url);
+	}
+	public static String getBaseURL() {
+		return BookCataloguePreferences.getString(PREFS_HOST_URL, "http://books.google.com");
+	}
+
 	static public File getThumbnailFromIsbn(String isbn) {
 		Bundle b = new Bundle();
 		try {
 			searchGoogle(isbn, "", "", b, true);
-			if (b.containsKey(SearchGoogleBooksEntryHandler.THUMBNAIL_KEY)) {
-				File f = new File(Objects.requireNonNull(b.getString(SearchGoogleBooksEntryHandler.THUMBNAIL_KEY)));
+			if (b.containsKey(SearchManager.BKEY_THUMBNAIL_SEARCHES)
+                    && b.getString(SearchManager.BKEY_THUMBNAIL_SEARCHES) != null) {
+				File f = new File(b.getString(SearchManager.BKEY_THUMBNAIL_SEARCHES));
 				File newName = new File(f.getAbsolutePath() + "_" + isbn);
 				//noinspection ResultOfMethodCallIgnored
 				f.renameTo(newName);
@@ -41,7 +55,7 @@ public class GoogleBooksManager {
 		author = author.replace(" ", "%20");
 		title = title.replace(" ", "%20");
 
-		String path = BookCataloguePreferences.WEBSITE_URL_GOOGLE_BOOKS + "/books/feeds/volumes";
+		String path = getBaseURL() + "/books/feeds/volumes";
 		if (mIsbn.isEmpty()) {
 			path += "?q=" + "intitle%3A"+title+"%2Binauthor%3A"+author+"";
 		} else {

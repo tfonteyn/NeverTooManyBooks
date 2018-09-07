@@ -96,8 +96,8 @@ public class GoodreadsManager {
     public static final String GOODREADS_API_ROOT = "https://www.goodreads.com";
     private static final String LAST_SYNC_DATE = "GoodreadsManager.LastSyncDate";
     /* meta data keys in manifest */
-    private static final String GOODREADS_DEV_KEY = "bookcatalogue.goodreads.dev_key";
-    private static final String GOODREADS_DEV_SECRET = "bookcatalogue.goodreads.dev_secret";
+    private static final String GOODREADS_DEV_KEY = "goodreads.dev_key";
+    private static final String GOODREADS_DEV_SECRET = "goodreads.dev_secret";
     /* authorization tokens */
     private static final String ACCESS_TOKEN = "GoodReads.AccessToken.Token";
     private static final String ACCESS_SECRET = "GoodReads.AccessToken.Secret";

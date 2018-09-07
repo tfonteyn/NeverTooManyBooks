@@ -3,6 +3,8 @@ package com.eleybourn.bookcatalogue.searches.amazon;
 import android.net.ParseException;
 import android.os.Bundle;
 
+import com.eleybourn.bookcatalogue.BookCataloguePreferences;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -16,6 +18,19 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 class AmazonManager {
+
+	private static final String PREFS_HOST_URL = "AmazonManager.hostUrl";
+
+	public static void setBaseURL(String url) {
+        if (BuildConfig.DEBUG) {
+            System.out.println("AmazonManager new base url: " + url);
+        }
+		BookCataloguePreferences.setString(PREFS_HOST_URL, url);
+	}
+	public static String getBaseURL() {
+		return BookCataloguePreferences.getString(PREFS_HOST_URL, "http://www.amazon.com");
+	}
+
 	/**
 	 * 
 	 * This searches the amazon REST site based on a specific isbn. It proxies through lgsolutions.com.au

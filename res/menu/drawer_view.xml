@@ -1,37 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/nav_search"
-        android:icon="@android:drawable/ic_menu_search"
-        android:title="@string/search" />
+    <group
+        android:id="@+id/g1"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_search"
+            android:icon="@android:drawable/ic_menu_search"
+            android:title="@string/search" />
+    </group>
+    <group
+        android:id="@+id/g2"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_manage_bookshelves"
+            android:icon="@android:drawable/ic_menu_manage"
+            android:title="@string/menu_bookshelf" />
 
-    <item
-        android:id="@+id/nav_booklist_prefs"
-        android:drawableStart="@android:drawable/ic_menu_manage"
-        android:title="@string/booklist_preferences" />
+        <item
+            android:id="@+id/nav_booklist_prefs"
+            android:icon="@android:drawable/ic_menu_manage"
+            android:title="@string/booklist_preferences" />
 
-    <item
-        android:id="@+id/nav_other_prefs"
-        android:drawableStart="@android:drawable/ic_menu_manage"
-        android:title="@string/other_preferences" />
+        <item
+            android:id="@+id/nav_other_prefs"
+            android:icon="@android:drawable/ic_menu_manage"
+            android:title="@string/other_preferences" />
 
-    <item
-        android:id="@+id/nav_admin"
-        android:icon="@android:drawable/ic_menu_preferences"
-        android:title="@string/menu_administration" />
+        <item
+            android:id="@+id/nav_admin"
+            android:icon="@android:drawable/ic_menu_preferences"
+            android:title="@string/menu_administration" />
+    </group>
+    <group
+        android:id="@+id/g3"
+        android:checkableBehavior="none">
 
-    <item
-        android:id="@+id/nav_about"
-        android:icon="@android:drawable/ic_menu_info_details"
-        android:title="@string/about_label" />
+        <item
+            android:id="@+id/nav_donate"
+            android:icon="@drawable/ic_menu_donate"
+            android:title="@string/donate_label" />
 
-    <item
-        android:id="@+id/nav_help"
-        android:icon="@android:drawable/ic_menu_help"
-        android:title="@string/help" />
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@android:drawable/ic_menu_help"
+            android:title="@string/help" />
 
-    <item
-        android:id="@+id/nav_donate"
-        android:icon="@drawable/ic_menu_donate"
-        android:title="@string/donate_label" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:title="@string/about_label" />
+    </group>
 </menu>
