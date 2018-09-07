@@ -119,8 +119,8 @@
                         style="@style/bookMinorDetailText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingEnd="6dp"
-                        android:paddingStart="6dp"
+                        android:paddingEnd="@dimen/padding_border"
+                        android:paddingStart="@dimen/padding_border"
                         tools:text="573 pages" />
 
                     <TextView
