@@ -76,11 +76,11 @@ public class SearchAdminOrder extends BookCatalogueListActivity {
         }
 
         @Override
-        protected void onSetupView(View target, final SearchManager.SearchSite site, int position) {
-            final TextView name = target.findViewById(R.id.row_name);
+        protected void onSetupView(int position, View convertView, final SearchManager.SearchSite site) {
+            final TextView name = convertView.findViewById(R.id.row_name);
             name.setText(site.name);
 
-            final CheckedTextView enabled = target.findViewById(R.id.row_enabled);
+            final CheckedTextView enabled = convertView.findViewById(R.id.row_enabled);
             enabled.setChecked(site.enabled);
             enabled.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -387,8 +387,8 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
         }
 
         @Override
-        protected void onSetupView(View target, T object, int position) {
-            EditObjectListActivity.this.onSetupView(target, object, position);
+        protected void onSetupView(int position, View convertView, T object) {
+            EditObjectListActivity.this.onSetupView(convertView, object, position);
         }
 
         @Override

@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    - displaying the title list on book details where we 'inflate' this
-    - in editing the list of titles on edit-anthology-titles for a book in an 'include'
--->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,9 +6,23 @@
 
     <TextView
         android:id="@+id/row_title"
-        style="@style/anthologyTitle" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:gravity="start"
+        android:paddingEnd="@dimen/padding_border"
+        android:paddingStart="@dimen/padding_border"
+        android:singleLine="true"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/row_author"
-        style="@style/anthologyAuthor" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:gravity="start"
+        android:paddingEnd="@dimen/padding_border"
+        android:paddingStart="@dimen/padding_border"
+        android:singleLine="true"
+        android:textSize="12sp" />
 </LinearLayout>

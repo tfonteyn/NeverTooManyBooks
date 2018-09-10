@@ -184,8 +184,8 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 		}
 
 		@Override
-		protected void onSetupView(View target, FileDetails fileDetails, int position) {
-			fileDetails.onSetupView(getActivity(), position, target);
+		protected void onSetupView(int position, View convertView, FileDetails fileDetails) {
+			fileDetails.onSetupView(getActivity(), position, convertView);
 		}
 
 		@Override

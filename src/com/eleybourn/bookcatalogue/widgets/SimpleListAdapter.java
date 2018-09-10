@@ -214,11 +214,10 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
     /**
      * Call to set up the row view. This is called by the original {@link #getView}
-     *
-     * @param target The target row view object
+     *  @param convertView The target row view object
      * @param object The object (or type T) from which to draw values.
      */
-    abstract protected void onSetupView(View target, T object, int position);
+    abstract protected void onSetupView(int position, View convertView, T object);
 
     @NonNull
     @Override
@@ -301,7 +300,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
             // Ask the subclass to set other fields.
             try {
-                onSetupView(convertView, object, position);
+                onSetupView(position, convertView, object);
             } catch (Exception e) {
                 Logger.logError(e);
             }

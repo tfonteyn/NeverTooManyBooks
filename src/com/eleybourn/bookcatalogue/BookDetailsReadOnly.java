@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,16 +9,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
 import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.utils.*;
+import com.eleybourn.bookcatalogue.utils.BookUtils;
+import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.HintManager;
+import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Class for representing read-only book details.
@@ -112,54 +122,64 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
         }
     }
 
-    // first time user opens up the list, create the entries. Avoids unneeded/lengthy rebuilds.
-    private boolean generateAnthologyFieldList = true;
-    private void showAnthologySection(BookData book) {
-        final BookData aBook = book;
+    private boolean mGenerateAnthologyFieldList = true;
+    private void showAnthologySection(final BookData book) {
         View section = getView().findViewById(R.id.anthology_section);
         section.setVisibility(View.VISIBLE);
         Button btn = getView().findViewById(R.id.anthology_button);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View titles = getView().findViewById(R.id.anthology_titlelist);
+                ListView titles = getView().findViewById(R.id.anthology_titlelist);
                 titles.setVisibility(titles.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
 
-                if (generateAnthologyFieldList) {
-                    populateAnthologyListField(aBook);
-                    generateAnthologyFieldList = false;
+                if (mGenerateAnthologyFieldList) {
+                    AnthologyTitleListAdapter adapter = new AnthologyTitleListAdapter(getActivity(), R.layout.row_anthology, book.getAnthologyTitles());
+                    titles.setAdapter(adapter);
+                    justifyListViewHeightBasedOnChildren(titles);
+                    mGenerateAnthologyFieldList = false;
                 }
             }
         });
     }
 
+    protected class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle> {
+
+        AnthologyTitleListAdapter(Context context, int rowViewId, List<AnthologyTitle> items) {
+            super(context, rowViewId, items);
+        }
+
+        @Override
+        protected void onSetupView(int position, View convertView, AnthologyTitle anthology) {
+            TextView author = convertView.findViewById(R.id.row_author);
+            author.setText(anthology.getAuthor().getDisplayName());
+            TextView title = convertView.findViewById(R.id.row_title);
+            title.setText(anthology.getTitle());
+        }
+    }
+
     /**
-     * FIXME: is this *really* the best way to do this ? Surely this can be done better/faster ?
-     * ArrayAdapter...-> avoid inflating in a loop
+     * Gets the total number of rows from the adapter, then uses that to set the ListView to the
+     * full height so all rows are visible (no scrolling)
      *
      */
-    protected void populateAnthologyListField(BookData book) {
-        ArrayList<Author> bookAuthors = book.getAuthors();
-        boolean isSingleAuthor = (1 == bookAuthors.size());
-        Author firstAuthorId = book.getAuthors().get(0);
-
-        ViewGroup view = getView().findViewById(R.id.anthology_titlelist);
-        for (AnthologyTitle aTitle : book.getAnthologyTitles()) {
-            ViewGroup antGroup = (ViewGroup)getLayoutInflater().inflate(R.layout.row_anthology, null);
-
-            TextView antTitle = antGroup.findViewById(R.id.row_title);
-            antTitle.setText(aTitle.getTitle());
-
-            TextView antAuthor = antGroup.findViewById(R.id.row_author);
-            Author author = aTitle.getAuthor();
-            if (isSingleAuthor && (firstAuthorId.equals(author))) {
-                antAuthor.setVisibility(View.GONE);
-            } else {
-                antAuthor.setText(author.getSortName());
-                antAuthor.setVisibility(View.VISIBLE);
-            }
-            view.addView(antGroup);
+    private void justifyListViewHeightBasedOnChildren (final ListView listView) {
+        ListAdapter adapter = listView.getAdapter();
+        if (adapter == null) {
+            return;
         }
+
+        int totalHeight = 0;
+        for (int i = 0; i < adapter.getCount(); i++) {
+            View listItem = adapter.getView(i, null, listView);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams par = listView.getLayoutParams();
+        par.height = totalHeight + (listView.getDividerHeight() * (adapter.getCount() - 1));
+        listView.setLayoutParams(par);
+        listView.requestLayout();
     }
 
     @Override

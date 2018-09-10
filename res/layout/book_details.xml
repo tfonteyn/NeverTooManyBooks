@@ -188,7 +188,7 @@
                 android:visibility="gone" />
         </LinearLayout>
 
-        <LinearLayout
+        <ListView
             android:id="@+id/anthology_titlelist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

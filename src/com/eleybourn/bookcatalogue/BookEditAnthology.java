@@ -54,6 +54,7 @@ import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -399,15 +400,15 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
         /**
          * Pass the parameters directly to the overridden function
          */
-        AnthologyTitleListAdapter(Context context, int rowViewId, ArrayList<AnthologyTitle> items) {
+        AnthologyTitleListAdapter(Context context, int rowViewId, List<AnthologyTitle> items) {
             super(context, rowViewId, items);
         }
 
         @Override
-        protected void onSetupView(View target, AnthologyTitle anthology, int position) {
-            TextView author = target.findViewById(R.id.row_author);
+        protected void onSetupView(int position, View convertView, AnthologyTitle anthology) {
+            TextView author = convertView.findViewById(R.id.row_author);
             author.setText(anthology.getAuthor().getDisplayName());
-            TextView title = target.findViewById(R.id.row_title);
+            TextView title = convertView.findViewById(R.id.row_title);
             title.setText(anthology.getTitle());
         }
 
