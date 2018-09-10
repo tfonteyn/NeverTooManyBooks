@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -23,41 +23,39 @@ import java.io.Serializable;
 
 /**
  * Class to represent a single title within an anthology
- * 
+ *
  * @author pjw
  */
 public class AnthologyTitle implements Serializable {
-	private static final long serialVersionUID = -8715364898312204329L;
-	private Author mAuthor;
-	private String mTitle;
+    private static final long serialVersionUID = -8715364898312204329L;
+    private Author mAuthor;
+    private String mTitle;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param author	Author of title
-	 * @param title		Title
-	 */
-	public AnthologyTitle(Author author, String title) {
-		mAuthor = author;
-		mTitle = title.trim();
-	}
-	
-	/** Accessor */
-	public String getTitle() {
-		return mTitle;
-	}
-	/** Accessor */
-	public void setTitle(String title) {
-		mTitle = title;
-	}
-	
-	/** Accessor */
-	public Author getAuthor() {
-		return mAuthor;
-	}
-	/** Accessor */
-	public void setAuthor(Author author) {
-		mAuthor = author;
-	}
+    /**
+     * Constructor
+     *
+     * @param author Author of title
+     * @param title  Title
+     */
+    public AnthologyTitle(Author author, String title) {
+        mAuthor = author;
+        mTitle = title.trim();
+    }
+
+    public String getTitle() {
+        return mTitle;
+    }
+
+    public void setTitle(String title) {
+        mTitle = title;
+    }
+
+    public Author getAuthor() {
+        return mAuthor;
+    }
+
+    public void setAuthor(Author author) {
+        mAuthor = author;
+    }
 
 }

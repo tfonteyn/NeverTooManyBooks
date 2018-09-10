@@ -23,7 +23,7 @@ package com.eleybourn.bookcatalogue.booklist;
 /**
  * Interface for objects that can provide long-lived instances of Booklist-related items.
  * Typically this interface is implemented by objects that have a close() method (eg. cursors)
- * so that resource-hungry objects (like Utils) can be cleaned up eventually.
+ * so that resource-hungry objects (can be cleaned up eventually.
  * 
  * @author Philip Warner
  */

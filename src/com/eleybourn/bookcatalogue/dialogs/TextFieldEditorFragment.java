@@ -31,9 +31,9 @@ import android.support.v4.app.DialogFragment;
  * @author pjw
  */
 public class TextFieldEditorFragment extends DialogFragment {
-	private static final String DIALOG_ID = "dialogId";
-	private static final String TITLE = "title";
-	private static final String TEXT = "text";
+	private static final String BKEY_DIALOG_ID = "dialogId";
+	private static final String BKEY_TITLE = "title";
+	private static final String BKEY_TEXT = "text";
 	private int mDialogId;
 
 	/**
@@ -58,9 +58,9 @@ public class TextFieldEditorFragment extends DialogFragment {
 	public static TextFieldEditorFragment newInstance(int dialogId, int titleId, String text) {
     	TextFieldEditorFragment frag = new TextFieldEditorFragment();
         Bundle args = new Bundle();
-        args.putString(TEXT, text);
-        args.putInt(TITLE, titleId);
-        args.putInt(DIALOG_ID, dialogId);
+        args.putString(BKEY_TEXT, text);
+        args.putInt(BKEY_TITLE, titleId);
+        args.putInt(BKEY_DIALOG_ID, dialogId);
         frag.setArguments(args);
         return frag;
     }
@@ -83,9 +83,9 @@ public class TextFieldEditorFragment extends DialogFragment {
     @NonNull
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	mDialogId = getArguments().getInt(DIALOG_ID);
-        int title = getArguments().getInt(TITLE);
-        String text = getArguments().getString(TEXT);
+    	mDialogId = getArguments().getInt(BKEY_DIALOG_ID);
+        int title = getArguments().getInt(BKEY_TITLE);
+        String text = getArguments().getString(BKEY_TEXT);
 
         TextFieldEditor editor = new TextFieldEditor(getActivity());
         editor.setText(text);

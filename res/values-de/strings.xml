@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Book Catalogue</string>
-    <string name="system_app_name">Book Catalogue</string>
     <string name="menu_insert">Buch hinzufügen</string>
     <string name="menu_delete">Buch löschen</string>
     <string name="author">Autor</string>
@@ -62,11 +60,6 @@
     <string name="webpage_label">Webseite:</string>
     <string name="sourcecode_label">Quellcode:</string>
     <string name="contact_label">Kontakt:</string>
-    <string name="webpage">https://wiki.github.com/eleybourn/Book-Catalogue/</string>
-    <string name="sourcecode">https://github.com/eleybourn/Book-Catalogue</string>
-    <string name="helppage">https://github.com/eleybourn/Book-Catalogue/wiki/Help</string>
-    <string name="contact1">eleybourn@gmail.com</string>
-    <string name="contact2">philip.warner@rhyme.com.au</string>
     <string name="donate_label">Spenden</string>
     <string name="about_label">Über diese App</string>
     <string name="sortby_author">Sortieren nach Autor</string>
@@ -143,8 +136,6 @@
     <string name="add">Hinzufügen</string>
     <string name="noauthors">Es wurde kein Autor für dieses Buch eingetragen. Bitte fügen Sie einen Autor über das Textfeld und den Knopf oben auf diesem Bildschirm hinzu.</string>
     <string name="noseries">Es besteht keine Serie für dieses Buch. Sie können eine Serie über das Textfeld und den Knopf oben auf dieser Seite hinzufügen.</string>
-    <item name="TAG_POSITION" type="id" />
-    <item name="TAG_ORIGINAL_VALUE" type="id" />
     <string name="cover_not_set">Das Cover wurde nicht gesetzt</string>
     <string name="cover_corrupt">Das Cover ist unbrauchbar</string>
     <string name="cover_detail">Coverdetails</string>
@@ -193,7 +184,6 @@
     <string name="click_on_thumb">Klicke auf ein Cover-Bild, um ein größeres Bild angezeigt zu bekommen</string>
     <string name="loading">Lade…</string>
     <string name="image_not_found">Bild nicht gefunden</string>
-    <item name="fieldCheckbox" type="id" />
     <string name="select_min_1_field">Es muss mindestens ein Feld für die Aktualisierung ausgewählt werden</string>
     <string name="usage_copy_if_blank">Kopieren wenn leer</string>
     <string name="usage_add_extra">hängt zusätzliche Daten an</string>
@@ -219,7 +209,6 @@
     <string name="megabytes">%.2f MB</string>
     <string name="kilobytes">%.2f kB</string>
     <string name="bytes">%.0f Bytes</string>
-    <string name="debug_email">eleybourn@gmail.com;grunthos@rhyme.com.au</string>
     <string name="sortby_author_given">Sortieren nach Autor (Vorname)</string>
     <string name="debug_subject">Gesammelte Debug-Informationen</string>
     <string name="debug_body">Bitte nehmen Sie sich Zeit, das aufgetretene Problem zu beschreiben.</string>
@@ -238,20 +227,11 @@
     <string name="retry_task">Wiederholen</string>
     <string name="delete_event">Ereignis löschen</string>
     <string name="delete_task">Aufgabe löschen</string>
-    <item name="TAG_EVENT" type="id" />
-    <item name="TAG_HOLDER" type="id" />
-    <item name="TAG_TASK" type="id" />
-    <item name="TAG_TASK_ID" type="id" />
-    <item name="TAG_BOOK_EVENT_HOLDER" type="id" />
-    <item name="TAG_TASK_HOLDER" type="id" />
-    <item name="TAG_PROPERTY" type="id" />
-    <item name="TAG_DIALOG_ITEM" type="id" />
     <string name="my_books">Meine Bücher</string>
     <string name="my_books_classic">Meine Bücher (Klassisch)</string>
     <string name="loan_return_book">Buch verleihen, zurückgeben oder bearbeiten</string>
     <string name="admin_and_prefs">Verwaltung und Einstellungen</string>
     <string name="edit_book_send_to_gr">Zu Goodreads senden</string>
-    <string name="goodreads">Goodreads</string>
     <string name="goodreads_auth_blurb_part1">Goodreads ist eine Website, deren ausgewiesener Zweck es ist, "Menschen zu helfen, um Bücher zu suchen und zu teilen, die sie gern haben".
 Sie führt eine umfassende Datenbank von Büchern und Buchbesprechungen, und wenn Sie ein
 registrierter Benutzer von Goodreads sind, kann BookCatalogue Ihre Bücher, Bücherregale
@@ -264,7 +244,6 @@ anmelden und den Zugriff autorisieren können. Wir werden Ihr Kennwort nie sehen
 auf der Website von Goodreads jederzeit beenden. Wegen der Unwägbarkeiten des Webs kann es sein, dass Sie
 anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den "Zurück"-Button, um hierher zurückzukehren!</string>
     <string name="goodreads_auth_blurb_part3">Aber denken Sie daran… Sie müssen nichts davon tun: BookCatalogue funktioniert ganz wunderbar ohne Goodreads!</string>
-    <string name="goodreads_url">http://www.goodreads.com</string>
     <string name="authorize_access">Zugriff autorisieren</string>
     <string name="authorize_access_already_auth">Scheinbar haben Sie diese App bereits autorisiert. Alle Funktionen von Goodreads sollten bereits verwendbar sein.</string>
     <string name="goodreads_access_error">Beim Zugriff auf Goodreads ist ein Netzwerkproblem aufgetreten. Bitte überprüfen Sie, ob die Website von Goodreads erreichbar ist. Falls das Problem nicht gelöst werden kann, kontaktieren Sie den Support.</string>
@@ -303,9 +282,6 @@ anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den "Zurück
     <string name="send_all_to_goodreads_result">%1$d Bücher verarbeitet: %2$d erfolgreich übertragen, %3$d ohne ISBN und %4$d mit einer in Goodreads nicht auffindbaren ISBN</string>
     <string name="x_of_y">%1$d von %2$d</string>
     <string name="send_book_to_goodreads">Buch %1$s an Goodreads senden</string>
-    <item name="NOTIFICATION" type="id" />
-    <item name="TAG_GOODREADS_WORK" type="id" />
-    <item name="TAG_GET_THUMBNAIL_TASK" type="id" />
     <string name="erase_cover_cache">Zwischenspeicher für Cover-Bilder löschen</string>
     <string name="crash_toast_text">BookCatalogue ist abgestürzt. Bitte helfen Sie uns bei der Verbesserung der App, indem Sie diesen Absturz melden.</string>
     <string name="crash_notif_ticker_text">BookCatalogue ist abgestürzt</string>
@@ -335,18 +311,6 @@ anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den "Zurück
     <string name="sort_added_date">Erfassungsdatum</string>
     <string name="sort_author_year">Autor und Jahr</string>
     <string name="empty_with_brackets">(leer)</string>
-    <item name="MENU_DELETE_BOOK" type="id" />
-    <item name="MENU_EDIT_BOOK" type="id" />
-    <item name="MENU_EDIT_BOOK_NOTES" type="id" />
-    <item name="MENU_EDIT_BOOK_FRIENDS" type="id" />
-    <item name="MENU_SEND_BOOK_TO_GR" type="id" />
-    <item name="MENU_EDIT_AUTHOR" type="id" />
-    <item name="MENU_EDIT_FORMAT" type="id" />
-    <item name="MENU_DELETE_SERIES" type="id" />
-    <item name="MENU_EDIT_SERIES" type="id" />
-    <item name="MENU_DELETE_STYLE" type="id" />
-    <item name="MENU_EDIT_STYLE" type="id" />
-    <item name="MENU_CLONE_STYLE" type="id" />
     <string name="booklist_preferences">Einstellungen der Bücherliste</string>
     <string name="extra_book_details">Zusätzliche Buchdetails</string>
     <string name="general">Allgemein</string>

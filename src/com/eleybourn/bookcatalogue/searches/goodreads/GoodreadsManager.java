@@ -76,7 +76,7 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_BOOKSHELF;
 
 /**
  * Class to wrap all GoodReads API calls and manage an API connection.
@@ -665,12 +665,12 @@ public class GoodreadsManager {
     /**
      * Wrapper to send an entire book, including shelves, to Goodreads.
      *
-     * @param dbHelper DB connection
+     * @param db DB connection
      * @param books    Cursor pointing to single book to send
      *
      * @return Disposition of book
      */
-    public ExportDisposition sendOneBook(CatalogueDBAdapter dbHelper, BooksRowView books) throws
+    public ExportDisposition sendOneBook(CatalogueDBAdapter db, BooksRowView books) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, IOException, NetworkException, BookNotFoundException {
         long bookId = books.getId();
@@ -713,7 +713,7 @@ public class GoodreadsManager {
 
                 // If we got an ID, save it against the book
                 if (grId != 0) {
-                    dbHelper.setGoodreadsBookId(bookId, grId);
+                    db.setGoodreadsBookId(bookId, grId);
                 }
             } catch (BookNotFoundException e) {
                 return ExportDisposition.notFound;
@@ -735,7 +735,7 @@ public class GoodreadsManager {
 
             // Build the list of shelves that we have in the local database for the book
             int exclusiveCount = 0;
-            try(Cursor shelfCsr = dbHelper.getAllBookBookshelvesForGoodreadsCursor(bookId)) {
+            try(Cursor shelfCsr = db.getAllBookBookshelvesForGoodreadsCursor(bookId)) {
                 int shelfCol = shelfCsr.getColumnIndexOrThrow(KEY_BOOKSHELF);
                 // Collect all shelf names for this book
                 while (shelfCsr.moveToNext()) {

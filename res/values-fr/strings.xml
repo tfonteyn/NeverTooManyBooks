@@ -1,26 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Begin: No translation required Section -->
-
-    <string name="app_name">Book Catalogue</string>
-    <string name="system_app_name">Book Catalogue</string>
-    <string name="contact1">eleybourn@gmail.com</string>
-    <string name="contact2">philip.warner@rhyme.com.au</string>
-    <string name="goodreads">Goodreads</string>
-    <string name="goodreads_url">http://www.goodreads.com</string>
     <string name="contact_label">Contact:</string>
-    <string name="webpage">https://wiki.github.com/eleybourn/Book-Catalogue/</string>
-    <string name="sourcecode">https://github.com/eleybourn/Book-Catalogue</string>
-    <string name="helppage">https://github.com/eleybourn/Book-Catalogue/wiki/Help</string>
-    <string name="debug_email">eleybourn@gmail.com;grunthos@rhyme.com.au</string>
     <string name="series_num">No</string>
-
-    <item name="TAG_POSITION" type="id" />
-    <item name="TAG_ORIGINAL_VALUE" type="id" />
-
-    <!-- End: No translation required Section -->
-
 
     <!-- Begin : What's New Section -->
 
@@ -287,9 +269,6 @@
     <string name="click_on_thumb">Cliquez sur une vignette pour afficher une image plus grande</string>
     <string name="loading">Chargement&#8230;</string>
     <string name="image_not_found">Image non trouvée</string>
-
-    <item name="fieldCheckbox" type="id" />
-
     <string name="select_min_1_field">Choisissez au moins un champ à mettre à jour</string>
     <string name="usage_copy_if_blank">Copier si vide</string>
     <string name="usage_add_extra">Ajouter des données supplémentaires</string>

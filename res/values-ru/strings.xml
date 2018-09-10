@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">BookCatalogue</string>
-    <string name="system_app_name">BookCatalogue</string>
     <string name="menu_insert">Добавить книгу</string>
     <string name="menu_delete">Удалить книгу</string>
     <string name="author">Автор</string>
@@ -63,11 +61,6 @@
     <string name="webpage_label">Веб-адрес проекта:</string>
     <string name="sourcecode_label">Исходный код:</string>
     <string name="contact_label">Контакты разработчиков:</string>
-    <string name="webpage">https://wiki.github.com/eleybourn/Book-Catalogue/</string>
-    <string name="sourcecode">https://github.com/eleybourn/Book-Catalogue</string>
-    <string name="helppage">https://github.com/eleybourn/Book-Catalogue/wiki/Help</string>
-    <string name="contact1">eleybourn@gmail.com</string>
-    <string name="contact2">philip.warner@rhyme.com.au</string>
     <string name="donate_label">Пожертвовать</string>
     <string name="about_label">О приложении…</string>
     <string name="sortby_author">Отсортировать по автору</string>
@@ -145,10 +138,6 @@
     <string name="add">Добавить</string>
     <string name="noauthors">Не указаны авторы книги. Пожалуйста, добавьте автора(ов), используя текстовую область и кнопку в верхней части этого экрана.</string>
     <string name="noseries">Не указана серия книги. Вы можете добавить серию используя текстовую область в верхней части этого экрана.</string>
-
-    <item name="TAG_POSITION" type="id" />
-    <item name="TAG_ORIGINAL_VALUE" type="id" />
-
     <string name="cover_not_set">Обложка не установлена</string>
     <string name="cover_corrupt">Обложка испорчена</string>
     <string name="cover_detail">Детальная информация об обложке</string>
@@ -197,9 +186,6 @@
     <string name="click_on_thumb">Щёлкните по миниатюре для просмотра большого изображения</string>
     <string name="loading">Загрузка&#8230;</string>
     <string name="image_not_found">Изображение не найдено</string>
-
-    <item name="fieldCheckbox" type="id" />
-
     <string name="select_min_1_field">Выберите хотя бы одно поле для обновления</string>
     <string name="usage_copy_if_blank">Копирует, если пусто</string>
     <string name="usage_add_extra">Добавляет дополнительные данные</string>
@@ -225,7 +211,6 @@
     <string name="megabytes">%.2fМб</string>
     <string name="kilobytes">%.2fкб</string>
     <string name="bytes">%.0f байт</string>
-    <string name="debug_email">eleybourn@gmail.com;grunthos@rhyme.com.au</string>
     <string name="sortby_author_given">Отсортировать по автору (имени)</string>
     <string name="debug_subject">Собрана отладочная информация</string>
     <string name="debug_body">Пожалуйста, кратко опишите обнаруженную ошибку.</string>
@@ -244,22 +229,11 @@
     <string name="retry_task">Повторить</string>
     <string name="delete_event">Удалить событие</string>
     <string name="delete_task">Удалить задачу</string>
-
-    <item name="TAG_EVENT" type="id" />
-    <item name="TAG_HOLDER" type="id" />
-    <item name="TAG_TASK" type="id" />
-    <item name="TAG_TASK_ID" type="id" />
-    <item name="TAG_BOOK_EVENT_HOLDER" type="id" />
-    <item name="TAG_TASK_HOLDER" type="id" />
-    <item name="TAG_PROPERTY" type="id" />
-    <item name="TAG_DIALOG_ITEM" type="id" />
-
     <string name="my_books">Мои книги</string>
     <string name="my_books_classic">Мои книги (Classic)</string>
     <string name="loan_return_book">Одолжить, Вернуть или Редактировать книгу</string>
     <string name="admin_and_prefs">Администрирование и Настройки</string>
     <string name="edit_book_send_to_gr">Послать на goodreads</string>
-    <string name="goodreads">goodreads</string>
     <string name="goodreads_auth_blurb_part1">Goodreads это сайт, чья основная миссия это "помогать людям находить и делиться книгами, которые они любят".
         									У них есть обширная база данных с книгами и отзывами на них. И если Вы зарегистрированный пользователь goodreads,
         									наше приложение может экспортировать и импортировать ваши книги, полки и обзоры. Наше приложение полностью 
@@ -270,7 +244,6 @@
         									через сайт Goodreads. Из-за капризов интернет соединения Вы можете увидеть пустую страницу. В этом случае просто нажмите
         									кнопку Назад, чтобы вернуться сюда!</string>
     <string name="goodreads_auth_blurb_part3">Но помните&#8230;всё это делать не обязательно: наше приложение замечательно работает и без этого!</string>
-    <string name="goodreads_url">http://www.goodreads.com</string>
     <string name="authorize_access">Авторизация</string>
     <string name="authorize_access_already_auth">Кажется, вы уже авторизованы. Все функции Goodreads уже должны быть доступны</string>
     <string name="goodreads_access_error">Возникли проблемы с соединением во время доступа к Goodreads. Пожалуйста, проверьте работает ли сайт Goodreads и если проблема останется сообщите в поддержку</string>
@@ -309,11 +282,6 @@
     <string name="send_all_to_goodreads_result">%1$d книг обработано: %2$d отправлено успешно, %3$d без ISBN и %4$d с ISBN но не найдено в Goodreads</string>
     <string name="x_of_y">%1$d из %2$d</string>
     <string name="send_book_to_goodreads">Отправить книгу %1$s на Goodreads</string>
-
-    <item name="NOTIFICATION" type="id" />
-    <item name="TAG_GOODREADS_WORK" type="id" />
-    <item name="TAG_GET_THUMBNAIL_TASK" type="id" />
-
     <string name="erase_cover_cache">Очистить кэш обложек</string>
     <string name="crash_toast_text">BookCatalogue завершилось с ошибкой. Пожалуйста, помогите нам сделать приложение лучше, отправив эту ошибку.</string>
     <string name="crash_notif_ticker_text">BookCatalogue завершилось с ошибкой</string>
@@ -331,20 +299,6 @@
     <string name="no_publisher">(без издателя)</string>
     <string name="no_author">(без автора)</string>
     <string name="no_date">(без даты)</string>
-
-    <item name="ACTIVITY_CREATE_BOOK_MANUALLY" type="id" />
-    <item name="ACTIVITY_CREATE_BOOK_ISBN" type="id" />
-    <item name="ACTIVITY_CREATE_BOOK_SCAN" type="id" />
-    <item name="ACTIVITY_EDIT_BOOK" type="id" />
-    <item name="ACTIVITY_ADMIN" type="id" />
-    <item name="ACTIVITY_HELP" type="id" />
-    <item name="ACTIVITY_PREFERENCES" type="id" />
-    <item name="ACTIVITY_BOOKLIST_STYLE" type="id" />
-    <item name="ACTIVITY_BOOKLIST_STYLE_PROPERTIES" type="id" />
-    <item name="ACTIVITY_BOOKLIST_STYLE_GROUPS" type="id" />
-    <item name="ACTIVITY_BOOKLIST_STYLES" type="id" />
-    <item name="ACTIVITY_GOODREADS_EXPORT_FAILURES" type="id" />
-
     <string name="show_thumbnails">Показывать миниатюры</string>
     <string name="prefer_large_thumbnails">Большие миниатюры предпочтительней</string>
     <string name="sort_author_series">Сначала автор потом серия</string>
@@ -357,20 +311,6 @@
     <string name="sort_added_date">Дата добавления</string>
     <string name="sort_author_year">Автор и год</string>
     <string name="empty_with_brackets">(пусто)</string>
-
-    <item name="MENU_DELETE_BOOK" type="id" />
-    <item name="MENU_EDIT_BOOK" type="id" />
-    <item name="MENU_EDIT_BOOK_NOTES" type="id" />
-    <item name="MENU_EDIT_BOOK_FRIENDS" type="id" />
-    <item name="MENU_SEND_BOOK_TO_GR" type="id" />
-    <item name="MENU_EDIT_AUTHOR" type="id" />
-    <item name="MENU_EDIT_FORMAT" type="id" />
-    <item name="MENU_DELETE_SERIES" type="id" />
-    <item name="MENU_EDIT_SERIES" type="id" />
-    <item name="MENU_DELETE_STYLE" type="id" />
-    <item name="MENU_EDIT_STYLE" type="id" />
-    <item name="MENU_CLONE_STYLE" type="id" />
-
     <string name="booklist_preferences">Список книг</string>
     <string name="extra_book_details">Дополнительная информация</string>
     <string name="general">Основные</string>
@@ -515,9 +455,6 @@
     <string name="menu_edit_format">Редактировать формат&#8230;</string>
     <string name="edit_format_name">Редактировать имя формата</string>
     <string name="name_can_not_be_blank">Имя не может быть пустым</string>
-
-    <item name="ACTIVITY_ADMIN_FINISH" type="id" />
-
     <string name="export_starting_ellipsis">Начало экспорта&#8230;</string>
     <string name="resizing_cover_thumbnails">Изменение размера миниатюр обложек</string>
     <string name="resize_each_time">Не кэшировать (используется меньше места, но пролистывание будет медленнее)</string>

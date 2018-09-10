@@ -23,7 +23,7 @@ package com.eleybourn.bookcatalogue.booklist;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle.CompoundKey;
-import com.eleybourn.bookcatalogue.database.DbUtils.DomainDefinition;
+import com.eleybourn.bookcatalogue.database.DomainDefinition;
 import com.eleybourn.bookcatalogue.properties.BooleanListProperty;
 import com.eleybourn.bookcatalogue.properties.ListProperty.ItemEntries;
 import com.eleybourn.bookcatalogue.properties.Properties;
@@ -385,16 +385,8 @@ public class BooklistGroup implements Serializable {
 			return mAllAuthors.getResolvedValue();
 		}
 
-		public void setAllAuthors(Boolean allAuthors) {
-			mAllAuthors.set(allAuthors);
-		}
-
 		public boolean getGivenName() {
 			return mGivenName.getResolvedValue();
-		}
-
-		public void setGivenName(Boolean giveName) {
-			mGivenName.set(giveName);
 		}
 
 		/**

@@ -9,17 +9,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
+import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.utils.BookUtils;
-import com.eleybourn.bookcatalogue.utils.Convert;
-import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.HintManager;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -140,13 +135,13 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
 
     /**
      * FIXME: is this *really* the best way to do this ? Surely this can be done better/faster ?
-     * ArrayAdapter...
+     * ArrayAdapter...-> avoid inflating in a loop
      *
      */
     protected void populateAnthologyListField(BookData book) {
         ArrayList<Author> bookAuthors = book.getAuthors();
         boolean isSingleAuthor = (1 == bookAuthors.size());
-        long firstAuthorId = book.getAuthors().get(0).id;
+        Author firstAuthorId = book.getAuthors().get(0);
 
         ViewGroup view = getView().findViewById(R.id.anthology_titlelist);
         for (AnthologyTitle aTitle : book.getAnthologyTitles()) {
@@ -157,7 +152,7 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
 
             TextView antAuthor = antGroup.findViewById(R.id.row_author);
             Author author = aTitle.getAuthor();
-            if (isSingleAuthor && (firstAuthorId == author.id)) {
+            if (isSingleAuthor && (firstAuthorId.equals(author))) {
                 antAuthor.setVisibility(View.GONE);
             } else {
                 antAuthor.setText(author.getSortName());
@@ -226,7 +221,7 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
             }
             //FIXME: html causes colour to change making 'Light' theme display very faint
             mFields.getField(R.id.series)
-                    .setShowHtml(true)
+                    .setShowHtml(true) /* so <br/> work */
                     .setValue(newText);
         }
     }
@@ -238,15 +233,15 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
      */
     private void addFields() {
         // From 'My comments' tab
-        mFields.add(R.id.rating, ColumnNames.KEY_RATING, null);
-        mFields.add(R.id.notes, ColumnNames.KEY_NOTES, null)
+        mFields.add(R.id.rating, ColumnInfo.KEY_RATING, null);
+        mFields.add(R.id.notes, ColumnInfo.KEY_NOTES, null)
                 .setShowHtml(true);
-        mFields.add(R.id.read_start, ColumnNames.KEY_READ_START, null, new Fields.DateFieldFormatter());
-        mFields.add(R.id.read_end, ColumnNames.KEY_READ_END, null, new Fields.DateFieldFormatter());
-        mFields.add(R.id.location, ColumnNames.KEY_LOCATION, null);
+        mFields.add(R.id.read_start, ColumnInfo.KEY_READ_START, null, new Fields.DateFieldFormatter());
+        mFields.add(R.id.read_end, ColumnInfo.KEY_READ_END, null, new Fields.DateFieldFormatter());
+        mFields.add(R.id.location, ColumnInfo.KEY_LOCATION, null);
         // Make sure the label is hidden when the ISBN is
-        mFields.add(R.id.isbn_label, "", ColumnNames.KEY_ISBN, null);
-        mFields.add(R.id.publishing_details, "", ColumnNames.KEY_PUBLISHER, null);
+        mFields.add(R.id.isbn_label, "", ColumnInfo.KEY_ISBN, null);
+        mFields.add(R.id.publishing_details, "", ColumnInfo.KEY_PUBLISHER, null);
     }
 
     /**
@@ -256,7 +251,7 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
     private void formatFormatSection(BookData book) {
         // Number of pages
         Field pagesField = mFields.getField(R.id.pages);
-        String pages = book.getString(ColumnNames.KEY_PAGES);
+        String pages = book.getString(ColumnInfo.KEY_PAGES);
         boolean hasPages = pages != null && !pages.isEmpty();
         if (hasPages) {
             pagesField.setValue(getString(R.string.book_details_readonly_pages, pages));
@@ -264,7 +259,7 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
 
         // 'format' field
         Field formatField = mFields.getField(R.id.format);
-        String format = book.getString(ColumnNames.KEY_FORMAT);
+        String format = book.getString(ColumnInfo.KEY_FORMAT);
         boolean hasFormat = format != null && !format.isEmpty();
         if (hasFormat) {
             if (hasPages) {
@@ -280,9 +275,9 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
      * of 'publisher' and 'date published' fields.
      */
     private void formatPublishingSection(BookData book) {
-        String date = book.getString(ColumnNames.KEY_DATE_PUBLISHED);
+        String date = book.getString(ColumnInfo.KEY_DATE_PUBLISHED);
         boolean hasDate = date != null && !date.isEmpty();
-        String pub = book.getString(ColumnNames.KEY_PUBLISHER);
+        String pub = book.getString(ColumnInfo.KEY_PUBLISHER);
         boolean hasPub = pub != null && !pub.isEmpty();
         String value;
 
@@ -335,7 +330,7 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
      * @param book  the book
      */
     private void showReadStatus(final BookData book) {
-        if (FieldVisibility.isVisible(ColumnNames.KEY_READ)) {
+        if (FieldVisibilityActivity.isVisible(ColumnInfo.KEY_READ)) {
             final CompoundButton readField = getView().findViewById(R.id.read);
             // set initial display state, REMINDER: setSelected will NOT update the GUI...
             readField.setChecked(book.isRead());

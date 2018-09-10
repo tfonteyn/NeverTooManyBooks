@@ -27,27 +27,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.widget.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.TextView;
-
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.searches.goodreads.SendOneBookTask;
 import com.eleybourn.bookcatalogue.utils.BcQueueManager;
 import com.eleybourn.bookcatalogue.utils.HintManager.HintOwner;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
-
-import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
-import net.philipwarner.taskqueue.ContextDialogItem;
-import net.philipwarner.taskqueue.Event;
-import net.philipwarner.taskqueue.EventsCursor;
-import net.philipwarner.taskqueue.QueueManager;
+import net.philipwarner.taskqueue.*;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ROWID;
 
 /**
  * Class to define all book-related events that may be stored in the QueueManager.
@@ -127,7 +118,7 @@ public class BookEvents {
 		 */
 		@Override
 		public View newListItemView(LayoutInflater inflater, Context context, BindableItemSQLiteCursor cursor, ViewGroup parent) {
-			View view = inflater.inflate(R.layout.book_event_info, parent, false);
+			View view = inflater.inflate(R.layout.row_book_event_info, parent, false);
 			ViewTagger.setTag(view, R.id.TAG_EVENT, this);
 			BookEventHolder holder = new BookEventHolder();
 			holder.event = this;
@@ -354,7 +345,7 @@ public class BookEvents {
 	 */
 	private static void editBook(Context ctx, long bookId) {
 		Intent i = new Intent(ctx, BookEdit.class);
-		i.putExtra(ColumnNames.KEY_ROWID, bookId);
+		i.putExtra(KEY_ROWID, bookId);
 		i.putExtra(BookEdit.TAB, BookEdit.TAB_EDIT);
 		ctx.startActivity(i);	
 	}

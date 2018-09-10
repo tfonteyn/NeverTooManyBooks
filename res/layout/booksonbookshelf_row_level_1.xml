@@ -14,12 +14,13 @@
         android:paddingTop="12dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textStyle="bold"
-        tools:text="name"/>
+        tools:text="Author name f.e."/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@id/name"
+        android:background="@android:drawable/divider_horizontal_bright"
         android:paddingBottom="8dp"
         android:paddingTop="2dp" />
 

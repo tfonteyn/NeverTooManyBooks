@@ -34,8 +34,8 @@ public class EditAuthorDialog {
 	private final CatalogueDBAdapter mDb;
 	private final Runnable mOnChanged;
 
-	EditAuthorDialog(Context context, CatalogueDBAdapter dbHelper, final Runnable onChanged) {
-		mDb = dbHelper;
+	EditAuthorDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
+		mDb = db;
 		mContext = context;
 		mOnChanged = onChanged;
 	}

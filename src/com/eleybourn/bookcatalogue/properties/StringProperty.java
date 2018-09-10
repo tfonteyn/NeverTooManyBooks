@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -35,103 +35,107 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 /**
  * Implement a String-based property with optional (non-empty) validation.
- * 
+ *
  * @author Philip Warner
  */
 @SuppressWarnings("unused")
 public class StringProperty extends ValuePropertyWithGlobalDefault<String> implements StringValue {
-	/** Flag indicating value must be non-blabnk */
-	private boolean mRequireNonBlank = false;
+    /** Flag indicating value must be non-blank */
+    private boolean mRequireNonBlank = false;
 
-	public StringProperty(String uniqueId, PropertyGroup group, int nameResourceId, String value, String defaultPref, String defaultValue) {
-		super(uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
-	}
-	public StringProperty(String uniqueId, PropertyGroup group, int nameResourceId, String defaultPref) {
-		super(uniqueId, group, nameResourceId, null, defaultPref, "");
-	}
-	public StringProperty(String uniqueId, PropertyGroup group, int nameResourceId) {
-		super(uniqueId, group, nameResourceId, null, null, "");
-	}
+    public StringProperty(String uniqueId, PropertyGroup group, int nameResourceId, String value, String defaultPref, String defaultValue) {
+        super(uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
+    }
 
-	/** Accessor */
-	public void setRequireNonBlank(boolean requireNonBlank) {
-		mRequireNonBlank = requireNonBlank;
-	}
+    public StringProperty(String uniqueId, PropertyGroup group, int nameResourceId, String defaultPref) {
+        super(uniqueId, group, nameResourceId, null, defaultPref, "");
+    }
 
-	/** Accessor */
-	public boolean getRequireNonBlank() {
-		return mRequireNonBlank;
-	}
+    public StringProperty(String uniqueId, PropertyGroup group, int nameResourceId) {
+        super(uniqueId, group, nameResourceId, null, null, "");
+    }
 
-	/**
-	 * Build the editor for this property
-	 */
-	@Override
-	public View getView(LayoutInflater inflater) {
-		// Get base view and components. Tag them.
-		View v = inflater.inflate(R.layout.property_value_string, null);
-		ViewTagger.setTag(v, R.id.TAG_PROPERTY, this);
-		final TextView name = v.findViewById(R.id.name);
-		final EditText value = v.findViewById(R.id.value);
+    /** Accessor */
+    @SuppressWarnings("WeakerAccess")
+    public boolean getRequireNonBlank() {
+        return mRequireNonBlank;
+    }
 
-		// Set the current values
-		name.setText(getName());
-		value.setHint(getName());
-		value.setText(get());
+    /** Accessor */
+    public void setRequireNonBlank(boolean requireNonBlank) {
+        mRequireNonBlank = requireNonBlank;
+    }
 
-		// Reflect all changes in underlying data
-		value.addTextChangedListener(new TextWatcher(){
-			@Override
-			public void afterTextChanged(Editable s) {
-				set(s.toString());
-			}
+    /** Build the editor for this property */
+    @Override
+    public View getView(LayoutInflater inflater) {
+        // Get base view and components. Tag them.
+        View v = inflater.inflate(R.layout.property_value_string, null);
+        ViewTagger.setTag(v, R.id.TAG_PROPERTY, this);
+        final TextView name = v.findViewById(R.id.name);
+        final EditText value = v.findViewById(R.id.value);
 
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+        // Set the current values
+        name.setText(getName());
+        value.setHint(getName());
+        value.setText(get());
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) { }
-		});
+        // Reflect all changes in underlying data
+        value.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                set(s.toString());
+            }
 
-		return v;
-	}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-	/**
-	 * Get underlying preferences value
-	 */
-	@Override
-	protected String getGlobalDefault() {
-		return BookCataloguePreferences.getString(getPreferenceKey(), getDefaultValue());
-	}
-	/**
-	 * Set underlying preferences value
-	 */
-	@Override
-	protected StringProperty setGlobalDefault(String value) {
-		BookCataloguePreferences.setString(getPreferenceKey(), value);
-		return this;
-	}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+        });
 
-	@Override
-	public StringProperty set(Property p) {
-		if (! (p instanceof StringValue) )
-			throw new RuntimeException("Can not find a compatible interface for string parameter");
-		StringValue bv = (StringValue) p;
-		set(bv.get());
-		return this;
-	}
+        return v;
+    }
 
-	/**
-	 * Optional validator.
-	 */
-	@Override
-	public void validate() {
-		if (getRequireNonBlank()) {
-			String s = get();
-			if (s == null || s.trim().isEmpty())
-				throw new ValidationException(BookCatalogueApp.getResourceString(R.string.thing_must_not_be_blank, getName()));
-		}
-	}
+    /** Get underlying preferences value */
+    @Override
+    protected String getGlobalDefault() {
+        return BookCataloguePreferences.getString(getPreferenceKey(), getDefaultValue());
+    }
 
+    /** Set underlying preferences value */
+    @Override
+    protected StringProperty setGlobalDefault(String value) {
+        BookCataloguePreferences.setString(getPreferenceKey(), value);
+        return this;
+    }
+
+    @Override
+    public StringProperty set(Property p) {
+        if (!(p instanceof StringValue))
+            throw new RuntimeException("Can not find a compatible interface for string parameter");
+        StringValue bv = (StringValue) p;
+        set(bv.get());
+        return this;
+    }
+
+    /** Optional validator. */
+    @Override
+    public void validate() {
+        if (getRequireNonBlank()) {
+            String s = get();
+            if (s == null || s.trim().isEmpty())
+                throw new ValidationException(BookCatalogueApp.getResourceString(R.string.thing_must_not_be_blank, getName()));
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "StringProperty{" +
+                "mRequireNonBlank=" + mRequireNonBlank +
+                '}';
+    }
 }
 

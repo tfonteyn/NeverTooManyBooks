@@ -1,10 +1,8 @@
-package com.eleybourn.bookcatalogue.database.dbaadapter;
+package com.eleybourn.bookcatalogue.database;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
-
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.DbSync;
 
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -19,13 +17,23 @@ import java.util.Map;
  *
  * @author Philip Warner
  */
-public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
+public class TableInfo implements Iterable<ColumnInfo> {
 
     public static final int CLASS_INTEGER = 1;
     public static final int CLASS_TEXT = 2;
     public static final int CLASS_REAL = 3;
+
+    static final String TYPE_INT = "int";
+    static final String TYPE_INTEGER = "integer";
+    public static final String TYPE_TEXT = "text";
+    static final String TYPE_DATE = "date";
+    static final String TYPE_FLOAT = "float";
+    static final String TYPE_BLOB = "blob";
+    static final String TYPE_BOOLEAN = "boolean";
+
     private final Map<String, ColumnInfo> mColumns;
     private final DbSync.SynchronizedDb mSyncedDb;
+
     public TableInfo(DbSync.SynchronizedDb db, String tableName) {
         mSyncedDb = db;
         mColumns = describeTable(tableName);
@@ -51,12 +59,13 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
      *
      * @return A collection of ColumnInfo objects.
      */
-    private Map<String, ColumnInfo> describeTable(String tableName) {
+    @NonNull
+    private Map<String, ColumnInfo> describeTable(@NonNull String tableName) {
         String sql = "PRAGMA table_info(" + tableName + ")";
 
-        Map<String, ColumnInfo> cols = new Hashtable<>();
+        Map<String, ColumnInfo> allColumns = new Hashtable<>();
 
-        try(Cursor colCsr = mSyncedDb.rawQuery(sql, new String[]{})) {
+        try (Cursor colCsr = mSyncedDb.rawQuery(sql, new String[]{})) {
             if (colCsr == null)
                 throw new IllegalArgumentException();
 
@@ -73,53 +82,36 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
                 col.isPrimaryKey = colCsr.getInt(5) == 1;
                 String tName = col.typeName.toLowerCase();
                 switch (tName) {
-                    case "int":
-                    case "integer":
+                    case TYPE_INT:
+                    case TYPE_INTEGER:
                         col.typeClass = CLASS_INTEGER;
                         break;
-                    case "text":
+                    case TYPE_TEXT:
                         col.typeClass = CLASS_TEXT;
                         break;
-                    case "float":
+                    case TYPE_FLOAT:
                     case "real":
                     case "double":
                         col.typeClass = CLASS_REAL;
                         break;
-                    case "date":
+                    case TYPE_DATE:
                     case "datetime":
                         col.typeClass = CLASS_TEXT;
                         break;
-                    case "boolean":
+                    case TYPE_BOOLEAN:
                         col.typeClass = CLASS_INTEGER;
                         break;
                     default:
                         throw new RuntimeException("Unknown data type '" + tName + "'");
                 }
 
-                cols.put(col.name.toLowerCase(), col);
+                allColumns.put(col.name.toLowerCase(), col);
                 if (colCsr.isLast())
                     break;
                 colCsr.moveToNext();
             }
         }
-        return cols;
-    }
-
-    /**
-     * Column info support. This is useful for auto-building queries from maps that have
-     * more columns than are in the table.
-     *
-     * @author Philip Warner
-     */
-    @SuppressWarnings("WeakerAccess")
-    public static class ColumnInfo {
-        public int position;
-        public String name;
-        public String typeName;
-        public boolean allowNull;
-        public boolean isPrimaryKey;
-        public String defaultValue;
-        public int typeClass;
+        return allColumns;
     }
 
 

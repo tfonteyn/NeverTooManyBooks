@@ -14,47 +14,32 @@ import android.provider.MediaStore;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import com.eleybourn.bookcatalogue.CoverBrowser.OnImageSelectedListener;
 import com.eleybourn.bookcatalogue.Fields.Field;
-import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.cropper.CropCropImage;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
-import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_FORMATTED;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_FORMAT;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_GENRE;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ISBN;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PAGES;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_NAME;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SIGNED;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TITLE;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.*;
 
 /**
  * Abstract class for creating activities containing book details.
@@ -92,6 +77,8 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
     private static final String BKEY_NO_FACE_DETECTION = "noFaceDetection";
     private static final String BKEY_RETURN_DATA = "return-data";
     private static final String BKEY_DATA = "data";
+    private static final String BOOKSHELF_TEXT = "bookshelf_text";
+    private static final String THUMBNAIL = "thumbnail";
     /**
      * Counter used to prevent images being reused accidentally
      */
@@ -106,8 +93,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
             delete.setIcon(android.R.drawable.ic_menu_delete);
 
             // Creating submenu item for rotate
-            android.view.SubMenu replaceSubmenu = menu.addSubMenu(0, CONTEXT_SUBMENU_REPLACE_THUMB, 2,
-                    R.string.menu_replace_thumb);
+            SubMenu replaceSubmenu = menu.addSubMenu(0, CONTEXT_SUBMENU_REPLACE_THUMB, 2, R.string.menu_replace_thumb);
             replaceSubmenu.setIcon(android.R.drawable.ic_menu_gallery);
 
             MenuItem add_photo = replaceSubmenu.add(0, CODE_ADD_PHOTO, 1, R.string.menu_add_thumb_photo);
@@ -118,7 +104,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
             alt_covers.setIcon(android.R.drawable.ic_menu_zoom);
 
             // Implementing submenu for rotate
-            android.view.SubMenu submenu = menu.addSubMenu(0, CONTEXT_ID_SUBMENU_ROTATE_THUMB, 3, R.string.menu_rotate_thumb);
+            SubMenu submenu = menu.addSubMenu(0, CONTEXT_ID_SUBMENU_ROTATE_THUMB, 3, R.string.menu_rotate_thumb);
             add_gallery.setIcon(android.R.drawable.ic_menu_rotate);
 
             MenuItem rotate_photo_cw = submenu.add(0, CONTEXT_ID_ROTATE_THUMB_CW, 1, R.string.menu_rotate_thumb_cw);
@@ -171,7 +157,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ")", Tracker.States.Enter);
+        Tracker.enterOnActivityResult(this, requestCode,resultCode);
         try {
             super.onActivityResult(requestCode, resultCode, intent);
             switch (requestCode) {
@@ -264,7 +250,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
                 }
             }
         } finally {
-            Tracker.handleEvent(this, "onActivityResult", Tracker.States.Exit);
+            Tracker.exitOnActivityResult(this,requestCode,resultCode);
         }
     }
 
@@ -660,7 +646,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
                     null, new Fields.DateFieldFormatter());
 
         mFields.add(R.id.series, KEY_SERIES_NAME, KEY_SERIES_NAME, null);
-        mFields.add(R.id.list_price, "list_price", null);
+        mFields.add(R.id.list_price, KEY_LIST_PRICE, null);
         mFields.add(R.id.pages, KEY_PAGES, null);
         mFields.add(R.id.format, KEY_FORMAT, null);
         //mFields.add(R.id.bookshelf, KEY_BOOKSHELF, null);
@@ -669,11 +655,11 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
         mFields.add(R.id.genre, KEY_GENRE, null);
         mFields.add(R.id.language, DatabaseDefinitions.DOM_LANGUAGE.name, null);
 
-        mFields.add(R.id.row_img, "", "thumbnail", null);
+        mFields.add(R.id.row_img, "", THUMBNAIL, null);
         mFields.getField(R.id.row_img).getView().setOnCreateContextMenuListener(mCreateBookThumbContextMenuListener);
 
         mFields.add(R.id.format_button, "", KEY_FORMAT, null);
-        mFields.add(R.id.bookshelf, "bookshelf_text", null).doNoFetch = true; // Output-only field
+        mFields.add(R.id.bookshelf, BOOKSHELF_TEXT, null).doNoFetch = true; // Output-only field
         mFields.add(R.id.signed, KEY_SIGNED, null);
     }
 

@@ -63,11 +63,11 @@
         android:layout_below="@id/top_buttons"
         android:fillViewport="true">
 
-        <com.eleybourn.bookcatalogue.widgets.TouchListView xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
+        <com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
             android:id="@id/android:list"
+            style="@style/TouchListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
             tlv:grabber="@+id/grabber"
             tlv:normal_height="64dip"
             tlv:remove_mode="none" />

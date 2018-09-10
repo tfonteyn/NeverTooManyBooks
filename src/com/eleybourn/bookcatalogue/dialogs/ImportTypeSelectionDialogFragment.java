@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.BackupReader;
@@ -21,8 +22,6 @@ import java.io.File;
 import java.io.IOException;
 
 public class ImportTypeSelectionDialogFragment extends DialogFragment {
-	private static final String DIALOG_ID = "dialogId";
-	private static final String FILE_SPEC = "fileSpec";
 	private int mDialogId;
 	private File mFile;
 	private boolean mArchiveHasValidDates;
@@ -47,8 +46,8 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
 	public static ImportTypeSelectionDialogFragment newInstance(int dialogId, File file) {
 		ImportTypeSelectionDialogFragment frag = new ImportTypeSelectionDialogFragment();
         Bundle args = new Bundle();
-        args.putInt(DIALOG_ID, dialogId);
-		args.putString(FILE_SPEC, file.getAbsolutePath());
+        args.putInt(UniqueId.BKEY_DIALOG_ID, dialogId);
+		args.putString(UniqueId.BKEY_FILE_SPEC, file.getAbsolutePath());
         frag.setArguments(args);
         return frag;
     }
@@ -88,8 +87,8 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
     @NonNull
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	mDialogId = getArguments().getInt(DIALOG_ID);
-    	mFile = new File(getArguments().getString(FILE_SPEC));
+    	mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
+    	mFile = new File(getArguments().getString(UniqueId.BKEY_FILE_SPEC));
 
 		try {
 			BackupReader reader = BackupManager.readBackup(mFile);
@@ -106,9 +105,9 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
 		alertDialog.setIcon(android.R.drawable.ic_menu_help);
 		alertDialog.setCanceledOnTouchOutside(false);
 
-		setOnClickListener(v, R.id.all_books_row);
+		setOnClickListener(v, R.id.all_books);
 		if (mArchiveHasValidDates) {
-			setOnClickListener(v, R.id.new_and_changed_books_row);
+			setOnClickListener(v, R.id.new_and_changed_books);
 		} else {
 			TextView blurb = v.findViewById(R.id.new_and_changed_books_blurb);
 			blurb.setText(R.string.old_archive_blurb);
@@ -118,7 +117,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
     }
     
     private void handleClick(View v) {
-    	if (!mArchiveHasValidDates && v.getId() == R.id.new_and_changed_books_row) {
+    	if (!mArchiveHasValidDates && v.getId() == R.id.new_and_changed_books) {
     		Toast.makeText(getActivity(), R.string.old_archive_blurb, Toast.LENGTH_LONG).show();
     		return;
     	}

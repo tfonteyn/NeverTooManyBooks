@@ -44,9 +44,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_DETAILS;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_DETAILS;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TITLE;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_DETAILS;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_DETAILS;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
 
 /**
  * Handle all aspects of searching (and ultimately synchronizing with) LibraryThing.

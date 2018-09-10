@@ -28,6 +28,7 @@ import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
@@ -250,7 +251,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
     private static void getUserStyles(CatalogueDBAdapter db, BooklistStyles styles) {
         BooklistStyle style;
 
-        try(Cursor c = db.getBooklistStyles()) {
+        try (Cursor c = db.getBooklistStyles()) {
             // Get the columns we want
             int idCol = c.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
             int blobCol = c.getColumnIndex(DatabaseDefinitions.DOM_STYLE.name);

@@ -176,7 +176,7 @@ public class ImportThread extends ManagedTask {
 //		// Version 1->3.3 export with family_name and author_id. Version 3.4+ do not; latest versions
 //		// make an attempt at escaping characters etc to preserve formatting.
 //		boolean fullEscaping;
-//		if (values.containsKey(CatalogueDBAdapter.KEY_AUTHOR_ID) && values.containsKey(CatalogueDBAdapter.KEY_FAMILY_NAME)) {
+//		if (values.containsKey(DatabaseDefinitions.KEY_AUTHOR_ID) && values.containsKey(DatabaseDefinitions.KEY_FAMILY_NAME)) {
 //			// Old export, or one using old formats
 //			fullEscaping = false;
 //		} else {
@@ -189,11 +189,11 @@ public class ImportThread extends ManagedTask {
 //		// ENHANCE: Do a search if mandatory columns missing (eg. allow 'import' of a list of ISBNs).
 //		// ENHANCE: Only make some columns mandatory if the ID is not in import, or not in DB (ie. if not an update)
 //		// ENHANCE: Export/Import should use GUIDs for book IDs, and put GUIDs on Image file names.
-//		requireColumnOr(values, CatalogueDBAdapter.KEY_ROWID, DatabaseDefinitions.DOM_BOOK_UUID.name);
-//		requireColumnOr(values, CatalogueDBAdapter.KEY_FAMILY_NAME,
-//								CatalogueDBAdapter.KEY_AUTHOR_FORMATTED,
-//								CatalogueDBAdapter.KEY_AUTHOR_NAME,
-//								CatalogueDBAdapter.KEY_AUTHOR_DETAILS);
+//		requireColumnOr(values, DatabaseDefinitions.KEY_ROWID, DatabaseDefinitions.DOM_BOOK_UUID.name);
+//		requireColumnOr(values, DatabaseDefinitions.KEY_FAMILY_NAME,
+//								DatabaseDefinitions.KEY_AUTHOR_FORMATTED,
+//								DatabaseDefinitions.KEY_AUTHOR_NAME,
+//								DatabaseDefinitions.KEY_AUTHOR_DETAILS);
 //
 //		int row = 1; // Start after headings.
 //		boolean inTx = false;
@@ -226,7 +226,7 @@ public class ImportThread extends ManagedTask {
 //
 //				boolean hasNumericId;
 //				// Validate ID
-//				String idStr = values.getString(CatalogueDBAdapter.KEY_ROWID.toLowerCase());
+//				String idStr = values.getString(DatabaseDefinitions.KEY_ROWID.toLowerCase());
 //				Long idLong;
 //				if (idStr == null || idStr == "") {
 //					hasNumericId = false;
@@ -241,7 +241,7 @@ public class ImportThread extends ManagedTask {
 //					}
 //				}
 //				if (!hasNumericId) {
-//					values.putString(CatalogueDBAdapter.KEY_ROWID, "0");					
+//					values.putString(DatabaseDefinitions.KEY_ROWID, "0");
 //				}
 //
 //				// Get the UUID, and remove from collection if null/blank
@@ -257,52 +257,52 @@ public class ImportThread extends ManagedTask {
 //					hasUuid = false;
 //				}
 //
-//				requireNonblank(values, row, CatalogueDBAdapter.KEY_TITLE);
-//				String title = values.getString(CatalogueDBAdapter.KEY_TITLE);
+//				requireNonblank(values, row, DatabaseDefinitions.KEY_TITLE);
+//				String title = values.getString(DatabaseDefinitions.KEY_TITLE);
 //
 //				// Keep author handling stuff local
 //				{
 //					// Get the list of authors from whatever source is available.
 //					String authorDetails;
-//					authorDetails = values.getString(CatalogueDBAdapter.KEY_AUTHOR_DETAILS);
+//					authorDetails = values.getString(DatabaseDefinitions.KEY_AUTHOR_DETAILS);
 //					if (authorDetails == null || authorDetails.length() == 0) {
 //						// Need to build it from other fields.
-//						if (values.containsKey(CatalogueDBAdapter.KEY_FAMILY_NAME)) {
+//						if (values.containsKey(DatabaseDefinitions.KEY_FAMILY_NAME)) {
 //							// Build from family/given
-//							authorDetails = values.getString(CatalogueDBAdapter.KEY_FAMILY_NAME);
+//							authorDetails = values.getString(DatabaseDefinitions.KEY_FAMILY_NAME);
 //							String given = "";
-//							if (values.containsKey(CatalogueDBAdapter.KEY_GIVEN_NAMES))
-//								given = values.getString(CatalogueDBAdapter.KEY_GIVEN_NAMES);
+//							if (values.containsKey(DatabaseDefinitions.KEY_GIVEN_NAMES))
+//								given = values.getString(DatabaseDefinitions.KEY_GIVEN_NAMES);
 //							if (given != null && given.length() > 0)
 //								authorDetails += ", " + given;
-//						} else if (values.containsKey(CatalogueDBAdapter.KEY_AUTHOR_NAME)) {
-//							authorDetails = values.getString(CatalogueDBAdapter.KEY_AUTHOR_NAME);
-//						} else if (values.containsKey(CatalogueDBAdapter.KEY_AUTHOR_FORMATTED)) {
-//							authorDetails = values.getString(CatalogueDBAdapter.KEY_AUTHOR_FORMATTED);					
+//						} else if (values.containsKey(DatabaseDefinitions.KEY_AUTHOR_NAME)) {
+//							authorDetails = values.getString(DatabaseDefinitions.KEY_AUTHOR_NAME);
+//						} else if (values.containsKey(DatabaseDefinitions.KEY_AUTHOR_FORMATTED)) {
+//							authorDetails = values.getString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED);
 //						}
 //					}
 //
 //					if (authorDetails == null || authorDetails.length() == 0) {
 //						String s = BookCatalogueApp.getResourceString(R.string.column_is_blank);
-//						throw new ImportException(String.format(s, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, row));
+//						throw new ImportException(String.format(s, DatabaseDefinitions.KEY_AUTHOR_DETAILS, row));
 //					}
 //
 //					// Now build the array for authors
 //					ArrayList<Author> aa = Convert.decodeList(authorDetails, '|', false);
 //					Utils.pruneList(mDb, aa);
-//					values.putSerializable(CatalogueDBAdapter.KEY_AUTHOR_ARRAY, aa);
+//					values.putSerializable(DatabaseDefinitions.KEY_AUTHOR_ARRAY, aa);
 //				}
 //
 //				// Keep series handling local
 //				{
 //					String seriesDetails;
-//					seriesDetails = values.getString(CatalogueDBAdapter.KEY_SERIES_DETAILS);
+//					seriesDetails = values.getString(DatabaseDefinitions.KEY_SERIES_DETAILS);
 //					if (seriesDetails == null || seriesDetails.length() == 0) {
 //						// Try to build from SERIES_NAME and SERIES_NUM. It may all be blank
-//						if (values.containsKey(CatalogueDBAdapter.KEY_SERIES_NAME)) {
-//							seriesDetails = values.getString(CatalogueDBAdapter.KEY_SERIES_NAME);
+//						if (values.containsKey(DatabaseDefinitions.KEY_SERIES_NAME)) {
+//							seriesDetails = values.getString(DatabaseDefinitions.KEY_SERIES_NAME);
 //							if (seriesDetails != null && seriesDetails.length() != 0) {
-//								String seriesNum = values.getString(CatalogueDBAdapter.KEY_SERIES_NUM);
+//								String seriesNum = values.getString(DatabaseDefinitions.KEY_SERIES_NUM);
 //								if (seriesNum == null)
 //									seriesNum = "";
 //								seriesDetails += "(" + seriesNum + ")";
@@ -315,20 +315,20 @@ public class ImportThread extends ManagedTask {
 //					ArrayList<Series> sa = Convert.decodeList(seriesDetails, '|', false);
 //					Utils.pruneSeriesList(sa);
 //					Utils.pruneList(mDb, sa);
-//					values.putSerializable(CatalogueDBAdapter.KEY_SERIES_ARRAY, sa);				
+//					values.putSerializable(DatabaseDefinitions.KEY_SERIES_ARRAY, sa);
 //				}
 //				
 //				
 //				// Make sure we have bookself_text if we imported bookshelf
-//				if (values.containsKey(CatalogueDBAdapter.KEY_BOOKSHELF) && !values.containsKey("bookshelf_text")) {
-//					values.setBookshelfList(values.getString(CatalogueDBAdapter.KEY_BOOKSHELF));
+//				if (values.containsKey(DatabaseDefinitions.KEY_BOOKSHELF) && !values.containsKey("bookshelf_text")) {
+//					values.setBookshelfList(values.getString(DatabaseDefinitions.KEY_BOOKSHELF));
 //				}
 //
 //				try {
 //					if (!hasUuid && !hasNumericId) {
 //						// Always import empty IDs...even if they are duplicates.
 //						Long id = mDb.createBook(values);
-//						values.putString(CatalogueDBAdapter.KEY_ROWID, id.toString());
+//						values.putString(DatabaseDefinitions.KEY_ROWID, id.toString());
 //						// Would be nice to import a cover, but with no ID/UUID thats not possible
 //						//mImportCreated++;
 //					} else {
@@ -362,7 +362,7 @@ public class ImportThread extends ManagedTask {
 //						} else {
 //							newId = mDb.createBook(idLong, values);
 //							//mImportCreated++;
-//							values.putString(CatalogueDBAdapter.KEY_ROWID, newId.toString());							
+//							values.putString(DatabaseDefinitions.KEY_ROWID, newId.toString());
 //							idLong = newId;
 //						}
 //						// When importing a file that has an ID or UUID, try to import a cover.
@@ -384,21 +384,21 @@ public class ImportThread extends ManagedTask {
 //					Logger.logError(e, "Import at row " + row);
 //				}
 //
-//				if (values.containsKey(CatalogueDBAdapter.KEY_LOANED_TO) && !values.get(CatalogueDBAdapter.KEY_LOANED_TO).equals("")) {
-//					int id = Integer.parseInt(values.getString(CatalogueDBAdapter.KEY_ROWID));
+//				if (values.containsKey(DatabaseDefinitions.KEY_LOANED_TO) && !values.get(DatabaseDefinitions.KEY_LOANED_TO).equals("")) {
+//					int id = Integer.parseInt(values.getString(DatabaseDefinitions.KEY_ROWID));
 //					mDb.deleteLoan(id);
 //					mDb.createLoan(values);
 //				}
 //
-//				if (values.containsKey(CatalogueDBAdapter.KEY_ANTHOLOGY_MASK)) {
+//				if (values.containsKey(DatabaseDefinitions.KEY_ANTHOLOGY_MASK)) {
 //					int anthology;
 //					try {
-//						anthology = Integer.parseInt(values.getString(CatalogueDBAdapter.KEY_ANTHOLOGY_MASK));
+//						anthology = Integer.parseInt(values.getString(DatabaseDefinitions.KEY_ANTHOLOGY_MASK));
 //					} catch (Exception e) {
 //						anthology = 0;
 //					}
 //					if (anthology == CatalogueDBAdapter.ANTHOLOGY_MULTIPLE_AUTHORS || anthology == CatalogueDBAdapter.ANTHOLOGY_IS_ANTHOLOGY) {
-//						int id = Integer.parseInt(values.getString(CatalogueDBAdapter.KEY_ROWID));
+//						int id = Integer.parseInt(values.getString(DatabaseDefinitions.KEY_ROWID));
 //						// We have anthology details, delete the current details.
 //						mDb.deleteAnthologyTitles(id);
 //						int oldi = 0;

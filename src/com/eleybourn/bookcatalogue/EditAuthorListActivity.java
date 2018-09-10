@@ -25,19 +25,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
+import android.widget.*;
+import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_ARRAY;
 
 /**
  * Activity to edit a list of authors provided in an ArrayList<Author> and
@@ -51,11 +49,11 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
      * Constructor; pass the superclass the main and row based layouts to use.
      */
     public EditAuthorListActivity() {
-        super(ColumnNames.KEY_AUTHOR_ARRAY, R.layout.activity_edit_list_author, R.layout.row_edit_author_list);
+        super(KEY_AUTHOR_ARRAY, R.layout.activity_edit_list_author, R.layout.row_edit_author_list);
     }
 
     @Override
-    protected void onSetupView(View target, Author object, int position) {
+    protected void onSetupView(@NonNull View target, @Nullable Author object, int position) {
         if (object != null) {
             TextView at = target.findViewById(R.id.row_author);
             if (at != null) {
@@ -89,16 +87,16 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     /**
      * Do the work of the onClickListener for the 'Add' button.
      */
-    protected void onAdd(View v) {
-        AutoCompleteTextView authorField = EditAuthorListActivity.this.findViewById(R.id.author);
+    protected void onAdd(View target) {
+        AutoCompleteTextView authorField = findViewById(R.id.author);
         String authorName = authorField.getText().toString().trim();
         if (!authorName.isEmpty()) {
             // Get an author and try to find in DB.
             Author author = new Author(authorField.getText().toString());
             author.id = mDb.lookupAuthorId(author);
             for (Author s : mList) {
-                if (s.id == author.id || s.getDisplayName().equals(author.getDisplayName())) {
-                    Toast.makeText(EditAuthorListActivity.this, getResources().getString(R.string.author_already_in_list), Toast.LENGTH_LONG).show();
+                if (s.equals(author)) {
+                    Toast.makeText(this, getResources().getString(R.string.author_already_in_list), Toast.LENGTH_LONG).show();
                     return;
                 }
             }
@@ -106,7 +104,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
             mAdapter.notifyDataSetChanged();
             authorField.setText("");
         } else {
-            Toast.makeText(EditAuthorListActivity.this, getResources().getString(R.string.author_is_blank), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getResources().getString(R.string.author_is_blank), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -152,7 +150,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         dialog.show();
     }
 
-    private void confirmEditAuthor(final Author oldAuthor, final Author newAuthor) {
+    private void confirmEditAuthor(@NonNull final Author oldAuthor, @NonNull final Author newAuthor) {
         // First, deal with a some special cases...
 
         // Case: Unchanged.

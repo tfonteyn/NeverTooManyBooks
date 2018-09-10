@@ -22,12 +22,13 @@ package com.eleybourn.bookcatalogue.booklist;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.EditObjectListActivity;
+import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyleGroupsListActivity.GroupWrapper;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -59,7 +60,7 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
 	 * Constructor
 	 */
 	public BooklistStyleGroupsListActivity() {
-		super(BKEY_GROUPS, R.layout.booklist_style_edit_list, R.layout.booklist_style_edit_row);
+		super(BKEY_GROUPS, R.layout.booklist_style_edit_group_list, R.layout.booklist_style_edit_row);
 	}
 
 	/**
@@ -144,7 +145,7 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
 	 * Set up the view for a passed wrapper.
 	 */
 	@Override
-	protected void onSetupView(View target, GroupWrapper wrapper, int position) {
+	protected void onSetupView(@NonNull View target, GroupWrapper wrapper, int position) {
 		// Get a Holder
 		Holder holder;
 		holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);

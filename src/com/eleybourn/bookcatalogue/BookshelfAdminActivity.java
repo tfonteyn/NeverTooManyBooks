@@ -32,9 +32,10 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
-
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueListActivity;
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
+
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ROWID;
 
 /**
  * Admin Activity where we list all bookshelves and can add/delete/edit them.
@@ -59,6 +60,7 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_manage_bs);
+
         mDb = new CatalogueDBAdapter(this);
         mDb.open();
         fillBookshelves();
@@ -72,9 +74,10 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
         startManagingCursor(bookshelfCursor);
 
         // Now create a simple cursor adapter and set it to display
-        String[] fieldsToDisplay = new String[]{ColumnNames.KEY_BOOKSHELF, ColumnNames.KEY_ROWID};
+        String[] fieldsToDisplay = new String[]{KEY_BOOKSHELF, KEY_ROWID};
         int[] fieldsToBindTo = new int[]{R.id.row_bookshelf};
-        SimpleCursorAdapter books = new SimpleCursorAdapter(this, R.layout.row_bookshelf, bookshelfCursor, fieldsToDisplay, fieldsToBindTo);
+        SimpleCursorAdapter books = new SimpleCursorAdapter(this, R.layout.row_bookshelf,
+                bookshelfCursor, fieldsToDisplay, fieldsToBindTo);
         this.setListAdapter(books);
     }
 
@@ -125,7 +128,7 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         Intent i = new Intent(this, BookshelfEditActivity.class);
-        i.putExtra(ColumnNames.KEY_ROWID, id);
+        i.putExtra(KEY_ROWID, id);
         startActivityForResult(i, ACTIVITY_EDIT);
     }
 

@@ -33,6 +33,8 @@
         <item name="android:paddingTop">2dp</item>
     </style>
 
+    <style name="DialogDividerTheme" />
+
     <!-- *******************************************************************************
         Field labels and their text *display* fields
     -->
@@ -181,7 +183,7 @@
     <!--
     **************************************************************************************
     -->
-    <style name="DialogDividerTheme" />
+
 
     <!--
     **************************************************************************************
@@ -281,8 +283,6 @@
     <style name="option_button">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_alignParentStart">true</item>
-        <item name="android:layout_alignParentTop">true</item>
         <item name="android:clickable">false</item>
         <item name="android:focusable">false</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
@@ -299,8 +299,20 @@
     <style name="option_row">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:orientation">vertical</item>
         <item name="android:paddingBottom">12dp</item>
+    </style>
+
+    <style name="TouchListView">
+        <item name="android:fadingEdge">none</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="dialogFrame">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingEnd">@dimen/padding_border</item>
+        <item name="android:paddingStart">@dimen/padding_border</item>
     </style>
     <!--
     **************************************************************************************

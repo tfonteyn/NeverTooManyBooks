@@ -32,7 +32,7 @@ import android.widget.CheckedTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eleybourn.bookcatalogue.EditObjectListActivity;
+import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -73,9 +73,6 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
             // We want context menus to be available
             registerForContextMenu(getListView());
 
-            //mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, mDb.fetchAllSeriesArray());
-            //((AutoCompleteTextView)this.findViewById(R.id.series)).setAdapter(mAdapter);
-
             if (savedInstanceState == null) {
                 HintManager.displayHint(this, R.string.hint_booklist_styles_editor, null);
             }
@@ -105,7 +102,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
     }
 
     @Override
-    protected void onSetupView(View target, BooklistStyle style, int position) {
+    protected void onSetupView(@NonNull View target, BooklistStyle style, int position) {
         Holder holder;
         holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
         if (holder == null) {

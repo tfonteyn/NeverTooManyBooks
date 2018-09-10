@@ -63,18 +63,19 @@ import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
+import com.eleybourn.bookcatalogue.widgets.FastScrollExpandableListView;
 
 import net.philipwarner.taskqueue.QueueManager;
 
 import java.util.ArrayList;
 
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_FORMATTED;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_FORMATTED_GIVEN_FIRST;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_NAME;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ROWID;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_NAME;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TITLE;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_FORMATTED_GIVEN_FIRST;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_NAME;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ROWID;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
 
 /*
  * A book catalogue application that integrates with Google Books.
@@ -142,8 +143,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 
 			// In V4.0 the startup activity is StartupActivity, but we need to deal with old icons.
 			// So we check the intent.
-			/* FIXME ? is this not done already ? -> check!
-			   TODO: Consider renaming 'BookCatalogue' activity to 'BookCatalogueClassic' and
+			/* FIXME ? is this not done already ? -> check! -> Consider renaming 'BookCatalogue' activity to 'BookCatalogueClassic' and
 			         creating a dummy BookCatalogue activity stub to avoid this check
 			 */
 			if ( ! StartupActivity.hasBeenCalled() ) {
@@ -172,7 +172,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			}
 			// This sets the search capability to local (application) search
 			setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
-			setContentView(R.layout.list_authors);
+			setContentView(R.layout.classic_list_authors);
 			mDb = new CatalogueDBAdapter(this);
 			mDb.open();
 
@@ -487,12 +487,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				View v = mInflater.inflate(ViewManager.this.getLayoutChild(), parent, false);
 				BookHolder holder = new BookHolder();
 
-				initViewInfo(v, holder.author, R.id.row_author, FieldVisibility.TAG + KEY_AUTHOR_NAME);
-				initViewInfo(v, holder.title, R.id.row_title, FieldVisibility.TAG + KEY_TITLE);
-				initViewInfo(v, holder.image, R.id.row_image_view, FieldVisibility.TAG + "thumbnail");
-				initViewInfo(v, holder.publisher, R.id.row_publisher, FieldVisibility.TAG + KEY_PUBLISHER);
-				initViewInfo(v, holder.read, R.id.row_read_image_view, FieldVisibility.TAG + "read");
-				initViewInfo(v, holder.series, R.id.row_series, FieldVisibility.TAG + KEY_SERIES_NAME);
+				initViewInfo(v, holder.author, R.id.row_author, FieldVisibilityActivity.TAG + KEY_AUTHOR_NAME);
+				initViewInfo(v, holder.title, R.id.row_title, FieldVisibilityActivity.TAG + KEY_TITLE);
+				initViewInfo(v, holder.image, R.id.row_image_view, FieldVisibilityActivity.TAG + "thumbnail");
+				initViewInfo(v, holder.publisher, R.id.row_publisher, FieldVisibilityActivity.TAG + KEY_PUBLISHER);
+				initViewInfo(v, holder.read, R.id.row_read_image_view, FieldVisibilityActivity.TAG + "read");
+				initViewInfo(v, holder.series, R.id.row_series, FieldVisibilityActivity.TAG + KEY_SERIES_NAME);
 
 				ViewTagger.setTag(v, R.id.TAG_HOLDER, holder);
 
@@ -555,7 +555,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				setGroupCursor(newGroupCursor());
 				notifyDataSetChanged();
 				// Reset the scroller, just in case
-				ExpandableListView fselv = BookCatalogueClassic.this.getExpandableListView();
+				FastScrollExpandableListView fselv = (FastScrollExpandableListView)BookCatalogueClassic.this.getExpandableListView();
 				fselv.setFastScrollEnabled(false);
 				fselv.setFastScrollEnabled(true);
 			}
@@ -610,8 +610,8 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 */
 	private class TitleViewManager extends ViewManager {
 		TitleViewManager() {
-			mLayout = R.layout.row_authors;
-			mChildLayout = R.layout.row_books;
+			mLayout = R.layout.classic_row_authors;
+			mChildLayout = R.layout.classic_row_books;
 			mFrom = new String[]{KEY_ROWID};
 			mTo = new int[]{R.id.row_family};
 		}
@@ -645,8 +645,8 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 */
 	private class AuthorViewManager extends ViewManager {
 		AuthorViewManager() {
-			mLayout = R.layout.row_authors;
-			mChildLayout = R.layout.row_authors_books;
+			mLayout = R.layout.classic_row_authors;
+			mChildLayout = R.layout.classic_row_authors_books;
 			mFrom = new String[]{KEY_AUTHOR_FORMATTED};
 			mTo = new int[]{R.id.row_family};
 		}
@@ -676,8 +676,8 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 */
 	private class AuthorFirstViewManager extends ViewManager {
 		AuthorFirstViewManager() {
-			mLayout = R.layout.row_authors;
-			mChildLayout = R.layout.row_authors_books;
+			mLayout = R.layout.classic_row_authors;
+			mChildLayout = R.layout.classic_row_authors_books;
 			mFrom = new String[]{KEY_AUTHOR_FORMATTED_GIVEN_FIRST};
 			mTo = new int[]{R.id.row_family};
 		}
@@ -707,8 +707,8 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 */
 	private class AuthorOneViewManager extends ViewManager {
 		AuthorOneViewManager() {
-			mLayout = R.layout.row_authors;
-			mChildLayout = R.layout.row_authors_books;
+			mLayout = R.layout.classic_row_authors;
+			mChildLayout = R.layout.classic_row_authors_books;
 			mFrom = new String[]{KEY_AUTHOR_FORMATTED};
 			mTo = new int[]{R.id.row_family};
 		}
@@ -738,8 +738,8 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 */
 	private class SeriesViewManager extends ViewManager {
 		SeriesViewManager() {
-			mLayout = R.layout.row_authors;
-			mChildLayout = R.layout.row_series_books;
+			mLayout = R.layout.classic_row_authors;
+			mChildLayout = R.layout.classic_row_series_books;
 			mFrom = new String[]{KEY_SERIES_NAME};
 			mTo = new int[]{R.id.row_family};
 		}
@@ -768,8 +768,8 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 */
 	private class LoanViewManager extends ViewManager {
 		LoanViewManager() {
-			mLayout = R.layout.row_authors;
-			mChildLayout = R.layout.row_series_books;
+			mLayout = R.layout.classic_row_authors;
+			mChildLayout = R.layout.classic_row_series_books;
 			mFrom = new String[]{KEY_ROWID};
 			mTo = new int[]{R.id.row_family};
 		}
@@ -793,8 +793,8 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 */
 	private class UnreadViewManager extends ViewManager {
 		UnreadViewManager() {
-			mLayout = R.layout.row_authors;
-			mChildLayout = R.layout.row_series_books;
+			mLayout = R.layout.classic_row_authors;
+			mChildLayout = R.layout.classic_row_series_books;
 			mFrom = new String[]{KEY_ROWID};
 			mTo = new int[]{R.id.row_family};
 		}
@@ -818,8 +818,8 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 */
 	private class GenreViewManager extends ViewManager {
 		GenreViewManager() {
-			mLayout = R.layout.row_authors;
-			mChildLayout = R.layout.row_books;
+			mLayout = R.layout.classic_row_authors;
+			mChildLayout = R.layout.classic_row_books;
 			mFrom = new String[]{KEY_ROWID};
 			mTo = new int[]{R.id.row_family};
 		}
@@ -853,8 +853,8 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 */
 	private class PublishedViewManager extends ViewManager {
 		PublishedViewManager() {
-			mLayout = R.layout.row_authors;
-			mChildLayout = R.layout.row_books;
+			mLayout = R.layout.classic_row_authors;
+			mChildLayout = R.layout.classic_row_books;
 			mFrom = new String[]{KEY_ROWID};
 			mTo = new int[]{R.id.row_family};
 		}
@@ -1166,19 +1166,18 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		mMenuHandler = new MenuHandler(menu);
 
 		// RELEASE: RE-ENABLE THESE!
-		//FIXME: original code had this block commented out.
-		{
-			mMenuHandler.addCreateBookSubMenu(menu);
-
-			if (collapsed || currentGroup.size() == 0) {
-				mMenuHandler.addItem(menu, SORT_BY_AUTHOR_COLLAPSED, R.string.menu_expand_all, R.drawable.ic_menu_expand);
-			} else {
-				mMenuHandler.addItem(menu, SORT_BY_AUTHOR_EXPANDED, R.string.menu_collapse_all, R.drawable.ic_menu_collapse);
-			}
-			mMenuHandler.addItem(menu, SORT_BY, R.string.menu_sort_by, android.R.drawable.ic_menu_sort_alphabetically);
-
-			mMenuHandler.addSearchItem(menu);
-		}
+//		{
+//			mMenuHandler.addCreateBookSubMenu(menu);
+//
+//			if (collapsed || currentGroup.size() == 0) {
+//				mMenuHandler.addItem(menu, SORT_BY_AUTHOR_COLLAPSED, R.string.menu_expand_all, R.drawable.ic_menu_expand);
+//			} else {
+//				mMenuHandler.addItem(menu, SORT_BY_AUTHOR_EXPANDED, R.string.menu_collapse_all, R.drawable.ic_menu_collapse);
+//			}
+//			mMenuHandler.addItem(menu, SORT_BY, R.string.menu_sort_by, android.R.drawable.ic_menu_sort_alphabetically);
+//
+//			mMenuHandler.addSearchItem(menu);
+//		}
 
 		return super.onPrepareOptionsMenu(menu);
 	}
@@ -1696,7 +1695,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 */
 	public void adapterChanged() {
 		// Reset the fast scroller
-		ExpandableListView lv = this.getExpandableListView();
+		FastScrollExpandableListView lv = (FastScrollExpandableListView)this.getExpandableListView();
 		lv.setFastScrollEnabled(false);
 		lv.setFastScrollEnabled(true);
 	}

@@ -76,8 +76,8 @@ public class ExportThread extends ManagedTask {
         }
 
         // was commented out in version 5.2.2.
-        // not removed, but moved to a private method (untested obviously) so i can physically more onRun in the file
-        //someThingOnRunUsedTo();
+        // not removed, but moved to a private method (untested obviously) so it's more readable
+        //someThingOnRunUsedToDo();
     }
 
     @Override
@@ -132,36 +132,36 @@ public class ExportThread extends ManagedTask {
         }
     }
 
-//   private void someThingOnRunUsedTo() {
+//   private void someThingOnRunUsedToDo() {
 //		mManager.doProgress(getString(R.string.export_starting_ellipsis));
 //		boolean displayingStartupMessage = true;
 //
 //		StringBuilder export = new StringBuilder(
-//			'"' + CatalogueDBAdapter.KEY_ROWID + "\"," + 			//0
-//			'"' + CatalogueDBAdapter.KEY_AUTHOR_DETAILS + "\"," + 	//2
-//			'"' + CatalogueDBAdapter.KEY_TITLE + "\"," + 			//4
-//			'"' + CatalogueDBAdapter.KEY_ISBN + "\"," + 			//5
-//			'"' + CatalogueDBAdapter.KEY_PUBLISHER + "\"," + 		//6
-//			'"' + CatalogueDBAdapter.KEY_DATE_PUBLISHED + "\"," + 	//7
-//			'"' + CatalogueDBAdapter.KEY_RATING + "\"," + 			//8
+//			'"' + DatabaseDefinitions.KEY_ROWID + "\"," + 			//0
+//			'"' + DatabaseDefinitions.KEY_AUTHOR_DETAILS + "\"," + 	//2
+//			'"' + DatabaseDefinitions.KEY_TITLE + "\"," + 			//4
+//			'"' + DatabaseDefinitions.KEY_ISBN + "\"," + 			//5
+//			'"' + DatabaseDefinitions.KEY_PUBLISHER + "\"," + 		//6
+//			'"' + DatabaseDefinitions.KEY_DATE_PUBLISHED + "\"," + 	//7
+//			'"' + DatabaseDefinitions.KEY_RATING + "\"," + 			//8
 //			'"' + "bookshelf_id\"," + 								//9
-//			'"' + CatalogueDBAdapter.KEY_BOOKSHELF + "\"," +		//10
-//			'"' + CatalogueDBAdapter.KEY_READ + "\"," +				//11
-//			'"' + CatalogueDBAdapter.KEY_SERIES_DETAILS + "\"," +	//12
-//			'"' + CatalogueDBAdapter.KEY_PAGES + "\"," + 			//14
-//			'"' + CatalogueDBAdapter.KEY_NOTES + "\"," + 			//15
-//			'"' + CatalogueDBAdapter.KEY_LIST_PRICE + "\"," + 		//16
-//			'"' + CatalogueDBAdapter.KEY_ANTHOLOGY_MASK+ "\"," + 		//17
-//			'"' + CatalogueDBAdapter.KEY_LOCATION+ "\"," + 			//18
-//			'"' + CatalogueDBAdapter.KEY_READ_START+ "\"," + 		//19
-//			'"' + CatalogueDBAdapter.KEY_READ_END+ "\"," + 			//20
-//			'"' + CatalogueDBAdapter.KEY_FORMAT+ "\"," + 			//21
-//			'"' + CatalogueDBAdapter.KEY_SIGNED+ "\"," + 			//22
-//			'"' + CatalogueDBAdapter.KEY_LOANED_TO+ "\"," +			//23 
+//			'"' + DatabaseDefinitions.KEY_BOOKSHELF + "\"," +		//10
+//			'"' + DatabaseDefinitions.KEY_READ + "\"," +				//11
+//			'"' + DatabaseDefinitions.KEY_SERIES_DETAILS + "\"," +	//12
+//			'"' + DatabaseDefinitions.KEY_PAGES + "\"," + 			//14
+//			'"' + DatabaseDefinitions.KEY_NOTES + "\"," + 			//15
+//			'"' + DatabaseDefinitions.KEY_LIST_PRICE + "\"," + 		//16
+//			'"' + DatabaseDefinitions.KEY_ANTHOLOGY_MASK+ "\"," + 		//17
+//			'"' + DatabaseDefinitions.KEY_LOCATION+ "\"," + 			//18
+//			'"' + DatabaseDefinitions.KEY_READ_START+ "\"," + 		//19
+//			'"' + DatabaseDefinitions.KEY_READ_END+ "\"," + 			//20
+//			'"' + DatabaseDefinitions.KEY_FORMAT+ "\"," + 			//21
+//			'"' + DatabaseDefinitions.KEY_SIGNED+ "\"," + 			//22
+//			'"' + DatabaseDefinitions.KEY_LOANED_TO+ "\"," +			//23
 //			'"' + "anthology_titles" + "\"," +						//24 
-//			'"' + CatalogueDBAdapter.KEY_DESCRIPTION+ "\"," + 		//25
-//			'"' + CatalogueDBAdapter.KEY_GENRE+ "\"," + 			//26
-//			'"' + CatalogueDBAdapter.KEY_DATE_ADDED+ "\"," + 		//27
+//			'"' + DatabaseDefinitions.KEY_DESCRIPTION+ "\"," + 		//25
+//			'"' + DatabaseDefinitions.KEY_GENRE+ "\"," + 			//26
+//			'"' + DatabaseDefinitions.KEY_DATE_ADDED+ "\"," + 		//27
 //			'"' + DatabaseDefinitions.DOM_GOODREADS_BOOK_ID + "\"," + 		//28
 //			'"' + DatabaseDefinitions.DOM_LAST_GOODREADS_SYNC_DATE + "\"," + 		//29
 //			'"' + DatabaseDefinitions.DOM_LAST_UPDATE_DATE + "\"," + 		//30
@@ -188,18 +188,18 @@ public class ExportThread extends ManagedTask {
 //				if (books.moveToFirst()) {
 //					do { 
 //						num++;
-//						long id = books.getLong(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_ROWID));
+//						long id = books.getLong(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_ROWID));
 //						// Just get the string from the database and save it. It should be in standard SQL form already.
 //						String dateString = "";
 //						try {
-//							dateString = books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_DATE_PUBLISHED));
+//							dateString = books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_DATE_PUBLISHED));
 //						} catch (Exception e) {
 //							//do nothing
 //						}
 //						// Just get the string from the database and save it. It should be in standard SQL form already.
 //						String dateReadStartString = "";
 //						try {
-//							dateReadStartString = books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_READ_START));
+//							dateReadStartString = books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_READ_START));
 //						} catch (Exception e) {
 //							Logger.logError(e);
 //							//do nothing
@@ -207,7 +207,7 @@ public class ExportThread extends ManagedTask {
 //						// Just get the string from the database and save it. It should be in standard SQL form already.
 //						String dateReadEndString = "";
 //						try {
-//							dateReadEndString = books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_READ_END));
+//							dateReadEndString = books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_READ_END));
 //						} catch (Exception e) {
 //							Logger.logError(e);
 //							//do nothing
@@ -215,20 +215,20 @@ public class ExportThread extends ManagedTask {
 //						// Just get the string from the database and save it. It should be in standard SQL form already.
 //						String dateAddedString = "";
 //						try {
-//							dateAddedString = books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_DATE_ADDED));
+//							dateAddedString = books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_DATE_ADDED));
 //						} catch (Exception e) {
 //							//do nothing
 //						}
 //
-//						String anthology = books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_ANTHOLOGY_MASK));
+//						String anthology = books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_ANTHOLOGY_MASK));
 //						String anthology_titles = "";
 //						if (anthology.equals(CatalogueDBAdapter.ANTHOLOGY_MULTIPLE_AUTHORS + "") || anthology.equals(CatalogueDBAdapter.ANTHOLOGY_IS_ANTHOLOGY + "")) {
 //							Cursor titles = mDb.fetchAnthologyTitlesByBook(id);
 //							try {
 //								if (titles.moveToFirst()) {
 //									do { 
-//										String anth_title = titles.getString(titles.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_TITLE));
-//										String anth_author = titles.getString(titles.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_AUTHOR_NAME));
+//										String anth_title = titles.getString(titles.getColumnIndexOrThrow(DatabaseDefinitions.KEY_TITLE));
+//										String anth_author = titles.getString(titles.getColumnIndexOrThrow(DatabaseDefinitions.KEY_AUTHOR_NAME));
 //										anthology_titles += anth_title + " * " + anth_author + "|";
 //									} while (titles.moveToNext()); 
 //								}
@@ -237,14 +237,14 @@ public class ExportThread extends ManagedTask {
 //									titles.close();
 //							}
 //						}
-//						String title = books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_TITLE));
+//						String title = books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_TITLE));
 //						//Display the selected bookshelves
 //						Cursor bookshelves = mDb.fetchAllBookshelvesByBook(id);
 //						String bookshelves_id_text = "";
 //						String bookshelves_name_text = "";
 //						while (bookshelves.moveToNext()) {
-//							bookshelves_id_text += bookshelves.getString(bookshelves.getColumnIndex(CatalogueDBAdapter.KEY_ROWID)) + BookEditFields.BOOKSHELF_SEPERATOR;
-//							bookshelves_name_text += Utils.encodeListItem(bookshelves.getString(bookshelves.getColumnIndex(CatalogueDBAdapter.KEY_BOOKSHELF)),BookEditFields.BOOKSHELF_SEPARATOR) + BookEditFields.BOOKSHELF_SEPARATOR;
+//							bookshelves_id_text += bookshelves.getString(bookshelves.getColumnIndex(DatabaseDefinitions.KEY_ROWID)) + BookEditFields.BOOKSHELF_SEPERATOR;
+//							bookshelves_name_text += Utils.encodeListItem(bookshelves.getString(bookshelves.getColumnIndex(DatabaseDefinitions.KEY_BOOKSHELF)),BookEditFields.BOOKSHELF_SEPARATOR) + BookEditFields.BOOKSHELF_SEPARATOR;
 //						}
 //						bookshelves.close();
 //
@@ -258,21 +258,21 @@ public class ExportThread extends ManagedTask {
 //						row.append("\"" + formatCell(rv.getIsbn()) + "\",");
 //						row.append("\"" + formatCell(rv.getPublisher()) + "\",");
 //						row.append("\"" + formatCell(dateString) + "\",");
-//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_RATING))) + "\",");
+//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_RATING))) + "\",");
 //						row.append("\"" + formatCell(bookshelves_id_text) + "\",");
 //						row.append("\"" + formatCell(bookshelves_name_text) + "\",");
 //						row.append("\"" + formatCell(rv.isRead()) + "\",");
 //						row.append("\"" + formatCell(seriesDetails) + "\",");
-//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_PAGES))) + "\",");
+//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_PAGES))) + "\",");
 //						row.append("\"" + formatCell(rv.getNotes()) + "\",");
-//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_LIST_PRICE))) + "\",");
+//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_LIST_PRICE))) + "\",");
 //						row.append("\"" + formatCell(anthology) + "\",");
 //						row.append("\"" + formatCell(rv.getLocation()) + "\",");
 //						row.append("\"" + formatCell(dateReadStartString) + "\",");
 //						row.append("\"" + formatCell(dateReadEndString) + "\",");
-//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_FORMAT))) + "\",");
-//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_SIGNED))) + "\",");
-//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(CatalogueDBAdapter.KEY_LOANED_TO))+"") + "\",");
+//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_FORMAT))) + "\",");
+//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_SIGNED))) + "\",");
+//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_LOANED_TO))+"") + "\",");
 //						row.append("\"" + formatCell(anthology_titles) + "\",");
 //						row.append("\"" + formatCell(rv.getDescription()) + "\",");
 //						row.append("\"" + formatCell(rv.getGenre()) + "\",");

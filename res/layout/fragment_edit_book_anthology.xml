@@ -42,36 +42,28 @@
         android:hint="@string/title"
         tools:text="add new title here" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_below="@id/add_title"
-        android:orientation="vertical">
+        android:fillViewport="true">
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true">
-
-            <com.eleybourn.bookcatalogue.widgets.TouchListView xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
-                android:id="@id/android:list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fillViewport="true"
-                android:textSize="16sp"
-                tlv:grabber="@+id/grabber"
-                tlv:normal_height="64dip"
-                tlv:remove_mode="none" />
-        </ScrollView>
-
-        <TextView
-            android:id="@id/android:empty"
+        <com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
+            android:id="@id/android:list"
+            style="@style/TouchListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/notset"
-            android:textSize="16sp" />
-    </LinearLayout>
+            tlv:grabber="@+id/grabber"
+            tlv:normal_height="64dip"
+            tlv:remove_mode="none" />
+    </ScrollView>
 
+    <TextView
+        android:id="@id/android:empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/notset"
+        android:textSize="16sp" />
 
 </RelativeLayout>

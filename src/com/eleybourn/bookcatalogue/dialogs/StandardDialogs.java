@@ -37,6 +37,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.Author;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
@@ -52,12 +53,13 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TITLE;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
 
 public class StandardDialogs {
 
-    private static final String UNKNOWN = "<Unknown>";
+    private static final String UNKNOWN = "<" + BookCatalogueApp.getResourceString(R.string.unknown_uc) + ">";
 
     /**
      * Show a dialog asking if unsaved edits should be ignored. Finish if so.
@@ -143,7 +145,7 @@ public class StandardDialogs {
     }
 
     public static void deleteSeriesAlert(Context context,
-                                         final CatalogueDBAdapter dbHelper,
+                                         final CatalogueDBAdapter db,
                                          final Series series,
                                          final Runnable onDeleted) {
 
@@ -162,7 +164,7 @@ public class StandardDialogs {
                 context.getResources().getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        dbHelper.deleteSeries(series);
+                        db.deleteSeries(series);
                         alertDialog.dismiss();
                         onDeleted.run();
                     }
@@ -184,7 +186,7 @@ public class StandardDialogs {
                                       final long id,
                                       final Runnable onDeleted) {
 
-        ArrayList<Author> authorList = dba.getBookAuthorList(id);
+        List<Author> authorList = dba.getBookAuthorList(id);
 
         String title;
         try(Cursor cur = dba.fetchBookById(id)) {
@@ -279,7 +281,7 @@ public class StandardDialogs {
      */
     public static void selectItemDialog(LayoutInflater inflater,
                                         String message,
-                                        ArrayList<SimpleDialogItem> items,
+                                        List<SimpleDialogItem> items,
                                         SimpleDialogItem selectedItem,
                                         final SimpleDialogOnClickListener handler) {
         // Get the view and the radio group
@@ -351,9 +353,9 @@ public class StandardDialogs {
      */
     public static void selectFileDialog(LayoutInflater inflater,
                                         String title,
-                                        ArrayList<File> files,
+                                        List<File> files,
                                         final SimpleDialogOnClickListener handler) {
-        ArrayList<SimpleDialogItem> items = new ArrayList<>();
+        List<SimpleDialogItem> items = new ArrayList<>();
         for (File file : files) {
             items.add(new SimpleDialogFileItem(file));
         }
@@ -366,10 +368,10 @@ public class StandardDialogs {
      */
     public static <T> void selectStringDialog(LayoutInflater inflater,
                                               String title,
-                                              ArrayList<T> objects,
+                                              List<T> objects,
                                               String current,
                                               final SimpleDialogOnClickListener handler) {
-        ArrayList<SimpleDialogItem> items = new ArrayList<>();
+        List<SimpleDialogItem> items = new ArrayList<>();
         SimpleDialogItem selectedItem = null;
         for (T o : objects) {
             SimpleDialogObjectItem item = new SimpleDialogObjectItem(o);
@@ -420,7 +422,7 @@ public class StandardDialogs {
          */
         public View getView(LayoutInflater inflater) {
             // Create the view
-            View v = inflater.inflate(R.layout.file_list_item, null);
+            View v = inflater.inflate(R.layout.dialog_file_list_item, null);
             // Set the file name
             TextView name = v.findViewById(R.id.name);
             name.setText(mFile.getName());
@@ -456,7 +458,7 @@ public class StandardDialogs {
          * Get a View to display the object
          */
         public View getView(LayoutInflater inflater) {
-            View view = inflater.inflate(R.layout.string_list_item, null);
+            View view = inflater.inflate(R.layout.dialog_string_list_item, null);
             TextView name = view.findViewById(R.id.name);
             name.setText(mObject.toString());
             return view;

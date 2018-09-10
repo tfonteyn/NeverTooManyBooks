@@ -96,11 +96,11 @@ public class SendOneBookTask extends GenericTask {
 		}
 
 		Context ctx = context.getApplicationContext();
-		CatalogueDBAdapter  dbHelper = new CatalogueDBAdapter(ctx);
-		dbHelper.open();
+		CatalogueDBAdapter  db = new CatalogueDBAdapter(ctx);
+		db.open();
 
 		// Open the cursor for the book
-		final BooksCursor books = dbHelper.getBookForGoodreadsCursor(mBookId);
+		final BooksCursor books = db.getBookForGoodreadsCursor(mBookId);
 		final BooksRowView book = books.getRowView();
 
 		try {
@@ -110,7 +110,7 @@ public class SendOneBookTask extends GenericTask {
 				ExportDisposition disposition;
 				Exception exportException = null;
 				try {
-					disposition = grManager.sendOneBook(dbHelper, book);
+					disposition = grManager.sendOneBook(db, book);
 				} catch (Exception e) {
 					disposition = ExportDisposition.error;
 					exportException = e;
@@ -124,7 +124,7 @@ public class SendOneBookTask extends GenericTask {
 					return false;
 				case sent:
 					// Record the change
-					dbHelper.setGoodreadsSyncDate(books.getId());
+					db.setGoodreadsSyncDate(books.getId());
 					break;
 				case noIsbn:
 					storeEvent(new GrNoIsbnEvent(books.getId()));
@@ -148,7 +148,7 @@ public class SendOneBookTask extends GenericTask {
 					Logger.logError(e, "Failed to close GoodReads books cursor");
 				}
 			try {
-				dbHelper.close();				
+				db.close();
 			} catch(Exception ignored)
 			{}
 		}

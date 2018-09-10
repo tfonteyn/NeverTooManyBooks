@@ -53,11 +53,15 @@ public class BackupChooser extends FileChooser implements
 
     // Used when saving state
     private final static String BKEY_FILENAME = "BackupFileSpec";
+
     // saving or opening
     private static final int TASK_ID_SAVE = 1;
     private static final int TASK_ID_OPEN = 2;
 
     private static final int DIALOG_OPEN_IMPORT_TYPE = 1;
+
+    private static final String ARCHIVE_EXTENSION = ".bcbk";
+    private static final String ARCHIVE_PREFIX = "BookCatalogue-";
     /**
      * The backup file that will be created (if saving)
      */
@@ -70,7 +74,11 @@ public class BackupChooser extends FileChooser implements
         this.setTitle(isSaveDialog() ? R.string.backup_to_archive : R.string.import_from_archive);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(BKEY_FILENAME)) {
-            mBackupFile = new File(savedInstanceState.getString(BKEY_FILENAME));
+            String fileSpec = savedInstanceState.getString(BKEY_FILENAME);
+            if (fileSpec == null) {
+                throw new RuntimeException("No BKEY_FILENAME passed in ?");
+            }
+            mBackupFile = new File(fileSpec);
         }
     }
 
@@ -80,7 +88,7 @@ public class BackupChooser extends FileChooser implements
     private String getDefaultFileName() {
         if (isSaveDialog()) {
             final String sqlDate = DateUtils.toLocalSqlDateOnly(new Date());
-            return "BookCatalogue-" + sqlDate.replace(" ", "-").replace(":", "") + ".bcbk";
+            return ARCHIVE_PREFIX + sqlDate.replace(" ", "-").replace(":", "") + ARCHIVE_EXTENSION;
         } else {
             return "";
         }
@@ -194,8 +202,7 @@ public class BackupChooser extends FileChooser implements
     public void onMessageDialogResult(int dialogId, MessageDialogFragment dialog, int button) {
         switch (dialogId) {
             case 0:
-                // Do nothing.
-                // Our dialogs with ID 0 are only 'FYI' type;
+                // Do nothing, our dialogs with ID 0 are only 'FYI' type;
                 break;
             case TASK_ID_OPEN:
             case TASK_ID_SAVE:
@@ -213,7 +220,7 @@ public class BackupChooser extends FileChooser implements
             case R.id.all_books_row:
                 BackupManager.restoreCatalogue(this, file, TASK_ID_OPEN, Importer.IMPORT_ALL);
                 break;
-            case R.id.new_and_changed_books_row:
+            case R.id.new_and_changed_books:
                 BackupManager.restoreCatalogue(this, file, TASK_ID_OPEN, Importer.IMPORT_NEW_OR_UPDATED);
                 break;
         }

@@ -23,8 +23,7 @@
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            style="@style/toolbar"
-            tools:text="TOOLBAR" />
+            style="@style/toolbar"/>
 
             <!-- the header with the Bookshelf Spinner and information lines -->
             <RelativeLayout
@@ -101,12 +100,11 @@
             android:layout_below="@id/header_divider"
             android:orientation="vertical">
 
-            <ListView
+            <com.eleybourn.bookcatalogue.widgets.FastScrollListView
                 android:id="@id/android:list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:textSize="16sp"
-                android:fastScrollEnabled="true"/>
+                android:textSize="16sp"/>
 
             <TextView
                 android:id="@id/android:empty"

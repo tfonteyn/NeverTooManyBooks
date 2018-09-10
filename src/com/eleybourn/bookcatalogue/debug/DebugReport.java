@@ -90,10 +90,10 @@ public class DebugReport {
      * <p>
      * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MAILING LIST OR FORUM!
      */
-    public static void sendDebugInfo(Context context, CatalogueDBAdapter dbHelper) {
+    public static void sendDebugInfo(Context context, CatalogueDBAdapter db) {
         // Create a temp DB copy.
         String tmpFileName = StorageUtils.DIRECTORY_NAME + "DbExport-tmp.db";
-        dbHelper.backupDbFile(tmpFileName);
+        db.backupDbFile(tmpFileName);
         File dbFile = StorageUtils.getFile(tmpFileName);
         dbFile.deleteOnExit();
         // setup the mail message

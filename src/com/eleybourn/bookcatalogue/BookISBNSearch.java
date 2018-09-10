@@ -28,29 +28,17 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.widget.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.Toast;
-
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
+import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.scanner.Scanner;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
-import com.eleybourn.bookcatalogue.utils.AsinUtils;
-import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
-import com.eleybourn.bookcatalogue.utils.SoundManager;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -156,7 +144,7 @@ public class BookISBNSearch extends ActivityWithTasks {
 
             // Must do this before super.onCreate as getLayoutId() needs them
             Bundle extras = getIntent().getExtras();
-            mIsbn = extras.getString(ColumnNames.KEY_ISBN);
+            mIsbn = extras.getString(ColumnInfo.KEY_ISBN);
             mBy = extras.getString(BKEY_BY);
 
             super.onCreate(savedInstanceState);
@@ -195,8 +183,8 @@ public class BookISBNSearch extends ActivityWithTasks {
             if (mIsbn == null && (mBy == null || mBy.isEmpty())) {
                 Logger.logError(new RuntimeException("Empty args for BookISBNSearch"));
                 if (savedInstanceState != null) {
-                    if (mIsbn == null && savedInstanceState.containsKey(ColumnNames.KEY_ISBN)) {
-                        mIsbn = savedInstanceState.getString(ColumnNames.KEY_ISBN);
+                    if (mIsbn == null && savedInstanceState.containsKey(ColumnInfo.KEY_ISBN)) {
+                        mIsbn = savedInstanceState.getString(ColumnInfo.KEY_ISBN);
                     }
                     if (savedInstanceState.containsKey(BKEY_BY)) {
                         mBy = savedInstanceState.getString(BKEY_BY);
@@ -252,8 +240,8 @@ public class BookISBNSearch extends ActivityWithTasks {
                 startScannerActivity();
             } else {
                 // It's a saved state, so see if we have an ISBN
-                if (savedInstanceState.containsKey(ColumnNames.KEY_ISBN)) {
-                    go(savedInstanceState.getString(ColumnNames.KEY_ISBN), "", "");
+                if (savedInstanceState.containsKey(ColumnInfo.KEY_ISBN)) {
+                    go(savedInstanceState.getString(ColumnInfo.KEY_ISBN), "", "");
                 }
             }
         } catch (SecurityException e) {
@@ -891,8 +879,8 @@ public class BookISBNSearch extends ActivityWithTasks {
         // handsets. Search for "BUG NOTE 1" in this source file for a discussion
         Bundle b = getIntent().getExtras();
         if (b != null) {
-            if (b.containsKey(ColumnNames.KEY_ISBN)) {
-                inState.putString(ColumnNames.KEY_ISBN, b.getString(ColumnNames.KEY_ISBN));
+            if (b.containsKey(ColumnInfo.KEY_ISBN)) {
+                inState.putString(ColumnInfo.KEY_ISBN, b.getString(ColumnInfo.KEY_ISBN));
             }
             if (b.containsKey(BKEY_BY)) {
                 inState.putString(BKEY_BY, b.getString(BKEY_BY));
@@ -901,9 +889,9 @@ public class BookISBNSearch extends ActivityWithTasks {
 
         inState.putParcelable(BKEY_LAST_BOOK_INTENT, mLastBookIntent);
         // Save the current search details as this may be called as a result of a rotate during an alert dialog.
-        inState.putString(ColumnNames.KEY_AUTHOR_ID, mAuthor);
-        inState.putString(ColumnNames.KEY_ISBN, mIsbn);
-        inState.putString(ColumnNames.KEY_TITLE, mTitle);
+        inState.putString(ColumnInfo.KEY_AUTHOR_ID, mAuthor);
+        inState.putString(ColumnInfo.KEY_ISBN, mIsbn);
+        inState.putString(ColumnInfo.KEY_TITLE, mTitle);
         inState.putBoolean(BKEY_SCANNER_STARTED, mScannerStarted);
         if (mSearchManagerId != 0) {
             inState.putLong(BKEY_SEARCH_MANAGER_ID, mSearchManagerId);

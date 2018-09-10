@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -37,9 +36,24 @@ import java.util.Objects;
  */
 public class Author implements Serializable, Utils.ItemWithIdFixup {
     private static final long serialVersionUID = 4597779234440821872L;
+
+    /**
+     * Support for creation via Parcelable.
+     * This is primarily useful for passing ArrayList<Author> in Bundles to activities.
+     */
+    public static final Parcelable.Creator<Author> CREATOR = new Parcelable.Creator<Author>() {
+        public Author createFromParcel(Parcel in) {
+            return new Author(in);
+        }
+
+        public Author[] newArray(int size) {
+            return new Author[size];
+        }
+    };
+
+    public long id;
     public String familyName;
     public String givenNames;
-    public long id;
 
     /**
      * Constructor that will attempt to parse a single string into an author name.
@@ -94,7 +108,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
     }
 
     /**
-     * Return the name in a sortable form (eg. 'Asimov, Iassc')
+     * Return the name in a sortable form (eg. 'Asimov, Isaac')
      *
      * @return formatted name
      */
@@ -129,21 +143,6 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
         }
     }
 
-	/**
-	 * Support for creation via Parcelable. This is primarily useful for passing
-	 * ArrayList<Author> in Bundles to activities.
-	 */
-    public static final Parcelable.Creator<Author> CREATOR
-            = new Parcelable.Creator<Author>() {
-        public Author createFromParcel(Parcel in) {
-            return new Author(in);
-        }
-
-        public Author[] newArray(int size) {
-            return new Author[size];
-        }
-    };
-
     /**
      * Replace local details from another author
      *
@@ -174,16 +173,24 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
         return true;
     }
 
+    /**
+     * Two authors are equal if:
+     * - one or both of them is 'new' (e.g. id == 0) and their names are equal
+     * - ids are equal
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Author author = (Author) o;
-        return id == author.id;
+        if (id == 0 || author.id == 0) {
+            return Objects.equals(getDisplayName(), author.getDisplayName());
+        }
+        return (id == author.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, getDisplayName());
     }
 }

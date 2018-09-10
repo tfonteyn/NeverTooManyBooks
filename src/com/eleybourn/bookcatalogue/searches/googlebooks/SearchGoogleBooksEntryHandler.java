@@ -21,13 +21,11 @@
 package com.eleybourn.bookcatalogue.searches.googlebooks;
 
 import android.os.Bundle;
-
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
+import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -149,32 +147,32 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
 	public void endElement(String uri, String localName, String name) throws SAXException {
 		super.endElement(uri, localName, name);
 		if (localName.equalsIgnoreCase(TITLE)){
-			addIfNotPresent(ColumnNames.KEY_TITLE);
+			addIfNotPresent(ColumnInfo.KEY_TITLE);
 		} else if (localName.equalsIgnoreCase(ISBN)){
 			String tmp = builder.toString(); 
 			if (tmp.indexOf("ISBN:") == 0) {
 				tmp = tmp.substring(5); 
-				if (!mValues.containsKey(ColumnNames.KEY_ISBN) || tmp.length() > mValues.getString(ColumnNames.KEY_ISBN).length()) {
-					mValues.putString(ColumnNames.KEY_ISBN, tmp);
+				if (!mValues.containsKey(ColumnInfo.KEY_ISBN) || tmp.length() > mValues.getString(ColumnInfo.KEY_ISBN).length()) {
+					mValues.putString(ColumnInfo.KEY_ISBN, tmp);
 				}
 			}
 		} else if (localName.equalsIgnoreCase(AUTHOR)){
-			ArrayUtils.appendOrAdd(mValues, ColumnNames.KEY_AUTHOR_DETAILS, builder.toString());
+			ArrayUtils.appendOrAdd(mValues, ColumnInfo.KEY_AUTHOR_DETAILS, builder.toString());
 		} else if (localName.equalsIgnoreCase(PUBLISHER)){
-			addIfNotPresent(ColumnNames.KEY_PUBLISHER);
+			addIfNotPresent(ColumnInfo.KEY_PUBLISHER);
 		} else if (localName.equalsIgnoreCase(DATE_PUBLISHED)){
-			addIfNotPresent(ColumnNames.KEY_DATE_PUBLISHED);
+			addIfNotPresent(ColumnInfo.KEY_DATE_PUBLISHED);
 		} else if (localName.equalsIgnoreCase(PAGES)){
 			String tmp = builder.toString();
 			int index = tmp.indexOf(" pages");
 			if (index > -1) {
 				tmp = tmp.substring(0, index).trim(); 
-				mValues.putString(ColumnNames.KEY_PAGES, tmp);
+				mValues.putString(ColumnInfo.KEY_PAGES, tmp);
 			}
 		} else if (localName.equalsIgnoreCase(GENRE)){
-			mValues.putString(ColumnNames.KEY_GENRE, builder.toString());
+			mValues.putString(ColumnInfo.KEY_GENRE, builder.toString());
 		} else if (localName.equalsIgnoreCase(DESCRIPTION)){
-			addIfNotPresent(ColumnNames.KEY_DESCRIPTION);
+			addIfNotPresent(ColumnInfo.KEY_DESCRIPTION);
 		}
 		builder.setLength(0);
 	}

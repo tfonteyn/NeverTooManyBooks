@@ -21,17 +21,18 @@
 package com.eleybourn.bookcatalogue.searches;
 
 import android.os.Bundle;
-
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
 import com.eleybourn.bookcatalogue.Series.SeriesDetails;
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.TaskManager;
 
 import java.util.ArrayList;
+
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_DETAILS;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
 
 abstract public class SearchThread extends ManagedTask {
     protected static boolean mFetchThumbnail;
@@ -57,9 +58,9 @@ abstract public class SearchThread extends ManagedTask {
         mIsbn = isbn;
         mFetchThumbnail = fetchThumbnail;
 
-        //mBookData.putString(CatalogueDBAdapter.KEY_AUTHOR_FORMATTED, mAuthor);
-        //mBookData.putString(CatalogueDBAdapter.KEY_TITLE, mTitle);
-        //mBookData.putString(CatalogueDBAdapter.KEY_ISBN, mIsbn);
+        //mBookData.putString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED, mAuthor);
+        //mBookData.putString(DatabaseDefinitions.KEY_TITLE, mTitle);
+        //mBookData.putString(DatabaseDefinitions.KEY_ISBN, mIsbn);
         //getMessageSwitch().addListener(getSenderId(), taskHandler, false);
     }
 
@@ -77,20 +78,20 @@ abstract public class SearchThread extends ManagedTask {
      */
     protected void checkForSeriesName() {
         try {
-            if (mBookData.containsKey(ColumnNames.KEY_TITLE)) {
-                String thisTitle = mBookData.getString(ColumnNames.KEY_TITLE);
+            if (mBookData.containsKey(KEY_TITLE)) {
+                String thisTitle = mBookData.getString(KEY_TITLE);
                 if (thisTitle != null) {
                     SeriesDetails details = Series.findSeries(thisTitle);
                     if (details != null && !details.name.isEmpty()) {
                         ArrayList<Series> sl;
-                        if (mBookData.containsKey(ColumnNames.KEY_SERIES_DETAILS)) {
-                            sl = ArrayUtils.getSeriesUtils().decodeList(mBookData.getString(ColumnNames.KEY_SERIES_DETAILS), '|', false);
+                        if (mBookData.containsKey(KEY_SERIES_DETAILS)) {
+                            sl = ArrayUtils.getSeriesUtils().decodeList(mBookData.getString(KEY_SERIES_DETAILS), '|', false);
                         } else {
                             sl = new ArrayList<>();
                         }
                         sl.add(new Series(details.name, details.position));
-                        mBookData.putString(ColumnNames.KEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(sl, '|'));
-                        mBookData.putString(ColumnNames.KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
+                        mBookData.putString(KEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(sl, '|'));
+                        mBookData.putString(KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
                     }
                 }
             }

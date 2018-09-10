@@ -27,7 +27,7 @@ import com.eleybourn.bookcatalogue.BookData;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
-import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.ImportThread.ImportException;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -43,22 +43,22 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ANTHOLOGY_MASK;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_ARRAY;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_DETAILS;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_FORMATTED;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_NAME;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_FAMILY_NAME;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_GIVEN_NAMES;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ROWID;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_ARRAY;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_DETAILS;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_NAME;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_NUM;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TITLE;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ANTHOLOGY_MASK;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_ARRAY;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_DETAILS;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_ID;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_NAME;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_FAMILY_NAME;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_GIVEN_NAMES;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_LOANED_TO;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ROWID;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_ARRAY;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_DETAILS;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_NUM;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
 
 /**
  * Implementation of Importer that reads a CSV file.
@@ -457,7 +457,7 @@ public class CsvImporter {
         if (authorDetails == null || authorDetails.isEmpty()) {
             authorDetails = BookCatalogueApp.getResourceString(R.string.author) + ", " + BookCatalogueApp.getResourceString(R.string.unknown);
             //String s = BookCatalogueApp.getResourceString(R.string.column_is_blank);
-            //throw new ImportException(String.format(s, CatalogueDBAdapter.KEY_AUTHOR_DETAILS, row));
+            //throw new ImportException(String.format(s, DatabaseDefinitions.KEY_AUTHOR_DETAILS, row));
         }
 
         // Now build the array for authors

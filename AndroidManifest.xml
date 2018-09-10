@@ -143,9 +143,7 @@
         <!-- *********************************************************************************** -->
 
 
-        <!-- *********************************************************************************** -->
-        <!-- BEGIN admin pages -->
-        <!-- *********************************************************************************** -->
+        <!-- Admin pages -->
         <activity android:name=".Help" />
         <activity android:name=".AdministrationAbout" />
         <activity android:name=".AdministrationDonate" />
@@ -155,31 +153,22 @@
         <!-- AdministrationFunctions: General -->
         <!-- ************************************************************ -->
 
-
-        <!-- BEGIN - Manage Bookshelves -->
-        <!-- List -->
+        <!-- Manage Bookshelves -->
         <activity android:name=".BookshelfAdminActivity" />
-        <!-- Detail -->
         <activity
             android:name=".BookshelfEditActivity"
             android:windowSoftInputMode="adjustResize" />
-        <!-- END - Manage Bookshelves -->
 
 
         <!-- Field Visibility -->
-        <activity android:name=".FieldVisibility" />
+        <activity android:name=".FieldVisibilityActivity" />
 
-        <!-- BEGIN - Edit book list styles -->
-        <!-- List -->
+        <!-- Edit book list styles -->
         <activity android:name=".booklist.BooklistStylesListActivity" />
-        <!-- Detail -->
         <activity
             android:name=".booklist.BooklistStylePropertiesActivity"
             android:windowSoftInputMode="stateHidden" />
-        <!-- grouping editor for detail -->
         <activity android:name=".booklist.BooklistStyleGroupsListActivity" />
-        <!-- END - Edit book list styles -->
-
 
         <!-- AdministrationFunctions:Data Import/Export -->
         <activity android:name=".filechooser.BackupChooser" />
@@ -195,6 +184,12 @@
 
         <!-- AdministrationFunctions: Background tasks -->
         <activity android:name=".TaskListActivity" />
+
+        <!-- AdministrationFunctions: Search configuration -->
+        <activity
+            android:name=".searches.SearchAdminHosts"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".searches.SearchAdminOrder" />
 
         <!-- *********************************************************************************** -->
         <!-- END admin pages -->
@@ -301,8 +296,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-        <activity android:name=".searches.amazon.AdministrationAmazon" />
-        <activity android:name=".searches.googlebooks.AdministrationGoogleBooks"></activity>
+
+
     </application>
 
 </manifest>

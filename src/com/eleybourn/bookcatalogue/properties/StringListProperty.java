@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -25,48 +25,53 @@ import com.eleybourn.bookcatalogue.R;
 
 /**
  * Extends ListProperty to create a nullable integer property with associated editing support.
- * 
+ *
  * @author Philip Warner
  */
 public class StringListProperty extends ListProperty<String> implements Property.StringValue {
 
     @SuppressWarnings("unused")
     public StringListProperty(ItemEntries<String> list, String uniqueId, PropertyGroup group, int nameResourceId, String value, String defaultPref, String defaultValue) {
-		super(list, uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
-	}
-    @SuppressWarnings("unused")
-	public StringListProperty(ItemEntries<String> list, String uniqueId, PropertyGroup group, int nameResourceId, String value, String defaultValue) {
-		super(list, uniqueId, group, nameResourceId, value, null, defaultValue);
-	}
-    @SuppressWarnings("unused")
-	public StringListProperty(ItemEntries<String> list, String uniqueId, PropertyGroup group, int nameResourceId, String value) {
-		super(list, uniqueId, group, nameResourceId, value, null, value);
-	}
-	public StringListProperty(ItemEntries<String> list, String uniqueId, PropertyGroup group, int nameResourceId) {
-		super(list, uniqueId, group, nameResourceId, null, null, null);
-	}
-    @SuppressWarnings("unused")
-	public StringListProperty(ItemEntries<String> list, String uniqueId) {
-		super(list, uniqueId, PropertyGroup.GRP_GENERAL, R.string.unknown, null, null, null);
-	}
+        super(list, uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
+    }
 
-	@Override
-	protected String getGlobalDefault() {
-		return BookCataloguePreferences.getString(getPreferenceKey(), getDefaultValue());
-	}
-	@Override
-	protected StringListProperty setGlobalDefault(String value) {
-		BookCataloguePreferences.setString(getPreferenceKey(), value);
-		return this;
-	}
+    @SuppressWarnings("unused")
+    public StringListProperty(ItemEntries<String> list, String uniqueId, PropertyGroup group, int nameResourceId, String value, String defaultValue) {
+        super(list, uniqueId, group, nameResourceId, value, null, defaultValue);
+    }
 
-	@Override
-	public StringListProperty set(Property p) {
-		if (! (p instanceof StringValue) )
-			throw new RuntimeException("Can not find a compatible interface for string parameter");
+    @SuppressWarnings("unused")
+    public StringListProperty(ItemEntries<String> list, String uniqueId, PropertyGroup group, int nameResourceId, String value) {
+        super(list, uniqueId, group, nameResourceId, value, null, value);
+    }
+
+    public StringListProperty(ItemEntries<String> list, String uniqueId, PropertyGroup group, int nameResourceId) {
+        super(list, uniqueId, group, nameResourceId, null, null, null);
+    }
+
+    @SuppressWarnings("unused")
+    public StringListProperty(ItemEntries<String> list, String uniqueId) {
+        super(list, uniqueId, PropertyGroup.GRP_GENERAL, R.string.unknown, null, null, null);
+    }
+
+    @Override
+    protected String getGlobalDefault() {
+        return BookCataloguePreferences.getString(getPreferenceKey(), getDefaultValue());
+    }
+
+    @Override
+    protected StringListProperty setGlobalDefault(String value) {
+        BookCataloguePreferences.setString(getPreferenceKey(), value);
+        return this;
+    }
+
+    @Override
+    public StringListProperty set(Property p) {
+        if (!(p instanceof StringValue))
+            throw new RuntimeException("Can not find a compatible interface for string parameter");
         StringValue v = (StringValue) p;
-		set(v.get());
-		return this;
-	}
+        set(v.get());
+        return this;
+    }
 }
 

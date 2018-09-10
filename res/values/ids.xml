@@ -44,14 +44,17 @@
     <!-- BEGIN used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
     <item name="row_details" type="id"/>
     <item name="row" type="id"/>
-    <item name="ROW_POSITION" type="id"/>
     <item name="ROW_UP" type="id"/>
     <item name="ROW_DOWN" type="id"/>
     <item name="ROW_DELETE" type="id"/>
+    <item name="ROW_POSITION" type="id"/>
     <item name="TAG_POSITION" type="id" />
     <!-- END used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
 
+    <!-- referenced but not used -->
+    <item name="booktitle" type="id" />
+
+
     <item name="UPDATE_FROM_INTERNET_FIELD_CHECKBOX" type="id" />
     <item name="NOTIFICATION" type="id" />
-
 </resources>

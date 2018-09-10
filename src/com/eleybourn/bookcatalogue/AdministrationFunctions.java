@@ -42,10 +42,10 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogFileItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickListener;
 import com.eleybourn.bookcatalogue.filechooser.BackupChooser;
-import com.eleybourn.bookcatalogue.searches.amazon.AdministrationAmazon;
+import com.eleybourn.bookcatalogue.searches.SearchAdminHosts;
+import com.eleybourn.bookcatalogue.searches.SearchAdminOrder;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegister;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
-import com.eleybourn.bookcatalogue.searches.googlebooks.AdministrationGoogleBooks;
 import com.eleybourn.bookcatalogue.searches.librarything.AdministrationLibraryThing;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.ManagedTask;
@@ -287,29 +287,29 @@ public class AdministrationFunctions extends ActivityWithTasks {
             });
         }
 
-        /* Amazon url */
+        /* Website urls */
         {
-            View v = findViewById(R.id.amazon_url);
+            View v = findViewById(R.id.local_websites_urls);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(AdministrationFunctions.this, AdministrationAmazon.class);
+                    Intent i = new Intent(AdministrationFunctions.this, SearchAdminHosts.class);
                     startActivity(i);
                 }
             });
         }
 
-        /* Google Books url */
+        /* Search order */
         {
-            View v = findViewById(R.id.googlebooks_url);
+            View v = findViewById(R.id.search_order);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(AdministrationFunctions.this, AdministrationGoogleBooks.class);
+                    Intent i = new Intent(AdministrationFunctions.this, SearchAdminOrder.class);
                     startActivity(i);
                 }
             });
@@ -408,7 +408,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
      * Load the Manage Field Visibility Activity
      */
     private void manageFields() {
-        Intent i = new Intent(this, FieldVisibility.class);
+        Intent i = new Intent(this, FieldVisibilityActivity.class);
         startActivityForResult(i, ACTIVITY_FIELD_VISIBILITY);
     }
 

@@ -45,7 +45,7 @@ import java.util.ArrayList;
  *
  * @author pjw
  */
-public abstract class BindableItemListActivity extends BookCatalogueListActivity implements BindableItemBinder {
+abstract public class BindableItemListActivity extends BookCatalogueListActivity implements BindableItemBinder {
     /**
      * The resource ID for the base view
      */

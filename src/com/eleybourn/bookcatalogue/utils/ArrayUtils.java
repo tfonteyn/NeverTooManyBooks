@@ -22,13 +22,14 @@ package com.eleybourn.bookcatalogue.utils;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-
 import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.Series;
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_ARRAY;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_ARRAY;
 
 public class ArrayUtils<T> {
 
@@ -197,7 +198,7 @@ public class ArrayUtils<T> {
      */
     @SuppressWarnings("unchecked")
     public static ArrayList<Author> getAuthorsFromBundle(Bundle b) {
-        return (ArrayList<Author>) b.getSerializable(ColumnNames.KEY_AUTHOR_ARRAY);
+        return (ArrayList<Author>) b.getSerializable(KEY_AUTHOR_ARRAY);
     }
 
     /**
@@ -210,7 +211,7 @@ public class ArrayUtils<T> {
     @SuppressWarnings("unchecked")
     public
     static ArrayList<Series> getSeriesFromBundle(Bundle b) {
-        return (ArrayList<Series>) b.getSerializable(ColumnNames.KEY_SERIES_ARRAY);
+        return (ArrayList<Series>) b.getSerializable(KEY_SERIES_ARRAY);
     }
 
     /**
@@ -235,7 +236,7 @@ public class ArrayUtils<T> {
      */
     @SuppressWarnings("unchecked")
     public static ArrayList<Author> getAuthorFromIntentExtras(Intent i) {
-        return (ArrayList<Author>) i.getSerializableExtra(ColumnNames.KEY_AUTHOR_ARRAY);
+        return (ArrayList<Author>) i.getSerializableExtra(KEY_AUTHOR_ARRAY);
     }
 
     /**
@@ -247,7 +248,7 @@ public class ArrayUtils<T> {
      */
     @SuppressWarnings("unchecked")
     public static ArrayList<Series> getSeriesFromIntentExtras(Intent i) {
-        return (ArrayList<Series>) i.getSerializableExtra(ColumnNames.KEY_SERIES_ARRAY);
+        return (ArrayList<Series>) i.getSerializableExtra(KEY_SERIES_ARRAY);
     }
 
     /**

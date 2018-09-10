@@ -3,8 +3,6 @@ package com.eleybourn.bookcatalogue.database;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper;
-
 
 /**
  * Class to detect if collation implementations are case sensitive.
@@ -33,9 +31,8 @@ public class CollationCaseSensitive {
 				c.moveToFirst();
 				s = c.getString(0);
 			}
-			return !"a".equals(s);
+			return !s.equals("a");
 		} finally {
-			// Cleanup
 			try { db.execSQL("Drop Table If Exists collation_cs_check");
 			} catch (Exception ignored) {}
 		}

@@ -26,7 +26,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper;
+import com.eleybourn.bookcatalogue.database.DatabaseHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;

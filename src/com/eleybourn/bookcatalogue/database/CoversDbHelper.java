@@ -39,7 +39,6 @@ import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
-import com.eleybourn.bookcatalogue.database.DbUtils.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -61,17 +60,11 @@ import java.util.Date;
  */
 public class CoversDbHelper implements AutoCloseable {
 
-    /**
-     * Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync
-     */
+    /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync  */
     private static final Synchronizer mSynchronizer = new Synchronizer();
-    /**
-     * DB location
-     */
+    /** DB location */
     private static final String COVERS_DATABASE_NAME = "covers.db";
-    /**
-     * DB Version
-     */
+    /** DB Version */
     private static final int COVERS_DATABASE_VERSION = 1;
     /**
      * Static Factory object to create the custom cursor
@@ -242,8 +235,6 @@ public class CoversDbHelper implements AutoCloseable {
             if (mCountToGetInstance == 0) {
                 if (mSyncedDb != null) {
                     mStatements.close();
-                    mSyncedDb.close();
-                    mSyncedDb = null;
                 }
             }
         }
@@ -401,6 +392,7 @@ public class CoversDbHelper implements AutoCloseable {
      *
      * @return Bitmap (if cached) or NULL (if not cached)
      */
+    @SuppressWarnings("WeakerAccess")
     public Bitmap fetchCachedImageIntoImageView(final File originalFile, final ImageView destView,
                                                 final String cacheId) {
         if (mSyncedDb == null) {

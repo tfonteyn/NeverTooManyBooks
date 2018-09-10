@@ -29,9 +29,11 @@ public class UniqueId {
     public static final int DIALOG_PROGRESS_DETERMINATE = 101;
     public static final int DIALOG_PROGRESS_INDETERMINATE = 102;
 
-    /* BKEY_* and BVAL_* which ae used in more then one class should be moved here */
-    public static final String BKEY_NOCOVER = "nocover";
-
     /* other global constants */
     public static final String GOODREADS_FILENAME_SUFFIX = "_GR";
+
+    /* BKEY_* and BVAL_* which ae used in more then one class should be moved here */
+    public static final String BKEY_NOCOVER = "nocover";
+    public static final String BKEY_DIALOG_ID = "dialogId";
+    public static final String BKEY_FILE_SPEC = "fileSpec";
 }

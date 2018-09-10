@@ -1,343 +1,364 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
     tools:ignore="DuplicateIds">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:ignore="UselessParent">
+        android:focusableInTouchMode="true"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_border_double">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/row_img"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:focusableInTouchMode="true"
-            android:orientation="vertical"
-            android:padding="@dimen/padding_border_double">
+            android:layout_gravity="center_horizontal"
+            android:background="@color/background_thumb"
+            android:gravity="center_horizontal"
+            android:padding="@dimen/padding_border"
+            tools:ignore="ContentDescription"
+            tools:src="@android:drawable/ic_menu_help" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/heading"
+                style="@style/editorFieldHeader"
+                android:text="@string/author" />
+
+            <Button
+                android:id="@+id/author"
+                style="@style/dataEntryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/heading"
+                android:nextFocusDown="@id/title"
+                android:nextFocusUp="@id/row_img">
+                <requestFocus/>
+            </Button>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/heading"
+                style="@style/editorFieldHeader"
+                android:labelFor="@id/title"
+                android:text="@string/title" />
+
+            <EditText
+                android:id="@+id/title"
+                style="@style/bookOrSeriesTitleTextEntry"
+                android:layout_below="@id/heading"
+                android:nextFocusDown="@id/isbn"
+                android:nextFocusUp="@id/author" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/row_isbn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/heading"
+                style="@style/editorFieldHeader"
+                android:layout_alignParentTop="false"
+                android:layout_centerVertical="true"
+                android:labelFor="@+id/isbn"
+                android:text="@string/isbn" />
+
+            <EditText
+                android:id="@+id/isbn"
+                style="@style/editorFieldText"
+                android:layout_alignParentStart="false"
+                android:layout_toEndOf="@id/heading"
+                android:inputType="text"
+                android:nextFocusDown="@+id/series"
+                android:nextFocusUp="@id/title" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/row_series"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/heading"
+                style="@style/editorFieldHeader"
+                android:text="@string/series" />
+
+            <Button
+                android:id="@+id/series"
+                style="@style/dataEntryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/heading"
+                android:nextFocusDown="@id/publisher"
+                android:nextFocusUp="@id/isbn" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/row_publisher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/heading"
+                style="@style/editorFieldHeader"
+                android:labelFor="@id/publisher"
+                android:text="@string/publisher" />
+
+            <AutoCompleteTextView
+                android:id="@+id/publisher"
+                style="@style/personalNameTextEntry"
+                android:layout_below="@id/heading"
+                android:completionThreshold="2"
+                android:nextFocusDown="@id/date_published"
+                android:nextFocusUp="@id/series" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/row_date_published"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/date_published_heading"
+                style="@style/editorFieldHeader"
+                android:text="@string/date_published" />
+
+            <Button
+                android:id="@+id/date_published"
+                style="@style/dataEntryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/date_published_heading"
+                android:nextFocusDown="@id/bookshelf"
+                android:nextFocusUp="@id/publisher" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/heading"
+                style="@style/editorFieldHeader"
+                android:text="@string/bookshelves" />
+
+            <Button
+                android:id="@+id/bookshelf"
+                style="@style/dataEntryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/heading"
+                android:nextFocusDown="@id/pages"
+                android:nextFocusUp="@id/date_published" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/row_pages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/pages_heading"
+                style="@style/editorFieldHeader"
+                android:labelFor="@id/pages"
+                android:text="@string/pages" />
+
+            <EditText
+                android:id="@+id/pages"
+                style="@style/editorFieldText"
+                android:layout_below="@id/pages_heading"
+                android:inputType="number"
+                android:nextFocusDown="@id/list_price"
+                android:nextFocusUp="@id/bookshelf" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/row_list_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/list_price_heading"
+                style="@style/editorFieldHeader"
+                android:labelFor="@id/list_price"
+                android:text="@string/list_price" />
+
+            <EditText
+                android:id="@+id/list_price"
+                style="@style/editorFieldText"
+                android:layout_below="@id/list_price_heading"
+                android:inputType="numberDecimal"
+                android:nextFocusDown="@id/format"
+                android:nextFocusUp="@id/pages" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/row_format"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/heading"
+                style="@style/editorFieldHeader"
+                android:labelFor="@id/format"
+                android:text="@string/format" />
+
+            <AutoCompleteTextView
+                android:id="@+id/format"
+                style="@style/editorFieldText"
+                android:layout_below="@id/heading"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@id/format_button"
+                android:completionThreshold="2"
+                android:nextFocusDown="@id/format_button"
+                android:nextFocusUp="@id/list_price"
+                android:singleLine="true" />
 
             <ImageView
-                android:id="@+id/row_img"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:background="@color/background_thumb"
-                android:gravity="center"
-                android:padding="@dimen/padding_border"
+                android:id="@+id/format_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignBottom="@id/format"
+                android:layout_alignParentEnd="true"
+                android:focusable="true"
+                android:nextFocusDown="@id/genre"
+                android:nextFocusUp="@id/format"
+                android:paddingEnd="@dimen/padding_border"
+                android:paddingStart="@dimen/padding_border"
+                app:srcCompat="@android:drawable/ic_menu_more"
                 tools:ignore="ContentDescription" />
+        </RelativeLayout>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+        <RelativeLayout
+            android:id="@+id/row_genre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/heading"
-                    style="@style/editorFieldHeader"
-                    android:text="@string/author" />
+            <TextView
+                android:id="@+id/heading"
+                style="@style/editorFieldHeader"
+                android:labelFor="@id/genre"
+                android:text="@string/genre" />
 
-                <Button
-                    android:id="@+id/author"
-                    style="@style/dataEntryButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_below="@id/heading"
-                    android:nextFocusDown="@+id/title" />
-            </RelativeLayout>
+            <AutoCompleteTextView
+                android:id="@+id/genre"
+                style="@style/editorFieldText"
+                android:layout_below="@id/heading"
+                android:completionThreshold="2"
+                android:inputType="textCapWords"
+                android:nextFocusDown="@id/language"
+                android:nextFocusUp="@id/format" />
+        </RelativeLayout>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+        <RelativeLayout
+            android:id="@+id/row_language"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/heading"
-                    style="@style/editorFieldHeader"
-                    android:text="@string/title" />
+            <TextView
+                android:id="@+id/heading"
+                style="@style/editorFieldHeader"
+                android:labelFor="@id/language"
+                android:text="@string/language" />
 
-                <EditText
-                    android:id="@+id/title"
-                    style="@style/bookOrSeriesTitleTextEntry"
-                    android:layout_below="@id/heading"
-                    android:nextFocusDown="@+id/isbn"
-                    tools:ignore="LabelFor" />
-            </RelativeLayout>
+            <!-- FIXME: style should be "@style/languageTextEntry" but that made the new button not work ?-->
+            <AutoCompleteTextView
+                android:id="@+id/language"
+                style="@style/editorFieldText"
+                android:layout_below="@id/heading"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@id/language_button"
+                android:completionThreshold="2"
+                android:nextFocusDown="@id/language_button"
+                android:nextFocusUp="@id/genre"
+                android:singleLine="true" />
 
-            <RelativeLayout
-                android:id="@+id/row_isbn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/language_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignBottom="@id/language"
+                android:layout_alignParentEnd="true"
+                android:focusable="true"
+                android:nextFocusDown="@id/anthology"
+                android:nextFocusUp="@id/language"
+                android:paddingEnd="@dimen/padding_border"
+                android:paddingStart="@dimen/padding_border"
+                app:srcCompat="@android:drawable/ic_menu_more"
+                tools:ignore="ContentDescription" />
+        </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/heading"
-                    style="@style/editorFieldHeader"
-                    android:layout_alignParentTop="false"
-                    android:layout_centerVertical="true"
-                    android:text="@string/isbn" />
+        <CheckBox
+            android:id="@+id/anthology"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:nextFocusDown="@id/description"
+            android:nextFocusUp="@id/language"
+            android:text="@string/is_anthology" />
 
-                <EditText
-                    android:id="@+id/isbn"
-                    style="@style/editorFieldText"
-                    android:layout_alignParentStart="false"
-                    android:layout_toEndOf="@id/heading"
-                    android:inputType="text"
-                    android:nextFocusDown="@+id/series"
-                    tools:ignore="LabelFor" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/row_series"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/heading"
-                    style="@style/editorFieldHeader"
-                    android:text="@string/series" />
-
-                <Button
-                    android:id="@+id/series"
-                    style="@style/dataEntryButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_below="@id/heading"
-                    android:nextFocusDown="@+id/publisher" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/row_publisher"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/heading"
-                    style="@style/editorFieldHeader"
-                    android:text="@string/publisher" />
-
-                <AutoCompleteTextView
-                    android:id="@+id/publisher"
-                    style="@style/personalNameTextEntry"
-                    android:layout_below="@id/heading"
-                    android:completionThreshold="2"
-                    android:nextFocusDown="@+id/date_published"
-                    tools:ignore="LabelFor" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/row_date_published"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/date_published_heading"
-                    style="@style/editorFieldHeader"
-                    android:text="@string/date_published" />
-
-                <Button
-                    android:id="@+id/date_published"
-                    style="@style/dataEntryButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_below="@id/date_published_heading"
-                    android:nextFocusDown="@+id/bookshelf" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/heading"
-                    style="@style/editorFieldHeader"
-                    android:text="@string/bookshelves" />
-
-                <Button
-                    android:id="@+id/bookshelf"
-                    style="@style/dataEntryButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_below="@id/heading"
-                    android:nextFocusDown="@+id/pages" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/row_pages"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/pages_heading"
-                    style="@style/editorFieldHeader"
-                    android:text="@string/pages" />
-
-                <EditText
-                    android:id="@+id/pages"
-                    style="@style/editorFieldText"
-                    android:layout_below="@id/pages_heading"
-                    android:inputType="number"
-                    android:nextFocusDown="@+id/list_price"
-                    tools:ignore="LabelFor" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/row_list_price"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/list_price_heading"
-                    style="@style/editorFieldHeader"
-                    android:text="@string/list_price" />
-
-                <EditText
-                    android:id="@+id/list_price"
-                    style="@style/editorFieldText"
-                    android:layout_below="@id/list_price_heading"
-                    android:inputType="numberDecimal"
-                    android:nextFocusDown="@+id/format"
-                    tools:ignore="LabelFor" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/row_format"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/heading"
-                    style="@style/editorFieldHeader"
-                    android:text="@string/format" />
-
-                <ImageView
-                    android:id="@+id/format_button"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_alignBottom="@+id/format"
-                    android:layout_alignParentEnd="true"
-                    android:focusable="true"
-                    android:paddingEnd="@dimen/padding_border"
-                    android:paddingStart="@dimen/padding_border"
-                    app:srcCompat="@android:drawable/ic_menu_more"
-                    tools:ignore="ContentDescription" />
-
-                <AutoCompleteTextView
-                    android:id="@+id/format"
-                    style="@style/editorFieldText"
-                    android:layout_below="@id/heading"
-                    android:layout_centerVertical="true"
-                    android:layout_toStartOf="@id/format_button"
-                    android:completionThreshold="2"
-                    android:nextFocusDown="@+id/genre"
-                    android:singleLine="true"
-                    tools:ignore="LabelFor" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/row_genre"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/heading"
-                    style="@style/editorFieldHeader"
-                    android:text="@string/genre" />
-
-                <AutoCompleteTextView
-                    android:id="@+id/genre"
-                    style="@style/editorFieldText"
-                    android:layout_below="@id/heading"
-                    android:completionThreshold="2"
-                    android:inputType="textCapWords"
-                    android:nextFocusDown="@+id/language"
-                    tools:ignore="LabelFor" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/row_language"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/heading"
-                    style="@style/editorFieldHeader"
-                    android:text="@string/language" />
-
-                <ImageView
-                    android:id="@+id/language_button"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_alignBottom="@+id/language"
-                    android:layout_alignParentEnd="true"
-                    android:focusable="true"
-                    android:paddingEnd="@dimen/padding_border"
-                    android:paddingStart="@dimen/padding_border"
-                    app:srcCompat="@android:drawable/ic_menu_more"
-                    tools:ignore="ContentDescription" />
-
-                <!-- FIXME: style should be "@style/languageTextEntry" but that made the new button not work ?-->
-                <AutoCompleteTextView
-                    android:id="@+id/language"
-                    style="@style/editorFieldText"
-                    android:layout_below="@id/heading"
-                    android:layout_centerVertical="true"
-                    android:layout_toStartOf="@id/language_button"
-                    android:completionThreshold="2"
-                    android:nextFocusDown="@+id/anthology"
-                    android:singleLine="true"
-                    tools:ignore="LabelFor" />
-            </RelativeLayout>
-
-            <CheckBox
-                android:id="@+id/anthology"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:nextFocusDown="@+id/description"
-                android:text="@string/is_anthology" />
+        <RelativeLayout
+            android:id="@+id/row_description_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/descriptionLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:paddingTop="12dp"
                 android:text="@string/description"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <View style="@style/listDivider" />
+            <ImageView
+                android:id="@+id/description_edit_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignBottom="@id/descriptionLabel"
+                android:layout_alignParentEnd="true"
+                android:focusable="true"
+                android:nextFocusDown="@id/row_img"
+                android:nextFocusUp="@id/language"
+                android:paddingEnd="@dimen/padding_border"
+                android:paddingStart="@dimen/padding_border"
+                app:srcCompat="@android:drawable/ic_menu_edit"
+                tools:ignore="ContentDescription" />
+        </RelativeLayout>
 
-            <TextView
-                android:id="@+id/description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="@string/notset"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-        </LinearLayout>
-    </ScrollView>
+        <View style="@style/listDivider" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:hint="@string/notset"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+
+</ScrollView>

@@ -103,8 +103,14 @@ public class Tracker {
 	public static void exitOnSaveInstanceState(Object a) {
 		handleEvent(a,"OnSaveInstanceState", States.Exit);
 	}
-	public static void enterFunction(Object a, String name) {
-        handleEvent(a,name, States.Enter);
+	public static void enterFunction(Object a, String name, Object... params) {
+		StringBuilder fullname = new StringBuilder(name + "(");
+		for (Object o : params) {
+			fullname.append(o.toString()).append(",");
+		}
+		fullname.append(")");
+
+        handleEvent(a,fullname.toString(), States.Enter);
     }
     public static void exitFunction(Object a, String name) {
         handleEvent(a,name, States.Exit);

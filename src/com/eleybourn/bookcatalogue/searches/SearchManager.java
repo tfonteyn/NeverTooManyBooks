@@ -20,14 +20,16 @@
 
  package com.eleybourn.bookcatalogue.searches;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
+import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 import com.eleybourn.bookcatalogue.searches.amazon.SearchAmazonThread;
@@ -46,6 +48,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 
 /**
  * Class to co-ordinate multiple SearchThread objects using an existing TaskManager.
@@ -58,7 +61,8 @@ import java.util.Hashtable;
  * @author Philip Warner
  */
 public class SearchManager implements TaskManagerListener {
-	
+	private static final String TAG = "SearchManager";
+
 	/** Flag indicating a search source to use */
 	public static final int SEARCH_GOOGLE = 1;
 	/** Flag indicating a search source to use */
@@ -69,11 +73,96 @@ public class SearchManager implements TaskManagerListener {
 	public static final int SEARCH_GOODREADS = 8;
 	/** Mask including all search sources */
 	public static final int SEARCH_ALL = SEARCH_GOOGLE | SEARCH_AMAZON | SEARCH_LIBRARY_THING | SEARCH_GOODREADS;
-	
-	// ENHANCE: Allow user to change the default search data priority
-	private static final int[] mDefaultSearchOrder = new int[] {SEARCH_AMAZON, SEARCH_GOODREADS, SEARCH_GOOGLE, SEARCH_LIBRARY_THING};
-	// ENHANCE: Allow user to change the default search data priority
-	private static final int[] mDefaultReliabilityOrder = new int[] {SEARCH_GOODREADS, SEARCH_AMAZON, SEARCH_GOOGLE, SEARCH_LIBRARY_THING};
+
+    public static class SearchSite {
+		int id;
+		String name;
+		boolean enabled;
+        int order;
+        int reliability;
+
+        SearchSite(final int order, final int reliability, final int bit, final String name, final boolean enabled) {
+			this.id = bit;
+            this.order = order;
+            this.reliability = reliability;
+			this.name = name;
+			this.enabled = enabled;
+		}
+
+//        @Override
+//        public String toString() {
+//            return "SearchSite{" +
+//                    "id=" + id +
+//                    ", name='" + name + '\'' +
+//                    ", enabled=" + enabled +
+//                    ", order=" + order +
+//                    ", reliability=" + reliability +
+//                    '}';
+//        }
+    }
+
+	private static final List<SearchSite> mSearchOrderDefaults;
+    private static List<SearchSite> mSearchOrder;
+    // TODO: not user configurable for now, but plumbing installed
+    private static List<SearchSite> mReliabilityOrder;
+
+    static {
+        /*
+         * default search order
+         *
+         * NEWKIND: make sure to set the reliability field correctly
+         *
+         *  {SEARCH_GOODREADS, SEARCH_AMAZON, SEARCH_GOOGLE, SEARCH_LIBRARY_THING}
+         */
+        mSearchOrderDefaults = new ArrayList<>();
+        mSearchOrderDefaults.add(new SearchSite(0,1,SEARCH_AMAZON,"Amazon",true));
+        mSearchOrderDefaults.add(new SearchSite(1,0,SEARCH_GOODREADS,"GoodReads",true));
+        mSearchOrderDefaults.add(new SearchSite(2,2,SEARCH_GOOGLE,"Google",true));
+        mSearchOrderDefaults.add(new SearchSite(3,3,SEARCH_LIBRARY_THING,"LibraryThing",true));
+
+        mSearchOrder = new ArrayList<>(mSearchOrderDefaults);
+        mReliabilityOrder = new ArrayList<>(mSearchOrderDefaults);
+
+        SharedPreferences p = BookCataloguePreferences.getSharedPreferences();
+        for (SearchSite site : mSearchOrderDefaults) {
+            site.enabled = p.getBoolean(TAG + "." + site.name + ".enabled", site.enabled);
+            site.order = p.getInt(TAG + "." + site.name + ".order", site.order);
+            site.reliability = p.getInt(TAG + "." + site.name + ".reliability", site.reliability);
+
+            mSearchOrder.set(site.order, site);
+            mReliabilityOrder.set(site.reliability, site);
+        }
+
+//        if (BuildConfig.DEBUG) {
+//            BookCataloguePreferences.dumpPreferences();
+//        }
+    }
+
+    private static void saveSearchSites() {
+        SharedPreferences.Editor e =  BookCataloguePreferences.getSharedPreferences().edit();
+        for (SearchSite site :  mSearchOrder) {
+            e.putBoolean(TAG + "." + site.name + ".enabled", site.enabled);
+            e.putInt(TAG + "." + site.name + ".order", site.order);
+            e.putInt(TAG + "." + site.name + ".reliability", site.reliability);
+        }
+        e.apply();
+//        if (BuildConfig.DEBUG) {
+//            BookCataloguePreferences.dumpPreferences();
+//        }
+    }
+
+	public static List<SearchSite> getSiteSearchOrder() {
+        return mSearchOrder;
+	}
+
+    public static void setSearchOrder(final List<SearchSite> newList) {
+        mSearchOrder = newList;
+        saveSearchSites();
+    }
+
+	public static List<SearchSite> getSiteReliabilityOrder() {
+		return mReliabilityOrder;
+	}
 
 	/** bundle key for thumbnail searches */
 	public static final String BKEY_THUMBNAIL_SEARCHES = "__thumbnail";
@@ -371,13 +460,13 @@ public class SearchManager implements TaskManagerListener {
 			else {
 				// Copy, append or update data as appropriate.
 				switch (k) {
-					case ColumnNames.KEY_AUTHOR_DETAILS:
+					case ColumnInfo.KEY_AUTHOR_DETAILS:
 						appendData(k, bookData, mBookData);
 						break;
-					case ColumnNames.KEY_SERIES_DETAILS:
+					case ColumnInfo.KEY_SERIES_DETAILS:
 						appendData(k, bookData, mBookData);
 						break;
-					case ColumnNames.KEY_DATE_PUBLISHED:
+					case ColumnInfo.KEY_DATE_PUBLISHED:
 						// Grab a different date if we can parse it.
 						Date newDate = DateUtils.parseDate(bookData.getString(k));
 						if (newDate != null) {
@@ -406,25 +495,25 @@ public class SearchManager implements TaskManagerListener {
 		if (mHasIsbn) {
 			// If ISBN was passed, ignore entries with the wrong ISBN, and put entries with no ISBN at the end
 			ArrayList<Integer> uncertain = new ArrayList<>();
-			for(int i: mDefaultReliabilityOrder) {
-				if (mSearchResults.containsKey(i)) {
-					Bundle bookData = mSearchResults.get(i);
-					if (bookData.containsKey(ColumnNames.KEY_ISBN)) {
-						if (IsbnUtils.matches(mIsbn, bookData.getString(ColumnNames.KEY_ISBN))) {
-							results.add(i);
+			for(SearchSite site: mReliabilityOrder) {
+				if (mSearchResults.containsKey(site.id)) {
+					Bundle bookData = mSearchResults.get(site.id);
+					if (bookData.containsKey(ColumnInfo.KEY_ISBN)) {
+						if (IsbnUtils.matches(mIsbn, bookData.getString(ColumnInfo.KEY_ISBN))) {
+							results.add(site.id);
 						}
 					} else {
-						uncertain.add(i);
+						uncertain.add(site.id);
 					}						
 				}
 			}
 			results.addAll(uncertain);
 			// Add the passed ISBN first; avoid overwriting
-			mBookData.putString(ColumnNames.KEY_ISBN, mIsbn);
+			mBookData.putString(ColumnInfo.KEY_ISBN, mIsbn);
 		} else {
 			// If ISBN was not passed, then just used the default order
-			for(int i: mDefaultReliabilityOrder)
-				results.add(i);
+			for(SearchSite site: mReliabilityOrder)
+				results.add(site.id);
 		}
 
 		
@@ -438,7 +527,7 @@ public class SearchManager implements TaskManagerListener {
 		// Try to use/construct authors
 		String authors = null;
 		try {
-			authors = mBookData.getString(ColumnNames.KEY_AUTHOR_DETAILS);
+			authors = mBookData.getString(ColumnInfo.KEY_AUTHOR_DETAILS);
 		} catch (Exception ignored) {}
 
 		if (authors == null || authors.isEmpty()) {
@@ -447,51 +536,51 @@ public class SearchManager implements TaskManagerListener {
 
 		if (authors != null && !authors.isEmpty()) {
 			ArrayList<Author> aa = ArrayUtils.getAuthorUtils().decodeList(authors, '|', false);
-			mBookData.putSerializable(ColumnNames.KEY_AUTHOR_ARRAY, aa);
+			mBookData.putSerializable(ColumnInfo.KEY_AUTHOR_ARRAY, aa);
 		}
 
 		// Try to use/construct title
 		String title = null;
 		try {
-			title = mBookData.getString(ColumnNames.KEY_TITLE);
+			title = mBookData.getString(ColumnInfo.KEY_TITLE);
 		} catch (Exception ignored) {}
 
 		if (title == null || title.isEmpty())
 			title = mTitle;
 
 		if (title != null && !title.isEmpty()) {
-			mBookData.putString(ColumnNames.KEY_TITLE, title);
+			mBookData.putString(ColumnInfo.KEY_TITLE, title);
 		}
 
 		// Try to use/construct isbn
 		String isbn = null;
 		try {
-			isbn = mBookData.getString(ColumnNames.KEY_ISBN);
+			isbn = mBookData.getString(ColumnInfo.KEY_ISBN);
 		} catch (Exception ignored) {}
 
 		if (isbn == null || isbn.isEmpty())
 			isbn = mIsbn;
 
 		if (isbn != null && !isbn.isEmpty()) {
-			mBookData.putString(ColumnNames.KEY_ISBN, isbn);
+			mBookData.putString(ColumnInfo.KEY_ISBN, isbn);
 		}
 		
 		// Try to use/construct series
 		String series = null;
 		try {
-			series = mBookData.getString(ColumnNames.KEY_SERIES_DETAILS);
+			series = mBookData.getString(ColumnInfo.KEY_SERIES_DETAILS);
 		} catch (Exception ignored) {}
 
 		if (series != null && !series.isEmpty()) {
 			try {
 				ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList(series, '|', false);
-				mBookData.putSerializable(ColumnNames.KEY_SERIES_ARRAY, sa);
+				mBookData.putSerializable(ColumnInfo.KEY_SERIES_ARRAY, sa);
 			} catch (Exception e) {
 				Logger.logError(e);
 			}
 		} else {
 			//add series to stop crashing
-			mBookData.putSerializable(ColumnNames.KEY_SERIES_ARRAY, new ArrayList<Series>());
+			mBookData.putSerializable(ColumnInfo.KEY_SERIES_ARRAY, new ArrayList<Series>());
 		}
 
 		//
@@ -501,10 +590,10 @@ public class SearchManager implements TaskManagerListener {
 		// Removed 20-Jan-2016 PJW; see Issue 717.
 		//
 		// Cleanup other fields
-		//Utils.doProperCase(mBookData, CatalogueDBAdapter.KEY_TITLE);			
-		//Utils.doProperCase(mBookData, CatalogueDBAdapter.KEY_PUBLISHER);
-		//Utils.doProperCase(mBookData, CatalogueDBAdapter.KEY_DATE_PUBLISHED);
-		//Utils.doProperCase(mBookData, CatalogueDBAdapter.KEY_SERIES_NAME);
+		//Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_TITLE);
+		//Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_PUBLISHER);
+		//Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_DATE_PUBLISHED);
+		//Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_SERIES_NAME);
 		
 		// If book is not found or missing required data, warn the user
 		if (authors == null || authors.isEmpty() || title == null || title.isEmpty()) {
@@ -529,12 +618,12 @@ public class SearchManager implements TaskManagerListener {
 	 */
 	private boolean startNext() {
 		// Loop though in 'search-priority' order
-		for (int source: mDefaultSearchOrder) {
+		for (SearchSite source: mSearchOrder) {
 			// If this search includes the source, check it
-			if ( (mSearchFlags & source) != 0) {
-				// If the source has not been search, search it
-				if (!mSearchResults.containsKey(source)) {
-					return startOneSearch(source);
+			if (source.enabled && ((mSearchFlags & source.id) != 0)) {
+				// If the source has not been searched, search it
+				if (!mSearchResults.containsKey(source.id)) {
+					return startOneSearch(source.id);
 				}
 			}
 		}
@@ -547,13 +636,13 @@ public class SearchManager implements TaskManagerListener {
 	private boolean startSearches(int sources) {
 		// Scan searches in priority order
 		boolean started = false;
-		for(int source: mDefaultSearchOrder) {
+		for(SearchSite source: mSearchOrder) {
 			// If requested search contains this source...
-			if ((sources & source) != 0)
+			if (source.enabled && ((sources & source.id) != 0))
 				// If we have not run this search...
-				if (!mSearchResults.containsKey(source)) {
+				if (!mSearchResults.containsKey(source.id)) {
 					// Run it now
-					if (startOneSearch(source))
+					if (startOneSearch(source.id))
 						started = true;
 				}
 		}
@@ -593,13 +682,13 @@ public class SearchManager implements TaskManagerListener {
 				mSearchingAsin = false;
 				// Clear the 'isbn'
 				mIsbn = "";
-				if (Utils.isNonBlankString(bookData, ColumnNames.KEY_ISBN)) {
+				if (Utils.isNonBlankString(bookData, ColumnInfo.KEY_ISBN)) {
 					// We got an ISBN, so pretend we were searching for an ISBN
 					mWaitingForIsbn = true;
 				} else {
 					// See if we got author/title
-					mAuthor = bookData.getString(ColumnNames.KEY_AUTHOR_NAME);
-					mTitle = bookData.getString(ColumnNames.KEY_TITLE);
+					mAuthor = bookData.getString(ColumnInfo.KEY_AUTHOR_NAME);
+					mTitle = bookData.getString(ColumnInfo.KEY_TITLE);
 					if (mAuthor != null && !mAuthor.isEmpty() && mTitle != null && !mTitle.isEmpty()) {
 						// We got them, so pretend we are searching by author/title now, and waiting for an ASIN...
 						mWaitingForIsbn = true;
@@ -607,10 +696,10 @@ public class SearchManager implements TaskManagerListener {
 				}
 			}
 			if (mWaitingForIsbn) {
-				if (Utils.isNonBlankString(bookData, ColumnNames.KEY_ISBN)) {
+				if (Utils.isNonBlankString(bookData, ColumnInfo.KEY_ISBN)) {
 					mWaitingForIsbn = false;
 					// Start the other two...even if they have run before
-					mIsbn = bookData.getString(ColumnNames.KEY_ISBN);
+					mIsbn = bookData.getString(ColumnInfo.KEY_ISBN);
 					startSearches(mSearchFlags);
 				} else {
 					// Start next one that has not run. 
@@ -618,7 +707,7 @@ public class SearchManager implements TaskManagerListener {
 				}
 			}				
 		}
-	}		
+	}
 
 	/* ===================================================================== 
 	 * Message Switchboard implementation

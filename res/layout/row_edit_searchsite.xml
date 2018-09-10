@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <!--
+        NOTE:
+        The outer layout is used because this item appears in a TouchListView which uses
+        the outer element padding, and we want to set our own padding.
+
+        With careful analysis, we could probably put padding on the right elements.
+        But this is clearer and easier.
+    -->
+    <RelativeLayout
+        android:id="@+id/row_real"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_border_double"
+        tools:ignore="UselessParent">
+
+        <CheckedTextView
+            android:id="@+id/row_enabled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:checkMark="?android:attr/textCheckMark"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:paddingEnd="@dimen/padding_border_double"
+            android:paddingStart="@dimen/padding_border_double" />
+
+        <RelativeLayout
+            android:id="@+id/row_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@id/row_enabled"
+            android:layout_toStartOf="@id/grabber"
+            android:orientation="vertical"
+            android:padding="2dp">
+
+            <TextView
+                android:id="@+id/row_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:gravity="start"
+                android:singleLine="false"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:text="site name" />
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/grabber"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
+            style="@style/touch_list_view_row_ic_grabber"
+            app:srcCompat="@drawable/ic_grabber"
+            tools:ignore="ContentDescription" />
+    </RelativeLayout>
+
+    <View style="@style/listDivider" />
+</LinearLayout>

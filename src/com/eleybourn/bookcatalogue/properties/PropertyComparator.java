@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -24,28 +24,28 @@ import java.util.Comparator;
 
 /**
  * Class to compare to properties for the purpose of sorting.
- * 
+ *
  * @author Philip Warner
  */
 public class PropertyComparator implements Comparator<Property> {
-	@Override
-	public int compare(Property lhs, Property rhs) {	
-		// First compare their groups
-		int gCmp = PropertyGroup.compare(lhs.getGroup(), rhs.getGroup());
-		if (gCmp != 0)
-			return gCmp;
+    @Override
+    public int compare(Property lhs, Property rhs) {
+        // First compare their groups
+        int gCmp = PropertyGroup.compare(lhs.getGroup(), rhs.getGroup());
+        if (gCmp != 0)
+            return gCmp;
 
-		// Same group, compare weights
-		if (lhs.getWeight() < rhs.getWeight())
-			return -1;
-		else if (lhs.getWeight() > rhs.getWeight())
-			return 1;
+        // Same group, compare weights
+        if (lhs.getWeight() < rhs.getWeight())
+            return -1;
+        else if (lhs.getWeight() > rhs.getWeight())
+            return 1;
 
-		// Same weights, compare names
-		if (lhs.getNameResourceId() != rhs.getNameResourceId()) 
-			return lhs.getName().compareTo(rhs.getName());
-		else
-			return 0;
-	}
+        // Same weights, compare names
+        if (lhs.getNameResourceId() != rhs.getNameResourceId())
+            return lhs.getName().compareTo(rhs.getName());
+        else
+            return 0;
+    }
 }
 

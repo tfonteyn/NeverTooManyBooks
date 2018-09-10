@@ -121,7 +121,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.search_catalogue_criteria;
+        return R.layout.activity_search_catalogue;
     }
 
     @Override
@@ -199,8 +199,8 @@ public class SearchCatalogue extends BookCatalogueActivity {
         long t0 = System.currentTimeMillis();
 
         //BooksCursor c = mDb.fetchAllBooks(""/*order*/, ""/*bookshelf*/,
-        //		"(" + CatalogueDBAdapter.KEY_FAMILY_NAME + " like '%" + author + "%' " + CatalogueDBAdapter.COLLATION + " or " + CatalogueDBAdapter.KEY_GIVEN_NAMES + " like '%" + author + "%' " + CatalogueDBAdapter.COLLATION + ")",
-        //		"b." + CatalogueDBAdapter.KEY_TITLE + " like '%" + title + "%' " + CatalogueDBAdapter.COLLATION + ",
+        //		"(" + DatabaseDefinitions.KEY_FAMILY_NAME + " like '%" + author + "%' " + CatalogueDBAdapter.COLLATION + " or " + DatabaseDefinitions.KEY_GIVEN_NAMES + " like '%" + author + "%' " + CatalogueDBAdapter.COLLATION + ")",
+        //		"b." + DatabaseDefinitions.KEY_TITLE + " like '%" + title + "%' " + CatalogueDBAdapter.COLLATION + ",
         //		""/*searchText*/, ""/*loaned_to*/, ""/*seriesName*/);
 
         // Get the cursor

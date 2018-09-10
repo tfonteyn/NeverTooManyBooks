@@ -45,20 +45,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter.AnthologyTitleExistsException;
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
-import com.eleybourn.bookcatalogue.database.dbaadapter.DatabaseHelper;
+import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaEntryHandler;
 import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaHandler;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
-import com.eleybourn.bookcatalogue.widgets.TouchListView;
 
 import java.net.URL;
 import java.util.ArrayList;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
 
 public class BookEditAnthology extends BookEditFragmentAbstract {
 
@@ -75,65 +76,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
     private Button mAdd;
     private CheckBox mSame;
     private Integer mEditPosition = null;
-    private int anthology_num = DatabaseHelper.ANTHOLOGY_NO;
     private ArrayList<AnthologyTitle> mList;
-    private AnthologyTitleListAdapter mAdapter;
-
-    /**
-     * Handle drop events; also preserves current position.
-     * TODO: I've been quick&dirty... copied from EditObjectListActivity.. should be unified ?
-     */
-    private final TouchListView.DropListener mDropListener = new TouchListView.DropListener() {
-
-        @Override
-        public void drop(int from, final int to) {
-            final ListView lv = getListView();
-            // Check if nothing to do; also avoids the nasty case where list size == 1
-            if (from == to)
-                return;
-
-            final int firstPos = lv.getFirstVisiblePosition();
-
-            AnthologyTitle item = mAdapter.getItem(from);
-            mAdapter.remove(item);
-            mAdapter.insert(item, to);
-            onListChanged();
-
-            int first2 = lv.getFirstVisiblePosition();
-            if (BuildConfig.DEBUG) {
-                System.out.println(from + " -> " + to + ", first " + firstPos + "(" + first2 + ")");
-            }
-            final int newFirst = (to > from && from < firstPos) ? (firstPos - 1) : firstPos;
-
-            View firstView = lv.getChildAt(0);
-            final int offset = firstView.getTop();
-            lv.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (BuildConfig.DEBUG) {
-                        System.out.println("Positioning to " + newFirst + "+{" + offset + "}");
-                    }
-                    lv.requestFocusFromTouch();
-                    lv.setSelectionFromTop(newFirst, offset);
-                    lv.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            for (int i = 0; ; i++) {
-                                View c = lv.getChildAt(i);
-                                if (c == null)
-                                    break;
-                                if (lv.getPositionForView(c) == to) {
-                                    lv.setSelectionFromTop(to, c.getTop());
-                                    //c.requestFocusFromTouch();
-                                    break;
-                                }
-                            }
-                        }
-                    });
-                }
-            });
-        }
-    };
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -158,18 +101,12 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
     private void loadPage() {
 
         BookData book = mEditManager.getBookData();
-        mBookAuthor = book.getString(ColumnNames.KEY_AUTHOR_FORMATTED);
-        mBookTitle = book.getString(ColumnNames.KEY_TITLE);
+        mBookAuthor = book.getString(KEY_AUTHOR_FORMATTED);
+        mBookTitle = book.getString(KEY_TITLE);
 
         // Setup the same author field
-        anthology_num = book.getInt(ColumnNames.KEY_ANTHOLOGY_MASK);
         mSame = getView().findViewById(R.id.same_author);
-        if ((anthology_num & DatabaseHelper.ANTHOLOGY_MULTIPLE_AUTHORS) != 0) {
-            mSame.setChecked(false);
-        } else {
-            mSame.setChecked(true);
-        }
-
+        mSame.setChecked(((book.getInt(ColumnInfo.KEY_ANTHOLOGY_MASK) & ColumnInfo.ANTHOLOGY_MULTIPLE_AUTHORS) == ColumnInfo.ANTHOLOGY_NO));
         mSame.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 saveState(mEditManager.getBookData());
@@ -180,11 +117,8 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
         ArrayAdapter<String> author_adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, mDb.getAllAuthors());
         mAuthorText = getView().findViewById(R.id.add_author);
         mAuthorText.setAdapter(author_adapter);
-        if (mSame.isChecked()) {
-            mAuthorText.setVisibility(View.GONE);
-        } else {
-            mAuthorText.setVisibility(View.VISIBLE);
-        }
+        mAuthorText.setVisibility(mSame.isChecked() ? View.GONE : View.VISIBLE);
+
         mTitleText = getView().findViewById(R.id.add_title);
 
         mAdd = getView().findViewById(R.id.row_add);
@@ -218,14 +152,6 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
         });
 
         fillAnthology();
-
-        TouchListView tlv = (TouchListView) getListView();
-        tlv.setDropListener(mDropListener);
-    }
-
-    public void fillAnthology(int scroll_to_id) {
-        fillAnthology();
-        gotoTitle(scroll_to_id);
     }
 
     /**
@@ -235,12 +161,13 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 
         // Get all of the rows from the database and create the item list
         mList = mEditManager.getBookData().getAnthologyTitles();
+
         // Now create a simple cursor adapter and set it to display
-        mAdapter = new AnthologyTitleListAdapter(getActivity(), R.layout.row_edit_anthology, mList);
-        final ListView list = getListView();
-        list.setAdapter(mAdapter);
-        registerForContextMenu(list);
-        list.setOnItemClickListener(new OnItemClickListener() {
+        AnthologyTitleListAdapter adapter = new AnthologyTitleListAdapter(getActivity(), R.layout.row_edit_anthology, mList);
+        getListView().setAdapter(adapter);
+
+        registerForContextMenu(getListView());
+        getListView().setOnItemClickListener(new OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -437,13 +364,11 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
     }
 
     private void saveState(BookData book) {
-        if (mSame.isChecked()) {
-            anthology_num = DatabaseHelper.ANTHOLOGY_IS_ANTHOLOGY;
-        } else {
-            anthology_num = DatabaseHelper.ANTHOLOGY_MULTIPLE_AUTHORS ^ DatabaseHelper.ANTHOLOGY_IS_ANTHOLOGY;
-        }
         book.setAnthologyTitles(mList);
-        book.putInt(ColumnNames.KEY_ANTHOLOGY_MASK, anthology_num);
+        book.putInt(ColumnInfo.KEY_ANTHOLOGY_MASK,
+                mSame.isChecked() ?
+                        ColumnInfo.ANTHOLOGY_IS_ANTHOLOGY
+                        : ColumnInfo.ANTHOLOGY_MULTIPLE_AUTHORS ^ ColumnInfo.ANTHOLOGY_IS_ANTHOLOGY);
     }
 
     @Override

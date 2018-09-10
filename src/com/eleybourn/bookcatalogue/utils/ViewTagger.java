@@ -30,7 +30,7 @@ import android.view.View;
  * <p>
  * http://code.google.com/p/android/issues/detail?id=18273
  * <p>
- * TODO: above bug was fixed in Android 4, so this class can probably be eliminated
+ * TODO: above bug was fixed in Android 4, so?
  * <p>
  * It seems that an 'interesting' design choice was made to use the view itself as a weak key to the into
  * another collection, which then causes the views to never be GC'd.

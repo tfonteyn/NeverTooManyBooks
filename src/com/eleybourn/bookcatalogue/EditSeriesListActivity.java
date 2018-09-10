@@ -25,35 +25,32 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
+import android.widget.*;
+import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_ARRAY;
 
 public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
     private ArrayAdapter<String> mSeriesAdapter;
 
     public EditSeriesListActivity() {
-        super(ColumnNames.KEY_SERIES_ARRAY, R.layout.activity_edit_list_series, R.layout.row_edit_series_list);
+        super(KEY_SERIES_ARRAY, R.layout.activity_edit_list_series, R.layout.row_edit_series_list);
     }
 
     @Override
-    protected void onSetupView(View target, Series object, int position) {
+    protected void onSetupView(@NonNull View target, Series object, int position) {
         if (object != null) {
             TextView dt = target.findViewById(R.id.row_series);
-            if (dt != null)
+            if (dt != null) {
                 dt.setText(object.getDisplayName());
-
+            }
             TextView st = target.findViewById(R.id.row_series_sort);
             if (st != null) {
                 if (object.getDisplayName().equals(object.getSortName())) {
@@ -64,8 +61,9 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
                 }
             }
             TextView et = target.findViewById(R.id.row_series_num);
-            if (et != null)
+            if (et != null) {
                 et.setText(object.number);
+            }
         }
     }
 
@@ -97,7 +95,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             Series series = new Series(seriesTitle, numberField.getText().toString());
             series.id = mDb.lookupSeriesId(series);
             for (Series s : mList) {
-                if (s.id == series.id || (s.name.equals(series.name) && s.number.equals(series.number))) {
+                if (s.equals(series)) {
                     Toast.makeText(EditSeriesListActivity.this, getResources().getString(R.string.series_already_in_list), Toast.LENGTH_LONG).show();
                     return;
                 }

@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
 
+import com.eleybourn.bookcatalogue.baseactivity.PreferencesBase;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.properties.BooleanProperty;
 import com.eleybourn.bookcatalogue.properties.IntegerListProperty;
@@ -43,26 +44,18 @@ import java.util.Locale;
  */
 public class OtherPreferences extends PreferencesBase {
 
-    /**
-     * Camera image rotation property values
-     */
+    /** Camera image rotation property values */
     private static final ItemEntries<Integer> mRotationListItems = new ItemEntries<Integer>()
             .add(null, R.string.use_default_setting)
             .add(0, R.string.no)
             .add(90, R.string.menu_rotate_thumb_cw)
             .add(-90, R.string.menu_rotate_thumb_ccw)
             .add(180, R.string.menu_rotate_thumb_180);
-    /**
-     * List of supported locales
-     */
+    /** List of supported locales */
     private static final ItemEntries<String> mLocalesListItems = getLocalesListItems();
-    /**
-     * List of supported themes
-     */
+    /** List of supported themes */
     private static final ItemEntries<Integer> mAppThemeItems = getThemeListItems();
-    /**
-     * Booklist Compatibility mode property values
-     */
+    /** Booklist Compatibility mode property values */
     private static final ItemEntries<Integer> mListGenerationOptionsListItems = new ItemEntries<Integer>()
             .add(null, R.string.use_default_setting)
             .add(BooklistBuilder.BOOKLIST_GENERATE_OLD_STYLE, R.string.force_compatibility_mode)
@@ -70,9 +63,7 @@ public class OtherPreferences extends PreferencesBase {
             .add(BooklistBuilder.BOOKLIST_GENERATE_NESTED_TRIGGER, R.string.force_fully_featured)
             .add(BooklistBuilder.BOOKLIST_GENERATE_AUTOMATIC, R.string.automatically_use_recommended_option);
 
-    /**
-     * Preferred Scanner property values
-     */
+    /** Preferred Scanner property values */
     private static final ItemEntries<Integer> mScannerListItems = new ItemEntries<Integer>()
             .add(null, R.string.use_default_setting)
             .add(ScannerManager.SCANNER_ZXING_COMPATIBLE, R.string.zxing_compatible_scanner)
@@ -217,7 +208,7 @@ public class OtherPreferences extends PreferencesBase {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.other_preferences;
+        return R.layout.activity_other_preferences;
     }
 
     @Override
@@ -236,9 +227,6 @@ public class OtherPreferences extends PreferencesBase {
         super.onPause();
     }
 
-    /**
-     * Fix background
-     */
     @Override
     public void onResume() {
         super.onResume();

@@ -4,15 +4,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.ImageView;
-
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.GetThumbnailTask;
 import com.eleybourn.bookcatalogue.ThumbnailCacheWriterTask;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -29,6 +26,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_THUMBNAIL;
 
 public class ImageUtils {
     /**
@@ -393,7 +392,7 @@ public class ImageUtils {
                 }
                 // Finally, cleanup the data
                 result.remove(SearchManager.BKEY_THUMBNAIL_SEARCHES);
-                result.putBoolean(ColumnNames.KEY_THUMBNAIL, true);
+                result.putBoolean(KEY_THUMBNAIL, true);
             }
         }
     }

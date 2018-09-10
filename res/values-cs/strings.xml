@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Book Catalogue</string>
-    <string name="system_app_name">Book Catalogue</string>
     <string name="menu_insert">Přidat knihu</string>
     <string name="menu_delete">Smazat knihu</string>
     <string name="author">Autor</string>
@@ -63,11 +61,6 @@
     <string name="webpage_label">WWW stránky:</string>
     <string name="sourcecode_label">Zdrojový kód:</string>
     <string name="contact_label">Kontakt:</string>
-    <string name="webpage">https://wiki.github.com/eleybourn/Book-Catalogue/</string>
-    <string name="sourcecode">https://github.com/eleybourn/Book-Catalogue</string>
-    <string name="helppage">https://github.com/eleybourn/Book-Catalogue/wiki/Help</string>
-    <string name="contact1">eleybourn@gmail.com</string>
-    <string name="contact2">philip.warner@rhyme.com.au</string>
     <string name="donate_label">Podpořit</string>
     <string name="about_label">O této aplikaci</string>
     <string name="sortby_author">Řadit podle autora</string>
@@ -145,8 +138,6 @@
     <string name="add">Přidat</string>
     <string name="noauthors">Tato kniha nemá autora. Prosím přidejte jej prostřednictví pole v horní části obrazovky.</string>
     <string name="noseries">Pro tuto knihu není zadána žádná série. Pro její zadání můžete použít pole v horní části obrazovky.</string>
-    <item name="TAG_POSITION" type="id" />
-    <item name="TAG_ORIGINAL_VALUE" type="id" />
     <string name="cover_not_set">Obálka není zadána</string>
     <string name="cover_corrupt">Obálka je poškozena</string>
     <string name="cover_detail">Detail obálky</string>
@@ -195,7 +186,6 @@
     <string name="click_on_thumb">Pro zobrazení většího obrázku klikněte na náhled</string>
     <string name="loading">Načítání&#8230;</string>
     <string name="image_not_found">Obrázek nebyl nalezen</string>
-    <item name="fieldCheckbox" type="id" />
     <string name="select_min_1_field">Zvolte alespoň jedno pole k aktualizaci</string>
     <string name="usage_copy_if_blank">Kopírovat pokud je prázdné</string>
     <string name="usage_add_extra">Přidat extra data</string>
@@ -221,7 +211,6 @@
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="bytes">%.0f bytů</string>
-    <string name="debug_email">eleybourn@gmail.com;grunthos@rhyme.com.au</string>
     <string name="sortby_author_given">Řadit podle autora (křestní jméno)</string>
     <string name="debug_subject">Shromáždit informace o debugování</string>
     <string name="debug_body">Věnujte prosím čas přesnému popisu problému, se kterým máte zkušenost.</string>
@@ -238,19 +227,11 @@
     <string name="task_errors">Chyby</string>
     <string name="retry">Opakovat</string>
     <string name="retry_task">Opakovat</string>
-    <item name="TAG_EVENT" type="id" />
-    <item name="TAG_HOLDER" type="id" />
-    <item name="TAG_TASK" type="id" />
-    <item name="TAG_TASK_ID" type="id" />
-    <item name="TAG_BOOK_EVENT_HOLDER" type="id" />
-    <item name="TAG_TASK_HOLDER" type="id" />
-    <item name="TAG_PROPERTY" type="id" />
     <string name="my_books">Moje knihy</string>
     <string name="my_books_classic">Moje knihy (klasik)</string>
     <string name="loan_return_book">Půjčit, vrátit nebo upravit knihu</string>
     <string name="admin_and_prefs">Administrace a možnosti</string>
     <string name="edit_book_send_to_gr">Poslat do Goodreads</string>
-    <string name="goodreads">Goodreads</string>
     <string name="goodreads_auth_blurb_part1">Goodreads je internetová síť, jejímž hlavním cílem je "pomoci lidem najít a sdílet knihy, které milují".
     										Mají velmi rozsáhlou databázi knih a recenzí, a pokud jste jejich registovaný uživatel, může 
     										BookCatalogue exportovat Vaše knihy, knihovny a recenze do Goodreads a naopak importovat Vaše knihy, knihovny 
@@ -262,7 +243,6 @@
     										a udělenou autorizaci můžete kdykoli zrušit přes webové stránky Goodreads. Při problémech s připojením 
     										k internetu můžete skončit na prázdné stránce - v tom případě prostě použijte tlačítko zpět pro návrat na tuto obrazovku!</string>
     <string name="goodreads_auth_blurb_part3">Pamatujte&#8230;žádná z těchto možností není povinná: BookCatalogue je samostatná aplikace a pracuje zcela správně i bez nich!</string>
-    <string name="goodreads_url">http://www.goodreads.com</string>
     <string name="authorize_access">Autorizovat přístup</string>
     <string name="authorize_access_already_auth">Vypadá to, že aplikace již byla autorizována. Všechny funkce z Goodreads by již měly být dostupné</string>
     <string name="goodreads_access_error">Během autorizace aplikace došlo k problému s internetovým připojením. Zkontrolujte prosím přístup ke stránkám Goodreads a pokud problémy přetrvají, kontaktujte správce.</string>
@@ -301,9 +281,6 @@
     <string name="send_all_to_goodreads_result">%1$d knih zpracováno: %2$d úspěšně odesláno, %3$d bez ISBN a %4$d s ISBN, které nebyly v Goodreads nalezeny.</string>
     <string name="x_of_y">%1$d z %2$d</string>
     <string name="send_book_to_goodreads">Poslat knihu %1$s do Goodreads</string>
-    <item name="NOTIFICATION" type="id" />
-    <item name="TAG_GOODREADS_WORK" type="id" />
-    <item name="TAG_GET_THUMBNAIL_TASK" type="id" />
     <string name="erase_cover_cache">Vymazat vyrovnávací paměť pro obálky</string>
     <string name="crash_toast_text">Došlo k neočekávanému pádu aplikace BookCatalogue. Prosím pomozte nám zlepšit aplikaci a informujte nás o tomto problému.</string>
     <string name="crash_notif_ticker_text">BookCatalogue spadl</string>
@@ -333,17 +310,6 @@
     <string name="sort_added_date">Datum přidání</string>
     <string name="sort_author_year">Autor a rok</string>
     <string name="empty_with_brackets">(prázdné)</string>
-    <item name="MENU_DELETE_BOOK" type="id" />
-    <item name="MENU_EDIT_BOOK" type="id" />
-    <item name="MENU_EDIT_BOOK_NOTES" type="id" />
-    <item name="MENU_EDIT_BOOK_FRIENDS" type="id" />
-    <item name="MENU_SEND_BOOK_TO_GR" type="id" />
-    <item name="MENU_EDIT_AUTHOR" type="id" />
-    <item name="MENU_DELETE_SERIES" type="id" />
-    <item name="MENU_EDIT_SERIES" type="id" />
-    <item name="MENU_DELETE_STYLE" type="id" />
-    <item name="MENU_EDIT_STYLE" type="id" />
-    <item name="MENU_CLONE_STYLE" type="id" />
     <string name="booklist_preferences">Možnosti seznamu knih</string>
     <string name="extra_book_details">Podrobnosti o knize</string>
     <string name="general">Obecné</string>

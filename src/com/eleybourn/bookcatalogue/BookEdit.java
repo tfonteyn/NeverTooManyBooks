@@ -40,7 +40,7 @@ import android.widget.Toast;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
+import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -70,7 +70,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 
     public static final String BOOK_DATA = "bookData";
     public static final String FLATTENED_BOOKLIST_POSITION = "FlattenedBooklistPosition";
-    public static final String FLATTENED_BOOKLIST = "FlattenedBooklist";
+    public static final String BKEY_FLATTENED_BOOKLIST = "FlattenedBooklist";
     /**
      * Tabs in order, see {@link #mTabClasses}
      */
@@ -149,7 +149,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     private ArrayList<String> mFormats;
 
     /**
-     * see {@link #openBook(Activity, long, BooklistBuilder, Integer)}
+     * @see #openBook(Activity, long, BooklistBuilder, Integer)
      */
     public static void openBook(Activity a, long id) {
         openBook(a, id, null, null);
@@ -187,7 +187,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
      */
     public static void editBook(Activity a, long id, int tab) {
         Intent i = new Intent(a, BookEdit.class);
-        i.putExtra(ColumnNames.KEY_ROWID, id);
+        i.putExtra(ColumnInfo.KEY_ROWID, id);
         i.putExtra(BookEdit.TAB, tab);
         a.startActivityForResult(i, UniqueId.ACTIVITY_EDIT_BOOK);
         return;
@@ -206,11 +206,11 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
      */
     public static void viewBook(Activity a, long id, String listTable, Integer position) {
         Intent i = new Intent(a, BookEdit.class);
-        i.putExtra(FLATTENED_BOOKLIST, listTable);
+        i.putExtra(BKEY_FLATTENED_BOOKLIST, listTable);
         if (position != null) {
             i.putExtra(FLATTENED_BOOKLIST_POSITION, position);
         }
-        i.putExtra(ColumnNames.KEY_ROWID, id);
+        i.putExtra(ColumnInfo.KEY_ROWID, id);
         i.putExtra(BookEdit.TAB, BookEdit.TAB_EDIT); // needed extra for creating BookEdit
         i.putExtra(BookEdit.KEY_READ_ONLY, true);
         a.startActivityForResult(i, UniqueId.ACTIVITY_VIEW_BOOK);
@@ -232,9 +232,9 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         Bundle extras = getIntent().getExtras();
 
         // We need the row ID
-        Long rowId = savedInstanceState != null ? savedInstanceState.getLong(ColumnNames.KEY_ROWID) : null;
+        Long rowId = savedInstanceState != null ? savedInstanceState.getLong(ColumnInfo.KEY_ROWID) : null;
         if (rowId == null) {
-            rowId = extras != null ? extras.getLong(ColumnNames.KEY_ROWID) : null;
+            rowId = extras != null ? extras.getLong(ColumnInfo.KEY_ROWID) : null;
         }
         mRowId = (rowId == null) ? 0 : rowId;
         boolean isExistingBook = (mRowId > 0);
@@ -347,15 +347,12 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
      */
     private void initBooklist(Bundle extras, Bundle savedInstanceState) {
         if (extras != null) {
-            String list = extras.getString(FLATTENED_BOOKLIST);
+            String list = extras.getString(BKEY_FLATTENED_BOOKLIST);
             if (list != null && !list.isEmpty()) {
                 mList = new FlattenedBooklist(mDb.getDb(), list);
-                // Check to see it really exists. The underlying table
-                // disappeared once in testing
-                // which is hard to explain; it theoretically should only happen
-                // if the app closes
-                // the database or if the activity pauses with 'isFinishing()'
-                // returning true.
+                // Check to see it really exists. The underlying table disappeared once in testing
+                // which is hard to explain; it theoretically should only happen if the app closes
+                // the database or if the activity pauses with 'isFinishing()' returning true.
                 if (mList.exists()) {
                     int pos;
                     if (savedInstanceState != null && savedInstanceState.containsKey(FLATTENED_BOOKLIST_POSITION)) {
@@ -465,7 +462,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         Tracker.enterOnSaveInstanceState(this);
         super.onSaveInstanceState(outState);
 
-        outState.putLong(ColumnNames.KEY_ROWID, mRowId);
+        outState.putLong(ColumnInfo.KEY_ROWID, mRowId);
         outState.putBundle(BOOK_DATA, mBookData.getRawData());
         if (mList != null) {
             outState.putInt(FLATTENED_BOOKLIST_POSITION, (int) mList.getPosition());
@@ -531,7 +528,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
      */
     private void finishAndSendIntent() {
         Intent i = new Intent();
-        i.putExtra(ColumnNames.KEY_ROWID, mBookData.getRowId());
+        i.putExtra(ColumnInfo.KEY_ROWID, mBookData.getRowId());
         setResult(Activity.RESULT_OK, i);
         finish();
     }
@@ -622,14 +619,14 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
             Toast.makeText(this, getResources().getText(R.string.author_required), Toast.LENGTH_LONG).show();
             return;
         }
-        if (!mBookData.containsKey(ColumnNames.KEY_TITLE)
-                || mBookData.getString(ColumnNames.KEY_TITLE).trim().isEmpty()) {
+        if (!mBookData.containsKey(ColumnInfo.KEY_TITLE)
+                || mBookData.getString(ColumnInfo.KEY_TITLE).trim().isEmpty()) {
             Toast.makeText(this, getResources().getText(R.string.title_required), Toast.LENGTH_LONG).show();
             return;
         }
 
         if (mRowId == 0) {
-            String isbn = mBookData.getString(ColumnNames.KEY_ISBN);
+            String isbn = mBookData.getString(ColumnInfo.KEY_ISBN);
             /* Check if the book currently exists */
             if (!isbn.isEmpty()) {
                 if (mDb.checkIsbnExists(isbn, true)) {
@@ -712,8 +709,8 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
             Logger.logError(e);
         }
 
-        added_title = mBookData.getString(ColumnNames.KEY_TITLE);
-        added_genre = mBookData.getString(ColumnNames.KEY_GENRE);
+        added_title = mBookData.getString(ColumnInfo.KEY_TITLE);
+        added_genre = mBookData.getString(ColumnInfo.KEY_GENRE);
     }
 
     /**
@@ -724,7 +721,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         if (bar != null) {
             if (mIsReadOnly && mList != null) {
                 // display a book
-//                bar.setTitle(mBookData.getString(ColumnNames.KEY_TITLE));
+//                bar.setTitle(mBookData.getString(KEY_TITLE));
 //                bar.setSubtitle(mBookData.getAuthorTextShort()
 //                                + String.format(" (" + getResources().getString(R.string.x_of_y) + ")",
 //                                  mList.getAbsolutePosition(), mList.getCount())
@@ -734,7 +731,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 
             } else if (mBookData.getRowId() > 0) {
                 // editing an existing book
-                bar.setTitle(mBookData.getString(ColumnNames.KEY_TITLE));
+                bar.setTitle(mBookData.getString(ColumnInfo.KEY_TITLE));
                 bar.setSubtitle(mBookData.getAuthorTextShort());
             } else {
                 // new book
@@ -756,7 +753,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
             mPublishers = new ArrayList<>();
 
             try (Cursor publisher_cur = mDb.fetchAllPublishers()) {
-                final int col = publisher_cur.getColumnIndexOrThrow(ColumnNames.KEY_PUBLISHER);
+                final int col = publisher_cur.getColumnIndexOrThrow(ColumnInfo.KEY_PUBLISHER);
                 while (publisher_cur.moveToNext()) {
                     mPublishers.add(publisher_cur.getString(col));
                 }
@@ -777,7 +774,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
             mGenres = new ArrayList<>();
 
             try (Cursor genre_cur = mDb.fetchAllGenres("")) {
-                final int col = genre_cur.getColumnIndexOrThrow(ColumnNames.KEY_ROWID);
+                final int col = genre_cur.getColumnIndexOrThrow(ColumnInfo.KEY_ROWID);
                 while (genre_cur.moveToNext()) {
                     mGenres.add(genre_cur.getString(col));
                 }
@@ -798,7 +795,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
             mLanguages = new ArrayList<>();
 
             try (Cursor cur = mDb.fetchAllLanguages("")) {
-                final int col = cur.getColumnIndexOrThrow(ColumnNames.KEY_ROWID);
+                final int col = cur.getColumnIndexOrThrow(ColumnInfo.KEY_ROWID);
                 while (cur.moveToNext()) {
                     String s = cur.getString(col);
                     if (s != null && !s.isEmpty()) {
@@ -963,7 +960,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 
         public void success() {
             Intent i = new Intent();
-            i.putExtra(ColumnNames.KEY_ROWID, mBookData.getRowId());
+            i.putExtra(ColumnInfo.KEY_ROWID, mBookData.getRowId());
             i.putExtra(ADDED_HAS_INFO, true);
             i.putExtra(ADDED_GENRE, added_genre);
             i.putExtra(ADDED_SERIES, added_series);

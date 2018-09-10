@@ -1,7 +1,7 @@
 /*
  * @copyright 2011 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 
 import java.io.Serializable;
@@ -31,37 +30,14 @@ import java.util.Objects;
 /**
  * Class to hold Publisher data. Used in lists.
  *
+ * ENHANCE Could just have used a String, but this way we're prepared for a dedicated table with the publishers
  */
 public class Publisher implements Serializable {
-	private static final long serialVersionUID = 1L;
-
-	public String name;
-
-	public Publisher(String name) {
-		this.name = name.trim();
-	}
-
-	/**
-	 * Return the 'human readable' version of the name
-	 *
-	 * @return	name
-	 */
-	public String getDisplayName() {
-			return name;
-	}
-
-	// Support for encoding to a text file
-	@Override
-	public String toString() {
-		return ArrayUtils.encodeListItem(name, ',');
-	}
-
-	/**
-	 * Support for creation via Parcelable. This is primarily useful for passing
-	 * ArrayList<Publisher> in Bundles to activities.
-	 */
-    public static final Parcelable.Creator<Publisher> CREATOR
-            = new Parcelable.Creator<Publisher>() {
+    /**
+     * Support for creation via Parcelable.
+     * This is primarily useful for passing ArrayList<Publisher> in Bundles to activities.
+     */
+    public static final Parcelable.Creator<Publisher> CREATOR = new Parcelable.Creator<Publisher>() {
         public Publisher createFromParcel(Parcel in) {
             return new Publisher(in);
         }
@@ -70,28 +46,59 @@ public class Publisher implements Serializable {
             return new Publisher[size];
         }
     };
+    private static final long serialVersionUID = 1L;
+    public String name;
 
-    /**
-     * Replace local details from another publisher
-     *
-     * @param source	publisher to copy
-     */
-    void copyFrom(Publisher source) {
-		name = source.name;
+    public Publisher(String name) {
+        this.name = name.trim();
     }
 
     /**
      * Constructor using a Parcel.
      */
     private Publisher(Parcel in) {
-    	name = in.readString();
+        name = in.readString();
     }
 
+    /**
+     * Return the 'human readable' version of the name
+     *
+     * @return name
+     */
+    public String getDisplayName() {
+        return name;
+    }
+
+    // Support for encoding to a text file
+    @Override
+    public String toString() {
+        return ArrayUtils.encodeListItem(name, ',');
+    }
+
+    /**
+     * Replace local details from another publisher
+     *
+     * @param source publisher to copy
+     */
+    void copyFrom(Publisher source) {
+        name = source.name;
+    }
+
+    /**
+     * Two Publisher are equal if:
+     * - one or both of them is 'new' (e.g. id == 0) and their names are equal
+     * - ids are equal
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Publisher publisher = (Publisher) o;
+        //ENHANCE use this once we start using ids
+//        if (id == 0 || publisher.id == 0) {
+//            return Objects.equals(name, publisher.name);
+//        }
+//        return (id == publisher.id);
         return Objects.equals(name, publisher.name);
     }
 

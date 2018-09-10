@@ -29,6 +29,7 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
+import android.text.util.Linkify;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -360,6 +361,7 @@ public class Fields extends ArrayList<Fields.Field> {
 		TextViewAccessor(boolean formatHtml) {
 			mFormatHtml = formatHtml;
 		}
+
 		public void set(Field field, Cursor c) {
 			set(field, c.getString(c.getColumnIndex(field.column)));
 		}
@@ -401,8 +403,11 @@ public class Fields extends ArrayList<Fields.Field> {
 			} else {
 				if (mFormatHtml && s != null) {
 					v.setText(Html.fromHtml(field.format(s)));
-					v.setFocusable(false);
-					v.setTextColor(BookCatalogueApp.getAppContext().getResources().getColor(android.R.color.primary_text_dark_nodisable));
+					v.setFocusable(true);
+					v.setTextIsSelectable(true);
+					v.setAutoLinkMask(Linkify.ALL);
+					v.setTextColor(BookCatalogueApp.getAppContext().getResources()
+                            .getColor(android.R.color.primary_text_dark_nodisable));
 				} else {
 					v.setText(field.format(s));
 				}				
@@ -914,7 +919,7 @@ public class Fields extends ArrayList<Fields.Field> {
 				} else {
 					throw new IllegalArgumentException();
 				}
-				visible = fields.getPreferences().getBoolean(FieldVisibility.TAG + group, true);
+				visible = fields.getPreferences().getBoolean(FieldVisibilityActivity.TAG + group, true);
 				if (!visible) {
 					view.setVisibility(View.GONE);
 				}
@@ -946,7 +951,7 @@ public class Fields extends ArrayList<Fields.Field> {
 			// Lookup the view
 			final View view = c.findViewById(id);
 			if (view != null) {
-				visible = BookCataloguePreferences.getBoolean(FieldVisibility.TAG + group, true);
+				visible = BookCataloguePreferences.getBoolean(FieldVisibilityActivity.TAG + group, true);
 				if (visible) {
 					view.setVisibility(View.VISIBLE);					
 				} else {

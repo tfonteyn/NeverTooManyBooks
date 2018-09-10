@@ -16,31 +16,45 @@ import com.eleybourn.bookcatalogue.R;
  * This has now become a copy from {@link ListActivity} but extending {@link BookCatalogueActivity}
  *
  * You must have a layout with the file name
- *      res/layout/list_activity.xml
- *  and containing something like this:
-    <pre>
-         <?xml version="1.0" encoding="utf-8"?>
-         <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-         android:layout_width="match_parent"
-         android:layout_height="0dp"
-         android:layout_weight="1"
-         android:orientation="vertical">
-
-         <ListView
-         android:id="@android:id/list"
-         android:layout_width="match_parent"
-         android:layout_height="match_parent" />
-
-         <TextView
-         android:id="@android:id/empty"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:visibility="gone" />
-         </FrameLayout>
-     </pre>
+ * res/layout/list_activity.xml
+ * and containing something like this:
+ * <pre>
+ * <?xml version="1.0" encoding="utf-8"?>
+ * <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ * android:layout_width="match_parent"
+ * android:layout_height="0dp"
+ * android:layout_weight="1"
+ * android:orientation="vertical">
  *
+ * <ListView
+ * android:id="@android:id/list"
+ * android:layout_width="match_parent"
+ * android:layout_height="match_parent" />
+ *
+ * <TextView
+ * android:id="@android:id/empty"
+ * android:layout_width="wrap_content"
+ * android:layout_height="wrap_content"
+ * android:visibility="gone" />
+ * </FrameLayout>
+ * </pre>
  */
 abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
+
+    private final Handler mHandler = new Handler();
+    private final AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {
+        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+            onListItemClick((ListView) parent, v, position, id);
+        }
+    };
+    private ListAdapter mAdapter;
+    private ListView mList;
+    private final Runnable mRequestFocus = new Runnable() {
+        public void run() {
+            mList.focusableViewAvailable(mList);
+        }
+    };
+    private boolean mFinishedStart = false;
 
     @Override
     protected int getLayoutId() {
@@ -62,29 +76,16 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
         super.onResume();
     }
 
-    private ListAdapter mAdapter;
-
-    private ListView mList;
-
-    private final Handler mHandler = new Handler();
-    private boolean mFinishedStart = false;
-
-    private final Runnable mRequestFocus = new Runnable() {
-        public void run() {
-            mList.focusableViewAvailable(mList);
-        }
-    };
-
     /**
      * This method will be called when an item in the list is selected.
      * Subclasses should override. Subclasses can call
      * getListView().getItemAtPosition(position) if they need to access the
      * data associated with the selected item.
      *
-     * @param l The ListView where the click happened
-     * @param v The view that was clicked within the ListView
+     * @param l        The ListView where the click happened
+     * @param v        The view that was clicked within the ListView
      * @param position The position of the view in the list
-     * @param id The row id of the item that was clicked
+     * @param id       The row id of the item that was clicked
      */
     protected void onListItemClick(ListView l, View v, int position, long id) {
     }
@@ -93,7 +94,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
      * Ensures the list view has been created before Activity restores all
      * of the view states.
      *
-     *@see Activity#onRestoreInstanceState(Bundle)
+     * @see Activity#onRestoreInstanceState(Bundle)
      */
     @Override
     protected void onRestoreInstanceState(Bundle state) {
@@ -123,8 +124,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
         mList = findViewById(android.R.id.list);
         if (mList == null) {
             throw new RuntimeException(
-                    "Your content must have a ListView whose id attribute is " +
-                            "'android.R.id.list'");
+                    "Your content must have a ListView whose id attribute is '@id/android:list'");
         }
         if (emptyView != null) {
             mList.setEmptyView(emptyView);
@@ -138,17 +138,6 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
     }
 
     /**
-     * Provide the cursor for the list view.
-     */
-    public void setListAdapter(ListAdapter adapter) {
-        synchronized (this) {
-            ensureList();
-            mAdapter = adapter;
-            mList.setAdapter(adapter);
-        }
-    }
-
-    /**
      * Set the currently selected list item to the specified position with the adapter's data
      */
     public void setSelection(int position) {
@@ -158,6 +147,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
     /**
      * Get the position of the currently selected list item.
      */
+    @SuppressWarnings("unused")
     public int getSelectedItemPosition() {
         return mList.getSelectedItemPosition();
     }
@@ -165,6 +155,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
     /**
      * Get the cursor row ID of the currently selected list item.
      */
+    @SuppressWarnings("unused")
     public long getSelectedItemId() {
         return mList.getSelectedItemId();
     }
@@ -184,16 +175,20 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
         return mAdapter;
     }
 
+    /**
+     * Provide the cursor for the list view.
+     */
+    public void setListAdapter(ListAdapter adapter) {
+        synchronized (this) {
+            ensureList();
+            mAdapter = adapter;
+            mList.setAdapter(adapter);
+        }
+    }
+
     private void ensureList() {
         if (mList != null) {
             return;
         }
     }
-
-    private final AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {
-        public void onItemClick(AdapterView<?> parent, View v, int position, long id)
-        {
-            onListItemClick((ListView)parent, v, position, id);
-        }
-    };
 }

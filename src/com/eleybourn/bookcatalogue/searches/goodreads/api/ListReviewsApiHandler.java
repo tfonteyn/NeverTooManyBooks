@@ -22,9 +22,8 @@ package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
+import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -33,47 +32,17 @@ import com.eleybourn.bookcatalogue.searches.goodreads.api.SimpleXmlFilter.Builde
 import com.eleybourn.bookcatalogue.searches.goodreads.api.SimpleXmlFilter.XmlListener;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
 import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
-
 import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GOODREADS_API_ROOT;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.ADDED;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.AUTHORS;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_AUTHOR_NAME;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_FORMAT;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_ISBN;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_NOTES;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_PAGES;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_PUBLISHER;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_RATING;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_READ_END;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_READ_START;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_TITLE;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.END;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.GR_BOOK_ID;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.GR_REVIEW_ID;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.ISBN13;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.LARGE_IMAGE;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.PUB_DAY;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.PUB_MONTH;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.PUB_YEAR;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.REVIEWS;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.SHELF;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.SHELVES;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.SMALL_IMAGE;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.START;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.TOTAL;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.UPDATED;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.*;
 
 /**
  * Class to implement the reviews.list api call. It queries based on the passed parameters and returns
@@ -118,18 +87,18 @@ public class ListReviewsApiHandler extends ApiHandler {
 		public static final String AUTHORS = "__authors";
 		public static final String SHELF = "__shelf";
 		public static final String SHELVES = "__shelves";
-		public static final String DB_PAGES = ColumnNames.KEY_PAGES;
-		public static final String DB_ISBN = ColumnNames.KEY_ISBN;
-		public static final String DB_TITLE = ColumnNames.KEY_TITLE;
-		public static final String DB_NOTES = ColumnNames.KEY_NOTES;
-		public static final String DB_FORMAT = ColumnNames.KEY_FORMAT;
-		public static final String DB_PUBLISHER = ColumnNames.KEY_PUBLISHER;
-		public static final String DB_DESCRIPTION = ColumnNames.KEY_DESCRIPTION;
-		public static final String DB_AUTHOR_ID = ColumnNames.KEY_AUTHOR_ID;
-		public static final String DB_AUTHOR_NAME = ColumnNames.KEY_AUTHOR_NAME;
-		public static final String DB_RATING = ColumnNames.KEY_RATING;
-		public static final String DB_READ_START = ColumnNames.KEY_READ_START;
-		public static final String DB_READ_END = ColumnNames.KEY_READ_END;
+		public static final String DB_PAGES = ColumnInfo.KEY_PAGES;
+		public static final String DB_ISBN = ColumnInfo.KEY_ISBN;
+		public static final String DB_TITLE = ColumnInfo.KEY_TITLE;
+		public static final String DB_NOTES = ColumnInfo.KEY_NOTES;
+		public static final String DB_FORMAT = ColumnInfo.KEY_FORMAT;
+		public static final String DB_PUBLISHER = ColumnInfo.KEY_PUBLISHER;
+		public static final String DB_DESCRIPTION = ColumnInfo.KEY_DESCRIPTION;
+		public static final String DB_AUTHOR_ID = ColumnInfo.KEY_AUTHOR_ID;
+		public static final String DB_AUTHOR_NAME = ColumnInfo.KEY_AUTHOR_NAME;
+		public static final String DB_RATING = ColumnInfo.KEY_RATING;
+		public static final String DB_READ_START = ColumnInfo.KEY_READ_START;
+		public static final String DB_READ_END = ColumnInfo.KEY_READ_END;
 	}
 
 	private SimpleXmlFilter mFilters;

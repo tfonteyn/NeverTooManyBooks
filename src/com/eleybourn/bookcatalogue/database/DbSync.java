@@ -271,7 +271,7 @@ public class DbSync {
 	 * 
 	 * @author Philip Warner
 	 */
-	public static class SynchronizedDb implements Closeable {
+	public static class SynchronizedDb {
 		/** Underlying database */
 		final SQLiteDatabase mDb;
 		/** Sync object to use */
@@ -281,7 +281,7 @@ public class DbSync {
 
 		/**
 		 * Constructor. Use of this method is not recommended. It is better to use
-		 * the methods that take a DBHelper object since opening the database may block
+		 * the methods that take a {@link SQLiteOpenHelper} object since opening the database may block
 		 * another thread, or vice versa.
 		 * 
 		 * @param db		Underlying database
@@ -290,6 +290,11 @@ public class DbSync {
 		public SynchronizedDb(SQLiteDatabase db, Synchronizer sync) {
 			mDb = db;
 			mSync = sync;
+			if (BuildConfig.DEBUG) {
+			    System.out.println("Reminder: Use of this method is not recommended. It is better to use\n" +
+                        "\t\t  the methods that take a {@link SQLiteOpenHelper} object since opening the database may block\n" +
+                        "\t\t  another thread, or vice versa.");
+            }
 		}
 
 		/**
@@ -339,6 +344,7 @@ public class DbSync {
 					} finally {
 						if (l != null) {
 							l.unlock();
+							l = null;
 						}
 					}				
 				} while (true);
@@ -347,7 +353,7 @@ public class DbSync {
 		/**
 		 * Constructor.
 		 * 
-		 * @param helper	DBHelper to open underlying database
+		 * @param helper	{@SQLiteOpenHelper} to open underlying database
 		 * @param sync		Synchronizer to use
 		 */
 		public SynchronizedDb(final SQLiteOpenHelper helper, Synchronizer sync) {
@@ -621,10 +627,6 @@ public class DbSync {
 			return mDb.isOpen();
 		}
 
-		@Override
-        public void close() {
-		    mDb.close();
-        }
 		/**
 		 * @return the underlying synchronizer object.
 		 */
@@ -689,6 +691,9 @@ public class DbSync {
 			mSql = sql;
             mIsReadOnly = sql.trim().toLowerCase().startsWith("select");
 			mStatement = db.getUnderlyingDatabase().compileStatement(sql);
+			if (BuildConfig.DEBUG) {
+			    System.out.println("\n" + sql + "\n\n");
+            }
 		}
 		
 		/**
@@ -770,6 +775,9 @@ public class DbSync {
 			else
 				l = mSync.getExclusiveLock();
 			try {
+				if (BuildConfig.DEBUG) {
+					System.out.println("EXECECUTING STMT: " +mStatement.toString());
+				}
 				mStatement.execute();				
 			} finally {
 				l.unlock();

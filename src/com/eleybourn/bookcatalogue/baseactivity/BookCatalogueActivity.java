@@ -80,6 +80,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
         }
     }
 
+    @SuppressWarnings("unused")
     protected NavigationView getNavigationView() {
         return mNavigationView;
     }

@@ -17,7 +17,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-class AmazonManager {
+public class AmazonManager {
 
 	private static final String PREFS_HOST_URL = "AmazonManager.hostUrl";
 

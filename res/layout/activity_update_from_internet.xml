@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/toolbar"
+        tools:text="TOOLBAR" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="50dip">
+
+        <LinearLayout
+            android:id="@+id/manage_fields_scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border">
+
+            <TextView
+                android:id="@+id/select_fields"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/padding_border"
+                android:text="@string/select_fields_to_update"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:id="@+id/select_fields_help_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/padding_border"
+                android:text="@string/select_fields_to_update_help" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- not sure why layout_marginTop works.. without it, buttons are gone -->
+    <include
+        android:id="@+id/buttonbar_cancel_update"
+        layout="@layout/inc_buttonbar_cancel_update"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-50dip"/>
+</LinearLayout>

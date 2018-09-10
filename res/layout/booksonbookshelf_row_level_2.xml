@@ -32,7 +32,7 @@
             android:gravity="center"
             android:paddingStart="2dp"
             android:paddingEnd="2dp"
-            tools:text="Some text"
+            tools:text="Series name f.e."
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textStyle="bold"/>
 
@@ -49,6 +49,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:background="@android:drawable/divider_horizontal_bright"
         android:paddingBottom="2dp"
         android:paddingTop="2dp" />
 

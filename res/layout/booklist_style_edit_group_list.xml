@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_wrapper"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/toolbar" />
+
+    <ScrollView
+        android:id="@+id/body"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/buttonbar_cancel_save"
+        android:layout_below="@id/toolbar"
+        android:fillViewport="true">
+
+        <com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
+            android:id="@id/android:list"
+            style="@style/TouchListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tlv:grabber="@+id/grabber"
+            tlv:normal_height="32dp"
+            tlv:remove_mode="none" />
+    </ScrollView>
+
+    <include
+        android:id="@+id/buttonbar_cancel_save"
+        layout="@layout/inc_buttonbar_cancel_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
+</RelativeLayout>

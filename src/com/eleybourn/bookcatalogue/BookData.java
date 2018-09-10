@@ -32,16 +32,16 @@ import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import java.util.ArrayList;
 
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ANTHOLOGY_MASK;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ANTHOLOGY_TITLE_ARRAY;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_AUTHOR_ARRAY;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_PAGES;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_READ;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ROWID;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SERIES_ARRAY;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_SIGNED;
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_TITLE;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ANTHOLOGY_MASK;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ANTHOLOGY_TITLE_ARRAY;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_ARRAY;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_PAGES;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_READ;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ROWID;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_ARRAY;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SIGNED;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
 
 /**
  * Represents the underlying data for a book.

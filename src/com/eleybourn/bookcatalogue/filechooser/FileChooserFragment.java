@@ -110,7 +110,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.file_chooser, container, false);
+		return inflater.inflate(R.layout.fragment_file_chooser, container, false);
 	}
 
 	@Override

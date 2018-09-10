@@ -64,10 +64,6 @@ public class MenuHandler {
         menu.clear();
     }
 
-//    public MenuItem addItem(Menu menu, int id, int stringId) {
-//        return addItem(menu, id, stringId, 0);
-//    }
-
     /**
      * Add a custom menu item.
      *
@@ -86,16 +82,6 @@ public class MenuHandler {
         return item;
     }
 
-    /**
-     * Add the default 'search' menu item
-     *
-     * @param menu	root menu
-     */
-    public MenuItem addSearchItem(Menu menu) {
-        MenuItem search = menu.add(0, MENU_ITEM_SEARCH, mSort++, R.string.menu_search);
-        search.setIcon(android.R.drawable.ic_menu_search);
-        return search;
-    }
     /**
      * Add menu and submenu for book creation.
      *
@@ -187,7 +173,7 @@ public class MenuHandler {
 //     */
 //    public static void editBook(Activity a, long id, int tab) {
 //        Intent i = new Intent(a, BookEdit.class);
-//        i.putExtra(CatalogueDBAdapter.KEY_ROWID, id);
+//        i.putExtra(DatabaseDefinitions.KEY_ROWID, id);
 //        i.putExtra(BookEdit.TAB, tab);
 //        a.startActivityForResult(i, UniqueId.ACTIVITY_EDIT_BOOK);
 //        return;

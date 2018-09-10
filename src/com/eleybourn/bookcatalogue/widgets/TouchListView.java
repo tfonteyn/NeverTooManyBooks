@@ -508,7 +508,6 @@ public class TouchListView extends ListView {
         }
     }
 
-    @SuppressWarnings("unused")
     public void setDragListener(DragListener l) {
         mDragListener = l;
     }
@@ -517,7 +516,6 @@ public class TouchListView extends ListView {
         mDropListener = l;
     }
 
-    @SuppressWarnings("unused")
     public void setRemoveListener(RemoveListener l) {
         mRemoveListener = l;
     }

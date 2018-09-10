@@ -31,10 +31,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
-import com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
+import com.eleybourn.bookcatalogue.database.ColumnInfo;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
@@ -43,9 +42,12 @@ import com.eleybourn.bookcatalogue.utils.FieldUsages;
 import com.eleybourn.bookcatalogue.utils.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
-//FIXME ... re-test and see why the progress stops
+/**
+ * FIXME ... re-test and see why the progress stops
+ */
 public class UpdateFromInternet extends ActivityWithTasks {
 
+    private final FieldUsages mFieldUsages = new FieldUsages();
     private long mUpdateSenderId = 0;
     private final ManagedTask.TaskListener mThumbnailsHandler = new ManagedTask.TaskListener() {
         @Override
@@ -55,11 +57,10 @@ public class UpdateFromInternet extends ActivityWithTasks {
         }
     };
     private SharedPreferences mPrefs = null;
-    private final FieldUsages mFieldUsages = new FieldUsages();
 
     @Override
     protected int getLayoutId() {
-        return R.layout.update_from_internet;
+        return R.layout.activity_update_from_internet;
     }
 
     @Override
@@ -86,7 +87,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
     private void addIfVisible(String field, String visField, int stringId, FieldUsages.Usages usage, boolean canAppend) {
         if (visField == null || visField.trim().isEmpty())
             visField = field;
-        if (mPrefs.getBoolean(FieldVisibility.TAG + visField, true))
+        if (mPrefs.getBoolean(FieldVisibilityActivity.TAG + visField, true))
             mFieldUsages.put(new FieldUsage(field, stringId, usage, canAppend));
     }
 
@@ -95,18 +96,18 @@ public class UpdateFromInternet extends ActivityWithTasks {
      * to each field checkbox
      */
     private void setupFields() {
-        addIfVisible(ColumnNames.KEY_AUTHOR_ARRAY, ColumnNames.KEY_AUTHOR_ID, R.string.author, FieldUsages.Usages.ADD_EXTRA, true);
-        addIfVisible(ColumnNames.KEY_TITLE, null, R.string.title, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnNames.KEY_ISBN, null, R.string.isbn, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnNames.KEY_THUMBNAIL, null, R.string.thumbnail, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnNames.KEY_SERIES_ARRAY, ColumnNames.KEY_SERIES_NAME, R.string.series, FieldUsages.Usages.ADD_EXTRA, true);
-        addIfVisible(ColumnNames.KEY_PUBLISHER, null, R.string.publisher, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnNames.KEY_DATE_PUBLISHED, null, R.string.date_published, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnNames.KEY_PAGES, null, R.string.pages, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnNames.KEY_LIST_PRICE, null, R.string.list_price, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnNames.KEY_FORMAT, null, R.string.format, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnNames.KEY_DESCRIPTION, null, R.string.description, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnNames.KEY_GENRE, null, R.string.genre, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnInfo.KEY_AUTHOR_ARRAY, ColumnInfo.KEY_AUTHOR_ID, R.string.author, FieldUsages.Usages.ADD_EXTRA, true);
+        addIfVisible(ColumnInfo.KEY_TITLE, null, R.string.title, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnInfo.KEY_ISBN, null, R.string.isbn, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnInfo.KEY_THUMBNAIL, null, R.string.thumbnail, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnInfo.KEY_SERIES_ARRAY, ColumnInfo.KEY_SERIES_NAME, R.string.series, FieldUsages.Usages.ADD_EXTRA, true);
+        addIfVisible(ColumnInfo.KEY_PUBLISHER, null, R.string.publisher, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnInfo.KEY_DATE_PUBLISHED, null, R.string.date_published, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnInfo.KEY_PAGES, null, R.string.pages, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnInfo.KEY_LIST_PRICE, null, R.string.list_price, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnInfo.KEY_FORMAT, null, R.string.format, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnInfo.KEY_DESCRIPTION, null, R.string.description, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(ColumnInfo.KEY_GENRE, null, R.string.genre, FieldUsages.Usages.COPY_IF_BLANK, false);
         addIfVisible(DatabaseDefinitions.DOM_LANGUAGE.name, null, R.string.language, FieldUsages.Usages.COPY_IF_BLANK, false);
 
         // Display the list of fields
@@ -194,7 +195,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                 // If they have selected thumbnails, check if they want to download ALL.
                 boolean thumbnail_check = false;
                 try {
-                    thumbnail_check = mFieldUsages.get(ColumnNames.KEY_THUMBNAIL).selected;
+                    thumbnail_check = mFieldUsages.get(ColumnInfo.KEY_THUMBNAIL).selected;
                 } catch (NullPointerException e) {
                     Logger.logError(e);
                 }
@@ -205,7 +206,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                     alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
                     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternet.this.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            mFieldUsages.get(ColumnNames.KEY_THUMBNAIL).usage = FieldUsages.Usages.OVERWRITE;
+                            mFieldUsages.get(ColumnInfo.KEY_THUMBNAIL).usage = FieldUsages.Usages.OVERWRITE;
                             startUpdate();
                             return;
                         }
@@ -219,7 +220,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                     });
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, UpdateFromInternet.this.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            mFieldUsages.get(ColumnNames.KEY_THUMBNAIL).usage = FieldUsages.Usages.COPY_IF_BLANK;
+                            mFieldUsages.get(ColumnInfo.KEY_THUMBNAIL).usage = FieldUsages.Usages.COPY_IF_BLANK;
                             startUpdate();
                             return;
                         }
@@ -282,5 +283,4 @@ public class UpdateFromInternet extends ActivityWithTasks {
             UpdateThumbnailsThread.getMessageSwitch().addListener(mUpdateSenderId, mThumbnailsHandler, true);
         Tracker.exitOnResume(this);
     }
-
 }

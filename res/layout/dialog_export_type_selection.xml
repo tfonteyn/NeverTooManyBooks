@@ -1,57 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+    style="@style/dialogFrame">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/export_books_blurb"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/padding_border">
+        android:paddingBottom="@dimen/padding_border_triple"
+        android:text="@string/export_books_blurb"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <TextView
-            android:id="@+id/export_books_blurb"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/padding_border_triple"
-            android:text="@string/export_books_blurb"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+    <RadioButton
+        android:id="@+id/all_books"
+        style="@style/option_button"
+        android:text="@string/all_books" />
 
-        <RelativeLayout
-            android:id="@+id/all_books_row"
-            style="@style/option_row">
+    <TextView
+        android:id="@+id/all_books_blurb"
+        style="@style/option_blurb"
+        android:text="@string/export_all_blurb" />
 
-            <RadioButton
-                android:id="@+id/all_books"
-                style="@style/option_button"
-                android:text="@string/all_books" />
+    <RadioButton
+        android:id="@+id/advanced_options"
+        style="@style/option_button"
+        android:text="@string/advanced_options" />
 
-            <TextView
-                android:id="@+id/all_books_blurb"
-                style="@style/option_blurb"
-                android:layout_alignStart="@id/all_books"
-                android:layout_below="@id/all_books"
-                android:text="@string/export_all_blurb" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/advanced_row"
-            style="@style/option_row">
-
-            <RadioButton
-                android:id="@+id/advanced_options"
-                style="@style/option_button"
-                android:text="@string/advanced_options" />
-
-            <TextView
-                android:id="@+id/export_advanced_blurb"
-                style="@style/option_blurb"
-                android:layout_alignStart="@+id/advanced_options"
-                android:layout_below="@id/advanced_options"
-                android:text="@string/export_advanced_blurb" />
-        </RelativeLayout>
-    </LinearLayout>
-
-</ScrollView>
+    <TextView
+        android:id="@+id/export_advanced_blurb"
+        style="@style/option_blurb"
+        android:text="@string/export_advanced_blurb" />
+</LinearLayout>

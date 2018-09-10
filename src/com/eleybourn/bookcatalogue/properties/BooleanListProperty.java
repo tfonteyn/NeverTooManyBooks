@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -26,54 +26,59 @@ import com.eleybourn.bookcatalogue.properties.Property.BooleanValue;
 
 /**
  * Extends ListProperty to create a trinary value (or nullable boolean?) with associated editing support.
- * 
+ *
  * Resulting editing display is a list of values in a dialog.
- * 
+ *
  * @author Philip Warner
  */
 public class BooleanListProperty extends ListProperty<Boolean> implements BooleanValue {
 
-	public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId, Boolean value, String defaultPref, Boolean defaultValue) {
-		super(list, uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
-	}
-	public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId, String defaultPref) {
-		super(list, uniqueId, group, nameResourceId, null, defaultPref, false);
-	}
-	@SuppressWarnings("unused")
-	public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId, Boolean value, Boolean defaultValue) {
-		super(list, uniqueId, group, nameResourceId, value, null, defaultValue);
-	}
-	@SuppressWarnings("unused")
-	public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId, Boolean value) {
-		super(list, uniqueId, group, nameResourceId, value, null, false);
-	}
-	@SuppressWarnings("unused")
-	public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId) {
-		super(list, uniqueId, group, nameResourceId, null, null, false);
-	}
-	@SuppressWarnings("unused")
-	public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId) {
-		super(list, uniqueId, PropertyGroup.GRP_GENERAL, R.string.unknown, null, null, null);
-	}
+    public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId, Boolean value, String defaultPref, Boolean defaultValue) {
+        super(list, uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
+    }
 
-	@Override
-	protected Boolean getGlobalDefault() {
-		return BookCataloguePreferences.getBoolean(getPreferenceKey(), getDefaultValue());
-	}
-	@Override
-	protected BooleanListProperty setGlobalDefault(Boolean value) {
-		BookCataloguePreferences.setBoolean(getPreferenceKey(), value);
-		return this;
-	}
+    public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId, String defaultPref) {
+        super(list, uniqueId, group, nameResourceId, null, defaultPref, false);
+    }
 
-	@Override
-	public BooleanListProperty set(Property p) {
-		if (! (p instanceof BooleanValue) )
-			throw new RuntimeException("Can not find a compatible interface for boolean parameter");
-		BooleanValue v = (BooleanValue) p;
-		set(v.get());
-		return this;
-	}
+    @SuppressWarnings("unused")
+    public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId, Boolean value, Boolean defaultValue) {
+        super(list, uniqueId, group, nameResourceId, value, null, defaultValue);
+    }
 
+    @SuppressWarnings("unused")
+    public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId, Boolean value) {
+        super(list, uniqueId, group, nameResourceId, value, null, false);
+    }
+
+    @SuppressWarnings("unused")
+    public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId) {
+        super(list, uniqueId, group, nameResourceId, null, null, false);
+    }
+
+    @SuppressWarnings("unused")
+    public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId) {
+        super(list, uniqueId, PropertyGroup.GRP_GENERAL, R.string.unknown, null, null, null);
+    }
+
+    @Override
+    protected Boolean getGlobalDefault() {
+        return BookCataloguePreferences.getBoolean(getPreferenceKey(), getDefaultValue());
+    }
+
+    @Override
+    protected BooleanListProperty setGlobalDefault(Boolean value) {
+        BookCataloguePreferences.setBoolean(getPreferenceKey(), value);
+        return this;
+    }
+
+    @Override
+    public BooleanListProperty set(Property p) {
+        if (!(p instanceof BooleanValue))
+            throw new RuntimeException("Can not find a compatible interface for boolean parameter");
+        BooleanValue v = (BooleanValue) p;
+        set(v.get());
+        return this;
+    }
 }
 

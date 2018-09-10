@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.widgets;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,47 +30,60 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
+ * TODO: RecyclerView
+ * If you are considering using array adapter with a ListView, consider using
+ * {@link android.support.v7.widget.RecyclerView} instead.
+ * RecyclerView offers similar features with better performance and more flexibility than
+ * ListView provides.
+ * See the
+ * <a href="https://developer.android.com/guide/topics/ui/layout/recyclerview.html">
+ * Recycler View</a> guide.</p>
+ *
+ *
+ *
  * ArrayAdapter to manage rows of an arbitrary type with row movement via clicking
  * on predefined sub-views, if present.
  *
  * The layout can optionally contain these "@+id/" :
  *
- *  - row_details         onRowClick
- *  - if no 'id/row_details' found, then 'id/row' is tried instead
- *  - ROW_UP              onRowUp
- *  - ROW_DOWN            onRowDown
- *  - ROW_DELETE          onRowDelete
+ * - row_details         onRowClick
+ * - if no 'id/row_details' found, then 'id/row' is tried instead
+ * - ROW_UP              onRowUp
+ * - ROW_DOWN            onRowDown
+ * - ROW_DELETE          onRowDelete
  *
- *  ids.xml has these predefined:
- *  <pre>
- *		<item name="row_details" type="id"/>
- *		<item name="row" type="id"/>
+ * ids.xml has these predefined:
+ * <pre>
+ * 		<item name="row_details" type="id"/>
+ * 		<item name="row" type="id"/>
  *     	<item name="ROW_UP" type="id"/>
- *		<item name="ROW_DOWN" type="id"/>
- *		<item name="ROW_DELETE" type="id"/>
+ * 		<item name="ROW_DOWN" type="id"/>
+ * 		<item name="ROW_DELETE" type="id"/>
+ *     	<item name="ROW_POSITION" type="id" />
  *     	<item name="TAG_POSITION" type="id" />
- *	</pre>
+ * 	</pre>
  *
  * @author Philip Warner
  */
 public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     private final int mRowViewId;
-    private final ArrayList<T> mItems;
+    private final List<T> mItems;
 
     private final View.OnLongClickListener mRowLongClickListener = new View.OnLongClickListener() {
         @Override
-        public boolean onLongClick(View view) {
+        public boolean onLongClick(View v) {
             try {
-                int pos = getViewRow(view);
+                int pos = getViewRow(v);
                 T item = getItem(pos);
-                return onRowLongClick(view, item, pos);
+                return onRowLongClick(v, item, pos);
             } catch (Exception e) {
                 Logger.logError(e);
             }
@@ -78,11 +92,11 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     };
     private final View.OnClickListener mRowClickListener = new View.OnClickListener() {
         @Override
-        public void onClick(View view) {
+        public void onClick(View v) {
             try {
-                int pos = getViewRow(view);
+                int pos = getViewRow(v);
                 T item = getItem(pos);
-                onRowClick(view, item, pos);
+                onRowClick(v, item, pos);
             } catch (Exception e) {
                 Logger.logError(e);
             }
@@ -148,71 +162,67 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         }
     };
 
-    // Flag fields to (slightly) optimize lookups and prevent looking for
-    // fields that are not there.
+    // Flag fields to (slightly) optimize lookups and prevent looking for fields that are not there.
     private boolean mCheckedFields = false;
     private boolean mHasPosition = false;
     private boolean mHasUp = false;
     private boolean mHasDown = false;
     private boolean mHasDelete = false;
 
-    public SimpleListAdapter(Context context, int rowViewId, ArrayList<T> items) {
+    public SimpleListAdapter(Context context, int rowViewId, List<T> items) {
         super(context, rowViewId, items);
         mRowViewId = rowViewId;
         mItems = items;
     }
 
-    @SuppressWarnings({"WeakerAccess", "unused"})
     protected void onListChanged() {
     }
 
     /**
+     * Called when an otherwise inactive part of the row is clicked.
      *
-     * @param view      on which we clicked
-     * @param object    the item itself
-     * @return          true when handled
+     * @param target The view clicked
+     * @param object The object associated with this row
      */
-    @SuppressWarnings({"WeakerAccess", "unused"})
-    protected void onRowClick(View view, T object, int position) {
+    protected void onRowClick(View target, T object, int position) {
     }
 
     /**
+     * Called when an otherwise inactive part of the row is long clicked.
      *
-     * @param view      on which we long clicked
-     * @param object    the item itself
-     * @return          true when handled
-     */
-    @SuppressWarnings({"WeakerAccess", "unused"})
-    protected boolean onRowLongClick(View view, T object, int position) {
-        return true;
-    }
-    /**
+     * @param target The view clicked
+     * @param object The object associated with this row
      *
-     * @return  true if delete is allowed to happen
+     * @return true if handled
      */
-    @SuppressWarnings({"WeakerAccess", "unused"})
-    protected boolean onRowDelete(View v, T object, int position) {
+    protected boolean onRowLongClick(View target, T object, int position) {
         return true;
     }
 
-    @SuppressWarnings({"WeakerAccess", "unused"})
-    protected void onRowDown(View v, T object, int position) {
+    /**
+     * @return true if delete is allowed to happen
+     */
+    protected boolean onRowDelete(View target, T object, int position) {
+        return true;
     }
 
-    @SuppressWarnings({"WeakerAccess", "unused"})
-    protected void onRowUp(View v, T object, int position) {
+    protected void onRowDown(View target, T object, int position) {
+    }
+
+    protected void onRowUp(View target, T object, int position) {
     }
 
     /**
-     * Call to set up the row view.
-     *  @param target The target row view object
+     * Call to set up the row view. This is called by the original {@link #getView}
+     *
+     * @param target The target row view object
      * @param object The object (or type T) from which to draw values.
      */
     abstract protected void onSetupView(View target, T object, int position);
 
     @NonNull
     @Override
-    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         final T object = this.getItem(position);
 
         // Get the view; if not defined, load it.
@@ -231,12 +241,19 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         // Save this views position
         ViewTagger.setTag(convertView, R.id.TAG_POSITION, position);
 
-        // Giving the whole row an onClickListener seems to interfere with drag/drop.
+        // If we use a TouchListView, then don't enable the whole row, so grabber/del btns keep working
         View row = convertView.findViewById(R.id.row_details);
         if (row == null) {
+            if (BuildConfig.DEBUG) {
+                System.out.println("R.id.row_details NOT found in " + this);
+            }
             // but if we did not define a details row, try row anyhow
             row = convertView.findViewById(R.id.row);
+            if (BuildConfig.DEBUG) {
+                System.out.println("Using R.id.row instead");
+            }
         }
+
         if (row != null) {
             row.setOnLongClickListener(mRowLongClickListener);
             row.setOnClickListener(mRowClickListener);
@@ -304,15 +321,15 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      *
      * @return The row view.
      */
-    private Integer getViewRow(View v) {
-        View pv = v;
-        while (pv.getId() != R.id.row) {
-            ViewParent p = pv.getParent();
-            if (!(p instanceof View))
+    public Integer getViewRow(@NonNull View v) {
+        while (v.getId() != R.id.row) {
+            ViewParent p = v.getParent();
+            if (!(p instanceof View)) {
                 throw new RuntimeException("Could not find row view in view ancestors");
-            pv = (View) p;
+            }
+            v = (View) p;
         }
-        Object o = ViewTagger.getTag(pv, R.id.TAG_POSITION);
+        Object o = ViewTagger.getTag(v, R.id.TAG_POSITION);
         if (o == null)
             throw new RuntimeException("A view with the tag R.id.row was found, but it is not the view for the row");
         return (Integer) o;

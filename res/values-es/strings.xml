@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Book Catalogue</string>
-    <string name="system_app_name">Book Catalogue</string>
     <string name="menu_insert">Añadir libro</string>
     <string name="menu_delete">Eliminar libro</string>
     <string name="author">Autor</string>
@@ -64,11 +62,6 @@
     <string name="webpage_label">Página web</string>
     <string name="sourcecode_label">Código fuente</string>
     <string name="contact_label">Contacto</string>
-    <string name="webpage">https://wiki.github.com/eleybourn/Book-Catalogue/</string>
-    <string name="sourcecode">https://github.com/eleybourn/Book-Catalogue</string>
-    <string name="helppage">https://github.com/eleybourn/Book-Catalogue/wiki/Help</string>
-    <string name="contact1">eleybourn@gmail.com</string>
-    <string name="contact2">philip.warner@rhyme.com.au</string>
     <string name="donate_label">Contribuir</string>
     <string name="about_label">Acerca de esta App</string>
     <string name="sortby_author">Ordenar por autor</string>
@@ -221,7 +214,6 @@
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="bytes">%.0f bytes</string>
-    <string name="debug_email">eleybourn@gmail.com;grunthos@rhyme.com.au</string>
     <string name="sortby_author_given">Ordenar por autor (Nombre)</string>
     <string name="debug_subject">Recopilando información sobre fallos</string>
     <string name="debug_body">Por favor, explique brevemente el problema experimentado.</string>
@@ -246,7 +238,6 @@
     <string name="loan_return_book">Prestar, Devolver o Editar Libro</string>
     <string name="admin_and_prefs">Administración y Preferencias</string>
     <string name="edit_book_send_to_gr">Enviar a goodreads</string>
-    <string name="goodreads">goodreads</string>
     <string name="goodreads_auth_blurb_part1">goodreads es un sitio web cuya misión es "ayudar a la gente a encontrar y compartir los libros que les gustan".
     										Disponen de una amplia base de datos de libros y comentarios, y si eres un usuario registrado de goodreads, 
     										BookCatalogue puede exportar sus libros, bibliotecas y comentarios a goodreads e importar sus libros, 
@@ -258,7 +249,6 @@
     										su contraseña, y podrá desactivar el acceso desde el sitio web de goodreads. Debido a la imprevisibilidad
     										de la web, puede terminar en una página en blanco. En ese caso, pulse el botón Atrás de su navegador para volver aquí.</string>
     <string name="goodreads_auth_blurb_part3">Pero recuerde&#8230;que no es necesario hacer nada de esto: BookCatalogue funciona perfectamente sin ello.</string>
-    <string name="goodreads_url">http://www.goodreads.com</string>
     <string name="authorize_access">Autorizar acceso</string>
     <string name="authorize_access_already_auth">Parece que usted ya había autorizado esta aplicación. Todas las funciones de goodreads deberían estar ya disponibles</string>
     <string name="goodreads_access_error">Se ha producido un problema de red al acceder a goodreads. Compruebe si el sitio web de goodreads está operativo, y si el problema persiste póngase en contacto con su servicio de soporte</string>

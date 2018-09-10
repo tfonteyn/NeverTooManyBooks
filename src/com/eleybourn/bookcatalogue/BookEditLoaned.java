@@ -32,21 +32,17 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.ScrollView;
-import android.widget.TextView;
-
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
+import android.widget.*;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import java.util.ArrayList;
 
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_LOANED_TO;
+
 /**
  * This class is called by the BookEdit activity and displays the Loaned Tab
- * <p>
+ *
  * Users can select a book and, from this activity, select a friend to "loan" the book to.
  * This will then be saved in the database for reference.
  */
@@ -139,13 +135,14 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
         LayoutInflater inf = getActivity().getLayoutInflater();
         inf.inflate(R.layout.fragment_edit_book_loan_to, sv);
 
-        AutoCompleteTextView mUserText = sv.findViewById(R.id.loan_to_who);
+        AutoCompleteTextView who = sv.findViewById(R.id.who);
         try {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, getFriends());
-            mUserText.setAdapter(adapter);
+            who.setAdapter(adapter);
         } catch (Exception e) {
             Logger.logError(e);
         }
+
         Button mConfirmButton = sv.findViewById(R.id.confirm);
         mConfirmButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -166,8 +163,9 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
         LayoutInflater inf = getActivity().getLayoutInflater();
         inf.inflate(R.layout.fragment_edit_book_loaned, sv);
 
-        TextView mWhoText = sv.findViewById(R.id.who);
-        mWhoText.setText(user);
+        TextView who = sv.findViewById(R.id.who);
+        who.setText(user);
+
         Button mConfirmButton = sv.findViewById(R.id.confirm);
         mConfirmButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -183,10 +181,10 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
      * @return the user
      */
     private String saveLoan() {
-        AutoCompleteTextView mUserText = getView().findViewById(R.id.loan_to_who);
-        String friend = mUserText.getText().toString();
+        AutoCompleteTextView who = getView().findViewById(R.id.who);
+        String friend = who.getText().toString();
         BookData values = mEditManager.getBookData();
-        values.putString(ColumnNames.KEY_LOANED_TO, friend);
+        values.putString(KEY_LOANED_TO, friend);
         mDb.createLoan(values, true);
         return friend;
     }

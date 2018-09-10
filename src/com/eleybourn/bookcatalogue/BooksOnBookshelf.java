@@ -38,34 +38,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AbsListView;
+import android.widget.*;
 import android.widget.AbsListView.OnScrollListener;
-import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.eleybourn.bookcatalogue.BooksMultitypeListHandler.BooklistChangeListener;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
-import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
+import com.eleybourn.bookcatalogue.booklist.*;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder.BookRowInfo;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
-import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
-import com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor;
-import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.booklist.BooklistStylePropertiesActivity;
-import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
-import com.eleybourn.bookcatalogue.booklist.BooklistStylesListActivity;
+import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.database.TrackedCursor;
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -82,9 +66,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
 
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_READ;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_TITLE;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.TBL_BOOKS;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.*;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
@@ -105,7 +87,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     /**
      * Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
      */
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     /**
      * Prefix used in preferences for this activity
      */
@@ -196,7 +178,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     /**
      * Multi-type adapter to manage list connection to cursor
      */
-    private MultitypeListAdapter mAdapter;
+    private MultitypeListCursorAdapter mAdapter;
     /**
      * Preferred booklist state in next rebuild
      */
@@ -267,7 +249,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
             setupSearch();
 
-            makeContextMenusAvailable();
+            setupContextMenus();
 
             // use the custom fast scroller (the ListView in the XML is our custom version).
             getListView().setFastScrollEnabled(true);
@@ -337,7 +319,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         }
     }
 
-    private void makeContextMenusAvailable() {
+    private void setupContextMenus() {
         getListView().setOnItemLongClickListener(new OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -350,7 +332,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                         public void onClick(SimpleDialogItem item) {
                             mList.moveToPosition(position);
                             int id = ((SimpleDialogMenuItem) item).getItemId();
-                            mListHandler.onContextItemSelected(mDb, mList.getRowView(), BooksOnBookshelf.this, mDb, id);
+                            mListHandler.onContextItemSelected(mDb, mList.getRowView(), BooksOnBookshelf.this, id);
 
                             // If data changed, we need to update display
                             if (id == R.id.MENU_MARK_AS_UNREAD || id == R.id.MENU_MARK_AS_READ) {
@@ -439,7 +421,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     public boolean onContextItemSelected(android.view.MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         mList.moveToPosition(info.position);
-        return mListHandler.onContextItemSelected(mDb, mList.getRowView(), this, mDb, item.getItemId()) || super.onContextItemSelected(item);
+        return mListHandler.onContextItemSelected(mDb,
+                mList.getRowView(), this, item.getItemId()) || super.onContextItemSelected(item);
     }
 
     /**
@@ -508,7 +491,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             return;
 
         // bookshelves can have changed, so reload
-        populateBookShelfSpinner();
+        //populateBookShelfSpinner();
 
         Tracker.exitOnResume(this);
     }
@@ -522,6 +505,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     private void displayList(BooklistPseudoCursor newList, final ArrayList<BookRowInfo> targetRows) {
         Objects.requireNonNull(newList, "Unexpected empty list");
 
+        if (BuildConfig.DEBUG) {
+            System.out.println("INSIDE displayList");
+        }
         final int showHeaderFlags = (mCurrentStyle == null ? BooklistStyle.SUMMARY_SHOW_ALL : mCurrentStyle.getShowHeaderInfo());
 
         TextView bookCounts = findViewById(R.id.bookshelf_count);
@@ -537,11 +523,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             bookCounts.setVisibility(View.GONE);
         }
 
-        long t0;
-        if (DEBUG && BuildConfig.DEBUG) {
-            //noinspection UnusedAssignment
-            t0 = System.currentTimeMillis();
-        }
+        long t0 = System.currentTimeMillis();
 
         // Save the old list so we can close it later, and set the new list locally
         BooklistPseudoCursor oldList = mList;
@@ -549,7 +531,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 
         // Get new handler and adapter since list may be radically different structure
         mListHandler = new BooksMultitypeListHandler();
-        mAdapter = new MultitypeListAdapter(this, mList, mListHandler);
+        mAdapter = new MultitypeListCursorAdapter(this, mList, mListHandler);
 
         // Get the ListView and set it up
         final ListView lv = getListView();
@@ -661,8 +643,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             lvHolder.level1Text.setVisibility(View.GONE);
 
         // Update the header details
-        if (count > 0 && (showHeaderFlags & (BooklistStyle.SUMMARY_SHOW_LEVEL_1 ^ BooklistStyle.SUMMARY_SHOW_LEVEL_2)) != 0)
+        if (count > 0 && (showHeaderFlags &
+                (BooklistStyle.SUMMARY_SHOW_LEVEL_1 ^ BooklistStyle.SUMMARY_SHOW_LEVEL_2)) != 0) {
             updateListHeader(lvHolder, mTopRow, hasLevel1, hasLevel2, showHeaderFlags);
+        }
 
         // Define a scroller to update header detail when top row changes
         lv.setOnScrollListener(
@@ -710,15 +694,22 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      * @param hasLevel2 flag indicating level 2 is present
      */
     private void updateListHeader(ListViewHolder holder, int topItem, boolean hasLevel1, boolean hasLevel2, int flags) {
-        if (topItem < 0)
+        if (topItem < 0) {
             topItem = 0;
+        }
 
         mLastTop = topItem;
         if (hasLevel1 && (flags & BooklistStyle.SUMMARY_SHOW_LEVEL_1) != 0) {
             if (mList.moveToPosition(topItem)) {
-                holder.level1Text.setText(mList.getRowView().getLevel1Data());
-                String s;
+                String s = mList.getRowView().getLevel1Data();
+                if (BuildConfig.DEBUG) {
+                    System.out.println("updateListHeader: level 1: " + s);
+                }
+                holder.level1Text.setText(s);
                 if (hasLevel2 && (flags & BooklistStyle.SUMMARY_SHOW_LEVEL_2) != 0) {
+                    if (BuildConfig.DEBUG) {
+                        System.out.println("updateListHeader: level 2: " + s);
+                    }
                     s = mList.getRowView().getLevel2Data();
                     holder.level2Text.setText(s);
                 }
@@ -734,17 +725,21 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      * @return The BooklistBuilder object used to build the data
      */
     private BooklistBuilder buildBooklist(boolean isFullRebuild) {
-        // If not a full rebuild then just use the current builder to requery the underlying data
+        //TOMF ... I did it.... but what?
+        System.out.println((char)27 + "[31m" + "REBUILD ALWAYS FORCED");
+        isFullRebuild = true;
+
+        // If not a full rebuild then just use the current builder to re-query the underlying data
         if (mList != null && !isFullRebuild) {
             if (DEBUG && BuildConfig.DEBUG) {
-                System.out.println("Doing rebuild()");
+                System.out.println("BooksOnBookshelf, buildBooklist: Doing rebuild()");
             }
             BooklistBuilder b = mList.getBuilder();
             b.rebuild();
             return b;
         } else {
             if (DEBUG && BuildConfig.DEBUG) {
-                System.out.println("Doing full reconstruct");
+                System.out.println("BooksOnBookshelf, buildBooklist:Doing full reconstruct");
             }
             // Make sure we have a style chosen
             BooklistStyles styles = BooklistStyles.getAllStyles(mDb);
@@ -872,7 +867,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         mBookshelfAdapter = new ArrayAdapter<>(this, R.layout.spinner_frontpage);
         mBookshelfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBookshelfSpinner.setAdapter(mBookshelfAdapter);
-        //populateBookShelfSpinner();
+        populateBookShelfSpinner();
 
         /*
          * This is fired whenever a bookshelf is selected. It is also fired when the
@@ -1027,8 +1022,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         switch (requestCode) {
             case UniqueId.ACTIVITY_CREATE_BOOK_SCAN:
                 try {
-                    if (intent != null && intent.hasExtra(ColumnNames.KEY_ROWID)) {
-                        long newId = intent.getLongExtra(ColumnNames.KEY_ROWID, 0);
+                    if (intent != null && intent.hasExtra(ColumnInfo.KEY_ROWID)) {
+                        long newId = intent.getLongExtra(ColumnInfo.KEY_ROWID, 0);
                         if (newId != 0) {
                             mMarkBookId = newId;
                         }
@@ -1046,8 +1041,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             case UniqueId.ACTIVITY_VIEW_BOOK:
             case UniqueId.ACTIVITY_EDIT_BOOK:
                 try {
-                    if (intent != null && intent.hasExtra(ColumnNames.KEY_ROWID)) {
-                        long id = intent.getLongExtra(ColumnNames.KEY_ROWID, 0);
+                    if (intent != null && intent.hasExtra(ColumnInfo.KEY_ROWID)) {
+                        long id = intent.getLongExtra(ColumnInfo.KEY_ROWID, 0);
                         if (id != 0) {
                             mMarkBookId = id;
                         }
@@ -1237,17 +1232,11 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      * @author Philip Warner
      */
     private class GetListTask implements SimpleTask {
-        /**
-         * Indicates whole table structure needs rebuild, vs. just do a reselect of underlying data
-         */
+        /** Indicates whole table structure needs rebuild, vs. just do a reselect of underlying data */
         private final boolean mIsFullRebuild;
-        /**
-         * Resulting Cursor
-         */
+        /** Resulting Cursor */
         BooklistPseudoCursor mTempList = null;
-        /**
-         * used to determine new cursor position
-         */
+        /** used to determine new cursor position */
         ArrayList<BookRowInfo> mTargetRows = null;
 
         /**
@@ -1256,28 +1245,27 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
          * @param isFullRebuild Indicates whole table structure needs rebuild, vs. just do a reselect of underlying data
          */
         GetListTask(boolean isFullRebuild) {
+            if (BuildConfig.DEBUG) {
+                System.out.println("GetListTask constructor, isFullRebuild=" + isFullRebuild);
+            }
             mIsFullRebuild = isFullRebuild;
         }
 
         @Override
         public void run(SimpleTaskContext taskContext) {
             try {
-                long t0;
-                if (DEBUG && BuildConfig.DEBUG) {
-                    //noinspection UnusedAssignment
-                    t0 = System.currentTimeMillis();
+                if (BuildConfig.DEBUG) {
+                    System.out.println("GetListTask constructor, run=");
                 }
-                // Build the underlying data
-                BooklistBuilder b = buildBooklist(mIsFullRebuild);
-                long t1;
-                if (DEBUG && BuildConfig.DEBUG) {
-                    //noinspection UnusedAssignment
-                    t1 = System.currentTimeMillis();
-                }
+
+                long t0 = System.currentTimeMillis();
+                 // Build the underlying data
+                BooklistBuilder bookListBuilder = buildBooklist(mIsFullRebuild);
+                long t1= System.currentTimeMillis();
                 // Try to sync the previously selected book ID
                 if (mMarkBookId != 0) {
                     // get all positions of the book
-                    mTargetRows = b.getBookAbsolutePositions(mMarkBookId);
+                    mTargetRows = bookListBuilder.getBookAbsolutePositions(mMarkBookId);
 
                     if (mTargetRows != null && mTargetRows.size() > 0) {
                         // First, get the ones that are currently visible...
@@ -1294,12 +1282,12 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                             // Make them ALL visible
                             for (BookRowInfo i : mTargetRows) {
                                 if (!i.visible) {
-                                    b.ensureAbsolutePositionVisible(i.absolutePosition);
+                                    bookListBuilder.ensureAbsolutePositionVisible(i.absolutePosition);
                                 }
                             }
                             // Recalculate all positions
                             for (BookRowInfo i : mTargetRows) {
-                                i.listPosition = b.getPosition(i.absolutePosition);
+                                i.listPosition = bookListBuilder.getPosition(i.absolutePosition);
                             }
                         }
 
@@ -1320,46 +1308,30 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 } else {
                     mTargetRows = null;
                 }
-                long t2;
-                if (DEBUG && BuildConfig.DEBUG) {
-                    //noinspection UnusedAssignment
-                    t2 = System.currentTimeMillis();
-                }
+                long t2 = System.currentTimeMillis();
 
                 // Now we have expanded groups as needed, get the list cursor
-                mTempList = b.getList();
+                mTempList = bookListBuilder.getList();
 
                 // Clear it so it won't be reused.
                 mMarkBookId = 0;
 
-                long t3;
-                if (DEBUG && BuildConfig.DEBUG) {
-                    //noinspection UnusedAssignment
-                    t3 = System.currentTimeMillis();
-                }
+                long t3 = System.currentTimeMillis();
+
                 // get a count() from the cursor in background task because the setAdapter() call
                 // will do a count() and potentially block the UI thread while it pages through the
                 // entire cursor. If we do it here, subsequent calls will be fast.
                 @SuppressWarnings("UnusedAssignment")
                 int count = mTempList.getCount();
 
-                long t4;
-                if (DEBUG && BuildConfig.DEBUG) {
-                    //noinspection UnusedAssignment
-                    t4 = System.currentTimeMillis();
-                }
+                long t4 = System.currentTimeMillis();
+
                 mUniqueBooks = mTempList.getUniqueBookCount();
-                long t5;
-                if (DEBUG && BuildConfig.DEBUG) {
-                    //noinspection UnusedAssignment
-                    t5 = System.currentTimeMillis();
-                }
+                long t5 = System.currentTimeMillis();
+
                 mTotalBooks = mTempList.getBookCount();
-                long t6;
-                if (DEBUG && BuildConfig.DEBUG) {
-                    //noinspection UnusedAssignment
-                    t6 = System.currentTimeMillis();
-                }
+                long t6 = System.currentTimeMillis();
+
                 if (DEBUG && BuildConfig.DEBUG) {
                     System.out.println("Build: " + (t1 - t0));
                     System.out.println("Position: " + (t2 - t1));
@@ -1376,17 +1348,16 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     // onFinish() will not be called, and we can discard our
                     // work...
                     if (mTempList != null && mTempList != mList) {
-                        if (mList == null || mTempList.getBuilder() != mList.getBuilder())
+                        if (mList == null || mTempList.getBuilder() != mList.getBuilder()) {
                             try {
                                 mTempList.getBuilder().close();
                             } catch (Exception ignore) {
                             }
-
+                        }
                         try {
                             mTempList.close();
                         } catch (Exception ignore) {
                         }
-
                     }
                 }
             }

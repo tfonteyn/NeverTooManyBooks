@@ -39,7 +39,7 @@ import com.eleybourn.bookcatalogue.utils.BookUtils;
 import java.util.ArrayList;
 
 /**
- * Based class for all fragments that appear in the BookEdit activity
+ * Based class for all fragments that appear in the {@link BookEdit} activity
  *
  * @author pjw
  */

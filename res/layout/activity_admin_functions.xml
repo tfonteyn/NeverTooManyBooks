@@ -119,22 +119,22 @@
                 android:drawableStart="@android:drawable/ic_menu_manage"
                 android:text="@string/library_thing" />
 
-            <!-- Local websites -->
+            <!-- Search options -->
             <TextView
                 style="@style/prefsHeader"
-                android:text="@string/local_websites_urls" />
+                android:text="@string/search_internet" />
 
             <TextView
-                android:id="@+id/amazon_url"
+                android:id="@+id/local_websites_urls"
                 style="@style/prefsItem"
                 android:drawableStart="@android:drawable/ic_menu_manage"
-                android:text="@string/amazon" />
+                android:text="@string/search_hosts" />
 
             <TextView
-                android:id="@+id/googlebooks_url"
+                android:id="@+id/search_order"
                 style="@style/prefsItem"
                 android:drawableStart="@android:drawable/ic_menu_manage"
-                android:text="@string/google_books" />
+                android:text="@string/search_site_order" />
 
             <!-- ADVANCED OPTIONS Header -->
 

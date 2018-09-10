@@ -32,15 +32,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 
 import java.util.ArrayList;
 
 import static com.eleybourn.bookcatalogue.BookDetailsFragmentAbstract.BOOKSHELF_SEPARATOR;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_BOOKSHELF;
 
 /**
  * Fragment wrapper for the Bookshelf list
@@ -103,7 +102,7 @@ public class BookshelfDialogFragment extends DialogFragment {
 
 	@Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.bookshelf_dialog, null);
+        return inflater.inflate(R.layout.dialog_fragment_bookshelves, null);
     }
 
 	/**
@@ -164,7 +163,7 @@ public class BookshelfDialogFragment extends DialogFragment {
     			do { 
     				final CheckBox cb = new CheckBox(getActivity());
     				boolean checked = false;
-    				String db_bookshelf = bookshelves_for_book.getString(bookshelves_for_book.getColumnIndex(ColumnNames.KEY_BOOKSHELF)).trim();
+    				String db_bookshelf = bookshelves_for_book.getString(bookshelves_for_book.getColumnIndex(KEY_BOOKSHELF)).trim();
     				String db_encoded_bookshelf = ArrayUtils.encodeListItem(db_bookshelf, BOOKSHELF_SEPARATOR);
     				if (shelves.contains(BOOKSHELF_SEPARATOR + db_encoded_bookshelf + BOOKSHELF_SEPARATOR)) {
     					checked = true;

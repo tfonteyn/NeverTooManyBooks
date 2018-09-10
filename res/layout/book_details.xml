@@ -314,7 +314,7 @@
 
             <!-- Has this book been signed -->
 
-            <LinearLayout
+            <TableRow
                 android:id="@+id/row_signed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -329,7 +329,7 @@
                     style="@style/bookDetailText"
                     android:text="@string/no" />
 
-            </LinearLayout>
+            </TableRow>
 
             <!-- Start and end of reading -->
             <TableRow
@@ -402,13 +402,12 @@
             android:id="@+id/description_divider"
             style="@style/listDivider" />
 
+        <!-- reminder: autolink/textIsSelectable etc won't work here, as its done in code -->
         <TextView
             android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textIsSelectable="true"
-            android:linksClickable="true"
             tools:text="I hereby nominate Lizard the humongous football player and Sylphide the mysterious ballerina as two of my favorite characters of 2012. Rarely have such elite and outsize personalities felt so true on the page--a joy to be with, worth rooting for." />
     </LinearLayout>
 

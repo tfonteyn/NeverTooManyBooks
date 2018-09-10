@@ -27,13 +27,9 @@
             android:paddingEnd="2dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textStyle="bold"
-            tools:text="name"/>
+            tools:text="third level ?"/>
 
-        <ImageView
-            style="@style/listDivider"
-            android:layout_height="wrap_content"
-            android:src="?android:attr/dividerHorizontal"
-            tools:ignore="ContentDescription" />
+        <View style="@style/listDivider" />
     </LinearLayout>
 
 </LinearLayout>

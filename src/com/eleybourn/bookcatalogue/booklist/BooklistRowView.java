@@ -24,31 +24,13 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
-import com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames;
+import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_ABSOLUTE_POSITION;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_BOOK;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_FORMAT;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_GENRE;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_KIND;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_LANGUAGE;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_LEVEL;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_PUBLICATION_MONTH;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_PUBLISHER;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_READ;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_SERIES_ID;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_SERIES_NAME;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_SERIES_NUM;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_TITLE;
-import static com.eleybourn.bookcatalogue.booklist.DatabaseDefinitions.DOM_TITLE_LETTER;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.*;
 
 /**
  * RowView object for the BooklistCursor.
@@ -164,7 +146,7 @@ public class BooklistRowView {
 	 * Checks if list displays series numbers anywhere.
 	 */
 	public boolean hasSeries() {
-		return hasColumn(ColumnNames.KEY_SERIES_NUM);
+		return hasColumn(ColumnInfo.KEY_SERIES_NUM);
 	}
 
 	/**

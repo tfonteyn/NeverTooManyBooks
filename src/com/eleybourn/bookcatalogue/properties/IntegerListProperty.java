@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -26,44 +26,50 @@ import com.eleybourn.bookcatalogue.properties.Property.IntegerValue;
 
 /**
  * Extends ListProperty to create a nullable integer property with associated editing support.
- * 
+ *
  * @author Philip Warner
  */
 public class IntegerListProperty extends ListProperty<Integer> implements IntegerValue {
 
-	public IntegerListProperty(ItemEntries<Integer> list, String uniqueId, PropertyGroup group, int nameResourceId, Integer value, String defaultPref, Integer defaultValue) {
-		super(list, uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
-	}
-	public IntegerListProperty(ItemEntries<Integer> list, String uniqueId, PropertyGroup group, int nameResourceId, Integer value, Integer defaultValue) {
-		super(list, uniqueId, group, nameResourceId, value, null, defaultValue);
-	}
-	public IntegerListProperty(ItemEntries<Integer> list, String uniqueId, PropertyGroup group, int nameResourceId, Integer value) {
-		super(list, uniqueId, group, nameResourceId, value, null, value);
-	}
-	public IntegerListProperty(ItemEntries<Integer> list, String uniqueId, PropertyGroup group, int nameResourceId) {
-		super(list, uniqueId, group, nameResourceId, null, null, null);
-	}
-	public IntegerListProperty(ItemEntries<Integer> list, String uniqueId) {
-		super(list, uniqueId, PropertyGroup.GRP_GENERAL, R.string.unknown, null, null, null);
-	}
+    public IntegerListProperty(ItemEntries<Integer> list, String uniqueId, PropertyGroup group, int nameResourceId, Integer value, String defaultPref, Integer defaultValue) {
+        super(list, uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
+    }
 
-	@Override
-	protected Integer getGlobalDefault() {
-		return BookCataloguePreferences.getInt(getPreferenceKey(), getDefaultValue());
-	}
-	@Override
-	protected IntegerListProperty setGlobalDefault(Integer value) {
-		BookCataloguePreferences.setInt(getPreferenceKey(), value);
-		return this;
-	}
+    @SuppressWarnings("unused")
+    public IntegerListProperty(ItemEntries<Integer> list, String uniqueId, PropertyGroup group, int nameResourceId, Integer value, Integer defaultValue) {
+        super(list, uniqueId, group, nameResourceId, value, null, defaultValue);
+    }
 
-	@Override
-	public IntegerListProperty set(Property p) {
-		if (! (p instanceof IntegerValue) )
-			throw new RuntimeException("Can not find a compatible interface for integer parameter");
-		IntegerValue v = (IntegerValue) p;
-		set(v.get());
-		return this;
-	}
+    public IntegerListProperty(ItemEntries<Integer> list, String uniqueId, PropertyGroup group, int nameResourceId, Integer value) {
+        super(list, uniqueId, group, nameResourceId, value, null, value);
+    }
+
+    public IntegerListProperty(ItemEntries<Integer> list, String uniqueId, PropertyGroup group, int nameResourceId) {
+        super(list, uniqueId, group, nameResourceId, null, null, null);
+    }
+
+    public IntegerListProperty(ItemEntries<Integer> list, String uniqueId) {
+        super(list, uniqueId, PropertyGroup.GRP_GENERAL, R.string.unknown, null, null, null);
+    }
+
+    @Override
+    protected Integer getGlobalDefault() {
+        return BookCataloguePreferences.getInt(getPreferenceKey(), getDefaultValue());
+    }
+
+    @Override
+    protected IntegerListProperty setGlobalDefault(Integer value) {
+        BookCataloguePreferences.setInt(getPreferenceKey(), value);
+        return this;
+    }
+
+    @Override
+    public IntegerListProperty set(Property p) {
+        if (!(p instanceof IntegerValue))
+            throw new RuntimeException("Can not find a compatible interface for integer parameter");
+        IntegerValue v = (IntegerValue) p;
+        set(v.get());
+        return this;
+    }
 }
 

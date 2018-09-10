@@ -28,7 +28,7 @@ import com.eleybourn.bookcatalogue.database.TrackedCursor;
 
 import java.util.Hashtable;
 
-import static com.eleybourn.bookcatalogue.database.dbaadapter.ColumnNames.KEY_ROWID;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ROWID;
 
 /**
  * Cursor implementation for book-related queries. The cursor wraps common

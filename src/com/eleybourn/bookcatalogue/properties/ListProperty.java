@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -41,146 +41,229 @@ import java.util.Objects;
 
 /**
  * Implement a generic list-of-values property. Display is done with Radio Buttons
- * 
- * @author Philip Warner
  *
- * @param <T>		Base type of list items
+ * @param <T> Base type of list items
+ *
+ * @author Philip Warner
  */
 public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> {
-	/** List of valid values */
-	protected final ItemEntries<T> mList;
-
-	@SuppressWarnings("WeakerAccess")
-	public ItemEntries<T> getListItems() {
-		return mList;
-	}
+    /** List of valid values */
+    protected final ItemEntries<T> mList;
 
     @SuppressWarnings("WeakerAccess")
-	public ListProperty(ItemEntries<T> list, String uniqueId, PropertyGroup group, int nameResourceId, T value, String defaultPref, T defaultValue) {
-		super(uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
-		mList = list;
-	}
+    public ListProperty(ItemEntries<T> list, String uniqueId, PropertyGroup group, int nameResourceId, T value, String defaultPref, T defaultValue) {
+        super(uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
+        mList = list;
+    }
 
-	/**
-	 * Return the default list editor view with associated event handlers.
-	 */
-	@Override
-	public View getView(final LayoutInflater inflater) {
-		View view = inflater.inflate(R.layout.property_value_list, null);
-		ViewTagger.setTag(view, R.id.TAG_PROPERTY, this);
-		// Display the list of values when clicked.
-		view.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				handleClick(v, inflater);
-			}
-		});
+    @SuppressWarnings("WeakerAccess")
+    public ItemEntries<T> getListItems() {
+        return mList;
+    }
 
-		// Set the name
-		TextView text = view.findViewById(R.id.name);
-		text.setText(getName());
-		
-		// Try to find the list item that corresponds to the current stored value.
-		ItemEntry<T> entry = null;
-		for(ItemEntry<T> e: getListItems() ) {
-			if (e.value == null) {
-				if (get() == null) {
-					entry = e;
-				}
-			} else {
-				if (get() != null && get().equals(e.value)) {
-					entry = e;
-				}
-			}
-		}
-		// Display current value
-		setValueInView(view, entry);
+    /** Return the default list editor view with associated event handlers. */
+    @Override
+    public View getView(final LayoutInflater inflater) {
+        View view = inflater.inflate(R.layout.property_value_list, null);
+        ViewTagger.setTag(view, R.id.TAG_PROPERTY, this);
+        // Display the list of values when clicked.
+        view.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleClick(v, inflater);
+            }
+        });
 
-		return view;
-	}
+        // Set the name
+        TextView text = view.findViewById(R.id.name);
+        text.setText(getName());
 
-	private void handleClick(final View base, final LayoutInflater inflater) {
-		final ItemEntries<T> items = getListItems();
-		if (this.hasHint()) {
-			HintManager.displayHint(base.getContext(), this.getHint(), new Runnable(){
-				@Override
-				public void run() {
-					displayList(base, inflater, items);
-				}});
-		} else {
-			displayList(base, inflater, items);
-		}
-	}
+        // Try to find the list item that corresponds to the current stored value.
+        ItemEntry<T> entry = null;
+        for (ItemEntry<T> e : getListItems()) {
+            if (e.value == null) {
+                if (get() == null) {
+                    entry = e;
+                }
+            } else {
+                if (get() != null && get().equals(e.value)) {
+                    entry = e;
+                }
+            }
+        }
+        // Display current value
+        setValueInView(view, entry);
 
-	/**
-	 * Class to represent all items in a list-of-values property
-	 * 
-	 * @author Philip Warner
-	 *
-	 * @param <T>		Type of underlying list item
-	 */
-	public static class ItemEntry<T> {
-		/** Actual value */
-		final T value;
-		/** Test description of the meaning of that value */
-		int textId;
+        return view;
+    }
+
+    private void handleClick(final View base, final LayoutInflater inflater) {
+        final ItemEntries<T> items = getListItems();
+        if (this.hasHint()) {
+            HintManager.displayHint(base.getContext(), this.getHint(), new Runnable() {
+                @Override
+                public void run() {
+                    displayList(base, inflater, items);
+                }
+            });
+        } else {
+            displayList(base, inflater, items);
+        }
+    }
+
+    /** Set the 'value' field in the passed view to match the passed item. */
+    private void setValueInView(View baseView, ItemEntry<T> item) {
+        TextView text = baseView.findViewById(R.id.value);
+
+        if (item == null) {
+            text.setText("");
+        } else {
+            if (isDefault(item.value))
+                text.setTypeface(null, Typeface.NORMAL);
+            else
+                text.setTypeface(null, Typeface.BOLD);
+
+            text.setText(item.getString());
+        }
+    }
+
+    /**
+     * Called to display a list of values for this property.
+     *
+     * @param baseView Specific view that was clicked
+     * @param inflater LayoutInflater
+     * @param items    All list items
+     */
+    private void displayList(final View baseView, final LayoutInflater inflater, ItemEntries<T> items) {
+
+        T currentValue = this.get();
+
+        // Get the view and the radio group
+        View root = inflater.inflate(R.layout.property_value_list_list, null);
+        final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext())
+                .setView(root)
+                .create();
+
+        // Create a listener that responds to any click on the list
+        OnClickListener clickListener = new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                Holder<T> holder = ViewTagger.getTag(v, R.id.TAG_HOLDER);
+                set(Objects.requireNonNull(holder).item.value);
+                setValueInView(holder.baseView, holder.item);
+            }
+        };
+
+        RadioGroup radioGroup = root.findViewById(R.id.values);
+        // Add each entry to the list
+        for (ItemEntry<T> entry : items) {
+            // If we are looking at global-only values, NULL is invalid
+            if (entry.value != null || !isGlobal()) {
+
+                // Check if this value is the currently selected value
+                boolean selected = false;
+                if (entry.value == null && currentValue == null)
+                    selected = true;
+                else if (entry.value != null && currentValue != null && entry.value.equals(currentValue))
+                    selected = true;
+
+                // Make the view for this item
+                View line = inflater.inflate(R.layout.property_value_list_item, null);
+                RadioButton sel = line.findViewById(R.id.selector);
+
+                //Set the various values
+                sel.setChecked(selected);
+                sel.setText(entry.getString());
+
+                // Listen for clicks
+                sel.setOnClickListener(clickListener);
+
+                // Set the tacks used by the listeners
+                ViewTagger.setTag(sel, R.id.TAG_HOLDER, new Holder<>(entry, baseView));
+
+                // Add it to the group
+                radioGroup.addView(line);
+            }
+        }
+
+        dialog.show();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("ListProperty{" +
+                "mList=[");
+
+        for (ItemEntry entry : mList) {
+            sb.append("{").append(entry.toString()).append("}");
+        }
+        sb.append("]}");
+        return sb.toString();
+    }
+
+    /**
+     * Class to represent all items in a list-of-values property
+     *
+     * @param <T> Type of underlying list item
+     *
+     * @author Philip Warner
+     */
+    public static class ItemEntry<T> {
+        /** Actual value */
+        final T value;
+        /** Test description of the meaning of that value */
+        int textId;
         Object[] textArgs;
 
-		/** Constructor. Instantiates string. */
-		ItemEntry(T value, int resourceId, Object... args) {
-			this.value = value;
-			this.textId = resourceId; //BookCatalogueApp.getResourceString(resourceId);
+        /** Constructor. Instantiates string. */
+        ItemEntry(T value, int resourceId, Object... args) {
+            this.value = value;
+            this.textId = resourceId; //BookCatalogueApp.getResourceString(resourceId);
             this.textArgs = args;
-		}
-//		/** Constructor */
-//		public ItemEntry(T value, String text) {
-//			this.value = value;
-//			this.text = text;
-//		}
+        }
 
-        /** Accessor */
         public String getString() {
             return BookCatalogueApp.getResourceString(textId, textArgs);
         }
 
-        /** Accessor */
         public T getValue() {
             return value;
         }
 
-        /** Accessor */
         public void setString(int value, Object... args) {
             textId = value;
             textArgs = args;
         }
 
         @Override
-		public String toString() {
-			return getString();
-		}
-	}
+        public String toString() {
+            return getString();
+        }
+    }
 
-	/**
-	 * Class to represent a collection of list entries for a list-of-values property
-	 * 
-	 * @author Philip Warner
-	 *
-	 * @param <T>		Underlying list item data type.
-	 */
-	public static class ItemEntries<T> implements Iterable<ItemEntry<T>> {
-		final ArrayList<ItemEntry<T>> mList = new ArrayList<>();
+    /**
+     * Class to represent a collection of list entries for a list-of-values property
+     *
+     * @param <T> Underlying list item data type.
+     *
+     * @author Philip Warner
+     */
+    public static class ItemEntries<T> implements Iterable<ItemEntry<T>> {
+        final ArrayList<ItemEntry<T>> mList = new ArrayList<>();
 
-		/**
-		 * Utility to make adding items easier.
-		 * 
-		 * @param value		Underlying value
-		 * @param stringId	String ID of description
-		 * @return this for chaining
-		 */
-		public ItemEntries<T> add(T value, int stringId, Object... args) {
-			mList.add(new ItemEntry<>(value, stringId, args));
-			return this;
-		}
+        /**
+         * Utility to make adding items easier.
+         *
+         * @param value    Underlying value
+         * @param stringId String ID of description
+         *
+         * @return this for chaining
+         */
+        public ItemEntries<T> add(T value, int stringId, Object... args) {
+            mList.add(new ItemEntry<>(value, stringId, args));
+            return this;
+        }
 
 //		/**
 //		 * Utility to make adding items easier.
@@ -194,108 +277,28 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 //			return this;
 //		}
 
-		@NonNull
+        @NonNull
         @Override
-		public Iterator<ItemEntry<T>> iterator() {
-			return mList.iterator();
-		}
-	}
-	
-	/**
-	 * Holder class for list items 
-	 * 
-	 * @author Philip Warner
-	 *
-	 * @param <T>
-	 */
-	private static class Holder<T> {
-		final ItemEntry<T> item;
-		final View baseView;
-		Holder(ItemEntry<T> item, View baseView) {
-			this.item = item;
-			this.baseView = baseView;
-		}
-	}
+        public Iterator<ItemEntry<T>> iterator() {
+            return mList.iterator();
+        }
+    }
 
-	/**
-	 * Set the 'value' field in the passed view to match the passed item.
-	 */
-	private void setValueInView(View baseView, ItemEntry<T> item) {
-		TextView text = baseView.findViewById(R.id.value);
+    /**
+     * Holder class for list items
+     *
+     * @param <T>
+     *
+     * @author Philip Warner
+     */
+    private static class Holder<T> {
+        final ItemEntry<T> item;
+        final View baseView;
 
-		if (item == null) {
-			text.setText("");		
-		} else {
-			if (isDefault(item.value))
-				text.setTypeface(null, Typeface.NORMAL);
-			else
-				text.setTypeface(null, Typeface.BOLD);
-
-			text.setText(item.getString());					
-		}
-	}
-
-	/**
-	 * Called to display a list of values for this property.
-	 * 
-	 * @param baseView    Specific view that was clicked
-	 * @param inflater    LayoutInflater
-	 * @param items       All list items
-	 */
-	private void displayList(final View baseView, final LayoutInflater inflater, ItemEntries<T> items) {
-
-        T currentValue = this.get();
-
-		// Get the view and the radio group
-		View root = inflater.inflate(R.layout.property_value_list_list, null);
-		final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext())
-				.setView(root)
-				.create();
-
-		// Create a listener that responds to any click on the list
-		OnClickListener clickListener = new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dialog.dismiss();
-				Holder<T> holder = ViewTagger.getTag(v, R.id.TAG_HOLDER);
-				set(Objects.requireNonNull(holder).item.value);
-				setValueInView(holder.baseView, holder.item);
-			}
-		};
-
-        RadioGroup radioGroup = root.findViewById(R.id.values);
-		// Add each entry to the list
-		for(ItemEntry<T> entry: items) {
-			// If we are looking at global-only values, NULL is invalid
-			if (entry.value != null || !isGlobal()) {
-
-				// Check if this value is the currently selected value
-				boolean selected = false;
-				if (entry.value == null && currentValue == null)
-					selected = true;
-				else if (entry.value != null && currentValue != null && entry.value.equals(currentValue))
-					selected = true;
-
-				// Make the view for this item
-				View line = inflater.inflate(R.layout.property_value_list_item, null);
-                RadioButton sel = line.findViewById(R.id.selector);
-
-				//Set the various values
-				sel.setChecked(selected);
-                sel.setText(entry.getString());
-
-				// Listen for clicks
-				sel.setOnClickListener(clickListener);
-
-				// Set the tacks used by the listeners
-				ViewTagger.setTag(sel, R.id.TAG_HOLDER, new Holder<>(entry, baseView));
-
-				// Add it to the group
-				radioGroup.addView(line);
-			}
-		}
-
-		dialog.show();
-	}
+        Holder(ItemEntry<T> item, View baseView) {
+            this.item = item;
+            this.baseView = baseView;
+        }
+    }
 }
 

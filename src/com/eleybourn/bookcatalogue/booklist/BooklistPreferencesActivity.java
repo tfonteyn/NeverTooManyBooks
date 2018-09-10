@@ -23,7 +23,7 @@ package com.eleybourn.bookcatalogue.booklist;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.PreferencesBase;
+import com.eleybourn.bookcatalogue.baseactivity.PreferencesBase;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -127,7 +127,7 @@ public class BooklistPreferencesActivity extends PreferencesBase {
 	 */
 	@Override
 	public int getLayoutId() {
-		return R.layout.booklist_preferences;
+		return R.layout.activity_booklist_preferences;
 	}
 
 	/**

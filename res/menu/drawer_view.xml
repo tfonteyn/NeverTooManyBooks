@@ -17,14 +17,14 @@
             android:title="@string/menu_bookshelf" />
 
         <item
+            android:id="@+id/nav_other_prefs"
+            android:icon="@android:drawable/ic_menu_manage"
+            android:title="@string/preferences" />
+
+        <item
             android:id="@+id/nav_booklist_prefs"
             android:icon="@android:drawable/ic_menu_manage"
             android:title="@string/booklist_preferences" />
-
-        <item
-            android:id="@+id/nav_other_prefs"
-            android:icon="@android:drawable/ic_menu_manage"
-            android:title="@string/other_preferences" />
 
         <item
             android:id="@+id/nav_admin"
