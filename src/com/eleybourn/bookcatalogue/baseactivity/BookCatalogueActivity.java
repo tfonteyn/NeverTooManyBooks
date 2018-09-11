@@ -85,7 +85,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
         return mNavigationView;
     }
 
-    protected void setNavigationView(NavigationView navigationView) {
+    private void setNavigationView(NavigationView navigationView) {
         this.mNavigationView = navigationView;
         if (mNavigationView != null) {
             navigationView.setNavigationItemSelectedListener(this);
@@ -100,7 +100,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
     /**
      * @param drawerLayout  your custom one
      */
-    protected void setDrawerLayout(DrawerLayout drawerLayout) {
+    private void setDrawerLayout(DrawerLayout drawerLayout) {
         this.mDrawerLayout = drawerLayout;
     }
 
@@ -156,7 +156,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
     /**
      * Reload this activity if theme has changed.
      */
-    protected void updateThemeIfChanged() {
+    private void updateThemeIfChanged() {
         if (BookCatalogueApp.hasThemeChanged()) {
             setTheme(BookCatalogueApp.getThemeResId());
             mReloadOnResume = true;

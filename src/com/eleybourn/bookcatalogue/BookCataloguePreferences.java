@@ -203,6 +203,7 @@ public class BookCataloguePreferences {
     /**
      * DEBUG method
      */
+    @SuppressWarnings("unused")
     public static void dumpPreferences() {
         if (BuildConfig.DEBUG) {
             StringBuilder sb = new StringBuilder("\n\nSharedPreferences: ");

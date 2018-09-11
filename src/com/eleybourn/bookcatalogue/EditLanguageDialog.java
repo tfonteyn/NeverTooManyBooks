@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,7 +31,7 @@ import android.widget.Toast;
 import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 
 /**
- * TODO: unify with {@link EditAuthorDialog}
+ * TODO: ? unify with {@link EditAuthorDialog}
  */
 public class EditLanguageDialog {
 	private final Context mContext;
@@ -48,8 +49,8 @@ public class EditLanguageDialog {
 		dialog.setContentView(R.layout.dialog_edit_language);
 		dialog.setTitle(R.string.edit_language_details);
 
-		EditText familyView = dialog.findViewById(R.id.name);
-		familyView.setText(language);
+		EditText name = dialog.findViewById(R.id.name);
+		name.setText(language);
 
 		Button saveButton = dialog.findViewById(R.id.confirm);
 		saveButton.setOnClickListener(new View.OnClickListener() {
@@ -77,17 +78,12 @@ public class EditLanguageDialog {
 		dialog.show();
 	}
 	
-	private void confirmEdit(String oldName, final String newName) {
-		// First, deal with a some special cases...
-		
-		// Case: Unchanged.
+	private void confirmEdit(@NonNull final String oldName, @NonNull final String newName) {
 		if (newName.equals(oldName)) {
 			return;
 		}
 
 		mDb.globalReplaceLanguage(oldName, newName);
-		oldName = newName;
-
 		mOnChanged.run();
 	}
 }

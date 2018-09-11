@@ -73,6 +73,7 @@ public class DataManager {
 	 * 
 	 * @return	self, for chaining
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public DataManager clear() {
 		mBundle.clear();
 		mData.clear();
@@ -111,6 +112,7 @@ public class DataManager {
 	 * 
 	 * @return				the DataManager, for chaining
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	protected DataManager addValidator(String key, DataValidator validator) {
 		mData.get(key).setValidator(validator);
 		return this;
@@ -124,6 +126,7 @@ public class DataManager {
 	 * 
 	 * @return				the DataManager, for chaining
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	protected DataManager addAccessor(String key, DataAccessor accessor) {
 		mData.get(key).setAccessor(accessor);
 		return this;
@@ -156,11 +159,13 @@ public class DataManager {
 		return mData.get(key).getBoolean(this, mBundle);
 	}
 	/** Store a boolean value */
+	@SuppressWarnings("UnusedReturnValue")
 	public DataManager putBoolean(String key, boolean value) {
 		mData.get(key).putBoolean(this, mBundle, value);
 		return this;
 	}
 	/** Store a boolean value */
+	@SuppressWarnings("UnusedReturnValue")
 	public DataManager putBoolean(Datum datum, boolean value) {
 		datum.putBoolean(this, mBundle, value);
 		return this;
@@ -171,6 +176,7 @@ public class DataManager {
 		return mData.get(key).getDouble(this, mBundle);
 	}
 	/** Store a double value */
+	@SuppressWarnings("UnusedReturnValue")
 	public DataManager putDouble(String key, double value) {
 		mData.get(key).putDouble(this, mBundle, value);
 		return this;
@@ -186,11 +192,13 @@ public class DataManager {
 		return mData.get(key).getFloat(this, mBundle);
 	}
 	/** Store a float value */
+	@SuppressWarnings("UnusedReturnValue")
 	public DataManager putFloat(String key, float value) {
 		mData.get(key).putFloat(this, mBundle, value);
 		return this;
 	}
 	/** Store a float value */
+	@SuppressWarnings("UnusedReturnValue")
 	public DataManager putFloat(Datum datum, float value) {
 		datum.putFloat(this, mBundle, value);
 		return this;
@@ -201,11 +209,13 @@ public class DataManager {
 		return mData.get(key).getInt(this, mBundle);
 	}
 	/** Store an int value */
+	@SuppressWarnings("UnusedReturnValue")
 	public DataManager putInt(String key, int value) {
 		mData.get(key).putInt(this, mBundle, value);
 		return this;
 	}
 	/** Store an int value */
+	@SuppressWarnings("UnusedReturnValue")
 	public DataManager putInt(Datum datum, int value) {
 		datum.putInt(this, mBundle, value);
 		return this;
@@ -216,6 +226,7 @@ public class DataManager {
 		return mData.get(key).getLong(this, mBundle);
 	}
 	/** Store a long value */
+	@SuppressWarnings("UnusedReturnValue")
 	public DataManager putLong(String key, long value) {
 		mData.get(key).putLong(this, mBundle, value);
 		return this;
@@ -235,10 +246,12 @@ public class DataManager {
 		return datum.getString(this, mBundle);
 	}
 	/** Store a String value */
+	@SuppressWarnings("UnusedReturnValue")
 	public DataManager putString(String key, String value) {
 		mData.get(key).putString(this, mBundle, value);
 		return this;
 	}
+	@SuppressWarnings("UnusedReturnValue")
 	public DataManager putString(Datum datum, String value) {
 		datum.putString(this, mBundle, value);
 		return this;
@@ -248,6 +261,7 @@ public class DataManager {
 	 * Store all passed values in our collection.
 	 * We do the laborious method here to allow Accessors to do their thing.
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	protected DataManager putAll(Bundle src) {
 		for(String key: src.keySet()) {
 			Object o = src.get(key);
@@ -325,6 +339,7 @@ public class DataManager {
 	 * 
 	 * @return		The data manager for chaining
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public DataManager putSerializable(String key, Serializable value) {
 		mData.get(key).putSerializable(mBundle, value);
 		return this;
@@ -343,11 +358,11 @@ public class DataManager {
 		mValidationExceptions.clear();
 
 		// First, just validate individual fields with the cross-val flag set false
-		if (!doValidate(false))
+		if (!validate(false))
 			isOk = false;
 		
 		// Now re-run with cross-val set to true.
-		if (!doValidate(true))
+		if (!validate(true))
 			isOk = false;
 
 		// Finally run the local cross-validation
@@ -367,7 +382,7 @@ public class DataManager {
 	 * 
 	 * @param crossValidating 	Flag indicating if this is a cross validation pass.
 	 */
-	private boolean doValidate(boolean crossValidating) {
+	private boolean validate(boolean crossValidating) {
 		boolean isOk = true;
 
 		for(String key: mData.keySet()) {
@@ -403,6 +418,7 @@ public class DataManager {
 	 *
 	 * @return  the old datum
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public Datum remove(String key) {
 		Datum datum = mData.remove(key);
 		mBundle.remove(key);
@@ -451,7 +467,7 @@ public class DataManager {
 	 * Append a string to a list value in this collection
 	 */
 	public void appendOrAdd(String key, String value) {
-		String s = ArrayUtils.encodeListItem(value, '|');
+		String s = ArrayUtils.encodeListItem('|', value);
 		if (!containsKey(key) || getString(key).isEmpty()) {
 			putString(key, s);
 		} else {

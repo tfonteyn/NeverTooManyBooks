@@ -82,15 +82,17 @@ public class LibraryThingManager {
 	// Words in XML
 	public static String ID = "id";
 	private static final String AUTHOR = "author";
-	private static final String RESPONSE = "response";
 	private static final String FIELD = "field";
 	private static final String ISBN = "isbn";
-	private static final String ITEM = "item";
 	private static final String FACT = "fact";
 	private static final String CANONICAL_TITLE = "canonicaltitle";
 	private static final String SERIES = "series";
 	private static final String PLACES = "placesmentioned";
 	private static final String CHARACTERS = "characternames";
+
+	// don't remove,  see SearchLibraryThingEntryHandler
+//	private static final String RESPONSE = "response";
+//	private static final String ITEM = "item";
 
 	private static final String BASE_URL = BookCataloguePreferences.WEBSITE_URL_LIBRARYTHING;
 	private static final String BASE_URL_COVERS = BookCataloguePreferences.WEBSITE_URL_LIBRARYTHING_COVERS;
@@ -522,18 +524,8 @@ public class LibraryThingManager {
 			// reset the string. See note in endElement() for a discussion.
 			mBuilder.setLength(0);
 
-			if (localName.equalsIgnoreCase(RESPONSE)){
-				// Not really much to do; we *could* look for the <err> element, then report it.
-				//String stat = attributes.getValue("", "stat");
-			} else if (localName.equalsIgnoreCase(ITEM)){
-				// We don't use it yet, but this contains the Work ID. LibraryThing supports
-				// retrieval of other editions etc via the Work ID.
-				String type = attributes.getValue("","type");
-				if (type != null && type.equalsIgnoreCase("work")) {
-					//mWorkId = attributes.getValue("", "id");
-				}
-			} else if (localName.equalsIgnoreCase(FIELD)){
-				// FIELDs are the main things we want. Once we are in a fieldm we wait for a FACT; these
+			if (localName.equalsIgnoreCase(FIELD)){
+				// FIELDs are the main things we want. Once we are in a field we wait for a FACT; these
 				// are read in the endElement() method.
 				String fieldName = attributes.getValue("", "name");
 				if (fieldName != null) {
@@ -547,7 +539,17 @@ public class LibraryThingManager {
 						mFieldType = FieldTypes.CHARACTERS;
 					}					
 				}
-			}
+			} //	else if (localName.equalsIgnoreCase(RESPONSE)){
+//			// Not really much to do; we *could* look for the <err> element, then report it.
+//				String stat = attributes.getValue("", "stat");
+//			} else if (localName.equalsIgnoreCase(ITEM)){
+//			// We don't use it yet, but this contains the Work ID. LibraryThing supports
+//			// retrieval of other editions etc via the Work ID.
+//				String type = attributes.getValue("","type");
+//				if (type != null && type.equalsIgnoreCase("work")) {
+//					mWorkId = attributes.getValue("", "id");
+//				}
+//			}
 		}
 
 		@Override

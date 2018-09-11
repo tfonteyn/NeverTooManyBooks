@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.utils;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
 import android.view.View;
@@ -27,22 +28,25 @@ import android.view.View;
 /**
  * Using View.setTag(int, Object) causes a memory leak if the tag refers, by a strong reference chain,
  * to the view itself (ie. it uses the 'Holder' pattern). This bug is documented here:
- * <p>
+ *
  * http://code.google.com/p/android/issues/detail?id=18273
- * <p>
- * TODO: above bug was fixed in Android 4, so?
- * <p>
+ *
+ * TODO: above bug was fixed in Android 4, but this class is rather nice
+ *
  * It seems that an 'interesting' design choice was made to use the view itself as a weak key to the into
  * another collection, which then causes the views to never be GC'd.
- * <p>
+ *
  * The work-around is to *not* use strong refs, or use setTag(Object). But we use multiple tags.
- * <p>
+ *
  * So this class implements setTag(int, Object) in a non-leaky fashion and is designed to be stored
  * in the tag of a view.
  *
  * @author Philip Warner
  */
 public class ViewTagger {
+    private ViewTagger() {
+    }
+
     /**
      * Stores the basic tag referred to without an ID
      */
@@ -59,7 +63,7 @@ public class ViewTagger {
      * @return ViewTagger object
      */
     @Nullable
-    private static ViewTagger getTagger(View v, boolean autoCreate) {
+    private static ViewTagger getTagger(@NonNull final View v, boolean autoCreate) {
         // See if we have one already
         Object o = v.getTag();
         ViewTagger tagger = null;
@@ -84,7 +88,7 @@ public class ViewTagger {
      * @param v View from which to retrieve tag
      */
     @Nullable
-    public static Object getTag(View v) {
+    public static Object getTag(@NonNull final View v) {
         ViewTagger tagger = getTagger(v, false);
         if (tagger == null)
             return null;
@@ -101,7 +105,8 @@ public class ViewTagger {
      * @return Object with specified tag
      */
     @SuppressWarnings("unchecked")
-    public static <T> T getTag(View v, int key) {
+    @Nullable
+    public static <T> T getTag(@NonNull final View v, int key) {
         ViewTagger tagger = getTagger(v, false);
         if (tagger == null)
             return null;
@@ -115,7 +120,7 @@ public class ViewTagger {
      * @param v     View from which to retrieve tag
      * @param value Object to store at specified tag
      */
-    public static void setTag(View v, Object value) {
+    public static void setTag(@NonNull final View v, Object value) {
         getTagger(v, true).set(value);
     }
 
@@ -126,7 +131,7 @@ public class ViewTagger {
      * @param key   Key of tag to store
      * @param value Object to store at specified tag
      */
-    public static void setTag(View v, int key, Object value) {
+    public static void setTag(@NonNull final View v, int key, Object value) {
         getTagger(v, true).set(key, value);
     }
 

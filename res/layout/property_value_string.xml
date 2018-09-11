@@ -25,6 +25,6 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         tools:ignore="LabelFor,TextFields" />
 
-    <View style="@style/listDivider" />
+    <View style="@style/listDividerHorizontal" />
 
 </LinearLayout>

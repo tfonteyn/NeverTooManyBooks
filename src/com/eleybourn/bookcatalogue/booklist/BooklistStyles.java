@@ -89,7 +89,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
     private static void getPreferredStyleNames(HashSet<String> hash) {
         String itemStr = BookCataloguePreferences.getString(PREF_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.equals("")) {
-            ArrayList<String> list = ArrayUtils.decodeList(itemStr, '|');
+            ArrayList<String> list = ArrayUtils.decodeList('|', itemStr);
             for (int i = 0; i < list.size(); i++) {
                 String name = list.get(i);
                 if (name != null && !name.isEmpty() && !hash.contains(name))
@@ -286,7 +286,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
         String itemStr = BookCataloguePreferences.getString(PREF_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.isEmpty()) {
             // Break it up and process in order
-            ArrayList<String> list = ArrayUtils.decodeList(itemStr, '|');
+            ArrayList<String> list = ArrayUtils.decodeList('|', itemStr);
             if (list != null) {
                 for (String n : list) {
                     // Add any exiting style that is preferred
@@ -351,7 +351,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
             if (s.isPreferred()) {
                 if (items.length() > 0)
                     items.append("|");
-                items.append(ArrayUtils.encodeListItem(s.getCanonicalName(), '|'));
+                items.append(ArrayUtils.encodeListItem('|', s.getCanonicalName()));
             }
         }
         Editor e = BookCataloguePreferences.edit();
@@ -362,7 +362,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
     /**
      * @return the number of styles in this collection
      */
-    public int size() {
+    private int size() {
         return mList.size();
     }
 
@@ -376,7 +376,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
     /**
      * Add a style to this list
      */
-    public void add(BooklistStyle style) {
+    private void add(BooklistStyle style) {
         style.setPreferred(mPreferredStyleNames.contains(style.getCanonicalName()));
         mList.add(style);
     }

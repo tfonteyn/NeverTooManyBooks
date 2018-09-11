@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:paddingBottom="2dp"
-    android:paddingTop="3dp" >
+    android:paddingTop="3dp">
 
+    <!-- the "row_info" level is used by {@link BooksMultitypeListHandler} to hide/show rows -->
     <LinearLayout
         android:id="@+id/row_info"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/padding_border"
-        android:paddingEnd="@dimen/padding_border"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:paddingBottom="2dp"
+        tools:ignore="UselessParent">
 
         <ImageView
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:layout_gravity="center"
+            android:id="@+id/c_start"
+            android:layout_width="@dimen/padding_border_double"
+            android:layout_height="@dimen/padding_border_double"
+            android:layout_gravity="center_vertical"
             app:srcCompat="@drawable/btn_circle_normal"
             tools:ignore="ContentDescription" />
 
@@ -28,29 +29,23 @@
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:paddingStart="2dp"
             android:paddingEnd="2dp"
-            tools:text="Series name f.e."
+            android:paddingStart="2dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            tools:text="Series name f.e." />
 
         <ImageView
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:layout_gravity="center"
-            android:paddingStart="2dp"
-            android:paddingEnd="2dp"
+            android:id="@+id/c_end"
+            android:layout_width="@dimen/padding_border_double"
+            android:layout_height="@dimen/padding_border_double"
+            android:layout_gravity="center_vertical"
             app:srcCompat="@drawable/btn_circle_normal"
             tools:ignore="ContentDescription" />
+
+        <View
+            style="@style/listDividerHorizontal"
+            android:background="@android:drawable/divider_horizontal_bright" />
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:drawable/divider_horizontal_bright"
-        android:paddingBottom="2dp"
-        android:paddingTop="2dp" />
-
-</LinearLayout>
+</RelativeLayout>

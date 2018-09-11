@@ -121,7 +121,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * This routine renames all files, if they exist.
      */
     private static void renameIdFilesToHash(DbSync.SynchronizedDb db) {
-        String sql = "select " + ColumnInfo.KEY_ROWID + ", " + DOM_BOOK_UUID + " from " + DB_TB_BOOKS + " Order by " + ColumnInfo.KEY_ROWID;
+        String sql = "select " + ColumnInfo.KEY_ID + ", " + DOM_BOOK_UUID + " from " + DB_TB_BOOKS + " Order by " + ColumnInfo.KEY_ID;
         try (Cursor c = db.rawQuery(sql)) {
             while (c.moveToNext()) {
                 final long id = c.getLong(0);
@@ -435,7 +435,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "CREATE INDEX IF NOT EXISTS anthology_book ON "+DB_TB_ANTHOLOGY+" ("+ ColumnInfo.KEY_BOOK+");",
             "CREATE INDEX IF NOT EXISTS anthology_author ON "+DB_TB_ANTHOLOGY+" ("+ ColumnInfo.KEY_AUTHOR_ID+");",
             "CREATE INDEX IF NOT EXISTS anthology_title ON "+DB_TB_ANTHOLOGY+" ("+ ColumnInfo.KEY_TITLE+");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS series_series ON "+DB_TB_SERIES+" ("+ ColumnInfo.KEY_ROWID+");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS series_series ON "+DB_TB_SERIES+" ("+ ColumnInfo.KEY_ID +");",
             "CREATE UNIQUE INDEX IF NOT EXISTS loan_book_loaned_to ON "+DB_TB_LOAN+" ("+ ColumnInfo.KEY_BOOK+");",
             "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_book ON "+DB_TB_BOOK_BOOKSHELF_WEAK+" ("+ ColumnInfo.KEY_BOOK+");",
             "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_bookshelf ON "+DB_TB_BOOK_BOOKSHELF_WEAK+" ("+ ColumnInfo.KEY_BOOKSHELF+");",
@@ -486,7 +486,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "		    goodreads_book_id = 0,\n" +
                 "		    last_goodreads_sync_date = ''\n" +
                 "		Where\n" +
-                "			" + ColumnInfo.KEY_ROWID + " = new." + ColumnInfo.KEY_ROWID + ";\n" +
+                "			" + ColumnInfo.KEY_ID + " = new." + ColumnInfo.KEY_ID + ";\n" +
                 "	End";
         db.execSQL("Drop Trigger if Exists " + name);
         db.execSQL("Create Trigger " + name + body);
@@ -828,7 +828,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             try {
                 db.execSQL(DATABASE_CREATE_BOOK_BOOKSHELF_WEAK);
                 //createIndices(db); // All createIndices prior to the latest have been removed
-                db.execSQL("INSERT INTO " + DB_TB_BOOK_BOOKSHELF_WEAK + " (" + ColumnInfo.KEY_BOOK + ", " + ColumnInfo.KEY_BOOKSHELF + ") SELECT " + ColumnInfo.KEY_ROWID + ", " + ColumnInfo.KEY_BOOKSHELF + " FROM " + DB_TB_BOOKS + "");
+                db.execSQL("INSERT INTO " + DB_TB_BOOK_BOOKSHELF_WEAK + " (" + ColumnInfo.KEY_BOOK + ", " + ColumnInfo.KEY_BOOKSHELF + ") SELECT " + ColumnInfo.KEY_ID + ", " + ColumnInfo.KEY_BOOKSHELF + " FROM " + DB_TB_BOOKS + "");
                 db.execSQL("CREATE TABLE tmp1 AS SELECT _id, " + OLD_KEY_AUTHOR + ", " + ColumnInfo.KEY_TITLE + ", " + ColumnInfo.KEY_ISBN + ", " + ColumnInfo.KEY_PUBLISHER + ", " +
                         ColumnInfo.KEY_DATE_PUBLISHED + ", " + ColumnInfo.KEY_RATING + ", " + ColumnInfo.KEY_READ + ", " + OLD_KEY_SERIES + ", " + ColumnInfo.KEY_PAGES + ", " + ColumnInfo.KEY_SERIES_NUM + ", " + ColumnInfo.KEY_NOTES + ", " +
                         ColumnInfo.KEY_LIST_PRICE + ", " + ColumnInfo.KEY_ANTHOLOGY_MASK + ", " + ColumnInfo.KEY_LOCATION + ", " + ColumnInfo.KEY_READ_START + ", " + ColumnInfo.KEY_READ_END + ", " + OLD_KEY_AUDIOBOOK + ", " +
@@ -867,10 +867,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         if (curVersion == 43) {
             curVersion++;
-            db.execSQL("DELETE FROM " + DB_TB_ANTHOLOGY + " WHERE " + ColumnInfo.KEY_ROWID + " IN (" +
-                    "SELECT a." + ColumnInfo.KEY_ROWID + " FROM " + DB_TB_ANTHOLOGY + " a, " + DB_TB_ANTHOLOGY + " b " +
+            db.execSQL("DELETE FROM " + DB_TB_ANTHOLOGY + " WHERE " + ColumnInfo.KEY_ID + " IN (" +
+                    "SELECT a." + ColumnInfo.KEY_ID + " FROM " + DB_TB_ANTHOLOGY + " a, " + DB_TB_ANTHOLOGY + " b " +
                     " WHERE a." + ColumnInfo.KEY_BOOK + "=b." + ColumnInfo.KEY_BOOK + " AND a." + OLD_KEY_AUTHOR + "=b." + OLD_KEY_AUTHOR + " " +
-                    " AND a." + ColumnInfo.KEY_TITLE + "=b." + ColumnInfo.KEY_TITLE + " AND a." + ColumnInfo.KEY_ROWID + " > b." + ColumnInfo.KEY_ROWID + "" +
+                    " AND a." + ColumnInfo.KEY_TITLE + "=b." + ColumnInfo.KEY_TITLE + " AND a." + ColumnInfo.KEY_ID + " > b." + ColumnInfo.KEY_ID + "" +
                     ")");
             db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS anthology_pk_idx ON " + DB_TB_ANTHOLOGY + " (" + ColumnInfo.KEY_BOOK + ", " + OLD_KEY_AUTHOR + ", " + ColumnInfo.KEY_TITLE + ")");
         }
@@ -1060,15 +1060,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     //createIndices(db); // All createIndices prior to the latest have been removed
 
                     db.execSQL("INSERT INTO " + DB_TB_BOOK_SERIES + " (" + ColumnInfo.KEY_BOOK + ", " + ColumnInfo.KEY_SERIES_ID + ", " + ColumnInfo.KEY_SERIES_NUM + ", " + ColumnInfo.KEY_SERIES_POSITION + ") "
-                            + "SELECT DISTINCT b." + ColumnInfo.KEY_ROWID + ", s." + ColumnInfo.KEY_ROWID + ", b." + ColumnInfo.KEY_SERIES_NUM + ", 1"
+                            + "SELECT DISTINCT b." + ColumnInfo.KEY_ID + ", s." + ColumnInfo.KEY_ID + ", b." + ColumnInfo.KEY_SERIES_NUM + ", 1"
                             + " FROM " + DB_TB_BOOKS + " b "
                             + " Join " + DB_TB_SERIES + " s On Upper(s." + ColumnInfo.KEY_SERIES_NAME + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
                             + " Where Coalesce(b." + OLD_KEY_SERIES + ", '') <> ''");
 
                     db.execSQL("INSERT INTO " + DB_TB_BOOK_AUTHOR + " (" + ColumnInfo.KEY_BOOK + ", " + ColumnInfo.KEY_AUTHOR_ID + ", " + ColumnInfo.KEY_AUTHOR_POSITION + ") "
-                            + "SELECT b." + ColumnInfo.KEY_ROWID + ", b." + OLD_KEY_AUTHOR + ", 1 FROM " + DB_TB_BOOKS + " b ");
+                            + "SELECT b." + ColumnInfo.KEY_ID + ", b." + OLD_KEY_AUTHOR + ", 1 FROM " + DB_TB_BOOKS + " b ");
 
-                    String tmpFields = ColumnInfo.KEY_ROWID + ", " /* + KEY_AUTHOR + ", " */ + ColumnInfo.KEY_TITLE + ", " + ColumnInfo.KEY_ISBN
+                    String tmpFields = ColumnInfo.KEY_ID + ", " /* + KEY_AUTHOR + ", " */ + ColumnInfo.KEY_TITLE + ", " + ColumnInfo.KEY_ISBN
                             + ", " + ColumnInfo.KEY_PUBLISHER + ", " + ColumnInfo.KEY_DATE_PUBLISHED + ", " + ColumnInfo.KEY_RATING + ", " + ColumnInfo.KEY_READ
                             + /* ", " + KEY_SERIES + */ ", " + ColumnInfo.KEY_PAGES /* + ", " + KEY_SERIES_NUM */ + ", " + ColumnInfo.KEY_NOTES
                             + ", " + ColumnInfo.KEY_LIST_PRICE + ", " + ColumnInfo.KEY_ANTHOLOGY_MASK + ", " + ColumnInfo.KEY_LOCATION + ", " + ColumnInfo.KEY_READ_START
@@ -1125,15 +1125,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         db.execSQL(DATABASE_CREATE_BOOK_AUTHOR);
 
                         db.execSQL("INSERT INTO " + DB_TB_BOOK_SERIES + " (" + ColumnInfo.KEY_BOOK + ", " + ColumnInfo.KEY_SERIES_ID + ", " + ColumnInfo.KEY_SERIES_NUM + ", " + ColumnInfo.KEY_SERIES_POSITION + ") "
-                                + "SELECT DISTINCT b." + ColumnInfo.KEY_ROWID + ", s." + ColumnInfo.KEY_ROWID + ", b." + ColumnInfo.KEY_SERIES_NUM + ", 1"
+                                + "SELECT DISTINCT b." + ColumnInfo.KEY_ID + ", s." + ColumnInfo.KEY_ID + ", b." + ColumnInfo.KEY_SERIES_NUM + ", 1"
                                 + " FROM " + DB_TB_BOOKS + " b "
                                 + " Join " + DB_TB_SERIES + " s On Upper(s." + ColumnInfo.KEY_SERIES_NAME + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
                                 + " Where Coalesce(b." + OLD_KEY_SERIES + ", '') <> ''");
 
                         db.execSQL("INSERT INTO " + DB_TB_BOOK_AUTHOR + " (" + ColumnInfo.KEY_BOOK + ", " + ColumnInfo.KEY_AUTHOR_ID + ", " + ColumnInfo.KEY_AUTHOR_POSITION + ") "
-                                + "SELECT b." + ColumnInfo.KEY_ROWID + ", b." + OLD_KEY_AUTHOR + ", 1 FROM " + DB_TB_BOOKS + " b ");
+                                + "SELECT b." + ColumnInfo.KEY_ID + ", b." + OLD_KEY_AUTHOR + ", 1 FROM " + DB_TB_BOOKS + " b ");
 
-                        String tmpFields = ColumnInfo.KEY_ROWID + ", " /* + KEY_AUTHOR + ", " */ + ColumnInfo.KEY_TITLE + ", " + ColumnInfo.KEY_ISBN
+                        String tmpFields = ColumnInfo.KEY_ID + ", " /* + KEY_AUTHOR + ", " */ + ColumnInfo.KEY_TITLE + ", " + ColumnInfo.KEY_ISBN
                                 + ", " + ColumnInfo.KEY_PUBLISHER + ", " + ColumnInfo.KEY_DATE_PUBLISHED + ", " + ColumnInfo.KEY_RATING + ", " + ColumnInfo.KEY_READ
                                 + /* ", " + KEY_SERIES + */ ", " + ColumnInfo.KEY_PAGES /* + ", " + KEY_SERIES_NUM */ + ", " + ColumnInfo.KEY_NOTES
                                 + ", " + ColumnInfo.KEY_LIST_PRICE + ", " + ColumnInfo.KEY_ANTHOLOGY_MASK + ", " + ColumnInfo.KEY_LOCATION + ", " + ColumnInfo.KEY_READ_START
@@ -1229,7 +1229,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     //table does not exist
                     db.execSQL(DATABASE_CREATE_BOOK_SERIES_54);
                     db.execSQL("INSERT INTO " + DB_TB_BOOK_SERIES + " (" + ColumnInfo.KEY_BOOK + ", " + ColumnInfo.KEY_SERIES_ID + ", " + ColumnInfo.KEY_SERIES_NUM + ", " + ColumnInfo.KEY_SERIES_POSITION + ") "
-                            + "SELECT DISTINCT b." + ColumnInfo.KEY_ROWID + ", s." + ColumnInfo.KEY_ROWID + ", b." + ColumnInfo.KEY_SERIES_NUM + ", 1"
+                            + "SELECT DISTINCT b." + ColumnInfo.KEY_ID + ", s." + ColumnInfo.KEY_ID + ", b." + ColumnInfo.KEY_SERIES_NUM + ", 1"
                             + " FROM " + DB_TB_BOOKS + " b "
                             + " Join " + DB_TB_SERIES + " s On Upper(s." + ColumnInfo.KEY_SERIES_NAME + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
                             + " Where Coalesce(b." + OLD_KEY_SERIES + ", '') <> ''");
@@ -1240,13 +1240,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     //table does not exist
                     db.execSQL(DATABASE_CREATE_BOOK_AUTHOR);
                     db.execSQL("INSERT INTO " + DB_TB_BOOK_AUTHOR + " (" + ColumnInfo.KEY_BOOK + ", " + ColumnInfo.KEY_AUTHOR_ID + ", " + ColumnInfo.KEY_AUTHOR_POSITION + ") "
-                            + "SELECT b." + ColumnInfo.KEY_ROWID + ", b." + OLD_KEY_AUTHOR + ", 1 FROM " + DB_TB_BOOKS + " b ");
+                            + "SELECT b." + ColumnInfo.KEY_ID + ", b." + OLD_KEY_AUTHOR + ", 1 FROM " + DB_TB_BOOKS + " b ");
                 }
             }
             try (Cursor results = db.rawQuery("SELECT * FROM " + DB_TB_BOOKS, new String[]{})) {
                 if (results.getCount() > 0) {
                     if (results.getColumnIndex(OLD_KEY_SERIES) > -1) {
-                        String tmpFields = ColumnInfo.KEY_ROWID + ", " /* + KEY_AUTHOR + ", " */ + ColumnInfo.KEY_TITLE + ", " + ColumnInfo.KEY_ISBN
+                        String tmpFields = ColumnInfo.KEY_ID + ", " /* + KEY_AUTHOR + ", " */ + ColumnInfo.KEY_TITLE + ", " + ColumnInfo.KEY_ISBN
                                 + ", " + ColumnInfo.KEY_PUBLISHER + ", " + ColumnInfo.KEY_DATE_PUBLISHED + ", " + ColumnInfo.KEY_RATING + ", " + ColumnInfo.KEY_READ
                                 + /* ", " + KEY_SERIES + */ ", " + ColumnInfo.KEY_PAGES /* + ", " + KEY_SERIES_NUM */ + ", " + ColumnInfo.KEY_NOTES
                                 + ", " + ColumnInfo.KEY_LIST_PRICE + ", " + ColumnInfo.KEY_ANTHOLOGY_MASK + ", " + ColumnInfo.KEY_LOCATION + ", " + ColumnInfo.KEY_READ_START

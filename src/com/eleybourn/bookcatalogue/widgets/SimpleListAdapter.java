@@ -35,7 +35,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * TODO: RecyclerView
@@ -75,7 +75,7 @@ import java.util.List;
  */
 public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     private final int mRowViewId;
-    private final List<T> mItems;
+    private final ArrayList<T> mItems;
 
     private final View.OnLongClickListener mRowLongClickListener = new View.OnLongClickListener() {
         @Override
@@ -169,7 +169,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     private boolean mHasDown = false;
     private boolean mHasDelete = false;
 
-    public SimpleListAdapter(Context context, int rowViewId, List<T> items) {
+    protected SimpleListAdapter(Context context, int rowViewId, ArrayList<T> items) {
         super(context, rowViewId, items);
         mRowViewId = rowViewId;
         mItems = items;
@@ -338,6 +338,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      * Interface to allow underlying objects to determine their view ID.
      */
     public interface ViewProvider {
+        @SuppressWarnings("SameReturnValue")
         int getViewId();
     }
 

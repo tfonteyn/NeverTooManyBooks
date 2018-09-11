@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.os.Bundle;
+
 import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.Series;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -35,15 +36,33 @@ import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementConte
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
+
 import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.*;
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
+
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.BOOK_ID;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.BOOK_URL;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.IMAGE;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.ISBN13;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.IS_EBOOK;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.ORIG_PUBLICATION_DAY;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.ORIG_PUBLICATION_MONTH;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.ORIG_PUBLICATION_YEAR;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.ORIG_TITLE;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.PUBLICATION_DAY;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.PUBLICATION_MONTH;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.PUBLICATION_YEAR;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.RATING;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.REVIEW_ID;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.SHELVES;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.SMALL_IMAGE;
+import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.WORK_ID;
 
 /**
  * Class to query and response to search.books api call. This is an abstract class
@@ -522,10 +541,10 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         //public static final String BOOK_URL = "__url";
 
         if (mAuthors != null && mAuthors.size() > 0)
-            mBook.putString(ColumnInfo.KEY_AUTHOR_DETAILS, ArrayUtils.getAuthorUtils().encodeList(mAuthors, '|'));
+            mBook.putString(ColumnInfo.KEY_AUTHOR_DETAILS, ArrayUtils.getAuthorUtils().encodeList('|', mAuthors));
 
         if (mSeries != null && mSeries.size() > 0)
-            mBook.putString(ColumnInfo.KEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(mSeries, '|'));
+            mBook.putString(ColumnInfo.KEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList('|', mSeries));
 
         if (mShelves != null && mShelves.size() > 0)
             mBook.putStringArrayList(SHELVES, mShelves);
@@ -688,8 +707,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
      * @author Philip Warner
      */
     public static final class ShowBookFieldNames {
-        public static final String BOOK_ID = "__book_id";
-        public static final String REVIEW_ID = "__review_id";
+
         public static final String ISBN13 = "__isbn13";
         public static final String IMAGE = "__image";
         public static final String SMALL_IMAGE = "__smallImage";
@@ -703,8 +721,10 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         public static final String ORIG_PUBLICATION_DAY = "__orig_pub_day";
         public static final String ORIG_TITLE = "__orig_title";
         public static final String RATING = "__rating";
-        public static final String SHELVES = "__shelves";
         public static final String BOOK_URL = "__url";
-    }
+
+        public static final String SHELVES = "__shelves";
+        public static final String BOOK_ID = "__book_id";
+        public static final String REVIEW_ID = "__review_id";    }
 
 }

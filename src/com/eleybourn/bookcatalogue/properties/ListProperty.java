@@ -48,7 +48,7 @@ import java.util.Objects;
  */
 public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> {
     /** List of valid values */
-    protected final ItemEntries<T> mList;
+    private final ItemEntries<T> mList;
 
     @SuppressWarnings("WeakerAccess")
     public ListProperty(ItemEntries<T> list, String uniqueId, PropertyGroup group, int nameResourceId, T value, String defaultPref, T defaultValue) {

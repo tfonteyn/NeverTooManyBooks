@@ -23,8 +23,10 @@ package com.eleybourn.bookcatalogue.booklist;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BooksMultitypeListHandler;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DomainDefinition;
 import com.eleybourn.bookcatalogue.properties.BooleanListProperty;
 import com.eleybourn.bookcatalogue.properties.BooleanProperty;
@@ -46,7 +48,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 /**
- * Represents a specific style of book list (eg. authors/series). Individual BooklistGroup objects
+ * Represents a specific style of book list (eg. authors/series). Individual {@link BooklistGroup} objects
  * are added to a style in order to describe the resulting list style.
  *
  * ENHANCE: Allow for style-based overrides of things currently stored in preferences
@@ -54,17 +56,21 @@ import java.util.Iterator;
  *
  * How to add a new Group:
  *
- * - add it to RowKinds. Update ROW_KIND_MAX.
- * - add new domain to DatabaseDefinitions (if necessary)
- * - modify BooklistBuilder.build() to add the necessary grouped/sorted domains
- * - modify BooksMultitypeListHandler; if it is just a string field, then use a GenericHolder. Otherwise add a new holder.
- * Need to at least modify BooksMultitypeListHandler.newHolder().
+ * - add it to {@link BooklistGroup.RowKinds} Update {@link BooklistGroup.RowKinds#ROW_KIND_MAX}
+ * - add new domain to {@link DatabaseDefinitions } (if necessary)
+ * - modify {@link BooklistBuilder#build} to add the necessary grouped/sorted domains
+ * - modify {@link BooksMultitypeListHandler}; if it is just a string field,
+ *   then use a {@link BooksMultitypeListHandler.GenericStringHolder}.
+ *   Otherwise add a new holder.
+ *
+ * Need to at least modify {@link BooksMultitypeListHandler#newHolder}
  *
  * @author Philip Warner
  */
 public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     private static final long serialVersionUID = 6615877148246388549L;
-    private static final long realSerialVersion = 4;
+    /** version field used in serialised data reading from file, see {@link #readObject} */
+    private static final long realSerialVersion = 5;
 
     /** Extra book data to show at lowest level */
     public static final int EXTRAS_BOOKSHELVES = 1;
@@ -79,8 +85,11 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /** Extra book data to show at lowest level */
     public static final int EXTRAS_THUMBNAIL_LARGE = 32;
     /** Extra book data to show at lowest level */
-    public static final int EXTRAS_ALL = EXTRAS_BOOKSHELVES | EXTRAS_LOCATION
-            | EXTRAS_PUBLISHER | EXTRAS_AUTHOR | EXTRAS_THUMBNAIL | EXTRAS_THUMBNAIL_LARGE;
+    public static final int EXTRAS_FORMAT = 64;
+
+    /** Extra book data to show at lowest level */
+    public static final int EXTRAS_ALL = EXTRAS_BOOKSHELVES | EXTRAS_LOCATION | EXTRAS_PUBLISHER
+            | EXTRAS_AUTHOR | EXTRAS_THUMBNAIL | EXTRAS_THUMBNAIL_LARGE | EXTRAS_FORMAT;
 
 
     public static final int FILTER_READ = 1;
@@ -100,11 +109,13 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     private static final String SFX_SHOW_AUTHOR = "ShowAuthor";
     private static final String SFX_SHOW_THUMBNAILS = "ShowThumbnails";
     private static final String SFX_LARGE_THUMBNAILS = "LargeThumbnails";
+    private static final String SFX_SHOW_FORMAT = "ShowFormat";
+
     private static final String SFX_CONDENSED = "Condensed";
     private static final String SFX_SHOW_HEADER_INFO = "ShowHeaderInfo";
 
     /** Prefix for all prefs */
-    public static final String TAG = "BookList";
+    private static final String TAG = "BookList";
     /** Prefix for all prefs */
     private static final String PREF_SHOW_EXTRAS_PREFIX = TAG + ".";
 
@@ -127,7 +138,8 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     private static final String PREF_SHOW_THUMBNAILS = PREF_SHOW_EXTRAS_PREFIX + BooklistStyle.SFX_SHOW_THUMBNAILS;
     /** Show large thumbnail if thumbnails are shown */
     private static final String PREF_LARGE_THUMBNAILS = PREF_SHOW_EXTRAS_PREFIX + BooklistStyle.SFX_LARGE_THUMBNAILS;
-
+    /** Show format for each book */
+    private static final String PREF_SHOW_FORMAT = PREF_SHOW_EXTRAS_PREFIX + BooklistStyle.SFX_SHOW_FORMAT;
     /** Support for 'READ' filter */
     private static final ItemEntries<Integer> mReadFilterListItems = new ItemEntries<>();
     /** Support for 'Condensed' property */
@@ -175,9 +187,12 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /** Extra details to show on book rows */
     private transient BooleanProperty mXtraShowPublisher;
     /** Extra details to show on book rows */
+    private transient BooleanProperty mXtraShowFormat;
+    /** Extra details to show on book rows */
     private transient BooleanProperty mXtraShowAuthor;
     /** Extra details to show on book rows */
     private transient IntegerListProperty mXtraReadUnreadAll;
+
     /** Show list using smaller text */
     private transient BooleanListProperty mCondensed;
     /** Show list header info */
@@ -338,6 +353,12 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
                 PREF_SHOW_PUBLISHER,
                 false);
 
+        mXtraShowFormat = new BooleanProperty("XFormat",
+                PropertyGroup.GRP_EXTRA_BOOK_DETAILS,
+                R.string.format,
+                PREF_SHOW_FORMAT,
+                false);
+
         mXtraShowAuthor = new BooleanProperty("XAuthor",
                 PropertyGroup.GRP_EXTRA_BOOK_DETAILS,
                 R.string.author,
@@ -386,6 +407,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         props.add(mXtraShowBookshelves);
         props.add(mXtraShowLocation);
         props.add(mXtraShowPublisher);
+        props.add(mXtraShowFormat);
         props.add(mXtraShowAuthor);
         props.add(mXtraReadUnreadAll);
         props.add(mCondensed);
@@ -460,6 +482,9 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         if (mXtraShowPublisher.getResolvedValue())
             extras |= EXTRAS_PUBLISHER;
 
+        if (mXtraShowFormat.getResolvedValue())
+            extras |= EXTRAS_FORMAT;
+
         if (mXtraShowAuthor.getResolvedValue())
             extras |= EXTRAS_AUTHOR;
 
@@ -519,7 +544,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      */
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
-        out.writeObject(realSerialVersion);
+        out.writeObject(realSerialVersion); // always write latest
         out.writeObject(mXtraShowThumbnails.get());
         out.writeObject(mXtraLargeThumbnails.get());
         out.writeObject(mXtraShowBookshelves.get());
@@ -530,6 +555,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         out.writeObject(mCondensed.get());
         out.writeObject(mNameProperty.get());
         out.writeObject(mShowHeaderInfo.get());
+        out.writeObject(mXtraShowFormat.get());
     }
 
     /**
@@ -571,8 +597,12 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
                     mShowHeaderInfo.set(isSet ? SUMMARY_SHOW_ALL : SUMMARY_HIDE);
                 }
             } else {
+                // version 4
                 mShowHeaderInfo.set((Integer) in.readObject());
             }
+        }
+        if (version > 4) {
+            mXtraShowFormat.set((Boolean) in.readObject());
         }
     }
 

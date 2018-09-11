@@ -284,7 +284,7 @@ public class CoversDbHelper implements AutoCloseable {
      *
      * @return byte[] of image data
      */
-    public final byte[] getFile(final String filename, final Date lastModified) {
+    private byte[] getFile(final String filename, final Date lastModified) {
         if (mSyncedDb == null) {
             return null;
         }

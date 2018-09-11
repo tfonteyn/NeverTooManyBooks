@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <View style="@style/listDivider" />
+        <View style="@style/listDividerHorizontal" />
     </LinearLayout>
 
 </ScrollView>

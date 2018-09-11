@@ -91,6 +91,7 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
     }
 
     /** Accessor for underlying (or global) value */
+    @SuppressWarnings("UnusedReturnValue")
     public ValuePropertyWithGlobalDefault<T> set(T value) {
         mValue = value;
         if (mIsGlobal)

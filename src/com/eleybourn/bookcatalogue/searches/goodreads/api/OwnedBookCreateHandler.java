@@ -35,7 +35,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
@@ -171,7 +170,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 
 		HttpPost post = new HttpPost(GOODREADS_API_ROOT + "/owned_books.xml");
 
-        List<NameValuePair> parameters = new ArrayList<>();
+		ArrayList<NameValuePair> parameters = new ArrayList<>();
         parameters.add(new BasicNameValuePair("owned_book[book_id]", Long.toString(id)));
         
         post.setEntity(new UrlEncodedFormEntity(parameters));	        	

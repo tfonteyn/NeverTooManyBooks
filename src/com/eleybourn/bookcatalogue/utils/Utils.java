@@ -62,7 +62,6 @@ public class Utils {
     public static final boolean USE_LT = true;
     public static final boolean USE_BARCODE = true;
 
-
     //public static final String APP_NAME = "DVD Catalogue";
     //public static final String LOCATION = "dvdCatalogue";
     //public static final String DATABASE_NAME = "dvd_catalogue";
@@ -187,7 +186,7 @@ public class Utils {
                         @Override
                         public void run() {
                             if (connInfo.is != null) {
-                                if (!connInfo.is.isClosed()) {
+                                if (connInfo.is.isOpen()) {
                                     try {
                                         connInfo.is.close();
                                         ((HttpURLConnection) connInfo.conn).disconnect();
@@ -566,26 +565,23 @@ public class Utils {
     }
 
     public static class StatefulBufferedInputStream extends BufferedInputStream implements Closeable{
-        private boolean mIsClosed = false;
+        private boolean mIsOpen = true;
 
         StatefulBufferedInputStream(InputStream in) {
             super(in);
         }
-//		public StatefulBufferedInputStream(InputStream in, int i) {
-//			super(in, i);
-//		}
 
         @Override
         public void close() throws IOException {
             try {
                 super.close();
             } finally {
-                mIsClosed = true;
+                mIsOpen = false;
             }
         }
 
-        public boolean isClosed() {
-            return mIsClosed;
+        public boolean isOpen() {
+            return mIsOpen;
         }
     }
 }

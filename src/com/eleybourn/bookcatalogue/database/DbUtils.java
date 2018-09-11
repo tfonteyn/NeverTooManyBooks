@@ -150,6 +150,7 @@ public class DbUtils {
          *
          * @return Join object (for chaining)
          */
+        @SuppressWarnings("UnusedReturnValue")
         public JoinContext append(String sql) {
             mSql.append(sql);
             return this;
@@ -312,6 +313,7 @@ public class DbUtils {
          *
          * @return TableDefinition (for chaining)
          */
+        @SuppressWarnings("UnusedReturnValue")
         public TableDefinition setName(String newName) {
             this.mName = newName;
             return this;
@@ -558,6 +560,7 @@ public class DbUtils {
         /**
          * Drop this table from the passed DB.
          */
+        @SuppressWarnings("UnusedReturnValue")
         public TableDefinition drop(SynchronizedDb db) {
             drop(db, mName);
             return this;
@@ -571,6 +574,7 @@ public class DbUtils {
          *
          * @return TableDefinition (for chaining)
          */
+        @SuppressWarnings("UnusedReturnValue")
         public TableDefinition create(SynchronizedDb db, boolean withConstraints) {
             if (BuildConfig.DEBUG) {
                 System.out.println(this.getSql(mName, withConstraints, false));

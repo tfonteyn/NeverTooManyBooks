@@ -27,7 +27,6 @@ public class ColumnInfo {
     public static final String KEY_SERIES_ARRAY = "series_array";
     public static final String KEY_SERIES_DETAILS = "series_details";
     public static final String KEY_SERIES_FORMATTED = "series_formatted";
-    public static final String KEY_SERIES_NUM_FORMATTED = "series_num_formatted";
     public static final String KEY_THUMBNAIL = "thumbnail";
 
 
@@ -57,7 +56,7 @@ public class ColumnInfo {
     public static final String KEY_READ = DOM_READ.name;
     public static final String KEY_READ_END = DOM_READ_END.name;
     public static final String KEY_READ_START = DOM_READ_START.name;
-    public static final String KEY_ROWID = DOM_ID.name;
+    public static final String KEY_ID = DOM_ID.name;
     public static final String KEY_SERIES_ID = DOM_SERIES_ID.name;
     public static final String KEY_SERIES_NAME = DOM_SERIES_NAME.name;
     public static final String KEY_SERIES_NUM = DOM_SERIES_NUM.name;

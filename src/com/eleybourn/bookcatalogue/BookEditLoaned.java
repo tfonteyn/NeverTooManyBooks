@@ -32,13 +32,17 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import java.util.ArrayList;
-
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_LOANED_TO;
 
 /**
  * This class is called by the BookEdit activity and displays the Loaned Tab
@@ -53,6 +57,103 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
             ContactsContract.Contacts.LOOKUP_KEY,
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY
     };
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_edit_book_loan_base, container, false);
+    }
+
+    /**
+     * Called when the activity is first created. This function will check whether a book has been loaned
+     * and display the appropriate page as required.
+     *
+     * @param savedInstanceState The saved bundle (from pausing). Can be null.
+     */
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
+        try {
+            super.onActivityCreated(savedInstanceState);
+            String friend = mDb.fetchLoanByBook(mEditManager.getBookData().getRowId());
+            if (friend == null) {
+                showLoanTo();
+            } else {
+                showLoaned(friend);
+            }
+        } catch (Exception e) {
+            Logger.logError(e);
+        } finally {
+            Tracker.exitOnCreate(this);
+        }
+    }
+
+    /**
+     * Display the loan to page. It is slightly different to the existing loan page
+     */
+    private void showLoanTo() {
+        ScrollView sv = loadFragmentIntoScrollView(R.layout.fragment_edit_book_loan_to);
+
+        // Auto complete list comes from your Contacts
+        AutoCompleteTextView who = sv.findViewById(R.id.who);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, getFriends());
+        who.setAdapter(adapter);
+
+        Button mConfirmButton = sv.findViewById(R.id.confirm);
+        mConfirmButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                AutoCompleteTextView who = getView().findViewById(R.id.who);
+                String friend = who.getText().toString();
+                saveLoan(friend);
+                showLoaned(friend);
+            }
+        });
+    }
+
+    /**
+     * Display the existing loan page. It is slightly different to the loan to page
+     *
+     * @param user The user the book was loaned to
+     */
+    private void showLoaned(String user) {
+        ScrollView sv = loadFragmentIntoScrollView(R.layout.fragment_edit_book_loaned);
+
+        TextView who = sv.findViewById(R.id.who);
+        who.setText(user);
+
+        Button mConfirmButton = sv.findViewById(R.id.confirm);
+        mConfirmButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                removeLoan();
+                showLoanTo();
+            }
+        });
+    }
+
+    @NonNull
+    private ScrollView loadFragmentIntoScrollView(int resId) {
+        ScrollView sv = getView().findViewById(R.id.root);
+        sv.removeAllViews();
+        getActivity().getLayoutInflater().inflate(resId, sv);
+        return sv;
+    }
+
+    private void saveLoan(@NonNull final String friend) {
+        BookData values = mEditManager.getBookData();
+        values.putString(ColumnInfo.KEY_LOANED_TO, friend);
+        mDb.createLoan(values, true);
+    }
+
+    private void removeLoan() {
+        mDb.deleteLoan(mEditManager.getBookData().getRowId(), true);
+        return;
+    }
+
+    @Override
+    protected void onLoadBookDetails(BookData book, boolean setAllDone) {
+        if (!setAllDone) {
+            mFields.setAll(book);
+        }
+    }
 
     /**
      * Return a list of friends from your contact list.
@@ -99,107 +200,4 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
         }
     }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_edit_book_loan_base, container, false);
-    }
-
-    /**
-     * Called when the activity is first created. This function will check whether a book has been loaned
-     * and display the appropriate page as required.
-     *
-     * @param savedInstanceState The saved bundle (from pausing). Can be null.
-     */
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
-        try {
-            super.onActivityCreated(savedInstanceState);
-            String user = mDb.fetchLoanByBook(mEditManager.getBookData().getRowId());
-            if (user == null) {
-                loanTo();
-            } else {
-                loaned(user);
-            }
-        } finally {
-            Tracker.exitOnCreate(this);
-        }
-    }
-
-    /**
-     * Display the loan to page. It is slightly different to the existing loan page
-     */
-    private void loanTo() {
-        ScrollView sv = getView().findViewById(R.id.root);
-        sv.removeAllViews();
-        LayoutInflater inf = getActivity().getLayoutInflater();
-        inf.inflate(R.layout.fragment_edit_book_loan_to, sv);
-
-        AutoCompleteTextView who = sv.findViewById(R.id.who);
-        try {
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, getFriends());
-            who.setAdapter(adapter);
-        } catch (Exception e) {
-            Logger.logError(e);
-        }
-
-        Button mConfirmButton = sv.findViewById(R.id.confirm);
-        mConfirmButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                String friend = saveLoan();
-                loaned(friend);
-            }
-        });
-    }
-
-    /**
-     * Display the existing loan page. It is slightly different to the loan to page
-     *
-     * @param user The user the book was loaned to
-     */
-    private void loaned(String user) {
-        ScrollView sv = getView().findViewById(R.id.root);
-        sv.removeAllViews();
-        LayoutInflater inf = getActivity().getLayoutInflater();
-        inf.inflate(R.layout.fragment_edit_book_loaned, sv);
-
-        TextView who = sv.findViewById(R.id.who);
-        who.setText(user);
-
-        Button mConfirmButton = sv.findViewById(R.id.confirm);
-        mConfirmButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                removeLoan();
-                loanTo();
-            }
-        });
-    }
-
-    /**
-     * Save the user and book combination as a loan in the database
-     *
-     * @return the user
-     */
-    private String saveLoan() {
-        AutoCompleteTextView who = getView().findViewById(R.id.who);
-        String friend = who.getText().toString();
-        BookData values = mEditManager.getBookData();
-        values.putString(KEY_LOANED_TO, friend);
-        mDb.createLoan(values, true);
-        return friend;
-    }
-
-    /**
-     * Delete the user and book combination as a loan from the database
-     */
-    private void removeLoan() {
-        mDb.deleteLoan(mEditManager.getBookData().getRowId(), true);
-        return;
-    }
-
-    @Override
-    protected void onLoadBookDetails(BookData book, boolean setAllDone) {
-        if (!setAllDone)
-            mFields.setAll(book);
-    }
 }

@@ -24,13 +24,31 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.*;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ABSOLUTE_POSITION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FORMAT;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GENRE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_KIND;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LANGUAGE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LEVEL;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE_LETTER;
 
 /**
  * RowView object for the BooklistCursor.
@@ -118,6 +136,7 @@ public class BooklistRowView {
 			maxSize = 60;
 		}
 
+		//FIXME: can we use {@link ImageUtils} instead ?
 		DisplayMetrics metrics = BookCatalogueApp.getAppContext().getResources().getDisplayMetrics();
 		maxSize = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, maxSize, metrics));		
 		return maxSize;
@@ -237,7 +256,7 @@ public class BooklistRowView {
 	/**
 	 * Check if a given column is present in underlying cursor.
 	 */
-	public boolean hasColumn(String name) {
+	private boolean hasColumn(String name) {
 		return mCursor.getColumnIndex(name) >= 0;
 	}
 

@@ -68,9 +68,8 @@ import java.util.ArrayList;
 public class BookEdit extends BookCatalogueActivity implements BookEditFragmentAbstract.BookEditManager,
         OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
 
-    public static final String BOOK_DATA = "bookData";
-    public static final String FLATTENED_BOOKLIST_POSITION = "FlattenedBooklistPosition";
-    public static final String BKEY_FLATTENED_BOOKLIST = "FlattenedBooklist";
+    private static final String FLATTENED_BOOKLIST_POSITION = "FlattenedBooklistPosition";
+    private static final String BKEY_FLATTENED_BOOKLIST = "FlattenedBooklist";
     /**
      * Tabs in order, see {@link #mTabClasses}
      */
@@ -187,7 +186,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
      */
     public static void editBook(Activity a, long id, int tab) {
         Intent i = new Intent(a, BookEdit.class);
-        i.putExtra(ColumnInfo.KEY_ROWID, id);
+        i.putExtra(ColumnInfo.KEY_ID, id);
         i.putExtra(BookEdit.TAB, tab);
         a.startActivityForResult(i, UniqueId.ACTIVITY_EDIT_BOOK);
         return;
@@ -204,13 +203,13 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
      * @param position  (Optional) position in underlying book list. Only used in
      *                  read-only view.
      */
-    public static void viewBook(Activity a, long id, String listTable, Integer position) {
+    private static void viewBook(Activity a, long id, String listTable, Integer position) {
         Intent i = new Intent(a, BookEdit.class);
         i.putExtra(BKEY_FLATTENED_BOOKLIST, listTable);
         if (position != null) {
             i.putExtra(FLATTENED_BOOKLIST_POSITION, position);
         }
-        i.putExtra(ColumnInfo.KEY_ROWID, id);
+        i.putExtra(ColumnInfo.KEY_ID, id);
         i.putExtra(BookEdit.TAB, BookEdit.TAB_EDIT); // needed extra for creating BookEdit
         i.putExtra(BookEdit.KEY_READ_ONLY, true);
         a.startActivityForResult(i, UniqueId.ACTIVITY_VIEW_BOOK);
@@ -232,9 +231,9 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         Bundle extras = getIntent().getExtras();
 
         // We need the row ID
-        Long rowId = savedInstanceState != null ? savedInstanceState.getLong(ColumnInfo.KEY_ROWID) : null;
+        Long rowId = savedInstanceState != null ? savedInstanceState.getLong(ColumnInfo.KEY_ID) : null;
         if (rowId == null) {
-            rowId = extras != null ? extras.getLong(ColumnInfo.KEY_ROWID) : null;
+            rowId = extras != null ? extras.getLong(ColumnInfo.KEY_ID) : null;
         }
         mRowId = (rowId == null) ? 0 : rowId;
         boolean isExistingBook = (mRowId > 0);
@@ -404,9 +403,9 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
      * blank for new books.
      */
     private void loadBookData(Long rowId, Bundle bestBundle) {
-        if (bestBundle != null && bestBundle.containsKey(BOOK_DATA)) {
+        if (bestBundle != null && bestBundle.containsKey(UniqueId.BKEY_BOOK_DATA)) {
             // If we have saved book data, use it
-            mBookData = new BookData(rowId, bestBundle.getBundle(BOOK_DATA));
+            mBookData = new BookData(rowId, bestBundle.getBundle(UniqueId.BKEY_BOOK_DATA));
         } else {
             // Just load based on rowId
             mBookData = new BookData(rowId);
@@ -462,8 +461,8 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         Tracker.enterOnSaveInstanceState(this);
         super.onSaveInstanceState(outState);
 
-        outState.putLong(ColumnInfo.KEY_ROWID, mRowId);
-        outState.putBundle(BOOK_DATA, mBookData.getRawData());
+        outState.putLong(ColumnInfo.KEY_ID, mRowId);
+        outState.putBundle(UniqueId.BKEY_BOOK_DATA, mBookData.getRawData());
         if (mList != null) {
             outState.putInt(FLATTENED_BOOKLIST_POSITION, (int) mList.getPosition());
         }
@@ -528,7 +527,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
      */
     private void finishAndSendIntent() {
         Intent i = new Intent();
-        i.putExtra(ColumnInfo.KEY_ROWID, mBookData.getRowId());
+        i.putExtra(ColumnInfo.KEY_ID, mBookData.getRowId());
         setResult(Activity.RESULT_OK, i);
         finish();
     }
@@ -774,7 +773,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
             mGenres = new ArrayList<>();
 
             try (Cursor genre_cur = mDb.fetchAllGenres("")) {
-                final int col = genre_cur.getColumnIndexOrThrow(ColumnInfo.KEY_ROWID);
+                final int col = genre_cur.getColumnIndexOrThrow(ColumnInfo.KEY_ID);
                 while (genre_cur.moveToNext()) {
                     mGenres.add(genre_cur.getString(col));
                 }
@@ -795,7 +794,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
             mLanguages = new ArrayList<>();
 
             try (Cursor cur = mDb.fetchAllLanguages("")) {
-                final int col = cur.getColumnIndexOrThrow(ColumnInfo.KEY_ROWID);
+                final int col = cur.getColumnIndexOrThrow(ColumnInfo.KEY_ID);
                 while (cur.moveToNext()) {
                     String s = cur.getString(col);
                     if (s != null && !s.isEmpty()) {
@@ -960,7 +959,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 
         public void success() {
             Intent i = new Intent();
-            i.putExtra(ColumnInfo.KEY_ROWID, mBookData.getRowId());
+            i.putExtra(ColumnInfo.KEY_ID, mBookData.getRowId());
             i.putExtra(ADDED_HAS_INFO, true);
             i.putExtra(ADDED_GENRE, added_genre);
             i.putExtra(ADDED_SERIES, added_series);

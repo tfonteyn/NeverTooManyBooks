@@ -34,7 +34,7 @@
             android:layout_weight="1"
             android:numStars="5" />
 
-        <View style="@style/listDivider" />
+        <View style="@style/listDividerHorizontal" />
 
         <RelativeLayout
             android:id="@+id/row_notes"
@@ -72,7 +72,7 @@
             android:layout_weight="1"
             android:text="@string/signed" />
 
-        <View style="@style/listDivider" />
+        <View style="@style/listDividerHorizontal" />
 
         <RelativeLayout
             android:id="@+id/row_read_start"
@@ -99,7 +99,7 @@
                 android:layout_below="@id/read_start_heading" />
         </RelativeLayout>
 
-        <View style="@style/listDivider" />
+        <View style="@style/listDividerHorizontal" />
 
         <RelativeLayout
             android:id="@+id/row_read_end"
@@ -126,7 +126,7 @@
                 android:layout_below="@id/read_end_heading" />
         </RelativeLayout>
 
-        <View style="@style/listDivider" />
+        <View style="@style/listDividerHorizontal" />
 
         <RelativeLayout
             android:id="@+id/row_location"

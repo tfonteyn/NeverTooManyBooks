@@ -53,7 +53,6 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This is the Administration page. It contains details about the app, links
@@ -445,7 +444,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
      */
     private void importFromCSV() {
         // Find all possible files (CSV in bookCatalogue directory)
-        List<File> files = StorageUtils.findExportFiles();
+        ArrayList<File> files = StorageUtils.findExportFiles();
         // If none, exit with message
         if (files == null || files.size() == 0) {
             Toast.makeText(this, R.string.no_export_files_found, Toast.LENGTH_LONG).show();

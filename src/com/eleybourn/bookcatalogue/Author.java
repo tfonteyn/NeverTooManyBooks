@@ -22,6 +22,8 @@ package com.eleybourn.bookcatalogue;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -80,7 +82,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      * @param family Family name
      * @param given  Given names
      */
-    Author(long id, String family, String given) {
+    Author(long id, @NonNull final String family, @NonNull final String given) {
         this.id = id;
         familyName = family.trim();
         givenNames = given.trim();
@@ -89,7 +91,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
     /**
      * Constructor using a Parcel.
      */
-    private Author(Parcel in) {
+    private Author(@NonNull final Parcel in) {
         familyName = in.readString();
         givenNames = in.readString();
         id = in.readLong();
@@ -100,6 +102,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      *
      * @return formatted name
      */
+    @NonNull
     public String getDisplayName() {
         if (givenNames != null && !givenNames.isEmpty())
             return givenNames + " " + familyName;
@@ -112,6 +115,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      *
      * @return formatted name
      */
+    @NonNull
     public String getSortName() {
         if (givenNames != null && !givenNames.isEmpty())
             return familyName + ", " + givenNames;
@@ -121,16 +125,16 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
 
     // Support for encoding to a text file
     @Override
+    @NonNull
     public String toString() {
         // Always use givenNames even if blanks because we need to KNOW they are blank. There
         // is a slim chance that family name may contain spaces (eg. 'Anonymous Anarchists').
-        return ArrayUtils.encodeListItem(familyName, ',') + ", " + ArrayUtils.encodeListItem(givenNames, ',');
+        return ArrayUtils.encodeListItem(',', familyName) + ", " + ArrayUtils.encodeListItem(',', givenNames);
     }
 
-    //@Override
-    private void fromString(String s) {
-        ArrayList<String> sa = ArrayUtils.decodeList(s, ',');
-        if (sa != null && sa.size() > 0) {
+    private void fromString(@NonNull final String s) {
+        ArrayList<String> sa = ArrayUtils.decodeList(',', s);
+        if (sa.size() > 0) {
             if (sa.size() < 2) {
                 // We have a name with no comma. Parse it the usual way.
                 String[] names = CatalogueDBAdapter.processAuthorName(s);
@@ -148,14 +152,14 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      *
      * @param source Author to copy
      */
-    void copyFrom(Author source) {
+    void copyFrom(@NonNull final Author source) {
         familyName = source.familyName;
         givenNames = source.givenNames;
         id = source.id;
     }
 
     @Override
-    public long fixupId(CatalogueDBAdapter db) {
+    public long fixupId(@NonNull final CatalogueDBAdapter db) {
         this.id = db.lookupAuthorId(this);
         return this.id;
     }

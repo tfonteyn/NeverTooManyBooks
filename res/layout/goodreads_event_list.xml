@@ -22,7 +22,7 @@
             tools:text="events found"/>
 
         <View
-            style="@style/listDivider"
+            style="@style/listDividerHorizontal"
             android:layout_below="@id/events_found" />
     </RelativeLayout>
 

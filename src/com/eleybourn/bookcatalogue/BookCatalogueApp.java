@@ -31,11 +31,12 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.support.annotation.NonNull;
 import android.util.TypedValue;
 
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.BcQueueManager;
+import com.eleybourn.bookcatalogue.utils.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.Terminator;
 
 import org.acra.ACRA;
@@ -137,7 +138,7 @@ public class BookCatalogueApp extends Application {
      * Used to sent notifications regarding tasks
      */
     private static NotificationManager mNotifier;
-    private static BcQueueManager mQueueManager = null;
+    private static BCQueueManager mQueueManager = null;
     /**
      * The locale used at startup; so that we can revert to system locale if we want to
      */
@@ -238,6 +239,7 @@ public class BookCatalogueApp extends Application {
         return l;
     }
 
+    @NonNull
     public static Context getAppContext() {
         return mInstance.getApplicationContext();
     }
@@ -286,7 +288,7 @@ public class BookCatalogueApp extends Application {
      *
      * @return QueueManager object
      */
-    public static BcQueueManager getQueueManager() {
+    public static BCQueueManager getQueueManager() {
         return mQueueManager;
     }
 
@@ -329,14 +331,14 @@ public class BookCatalogueApp extends Application {
 //	/**
 //	 * Points to the bound service, once it is started.
 //	 */
-//	private static BcQueueManager mBoundService = null;
+//	private static BCQueueManager mBoundService = null;
 //
 //	/**
 //	 * Utility routine to get the current QueueManager.
 //	 * 
 //	 * @return	QueueManager object
 //	 */
-//	public static BcQueueManager getQueueManager() {
+//	public static BCQueueManager getQueueManager() {
 //		return mBoundService;
 //	}
 
@@ -420,14 +422,6 @@ public class BookCatalogueApp extends Application {
         mNotifier.notify(id, notification);
     }
 
-    /**
-     * Get the current preferred locale, or null
-     *
-     * @return locale, or null
-     */
-    public static Locale getPreferredLocale() {
-        return mPreferredLocale;
-    }
 //	/**
 //	 * Code based on Google sample code to bind the service.
 //	 */
@@ -438,7 +432,7 @@ public class BookCatalogueApp extends Application {
 //	        // interact with the service.  Because we have bound to a explicit
 //	        // service that we know is running in our own process, we can
 //	        // cast its IBinder to a concrete class and directly access it.
-//	        mBoundService = (BcQueueManager)((QueueManager.QueueManagerBinder)service).getService();
+//	        mBoundService = (BCQueueManager)((QueueManager.QueueManagerBinder)service).getService();
 //
 //	        // Tell the user about this for our demo.
 //	        //Toast.makeText(BookCatalogueApp.this, "Connected", Toast.LENGTH_SHORT).show();
@@ -464,7 +458,7 @@ public class BookCatalogueApp extends Application {
 //	 * supporting component replacement by other applications).
 //	 */
 //	void doBindService() {
-//	    bindService(new Intent(BookCatalogueApp.this, BcQueueManager.class), mConnection, Context.BIND_AUTO_CREATE);
+//	    bindService(new Intent(BookCatalogueApp.this, BCQueueManager.class), mConnection, Context.BIND_AUTO_CREATE);
 //	    mIsBound = true;
 //	}
 //	/**
@@ -558,7 +552,7 @@ public class BookCatalogueApp extends Application {
 
         // Start the queue manager
         if (mQueueManager == null)
-            mQueueManager = new BcQueueManager(this.getApplicationContext());
+            mQueueManager = new BCQueueManager(this.getApplicationContext());
 
         // Initialise the Theme
         mLastTheme = BookCataloguePreferences.getTheme(DEFAULT_THEME);

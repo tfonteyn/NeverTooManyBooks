@@ -25,22 +25,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2">
 
-                <!-- Read -->
-                <ToggleButton
-                    android:id="@+id/read"
-                    android:layout_width="30dp"
-                    android:layout_height="45dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_gravity="top|end"
-                    android:background="@android:color/transparent"
-                    android:button="?android:attr/textCheckMark"
-                    android:padding="0dp"
-                    android:textOff="@string/_empty_"
-                    android:textOn="@string/_empty_"
-                    android:contentDescription="@string/read"/>
-
-                <!-- Title -->
                 <TextView
                     android:id="@+id/title"
                     android:layout_width="match_parent"
@@ -54,7 +38,6 @@
                     android:textStyle="italic"
                     tools:text="Anna Karenina" />
 
-                <!-- Author -->
                 <TextView
                     android:id="@+id/author"
                     android:layout_width="match_parent"
@@ -64,6 +47,17 @@
                     android:paddingBottom="8dp"
                     android:textIsSelectable="true"
                     tools:text="by Lev Tolstoy" />
+
+                <CheckedTextView
+                    android:id="@+id/read"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentTop="true"
+                    android:checkMark="?android:attr/textCheckMark"
+                    android:background="@android:color/transparent"
+                    android:padding="0dp"
+                    tools:checked="true"/>
 
                 <LinearLayout
                     android:id="@+id/rating_wrapper"
@@ -81,7 +75,6 @@
                         android:paddingBottom="8dp" />
                 </LinearLayout>
 
-                <!-- ISBN -->
                 <LinearLayout
                     android:id="@+id/row_isbn"
                     android:layout_width="match_parent"
@@ -106,7 +99,6 @@
                         tools:text="97834579862" />
                 </LinearLayout>
 
-                <!-- Pages & Format -->
                 <LinearLayout
                     android:id="@+id/row_format"
                     android:layout_width="match_parent"
@@ -155,7 +147,19 @@
             </RelativeLayout>
         </LinearLayout>
 
-        <View style="@style/listDivider" />
+        <View style="@style/listDividerHorizontal" />
+
+        <!-- Series -->
+        <TextView
+            android:id="@+id/lbl_series"
+            style="@style/bookDetailLabel"
+            android:text="@string/series" />
+
+        <TextView
+            android:id="@+id/series"
+            style="@style/bookDetailText"
+            android:singleLine="false"
+            tools:text="Series name (1)\nSeries name (2)" />
 
         <!-- Anthology -->
         <LinearLayout
@@ -194,19 +198,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone"
-            tools:visibility="visible" />
-
-        <!-- Series -->
-        <TextView
-            android:id="@+id/lbl_series"
-            style="@style/bookDetailLabel"
-            android:text="@string/series" />
-
-        <TextView
-            android:id="@+id/series"
-            style="@style/bookDetailText"
-            android:singleLine="false"
-            tools:text="Series name (1)\nSeries name (2)" />
+            tools:visibility="visible"
+            tools:ignore="NestedScrolling" />
 
         <!-- Publishing -->
         <TextView
@@ -261,7 +254,7 @@
             style="@style/bookDetailText"
             tools:text="Quenya" />
 
-        <View style="@style/listDivider" />
+        <View style="@style/listDividerHorizontal" />
 
         <TableLayout
             android:layout_width="match_parent"
@@ -295,7 +288,7 @@
             android:text="@string/notes"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <View style="@style/listDivider" />
+        <View style="@style/listDividerHorizontal" />
 
         <!-- Notes -->
         <TextView
@@ -400,7 +393,7 @@
 
         <View
             android:id="@+id/description_divider"
-            style="@style/listDivider" />
+            style="@style/listDividerHorizontal" />
 
         <!-- reminder: autolink/textIsSelectable etc won't work here, as its done in code -->
         <TextView

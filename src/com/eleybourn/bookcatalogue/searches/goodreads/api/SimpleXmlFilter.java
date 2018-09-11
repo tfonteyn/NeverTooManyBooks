@@ -191,6 +191,7 @@ public class SimpleXmlFilter {
 		return this;
 	}
 
+	@SuppressWarnings("UnusedReturnValue")
 	public SimpleXmlFilter done() {
 		mTags.clear();
 		mContexts.clear();

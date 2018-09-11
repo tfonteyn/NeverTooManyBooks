@@ -63,7 +63,7 @@
                 android:inputType="textMultiLine"
                 android:singleLine="false" />
 
-            <View style="@style/listDivider" />
+            <View style="@style/listDividerHorizontal" />
 
             <TextView
                 android:id="@+id/books_found"
@@ -76,7 +76,7 @@
 
     </ScrollView>
 
-    <View style="@style/listDivider" />
+    <View style="@style/listDividerHorizontal" />
 
     <LinearLayout
         android:id="@+id/buttonbar"

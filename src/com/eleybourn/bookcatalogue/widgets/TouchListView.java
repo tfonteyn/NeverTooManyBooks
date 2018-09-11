@@ -201,7 +201,7 @@ public class TouchListView extends ListView {
         return super.onInterceptTouchEvent(ev);
     }
 
-    protected boolean isDraggableRow(View view) {
+    private boolean isDraggableRow(View view) {
         return (view.findViewById(grabberId) != null);
     }
 
@@ -508,6 +508,7 @@ public class TouchListView extends ListView {
         }
     }
 
+    @SuppressWarnings("unused")
     public void setDragListener(DragListener l) {
         mDragListener = l;
     }
@@ -516,6 +517,7 @@ public class TouchListView extends ListView {
         mDropListener = l;
     }
 
+    @SuppressWarnings("unused")
     public void setRemoveListener(RemoveListener l) {
         mRemoveListener = l;
     }

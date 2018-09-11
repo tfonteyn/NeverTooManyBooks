@@ -19,7 +19,7 @@ public class TouchListViewWithDropListener<T> extends TouchListView implements T
         setDropListener(this);
     }
 
-    protected void onListChanged() {
+    private void onListChanged() {
         /* do nothing */
     }
 

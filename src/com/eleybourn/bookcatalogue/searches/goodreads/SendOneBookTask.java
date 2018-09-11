@@ -22,7 +22,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.Context;
 
-import com.eleybourn.bookcatalogue.utils.BcQueueManager;
+import com.eleybourn.bookcatalogue.utils.BCQueueManager;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookEvents.GrNoIsbnEvent;
 import com.eleybourn.bookcatalogue.BookEvents.GrNoMatchEvent;
@@ -157,7 +157,7 @@ public class SendOneBookTask extends GenericTask {
 
 	@Override
 	public long getCategory() {
-		return BcQueueManager.CAT_GOODREADS_EXPORT_ONE;
+		return BCQueueManager.CAT_GOODREADS_EXPORT_ONE;
 	}
 
 }

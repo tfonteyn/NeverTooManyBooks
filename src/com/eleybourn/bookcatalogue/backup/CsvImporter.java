@@ -53,7 +53,7 @@ import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_GIVEN_NAMES;
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ROWID;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ID;
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_ARRAY;
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_DETAILS;
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_NAME;
@@ -72,6 +72,7 @@ public class CsvImporter {
     private final static char ESCAPE_CHAR = '\\';
     private final static char SEPARATOR = ',';
 
+    @SuppressWarnings("UnusedReturnValue")
     public boolean importBooks(InputStream exportStream,
                                Importer.CoverFinder coverFinder,
                                Importer.OnImporterListener listener,
@@ -87,6 +88,7 @@ public class CsvImporter {
         return importBooks(importedString, coverFinder, listener, importFlags);
     }
 
+    @SuppressWarnings("SameReturnValue")
     private boolean importBooks(ArrayList<String> export,
                                 Importer.CoverFinder coverFinder,
                                 Importer.OnImporterListener listener,
@@ -123,7 +125,7 @@ public class CsvImporter {
         // ENHANCE: Do a search if mandatory columns missing (eg. allow 'import' of a list of ISBNs).
         // ENHANCE: Only make some columns mandatory if the ID is not in import, or not in DB (ie. if not an update)
         // ENHANCE: Export/Import should use GUIDs for book IDs, and put GUIDs on Image file names.
-        requireColumnOr(values, KEY_ROWID, DatabaseDefinitions.DOM_BOOK_UUID.name);
+        requireColumnOr(values, KEY_ID, DatabaseDefinitions.DOM_BOOK_UUID.name);
         requireColumnOr(values, KEY_FAMILY_NAME,
                 KEY_AUTHOR_FORMATTED,
                 KEY_AUTHOR_NAME,
@@ -175,7 +177,7 @@ public class CsvImporter {
 
                 boolean hasNumericId;
                 // Validate ID
-                String idStr = values.getString(KEY_ROWID.toLowerCase());
+                String idStr = values.getString(KEY_ID.toLowerCase());
                 Long idLong;
                 if (idStr == null || idStr.isEmpty()) {
                     hasNumericId = false;
@@ -190,7 +192,7 @@ public class CsvImporter {
                     }
                 }
                 if (!hasNumericId) {
-                    values.putString(KEY_ROWID, "0");
+                    values.putString(KEY_ID, "0");
                 }
 
                 // Get the UUID, and remove from collection if null/blank
@@ -227,7 +229,7 @@ public class CsvImporter {
                         doUpdate = true;
                         // Always import empty IDs...even if they are duplicates.
                         Long id = db.createBook(values, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
-                        values.putString(KEY_ROWID, id.toString());
+                        values.putString(KEY_ID, id.toString());
                         // Would be nice to import a cover, but with no ID/UUID that is not possible
                         //mImportCreated++;
                     } else {
@@ -271,7 +273,7 @@ public class CsvImporter {
                             newId = db.createBook(idLong, values, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
                             nCreated++;
                             //mImportCreated++;
-                            values.putString(KEY_ROWID, newId.toString());
+                            values.putString(KEY_ID, newId.toString());
                             idLong = newId;
                         }
 
@@ -280,7 +282,7 @@ public class CsvImporter {
                             coverFinder.copyOrRenameCoverFile(uuidVal, idFromFile, idLong);
                         }
                         // Save the real ID to the collection (will/may be used later)
-                        values.putString(KEY_ROWID, idLong.toString());
+                        values.putString(KEY_ID, idLong.toString());
                     }
 
                     if (doUpdate) {
@@ -375,7 +377,7 @@ public class CsvImporter {
             anthology = 0;
         }
         if (anthology != 0) {
-            int id = Integer.parseInt(values.getString(KEY_ROWID));
+            int id = Integer.parseInt(values.getString(KEY_ID));
             // We have anthology details, delete the current details.
             db.deleteAnthologyTitles(id, false);
             int oldi = 0;
@@ -401,7 +403,7 @@ public class CsvImporter {
     }
 
     private void importBooks_handleLoan(CatalogueDBAdapter db, BookData values) {
-        int id = Integer.parseInt(values.getString(KEY_ROWID));
+        int id = Integer.parseInt(values.getString(KEY_ID));
         db.deleteLoan(id, false);
         db.createLoan(values, false);
     }
@@ -424,7 +426,7 @@ public class CsvImporter {
             }
         }
         // Handle the series
-        ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList(seriesDetails, '|', false);
+        ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList('|', seriesDetails, false);
         Utils.pruneSeriesList(sa);
         Utils.pruneList(db, sa);
         values.putSerializable(KEY_SERIES_ARRAY, sa);
@@ -461,7 +463,7 @@ public class CsvImporter {
         }
 
         // Now build the array for authors
-        ArrayList<Author> aa = ArrayUtils.getAuthorUtils().decodeList(authorDetails, '|', false);
+        ArrayList<Author> aa = ArrayUtils.getAuthorUtils().decodeList('|', authorDetails, false);
         Utils.pruneList(db, aa);
         values.putSerializable(KEY_AUTHOR_ARRAY, aa);
     }
@@ -595,7 +597,7 @@ public class CsvImporter {
                 return;
 
         String s = BookCatalogueApp.getResourceString(R.string.file_must_contain_any_column);
-        throw new ImportException(String.format(s, Convert.join(names, ",")));
+        throw new ImportException(String.format(s, Convert.join(",", names)));
     }
 
     private void requireNonblank(BookData values, int row, String name) {
@@ -612,7 +614,7 @@ public class CsvImporter {
                 return;
 
         String s = BookCatalogueApp.getResourceString(R.string.columns_are_blank);
-        throw new ImportException(String.format(s, Convert.join(names, ","), row));
+        throw new ImportException(String.format(s, Convert.join(",", names), row));
     }
 
 }

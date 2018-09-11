@@ -23,7 +23,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.utils.BcQueueManager;
+import com.eleybourn.bookcatalogue.utils.BCQueueManager;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 
@@ -55,7 +55,7 @@ public class GoodreadsAuthorizationActivity extends BookCatalogueActivity {
 
 		    // Handle the auth response by passing it off to a background task to check.
 		    GoodreadsAuthorizationResultCheck task = new GoodreadsAuthorizationResultCheck();
-		    QueueManager.getQueueManager().enqueueTask(task, BcQueueManager.QUEUE_SMALL_JOBS, 0);
+		    QueueManager.getQueueManager().enqueueTask(task, BCQueueManager.QUEUE_SMALL_JOBS, 0);
 		}
 
 		// Bring the main app task back to the top

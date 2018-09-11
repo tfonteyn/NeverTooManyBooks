@@ -48,7 +48,7 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
  * @author Philip Warner
  */
 public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
-    public static final String TAG = "BooklistStyleProperties";
+    private static final String TAG = "BooklistStyleProperties";
     /**
      * Parameter used to pass data to this activity
      */
@@ -56,7 +56,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
     /**
      * Parameter used to pass data to this activity
      */
-    public static final String BKEY_SAVE_TO_DATABASE = TAG + ".SaveToDb";
+    private static final String BKEY_SAVE_TO_DATABASE = TAG + ".SaveToDb";
 
     /**
      * Database connection, if used
@@ -143,7 +143,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
     /**
      * Start editing the groups.
      */
-    public void startGroupsActivity() {
+    private void startGroupsActivity() {
         Intent i = new Intent(this, BooklistStyleGroupsListActivity.class);
         i.putExtra(BooklistStyleGroupsListActivity.BKEY_STYLE, mStyle);
         i.putExtra(BooklistStyleGroupsListActivity.BKEY_SAVE_TO_DATABASE, false);

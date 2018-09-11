@@ -140,6 +140,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
     /**
      * Set the currently selected list item to the specified position with the adapter's data
      */
+    @SuppressWarnings("unused")
     public void setSelection(int position) {
         mList.setSelection(position);
     }
@@ -163,7 +164,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
     /**
      * Get the activity's list view widget.
      */
-    public ListView getListView() {
+    protected ListView getListView() {
         ensureList();
         return mList;
     }
@@ -171,6 +172,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
     /**
      * Get the ListAdapter associated with this activity's ListView.
      */
+    @SuppressWarnings("unused")
     public ListAdapter getListAdapter() {
         return mAdapter;
     }

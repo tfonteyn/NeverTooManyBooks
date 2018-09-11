@@ -182,7 +182,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      *
      * @return true if handled
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "SameReturnValue"})
     protected boolean onRowLongClick(View target, T object, int position) {
         return true;
     }
@@ -190,7 +190,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      *
      * @return  true if delete is allowed to happen
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "SameReturnValue"})
     protected boolean onRowDelete(View target, T object, int position) {
         return true;
     }
@@ -224,7 +224,8 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      *
      * @return True if activity should exit, false to abort exit.
      */
-    protected boolean onCancel() {
+    @SuppressWarnings("SameReturnValue")
+    private boolean onCancel() {
         return true;
     }
 
@@ -298,7 +299,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
             // Look for title and title_label
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
-                mRowId = extras.getLong(ColumnInfo.KEY_ROWID);
+                mRowId = extras.getLong(ColumnInfo.KEY_ID);
 
                 mBookTitle = extras.getString(ColumnInfo.KEY_TITLE);
                 setTextOrHideView(R.id.title, mBookTitle);
@@ -381,7 +382,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * So wrap it up in this dummy class.
      * probably needs an interface
      */
-    public class EditObjectListAdapter extends SimpleListAdapter<T> {
+    protected class EditObjectListAdapter extends SimpleListAdapter<T> {
         EditObjectListAdapter(Context context, int rowViewId, ArrayList<T> items) {
             super(context, rowViewId, items);
         }

@@ -23,7 +23,6 @@ import android.database.AbstractCursor;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -80,12 +79,6 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
 	/** Pseudo-count obtained from Builder */
 	private Integer mPseudoCount = null;
 	
-
-	/** Utils object; we need an instance for cover retrieval because it uses a DB connection
-	 * that we do not want to make static. This instance is used by BookMultitypeListHandler.
-	 */
-	private Utils mUtils = null;
-
 	/** Number of rows to return in each cursor. No tuning has been done to pick this number. */
 	private final static int CURSOR_SIZE = 20;
 	/** Size of MRU list. Not based on tuning; just set to more than 2*3+1. */

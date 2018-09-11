@@ -350,7 +350,7 @@
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
 
-        <View style="@style/listDivider" />
+        <View style="@style/listDividerHorizontal" />
 
         <TextView
             android:id="@+id/description"

@@ -70,16 +70,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.*;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
- * <pre>
- * //Set zooming by default on clicking on image
- * getView().findViewById(R.id.row_img).setOnClickListener(new OnClickListener() {
- *
- *
- * Override public void onClick(View v) {
- * showZoomedThumb(mEditManager.getBookData().getRowId());
- * }
- * });
- * </pre>
  *
  * @author Philip Warner
  */
@@ -319,6 +309,13 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         }
     }
 
+    /**
+     * TODO
+     *  this sets up menus on the whole ListView....
+     *  We really want it on the "row_info" pieces for each row.
+     *  OR.... this listener must take the cover image (offer replacing etc)
+     *  ...and 'read' check mark (ignore it) into account
+     */
     private void setupContextMenus() {
         getListView().setOnItemLongClickListener(new OnItemLongClickListener() {
             @Override
@@ -326,8 +323,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 mList.moveToPosition(position);
                 ArrayList<SimpleDialogItem> menu = new ArrayList<>();
                 mListHandler.buildContextMenu(mList.getRowView(), menu);
+
                 if (menu.size() > 0) {
-                    StandardDialogs.selectItemDialog(getLayoutInflater(), null, menu, null, new SimpleDialogOnClickListener() {
+                    StandardDialogs.selectItemDialog(getLayoutInflater(), null,
+                            menu, null, new SimpleDialogOnClickListener() {
                         @Override
                         public void onClick(SimpleDialogItem item) {
                             mList.moveToPosition(position);
@@ -395,7 +394,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      * @param position Position of view in listView
      * @param rowId    _id field from cursor
      */
-    @SuppressWarnings("unused")
     private void handleItemClick(AdapterView<?> parent, View view, int position, long rowId) {
         // Move the cursor to the position
         mList.moveToPosition(position);
@@ -1022,8 +1020,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         switch (requestCode) {
             case UniqueId.ACTIVITY_CREATE_BOOK_SCAN:
                 try {
-                    if (intent != null && intent.hasExtra(ColumnInfo.KEY_ROWID)) {
-                        long newId = intent.getLongExtra(ColumnInfo.KEY_ROWID, 0);
+                    if (intent != null && intent.hasExtra(ColumnInfo.KEY_ID)) {
+                        long newId = intent.getLongExtra(ColumnInfo.KEY_ID, 0);
                         if (newId != 0) {
                             mMarkBookId = newId;
                         }
@@ -1041,8 +1039,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             case UniqueId.ACTIVITY_VIEW_BOOK:
             case UniqueId.ACTIVITY_EDIT_BOOK:
                 try {
-                    if (intent != null && intent.hasExtra(ColumnInfo.KEY_ROWID)) {
-                        long id = intent.getLongExtra(ColumnInfo.KEY_ROWID, 0);
+                    if (intent != null && intent.hasExtra(ColumnInfo.KEY_ID)) {
+                        long id = intent.getLongExtra(ColumnInfo.KEY_ID, 0);
                         if (id != 0) {
                             mMarkBookId = id;
                         }

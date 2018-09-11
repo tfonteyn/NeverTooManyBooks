@@ -35,7 +35,6 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
@@ -76,7 +75,7 @@ public class SearchBooksApiHandler extends ApiHandler {
 
 		// Setup API call
 		HttpPost post = new HttpPost(GOODREADS_API_ROOT + "/search/index.xml");
-        List<NameValuePair> parameters = new ArrayList<>();
+		ArrayList<NameValuePair> parameters = new ArrayList<>();
         parameters.add(new BasicNameValuePair("q", query));
         parameters.add(new BasicNameValuePair("key", mManager.getDeveloperKey()));
     

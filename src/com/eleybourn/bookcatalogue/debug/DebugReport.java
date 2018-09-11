@@ -13,9 +13,9 @@ import android.widget.Toast;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.scanner.Pic2ShopScanner;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.scanner.ZxingScanner;
-import com.eleybourn.bookcatalogue.scanner.pic2shop.Scan;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
@@ -128,7 +128,7 @@ public class DebugReport {
         // Scanners installed
         try {
             message.append("Pref. Scanner: ").append(BookCataloguePreferences.getInt(ScannerManager.PREF_PREFERRED_SCANNER, -1)).append("\n");
-            String[] scanners = new String[]{ZxingScanner.ACTION, Scan.ACTION, Scan.Pro.ACTION};
+            String[] scanners = new String[]{ZxingScanner.ACTION, Pic2ShopScanner.ACTION, Pic2ShopScanner.ACTION};
             for (String scanner : scanners) {
                 message.append("Scanner [").append(scanner).append("]:\n");
                 final Intent mainIntent = new Intent(scanner, null);

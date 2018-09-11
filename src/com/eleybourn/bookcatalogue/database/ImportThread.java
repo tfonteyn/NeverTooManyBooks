@@ -189,7 +189,7 @@ public class ImportThread extends ManagedTask {
 //		// ENHANCE: Do a search if mandatory columns missing (eg. allow 'import' of a list of ISBNs).
 //		// ENHANCE: Only make some columns mandatory if the ID is not in import, or not in DB (ie. if not an update)
 //		// ENHANCE: Export/Import should use GUIDs for book IDs, and put GUIDs on Image file names.
-//		requireColumnOr(values, DatabaseDefinitions.KEY_ROWID, DatabaseDefinitions.DOM_BOOK_UUID.name);
+//		requireColumnOr(values, DatabaseDefinitions.KEY_ID, DatabaseDefinitions.DOM_BOOK_UUID.name);
 //		requireColumnOr(values, DatabaseDefinitions.KEY_FAMILY_NAME,
 //								DatabaseDefinitions.KEY_AUTHOR_FORMATTED,
 //								DatabaseDefinitions.KEY_AUTHOR_NAME,
@@ -226,7 +226,7 @@ public class ImportThread extends ManagedTask {
 //
 //				boolean hasNumericId;
 //				// Validate ID
-//				String idStr = values.getString(DatabaseDefinitions.KEY_ROWID.toLowerCase());
+//				String idStr = values.getString(DatabaseDefinitions.KEY_ID.toLowerCase());
 //				Long idLong;
 //				if (idStr == null || idStr == "") {
 //					hasNumericId = false;
@@ -241,7 +241,7 @@ public class ImportThread extends ManagedTask {
 //					}
 //				}
 //				if (!hasNumericId) {
-//					values.putString(DatabaseDefinitions.KEY_ROWID, "0");
+//					values.putString(DatabaseDefinitions.KEY_ID, "0");
 //				}
 //
 //				// Get the UUID, and remove from collection if null/blank
@@ -328,7 +328,7 @@ public class ImportThread extends ManagedTask {
 //					if (!hasUuid && !hasNumericId) {
 //						// Always import empty IDs...even if they are duplicates.
 //						Long id = mDb.createBook(values);
-//						values.putString(DatabaseDefinitions.KEY_ROWID, id.toString());
+//						values.putString(DatabaseDefinitions.KEY_ID, id.toString());
 //						// Would be nice to import a cover, but with no ID/UUID thats not possible
 //						//mImportCreated++;
 //					} else {
@@ -362,7 +362,7 @@ public class ImportThread extends ManagedTask {
 //						} else {
 //							newId = mDb.createBook(idLong, values);
 //							//mImportCreated++;
-//							values.putString(DatabaseDefinitions.KEY_ROWID, newId.toString());
+//							values.putString(DatabaseDefinitions.KEY_ID, newId.toString());
 //							idLong = newId;
 //						}
 //						// When importing a file that has an ID or UUID, try to import a cover.
@@ -385,7 +385,7 @@ public class ImportThread extends ManagedTask {
 //				}
 //
 //				if (values.containsKey(DatabaseDefinitions.KEY_LOANED_TO) && !values.get(DatabaseDefinitions.KEY_LOANED_TO).equals("")) {
-//					int id = Integer.parseInt(values.getString(DatabaseDefinitions.KEY_ROWID));
+//					int id = Integer.parseInt(values.getString(DatabaseDefinitions.KEY_ID));
 //					mDb.deleteLoan(id);
 //					mDb.createLoan(values);
 //				}
@@ -398,7 +398,7 @@ public class ImportThread extends ManagedTask {
 //						anthology = 0;
 //					}
 //					if (anthology == CatalogueDBAdapter.ANTHOLOGY_MULTIPLE_AUTHORS || anthology == CatalogueDBAdapter.ANTHOLOGY_IS_ANTHOLOGY) {
-//						int id = Integer.parseInt(values.getString(DatabaseDefinitions.KEY_ROWID));
+//						int id = Integer.parseInt(values.getString(DatabaseDefinitions.KEY_ID));
 //						// We have anthology details, delete the current details.
 //						mDb.deleteAnthologyTitles(id);
 //						int oldi = 0;

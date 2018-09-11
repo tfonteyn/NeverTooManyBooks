@@ -21,6 +21,8 @@
 package com.eleybourn.bookcatalogue.searches.amazon;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
@@ -253,7 +255,7 @@ public class SearchAmazonHandler extends DefaultHandler {
      * @param key   Key for data to add
      * @param value Value to compare to; if present but equal to this, it will be overwritten
      */
-    private void addIfNotPresentOrEqual(String key, String value) {
+    private void addIfNotPresentOrEqual(@NonNull final String key, @SuppressWarnings("SameParameterValue") String value) {
         if (!mBookData.containsKey(key) || mBookData.getString(key).isEmpty() || mBookData.getString(key).equals(value)) {
             mBookData.putString(key, mBuilder.toString());
         }

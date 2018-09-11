@@ -53,11 +53,11 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
     /**
      * Cursor of book IDs
      */
-    protected BindableItemSQLiteCursor mBindableItems;
+    private BindableItemSQLiteCursor mBindableItems;
     /**
      * Adapter for list
      */
-    BindableItemCursorAdapter mListAdapter;
+    private BindableItemCursorAdapter mListAdapter;
 
     /**
      * Constructor; this will be called by the subclass to set the resource IDs.
@@ -120,13 +120,14 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
         mListAdapter.notifyDataSetChanged();
     }
 
-    public void onListItemClick(AdapterView<?> parent, View v, int position, long id) {
+    protected void onListItemClick(AdapterView<?> parent, View v, int position, long id) {
     }
 
-    public boolean onListItemLongClick(@SuppressWarnings("unused") AdapterView<?> parent,
-                                       @SuppressWarnings("unused") View v,
-                                       @SuppressWarnings("unused") int position,
-                                       @SuppressWarnings("unused") long id) {
+    @SuppressWarnings("SameReturnValue")
+    private boolean onListItemLongClick(@SuppressWarnings("unused") AdapterView<?> parent,
+                                        @SuppressWarnings("unused") View v,
+                                        @SuppressWarnings("unused") int position,
+                                        @SuppressWarnings("unused") long id) {
         return false;
     }
 

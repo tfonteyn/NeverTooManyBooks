@@ -1,27 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="wrap_content"
+    <!-- the "row_info" level is used by {@link BooksMultitypeListHandler} to hide/show rows -->
+    <LinearLayout
+        android:id="@+id/row_info"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="12dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textStyle="bold"
-        tools:text="Author name f.e."/>
+        android:orientation="horizontal"
+        android:paddingBottom="2dp"
+        tools:ignore="UselessParent">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@id/name"
-        android:background="@android:drawable/divider_horizontal_bright"
-        android:paddingBottom="8dp"
-        android:paddingTop="2dp" />
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/padding_border_double"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textStyle="bold"
+            tools:text="Author name f.e." />
 
-</RelativeLayout>
+        <View
+            style="@style/listDividerHorizontal"
+            android:background="@android:drawable/divider_horizontal_bright"
+            android:paddingBottom="@dimen/padding_border" />
+    </LinearLayout>
+
+</LinearLayout>

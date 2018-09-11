@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
+import android.support.annotation.NonNull;
+
 public class AsinUtils {
 	private AsinUtils() {
 	}
@@ -29,9 +31,9 @@ public class AsinUtils {
 	 * Validate an ASIN
 	 * 
 	 * Amazon have apparently designed ASINs without (public) validation methods. All we can do is check length and characters;
-	 * the apparent rule is that it must be an ISBN10 or be a 10 character string containing at least on nonnumeric. 
+	 * the apparent rule is that it must be an ISBN10 or be a 10 character string containing at least on non-numeric.
 	 */
-	public static boolean isValid(String asin) {
+	public static boolean isValid(@NonNull String asin) {
 		try {
 			asin = asin.toUpperCase().trim();
 			if (asin.length() != 10)

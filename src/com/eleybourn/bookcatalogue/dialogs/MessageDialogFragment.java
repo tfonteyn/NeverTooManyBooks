@@ -9,10 +9,10 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 public class MessageDialogFragment extends DialogFragment {
-	private static final String DIALOG_ID = "dialogId";
 	private static final String TITLE_ID = "titleId";
 	private static final String MESSAGE = "message";
 	private static final String BUTTON_POSITIVE_TEXT_ID = "buttonPositiveTextId";
@@ -53,7 +53,7 @@ public class MessageDialogFragment extends DialogFragment {
 	public static MessageDialogFragment newInstance(int dialogId, int titleId, String message, int buttonPositiveTextId, int buttonNegativeTextId, int buttonNeutralTextId) {
 		MessageDialogFragment frag = new MessageDialogFragment();
         Bundle args = new Bundle();
-        args.putInt(DIALOG_ID, dialogId);
+        args.putInt(UniqueId.BKEY_DIALOG_ID, dialogId);
         args.putInt(TITLE_ID, titleId);
         args.putString(MESSAGE, message);
         args.putInt(BUTTON_POSITIVE_TEXT_ID, buttonPositiveTextId);
@@ -81,7 +81,7 @@ public class MessageDialogFragment extends DialogFragment {
     @NonNull
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	mDialogId = getArguments().getInt(DIALOG_ID);
+    	mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
         int title = getArguments().getInt(TITLE_ID);
         String msg = getArguments().getString(MESSAGE);
         int btnPos = getArguments().getInt(BUTTON_POSITIVE_TEXT_ID);

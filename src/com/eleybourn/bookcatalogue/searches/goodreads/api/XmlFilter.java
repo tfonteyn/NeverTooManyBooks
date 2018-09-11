@@ -148,7 +148,7 @@ public class XmlFilter {
 	/**
 	 * Get the tag that this filter will match
 	 */
-	public String getTagName() {
+	private String getTagName() {
 		return mTagName;
 	}
 
@@ -159,6 +159,7 @@ public class XmlFilter {
 	 * 
 	 * @return		This XmlFilter, to allow chaining
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public XmlFilter setEndAction(XmlHandler endAction) {
 		return setEndAction(endAction, null);
 	}
@@ -193,7 +194,7 @@ public class XmlFilter {
 	 * 
 	 * @param filter	filter to add
 	 */
-	public void addFilter(XmlFilter filter) {
+	private void addFilter(XmlFilter filter) {
 		String lcPat = filter.getTagName().toLowerCase();
 		if (mSubFilterHash.containsKey(lcPat))
 			throw new RuntimeException("Filter " + filter.getTagName() + " already exists");

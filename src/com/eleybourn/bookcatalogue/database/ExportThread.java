@@ -137,7 +137,7 @@ public class ExportThread extends ManagedTask {
 //		boolean displayingStartupMessage = true;
 //
 //		StringBuilder export = new StringBuilder(
-//			'"' + DatabaseDefinitions.KEY_ROWID + "\"," + 			//0
+//			'"' + DatabaseDefinitions.KEY_ID + "\"," + 			//0
 //			'"' + DatabaseDefinitions.KEY_AUTHOR_DETAILS + "\"," + 	//2
 //			'"' + DatabaseDefinitions.KEY_TITLE + "\"," + 			//4
 //			'"' + DatabaseDefinitions.KEY_ISBN + "\"," + 			//5
@@ -188,7 +188,7 @@ public class ExportThread extends ManagedTask {
 //				if (books.moveToFirst()) {
 //					do { 
 //						num++;
-//						long id = books.getLong(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_ROWID));
+//						long id = books.getLong(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_ID));
 //						// Just get the string from the database and save it. It should be in standard SQL form already.
 //						String dateString = "";
 //						try {
@@ -243,7 +243,7 @@ public class ExportThread extends ManagedTask {
 //						String bookshelves_id_text = "";
 //						String bookshelves_name_text = "";
 //						while (bookshelves.moveToNext()) {
-//							bookshelves_id_text += bookshelves.getString(bookshelves.getColumnIndex(DatabaseDefinitions.KEY_ROWID)) + BookEditFields.BOOKSHELF_SEPERATOR;
+//							bookshelves_id_text += bookshelves.getString(bookshelves.getColumnIndex(DatabaseDefinitions.KEY_ID)) + BookEditFields.BOOKSHELF_SEPERATOR;
 //							bookshelves_name_text += Utils.encodeListItem(bookshelves.getString(bookshelves.getColumnIndex(DatabaseDefinitions.KEY_BOOKSHELF)),BookEditFields.BOOKSHELF_SEPARATOR) + BookEditFields.BOOKSHELF_SEPARATOR;
 //						}
 //						bookshelves.close();

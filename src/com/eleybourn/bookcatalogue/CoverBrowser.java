@@ -82,7 +82,7 @@ public class CoverBrowser {
     private FileManager mFileManager;
     // The Dialog
     private final Dialog mDialog;
-    private android.util.DisplayMetrics mMetric;
+    private final android.util.DisplayMetrics mMetric;
     /**
      * Indicates a 'shutdown()' has been requested
      */
@@ -92,16 +92,15 @@ public class CoverBrowser {
      * Constructor
      *
      * @param a             Calling context
-     * @param metrics       Display metrics uses in sizing images
      * @param isbn          ISBN of book
      * @param onImageSelectedListener Handler to call when book selected
      */
-    CoverBrowser(Activity a, android.util.DisplayMetrics metrics, String isbn,
-                 OnImageSelectedListener onImageSelectedListener) {
+    CoverBrowser(Activity a, String isbn, OnImageSelectedListener onImageSelectedListener) {
         mActivity = a;
-        mMetric = metrics;
         mIsbn = isbn;
         mOnImageSelectedListener = onImageSelectedListener;
+
+        mMetric = ImageUtils.getDisplayMetrics(a);;
 
         // Calculate some image sizes to display
         int previewSize = Math.max(mMetric.widthPixels, mMetric.heightPixels) / 5;

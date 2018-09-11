@@ -25,13 +25,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
+import com.eleybourn.bookcatalogue.UniqueId;
+
 /**
  * Fragment wrapper for the PartialDatePicker dialog
  * 
  * @author pjw
  */
 public class TextFieldEditorFragment extends DialogFragment {
-	private static final String BKEY_DIALOG_ID = "dialogId";
 	private static final String BKEY_TITLE = "title";
 	private static final String BKEY_TEXT = "text";
 	private int mDialogId;
@@ -60,7 +61,7 @@ public class TextFieldEditorFragment extends DialogFragment {
         Bundle args = new Bundle();
         args.putString(BKEY_TEXT, text);
         args.putInt(BKEY_TITLE, titleId);
-        args.putInt(BKEY_DIALOG_ID, dialogId);
+        args.putInt(UniqueId.BKEY_DIALOG_ID, dialogId);
         frag.setArguments(args);
         return frag;
     }
@@ -83,7 +84,7 @@ public class TextFieldEditorFragment extends DialogFragment {
     @NonNull
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	mDialogId = getArguments().getInt(BKEY_DIALOG_ID);
+    	mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
         int title = getArguments().getInt(BKEY_TITLE);
         String text = getArguments().getString(BKEY_TEXT);
 

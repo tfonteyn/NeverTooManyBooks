@@ -1,40 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 
-    <!-- 	android:minHeight="?android:attr/listPreferredItemHeight"  -->
-
+    <!-- we need the RadioButton although it will be made Visibility.GONE -->
     <RadioButton
         android:id="@+id/selector"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:focusable="false" />
+        android:focusable="false"
+        android:text="" />
 
+    <!-- what the user sees, with a drawable added from code -->
     <TextView
         android:id="@+id/name"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_toStartOf="@id/selector"
         android:gravity="center_vertical"
-        android:paddingBottom="8dip"
-        android:paddingLeft="15dip"
-        android:paddingRight="15dip"
-        android:paddingTop="8dip"
+        android:paddingBottom="@dimen/padding_border"
+        android:paddingLeft="@dimen/padding_border_triple"
+        android:paddingRight="@dimen/padding_border_triple"
+        android:paddingTop="@dimen/padding_border"
         android:singleLine="false"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:text="name" />
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <!--  android:textAppearance="?android:attr/textAppearanceLarge"  -->
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_alignParentBottom="true" />
+    <View style="@style/listDividerHorizontal" android:visibility="invisible" />
 
 </RelativeLayout>

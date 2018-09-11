@@ -59,7 +59,7 @@ import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_RATING;
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_READ;
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_READ_END;
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_READ_START;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ROWID;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ID;
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_DETAILS;
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SIGNED;
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
@@ -104,7 +104,7 @@ public class CsvExporter implements Exporter {
         boolean displayingStartupMessage = true;
 
         StringBuilder export = new StringBuilder(
-                '"' + KEY_ROWID + "\"," +            //0
+                '"' + KEY_ID + "\"," +            //0
                         '"' + KEY_AUTHOR_DETAILS + "\"," +    //2
                         '"' + KEY_TITLE + "\"," +            //4
                         '"' + KEY_ISBN + "\"," +            //5
@@ -160,7 +160,7 @@ public class CsvExporter implements Exporter {
                 if (books.moveToFirst()) {
                     do {
                         num++;
-                        long id = books.getLong(books.getColumnIndexOrThrow(KEY_ROWID));
+                        long id = books.getLong(books.getColumnIndexOrThrow(KEY_ID));
                         // Just get the string from the database and save it. It should be in standard SQL form already.
                         String dateString = "";
                         try {
@@ -218,20 +218,20 @@ public class CsvExporter implements Exporter {
                         try (Cursor bookshelves = db.fetchAllBookshelvesByBook(id)) {
                             while (bookshelves.moveToNext()) {
                                 bookshelves_id_text
-                                        .append(bookshelves.getString(bookshelves.getColumnIndex(KEY_ROWID)))
+                                        .append(bookshelves.getString(bookshelves.getColumnIndex(KEY_ID)))
                                         .append(BookEditFields.BOOKSHELF_SEPARATOR);
                                 bookshelves_name_text
-                                        .append(ArrayUtils.encodeListItem(bookshelves.getString(bookshelves.getColumnIndex(KEY_BOOKSHELF)), BookEditFields.BOOKSHELF_SEPARATOR))
+                                        .append(ArrayUtils.encodeListItem(BookEditFields.BOOKSHELF_SEPARATOR, bookshelves.getString(bookshelves.getColumnIndex(KEY_BOOKSHELF))))
                                         .append(BookEditFields.BOOKSHELF_SEPARATOR);
                             }
                         }
 
-                        String authorDetails = ArrayUtils.getAuthorUtils().encodeList(db.getBookAuthorList(id), '|');
+                        String authorDetails = ArrayUtils.getAuthorUtils().encodeList('|', db.getBookAuthorList(id));
                         // Sanity check: ensure author is non-blank. This HAPPENS. Probably due to constraint failures.
                         if (authorDetails == null || authorDetails.trim().isEmpty())
                             authorDetails = AUTHOR + ", " + UNKNOWN;
 
-                        String seriesDetails = ArrayUtils.getSeriesUtils().encodeList(db.getBookSeriesList(id), '|');
+                        String seriesDetails = ArrayUtils.getSeriesUtils().encodeList('|', db.getBookSeriesList(id));
 
                         row.setLength(0);
                         row.append("\"").append(formatCell(id)).append("\",");

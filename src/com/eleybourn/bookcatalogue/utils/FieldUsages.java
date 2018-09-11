@@ -28,7 +28,8 @@ import java.util.LinkedHashMap;
  * Inherits from LinkedHashMap to guarantee iteration order.
  *
  * FIXME: Android Studio 3.1.4 failed to compile this, had to make {@link FieldUsages} and
- * FIXME:   {@link FieldUsage} standalone classes instead of internal to {@link UpdateFromInternet}
+ *    {@link FieldUsage} standalone classes instead of internal to {@link UpdateFromInternet}
+ *
  * @author Philip Warner
  */
 public class FieldUsages extends LinkedHashMap<String,FieldUsage> {
@@ -36,6 +37,7 @@ public class FieldUsages extends LinkedHashMap<String,FieldUsage> {
 
     public enum Usages { COPY_IF_BLANK, ADD_EXTRA, OVERWRITE }
 
+    @SuppressWarnings("UnusedReturnValue")
     public FieldUsage put(FieldUsage usage) {
         this.put(usage.fieldName, usage);
         return usage;

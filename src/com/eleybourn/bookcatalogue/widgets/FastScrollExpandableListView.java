@@ -41,7 +41,7 @@ import android.widget.ExpandableListView;
 public class FastScrollExpandableListView extends ExpandableListView {
 
 	/** Active scroller, if any */
-	FastScroller mScroller = null;
+	private FastScroller mScroller = null;
 	
 	public FastScrollExpandableListView(Context context ) {
 		super(context);

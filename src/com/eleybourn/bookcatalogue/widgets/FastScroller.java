@@ -84,7 +84,6 @@ import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 
 /**
@@ -168,7 +167,7 @@ public class FastScroller {
         init(context);
     }
 
-    public void setState(int state) {
+    private void setState(int state) {
     	
     	//System.out.println("State: " + state);
         switch (state) {
@@ -192,7 +191,7 @@ public class FastScroller {
         mState = state;
     }
     
-    public int getState() {
+    private int getState() {
         return mState;
     }
     
@@ -234,7 +233,7 @@ public class FastScroller {
         mPaint.setAntiAlias(true);
         mPaint.setTextAlign(Paint.Align.CENTER);
         mPaint.setTextSize(mOverlaySize / 3);
-        TypedArray ta = context.getTheme().obtainStyledAttributes(new int[] { 
+        TypedArray ta = context.getTheme().obtainStyledAttributes(new int[] {
                 android.R.attr.textColorPrimary });
         ColorStateList textColor = ta.getColorStateList(ta.getIndex(0));
         int textColorNormal = textColor.getDefaultColor();
@@ -466,10 +465,6 @@ public class FastScroller {
 				mSectionTextV1 = null;
 			}
 		}
-
-		if (BuildConfig.DEBUG) {
-            System.out.println("Fastscroller scrollTo: mSectionTextV2: " + mSectionTextV2);
-        }
 
         //(mSectionText.length() != 1 || mSectionText.charAt(0) != ' ') && sectionIndex < sections.length;
         mDrawOverlay = (mSectionTextV2 != null) || (mSectionTextV1 != null && mSectionTextV1.length() > 0);

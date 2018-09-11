@@ -20,10 +20,12 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookCataloguePreferences;
@@ -221,6 +223,7 @@ public class GoodreadsManager {
     /**
      * Construct a full or partial date string based on the y/m/d fields.
      */
+    @SuppressLint("DefaultLocale")
     public static String buildDate(Bundle data, String yearField, String monthField, String dayField, String resultField) {
         String date = null;
         if (data.containsKey(yearField)) {
@@ -439,6 +442,8 @@ public class GoodreadsManager {
      *
      * @author Philip Warner
      */
+    @SuppressWarnings("UnusedReturnValue")
+    @Nullable
     public HttpResponse execute(HttpUriRequest request, DefaultHandler requestHandler, boolean requiresSignature) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             IOException, NotAuthorizedException, BookNotFoundException, NetworkException {

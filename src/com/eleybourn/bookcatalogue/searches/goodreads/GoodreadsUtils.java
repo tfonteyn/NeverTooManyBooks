@@ -10,7 +10,7 @@ import android.view.View.OnClickListener;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.utils.BcQueueManager;
+import com.eleybourn.bookcatalogue.utils.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
@@ -84,11 +84,11 @@ public class GoodreadsUtils {
 			@Override
 			public void run(SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
 
-				if (BcQueueManager.getQueueManager().hasActiveTasks(BcQueueManager.CAT_GOODREADS_IMPORT_ALL)) {
+				if (BCQueueManager.getQueueManager().hasActiveTasks(BCQueueManager.CAT_GOODREADS_IMPORT_ALL)) {
 					fragment.showToast(R.string.requested_task_is_already_queued);
 					return;
 				}
-				if (BcQueueManager.getQueueManager().hasActiveTasks(BcQueueManager.CAT_GOODREADS_EXPORT_ALL)) {
+				if (BCQueueManager.getQueueManager().hasActiveTasks(BCQueueManager.CAT_GOODREADS_EXPORT_ALL)) {
 					fragment.showToast(R.string.export_task_is_already_queued);
 					return;
 				}
@@ -108,7 +108,7 @@ public class GoodreadsUtils {
 				}
 
 				if (!fragment.isCancelled()) {
-					QueueManager.getQueueManager().enqueueTask(new ImportAllTask(isSync), BcQueueManager.QUEUE_MAIN, 0);
+					QueueManager.getQueueManager().enqueueTask(new ImportAllTask(isSync), BCQueueManager.QUEUE_MAIN, 0);
 					fragment.showToast(R.string.task_has_been_queued_in_background);					
 				}
 			}
@@ -142,10 +142,10 @@ public class GoodreadsUtils {
 	 * @return	Flag indicating OK
 	 */
 	private static int checkCanSendToGoodreads() {
-		if (BcQueueManager.getQueueManager().hasActiveTasks(BcQueueManager.CAT_GOODREADS_EXPORT_ALL)) {
+		if (BCQueueManager.getQueueManager().hasActiveTasks(BCQueueManager.CAT_GOODREADS_EXPORT_ALL)) {
 			return R.string.requested_task_is_already_queued;
 		}
-		if (BcQueueManager.getQueueManager().hasActiveTasks(BcQueueManager.CAT_GOODREADS_IMPORT_ALL)) {
+		if (BCQueueManager.getQueueManager().hasActiveTasks(BCQueueManager.CAT_GOODREADS_IMPORT_ALL)) {
 			return R.string.import_task_is_already_queued;
 		}
 
@@ -161,7 +161,7 @@ public class GoodreadsUtils {
 			public void run(SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
 				int msg = checkCanSendToGoodreads();
 				if (msg == 0) {
-					QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(updatesOnly), BcQueueManager.QUEUE_MAIN, 0);
+					QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(updatesOnly), BCQueueManager.QUEUE_MAIN, 0);
 					msg = R.string.task_has_been_queued_in_background;
 				}
 				setState(msg);

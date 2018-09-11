@@ -28,7 +28,7 @@ import com.eleybourn.bookcatalogue.database.TrackedCursor;
 
 import java.util.Hashtable;
 
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ROWID;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ID;
 
 /**
  * Cursor implementation for book-related queries. The cursor wraps common
@@ -58,6 +58,7 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
 	 * 
 	 * @return	Flag indicating if current row has been marked as 'selected'.
 	 */
+	@SuppressWarnings("unused")
 	public boolean getIsSelected() {
 		Long id = getId();
 		if (mSelections.containsKey(id)) {
@@ -67,6 +68,7 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public void setIsSelected(boolean selected) {
 		mSelections.put(getId(), selected);
 	}
@@ -77,7 +79,7 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
 	private int mIdCol = -2;
 	public final long getId() {
 		if (mIdCol < 0) {
-			mIdCol = getColumnIndex(KEY_ROWID);
+			mIdCol = getColumnIndex(KEY_ID);
 			if (mIdCol < 0)
 				throw new RuntimeException("ISBN column not in result set");
 		}

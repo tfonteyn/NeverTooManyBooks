@@ -166,7 +166,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         return frag;
     }
 
-    public static SimpleTaskQueueProgressFragment newInstance(int title, boolean isIndeterminate, int taskId) {
+    private static SimpleTaskQueueProgressFragment newInstance(int title, boolean isIndeterminate, int taskId) {
         SimpleTaskQueueProgressFragment frag = new SimpleTaskQueueProgressFragment();
         Bundle args = new Bundle();
         args.putInt("title", title);
@@ -242,7 +242,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     /**
      * Utility routine to display a Toast message or queue it as appropriate.
      */
-    public void showToast(final String message) {
+    private void showToast(final String message) {
         // Can only display in main thread.
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             synchronized (this) {
@@ -277,7 +277,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     /**
      * Enqueue a task for this fragment
      */
-    public void enqueue(FragmentTask task) {
+    private void enqueue(FragmentTask task) {
         mQueue.enqueue(new FragmentTaskWrapper(task));
     }
 

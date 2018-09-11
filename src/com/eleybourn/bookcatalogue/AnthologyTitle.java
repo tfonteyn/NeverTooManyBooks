@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 
 /**
@@ -37,16 +39,18 @@ public class AnthologyTitle implements Serializable {
      * @param author Author of title
      * @param title  Title
      */
-    public AnthologyTitle(Author author, String title) {
+    @SuppressWarnings("WeakerAccess")
+    public AnthologyTitle(Author author, @NonNull final String title) {
         mAuthor = author;
         mTitle = title.trim();
     }
 
+    @NonNull
     public String getTitle() {
         return mTitle;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(@NonNull final String title) {
         mTitle = title;
     }
 

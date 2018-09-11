@@ -121,6 +121,7 @@ public abstract class Property {
         return mHint;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public Property setHint(int hint) {
         mHint = hint;
         return this;
@@ -131,6 +132,7 @@ public abstract class Property {
     }
 
     /** Children must implement set(Property) */
+    @SuppressWarnings("UnusedReturnValue")
     public abstract Property set(Property p);
 
     /** Children must implement getView to return an editor for this object */
@@ -154,7 +156,7 @@ public abstract class Property {
      *
      * @author Philip Warner
      */
-    public interface StringValue {
+    protected interface StringValue {
         String get();
     }
 

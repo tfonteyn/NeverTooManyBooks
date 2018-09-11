@@ -353,7 +353,7 @@ public class DbSync {
 		/**
 		 * Constructor.
 		 * 
-		 * @param helper	{@SQLiteOpenHelper} to open underlying database
+		 * @param helper	SQLiteOpenHelper to open underlying database
 		 * @param sync		Synchronizer to use
 		 */
 		public SynchronizedDb(final SQLiteOpenHelper helper, Synchronizer sync) {
@@ -435,7 +435,8 @@ public class DbSync {
 		/**
 		 * Locking-aware wrapper for underlying database method.
 		 */
-		public Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
+		public Cursor query(String table, String[] columns, String selection, String[] selectionArgs,
+							String groupBy, String having, String orderBy) {
 			SyncLock l = null;
 			if (mTxLock == null)
 				l = mSync.getSharedLock();

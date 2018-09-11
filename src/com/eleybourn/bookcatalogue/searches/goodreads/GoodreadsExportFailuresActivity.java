@@ -241,6 +241,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity
 	/** 
 	 * @return the unique ID associated with this activity. Used in activity results.
 	 */
+	@SuppressWarnings("SameReturnValue")
 	private static int getActivityId() {
 		return UniqueId.ACTIVITY_GOODREADS_EXPORT_FAILURES;
 	}

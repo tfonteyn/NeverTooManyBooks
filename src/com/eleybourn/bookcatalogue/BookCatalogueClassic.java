@@ -58,7 +58,7 @@ import com.eleybourn.bookcatalogue.scanner.Scanner;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
 import com.eleybourn.bookcatalogue.searches.goodreads.SendOneBookTask;
-import com.eleybourn.bookcatalogue.utils.BcQueueManager;
+import com.eleybourn.bookcatalogue.utils.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -73,7 +73,7 @@ import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_FORMATT
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_FORMATTED_GIVEN_FIRST;
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_NAME;
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ROWID;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ID;
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
 
@@ -309,7 +309,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return mCursor;
 		}
 
-		abstract public Cursor newGroupCursor();
+		protected abstract Cursor newGroupCursor();
 		public String[] getFrom() { return mFrom; }
 		public int[] getTo() { return mTo; }
 		/**
@@ -318,13 +318,13 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		 *
 		 * @return	column number
 		 */
-		abstract public int getSectionNameColumn();
+		protected abstract int getSectionNameColumn();
 
 		/**
 		 * Get a cursor to retrieve list of children; must be a database cursor
 		 * and will be converted to a CursorSnapshotCursor
 		 */
-		public abstract SQLiteCursor getChildrenCursor(Cursor groupCursor);
+		protected abstract SQLiteCursor getChildrenCursor(Cursor groupCursor);
 
 		BasicBookListAdapter newAdapter(Context context) {
 			return new BasicBookListAdapter(context);
@@ -612,7 +612,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		TitleViewManager() {
 			mLayout = R.layout.classic_row_authors;
 			mChildLayout = R.layout.classic_row_books;
-			mFrom = new String[]{KEY_ROWID};
+			mFrom = new String[]{KEY_ID};
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
@@ -631,12 +631,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				// Return the search results instead of all books (for the bookshelf)
 				mCursor = mDb.searchBooksChars(search_query, bookshelf);
 			}
-			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ID);
 			return mCursor;
 		}
 		@Override
 		public int getSectionNameColumn() {
-			return mCursor.getColumnIndex(KEY_ROWID);
+			return mCursor.getColumnIndex(KEY_ID);
 		}
 	}
 
@@ -662,7 +662,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				// Return the search results instead of all books (for the bookshelf)
 				mCursor = mDb.searchAuthors(search_query, bookshelf);
 			}
-			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ID);
 			return mCursor;
 		}
 		@Override
@@ -693,7 +693,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				// Return the search results instead of all books (for the bookshelf)
 				mCursor = mDb.searchAuthors(search_query, bookshelf, false, false);
 			}
-			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ID);
 			return mCursor;
 		}
 		@Override
@@ -724,7 +724,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				// Return the search results instead of all books (for the bookshelf)
 				mCursor = mDb.searchAuthors(search_query, bookshelf, true, true);
 			}
-			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ID);
 			return mCursor;
 		}
 		@Override
@@ -754,7 +754,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				mCursor = mDb.searchSeries(search_query, bookshelf);
 			}
 			BookCatalogueClassic.this.startManagingCursor(mCursor);
-			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ID);
 			return mCursor;
 		}
 		@Override
@@ -770,7 +770,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		LoanViewManager() {
 			mLayout = R.layout.classic_row_authors;
 			mChildLayout = R.layout.classic_row_series_books;
-			mFrom = new String[]{KEY_ROWID};
+			mFrom = new String[]{KEY_ID};
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
@@ -779,12 +779,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		@Override
 		public Cursor newGroupCursor() {
 			mCursor = mDb.fetchAllLoans();
-			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ID);
 			return mCursor;
 		}
 		@Override
 		public int getSectionNameColumn() {
-			return mCursor.getColumnIndex(KEY_ROWID);
+			return mCursor.getColumnIndex(KEY_ID);
 		}
 	}
 
@@ -795,7 +795,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		UnreadViewManager() {
 			mLayout = R.layout.classic_row_authors;
 			mChildLayout = R.layout.classic_row_series_books;
-			mFrom = new String[]{KEY_ROWID};
+			mFrom = new String[]{KEY_ID};
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
@@ -804,12 +804,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		@Override
 		public Cursor newGroupCursor() {
 			mCursor = mDb.fetchAllUnreadPsuedo();
-			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ID);
 			return mCursor;
 		}
 		@Override
 		public int getSectionNameColumn() {
-			return mCursor.getColumnIndex(KEY_ROWID);
+			return mCursor.getColumnIndex(KEY_ID);
 		}
 	}
 
@@ -820,7 +820,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		GenreViewManager() {
 			mLayout = R.layout.classic_row_authors;
 			mChildLayout = R.layout.classic_row_books;
-			mFrom = new String[]{KEY_ROWID};
+			mFrom = new String[]{KEY_ID};
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
@@ -839,12 +839,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				// Return the search results instead of all books (for the bookshelf)
 				mCursor = mDb.searchGenres(search_query, bookshelf);
 			}
-			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ID);
 			return mCursor;
 		}
 		@Override
 		public int getSectionNameColumn() {
-			return mCursor.getColumnIndex(KEY_ROWID);
+			return mCursor.getColumnIndex(KEY_ID);
 		}
 	}
 
@@ -855,7 +855,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		PublishedViewManager() {
 			mLayout = R.layout.classic_row_authors;
 			mChildLayout = R.layout.classic_row_books;
-			mFrom = new String[]{KEY_ROWID};
+			mFrom = new String[]{KEY_ID};
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
@@ -874,12 +874,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				// Return the search results instead of all books (for the bookshelf)
 				mCursor = mDb.searchDatePublished(search_query, bookshelf);
 			}
-			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ROWID);
+			mGroupIdColumnIndex = mCursor.getColumnIndex(KEY_ID);
 			return mCursor;
 		}
 		@Override
 		public int getSectionNameColumn() {
-			return mCursor.getColumnIndex(KEY_ROWID);
+			return mCursor.getColumnIndex(KEY_ID);
 		}
 	}
 
@@ -1210,7 +1210,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	/*
 	 * Save Current group to preferences
 	 */
-	public void saveCurrentGroup() {
+	private void saveCurrentGroup() {
 		try {
 			SharedPreferences.Editor ed = mPrefs.edit();
 			ed.putInt(STATE_CURRENT_GROUP_COUNT, currentGroup.size());
@@ -1232,7 +1232,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	/*
 	 * Load Current group from preferences
 	 */
-	public void loadCurrentGroup() {
+	private void loadCurrentGroup() {
 		try {
 			if (currentGroup != null)
 				currentGroup.clear();
@@ -1262,7 +1262,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	/**
 	 * Expand and scroll to the current group
 	 */
-	public void gotoCurrentGroup() {
+	private void gotoCurrentGroup() {
 		try {
 			synchronized(mLoadingGroups) {
 				mLoadingGroups += 1;
@@ -1313,7 +1313,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 * @param adj	Adjustment to make (+1/-1 = open/close)
 	 * @param force	If force is true, then it will be always be added (if adj=1), even if it already exists - but moved to the end
 	 */
-	public void adjustCurrentGroup(int pos, int adj, boolean force, boolean save) {
+	private void adjustCurrentGroup(int pos, int adj, boolean force, boolean save) {
 		int index = currentGroup.indexOf(pos);
 		if (index == -1) {
 			//it does not exist (so is not open), so if adj=1, add to the list
@@ -1470,7 +1470,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			// get a QueueManager and queue the task.
 			QueueManager qm = BookCatalogueApp.getQueueManager();
 			SendOneBookTask task = new SendOneBookTask(info.id);
-			qm.enqueueTask(task, BcQueueManager.QUEUE_MAIN, 0);
+			qm.enqueueTask(task, BCQueueManager.QUEUE_MAIN, 0);
 			return true;
 
 		case EDIT_SERIES_ID:
@@ -1693,7 +1693,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	/**
 	 * When the adapter is changed, we need to rebuild the ListView.
 	 */
-	public void adapterChanged() {
+	private void adapterChanged() {
 		// Reset the fast scroller
 		FastScrollExpandableListView lv = (FastScrollExpandableListView)this.getExpandableListView();
 		lv.setFastScrollEnabled(false);

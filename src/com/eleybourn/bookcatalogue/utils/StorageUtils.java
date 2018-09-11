@@ -135,15 +135,6 @@ public class StorageUtils {
 	}
 
     /**
-     * full path, without trailing File.separator !
-     * @return the path
-     */
-    public static String getSharedStoragePath() {
-        return EXTERNAL_FILE_PATH;
-    }
-
-    /**
-     *
      * @param fileName in the temp image directory
      * @return the file
      */
@@ -159,7 +150,6 @@ public class StorageUtils {
 	}
 
     /**
-     *
      * @param db        file to backup
      * @param suffix    suffix to apply to the directory name
      */

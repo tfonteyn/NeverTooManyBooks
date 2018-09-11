@@ -1,12 +1,9 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,9 +15,9 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnCreateContextMenuListener;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import com.eleybourn.bookcatalogue.CoverBrowser.OnImageSelectedListener;
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.cropper.CropCropImage;
@@ -28,18 +25,33 @@ import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 import com.eleybourn.bookcatalogue.utils.HintManager;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.*;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_FORMAT;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_GENRE;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ISBN;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_LIST_PRICE;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_PAGES;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SIGNED;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
 
 /**
  * Abstract class for creating activities containing book details.
@@ -51,10 +63,6 @@ import static com.eleybourn.bookcatalogue.database.ColumnInfo.*;
 public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstract {
 
     public static final Character BOOKSHELF_SEPARATOR = ',';
-
-    // Target size of a thumbnail in edit dialog and zoom dialog (bbox dim)
-    private static final int MAX_EDIT_THUMBNAIL_SIZE = 256;
-    private static final int MAX_ZOOM_THUMBNAIL_SIZE = 1024;
 
     private static final int CONTEXT_ID_DELETE = 1;
     private static final int CONTEXT_SUBMENU_REPLACE_THUMB = 2;
@@ -118,7 +126,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
             crop_thumb.setIcon(android.R.drawable.ic_menu_crop);
         }
     };
-    protected android.util.DisplayMetrics mMetrics;
+
     /**
      * Minimum of MAX_EDIT_THUMBNAIL_SIZE and 1/3rd of largest screen dimension
      */
@@ -261,8 +269,9 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
         super.onActivityCreated(savedInstanceState);
 
         // See how big the display is and use that to set bitmap sizes
-        setDisplayMetrics();
-        initThumbSizes();
+        Integer[] thumbSizes = ImageUtils.getThumbSizes(getActivity());
+        mThumbEditSize = thumbSizes[0];
+        mThumbZoomSize = thumbSizes[1];
 
         initFields();
 
@@ -271,7 +280,8 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
 
             @Override
             public void onClick(View v) {
-                showZoomedThumb(mEditManager.getBookData().getRowId());
+                long rowId = mEditManager.getBookData().getRowId();
+                ImageUtils.showZoomedThumb(getActivity(), getCoverFile(rowId));
             }
         });
     }
@@ -366,7 +376,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
                     if (isbn == null || isbn.trim().isEmpty()) {
                         Toast.makeText(getActivity(), getResources().getString(R.string.editions_require_isbn), Toast.LENGTH_LONG).show();
                     } else {
-                        mCoverBrowser = new CoverBrowser(getActivity(), mMetrics, isbn, mOnImageSelectedListener);
+                        mCoverBrowser = new CoverBrowser(getActivity(), isbn, mOnImageSelectedListener);
                         mCoverBrowser.showEditionCovers();
                     }
                     return true;
@@ -393,6 +403,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
         }
     }
 
+    @SuppressWarnings("unused")
     private void copyFile(File src, File dst) throws IOException {
         FileInputStream fis = new FileInputStream(src);
         FileOutputStream fos = new FileOutputStream(dst);
@@ -496,7 +507,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
      * Get the File object for the cover of the book we are editing. If the book
      * is new, return the standard temp file.
      */
-    protected File getCoverFile(Long rowId) {
+    private File getCoverFile(Long rowId) {
         if (rowId == null || rowId == 0)
             return ImageUtils.getTempThumbnail();
         else
@@ -617,7 +628,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
     /**
      * Add all book fields with corresponding validators.
      */
-    protected void initFields() {
+    private void initFields() {
         final View root = getView();
 
         /* Title has some post-processing on the text, to move leading 'A', 'The' etc to the end.
@@ -661,26 +672,6 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
         mFields.add(R.id.format_button, "", KEY_FORMAT, null);
         mFields.add(R.id.bookshelf, BOOKSHELF_TEXT, null).doNoFetch = true; // Output-only field
         mFields.add(R.id.signed, KEY_SIGNED, null);
-    }
-
-    /**
-     * Initializes {@link #mThumbEditSize} and {@link #mThumbZoomSize} values according
-     * to screen size and {@link #MAX_EDIT_THUMBNAIL_SIZE}, {@link #MAX_ZOOM_THUMBNAIL_SIZE}
-     * values.<p>
-     * Be sure that you set {@link #mMetrics} before. See {@link #setDisplayMetrics()}
-     * for it.
-     */
-    private void initThumbSizes() {
-        mThumbEditSize = Math.min(MAX_EDIT_THUMBNAIL_SIZE, Math.max(mMetrics.widthPixels, mMetrics.heightPixels) / 3);
-        mThumbZoomSize = Math.min(MAX_ZOOM_THUMBNAIL_SIZE, Math.max(mMetrics.widthPixels, mMetrics.heightPixels));
-    }
-
-    /**
-     * Get display metrics and set {@link #mMetrics} with it.
-     */
-    private void setDisplayMetrics() {
-        mMetrics = new android.util.DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
     }
 
     /**
@@ -735,48 +726,6 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
 //        }
 //        return 0;
 //    }
-
-    /**
-     * Shows zoomed thumbnail in dialog. Closed by click on image area.
-     *
-     * @param rowId database row id for getting correct file
-     */
-    private void showZoomedThumb(Long rowId) {
-        Context c = getActivity();
-
-        // Check if we have a file and/or it is valid
-        File thumbFile = getCoverFile(rowId);
-        if (thumbFile == null || !thumbFile.exists()) {
-            Toast.makeText(c, R.string.cover_not_set, Toast.LENGTH_SHORT).show();
-        } else {
-			BitmapFactory.Options opt = new BitmapFactory.Options();
-			opt.inJustDecodeBounds = true;
-			BitmapFactory.decodeFile(thumbFile.getAbsolutePath(), opt);
-
-            // If no size info, assume file bad and return appropriate icon
-            if (opt.outHeight <= 0 || opt.outWidth <= 0) {
-                Toast.makeText(c, R.string.cover_corrupt, Toast.LENGTH_LONG).show();
-            } else {
-                final Dialog dialog = new BasicDialog(c,false);
-                dialog.setContentView(R.layout.dialog_zoom_thumb);
-
-                ImageView cover = new ImageView(getActivity());
-                ImageUtils.fetchFileIntoImageView(thumbFile, cover, mThumbZoomSize, mThumbZoomSize, true);
-                cover.setAdjustViewBounds(true);
-                cover.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-
-                LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-                dialog.addContentView(cover, lp);
-                dialog.show();
-            }
-        }
-
-    }
 
     /**
      * Gets all bookshelves for the book from database and populate corresponding filed with them.

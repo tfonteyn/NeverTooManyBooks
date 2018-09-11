@@ -25,6 +25,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.Html;
@@ -53,13 +54,14 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * This is the class that manages data and views for an activity; access to the data that
  * each view represents should be handled via this class (and its related classes) where
  * possible.
- * <p>
- * Features is provides are:
+ * 
+ * Features provides are:
  * <ul>
  * <li> handling of visibility via preferences
  * <li> handling of 'group' visibility via the 'group' property of a field.
@@ -72,41 +74,41 @@ import java.util.Iterator;
  * <li> simplified loading of data from a cursor.
  * <li> simplified extraction of data to a ContentValues collection.
  * </ul>
- * <p>
+ * 
  * Formatters and Accessors
- * <p>
+ * 
  * It is up to each accessor to decide what to do with any formatters defined for a field.
  * The fields themselves have extract() and format() methods that will apply the formatter
  * functions (if present) or just pass the value through.
- * <p>
+ * 
  * On a set(), the accessor should call format() function then apply the value
- * <p>
+ * 
  * On a get() the accessor should retrieve the value and apply the extract() function.
- * <p>
+ * 
  * The use of a formatter typically results in all values being converted to strings so
  * they should be avoided for most non-string data.
- * <p>
+ * 
  * Data Flow
- * <p>
+ * 
  * Data flows to and from a view as follows:
  * IN  (with formatter): (Cursor or other source) -> format() (via accessor) -> transform (in accessor) -> View
  * IN  ( no formatter ): (Cursor or other source) -> transform (in accessor) -> View
  * OUT (with formatter): (Cursor or other source) -> transform (in accessor) -> extract (via accessor) -> validator -> (ContentValues or Object)
  * OUT ( no formatter ): (Cursor or other source) -> transform (in accessor) -> validator -> (ContentValues or Object)
- * <p>
+ * 
  * Usage Note:
- * <p>
+ * 
  * 1. Which Views to Add?
- * <p>
+ * 
  * It is not necessary to add every control to the 'Fields' collection, but as a general rule
  * any control that displays data from a database, or related derived data, or labels for such
  * data should be added.
- * <p>
+ * 
  * Typical controls NOT added, are 'Save' and 'Cancel' buttons, or other controls whose
  * interactions are purely functional.
- * <p>
+ * 
  * 2. Handlers?
- * <p>
+ * 
  * The add() method of Fields returns a new Field object which exposes the 'view' member; this
  * can be used to perform view-specific tasks like setting onClick() handlers.
  *
@@ -119,7 +121,7 @@ public class Fields extends ArrayList<Fields.Field> {
 	// Used for date parsing
 	@SuppressLint("SimpleDateFormat")
 	private static final java.text.SimpleDateFormat mDateSqlSdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
-	private static final java.text.DateFormat mDateDispSdf = java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM);
+	private static final java.text.DateFormat mDateDisplaySdf = java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM);
 
 	// Java likes this
 	public static final long serialVersionUID = 1L;
@@ -185,8 +187,7 @@ public class Fields extends ArrayList<Fields.Field> {
 	/**
 	 * Constructor
 	 * 
-	 * @param a 	The parent activity which contains all Views this object
-	 * 				will manage.
+	 * @param a 	The parent activity which contains all Views this object will manage.
 	 */
 	Fields(Activity a) {
 		super();
@@ -209,6 +210,7 @@ public class Fields extends ArrayList<Fields.Field> {
 	 * @param listener	the listener for field changes
 	 * @return			original listener
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public AfterFieldChangeListener setAfterFieldChangeListener(AfterFieldChangeListener listener) {
 		AfterFieldChangeListener old = mAfterFieldChangeListener;
 		mAfterFieldChangeListener = listener;
@@ -231,7 +233,7 @@ public class Fields extends ArrayList<Fields.Field> {
 			d = mDateSqlSdf.parse(s);
 		} catch (Exception e) {
 			try {
-				d = mDateDispSdf.parse(s);				
+				d = mDateDisplaySdf.parse(s);
 			} catch (Exception e1) {
 				java.text.DateFormat df = java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT);
 				d = df.parse(s);
@@ -406,8 +408,6 @@ public class Fields extends ArrayList<Fields.Field> {
 					v.setFocusable(true);
 					v.setTextIsSelectable(true);
 					v.setAutoLinkMask(Linkify.ALL);
-					v.setTextColor(BookCatalogueApp.getAppContext().getResources()
-                            .getColor(android.R.color.primary_text_dark_nodisable));
 				} else {
 					v.setText(field.format(s));
 				}				
@@ -794,7 +794,7 @@ public class Fields extends ArrayList<Fields.Field> {
 		public String format(Field f, String source) {
 			try {
 				java.util.Date d = parseDate(source);
-				return mDateDispSdf.format(d);				
+				return mDateDisplaySdf.format(d);
 			} catch (Exception e) {
 				return source;
 			}
@@ -952,12 +952,7 @@ public class Fields extends ArrayList<Fields.Field> {
 			final View view = c.findViewById(id);
 			if (view != null) {
 				visible = BookCataloguePreferences.getBoolean(FieldVisibilityActivity.TAG + group, true);
-				if (visible) {
-					view.setVisibility(View.VISIBLE);					
-				} else {
-					view.setVisibility(View.GONE);
-				}
-				
+                view.setVisibility(visible ? View.VISIBLE : View.GONE);
 			}
 		}
 		/**
@@ -967,7 +962,7 @@ public class Fields extends ArrayList<Fields.Field> {
 		 */
 		private void addTouchSignalsDirty(View view) {
 			// Touching this is considered a change
-			// We need to introduce a better way to handle this.
+			//TODO We need to introduce a better way to handle this.
 			view.setOnTouchListener(new View.OnTouchListener(){
 			    @Override
 			    public boolean onTouch(View v, MotionEvent event) {
@@ -1151,7 +1146,7 @@ public class Fields extends ArrayList<Fields.Field> {
 	 * 
 	 * @return SharedPreferences for this collection.
 	 */
-	public SharedPreferences getPreferences() {
+	private SharedPreferences getPreferences() {
 		return mPrefs;
 	}
 
@@ -1197,6 +1192,7 @@ public class Fields extends ArrayList<Fields.Field> {
 	 * 
 	 * @return					The resulting Field.
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public Field add(int fieldId, String sourceColumn, String visibilityGroup, FieldValidator fieldValidator) {
 		return add(fieldId, sourceColumn, visibilityGroup, fieldValidator, null);
 	}
@@ -1319,7 +1315,9 @@ public class Fields extends ArrayList<Fields.Field> {
 	 * @param values 			The Bundle to fill in/use.
 	 * @param crossValidating 	Flag indicating if this is a cross validation pass.
 	 */
-	private boolean doValidate(Bundle values, boolean crossValidating) {
+	private boolean validate(@NonNull Bundle values, boolean crossValidating) {
+        Objects.requireNonNull(values);
+
 		Iterator<Field> fi = this.iterator();
 		boolean isOk = true;
 
@@ -1338,7 +1336,7 @@ public class Fields extends ArrayList<Fields.Field> {
 						} catch (Exception ignored) {}
                 }
 			} else {
-				if (!fe.column.isEmpty() && values != null)
+				if (!fe.column.isEmpty())
 					fe.getValue(values);						
 			}
 		}
@@ -1364,19 +1362,18 @@ public class Fields extends ArrayList<Fields.Field> {
 	 * 
 	 * @return boolean True if all validation passed.
 	 */
-	public boolean validate(Bundle values) {
-		if (values == null)
-			throw new NullPointerException();
+	public boolean validate(@NonNull Bundle values) {
+        Objects.requireNonNull(values);
 
 		boolean isOk = true;
 		mValidationExceptions.clear();
 
 		// First, just validate individual fields with the cross-val flag set false
-		if (!doValidate(values, false))
+		if (!validate(values, false))
 			isOk = false;
 		
 		// Now re-run with cross-val set to true.
-		if (!doValidate(values, true))
+		if (!validate(values, true))
 			isOk = false;
 
 		// Finally run the local cross-validation

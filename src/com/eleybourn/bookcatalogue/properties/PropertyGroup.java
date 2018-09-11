@@ -40,30 +40,39 @@ public class PropertyGroup {
     /** Global PropertyGroup definition */
     private static final int GRP_GENERAL_ID = ++GRP_COUNT;
     public static final PropertyGroup GRP_GENERAL = mGroups.addGroup(GRP_GENERAL_ID, R.string.general, 0);
+
     /** Global PropertyGroup definition */
     private static final int GRP_EXTRA_BOOK_DETAILS_ID = ++GRP_COUNT;
     public static final PropertyGroup GRP_EXTRA_BOOK_DETAILS = mGroups.addGroup(GRP_EXTRA_BOOK_DETAILS_ID, R.string.extra_book_details, 100);
+
     /** Global PropertyGroup definition */
     private static final int GRP_AUTHOR_ID = ++GRP_COUNT;
     public static final PropertyGroup GRP_AUTHOR = mGroups.addGroup(GRP_AUTHOR_ID, R.string.author, 50);
+
     /** Global PropertyGroup definition */
     private static final int GRP_SERIES_ID = ++GRP_COUNT;
     public static final PropertyGroup GRP_SERIES = mGroups.addGroup(GRP_SERIES_ID, R.string.series, 50);
+
     /** Global PropertyGroup definition */
     private static final int GRP_EXTRA_FILTERS_ID = ++GRP_COUNT;
     public static final PropertyGroup GRP_EXTRA_FILTERS = mGroups.addGroup(GRP_EXTRA_FILTERS_ID, R.string.extra_filters, 70);
+
     /** Global PropertyGroup definition */
     private static final int GRP_USER_INTERFACE_ID = ++GRP_COUNT;
     public static final PropertyGroup GRP_USER_INTERFACE = mGroups.addGroup(GRP_USER_INTERFACE_ID, R.string.user_interface, 35);
+
     /** Global PropertyGroup definition */
     private static final int GRP_THUMBNAILS_ID = ++GRP_COUNT;
     public static final PropertyGroup GRP_THUMBNAILS = mGroups.addGroup(GRP_THUMBNAILS_ID, R.string.thumbnails, 40);
+
     /** Global PropertyGroup definition */
     private static final int GRP_SCANNER_ID = ++GRP_COUNT;
     public static final PropertyGroup GRP_SCANNER = mGroups.addGroup(GRP_SCANNER_ID, R.string.scanning, 70);
+
     /** Global PropertyGroup definition */
     private static final int GRP_ADVANCED_OPTIONS_ID = ++GRP_COUNT;
     public static final PropertyGroup GRP_ADVANCED_OPTIONS = mGroups.addGroup(GRP_ADVANCED_OPTIONS_ID, R.string.advanced_options, 80);
+
     /** ID of this group */
     private final int id;
     /** String resource ID for group name */
@@ -100,7 +109,7 @@ public class PropertyGroup {
     }
 
     /** Realize and return the group name */
-    public String getName() {
+    private String getName() {
         if (mName == null)
             mName = BookCatalogueApp.getResourceString(nameId);
         return mName;

@@ -27,6 +27,7 @@ import android.database.CursorIndexOutOfBoundsException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 import com.eleybourn.bookcatalogue.*;
@@ -43,8 +44,6 @@ import java.io.File;
  */
 public class BookUtils {
 
-	private static final String BKEY_BOOK_DATA = "bookData";
-
 	private BookUtils() {
 	}
 
@@ -54,7 +53,7 @@ public class BookUtils {
 	 *
 	 * @param rowId The id of the book to copy fields
 	 */
-	public static void duplicateBook(Activity activity, @NonNull CatalogueDBAdapter dba, Long rowId){
+	public static void duplicateBook(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter dba, @Nullable final Long rowId){
         if (rowId == null || rowId == 0) {
             Toast.makeText(activity, R.string.this_option_is_not_available_until_the_book_is_saved, Toast.LENGTH_LONG).show();
         }
@@ -83,7 +82,7 @@ public class BookUtils {
 			book.putSerializable(ColumnInfo.KEY_AUTHOR_ARRAY, dba.getBookAuthorList(rowId));
 			book.putSerializable(ColumnInfo.KEY_SERIES_ARRAY, dba.getBookSeriesList(rowId));
 			
-			i.putExtra(BKEY_BOOK_DATA, book);
+			i.putExtra(UniqueId.BKEY_BOOK_DATA, book);
 
 			activity.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_MANUALLY);
 		} catch (CursorIndexOutOfBoundsException e) {
@@ -96,7 +95,7 @@ public class BookUtils {
 	 * Delete book by its database row _id and close current activity. 
 	 * @param rowId The database id of the book for deleting
 	 */
-	public static void deleteBook(Context context, @NonNull final CatalogueDBAdapter dba, Long rowId, final Runnable runnable){
+	public static void deleteBook(@NonNull final Context context, @NonNull final CatalogueDBAdapter dba, @Nullable final Long rowId, final Runnable runnable){
 		if (rowId == null || rowId == 0) {
 			Toast.makeText(context, R.string.this_option_is_not_available_until_the_book_is_saved, Toast.LENGTH_LONG).show();
 			return;
@@ -121,7 +120,7 @@ public class BookUtils {
      *
 	 * @param rowId The database id of the book for deleting
 	 */
-	public static void shareBook(Context context, final CatalogueDBAdapter db, Long rowId){
+	public static void shareBook(@NonNull final Context context, @NonNull final CatalogueDBAdapter db, @Nullable final Long rowId){
 		if (rowId == null || rowId == 0) {
 			Toast.makeText(context, R.string.this_option_is_not_available_until_the_book_is_saved, Toast.LENGTH_LONG).show();
 			return;
@@ -188,7 +187,8 @@ public class BookUtils {
      *
      * @return    true/false as result from database update
 	 */
-    public static boolean setRead(CatalogueDBAdapter dba, BookData book, boolean read) {
+    @SuppressWarnings("UnusedReturnValue")
+    public static boolean setRead(@NonNull final CatalogueDBAdapter dba, @NonNull final BookData book, boolean read) {
         int prev = book.getInt(ColumnInfo.KEY_READ);
         book.putInt(ColumnInfo.KEY_READ, read ? 1 : 0);
 		if (!dba.updateBook(book.getRowId(), book, 0)) {
@@ -198,7 +198,21 @@ public class BookUtils {
         return true;
 	}
 	
-	public static boolean setRead(CatalogueDBAdapter dba, long bookId, boolean read) {
-        return dba.updateBook(bookId, new BookData((bookId)), 0);
+	@SuppressWarnings("UnusedReturnValue")
+    public static boolean setRead(@NonNull final CatalogueDBAdapter dba, Long bookId, boolean read) {
+        BookData book = new BookData(bookId);
+        book.putBoolean(ColumnInfo.KEY_READ, read);
+        return dba.updateBook(bookId, book, 0);
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public static boolean setRead(long bookId, boolean read) {
+        CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+        db.open();
+        BookData book = new BookData(bookId);
+        book.putBoolean(ColumnInfo.KEY_READ, read);
+        boolean ok = db.updateBook(bookId, book, 0);
+        db.close();
+        return ok;
     }
 }

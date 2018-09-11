@@ -32,24 +32,98 @@ import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteQuery;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.database.*;
+import com.eleybourn.bookcatalogue.database.ColumnInfo;
+import com.eleybourn.bookcatalogue.database.CoversDbHelper;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DatabaseHelper;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
+import com.eleybourn.bookcatalogue.database.SqlStatementManager;
+import com.eleybourn.bookcatalogue.database.TableInfo;
+import com.eleybourn.bookcatalogue.database.TrackedCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.*;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.SerializationUtils;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Set;
 
 import static android.media.MediaFormat.KEY_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.*;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_ANTHOLOGY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_AUTHORS;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOKS;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOK_AUTHOR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOK_BOOKSHELF_WEAK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOK_SERIES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_LOAN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_SERIES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_DATE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_NAME;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_POSITION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_NAME;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DOCID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FAMILY_NAME;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FORMAT;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GENRE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GIVEN_NAMES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ISBN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LANGUAGE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_GOODREADS_SYNC_DATE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LIST_PRICE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOCATION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PAGES;
-import static com.eleybourn.bookcatalogue.database.DatabaseHelper.*;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_RATING;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_END;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_START;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_POSITION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_STYLE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_ANTHOLOGY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_AUTHORS;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS_FTS;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_AUTHOR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_LIST_STYLES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_SERIES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIES;
+import static com.eleybourn.bookcatalogue.database.DatabaseHelper.COLLATION;
 
 /**
  * Book Catalogue database access helper class. Defines the basic CRUD operations
@@ -159,14 +233,14 @@ public class CatalogueDBAdapter {
 			alias + "." + DOM_BOOK_UUID  + " as " + DOM_BOOK_UUID;
 		}
 
-//	private static String SERIES_FIELDS = "s." + KEY_ROWID + " as " + KEY_SERIES_ID
+//	private static String SERIES_FIELDS = "s." + KEY_ID + " as " + KEY_SERIES_ID
 //		+ " CASE WHEN s." + KEY_SERIES_NAME + "='' THEN '' ELSE s." + KEY_SERIES_NAME + " || CASE WHEN s." + KEY_SERIES_NUM + "='' THEN '' ELSE ' #' || s." + KEY_SERIES_NUM + " END END AS " + KEY_SERIES_FORMATTED;
 //
-//	private static String BOOKSHELF_TABLES = DB_TB_BOOKS + " b LEFT OUTER JOIN " + DB_TB_BOOK_BOOKSHELF_WEAK + " w ON (b." + KEY_ROWID + "=w." + KEY_BOOK + ") LEFT OUTER JOIN " + DB_TB_BOOKSHELF + " bs ON (bs." + KEY_ROWID + "=w." + KEY_BOOKSHELF + ") ";
+//	private static String BOOKSHELF_TABLES = DB_TB_BOOKS + " b LEFT OUTER JOIN " + DB_TB_BOOK_BOOKSHELF_WEAK + " w ON (b." + KEY_ID + "=w." + KEY_BOOK + ") LEFT OUTER JOIN " + DB_TB_BOOKSHELF + " bs ON (bs." + KEY_ID + "=w." + KEY_BOOKSHELF + ") ";
 //	private static String SERIES_TABLES = DB_TB_BOOKS 
 //						+ " b LEFT OUTER JOIN " + DB_TB_BOOK_SERIES + " w "
-//						+ " ON (b." + KEY_ROWID + "=w." + KEY_BOOK + ") "
-//						+ " LEFT OUTER JOIN " + DB_TB_SERIES + " s ON (s." + KEY_ROWID + "=w." + KEY_SERIES_ID + ") ";
+//						+ " ON (b." + KEY_ID + "=w." + KEY_BOOK + ") "
+//						+ " LEFT OUTER JOIN " + DB_TB_SERIES + " s ON (s." + KEY_ID + "=w." + KEY_SERIES_ID + ") ";
 
 
 	private TableInfo mBooksInfo = null;
@@ -200,14 +274,16 @@ public class CatalogueDBAdapter {
     /**
      * DEBUG only
      */
-	private static void addInstance(CatalogueDBAdapter db) {
+	@SuppressWarnings("unused")
+    private static void addInstance(CatalogueDBAdapter db) {
 		mInstances.add(new InstanceRef(db));
 	}
 
     /**
      * DEBUG only
      */
-	private static void removeInstance(CatalogueDBAdapter db) {
+	@SuppressWarnings("unused")
+    private static void removeInstance(CatalogueDBAdapter db) {
 		ArrayList< InstanceRef > toDelete = new ArrayList<>();
 		for( InstanceRef ref: mInstances) {
 			CatalogueDBAdapter refDb = ref.get();
@@ -225,7 +301,8 @@ public class CatalogueDBAdapter {
 			mInstances.remove(ref);
 		}
 	}
-	public static void dumpInstances() {
+	@SuppressWarnings("unused")
+    public static void dumpInstances() {
 		for( InstanceRef ref: mInstances) {
 			CatalogueDBAdapter db = ref.get();
 			if (db == null) {
@@ -341,38 +418,39 @@ public class CatalogueDBAdapter {
 	 * @param name a String containing the name e.g. "Isaac Asimov" or "Asimov, Isaac"
 	 * @return a String array containing the family and given names. e.g. ['Asimov', 'Isaac']
 	 */
-	static public String[] processAuthorName(String name) {
-		String[] author = {"", ""};
-		String family = "";
+	static public String[] processAuthorName(@NonNull final String name) {
+		StringBuilder family = new StringBuilder();
 		StringBuilder given = new StringBuilder();
 		String names[];
 		int commaIndex = name.indexOf(",");
 		if (commaIndex > 0) {
-			family = name.substring(0, commaIndex);
+			family.append(name.substring(0, commaIndex));
 			given.append(name.substring(commaIndex+1));
 		} else {
 			names = name.split(" ");
 			int flen = 1;
 			if (names.length > 2) {
 				String sname = names[names.length-2];
-				/* e.g. Ursula Le Guin or Marianne De Pierres */
+				/* e.g. Ursula Le Guin or Marianne De Pierres FIXME: needs internationalisation !*/
 				if (sname.matches("[LlDd]e")) {
-					family = names[names.length-2] + " ";
+					family.append(names[names.length - 2]).append(" ");
 					flen = 2;
 				}
 				sname = names[names.length-1];
-				/* e.g. Foo Bar Jr*/
+				/* e.g. Foo Bar Jr  FIXME: needs internationalisation ? */
 				if (sname.matches("[Jj]r|[Jj]unior|[Ss]r|[Ss]enior")) {
-					family = names[names.length-2] + " ";
+					family.append(names[names.length - 2]).append(" ");
 					flen = 2;
 				}
 			}
-			family += names[names.length-1];
+			family.append(names[names.length-1]);
 			for (int i=0; i<names.length-flen; i++) {
 				given.append(names[i]).append(" ");
 			}
 		}
-		author[0] = family.trim();
+
+		String[] author = {"", ""};
+		author[0] = family.toString().trim();
 		author[1] = given.toString().trim();
 		return author;
 	}
@@ -682,8 +760,8 @@ public class CatalogueDBAdapter {
 			+ ")";
 			// This is done in bookSearchPredicate().
 			//+ " OR Exists(Select NULL From " + DB_TB_BOOK_SERIES + " bs"
-			//+ "            Join " + DB_TB_SERIES + " s On s." + KEY_ROWID + " = bs." + KEY_SERIES_ID
-			//+ "           Where s." + KEY_SERIES_NAME + " Like '%" + searchText + "' and bs." + KEY_BOOK + " = b." + KEY_ROWID + ")"
+			//+ "            Join " + DB_TB_SERIES + " s On s." + KEY_ID + " = bs." + KEY_SERIES_ID
+			//+ "           Where s." + KEY_SERIES_NAME + " Like '%" + searchText + "' and bs." + KEY_BOOK + " = b." + KEY_ID + ")"
 			//+ ")";
 		}
 
@@ -1064,7 +1142,7 @@ public class CatalogueDBAdapter {
 	public Cursor fetchAllLoans() {
 		//cleanup SQL
 		//String cleanup = "DELETE FROM " + DATABASE_TABLE_LOAN + " " +
-		//		" WHERE " + KEY_BOOK + " NOT IN (SELECT " + KEY_ROWID + " FROM " + DATABASE_TABLE_BOOKS + ") ";
+		//		" WHERE " + KEY_BOOK + " NOT IN (SELECT " + KEY_ID + " FROM " + DATABASE_TABLE_BOOKS + ") ";
 		//mSyncedDb.rawQuery(cleanup, new String[]{});
 		
 		//fetch books
@@ -1460,9 +1538,9 @@ public class CatalogueDBAdapter {
 //	 * @throws SQLException if note could not be found/retrieved
 //	 */
 //	public Cursor fetchBookshelf(long rowId) throws SQLException {
-//		String sql = "SELECT bs." + KEY_ROWID + ", bs." + KEY_BOOKSHELF + 
+//		String sql = "SELECT bs." + KEY_ID + ", bs." + KEY_BOOKSHELF +
 //		" FROM " + DB_TB_BOOKSHELF + " bs " +  
-//		" WHERE bs." + KEY_ROWID + "=" + rowId + "";
+//		" WHERE bs." + KEY_ID + "=" + rowId + "";
 //		Cursor mCursor = mSyncedDb.rawQuery(sql, new String[]{});
 //		if (mCursor != null) {
 //			mCursor.moveToFirst();
@@ -1513,9 +1591,12 @@ public class CatalogueDBAdapter {
 	 * @return Who the book is loaned to, can be blank.
 	 */
 	public String fetchLoanByBook(Long mRowId) {
-		String sql;
-		sql = DOM_BOOK + "=" + mRowId + "";
-		try (Cursor results = mSyncedDb.query(DB_TB_LOAN, new String[] {DOM_BOOK.name, ColumnInfo.KEY_LOANED_TO}, sql, null, null, null, null)) {
+		String sql = DOM_BOOK + "=" + mRowId + "";
+
+		try (Cursor results = mSyncedDb.query(DB_TB_LOAN,
+                new String[] {DOM_BOOK.name, ColumnInfo.KEY_LOANED_TO}, sql,
+                null, null, null, null)) {
+
 			return getStringValue(results, 1);
 		}
 	}
@@ -1680,7 +1761,7 @@ public class CatalogueDBAdapter {
 			result.append(makeSearchTerm(k, search_term)).append(" OR ");
 
 		// And check the series too.
-		result.append(" Exists(Select NULL From " + DB_TB_BOOK_SERIES + " bsw " + " Join " + DB_TB_SERIES + " s " + "     On s." + DOM_ID + " = bsw." + ColumnInfo.KEY_SERIES_ID + "         And ")
+		result.append(" Exists(Select NULL From " + DB_TB_BOOK_SERIES + " bsw " + " Join " + DB_TB_SERIES + " s " + "     On s.").append(DOM_ID).append(" = bsw.").append(ColumnInfo.KEY_SERIES_ID).append("         And ")
             .append(makeSearchTerm("s." + DOM_SERIES_NAME, search_term))
             .append(" Where bsw.")
             .append(DOM_BOOK)
@@ -1689,7 +1770,7 @@ public class CatalogueDBAdapter {
             .append(") ");
 
 		//and check the anthologies too.
-		result.append(" OR Exists (SELECT NULL FROM  " + DB_TB_ANTHOLOGY + " bsan, " + DB_TB_AUTHORS + " bsau " + " WHERE bsan." + DOM_AUTHOR_ID + "= bsau." + DOM_ID + " AND bsan." + DOM_BOOK + " = b." + DOM_ID + " AND " + "(")
+		result.append(" OR Exists (SELECT NULL FROM  " + DB_TB_ANTHOLOGY + " bsan, " + DB_TB_AUTHORS + " bsau " + " WHERE bsan.").append(DOM_AUTHOR_ID).append("= bsau.").append(DOM_ID).append(" AND bsan.").append(DOM_BOOK).append(" = b.").append(DOM_ID).append(" AND ").append("(")
             .append(makeSearchTerm("bsan." + DOM_TITLE, search_term))
             .append(" OR ")
             .append(makeSearchTerm("bsau." + DOM_FAMILY_NAME, search_term))
@@ -1967,7 +2048,7 @@ public class CatalogueDBAdapter {
 
 			String bookshelf = values.getBookshelfList();
 			if (bookshelf != null && !bookshelf.trim().isEmpty()) {
-				createBookshelfBooks(rowId, ArrayUtils.decodeList(bookshelf, BookEditFields.BOOKSHELF_SEPARATOR), false);
+				createBookshelfBooks(rowId, ArrayUtils.decodeList(BookEditFields.BOOKSHELF_SEPARATOR, bookshelf), false);
 			}
 
 			createBookAuthors(rowId, authors, false);
@@ -2571,7 +2652,7 @@ public class CatalogueDBAdapter {
 
 			String bookshelf = values.getBookshelfList();
 			if (bookshelf != null && !bookshelf.trim().isEmpty()) {
-				createBookshelfBooks(rowId, ArrayUtils.decodeList(bookshelf, BookEditFields.BOOKSHELF_SEPARATOR), false);
+				createBookshelfBooks(rowId, ArrayUtils.decodeList(BookEditFields.BOOKSHELF_SEPARATOR, bookshelf), false);
 			}
 
 			if (values.containsKey(ColumnInfo.KEY_AUTHOR_ARRAY)) {
@@ -3330,7 +3411,7 @@ public class CatalogueDBAdapter {
 //	 */
 //	public String getGoodreadsSyncDate(long bookId) {
 //		if (mGetGoodreadsSyncDateStmt == null) {
-//			String sql = "Select " + DOM_LAST_GOODREADS_SYNC_DATE + " From " + DB_TB_BOOKS + " Where " + KEY_ROWID + " = ?";
+//			String sql = "Select " + DOM_LAST_GOODREADS_SYNC_DATE + " From " + DB_TB_BOOKS + " Where " + KEY_ID + " = ?";
 //			mGetGoodreadsSyncDateStmt = mStatements.add("mGetGoodreadsSyncDateStmt", sql);			
 //		}
 //		mGetGoodreadsSyncDateStmt.bindLong(1, bookId);
@@ -4335,7 +4416,8 @@ public class CatalogueDBAdapter {
 	 * DEBUG ONLY; used when tracking a bug in android 2.1, but kept because
 	 * there are still non-fatal anomalies.
 	 */
-	public static void printReferenceCount(String msg) {
+	@SuppressWarnings("unused")
+    public static void printReferenceCount(String msg) {
 		if (DEBUG && BuildConfig.DEBUG) {
 			if (mSyncedDb != null) {
                 SynchronizedDb.printRefCount(msg, mSyncedDb.getUnderlyingDatabase());

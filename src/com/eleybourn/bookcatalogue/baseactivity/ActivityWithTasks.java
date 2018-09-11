@@ -59,11 +59,11 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
     /**
      * ID of associated TaskManager
      */
-    protected long mTaskManagerId = 0;
+    private long mTaskManagerId = 0;
     /**
      * ProgressDialog for this activity
      */
-    protected ProgressBase mProgressDialog = null;
+    private ProgressBase mProgressDialog = null;
     /**
      * Associated TaskManager
      */
@@ -228,7 +228,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
     /**
      * Method to allow subclasses easy access to terminating tasks
      */
-    public void onTaskEnded(ManagedTask task) {
+    protected void onTaskEnded(ManagedTask task) {
     }
 
     private void closeProgressDialog() {

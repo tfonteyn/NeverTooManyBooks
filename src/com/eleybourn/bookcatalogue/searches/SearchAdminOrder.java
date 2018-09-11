@@ -13,7 +13,6 @@ import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueListActivity;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Should use {@link com.eleybourn.bookcatalogue.Fields.Field}
@@ -24,7 +23,7 @@ import java.util.List;
  */
 public class SearchAdminOrder extends BookCatalogueListActivity {
 
-    private List<SearchManager.SearchSite> mList;
+    private ArrayList<SearchManager.SearchSite> mList;
 
     @Override
     protected int getLayoutId() {
@@ -43,7 +42,7 @@ public class SearchAdminOrder extends BookCatalogueListActivity {
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<SearchManager.SearchSite> newList = new ArrayList<>(mList);
+                ArrayList<SearchManager.SearchSite> newList = new ArrayList<>(mList);
                 ListView list = getListView();
                 for (int i=0; i < list.getChildCount(); i++) {
                     // get the current position of each site, and store that back into the site object.
@@ -71,7 +70,7 @@ public class SearchAdminOrder extends BookCatalogueListActivity {
 
     private class SearchSiteListAdapter extends SimpleListAdapter<SearchManager.SearchSite> {
 
-        SearchSiteListAdapter(Context context, int rowViewId, List<SearchManager.SearchSite> list) {
+        SearchSiteListAdapter(Context context, int rowViewId, ArrayList<SearchManager.SearchSite> list) {
             super(context, rowViewId, list);
         }
 

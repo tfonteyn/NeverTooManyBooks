@@ -40,7 +40,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 /**
- * Class to manage the display of 'hints' withing the application. Each hint dialog has 
+ * Class to manage the display of 'hints' within the application. Each hint dialog has
  * a 'Do not show again' option, that results in an update to the preferences which 
  * are checked by this code.
  * 
@@ -100,13 +100,13 @@ public class HintManager {
 	}
 	
 	/** Display the passed hint, if the user has not disabled it */
-	public static boolean displayHint(Context context, int stringId, final Runnable postRun, Object... args) {
+	public static void displayHint(Context context, int stringId, final Runnable postRun, Object... args) {
 		// Get the hint and return if it has been disabled.
 		final Hint h = mHints.getHint(stringId);
 		if (!h.shouldBeShown()) {
 			if (postRun != null)
 				postRun.run();
-			return false;			
+			return;
 		}
 
 		// Build the hint dialog
@@ -140,8 +140,6 @@ public class HintManager {
 
 		dialog.show();
 		h.setHasBeenDisplayed(true);
-
-		return true;
 	}
 	
 	/**

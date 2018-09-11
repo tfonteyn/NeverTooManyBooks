@@ -20,9 +20,11 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.annotation.SuppressLint;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -87,7 +89,7 @@ public class DateUtils {
      * @param needEnglish   if set, also add the localized english version
      * @param format        date format to add
      */
-    private static void addParseDateFormat(boolean needEnglish, String format) {
+    private static void addParseDateFormat(boolean needEnglish, @NonNull final String format) {
         mParseDateFormats.add(new SimpleDateFormat(format));
         if (needEnglish)
             mParseDateFormats.add(new SimpleDateFormat(format, Locale.ENGLISH));
@@ -139,15 +141,14 @@ public class DateUtils {
      * @return				Resulting date if parsed, otherwise null
      */
     @Nullable
-    private static Date parseDate(String s, boolean lenient) {
+    private static Date parseDate(@NonNull final String s, boolean lenient) {
         Date d;
         for ( SimpleDateFormat sdf : mParseDateFormats ) {
             try {
                 sdf.setLenient(lenient);
                 d = sdf.parse(s);
                 return d;
-            } catch (Exception e) {
-                // Ignore
+            } catch (ParseException ignore) {
             }
         }
         // All SDFs failed, try locale-specific...
@@ -156,8 +157,7 @@ public class DateUtils {
             df.setLenient(lenient);
             d = df.parse(s);
             return d;
-        } catch (Exception e) {
-            // Ignore
+        } catch (ParseException ignore) {
         }
         return null;
     }
@@ -167,6 +167,7 @@ public class DateUtils {
     /** Formatter for month names given dates */
     private static SimpleDateFormat mMonthNameFormatter = null;
 
+    @NonNull
     public static String getMonthName(int month) {
         if (mMonthNameFormatter == null)
             mMonthNameFormatter = new SimpleDateFormat("MMMM");
@@ -184,7 +185,8 @@ public class DateUtils {
      * @return		Formatted date, eg. '2011-11-01' or '2011-11'
      */
     @SuppressLint("DefaultLocale")
-    public static String buildPartialDate(Integer year, Integer month, Integer day) {
+    @NonNull
+    public static String buildPartialDate(@Nullable final Integer year, @Nullable final Integer month, @Nullable final Integer day) {
         String value;
         if (year == null) {
             value = "";

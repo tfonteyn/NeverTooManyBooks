@@ -80,6 +80,7 @@ public class Datum {
 	/**
 	 *  Accessor. Protected against being set twice.
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public Datum setValidator(DataValidator validator) {
 		if (mValidator != null && validator != mValidator)
 			throw new RuntimeException("Datum '" + mKey + "' already has a validator");
@@ -94,6 +95,7 @@ public class Datum {
 	/**
 	 *  Accessor. Protected against being set twice.
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public Datum setAccessor(DataAccessor accessor) {
 		if (mAccessor != null && accessor != mAccessor)
 			throw new RuntimeException("Datum '" + mKey + "' already has an Accessor");
@@ -146,6 +148,7 @@ public class Datum {
 	 * 
 	 * @return			This Datum, for chaining
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public Datum putBoolean(DataManager data, Bundle bundle, boolean value) {
 		if (mAccessor == null) {
 			bundle.putBoolean(mKey, value);
@@ -180,6 +183,7 @@ public class Datum {
 	 * 
 	 * @return			This Datum, for chaining
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public Datum putInt(DataManager data, Bundle bundle, int value) {
 		if (mAccessor == null) {
 			bundle.putInt(mKey, value);
@@ -215,6 +219,7 @@ public class Datum {
 	 * 
 	 * @return			This Datum, for chaining
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public Datum putLong(DataManager data, Bundle bundle, long value) {
 		if (mAccessor == null) {
 			bundle.putLong(mKey, value);
@@ -249,6 +254,7 @@ public class Datum {
 	 * 
 	 * @return			This Datum, for chaining
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public Datum putDouble(DataManager data, Bundle bundle, double value) {
 		if (mAccessor == null) {
 			bundle.putDouble(mKey, value);
@@ -283,6 +289,7 @@ public class Datum {
 	 * 
 	 * @return			This Datum, for chaining
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public Datum putFloat(DataManager data, Bundle bundle, float value) {
 		if (mAccessor == null) {
 			bundle.putFloat(mKey, value);
@@ -317,6 +324,7 @@ public class Datum {
 	 * 
 	 * @return			This Datum, for chaining
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public Datum putString(DataManager data, Bundle bundle, String value) {
 		if (mAccessor == null) {
 			bundle.putString(mKey, value);
@@ -354,6 +362,7 @@ public class Datum {
 	 * 
 	 * @return		The data manager for chaining
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public Datum putSerializable(Bundle bundle, Serializable value) {
 		if (mAccessor == null) {
 			bundle.putSerializable(mKey, value);			

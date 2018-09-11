@@ -49,12 +49,12 @@ import java.util.ArrayList;
  */
 public class FileChooserFragment extends Fragment implements FileListerListener {
 	private File mRootPath;
-	protected static final String BKEY_ROOT_PATH = "rootPath";
-	protected static final String BKEY_FILE_NAME = "fileName";
-	protected static final String BKEY_LIST = "list";
+	private static final String BKEY_ROOT_PATH = "rootPath";
+	private static final String BKEY_FILE_NAME = "fileName";
+	private static final String BKEY_LIST = "list";
 
 	// Create an empty one in case we are rotated before generated.
-	protected ArrayList<FileDetails> mList = new ArrayList<>();
+	private ArrayList<FileDetails> mList = new ArrayList<>();
 
 	/**
 	 * Interface that the containing Activity must implement. Called when user changes path.
@@ -177,7 +177,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 	 * 
 	 * @author pjw
 	 */
-	public class DirectoryAdapter extends SimpleListAdapter<FileDetails> {
+	protected class DirectoryAdapter extends SimpleListAdapter<FileDetails> {
 
 		DirectoryAdapter(Context context, int rowViewId, ArrayList<FileDetails> items) {
 			super(context, rowViewId, items);

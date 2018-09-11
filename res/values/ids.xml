@@ -53,7 +53,7 @@
 
     <!-- referenced but not used -->
     <item name="booktitle" type="id" />
-
+    <item name="row_info" type="id" />
 
     <item name="UPDATE_FROM_INTERNET_FIELD_CHECKBOX" type="id" />
     <item name="NOTIFICATION" type="id" />

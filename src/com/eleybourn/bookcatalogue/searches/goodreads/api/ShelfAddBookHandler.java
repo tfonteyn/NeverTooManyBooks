@@ -35,7 +35,6 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
@@ -90,7 +89,8 @@ public class ShelfAddBookHandler extends ApiHandler {
 	/**
 	 * Remove the passed book from the passed shelf
 	 */	
-	public long remove(String shelfName, long grBookId) 
+	@SuppressWarnings("UnusedReturnValue")
+	public long remove(String shelfName, long grBookId)
 			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
 			NotAuthorizedException, BookNotFoundException, NetworkException
 	{
@@ -108,7 +108,7 @@ public class ShelfAddBookHandler extends ApiHandler {
 
 		HttpPost post = new HttpPost(GOODREADS_API_ROOT + "/shelf/add_to_shelf.xml");
 
-        List<NameValuePair> parameters = new ArrayList<>();
+		ArrayList<NameValuePair> parameters = new ArrayList<>();
         if (isRemove)
             parameters.add(new BasicNameValuePair("a", "remove"));
         parameters.add(new BasicNameValuePair("book_id", Long.toString(grBookId)));

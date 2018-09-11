@@ -36,4 +36,5 @@ public class UniqueId {
     public static final String BKEY_NOCOVER = "nocover";
     public static final String BKEY_DIALOG_ID = "dialogId";
     public static final String BKEY_FILE_SPEC = "fileSpec";
+    public static final String BKEY_BOOK_DATA = "bookData";
 }

@@ -109,7 +109,7 @@ class ImportAllTask extends GenericTask {
 			// If it's a sync job, then start the 'send' part and save last syn date
 			if (mIsSync) {
 				GoodreadsManager.setLastSyncDate(mStartDate);
-				QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(true), BcQueueManager.QUEUE_MAIN, 0);
+				QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(true), BCQueueManager.QUEUE_MAIN, 0);
 			}
 			return ok;
 		} finally {
@@ -450,7 +450,7 @@ class ImportAllTask extends GenericTask {
         	for(Bundle sb: shelves) {
         		String shelf = translateBookshelf(db, sb.getString(ListReviewsFieldNames.SHELF));
         		if (shelf != null && !shelf.isEmpty()) {
-        			shelf = ArrayUtils.encodeListItem(shelf, BookEditFields.BOOKSHELF_SEPARATOR);
+        			shelf = ArrayUtils.encodeListItem(BookEditFields.BOOKSHELF_SEPARATOR, shelf);
         			if (shelfNames == null)
 		        		shelfNames = new StringBuilder(shelf);
         			else
@@ -541,7 +541,7 @@ class ImportAllTask extends GenericTask {
 
 	@Override
 	public long getCategory() {
-		return BcQueueManager.CAT_GOODREADS_IMPORT_ALL;
+		return BCQueueManager.CAT_GOODREADS_IMPORT_ALL;
 	}
 
 	/**

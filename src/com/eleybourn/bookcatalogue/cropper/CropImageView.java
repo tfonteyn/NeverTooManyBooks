@@ -16,9 +16,10 @@ public class CropImageView extends CropImageViewTouchBase {
 
     final ArrayList<CropHighlightView> mHighlightViews = new ArrayList<>();
     private final Context mContext;
-    CropHighlightView mMotionHighlightView = null;
-    float mLastX, mLastY;
-    int mMotionEdge;
+    private CropHighlightView mMotionHighlightView = null;
+    private float mLastX;
+    private float mLastY;
+    private int mMotionEdge;
 
     public CropImageView(Context context, AttributeSet attrs) {
         super(context, attrs);

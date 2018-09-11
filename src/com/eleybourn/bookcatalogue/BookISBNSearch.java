@@ -704,6 +704,7 @@ public class BookISBNSearch extends ActivityWithTasks {
         }
     }
 
+    @SuppressWarnings("SameReturnValue")
     private boolean onSearchFinished(Bundle bookData, boolean cancelled) {
         Tracker.handleEvent(this, "onSearchFinished" + mSearchManagerId, Tracker.States.Running);
         try {
@@ -760,7 +761,7 @@ public class BookISBNSearch extends ActivityWithTasks {
      */
     private void createBook(Bundle book) {
         Intent i = new Intent(this, BookEdit.class);
-        i.putExtra(BookEditFields.BKEY_BOOK_DATA, book);
+        i.putExtra(UniqueId.BKEY_BOOK_DATA, book);
         startActivityForResult(i, UniqueId.ACTIVITY_EDIT_BOOK);
         //dismissProgress();
     }

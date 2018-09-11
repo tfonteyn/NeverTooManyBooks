@@ -22,6 +22,9 @@ package com.eleybourn.bookcatalogue;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.Serializable;
@@ -52,7 +55,20 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 
     private static final String SERIES_REGEX_SUFFIX =
             BookCatalogueApp.getResourceString(R.string.series_number_prefixes)
-                    + "\\s*([0-9\\.\\-]+|[ivxlcm\\.\\-]+)\\s*$";
+                    /**
+                     * Trim extraneous punctuation and whitespace from the titles and authors
+                     *
+                     * Original code had:
+                     *    "\\s*([0-9\\.\\-]+|[ivxlcm\\.\\-]+)\\s*$";
+                     *
+                     *    Android Studio:
+                     *    Reports character escapes that are replaceable with the unescaped character without a
+                     *    change in meaning. Note that inside the square brackets of a character class, many
+                     *    escapes are unnecessary that would be necessary outside of a character class.
+                     *    For example the regex [\.] is identical to [.]
+                     */
+                    + "\\s*([0-9.\\-]+|[ivxlcm.\\-]+)\\s*$";
+
     private static final String SERIES_REGEX_1 = "^\\s*" + SERIES_REGEX_SUFFIX;
     private static final String SERIES_REGEX_2 = "(.*?)(,|\\s)\\s*" + SERIES_REGEX_SUFFIX;
 
@@ -63,14 +79,14 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
     private static Pattern mSeriesIntegerPat = null;
 
     @SuppressWarnings({"FieldCanBeLocal"})
-    private final Pattern mPattern = Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
+    private final Pattern PATTERN = Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
 
     public long id;
     public String name;
     public String number;
 
-    public Series(String name) {
-        java.util.regex.Matcher m = mPattern.matcher(name);
+    public Series(@NonNull final String name) {
+        java.util.regex.Matcher m = PATTERN.matcher(name);
         if (m.find()) {
             this.name = m.group(1).trim();
             this.number = cleanupSeriesPosition(m.group(2));
@@ -81,21 +97,17 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
         this.id = 0L;
     }
 
-    Series(long id, String name) {
-        this(id, name, "");
-    }
-
-    public Series(String name, String number) {
+    public Series(@NonNull final String name, @Nullable String number) {
         this(0L, name, number);
     }
 
-    Series(long id, String name, String number) {
+    Series(long id, @NonNull final String name, @Nullable String number) {
         this.id = id;
         this.name = name.trim();
         this.number = cleanupSeriesPosition(number);
     }
 
-    private Series(Parcel in) {
+    private Series(@NonNull final Parcel in) {
         name = in.readString();
         number = in.readString();
         id = in.readLong();
@@ -106,7 +118,8 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
      *
      * @param title Book title to parse
      */
-    public static SeriesDetails findSeries(String title) {
+    @Nullable
+    public static SeriesDetails findSeries(@Nullable final String title) {
         if (title == null || title.isEmpty()) {
             return null;
         }
@@ -136,7 +149,8 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
      *
      * @param position Position name to cleanup
      */
-    private static String cleanupSeriesPosition(String position) {
+    @NonNull
+    private static String cleanupSeriesPosition(@Nullable String position) {
         if (position == null)
             return "";
         position = position.trim();
@@ -165,6 +179,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
         }
     }
 
+    @NonNull
     public String getDisplayName() {
         if (number != null && !number.isEmpty())
             return name + " (" + number + ")";
@@ -172,10 +187,12 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
             return name;
     }
 
+    @NonNull
     public String getSortName() {
         return getDisplayName();
     }
 
+    @NonNull
     public String toString() {
         return getDisplayName();
     }
@@ -185,14 +202,14 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
      *
      * @param source Author to copy
      */
-    void copyFrom(Series source) {
+    void copyFrom(@NonNull final Series source) {
         name = source.name;
         number = source.number;
         id = source.id;
     }
 
     @Override
-    public long fixupId(CatalogueDBAdapter db) {
+    public long fixupId(@NonNull final CatalogueDBAdapter db) {
         this.id = db.lookupSeriesId(this);
         return this.id;
     }

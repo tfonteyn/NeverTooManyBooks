@@ -48,7 +48,6 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.List;
 
 /**
  * Class to co-ordinate multiple SearchThread objects using an existing TaskManager.
@@ -75,8 +74,8 @@ public class SearchManager implements TaskManagerListener {
 	public static final int SEARCH_ALL = SEARCH_GOOGLE | SEARCH_AMAZON | SEARCH_LIBRARY_THING | SEARCH_GOODREADS;
 
     public static class SearchSite {
-		int id;
-		String name;
+		final int id;
+		final String name;
 		boolean enabled;
         int order;
         int reliability;
@@ -101,10 +100,10 @@ public class SearchManager implements TaskManagerListener {
 //        }
     }
 
-	private static final List<SearchSite> mSearchOrderDefaults;
-    private static List<SearchSite> mSearchOrder;
+	private static final ArrayList<SearchSite> mSearchOrderDefaults;
+    private static ArrayList<SearchSite> mSearchOrder;
     // TODO: not user configurable for now, but plumbing installed
-    private static List<SearchSite> mReliabilityOrder;
+    private static final ArrayList<SearchSite> mReliabilityOrder;
 
     static {
         /*
@@ -151,18 +150,14 @@ public class SearchManager implements TaskManagerListener {
 //        }
     }
 
-	public static List<SearchSite> getSiteSearchOrder() {
+	public static ArrayList<SearchSite> getSiteSearchOrder() {
         return mSearchOrder;
 	}
 
-    public static void setSearchOrder(final List<SearchSite> newList) {
+    public static void setSearchOrder(final ArrayList<SearchSite> newList) {
         mSearchOrder = newList;
         saveSearchSites();
     }
-
-	public static List<SearchSite> getSiteReliabilityOrder() {
-		return mReliabilityOrder;
-	}
 
 	/** bundle key for thumbnail searches */
 	public static final String BKEY_THUMBNAIL_SEARCHES = "__thumbnail";
@@ -535,7 +530,7 @@ public class SearchManager implements TaskManagerListener {
 		}
 
 		if (authors != null && !authors.isEmpty()) {
-			ArrayList<Author> aa = ArrayUtils.getAuthorUtils().decodeList(authors, '|', false);
+			ArrayList<Author> aa = ArrayUtils.getAuthorUtils().decodeList('|', authors, false);
 			mBookData.putSerializable(ColumnInfo.KEY_AUTHOR_ARRAY, aa);
 		}
 
@@ -573,7 +568,7 @@ public class SearchManager implements TaskManagerListener {
 
 		if (series != null && !series.isEmpty()) {
 			try {
-				ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList(series, '|', false);
+				ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList('|', series, false);
 				mBookData.putSerializable(ColumnInfo.KEY_SERIES_ARRAY, sa);
 			} catch (Exception e) {
 				Logger.logError(e);

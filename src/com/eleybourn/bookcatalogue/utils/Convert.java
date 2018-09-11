@@ -20,6 +20,8 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
@@ -31,17 +33,20 @@ public class Convert {
     /**
      * Format the passed bundle in a way that is convenient for display
      *
-     * @param b		Bundle to format
+     * @param b Bundle to format
      *
-     * @return		Formatted string
+     * @return Formatted string
      */
-    public static String toString(Bundle b) {
+    @NonNull
+    public static String toString(@NonNull final Bundle b) {
         StringBuilder sb = new StringBuilder();
-        for(String k: b.keySet()) {
-            sb.append(k);
-            sb.append("->");
+        for (String k : b.keySet()) {
+            sb.append(k).append("->");
             try {
-                sb.append(b.get(k).toString());
+                Object o = b.get(k);
+                if (o != null) {
+                    sb.append(o.toString());
+                }
             } catch (Exception e) {
                 sb.append("<<Unknown>>");
             }
@@ -53,12 +58,15 @@ public class Convert {
     /**
      * Join the passed array of strings, with 'delim' between them.
      *
-     * @param sa		Array of strings to join
-     * @param delim		Delimiter to place between entries
+     * API 26 needed for {@link String#join(CharSequence, Iterable)} }
      *
-     * @return			The joined strings
+     * @param delim Delimiter to place between entries
+     * @param sa    Array of strings to join
+     *
+     * @return The joined strings
      */
-    public static String join(String[] sa, String delim) {
+    @NonNull
+    public static String join(@NonNull final String delim, @NonNull final String[] sa) {
         // Simple case, return empty string
         if (sa.length <= 0)
             return "";
@@ -68,7 +76,7 @@ public class Convert {
 
         if (sa.length > 1) {
             // If more than one, loop appending delim then string.
-            for(int i = 1; i < sa.length; i++) {
+            for (int i = 1; i < sa.length; i++) {
                 buf.append(delim);
                 buf.append(sa[i]);
             }
@@ -78,34 +86,37 @@ public class Convert {
     }
 
     /**
-     * Get a value from a bundle and convert to a long.
+     * Get a value from a bundle and convert to a String.
      *
-     * @param b		Bundle
-     * @param key	Key in bundle
+     * @param b   Bundle
+     * @param key Key in bundle
      *
-     * @return		Result
+     * @return Result
      */
-    public static String getAsString(Bundle b, String key) {
+    @Nullable
+    public static String getAsString(@NonNull final Bundle b, @Nullable final String key) {
         Object o = b.get(key);
-        return o.toString();
+        if (o != null)
+            return o.toString();
+        return null;
     }
 
     /**
      * Get a value from a bundle and convert to a long.
      *
-     * @param b		Bundle
-     * @param key	Key in bundle
+     * @param b   Bundle
+     * @param key Key in bundle
      *
-     * @return		Result
+     * @return Result
      */
-    public static long getAsLong(Bundle b, String key) {
+    public static long getAsLong(@NonNull final Bundle b, @Nullable final String key) {
         Object o = b.get(key);
         if (o instanceof Long) {
             return (Long) o;
         } else if (o instanceof String) {
-            return Long.parseLong((String)o);
+            return Long.parseLong((String) o);
         } else if (o instanceof Integer) {
-            return ((Integer)o).longValue();
+            return ((Integer) o).longValue();
         } else {
             throw new RuntimeException("Not a long value");
         }
@@ -114,6 +125,7 @@ public class Convert {
     /**
      * Format a number of bytes in a human readable form
      */
+    @NonNull
     public static String formatFileSize(float space) {
         String sizeFmt;
         if (space < 3072) { // Show 'bytes' if < 3k
@@ -125,18 +137,18 @@ public class Convert {
             sizeFmt = BookCatalogueApp.getResourceString(R.string.megabytes);
             space = space / (1024 * 1024);
         }
-        return String.format(sizeFmt,space);
+        return String.format(sizeFmt, space);
     }
 
     /**
      * Utility function to convert string to boolean
      *
-     * @param s		        String to convert
-     * @param emptyIsFalse  if true, empty string is handled as false
+     * @param s            String to convert
+     * @param emptyIsFalse if true, empty string is handled as false
      *
-     * @return		Boolean value
+     * @return Boolean value
      */
-    public static boolean toBoolean(String s, boolean emptyIsFalse) {
+    public static boolean toBoolean(@Nullable final String s, boolean emptyIsFalse) {
         if (s == null || s.isEmpty())
             if (emptyIsFalse) {
                 return false;
@@ -167,18 +179,18 @@ public class Convert {
         }
     }
 
-    public static boolean toBoolean(Object o) {
+    public static boolean toBoolean(@NonNull final Object o) {
         if (o instanceof Boolean) {
-            return (Boolean)o;
-        }
-        if (o instanceof Integer || o instanceof Long) {
-            return (Long)o != 0;
+            return (Boolean) o;
         }
         try {
-            return (Boolean)o;
+            if (o instanceof Integer || o instanceof Long) {
+                return (Long) o != 0;
+            }
+
+            return (Boolean) o;
         } catch (ClassCastException e) {
             return toBoolean(o.toString(), true);
         }
     }
-
 }

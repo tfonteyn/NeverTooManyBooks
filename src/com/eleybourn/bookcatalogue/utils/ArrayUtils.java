@@ -21,15 +21,15 @@ package com.eleybourn.bookcatalogue.utils;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.Series;
+import com.eleybourn.bookcatalogue.database.ColumnInfo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_ARRAY;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_ARRAY;
 
 public class ArrayUtils<T> {
 
@@ -47,12 +47,13 @@ public class ArrayUtils<T> {
     /**
      * Decode a text list separated by '|' and encoded by encodeListItem.
      *
-     * @param s     String representing the list
      * @param delim delimiter used in string s
+     * @param s     String representing the list
      *
      * @return Array of strings resulting from list
      */
-    public static ArrayList<String> decodeList(String s, char delim) {
+    @NonNull
+    public static ArrayList<String> decodeList(char delim, @NonNull final String s) {
         StringBuilder ns = new StringBuilder();
         ArrayList<String> list = new ArrayList<>();
         boolean inEsc = false;
@@ -102,15 +103,16 @@ public class ArrayUtils<T> {
     /**
      * Convert a string by 'escaping' all instances of: '|', '\', \r, \n. The
      * escape char is '\'.
-     * <p>
+     *
      * This is used to build text lists separated by the passed delimiter.
      *
-     * @param s     String to convert
      * @param delim The list delimiter to encode (if found).
+     * @param s     String to convert
      *
      * @return Converted string
      */
-    public static String encodeListItem(String s, char delim) {
+    @NonNull
+    public static String encodeListItem(char delim, @NonNull final String s) {
         StringBuilder ns = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
@@ -140,13 +142,14 @@ public class ArrayUtils<T> {
      *
      * @return Resulting string
      */
-    public static <T> String toString(ArrayList<T> a) {
+    @NonNull
+    public static <T> String toString(@NonNull final ArrayList<T> a) {
         StringBuilder details = new StringBuilder();
 
         for (T i : a) {
             if (details.length() > 0)
                 details.append("|");
-            details.append(encodeListItem(i.toString(), '|'));
+            details.append(encodeListItem('|', i.toString()));
         }
         return details.toString();
     }
@@ -157,8 +160,8 @@ public class ArrayUtils<T> {
      *
      * @param key Key for data to add
      */
-    public static void appendOrAdd(Bundle values, String key, String value) {
-        String s = encodeListItem(value, '|');
+    public static void appendOrAdd(@NonNull final Bundle values, @Nullable final String key, @Nullable final String value) {
+        String s = encodeListItem('|', value);
         if (!values.containsKey(key) || values.getString(key).isEmpty()) {
             values.putString(key, s);
         } else {
@@ -167,11 +170,13 @@ public class ArrayUtils<T> {
         }
     }
 
-    static public ArrayUtils<Author> getAuthorUtils() {
+    @NonNull
+    public static ArrayUtils<Author> getAuthorUtils() {
         if (mAuthorUtils == null) {
             mAuthorUtils = new ArrayUtils<>(new Factory<Author>() {
                 @Override
-                public Author get(String source) {
+                @NonNull
+                public Author get(@NonNull final String source) {
                     return new Author(source);
                 }
             });
@@ -179,17 +184,20 @@ public class ArrayUtils<T> {
         return mAuthorUtils;
     }
 
-    static public ArrayUtils<Series> getSeriesUtils() {
+    @NonNull
+    public static ArrayUtils<Series> getSeriesUtils() {
         if (mSeriesUtils == null) {
             mSeriesUtils = new ArrayUtils<>(new Factory<Series>() {
                 @Override
-                public Series get(String source) {
+                @NonNull
+                public Series get(@NonNull final String source) {
                     return new Series(source);
                 }
             });
         }
         return mSeriesUtils;
     }
+
     /**
      * Utility routine to get an author list from the intent extras
      *
@@ -197,8 +205,9 @@ public class ArrayUtils<T> {
      * @return		List of authors
      */
     @SuppressWarnings("unchecked")
-    public static ArrayList<Author> getAuthorsFromBundle(Bundle b) {
-        return (ArrayList<Author>) b.getSerializable(KEY_AUTHOR_ARRAY);
+    @Nullable
+    public static ArrayList<Author> getAuthorsFromBundle(@NonNull final Bundle b) {
+        return (ArrayList<Author>) b.getSerializable(ColumnInfo.KEY_AUTHOR_ARRAY);
     }
 
     /**
@@ -209,9 +218,9 @@ public class ArrayUtils<T> {
      * @return		List of series
      */
     @SuppressWarnings("unchecked")
-    public
-    static ArrayList<Series> getSeriesFromBundle(Bundle b) {
-        return (ArrayList<Series>) b.getSerializable(KEY_SERIES_ARRAY);
+    @Nullable
+    public static ArrayList<Series> getSeriesFromBundle(@NonNull final Bundle b) {
+        return (ArrayList<Series>) b.getSerializable(ColumnInfo.KEY_SERIES_ARRAY);
     }
 
     /**
@@ -223,7 +232,8 @@ public class ArrayUtils<T> {
      * @return		List
      */
     @SuppressWarnings("unchecked")
-    public static <T> ArrayList<T> getListFromBundle(Bundle b, String key) {
+    @Nullable
+    public static <T> ArrayList<T> getListFromBundle(@NonNull final Bundle b, @Nullable final String key) {
         return (ArrayList<T>) b.getSerializable(key);
     }
 
@@ -235,8 +245,9 @@ public class ArrayUtils<T> {
      * @return		List
      */
     @SuppressWarnings("unchecked")
-    public static ArrayList<Author> getAuthorFromIntentExtras(Intent i) {
-        return (ArrayList<Author>) i.getSerializableExtra(KEY_AUTHOR_ARRAY);
+    @Nullable
+    public static ArrayList<Author> getAuthorFromIntentExtras(@NonNull final Intent i) {
+        return (ArrayList<Author>) i.getSerializableExtra(ColumnInfo.KEY_AUTHOR_ARRAY);
     }
 
     /**
@@ -247,8 +258,9 @@ public class ArrayUtils<T> {
      * @return		List
      */
     @SuppressWarnings("unchecked")
-    public static ArrayList<Series> getSeriesFromIntentExtras(Intent i) {
-        return (ArrayList<Series>) i.getSerializableExtra(KEY_SERIES_ARRAY);
+    @Nullable
+    public static ArrayList<Series> getSeriesFromIntentExtras(@NonNull final Intent i) {
+        return (ArrayList<Series>) i.getSerializableExtra(ColumnInfo.KEY_SERIES_ARRAY);
     }
 
     /**
@@ -259,39 +271,42 @@ public class ArrayUtils<T> {
      *
      * @return		List, or null when not present in the intent extras
      */
-    @Nullable
     @SuppressWarnings("unchecked")
-    public static <T> ArrayList<T> getListFromIntentExtras(Intent i, String key) {
+    @Nullable
+    public static <T> ArrayList<T> getListFromIntentExtras(@NonNull final Intent i, @Nullable final String key) {
         return (ArrayList<T>) i.getSerializableExtra(key);
     }
 
-    private T get(String source) {
+    @NonNull
+    private T get(@NonNull final String source) {
         return mFactory.get(source);
     }
 
     /**
      * Encode a list of strings by 'escaping' all instances of: delim, '\', \r, \n. The
      * escape char is '\'.
-     * <p>
+     *
      * This is used to build text lists separated by 'delim'.
      *
      * @param sa String to convert
      *
      * @return Converted string
      */
-    public String encodeList(ArrayList<T> sa, char delim) {
+    @NonNull
+    public String encodeList(char delim, @NonNull final ArrayList<T> sa) {
         Iterator<T> si = sa.iterator();
-        return encodeList(si, delim);
+        return encodeList(delim, si);
     }
 
-    private String encodeList(Iterator<T> si, char delim) {
+    @NonNull
+    private String encodeList(char delim, @NonNull final Iterator<T> si) {
         StringBuilder ns = new StringBuilder();
         if (si.hasNext()) {
             ns.append(
-                    encodeListItem(si.next().toString(), delim));
+                    encodeListItem(delim, si.next().toString()));
             while (si.hasNext()) {
                 ns.append(delim);
-                ns.append(encodeListItem(si.next().toString(), delim));
+                ns.append(encodeListItem(delim, si.next().toString()));
             }
         }
         return ns.toString();
@@ -304,7 +319,8 @@ public class ArrayUtils<T> {
      *
      * @return Array of strings resulting from list
      */
-    public ArrayList<T> decodeList(String s, char delim, boolean allowBlank) {
+    @NonNull
+    public ArrayList<T> decodeList(char delim, @Nullable final String s, boolean allowBlank) {
         StringBuilder ns = new StringBuilder();
         ArrayList<T> list = new ArrayList<>();
         if (s == null)
@@ -359,6 +375,6 @@ public class ArrayUtils<T> {
     }
 
     public interface Factory<T> {
-        T get(String source);
+        T get(@NonNull final String source);
     }
 }

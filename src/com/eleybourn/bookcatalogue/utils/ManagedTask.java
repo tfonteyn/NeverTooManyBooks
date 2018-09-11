@@ -21,10 +21,8 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 import com.eleybourn.bookcatalogue.debug.Logger;
-
-import java.nio.channels.ClosedByInterruptException;
+import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 
 /**
  * Base class for handling tasks in background while displaying a ProgressDialog.
@@ -58,7 +56,7 @@ abstract public class ManagedTask extends Thread {
 	*/
 	abstract protected void onThreadFinish();
 	/** Called to do the main thread work. Can use doProgress() and doToast() to display messages. */
-	abstract protected void onRun() throws InterruptedException, ClosedByInterruptException;
+	abstract protected void onRun() throws InterruptedException;
 
 	/**
 	 * Utility routine to ask the Taskmanager to get a String from a resource ID.
@@ -112,13 +110,12 @@ abstract public class ManagedTask extends Thread {
 	 */
 	@Override
 	public void run() {
-
 		try {
 			onRun();			
-		} catch (InterruptedException | ClosedByInterruptException e) {
+		} catch (InterruptedException e) {
 			mCancelFlg = true;
-		} catch (Exception e) {
-			Logger.logError(e);
+		} catch (Exception ignore) {
+			Logger.logError(ignore);
 		}
 
 		mFinished = true;
@@ -199,7 +196,10 @@ abstract public class ManagedTask extends Thread {
 	 * 	STATIC Object for passing messages from background tasks to activities that may be recreated 
 	 *
 	 *  This object handles all underlying OnTaskEndedListener messages for every instance of this class.
+	 *
+	 *  note to self: YES "public" is a MUST
 	 */
+	@SuppressWarnings("WeakerAccess")
 	public static class TaskSwitch extends MessageSwitch<TaskListener, TaskController> {
 	}
 

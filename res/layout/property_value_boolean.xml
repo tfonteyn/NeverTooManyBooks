@@ -43,5 +43,5 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         tools:text="some value"/>
 
-    <View style="@style/listDivider"/>
+    <View style="@style/listDividerHorizontal"/>
 </RelativeLayout>

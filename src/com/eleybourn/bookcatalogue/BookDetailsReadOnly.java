@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
+import android.widget.CheckedTextView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,12 +22,12 @@ import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.HintManager;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Class for representing read-only book details.
@@ -35,6 +35,14 @@ import java.util.List;
  * @author n.silin
  */
 public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
+
+    /**
+     * ok, so why an Adapter and not handle this just like Series is currently handled....
+     *
+     * TODO the idea is to have a new Activity: AnthologyTitle -> books containing the story
+     * TODO once done, retrofit the same to Series.
+     */
+    private boolean mGenerateAnthologyFieldList = true;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,7 +65,8 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
          * We have to override this value to initialize book thumb with right size.
          * You have to see in book_details.xml to get dividing coefficient
          */
-        mThumbEditSize = Math.min(mMetrics.widthPixels, mMetrics.heightPixels) / 3;
+        Integer[] sizes = ImageUtils.getThumbSizes(getActivity());
+        mThumbEditSize = sizes[0];
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getActivity(), R.string.hint_view_only_help, null);
@@ -122,7 +131,11 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
         }
     }
 
-    private boolean mGenerateAnthologyFieldList = true;
+    /**
+     * FIXME: use a background task to build the list instead of on the UI thread !
+     *
+     * @param book
+     */
     private void showAnthologySection(final BookData book) {
         View section = getView().findViewById(R.id.anthology_section);
         section.setVisibility(View.VISIBLE);
@@ -132,7 +145,7 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
             public void onClick(View v) {
                 ListView titles = getView().findViewById(R.id.anthology_titlelist);
                 titles.setVisibility(titles.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-
+                // only generate once
                 if (mGenerateAnthologyFieldList) {
                     AnthologyTitleListAdapter adapter = new AnthologyTitleListAdapter(getActivity(), R.layout.row_anthology, book.getAnthologyTitles());
                     titles.setAdapter(adapter);
@@ -143,27 +156,11 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
         });
     }
 
-    protected class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle> {
-
-        AnthologyTitleListAdapter(Context context, int rowViewId, List<AnthologyTitle> items) {
-            super(context, rowViewId, items);
-        }
-
-        @Override
-        protected void onSetupView(int position, View convertView, AnthologyTitle anthology) {
-            TextView author = convertView.findViewById(R.id.row_author);
-            author.setText(anthology.getAuthor().getDisplayName());
-            TextView title = convertView.findViewById(R.id.row_title);
-            title.setText(anthology.getTitle());
-        }
-    }
-
     /**
      * Gets the total number of rows from the adapter, then uses that to set the ListView to the
      * full height so all rows are visible (no scrolling)
-     *
      */
-    private void justifyListViewHeightBasedOnChildren (final ListView listView) {
+    private void justifyListViewHeightBasedOnChildren(final ListView listView) {
         ListAdapter adapter = listView.getAdapter();
         if (adapter == null) {
             return;
@@ -239,7 +236,6 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
                 }
                 newText = builder.toString();
             }
-            //FIXME: html causes colour to change making 'Light' theme display very faint
             mFields.getField(R.id.series)
                     .setShowHtml(true) /* so <br/> work */
                     .setValue(newText);
@@ -270,22 +266,26 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
      */
     private void formatFormatSection(BookData book) {
         // Number of pages
-        Field pagesField = mFields.getField(R.id.pages);
-        String pages = book.getString(ColumnInfo.KEY_PAGES);
-        boolean hasPages = pages != null && !pages.isEmpty();
-        if (hasPages) {
-            pagesField.setValue(getString(R.string.book_details_readonly_pages, pages));
-        }
-
-        // 'format' field
-        Field formatField = mFields.getField(R.id.format);
-        String format = book.getString(ColumnInfo.KEY_FORMAT);
-        boolean hasFormat = format != null && !format.isEmpty();
-        if (hasFormat) {
+        boolean hasPages = false;
+        if (FieldVisibilityActivity.isVisible(ColumnInfo.KEY_PAGES)) {
+            Field pagesField = mFields.getField(R.id.pages);
+            String pages = book.getString(ColumnInfo.KEY_PAGES);
+            hasPages = pages != null && !pages.isEmpty();
             if (hasPages) {
-                formatField.setValue(getString(R.string.brackets, format));
-            } else {
-                formatField.setValue(format);
+                pagesField.setValue(getString(R.string.book_details_readonly_pages, pages));
+            }
+        }
+        // 'format' field
+        if (FieldVisibilityActivity.isVisible(ColumnInfo.KEY_FORMAT)) {
+            Field formatField = mFields.getField(R.id.format);
+            String format = book.getString(ColumnInfo.KEY_FORMAT);
+            boolean hasFormat = format != null && !format.isEmpty();
+            if (hasFormat) {
+                if (hasPages && FieldVisibilityActivity.isVisible(ColumnInfo.KEY_PAGES)) {
+                    formatField.setValue(getString(R.string.brackets, format));
+                } else {
+                    formatField.setValue(format);
+                }
             }
         }
     }
@@ -347,17 +347,23 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
     /**
      * Sets read status of the book if needed. Shows green tick if book is read.
      *
-     * @param book  the book
+     * @param book the book
      */
     private void showReadStatus(final BookData book) {
-        if (FieldVisibilityActivity.isVisible(ColumnInfo.KEY_READ)) {
-            final CompoundButton readField = getView().findViewById(R.id.read);
+        final CheckedTextView readField = getView().findViewById(R.id.read);
+        boolean visible = FieldVisibilityActivity.isVisible(ColumnInfo.KEY_READ);
+        readField.setVisibility(visible ? View.VISIBLE : View.GONE);
+
+        if (visible) {
             // set initial display state, REMINDER: setSelected will NOT update the GUI...
             readField.setChecked(book.isRead());
-            readField.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            readField.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    BookUtils.setRead(mDb, book, isChecked);
+                public void onClick(final View v) {
+                    boolean newState = !readField.isChecked();
+                    if (BookUtils.setRead(mDb, book, newState)) {
+                        readField.setChecked(newState);
+                    }
                 }
             });
         }
@@ -434,6 +440,21 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
             } catch (Exception e) {
                 return source;
             }
+        }
+    }
+
+    protected class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle> {
+
+        AnthologyTitleListAdapter(Context context, int rowViewId, ArrayList<AnthologyTitle> items) {
+            super(context, rowViewId, items);
+        }
+
+        @Override
+        protected void onSetupView(int position, View convertView, AnthologyTitle anthology) {
+            TextView author = convertView.findViewById(R.id.row_author);
+            author.setText(anthology.getAuthor().getDisplayName());
+            TextView title = convertView.findViewById(R.id.row_title);
+            title.setText(anthology.getTitle());
         }
     }
 

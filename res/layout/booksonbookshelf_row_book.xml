@@ -8,111 +8,119 @@
     android:scaleType="fitStart">
 
     <!-- NOTE: layout width/height will be set to a specific value at runtime -->
-
     <ImageView
         android:id="@+id/cover"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="top"
         android:layout_weight="0"
         android:adjustViewBounds="true"
-        android:contentDescription="@string/thumbnail" />
+        android:contentDescription="@string/thumbnail"
+        tools:src="@android:drawable/ic_menu_help" />
 
     <LinearLayout
+        android:id="@+id/row_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="start"
         android:orientation="vertical"
         android:paddingBottom="@dimen/padding_border"
-        android:paddingTop="@dimen/padding_border"
+        android:paddingEnd="@dimen/padding_border"
         android:paddingStart="@dimen/padding_border"
-        android:paddingEnd="@dimen/padding_border" >
+        android:paddingTop="@dimen/padding_border">
 
         <TextView
             android:id="@+id/series_num_long"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/padding_border"
             android:paddingEnd="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="series_num_long"/>
+            tools:text="series_num_long" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/series_num"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="###"/>
+                tools:text="###" />
 
             <TextView
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/padding_border"
                 android:paddingEnd="@dimen/padding_border"
+                android:paddingStart="@dimen/padding_border"
                 android:singleLine="false"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="book title"/>
+                tools:text="book title" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/author"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/padding_border"
             android:paddingEnd="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border"
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="author name"/>
+            tools:text="author name" />
 
         <TextView
             android:id="@+id/shelves"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/padding_border"
             android:paddingEnd="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border"
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="shelves I'm on"/>
+            tools:text="bookshelves" />
 
         <TextView
             android:id="@+id/location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/padding_border"
             android:paddingEnd="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border"
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="location"/>
+            tools:text="location" />
 
         <TextView
             android:id="@+id/publisher"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/padding_border"
             android:paddingEnd="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border"
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="publisher"/>
+            tools:text="publisher" />
+
+        <TextView
+            android:id="@+id/format"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="@dimen/padding_border"
+            android:paddingStart="@dimen/padding_border"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="format" />
     </LinearLayout>
 
     <CheckedTextView
         android:id="@+id/read"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="0"
-        android:gravity="end"
-        android:paddingStart="8dp"
-        android:paddingTop="@dimen/padding_border"
-        android:paddingEnd="@dimen/padding_border"
         android:background="@android:color/transparent"
         android:checkMark="?android:attr/textCheckMark"
-        android:visibility="gone"
-        tools:visibility="visible"/>
+        android:padding="0dp"
+        tools:checked="true" />
 
 </LinearLayout>

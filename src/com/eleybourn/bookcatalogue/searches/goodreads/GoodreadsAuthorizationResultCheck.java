@@ -23,7 +23,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 import android.content.Context;
 import android.content.Intent;
 
-import com.eleybourn.bookcatalogue.utils.BcQueueManager;
+import com.eleybourn.bookcatalogue.utils.BCQueueManager;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
@@ -81,7 +81,7 @@ class GoodreadsAuthorizationResultCheck extends GenericTask {
 
 	@Override
 	public long getCategory() {
-		return BcQueueManager.CAT_GOODREADS_AUTH;
+		return BCQueueManager.CAT_GOODREADS_AUTH;
 	}
 
 }

@@ -190,7 +190,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
     /**
      * Get an object for building an list of files in background.
      */
-    public abstract FileLister getFileLister(File root);
+    protected abstract FileLister getFileLister(File root);
 
     /**
      * Rebuild the file list in background; gather whatever data is necessary to

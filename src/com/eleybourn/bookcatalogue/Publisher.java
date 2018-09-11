@@ -22,6 +22,8 @@ package com.eleybourn.bookcatalogue;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 
 import java.io.Serializable;
@@ -33,6 +35,8 @@ import java.util.Objects;
  * ENHANCE Could just have used a String, but this way we're prepared for a dedicated table with the publishers
  */
 public class Publisher implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Support for creation via Parcelable.
      * This is primarily useful for passing ArrayList<Publisher> in Bundles to activities.
@@ -46,17 +50,16 @@ public class Publisher implements Serializable {
             return new Publisher[size];
         }
     };
-    private static final long serialVersionUID = 1L;
     public String name;
 
-    public Publisher(String name) {
+    public Publisher(@NonNull final String name) {
         this.name = name.trim();
     }
 
     /**
      * Constructor using a Parcel.
      */
-    private Publisher(Parcel in) {
+    private Publisher(@NonNull final Parcel in) {
         name = in.readString();
     }
 
@@ -72,7 +75,7 @@ public class Publisher implements Serializable {
     // Support for encoding to a text file
     @Override
     public String toString() {
-        return ArrayUtils.encodeListItem(name, ',');
+        return ArrayUtils.encodeListItem(',', name);
     }
 
     /**
@@ -80,7 +83,7 @@ public class Publisher implements Serializable {
      *
      * @param source publisher to copy
      */
-    void copyFrom(Publisher source) {
+    void copyFrom(@NonNull final Publisher source) {
         name = source.name;
     }
 

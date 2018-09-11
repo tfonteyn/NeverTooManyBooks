@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
@@ -42,12 +43,18 @@ public class MultitypeListCursorAdapter extends CursorAdapter implements FastScr
 
 	private final LayoutInflater mInflater;
 	private final MultitypeListHandler mHandler;
+    /**
+     * TODO: the intention is to set a click listener on the cover image... but see fixme below first!
+     */
+	@SuppressWarnings("FieldCanBeLocal")
+    private final Activity mActivity;
 
 	//FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
 
-	MultitypeListCursorAdapter(Context context, Cursor c, MultitypeListHandler handler) {
-		super(context, c);
-		mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	MultitypeListCursorAdapter(Activity activity, Cursor c, MultitypeListHandler handler) {
+		super(activity, c);
+		mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		mActivity = activity;
 		mHandler = handler;
 	}
 

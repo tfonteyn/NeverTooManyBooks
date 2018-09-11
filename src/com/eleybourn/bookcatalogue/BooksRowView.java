@@ -21,24 +21,10 @@
 package com.eleybourn.bookcatalogue;
 
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_FORMATTED_GIVEN_FIRST;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_GENRE;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ISBN;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_LOCATION;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_NOTES;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_RATING;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_READ;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_READ_END;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ROWID;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_NAME;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SIGNED;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
 
 /**
  * Convenience class to avoid having to write the same code in more than one place. This
@@ -56,23 +42,25 @@ public class BooksRowView {
     private final Cursor mCursor;
 
     private int mIdCol = -2;
-    private int mGoodreadsBookIdCol = -2;
+
     private int mBookUuidCol = -2;
-    private int mIsbnCol = -2;
-    private int mPrimaryAuthorCol = -2;
-    private int mTitleCol = -2;
-    private int mDescriptionCol = -2;
-    private int mNotesCol = -2;
-    private int mRatingCol = -2;
-    private int mReadEndCol = -2;
-    private int mReadCol = -2;
-    private int mSignedCol = -2;
-    private int mPublisherCol = -2;
     private int mDatePublishedCol = -2;
+    private int mDescriptionCol = -2;
+    private int mFormatCol = -2;
     private int mGenreCol = -2;
+    private int mGoodreadsBookIdCol = -2;
+    private int mIsbnCol = -2;
     private int mLanguageCol = -2;
     private int mLocationCol = -2;
+    private int mNotesCol = -2;
+    private int mPrimaryAuthorCol = -2;
+    private int mPublisherCol = -2;
+    private int mRatingCol = -2;
+    private int mReadCol = -2;
+    private int mReadEndCol = -2;
     private int mSeriesCol = -2;
+    private int mSignedCol = -2;
+    private int mTitleCol = -2;
 
     /**
      * Constructor
@@ -85,150 +73,150 @@ public class BooksRowView {
 
     public final long getId() {
         if (mIdCol < 0) {
-            mIdCol = mCursor.getColumnIndex(KEY_ROWID);
+            mIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
             if (mIdCol < 0)
-                throw new RuntimeException("ISBN column not in result set");
+                throw new RuntimeException("DOM_ID column not in result set");
         }
-        return mCursor.getLong(mIdCol);// mCurrentRow[mIsbnCol];
+        return mCursor.getLong(mIdCol);
     }
 
     public final long getGoodreadsBookId() {
         if (mGoodreadsBookIdCol < 0) {
             mGoodreadsBookIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_GOODREADS_BOOK_ID.name);
             if (mGoodreadsBookIdCol < 0)
-                throw new RuntimeException("Goodreads Book ID column not in result set");
+                throw new RuntimeException("DOM_GOODREADS_BOOK_ID column not in result set");
         }
-        return mCursor.getLong(mGoodreadsBookIdCol);// mCurrentRow[mIsbnCol];
+        return mCursor.getLong(mGoodreadsBookIdCol);
     }
 
     public final String getBookUuid() {
         if (mBookUuidCol < 0) {
             mBookUuidCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_UUID.name);
             if (mBookUuidCol < 0)
-                throw new RuntimeException("UUID column not in result set");
+                throw new RuntimeException("DOM_BOOK_UUID column not in result set");
         }
-        return mCursor.getString(mBookUuidCol);// mCurrentRow[mIsbnCol];
+        return mCursor.getString(mBookUuidCol);
     }
 
     public final String getIsbn() {
         if (mIsbnCol < 0) {
-            mIsbnCol = mCursor.getColumnIndex(KEY_ISBN);
+            mIsbnCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ISBN.name);
             if (mIsbnCol < 0)
-                throw new RuntimeException("ISBN column not in result set");
+                throw new RuntimeException("DOM_ISBN column not in result set");
         }
-        return mCursor.getString(mIsbnCol);// mCurrentRow[mIsbnCol];
+        return mCursor.getString(mIsbnCol);
     }
 
     public final String getPrimaryAuthorName() {
         if (mPrimaryAuthorCol < 0) {
-            mPrimaryAuthorCol = mCursor.getColumnIndex(KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+            mPrimaryAuthorCol = mCursor.getColumnIndex(ColumnInfo.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
             if (mPrimaryAuthorCol < 0)
                 throw new RuntimeException("Primary author column not in result set");
         }
         return mCursor.getString(mPrimaryAuthorCol);
-//		return mCurrentRow[mPrimaryAuthorCol];
     }
 
     public final String getTitle() {
         if (mTitleCol < 0) {
-            mTitleCol = mCursor.getColumnIndex(KEY_TITLE);
+            mTitleCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_TITLE.name);
             if (mTitleCol < 0)
-                throw new RuntimeException("Title column not in result set");
+                throw new RuntimeException("DOM_TITLE column not in result set");
         }
         return mCursor.getString(mTitleCol);
-//		return mCurrentRow[mTitleCol];
     }
 
     public final String getDescription() {
         if (mDescriptionCol < 0) {
-            mDescriptionCol = mCursor.getColumnIndex(KEY_DESCRIPTION);
+            mDescriptionCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_DESCRIPTION.name);
             if (mDescriptionCol < 0)
-                throw new RuntimeException("Description column not in result set");
+                throw new RuntimeException("DOM_DESCRIPTION column not in result set");
         }
         return mCursor.getString(mDescriptionCol);
-//		return mCurrentRow[mDescriptionCol];
     }
 
     public final String getNotes() {
         if (mNotesCol < 0) {
-            mNotesCol = mCursor.getColumnIndex(KEY_NOTES);
+            mNotesCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_NOTES.name);
             if (mNotesCol < 0)
-                throw new RuntimeException("Notes column not in result set");
+                throw new RuntimeException("DOM_NOTES column not in result set");
         }
         return mCursor.getString(mNotesCol);
-//		return mCurrentRow[mNotesCol];
     }
 
     public final double getRating() {
         if (mRatingCol < 0) {
-            mRatingCol = mCursor.getColumnIndex(KEY_RATING);
+            mRatingCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_RATING.name);
             if (mRatingCol < 0)
-                throw new RuntimeException("Rating column not in result set");
+                throw new RuntimeException("DOM_RATING column not in result set");
         }
         return mCursor.getDouble(mRatingCol);
     }
 
     public final String getReadEnd() {
         if (mReadEndCol < 0) {
-            mReadEndCol = mCursor.getColumnIndex(KEY_READ_END);
+            mReadEndCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_READ_END.name);
             if (mReadEndCol < 0)
-                throw new RuntimeException("Read-End column not in result set");
+                throw new RuntimeException("DOM_READ_END column not in result set");
         }
         return mCursor.getString(mReadEndCol);
     }
 
     public final int getRead() {
         if (mReadCol < 0) {
-            mReadCol = mCursor.getColumnIndex(KEY_READ);
+            mReadCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_READ.name);
             if (mReadCol < 0)
-                throw new RuntimeException("READ column not in result set");
+                throw new RuntimeException("DOM_READ column not in result set");
         }
         return mCursor.getInt(mReadCol);
-//		return Integer.parseInt(mCurrentRow[mReadCol]);
     }
-
-    private int getSigned() {
-        if (mSignedCol < 0) {
-            mSignedCol = mCursor.getColumnIndex(KEY_SIGNED);
-            if (mSignedCol < 0)
-                throw new RuntimeException("SIGNED column not in result set");
-        }
-        return mCursor.getInt(mSignedCol);
-//		return Integer.parseInt(mCurrentRow[mReadCol]);
-    }
-
     public final boolean isRead() {
         return getRead() != 0;
     }
 
+    private int getSigned() {
+        if (mSignedCol < 0) {
+            mSignedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_SIGNED.name);
+            if (mSignedCol < 0)
+                throw new RuntimeException("DOM_SIGNED column not in result set");
+        }
+        return mCursor.getInt(mSignedCol);
+    }
     public final boolean isSigned() {
         return getSigned() != 0;
     }
 
     public final String getPublisher() {
         if (mPublisherCol < 0) {
-            mPublisherCol = mCursor.getColumnIndex(KEY_PUBLISHER);
+            mPublisherCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_PUBLISHER.name);
             if (mPublisherCol < 0)
-                throw new RuntimeException("PUBLISHER column not in result set");
+                throw new RuntimeException("DOM_PUBLISHER column not in result set");
         }
         return mCursor.getString(mPublisherCol);
     }
 
-    @SuppressWarnings("unused")
     public final String getDatePublished() {
         if (mDatePublishedCol < 0) {
-            mDatePublishedCol = mCursor.getColumnIndex(KEY_DATE_PUBLISHED);
+            mDatePublishedCol = mCursor.getColumnIndex(ColumnInfo.KEY_DATE_PUBLISHED);
             if (mDatePublishedCol < 0)
                 throw new RuntimeException("DATE_PUBLISHED column not in result set");
         }
         return mCursor.getString(mDatePublishedCol);
     }
 
+    public final String getFormat() {
+        if (mFormatCol < 0) {
+            mFormatCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_FORMAT.name);
+            if (mFormatCol < 0)
+                throw new RuntimeException("DOM_FORMAT column not in result set");
+        }
+        return mCursor.getString(mFormatCol);
+    }
+
     public final String getGenre() {
         if (mGenreCol < 0) {
-            mGenreCol = mCursor.getColumnIndex(KEY_GENRE);
+            mGenreCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_GENRE.name);
             if (mGenreCol < 0)
-                throw new RuntimeException("GENRE column not in result set");
+                throw new RuntimeException("DOM_GENRE column not in result set");
         }
         return mCursor.getString(mGenreCol);
     }
@@ -237,29 +225,30 @@ public class BooksRowView {
         if (mLanguageCol < 0) {
             mLanguageCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_LANGUAGE.name);
             if (mLanguageCol < 0)
-                throw new RuntimeException("LANGUAGE column not in result set");
+                throw new RuntimeException("DOM_LANGUAGE column not in result set");
         }
         return mCursor.getString(mLanguageCol);
     }
 
     public final String getLocation() {
         if (mLocationCol < 0) {
-            mLocationCol = mCursor.getColumnIndex(KEY_LOCATION);
+            mLocationCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_LOCATION.name);
             if (mLocationCol < 0)
-                throw new RuntimeException("LOCATION column not in result set");
+                throw new RuntimeException("DOM_LOCATION column not in result set");
         }
         return mCursor.getString(mLocationCol);
     }
 
     public final String getSeries() {
         if (mSeriesCol < 0) {
-            mSeriesCol = mCursor.getColumnIndex(KEY_SERIES_NAME);
+            mSeriesCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_SERIES_NAME.name);
             if (mSeriesCol < 0)
-                throw new RuntimeException("SERIES column not in result set");
+                throw new RuntimeException("DOM_SERIES_NAME column not in result set");
         }
         return mCursor.getString(mSeriesCol);
     }
 
+    @Nullable
     private String getString(final int position) {
         if (mCursor.isNull(position))
             return null;

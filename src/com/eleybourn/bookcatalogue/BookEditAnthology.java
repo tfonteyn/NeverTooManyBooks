@@ -54,7 +54,6 @@ import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -67,8 +66,19 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
     private static final int DELETE_ID = Menu.FIRST;
     private static final int POPULATE = Menu.FIRST + 1;
 
-    // Trim extraneous punctuation and whitespace from the titles and authors
-    private static final String CLEANUP_REGEX = "[\\,\\.\\'\\:\\;\\`\\~\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\_\\+]*$";
+    /**
+     * Trim extraneous punctuation and whitespace from the titles and authors
+     *
+     * Original code had:
+     *    CLEANUP_REGEX = "[\\,\\.\\'\\:\\;\\`\\~\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\_\\+]*$";
+     *
+     *    Android Studio:
+     *    Reports character escapes that are replaceable with the unescaped character without a
+     *    change in meaning. Note that inside the square brackets of a character class, many
+     *    escapes are unnecessary that would be necessary outside of a character class.
+     *    For example the regex [\.] is identical to [.]
+     */
+    private static final String CLEANUP_REGEX = "[,.':;`~@#$%^&*()\\-=_+]*$";
 
     private EditText mTitleText;
     private AutoCompleteTextView mAuthorText;
@@ -390,17 +400,9 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
         saveState(book);
     }
 
-    private void onListChanged() {
-        /* do nothing */
-    }
-
     protected class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle> {
-        boolean series = false;
 
-        /**
-         * Pass the parameters directly to the overridden function
-         */
-        AnthologyTitleListAdapter(Context context, int rowViewId, List<AnthologyTitle> items) {
+        AnthologyTitleListAdapter(Context context, int rowViewId, ArrayList<AnthologyTitle> items) {
             super(context, rowViewId, items);
         }
 

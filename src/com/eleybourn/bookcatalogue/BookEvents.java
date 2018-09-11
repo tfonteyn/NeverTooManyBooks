@@ -30,7 +30,7 @@ import android.view.ViewGroup;
 import android.widget.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import com.eleybourn.bookcatalogue.searches.goodreads.SendOneBookTask;
-import com.eleybourn.bookcatalogue.utils.BcQueueManager;
+import com.eleybourn.bookcatalogue.utils.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.HintManager.HintOwner;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import net.philipwarner.taskqueue.*;
@@ -38,7 +38,7 @@ import net.philipwarner.taskqueue.*;
 import java.text.DateFormat;
 import java.util.ArrayList;
 
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ROWID;
+import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ID;
 
 /**
  * Class to define all book-related events that may be stored in the QueueManager.
@@ -258,7 +258,7 @@ public class BookEvents {
 			QueueManager qm = BookCatalogueApp.getQueueManager();
 			SendOneBookTask task = new SendOneBookTask(mBookId);
 			// TODO: MAKE IT USE THE SAME QUEUE? Why????
-			qm.enqueueTask(task, BcQueueManager.QUEUE_SMALL_JOBS, 0);
+			qm.enqueueTask(task, BCQueueManager.QUEUE_SMALL_JOBS, 0);
 			qm.deleteEvent(this.getId());
 		}
 
@@ -345,24 +345,23 @@ public class BookEvents {
 	 */
 	private static void editBook(Context ctx, long bookId) {
 		Intent i = new Intent(ctx, BookEdit.class);
-		i.putExtra(KEY_ROWID, bookId);
+		i.putExtra(KEY_ID, bookId);
 		i.putExtra(BookEdit.TAB, BookEdit.TAB_EDIT);
 		ctx.startActivity(i);	
 	}
 
-	/*****************************************************************************************************
-	 * 
-	 * 'General' purpose exception class
-	 * 
-	 * @author Philip Warner
-	 */
-	public static class GrGeneralBookEvent extends GrSendBookEvent {
-		private static final long serialVersionUID = -7684121345325648066L;
-
-		public GrGeneralBookEvent(long bookId, Exception e, String message) {
-			super(bookId, message, e);
-		}
-	}
+//	/**
+//	 * 'General' purpose exception class
+//	 *
+//	 * @author Philip Warner
+//	 */
+//	public static class GrGeneralBookEvent extends GrSendBookEvent {
+//		private static final long serialVersionUID = -7684121345325648066L;
+//
+//		public GrGeneralBookEvent(long bookId, Exception e, String message) {
+//			super(bookId, message, e);
+//		}
+//	}
 
     /**
 	 * Exception indicating the book's ISBN could not be found at GoodReads

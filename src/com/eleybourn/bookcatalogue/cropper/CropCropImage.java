@@ -59,16 +59,16 @@ public class CropCropImage extends CropMonitoredActivity {
     @SuppressWarnings("FieldCanBeLocal")
     private final boolean DO_FACE_DETECTION = false;
 
-	public static final String BKEY_CIRCLE_CROP = "circleCrop";
-    public static final String BKEY_IMAGE_PATH = "image-path";
-    public static final String BKEY_OUTPUT = "output";
-    public static final String BKEY_ASPECT_X = "aspectX";
-    public static final String BKEY_ASPECT_Y = "aspectY";
-    public static final String BKEY_OUTPUT_X = "outputX";
-    public static final String BKEY_OUTPUT_Y = "outputY";
-    public static final String BKEY_SCALE = "scale";
-    public static final String BKEY_SCALE_UP_IF_NEEDED = "scaleUpIfNeeded";
-    public static final String BKEY_WHOLE_IMAGE = "whole-image";
+	private static final String BKEY_CIRCLE_CROP = "circleCrop";
+	private static final String BKEY_IMAGE_PATH = "image-path";
+	private static final String BKEY_OUTPUT = "output";
+	private static final String BKEY_ASPECT_X = "aspectX";
+	private static final String BKEY_ASPECT_Y = "aspectY";
+	private static final String BKEY_OUTPUT_X = "outputX";
+	private static final String BKEY_OUTPUT_Y = "outputY";
+	private static final String BKEY_SCALE = "scale";
+	private static final String BKEY_SCALE_UP_IF_NEEDED = "scaleUpIfNeeded";
+	private static final String BKEY_WHOLE_IMAGE = "whole-image";
 
 	// These are various options can be specified in the intent.
 	private final Bitmap.CompressFormat mOutputFormat =
@@ -405,7 +405,7 @@ public class CropCropImage extends CropMonitoredActivity {
 			mBitmap.recycle();
 	}
 
-	final Runnable mRunFaceDetection = new Runnable() {
+	private final Runnable mRunFaceDetection = new Runnable() {
 		float mScale = 1F;
 		Matrix mImageMatrix;
 		final FaceDetector.Face[] mFaces = new FaceDetector.Face[3];
@@ -519,8 +519,8 @@ public class CropCropImage extends CropMonitoredActivity {
 			mScale = 1.0F / mScale;
 			//noinspection ConstantConditions
 			if (faceBitmap != null && DO_FACE_DETECTION) {
-				FaceDetector detector = new FaceDetector(faceBitmap.getWidth(),
-						faceBitmap.getHeight(), mFaces.length);
+				//noinspection UnusedAssignment
+				FaceDetector detector = new FaceDetector(faceBitmap.getWidth(), faceBitmap.getHeight(), mFaces.length);
 				mNumFaces = detector.findFaces(faceBitmap, mFaces);
 			}
 
@@ -554,14 +554,14 @@ public class CropCropImage extends CropMonitoredActivity {
 		}
 	};
 
-	public static final int NO_STORAGE_ERROR = -1;
-	public static final int CANNOT_STAT_ERROR = -2;
+	private static final int NO_STORAGE_ERROR = -1;
+	private static final int CANNOT_STAT_ERROR = -2;
 
-	public static void showStorageToast(Activity activity) {
+	private static void showStorageToast(Activity activity) {
 		showStorageToast(activity, calculatePicturesRemaining());
 	}
 
-	public static void showStorageToast(Activity activity, int remaining) {
+	private static void showStorageToast(Activity activity, int remaining) {
 		String noStorageText = null;
 
 		if (remaining == NO_STORAGE_ERROR) {
@@ -579,7 +579,7 @@ public class CropCropImage extends CropMonitoredActivity {
 		}
 	}
 
-	public static int calculatePicturesRemaining() {
+	private static int calculatePicturesRemaining() {
 		try {
 			/*
 			 * if (!ImageManager.hasStorage()) { return NO_STORAGE_ERROR; } else

@@ -39,7 +39,7 @@ import android.widget.ListView;
 public class FastScrollListView extends ListView {
 
 	/** Active scroller, if any */
-	FastScroller mScroller = null;
+	private FastScroller mScroller = null;
 
 	public FastScrollListView(Context context) {
 		super(context);

@@ -34,7 +34,8 @@ public interface CropCancelable<T> {
 	 * // do necessary work to cancel the task return true; } return false; }
 	 * </pre>
 	 */
-    boolean requestCancel();
+	@SuppressWarnings("UnusedReturnValue")
+	boolean requestCancel();
 
 	void await() throws InterruptedException;
 

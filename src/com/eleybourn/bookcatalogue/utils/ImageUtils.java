@@ -1,15 +1,26 @@
 package com.eleybourn.bookcatalogue.utils;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.GetThumbnailTask;
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.ThumbnailCacheWriterTask;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -36,6 +47,28 @@ public class ImageUtils {
     private static final boolean DEBUG = false;
 
     private ImageUtils() {
+    }
+
+    // Target size of a thumbnail in edit dialog and zoom dialog
+    private static final int MAX_EDIT_THUMBNAIL_SIZE = 256;
+    private static final int MAX_ZOOM_THUMBNAIL_SIZE = 1024;
+
+    public static DisplayMetrics getDisplayMetrics(Activity activity) {
+        DisplayMetrics metrics = new android.util.DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        return metrics;
+    }
+
+    /**
+     *
+     * @return an array with two elements: 0=EditThumbnailSize; 1=ZoomThumbnailSize
+     */
+     public static Integer[] getThumbSizes(Activity activity) {
+        DisplayMetrics metrics = getDisplayMetrics(activity);
+        Integer[] sizes = new Integer[2];
+        sizes[0] = Math.min(MAX_EDIT_THUMBNAIL_SIZE, Math.max(metrics.widthPixels, metrics.heightPixels) / 3);
+        sizes[1] = Math.min(MAX_ZOOM_THUMBNAIL_SIZE, Math.max(metrics.widthPixels, metrics.heightPixels));
+        return sizes;
     }
 
     /**
@@ -69,11 +102,13 @@ public class ImageUtils {
      * @param checkCache      Indicates if cache should be checked for this cover
      * @param allowBackground Indicates if request can be put in background task.
      *
-     * @return Bitmap (if cached) or NULL (if done in background)
+     * @return Bitmap (if cached) or null (if done in background)
      */
+    @Nullable
     public static Bitmap fetchBookCoverIntoImageView(final ImageView destView,
                                                      int maxWidth, int maxHeight,
-                                                     final boolean exact, final String hash,
+                                                     final boolean exact,
+                                                     final String hash,
                                                      final boolean checkCache, final boolean allowBackground) {
 
         //* Get the original file so we can use the modification date, path etc */
@@ -248,7 +283,7 @@ public class ImageUtils {
      *
      * @return The File object
      */
-    public static File fetchThumbnailByUuid(String uuid, String suffix) {
+    private static File fetchThumbnailByUuid(String uuid, @SuppressWarnings("SameParameterValue") String suffix) {
         return fetchThumbnailByName(uuid, suffix);
     }
 
@@ -347,7 +382,7 @@ public class ImageUtils {
             // Parse the list
             String s = result.getString(SearchManager.BKEY_THUMBNAIL_SEARCHES);
             if (s != null) {
-                ArrayList<String> files = ArrayUtils.decodeList(s, '|');
+                ArrayList<String> files = ArrayUtils.decodeList('|', s);
 
                 long best = -1;
                 int bestFile = -1;
@@ -447,6 +482,46 @@ public class ImageUtils {
             return null;
         }
         return f.toByteArray();
+    }
+
+    /**
+     * Show zoomed thumbnail in dialog. Closed by click on image area.
+     */
+    public static void showZoomedThumb(Activity activity, File thumbFile) {
+
+        Integer[] sizes = getThumbSizes(activity);
+        Integer thumbZoomSize = sizes[0];
+
+        // Check if we have a file and/or it is valid
+        if (thumbFile == null || !thumbFile.exists()) {
+            Toast.makeText(activity, R.string.cover_not_set, Toast.LENGTH_SHORT).show();
+        } else {
+            BitmapFactory.Options opt = new BitmapFactory.Options();
+            opt.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(thumbFile.getAbsolutePath(), opt);
+
+            // If no size info, assume file bad and return appropriate icon
+            if (opt.outHeight <= 0 || opt.outWidth <= 0) {
+                Toast.makeText(activity, R.string.cover_corrupt, Toast.LENGTH_LONG).show();
+            } else {
+                final Dialog dialog = new BasicDialog(activity, false);
+                dialog.setContentView(R.layout.dialog_zoom_thumb);
+
+                ImageView cover = new ImageView(activity);
+                fetchFileIntoImageView(thumbFile, cover, thumbZoomSize, thumbZoomSize, true);
+                cover.setAdjustViewBounds(true);
+                cover.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                dialog.addContentView(cover, lp);
+                dialog.show();
+            }
+        }
     }
 
 //    /**

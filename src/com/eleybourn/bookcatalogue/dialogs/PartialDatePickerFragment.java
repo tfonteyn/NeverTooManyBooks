@@ -25,17 +25,18 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
+import com.eleybourn.bookcatalogue.UniqueId;
+
 /**
  * Fragment wrapper for the PartialDatePicker dialog
  *
  * @author pjw
  */
 public class PartialDatePickerFragment extends DialogFragment {
-    public static final String YEAR = "year";
-    public static final String MONTH = "month";
-    public static final String DAY = "day";
-    public static final String TITLE = "title";
-    public static final String DIALOG_ID = "dialogId";
+    private static final String BKEY_YEAR = "year";
+    private static final String BKEY_MONTH = "month";
+    private static final String BKEY_DAY = "day";
+    public static final String BKEY_TITLE = "title";
 
     /**
      * Currently displayed year; null if empty/invalid
@@ -102,14 +103,14 @@ public class PartialDatePickerFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Restore saved state info
         if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(YEAR))
-                mYear = savedInstanceState.getInt(YEAR);
-            if (savedInstanceState.containsKey(MONTH))
-                mMonth = savedInstanceState.getInt(MONTH);
-            if (savedInstanceState.containsKey(DAY))
-                mDay = savedInstanceState.getInt(DAY);
-            mTitleId = savedInstanceState.getInt(TITLE);
-            mDialogId = savedInstanceState.getInt(DIALOG_ID);
+            if (savedInstanceState.containsKey(BKEY_YEAR))
+                mYear = savedInstanceState.getInt(BKEY_YEAR);
+            if (savedInstanceState.containsKey(BKEY_MONTH))
+                mMonth = savedInstanceState.getInt(BKEY_MONTH);
+            if (savedInstanceState.containsKey(BKEY_DAY))
+                mDay = savedInstanceState.getInt(BKEY_DAY);
+            mTitleId = savedInstanceState.getInt(BKEY_TITLE);
+            mDialogId = savedInstanceState.getInt(UniqueId.BKEY_DIALOG_ID);
         }
 
         // Create the dialog and listen (locally) for its events
@@ -145,7 +146,7 @@ public class PartialDatePickerFragment extends DialogFragment {
     /**
      * Accessor. Update dialog if available.
      */
-    public PartialDatePickerFragment setDate(Integer year, Integer month, Integer day) {
+    private PartialDatePickerFragment setDate(Integer year, Integer month, Integer day) {
         mYear = year;
         mMonth = month;
         mDay = day;
@@ -158,14 +159,14 @@ public class PartialDatePickerFragment extends DialogFragment {
 
     @Override
     public void onSaveInstanceState(Bundle state) {
-        state.putInt(TITLE, mTitleId);
-        state.putInt(DIALOG_ID, mDialogId);
+        state.putInt(BKEY_TITLE, mTitleId);
+        state.putInt(UniqueId.BKEY_DIALOG_ID, mDialogId);
         if (mYear != null)
-            state.putInt(YEAR, mYear);
+            state.putInt(BKEY_YEAR, mYear);
         if (mMonth != null)
-            state.putInt(MONTH, mMonth);
+            state.putInt(BKEY_MONTH, mMonth);
         if (mDay != null)
-            state.putInt(DAY, mDay);
+            state.putInt(BKEY_DAY, mDay);
     }
 
     /**

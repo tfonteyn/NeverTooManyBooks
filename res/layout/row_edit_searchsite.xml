@@ -67,5 +67,5 @@
             tools:ignore="ContentDescription" />
     </RelativeLayout>
 
-    <View style="@style/listDivider" />
+    <View style="@style/listDividerHorizontal" />
 </LinearLayout>

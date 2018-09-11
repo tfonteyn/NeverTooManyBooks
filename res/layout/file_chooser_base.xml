@@ -1,31 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar"/>
+        style="@style/toolbar"
+        android:layout_alignParentTop="true" />
 
-    <RelativeLayout
+    <LinearLayout
+        android:id="@+id/browser_fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonbar_cancel_save"
+        android:layout_below="@id/toolbar"
+        android:orientation="vertical" />
 
-        <LinearLayout
-            android:id="@+id/browser_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/buttonbar_cancel_save"
-            android:orientation="vertical" />
+    <include
+        android:id="@+id/buttonbar_cancel_save"
+        layout="@layout/inc_buttonbar_cancel_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
+</RelativeLayout>
 
-        <include
-            android:id="@+id/buttonbar_cancel_save"
-            layout="@layout/inc_buttonbar_cancel_save"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"/>
-    </RelativeLayout>
-</LinearLayout>

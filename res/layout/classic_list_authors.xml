@@ -40,7 +40,7 @@
         android:layout_toEndOf="@id/bookshelf_num"
         android:paddingStart="@dimen/padding_border"
         android:paddingEnd="@dimen/padding_border"
-        app:srcCompat="@drawable/ic_dialog_menu_generic"
+        app:srcCompat="@android:drawable/ic_menu_more"
         tools:ignore="ContentDescription" />
 
     <LinearLayout

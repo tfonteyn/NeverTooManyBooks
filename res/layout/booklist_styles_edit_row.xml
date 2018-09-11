@@ -82,5 +82,5 @@
 
     </RelativeLayout>
 
-    <View style="@style/listDivider" />
+    <View style="@style/listDividerHorizontal" />
 </LinearLayout>

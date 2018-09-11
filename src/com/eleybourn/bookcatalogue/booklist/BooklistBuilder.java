@@ -216,7 +216,7 @@ public class BooklistBuilder implements AutoCloseable {
         return new FlattenedBooklist(mSyncedDb, flat);
     }
 
-    public int getId() {
+    private int getId() {
         return mBooklistBuilderId;
     }
 
@@ -762,8 +762,8 @@ public class BooklistBuilder implements AutoCloseable {
 				/*
 				if (!bookshelf.isEmpty()) {
 					sql += "	" + DB_TB_BOOKSHELF_AND_ALIAS + " join " + DB_TB_BOOK_BOOKSHELF_AND_ALIAS +
-							" On " + ALIAS_BOOK_BOOKSHELF + "." + KEY_BOOKSHELF + " = " + ALIAS_BOOKSHELF + "." + KEY_ROWID ;
-					sql +=	"    join " + DB_TB_BOOKS_AND_ALIAS + " on " + ALIAS_BOOKS + "." + KEY_ROWID + " = " + ALIAS_BOOK_BOOKSHELF + "." + KEY_BOOK + "\n";
+							" On " + ALIAS_BOOK_BOOKSHELF + "." + KEY_BOOKSHELF + " = " + ALIAS_BOOKSHELF + "." + KEY_ID ;
+					sql +=	"    join " + DB_TB_BOOKS_AND_ALIAS + " on " + ALIAS_BOOKS + "." + KEY_ID + " = " + ALIAS_BOOK_BOOKSHELF + "." + KEY_BOOK + "\n";
 				} else {
 					sql +=	"    " + DB_TB_BOOKS_AND_ALIAS + "\n";
 				}
@@ -787,9 +787,9 @@ public class BooklistBuilder implements AutoCloseable {
             // Current table will be authors, so name parent explicitly to join books->book_series.
             join.leftOuterJoin(TBL_BOOKS, TBL_BOOK_SERIES);
 				/*
-				sql +=	"    join " + DB_TB_BOOK_AUTHOR_AND_ALIAS + " on " + ALIAS_BOOK_AUTHOR + "." + KEY_BOOK + " = " + ALIAS_BOOKS + "." + KEY_ROWID + "\n" +
-						"    join " + DB_TB_AUTHORS_AND_ALIAS + " on " + ALIAS_AUTHORS + "." + KEY_ROWID + " = " + ALIAS_BOOK_AUTHOR + "." + KEY_AUTHOR_ID + "\n";
-				sql +=	"    left outer join " + DB_TB_BOOK_SERIES_AND_ALIAS + " on " + ALIAS_BOOK_SERIES + "." + KEY_BOOK + " = " + ALIAS_BOOKS + "." + KEY_ROWID + "\n";
+				sql +=	"    join " + DB_TB_BOOK_AUTHOR_AND_ALIAS + " on " + ALIAS_BOOK_AUTHOR + "." + KEY_BOOK + " = " + ALIAS_BOOKS + "." + KEY_ID + "\n" +
+						"    join " + DB_TB_AUTHORS_AND_ALIAS + " on " + ALIAS_AUTHORS + "." + KEY_ID + " = " + ALIAS_BOOK_AUTHOR + "." + KEY_AUTHOR_ID + "\n";
+				sql +=	"    left outer join " + DB_TB_BOOK_SERIES_AND_ALIAS + " on " + ALIAS_BOOK_SERIES + "." + KEY_BOOK + " = " + ALIAS_BOOKS + "." + KEY_ID + "\n";
 				*/
 
             // If there was no series group, or user requests primary series only, then just get primary series.
@@ -802,7 +802,7 @@ public class BooklistBuilder implements AutoCloseable {
 				if (seriesLevel == null || !seriesLevel.allSeries) {
 					sql += "		and " + ALIAS_BOOK_SERIES + "." + KEY_SERIES_POSITION + " == 1\n";
 				}
-				sql +=	"    left outer join " + DB_TB_SERIES_AND_ALIAS + " on " + ALIAS_SERIES + "." + KEY_ROWID + " = " + ALIAS_BOOK_SERIES + "." + KEY_SERIES_ID;
+				sql +=	"    left outer join " + DB_TB_SERIES_AND_ALIAS + " on " + ALIAS_SERIES + "." + KEY_ID + " = " + ALIAS_BOOK_SERIES + "." + KEY_SERIES_ID;
 				*/
 
             // Append the resulting join tables to our initial insert statement
@@ -2382,8 +2382,8 @@ public class BooklistBuilder implements AutoCloseable {
 //			/*
 //			if (!bookshelf.isEmpty()) {
 //				sql += "	" + DB_TB_BOOKSHELF_AND_ALIAS + " join " + DB_TB_BOOK_BOOKSHELF_AND_ALIAS + 
-//						" On " + ALIAS_BOOK_BOOKSHELF + "." + KEY_BOOKSHELF + " = " + ALIAS_BOOKSHELF + "." + KEY_ROWID ;
-//				sql +=	"    join " + DB_TB_BOOKS_AND_ALIAS + " on " + ALIAS_BOOKS + "." + KEY_ROWID + " = " + ALIAS_BOOK_BOOKSHELF + "." + KEY_BOOK + "\n";
+//						" On " + ALIAS_BOOK_BOOKSHELF + "." + KEY_BOOKSHELF + " = " + ALIAS_BOOKSHELF + "." + KEY_ID ;
+//				sql +=	"    join " + DB_TB_BOOKS_AND_ALIAS + " on " + ALIAS_BOOKS + "." + KEY_ID + " = " + ALIAS_BOOK_BOOKSHELF + "." + KEY_BOOK + "\n";
 //			} else {
 //				sql +=	"    " + DB_TB_BOOKS_AND_ALIAS + "\n";
 //			}
@@ -2402,9 +2402,9 @@ public class BooklistBuilder implements AutoCloseable {
 //		join.join(TBL_AUTHORS);
 //		join.leftOuterJoin(TBL_BOOKS, TBL_BOOK_SERIES);
 //			/*
-//			sql +=	"    join " + DB_TB_BOOK_AUTHOR_AND_ALIAS + " on " + ALIAS_BOOK_AUTHOR + "." + KEY_BOOK + " = " + ALIAS_BOOKS + "." + KEY_ROWID + "\n" +
-//					"    join " + DB_TB_AUTHORS_AND_ALIAS + " on " + ALIAS_AUTHORS + "." + KEY_ROWID + " = " + ALIAS_BOOK_AUTHOR + "." + KEY_AUTHOR_ID + "\n";
-//			sql +=	"    left outer join " + DB_TB_BOOK_SERIES_AND_ALIAS + " on " + ALIAS_BOOK_SERIES + "." + KEY_BOOK + " = " + ALIAS_BOOKS + "." + KEY_ROWID + "\n";
+//			sql +=	"    join " + DB_TB_BOOK_AUTHOR_AND_ALIAS + " on " + ALIAS_BOOK_AUTHOR + "." + KEY_BOOK + " = " + ALIAS_BOOKS + "." + KEY_ID + "\n" +
+//					"    join " + DB_TB_AUTHORS_AND_ALIAS + " on " + ALIAS_AUTHORS + "." + KEY_ID + " = " + ALIAS_BOOK_AUTHOR + "." + KEY_AUTHOR_ID + "\n";
+//			sql +=	"    left outer join " + DB_TB_BOOK_SERIES_AND_ALIAS + " on " + ALIAS_BOOK_SERIES + "." + KEY_BOOK + " = " + ALIAS_BOOKS + "." + KEY_ID + "\n";
 //			*/
 //
 //		if (seriesLevel == null || !seriesLevel.allSeries) {
@@ -2415,7 +2415,7 @@ public class BooklistBuilder implements AutoCloseable {
 //			if (seriesLevel == null || !seriesLevel.allSeries) {
 //				sql += "		and " + ALIAS_BOOK_SERIES + "." + KEY_SERIES_POSITION + " == 1\n";
 //			}
-//			sql +=	"    left outer join " + DB_TB_SERIES_AND_ALIAS + " on " + ALIAS_SERIES + "." + KEY_ROWID + " = " + ALIAS_BOOK_SERIES + "." + KEY_SERIES_ID;
+//			sql +=	"    left outer join " + DB_TB_SERIES_AND_ALIAS + " on " + ALIAS_SERIES + "." + KEY_ID + " = " + ALIAS_BOOK_SERIES + "." + KEY_SERIES_ID;
 //			*/
 //
 //		// Append the joined tables to our initial insert statement

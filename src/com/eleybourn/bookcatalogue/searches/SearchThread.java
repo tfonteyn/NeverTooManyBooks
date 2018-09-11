@@ -85,12 +85,12 @@ abstract public class SearchThread extends ManagedTask {
                     if (details != null && !details.name.isEmpty()) {
                         ArrayList<Series> sl;
                         if (mBookData.containsKey(KEY_SERIES_DETAILS)) {
-                            sl = ArrayUtils.getSeriesUtils().decodeList(mBookData.getString(KEY_SERIES_DETAILS), '|', false);
+                            sl = ArrayUtils.getSeriesUtils().decodeList('|', mBookData.getString(KEY_SERIES_DETAILS), false);
                         } else {
                             sl = new ArrayList<>();
                         }
                         sl.add(new Series(details.name, details.position));
-                        mBookData.putString(KEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(sl, '|'));
+                        mBookData.putString(KEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList('|', sl));
                         mBookData.putString(KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
                     }
                 }

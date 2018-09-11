@@ -45,7 +45,6 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
 
     /** Prefix for all preferences */
     public final static String TAG = "field_visibility_";
-    public final static String THUMBNAIL = TAG + "thumbnail";
     private static final ArrayList<FieldInfo> allFields = new ArrayList<>();
     static {
         allFields.add(new FieldInfo(DatabaseDefinitions.DOM_AUTHOR_ID, R.string.author, true));
@@ -57,7 +56,7 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
         allFields.add(new FieldInfo(DatabaseDefinitions.DOM_SERIES_NUM, R.string.series_num, false));
         allFields.add(new FieldInfo(DatabaseDefinitions.DOM_PUBLISHER, R.string.publisher, false));
         allFields.add(new FieldInfo(ColumnInfo.KEY_DATE_PUBLISHED, R.string.date_published, false));
-        allFields.add(new FieldInfo(ColumnInfo.KEY_BOOKSHELF, R.string.bookshelf, false));
+        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_BOOKSHELF_ID, R.string.bookshelf, false));
         allFields.add(new FieldInfo(DatabaseDefinitions.DOM_PAGES, R.string.pages, false));
         allFields.add(new FieldInfo(DatabaseDefinitions.DOM_LIST_PRICE, R.string.list_price, false));
         allFields.add(new FieldInfo(DatabaseDefinitions.DOM_READ, R.string.read, false));
@@ -143,9 +142,9 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
     }
 
     private static class FieldInfo {
-        String name;
-        int resId;
-        boolean compulsory;
+        final String name;
+        final int resId;
+        final boolean compulsory;
 
         FieldInfo(final DomainDefinition domain, final int resId, final boolean compulsory) {
             this(domain.name,resId,compulsory);

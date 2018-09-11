@@ -5,96 +5,99 @@ import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import java.util.Hashtable;
 
 /**
- * Class to handle details of specific scanner interfaces and return a 
+ * Class to handle details of specific scanner interfaces and return a
  * Scanner object to the caller.
- * 
+ *
  * @author pjw
  */
 public class ScannerManager {
-	/** Preference key */
-	public static final String PREF_PREFERRED_SCANNER = "ScannerManager.PreferredScanner";
+    /** Preference key */
+    public static final String PREF_PREFERRED_SCANNER = "ScannerManager.PreferredScanner";
 
-	/** Unique IDs to associate with each supported scanner intent */
-	public static final int SCANNER_ZXING_COMPATIBLE = 1;
-	public static final int SCANNER_PIC2SHOP = 2;
-	public static final int SCANNER_ZXING = 3;
+    /** Unique IDs to associate with each supported scanner intent */
+    public static final int SCANNER_ZXING_COMPATIBLE = 1;
+    public static final int SCANNER_PIC2SHOP = 2;
+    public static final int SCANNER_ZXING = 3;
 
-	/** 
-	 * Support for creating scanner objects on the fly without know which ones are available.
-	 * 
-	 * @author pjw
-	 */
-	private interface ScannerFactory {
-		/** Create a new scanner of the related type */
-		Scanner newInstance();
-		/** Check if this scanner is available */
-		boolean isIntentAvaiable();
-	}
+    /** Collection of ScannerFactory objects */
+    private static final Hashtable<Integer, ScannerFactory> myScannerFactories = new Hashtable<>();
 
-	/**
-	 * Collection of ScannerFactory objects
-	 */
-	private static final Hashtable<Integer,ScannerFactory> myScannerFactories = new Hashtable<>();
-	/*
-	 * Build the collection
-	 */
-	static {
-		myScannerFactories.put(SCANNER_ZXING_COMPATIBLE, new ScannerFactory() {
-			@Override
-			public Scanner newInstance() {
-				return new ZxingScanner(false);
-			}
+    /*
+     * Build the collection
+     */
+    static {
+        myScannerFactories.put(SCANNER_ZXING_COMPATIBLE, new ScannerFactory() {
+            @Override
+            public Scanner newInstance() {
+                return new ZxingScanner(false);
+            }
 
-			@Override
-			public boolean isIntentAvaiable() {
-				return ZxingScanner.isIntentAvailable(false);
-			}});
+            @Override
+            public boolean isIntentAvailable() {
+                return ZxingScanner.isIntentAvailable(false);
+            }
+        });
 
-		myScannerFactories.put(SCANNER_ZXING, new ScannerFactory() {
-			@Override
-			public Scanner newInstance() {
-				return new ZxingScanner(true);
-			}
+        myScannerFactories.put(SCANNER_ZXING, new ScannerFactory() {
+            @Override
+            public Scanner newInstance() {
+                return new ZxingScanner(true);
+            }
 
-			@Override
-			public boolean isIntentAvaiable() {
-				return ZxingScanner.isIntentAvailable(true);
-			}});
+            @Override
+            public boolean isIntentAvailable() {
+                return ZxingScanner.isIntentAvailable(true);
+            }
+        });
 
-		myScannerFactories.put(SCANNER_PIC2SHOP, new ScannerFactory() {
-			@Override
-			public Scanner newInstance() {
-				return new Pic2ShopScanner();
-			}
+        myScannerFactories.put(SCANNER_PIC2SHOP, new ScannerFactory() {
+            @Override
+            public Scanner newInstance() {
+                return new Pic2ShopScanner();
+            }
 
-			@Override
-			public boolean isIntentAvaiable() {
-				return Pic2ShopScanner.isIntentAvailable();
-			}});
-	}
+            @Override
+            public boolean isIntentAvailable() {
+                return Pic2ShopScanner.isIntentAvailable();
+            }
+        });
+    }
 
-	/**
-	 * Return a Scanner object based on the current environment and user preferences.
-	 * 
-	 * @return	A Scanner
-	 */
-	public static Scanner getScanner() {
-		// Find out what the user prefers if any
-		int prefScanner = BookCataloguePreferences.getInt( PREF_PREFERRED_SCANNER, SCANNER_ZXING_COMPATIBLE);
+    /**
+     * Return a Scanner object based on the current environment and user preferences.
+     *
+     * @return A Scanner
+     */
+    public static Scanner getScanner() {
+        // Find out what the user prefers if any
+        int prefScanner = BookCataloguePreferences.getInt(PREF_PREFERRED_SCANNER, SCANNER_ZXING_COMPATIBLE);
 
-		// See if preferred one is present, if so return a new instance
-		ScannerFactory psf = myScannerFactories.get(prefScanner);
-		if (psf != null && psf.isIntentAvaiable()) {
-			return psf.newInstance();
-		}
+        // See if preferred one is present, if so return a new instance
+        ScannerFactory psf = myScannerFactories.get(prefScanner);
+        if (psf != null && psf.isIntentAvailable()) {
+            return psf.newInstance();
+        }
 
-		// Search all supported scanners. If none, just return a Zxing one
-		for(ScannerFactory sf: myScannerFactories.values()) {
-			if (sf != psf && sf.isIntentAvaiable()) {
-				return sf.newInstance();
-			}
-		}
-		return new ZxingScanner(false);
-	}
+        // Search all supported scanners. If none, just return a Zxing one
+        for (ScannerFactory sf : myScannerFactories.values()) {
+            if (sf != psf && sf.isIntentAvailable()) {
+                return sf.newInstance();
+            }
+        }
+        return new ZxingScanner(false);
+    }
+
+    /**
+     * Support for creating scanner objects on the fly without know which ones are available.
+     *
+     * @author pjw
+     */
+    private interface ScannerFactory {
+        /** Create a new scanner of the related type */
+        Scanner newInstance();
+
+        /** Check if this scanner is available */
+        boolean isIntentAvailable();
+    }
 
 }

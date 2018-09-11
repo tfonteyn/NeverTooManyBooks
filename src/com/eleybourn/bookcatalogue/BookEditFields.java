@@ -63,8 +63,7 @@ import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_THUMBNAIL;
 public class BookEditFields extends BookDetailsFragmentAbstract
         implements OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
 
-    public static final String BOOKSHELVES_DIALOG = "bookshelves_dialog";
-    public static final String BKEY_BOOK_DATA = "bookData";
+    public static final String TAG_BOOKSHELVES_DIALOG = "bookshelves_dialog";
     /**
      * Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
      */
@@ -104,7 +103,7 @@ public class BookEditFields extends BookDetailsFragmentAbstract
                         public void onClick(View v) {
                             Intent i = new Intent(getActivity(), EditAuthorListActivity.class);
                             i.putExtra(ColumnInfo.KEY_AUTHOR_ARRAY, mEditManager.getBookData().getAuthors());
-                            i.putExtra(ColumnInfo.KEY_ROWID, mEditManager.getBookData().getRowId());
+                            i.putExtra(ColumnInfo.KEY_ID, mEditManager.getBookData().getRowId());
                             i.putExtra(ColumnInfo.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
                             startActivityForResult(i, ACTIVITY_EDIT_AUTHORS);
                         }
@@ -116,7 +115,7 @@ public class BookEditFields extends BookDetailsFragmentAbstract
                         public void onClick(View v) {
                             Intent i = new Intent(getActivity(), EditSeriesListActivity.class);
                             i.putExtra(ColumnInfo.KEY_SERIES_ARRAY, mEditManager.getBookData().getSeries());
-                            i.putExtra(ColumnInfo.KEY_ROWID, mEditManager.getBookData().getRowId());
+                            i.putExtra(ColumnInfo.KEY_ID, mEditManager.getBookData().getRowId());
                             i.putExtra(ColumnInfo.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
                             startActivityForResult(i, ACTIVITY_EDIT_SERIES);
                         }
@@ -191,7 +190,7 @@ public class BookEditFields extends BookDetailsFragmentAbstract
                             mEditManager.getBookData().getBookshelfText(),
                             mEditManager.getBookData().getBookshelfList()
                     );
-                    frag.show(getFragmentManager(), BOOKSHELVES_DIALOG);
+                    frag.show(getFragmentManager(), TAG_BOOKSHELVES_DIALOG);
                 }
             });
 
@@ -271,7 +270,7 @@ public class BookEditFields extends BookDetailsFragmentAbstract
                 if (extras.containsKey(ColumnInfo.KEY_BOOK)) {
                     throw new RuntimeException("[book] array passed in Intent");
                 } else {
-                    Bundle values = extras.getParcelable(BKEY_BOOK_DATA);
+                    Bundle values = extras.getParcelable(UniqueId.BKEY_BOOK_DATA);
                     if (values != null) {
                         for (Field f : mFields) {
                             if (!f.column.isEmpty() && values.containsKey(f.column)) {
@@ -315,7 +314,7 @@ public class BookEditFields extends BookDetailsFragmentAbstract
             if (currShelf.isEmpty()) {
                 currShelf = mDb.getBookshelfName(1);
             }
-            String encoded_shelf = ArrayUtils.encodeListItem(currShelf, BOOKSHELF_SEPARATOR);
+            String encoded_shelf = ArrayUtils.encodeListItem(BOOKSHELF_SEPARATOR, currShelf);
             Field fe = mFields.getField(R.id.bookshelf);
             fe.setValue(currShelf);
             book.setBookshelfList(encoded_shelf);

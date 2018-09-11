@@ -53,7 +53,6 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
 
@@ -186,7 +185,7 @@ public class StandardDialogs {
                                       final long id,
                                       final Runnable onDeleted) {
 
-        List<Author> authorList = dba.getBookAuthorList(id);
+        ArrayList<Author> authorList = dba.getBookAuthorList(id);
 
         String title;
         try(Cursor cur = dba.fetchBookById(id)) {
@@ -281,19 +280,20 @@ public class StandardDialogs {
      */
     public static void selectItemDialog(LayoutInflater inflater,
                                         String message,
-                                        List<SimpleDialogItem> items,
+                                        ArrayList<SimpleDialogItem> items,
                                         SimpleDialogItem selectedItem,
                                         final SimpleDialogOnClickListener handler) {
         // Get the view and the radio group
         final View root = inflater.inflate(R.layout.dialog_select_from_list, null);
         TextView msg = root.findViewById(R.id.message);
 
-        // Build the base dialog
+        // Build the base dialog and the top message (if any)
         final AlertDialog.Builder builder = new AlertDialog.Builder(inflater.getContext()).setView(root);
         if (message != null && !message.isEmpty()) {
             msg.setText(message);
         } else {
             msg.setVisibility(View.GONE);
+            root.findViewById(R.id.messageBottomDivider).setVisibility(View.GONE);
         }
 
         final AlertDialog dialog = builder.create();
@@ -353,9 +353,9 @@ public class StandardDialogs {
      */
     public static void selectFileDialog(LayoutInflater inflater,
                                         String title,
-                                        List<File> files,
+                                        ArrayList<File> files,
                                         final SimpleDialogOnClickListener handler) {
-        List<SimpleDialogItem> items = new ArrayList<>();
+        ArrayList<SimpleDialogItem> items = new ArrayList<>();
         for (File file : files) {
             items.add(new SimpleDialogFileItem(file));
         }
@@ -368,10 +368,10 @@ public class StandardDialogs {
      */
     public static <T> void selectStringDialog(LayoutInflater inflater,
                                               String title,
-                                              List<T> objects,
+                                              ArrayList<T> objects,
                                               String current,
                                               final SimpleDialogOnClickListener handler) {
-        List<SimpleDialogItem> items = new ArrayList<>();
+        ArrayList<SimpleDialogItem> items = new ArrayList<>();
         SimpleDialogItem selectedItem = null;
         for (T o : objects) {
             SimpleDialogObjectItem item = new SimpleDialogObjectItem(o);
@@ -450,12 +450,8 @@ public class StandardDialogs {
             mObject = object;
         }
 
-        public Object getObject() {
-            return mObject;
-        }
-
         /**
-         * Get a View to display the object
+         * Get a View to display the object -> toString() and put into RadioButton.text
          */
         public View getView(LayoutInflater inflater) {
             View view = inflater.inflate(R.layout.dialog_string_list_item, null);
@@ -470,7 +466,7 @@ public class StandardDialogs {
 
         /**
          * Get the underlying object as a string
-         */
+        */
         @Override
         public String toString() {
             return mObject.toString();
@@ -496,6 +492,7 @@ public class StandardDialogs {
             View v = super.getView(inflater);
             TextView name = v.findViewById(R.id.name);
             name.setCompoundDrawablesWithIntrinsicBounds(mDrawableId, 0, 0, 0);
+            // Now make the actual RadioButton gone
             getSelector(v).setVisibility(View.GONE);
             return v;
         }

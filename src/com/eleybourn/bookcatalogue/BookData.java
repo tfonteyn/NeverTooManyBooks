@@ -21,7 +21,10 @@ package com.eleybourn.bookcatalogue;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.datamanager.DataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
@@ -32,16 +35,6 @@ import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import java.util.ArrayList;
 
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ANTHOLOGY_MASK;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ANTHOLOGY_TITLE_ARRAY;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_ARRAY;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_PAGES;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_READ;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ROWID;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_ARRAY;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SIGNED;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
 
 /**
  * Represents the underlying data for a book.
@@ -50,34 +43,20 @@ import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
  */
 public class BookData extends DataManager {
 
-    /**
-     * Key for special field
-     */
+    /** Key for special field */
     public static final String KEY_ANTHOLOGY = "+IsAnthology";
-    /**
-     * Key for special field
-     */
+    /** Key for special field */
     private static final String KEY_BOOKSHELF_LIST = "+BookshelfList";
-    /**
-     * Key for special field
-     */
+    /** Key for special field */
     private static final String KEY_BOOKSHELF_TEXT = "+BookshelfText";
-    /**
-     * Row ID for book
-     */
+    /** Row ID for book */
     private long mRowId;
 
-    /**
-     * Constructor
-     */
     public BookData() {
         this(0L, null);
     }
 
-    /**
-     * Constructor
-     */
-    public BookData(Long rowId) {
+    public BookData(@Nullable Long rowId) {
         this(rowId, null);
     }
 
@@ -86,7 +65,7 @@ public class BookData extends DataManager {
      *
      * @param src Bundle with book data (may be null)
      */
-    public BookData(Bundle src) {
+    public BookData(@Nullable final Bundle src) {
         this(0L, src);
     }
 
@@ -96,7 +75,7 @@ public class BookData extends DataManager {
      * @param rowId ID of book (may be 0 for new)
      * @param src   Bundle with book data (may be null)
      */
-    public BookData(Long rowId, Bundle src) {
+    public BookData(@Nullable Long rowId, @Nullable final Bundle src) {
         // Save the row, if possible
         if (rowId == null) {
             mRowId = 0;
@@ -119,6 +98,7 @@ public class BookData extends DataManager {
      * @return self, for chaining
      */
     @Override
+    @NonNull
     public DataManager clear() {
         super.clear();
         // Create special validators
@@ -126,16 +106,10 @@ public class BookData extends DataManager {
         return this;
     }
 
-    /**
-     * Accessor
-     */
     public String getBookshelfList() {
         return getString(KEY_BOOKSHELF_LIST);
     }
 
-    /**
-     * Accessor
-     */
     public void setBookshelfList(String encodedList) {
         putString(KEY_BOOKSHELF_LIST, encodedList);
     }
@@ -143,9 +117,10 @@ public class BookData extends DataManager {
     /**
      * Accessor. Return a formatted list of books.
      */
+    @NonNull
     public String getBookshelfText() {
         String list = getBookshelfList();
-        ArrayList<String> items = ArrayUtils.decodeList(list, BookDetailsFragmentAbstract.BOOKSHELF_SEPARATOR);
+        ArrayList<String> items = ArrayUtils.decodeList(BookDetailsFragmentAbstract.BOOKSHELF_SEPARATOR, list);
         if (items.size() == 0)
             return "";
 
@@ -200,19 +175,19 @@ public class BookData extends DataManager {
      * Special Accessor
      */
     public void setAuthorList(ArrayList<Author> list) {
-        putSerializable(KEY_AUTHOR_ARRAY, list);
+        putSerializable(ColumnInfo.KEY_AUTHOR_ARRAY, list);
     }
 
     /**
      * Special Accessor
      */
     public void setSeriesList(ArrayList<Series> list) {
-        putSerializable(KEY_SERIES_ARRAY, list);
+        putSerializable(ColumnInfo.KEY_SERIES_ARRAY, list);
     }
 
     /**
      * Special Accessor.
-     * <p>
+     *
      * Build a formatted string for author list.
      */
     public String getAuthorTextShort() {
@@ -231,7 +206,7 @@ public class BookData extends DataManager {
 
     /**
      * Special Accessor.
-     * <p>
+     *
      * Build a formatted string for series list.
      */
     public String getSeriesTextShort() {
@@ -255,7 +230,7 @@ public class BookData extends DataManager {
      */
     @SuppressWarnings("unchecked")
     public ArrayList<AnthologyTitle> getAnthologyTitles() {
-        ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) getSerializable(KEY_ANTHOLOGY_TITLE_ARRAY);
+        ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) getSerializable(ColumnInfo.KEY_ANTHOLOGY_TITLE_ARRAY);
         if (list == null) {
             list = new ArrayList<>();
         }
@@ -266,7 +241,7 @@ public class BookData extends DataManager {
      * Special Accessor
      */
     public void setAnthologyTitles(ArrayList<AnthologyTitle> list) {
-        putSerializable(KEY_ANTHOLOGY_TITLE_ARRAY, list);
+        putSerializable(ColumnInfo.KEY_ANTHOLOGY_TITLE_ARRAY, list);
     }
 
     /**
@@ -276,7 +251,7 @@ public class BookData extends DataManager {
      */
     @SuppressWarnings("unchecked")
     public ArrayList<Author> getAuthors() {
-        ArrayList<Author> list = (ArrayList<Author>) getSerializable(KEY_AUTHOR_ARRAY);
+        ArrayList<Author> list = (ArrayList<Author>) getSerializable(ColumnInfo.KEY_AUTHOR_ARRAY);
         if (list == null) {
             list = new ArrayList<>();
         }
@@ -290,7 +265,7 @@ public class BookData extends DataManager {
      */
     @SuppressWarnings("unchecked")
     public ArrayList<Series> getSeries() {
-        ArrayList<Series> list = (ArrayList<Series>) getSerializable(KEY_SERIES_ARRAY);
+        ArrayList<Series> list = (ArrayList<Series>) getSerializable(ColumnInfo.KEY_SERIES_ARRAY);
         if (list == null) {
             list = new ArrayList<>();
         }
@@ -301,14 +276,14 @@ public class BookData extends DataManager {
      * Convenience Accessor
      */
     public boolean isRead() {
-        return getInt(KEY_READ) != 0;
+        return getInt(ColumnInfo.KEY_READ) != 0;
     }
 
     /**
      * Convenience Accessor
      */
     public boolean isSigned() {
-        return getInt(KEY_SIGNED) != 0;
+        return getInt(ColumnInfo.KEY_SIGNED) != 0;
     }
 
     /**
@@ -350,8 +325,8 @@ public class BookData extends DataManager {
         try(Cursor bookshelves = db.fetchAllBookshelvesByBook(getRowId())) {
             StringBuilder bookshelves_list = new StringBuilder();
             while (bookshelves.moveToNext()) {
-                String name = bookshelves.getString(bookshelves.getColumnIndex(KEY_BOOKSHELF));
-                String encoded_name = ArrayUtils.encodeListItem(name, BookDetailsFragmentAbstract.BOOKSHELF_SEPARATOR);
+                String name = bookshelves.getString(bookshelves.getColumnIndex(ColumnInfo.KEY_BOOKSHELF));
+                String encoded_name = ArrayUtils.encodeListItem(BookDetailsFragmentAbstract.BOOKSHELF_SEPARATOR, name);
                 if (bookshelves_list.length() == 0) {
                     bookshelves_list.append(encoded_name);
                 } else {
@@ -366,8 +341,8 @@ public class BookData extends DataManager {
      * Build any special purpose validators
      */
     private void initValidators() {
-        addValidator(KEY_TITLE, nonBlankValidator);
-        addValidator(KEY_ANTHOLOGY_MASK, integerValidator);
+        addValidator(ColumnInfo.KEY_TITLE, nonBlankValidator);
+        addValidator(ColumnInfo.KEY_ANTHOLOGY_MASK, integerValidator);
 
         /* Anthology needs special handling, and we use a formatter to do this. If the original
          * value was 0 or 1, then setting/clearing it here should just set the new value to 0 or 1.
@@ -379,26 +354,26 @@ public class BookData extends DataManager {
         addAccessor(KEY_ANTHOLOGY, new DataAccessor() {
             @Override
             public Object get(DataManager data, Datum datum, Bundle rawData) {
-                Integer mask = data.getInt(KEY_ANTHOLOGY_MASK);
+                Integer mask = data.getInt(ColumnInfo.KEY_ANTHOLOGY_MASK);
                 return mask != 0 ? "1" : "0";
             }
 
             @Override
             public void set(DataManager data, Datum datum, Bundle rawData, Object value) {
-                Integer mask = getInt(KEY_ANTHOLOGY_MASK);
+                Integer mask = getInt(ColumnInfo.KEY_ANTHOLOGY_MASK);
                 // Parse the string the CheckBox returns us (0 or 1)
                 if (Convert.toBoolean(value)) {
                     mask |= 1;
                 } else {
                     mask &= 0xFFFFFFFE;
                 }
-                putInt(KEY_ANTHOLOGY_MASK, mask);
+                putInt(ColumnInfo.KEY_ANTHOLOGY_MASK, mask);
 
             }
 
             @Override
             public boolean isPresent(DataManager data, Datum datum, Bundle rawData) {
-                return rawData.containsKey(KEY_ANTHOLOGY_MASK);
+                return rawData.containsKey(ColumnInfo.KEY_ANTHOLOGY_MASK);
             }
 
         });
@@ -422,7 +397,7 @@ public class BookData extends DataManager {
         });
 
         // Whenever the row ID is written, make sure mRowId is updated.
-        addAccessor(KEY_ROWID, new DataAccessor() {
+        addAccessor(ColumnInfo.KEY_ID, new DataAccessor() {
             @Override
             public Object get(DataManager data, Datum datum, Bundle rawData) {
                 return Datum.objectToLong(rawData.get(datum.getKey()));
@@ -441,8 +416,8 @@ public class BookData extends DataManager {
         });
 
 
-        addValidator("list_price", blankOrFloatValidator);
-        addValidator(KEY_PAGES, blankOrIntegerValidator);
+        addValidator(ColumnInfo.KEY_LIST_PRICE, blankOrFloatValidator);
+        addValidator(ColumnInfo.KEY_PAGES, blankOrIntegerValidator);
     }
 
 }
