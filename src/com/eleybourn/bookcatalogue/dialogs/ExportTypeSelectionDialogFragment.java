@@ -16,6 +16,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.io.File;
 import java.util.Date;
+import java.util.Objects;
 
 public class ExportTypeSelectionDialogFragment extends DialogFragment {
     private int mDialogId;
@@ -75,7 +76,7 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
-        mFile = new File(getArguments().getString(UniqueId.BKEY_FILE_SPEC));
+        mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
 
         View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_export_type_selection, null);
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(v).setTitle(R.string.backup_to_archive).create();

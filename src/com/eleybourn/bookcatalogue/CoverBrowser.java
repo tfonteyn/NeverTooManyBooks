@@ -52,7 +52,6 @@ import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import com.eleybourn.bookcatalogue.widgets.PagerLayout;
-import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -100,7 +99,7 @@ public class CoverBrowser {
         mIsbn = isbn;
         mOnImageSelectedListener = onImageSelectedListener;
 
-        mMetric = ImageUtils.getDisplayMetrics(a);;
+        mMetric = ImageUtils.getDisplayMetrics(a);
 
         // Calculate some image sizes to display
         int previewSize = Math.max(mMetric.widthPixels, mMetric.heightPixels) / 5;
@@ -110,7 +109,7 @@ public class CoverBrowser {
         // Create an object to manage the downloaded files
         mFileManager = new FileManager();
 
-        mDialog = new BasicDialog(mActivity);
+        mDialog = new StandardDialogs.BasicDialog(mActivity);
     }
 
     /**

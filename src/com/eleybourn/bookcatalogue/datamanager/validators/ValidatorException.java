@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -24,24 +24,25 @@ import android.content.res.Resources;
 /**
  * Exception class for all validation errors. String ID and args are stored
  * for later retrieval.
- * 
- * @author Philip Warner
  *
+ * @author Philip Warner
  */
 public class ValidatorException extends RuntimeException {
-	// Java likes this
-	public static final long serialVersionUID = 1L;
-	// String ID of resource string
-	private final int mStringId;
-	// Args to pass to format function
-	private final Object[] mArgs;
-	// Constructor
-	public ValidatorException(int stringId, Object[] args) {
-		mStringId = stringId;
-		mArgs = args;
-	}
-	public String getFormattedMessage(Resources res) {
-		String s = res.getString(mStringId);
-		return String.format(s, mArgs);
-	}
+    // Java likes this
+    public static final long serialVersionUID = 1L;
+    // String ID of resource string
+    private final int mStringId;
+    // Args to pass to format function
+    private final Object[] mArgs;
+
+    // Constructor
+    public ValidatorException(int stringId, Object[] args) {
+        mStringId = stringId;
+        mArgs = args;
+    }
+
+    public String getFormattedMessage(Resources res) {
+        String s = res.getString(mStringId);
+        return String.format(s, mArgs);
+    }
 }

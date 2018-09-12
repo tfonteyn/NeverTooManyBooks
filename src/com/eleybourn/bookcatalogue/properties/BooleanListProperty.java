@@ -20,7 +20,7 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
+import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.properties.Property.BooleanValue;
 
@@ -63,12 +63,12 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
 
     @Override
     protected Boolean getGlobalDefault() {
-        return BookCataloguePreferences.getBoolean(getPreferenceKey(), getDefaultValue());
+        return BCPreferences.getBoolean(getPreferenceKey(), getDefaultValue());
     }
 
     @Override
     protected BooleanListProperty setGlobalDefault(Boolean value) {
-        BookCataloguePreferences.setBoolean(getPreferenceKey(), value);
+        BCPreferences.setBoolean(getPreferenceKey(), value);
         return this;
     }
 

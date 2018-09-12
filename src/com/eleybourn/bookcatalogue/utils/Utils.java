@@ -23,6 +23,8 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -30,7 +32,9 @@ import android.text.Spanned;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
 
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -484,12 +488,78 @@ public class Utils {
         return buffer;
     }
 
-    @SuppressWarnings("unused")
-    public static void printStackTrace() {
-        StackTraceElement[] all = Thread.currentThread().getStackTrace();
-        for (StackTraceElement element : all) {
-            System.out.println(element.toString());
+    /**
+     * Join the passed array of strings, with 'delim' between them.
+     *
+     * API 26 needed for {@link String#join(CharSequence, Iterable)} }
+     *
+     * @param delim Delimiter to place between entries
+     * @param sa    Array of strings to join
+     *
+     * @return The joined strings
+     */
+    @NonNull
+    public static String join(@NonNull final String delim, @NonNull final String[] sa) {
+        // Simple case, return empty string
+        if (sa.length <= 0)
+            return "";
+
+        // Initialize with first
+        StringBuilder sb = new StringBuilder(sa[0]);
+
+        if (sa.length > 1) {
+            // If more than one, loop appending delim then string.
+            for (int i = 1; i < sa.length; i++) {
+                sb.append(delim);
+                sb.append(sa[i]);
+            }
         }
+        // Return result
+        return sb.toString();
+    }
+
+    /**
+     * Get a value from a bundle and convert to a long.
+     *
+     * @param b   Bundle
+     * @param key Key in bundle
+     *
+     * @return Result
+     *
+     * @throws NumberFormatException if it was a string with an invalid format
+     */
+    public static long getLongFromBundle(@NonNull final Bundle b, @Nullable final String key)
+            throws NumberFormatException {
+        Object o = b.get(key);
+        if (o instanceof Long) {
+            return (Long) o;
+        }
+
+        if (o instanceof String) {
+            return Long.parseLong((String) o);
+        } else if (o instanceof Integer) {
+            return ((Integer) o).longValue();
+        } else {
+            throw new NumberFormatException("Not a long value");
+        }
+    }
+
+    /**
+     * Format a number of bytes in a human readable form
+     */
+    @NonNull
+    public static String formatFileSize(float space) {
+        String sizeFmt;
+        if (space < 3072) { // Show 'bytes' if < 3k
+            sizeFmt = BookCatalogueApp.getResourceString(R.string.bytes);
+        } else if (space < 250 * 1024) { // Show Kb if less than 250kB
+            sizeFmt = BookCatalogueApp.getResourceString(R.string.kilobytes);
+            space = space / 1024;
+        } else { // Show MB otherwise...
+            sizeFmt = BookCatalogueApp.getResourceString(R.string.megabytes);
+            space = space / (1024 * 1024);
+        }
+        return String.format(sizeFmt, space);
     }
 
 

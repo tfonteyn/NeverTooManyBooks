@@ -31,7 +31,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 import com.eleybourn.bookcatalogue.*;
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
@@ -61,26 +61,26 @@ public class BookUtils {
 		Bundle book = new Bundle();
 		try(Cursor thisBook = dba.fetchBookById(rowId)) {
 			thisBook.moveToFirst();
-			book.putString(ColumnInfo.KEY_TITLE, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_TITLE)));
-			book.putString(ColumnInfo.KEY_ISBN, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_ISBN)));
-			book.putString(ColumnInfo.KEY_PUBLISHER, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_PUBLISHER)));
-			book.putString(ColumnInfo.KEY_DATE_PUBLISHED, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_DATE_PUBLISHED)));
-			book.putString(ColumnInfo.KEY_RATING, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_RATING)));
-			book.putString(ColumnInfo.KEY_READ, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_READ)));
-			book.putString(ColumnInfo.KEY_PAGES, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_PAGES)));
-			book.putString(ColumnInfo.KEY_NOTES, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_NOTES)));
-			book.putString(ColumnInfo.KEY_LIST_PRICE, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_LIST_PRICE)));
-			book.putString(ColumnInfo.KEY_ANTHOLOGY_MASK, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_ANTHOLOGY_MASK)));
-			book.putString(ColumnInfo.KEY_LOCATION, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_LOCATION)));
-			book.putString(ColumnInfo.KEY_READ_START, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_READ_START)));
-			book.putString(ColumnInfo.KEY_READ_END, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_READ_END)));
-			book.putString(ColumnInfo.KEY_FORMAT, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_FORMAT)));
-			book.putString(ColumnInfo.KEY_SIGNED, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_SIGNED)));
-			book.putString(ColumnInfo.KEY_DESCRIPTION, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_DESCRIPTION)));
-			book.putString(ColumnInfo.KEY_GENRE, thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_GENRE)));
+			book.putString(UniqueId.KEY_TITLE, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_TITLE)));
+			book.putString(UniqueId.KEY_ISBN, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_ISBN)));
+			book.putString(UniqueId.KEY_PUBLISHER, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_PUBLISHER)));
+			book.putString(UniqueId.KEY_DATE_PUBLISHED, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_DATE_PUBLISHED)));
+			book.putString(UniqueId.KEY_RATING, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_RATING)));
+			book.putString(UniqueId.KEY_READ, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_READ)));
+			book.putString(UniqueId.KEY_PAGES, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_PAGES)));
+			book.putString(UniqueId.KEY_NOTES, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_NOTES)));
+			book.putString(UniqueId.KEY_LIST_PRICE, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_LIST_PRICE)));
+			book.putString(UniqueId.KEY_ANTHOLOGY_MASK, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_ANTHOLOGY_MASK)));
+			book.putString(UniqueId.KEY_LOCATION, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_LOCATION)));
+			book.putString(UniqueId.KEY_READ_START, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_READ_START)));
+			book.putString(UniqueId.KEY_READ_END, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_READ_END)));
+			book.putString(UniqueId.KEY_FORMAT, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_FORMAT)));
+			book.putString(UniqueId.KEY_SIGNED, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_SIGNED)));
+			book.putString(UniqueId.KEY_DESCRIPTION, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_DESCRIPTION)));
+			book.putString(UniqueId.KEY_GENRE, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_GENRE)));
 			
-			book.putSerializable(ColumnInfo.KEY_AUTHOR_ARRAY, dba.getBookAuthorList(rowId));
-			book.putSerializable(ColumnInfo.KEY_SERIES_ARRAY, dba.getBookSeriesList(rowId));
+			book.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, dba.getBookAuthorList(rowId));
+			book.putSerializable(UniqueId.BKEY_SERIES_ARRAY, dba.getBookSeriesList(rowId));
 			
 			i.putExtra(UniqueId.BKEY_BOOK_DATA, book);
 
@@ -134,10 +134,10 @@ public class BookUtils {
 
 		try(Cursor thisBook = db.fetchBookById(rowId)) {
 			thisBook.moveToFirst();
-			title = thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_TITLE));
-			rating = thisBook.getDouble(thisBook.getColumnIndex(ColumnInfo.KEY_RATING));
-			author = thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_AUTHOR_FORMATTED_GIVEN_FIRST));
-			series = thisBook.getString(thisBook.getColumnIndex(ColumnInfo.KEY_SERIES_FORMATTED));
+			title = thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_TITLE));
+			rating = thisBook.getDouble(thisBook.getColumnIndex(UniqueId.KEY_RATING));
+			author = thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_AUTHOR_FORMATTED_GIVEN_FIRST));
+			series = thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_SERIES_FORMATTED));
 		}
 
 		File image = ImageUtils.fetchThumbnailByUuid(db.getBookUuid(rowId));
@@ -189,10 +189,10 @@ public class BookUtils {
 	 */
     @SuppressWarnings("UnusedReturnValue")
     public static boolean setRead(@NonNull final CatalogueDBAdapter dba, @NonNull final BookData book, boolean read) {
-        int prev = book.getInt(ColumnInfo.KEY_READ);
-        book.putInt(ColumnInfo.KEY_READ, read ? 1 : 0);
+        int prev = book.getInt(UniqueId.KEY_READ);
+        book.putInt(UniqueId.KEY_READ, read ? 1 : 0);
 		if (!dba.updateBook(book.getRowId(), book, 0)) {
-            book.putInt(ColumnInfo.KEY_READ, prev);
+            book.putInt(UniqueId.KEY_READ, prev);
             return false;
         }
         return true;
@@ -201,7 +201,7 @@ public class BookUtils {
 	@SuppressWarnings("UnusedReturnValue")
     public static boolean setRead(@NonNull final CatalogueDBAdapter dba, Long bookId, boolean read) {
         BookData book = new BookData(bookId);
-        book.putBoolean(ColumnInfo.KEY_READ, read);
+        book.putBoolean(UniqueId.KEY_READ, read);
         return dba.updateBook(bookId, book, 0);
     }
 
@@ -210,7 +210,7 @@ public class BookUtils {
         CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         db.open();
         BookData book = new BookData(bookId);
-        book.putBoolean(ColumnInfo.KEY_READ, read);
+        book.putBoolean(UniqueId.KEY_READ, read);
         boolean ok = db.updateBook(bookId, book, 0);
         db.close();
         return ok;

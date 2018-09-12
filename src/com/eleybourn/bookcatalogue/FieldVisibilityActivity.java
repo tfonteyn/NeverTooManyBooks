@@ -27,9 +27,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DomainDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -47,34 +46,34 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
     public final static String TAG = "field_visibility_";
     private static final ArrayList<FieldInfo> allFields = new ArrayList<>();
     static {
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_AUTHOR_ID, R.string.author, true));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_TITLE.name, R.string.title, true));
+        allFields.add(new FieldInfo(UniqueId.KEY_AUTHOR_ID, R.string.author, true));
+        allFields.add(new FieldInfo(UniqueId.KEY_TITLE, R.string.title, true));
 
-        allFields.add(new FieldInfo(ColumnInfo.KEY_THUMBNAIL, R.string.thumbnail, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_ISBN, R.string.isbn, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_SERIES_NAME, R.string.series, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_SERIES_NUM, R.string.series_num, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_PUBLISHER, R.string.publisher, false));
-        allFields.add(new FieldInfo(ColumnInfo.KEY_DATE_PUBLISHED, R.string.date_published, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_BOOKSHELF_ID, R.string.bookshelf, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_PAGES, R.string.pages, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_LIST_PRICE, R.string.list_price, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_READ, R.string.read, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_RATING, R.string.rating, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_NOTES, R.string.notes, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_ANTHOLOGY_MASK, R.string.anthology, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_LOCATION, R.string.location_of_book, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_READ_START, R.string.read_start, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_READ_END, R.string.read_end, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_FORMAT, R.string.format, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_SIGNED, R.string.signed, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_DESCRIPTION, R.string.description, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_GENRE, R.string.genre, false));
-        allFields.add(new FieldInfo(DatabaseDefinitions.DOM_LANGUAGE, R.string.language, false));
+        allFields.add(new FieldInfo(UniqueId.BKEY_THUMBNAIL, R.string.thumbnail, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_ISBN, R.string.isbn, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_SERIES_NAME, R.string.series, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_SERIES_NUM, R.string.series_num, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_PUBLISHER, R.string.publisher, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_DATE_PUBLISHED, R.string.date_published, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_BOOKSHELF, R.string.bookshelf, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_PAGES, R.string.pages, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_LIST_PRICE, R.string.list_price, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_READ, R.string.read, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_RATING, R.string.rating, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_NOTES, R.string.notes, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_ANTHOLOGY_MASK, R.string.anthology, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_LOCATION, R.string.location_of_book, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_READ_START, R.string.read_start, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_READ_END, R.string.read_end, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_FORMAT, R.string.format, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_SIGNED, R.string.signed, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_DESCRIPTION, R.string.description, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_GENRE, R.string.genre, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_LANGUAGE, R.string.language, false));
     }
 
     public static boolean isVisible(String fieldName) {
-        return BookCataloguePreferences.getBoolean(TAG + fieldName, true);
+        return BCPreferences.getBoolean(TAG + fieldName, true);
     }
 
     @Override
@@ -98,7 +97,7 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
      */
     private void setupFields() {
 
-        SharedPreferences mPrefs = getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, MODE_PRIVATE);
+        SharedPreferences mPrefs = getSharedPreferences(BCPreferences.APP_SHARED_PREFERENCES, MODE_PRIVATE);
         //SharedPreferences.Editor ed = mPrefs.edit();
         //ed.putString(STATE_BOOKSHELF, bookshelf);
         //ed.commit();
@@ -121,7 +120,7 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
                 cb.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        SharedPreferences mPrefs = getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, MODE_PRIVATE);
+                        SharedPreferences mPrefs = getSharedPreferences(BCPreferences.APP_SHARED_PREFERENCES, MODE_PRIVATE);
                         SharedPreferences.Editor ed = mPrefs.edit();
                         boolean field_visibility = mPrefs.getBoolean(prefs_name, true);
                         ed.putBoolean(prefs_name, !field_visibility);

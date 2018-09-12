@@ -1,7 +1,6 @@
 package com.eleybourn.bookcatalogue.database;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.CsvImporter;
 import com.eleybourn.bookcatalogue.backup.Importer;
@@ -176,7 +175,7 @@ public class ImportThread extends ManagedTask {
 //		// Version 1->3.3 export with family_name and author_id. Version 3.4+ do not; latest versions
 //		// make an attempt at escaping characters etc to preserve formatting.
 //		boolean fullEscaping;
-//		if (values.containsKey(DatabaseDefinitions.KEY_AUTHOR_ID) && values.containsKey(DatabaseDefinitions.KEY_FAMILY_NAME)) {
+//		if (values.containsKey(DatabaseDefinitions.KEY_AUTHOR_ID) && values.containsKey(DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME)) {
 //			// Old export, or one using old formats
 //			fullEscaping = false;
 //		} else {
@@ -190,10 +189,10 @@ public class ImportThread extends ManagedTask {
 //		// ENHANCE: Only make some columns mandatory if the ID is not in import, or not in DB (ie. if not an update)
 //		// ENHANCE: Export/Import should use GUIDs for book IDs, and put GUIDs on Image file names.
 //		requireColumnOr(values, DatabaseDefinitions.KEY_ID, DatabaseDefinitions.DOM_BOOK_UUID.name);
-//		requireColumnOr(values, DatabaseDefinitions.KEY_FAMILY_NAME,
+//		requireColumnOr(values, DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME,
 //								DatabaseDefinitions.KEY_AUTHOR_FORMATTED,
 //								DatabaseDefinitions.KEY_AUTHOR_NAME,
-//								DatabaseDefinitions.KEY_AUTHOR_DETAILS);
+//								DatabaseDefinitions.BKEY_AUTHOR_DETAILS);
 //
 //		int row = 1; // Start after headings.
 //		boolean inTx = false;
@@ -264,15 +263,15 @@ public class ImportThread extends ManagedTask {
 //				{
 //					// Get the list of authors from whatever source is available.
 //					String authorDetails;
-//					authorDetails = values.getString(DatabaseDefinitions.KEY_AUTHOR_DETAILS);
+//					authorDetails = values.getString(DatabaseDefinitions.BKEY_AUTHOR_DETAILS);
 //					if (authorDetails == null || authorDetails.length() == 0) {
 //						// Need to build it from other fields.
-//						if (values.containsKey(DatabaseDefinitions.KEY_FAMILY_NAME)) {
+//						if (values.containsKey(DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME)) {
 //							// Build from family/given
-//							authorDetails = values.getString(DatabaseDefinitions.KEY_FAMILY_NAME);
+//							authorDetails = values.getString(DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME);
 //							String given = "";
-//							if (values.containsKey(DatabaseDefinitions.KEY_GIVEN_NAMES))
-//								given = values.getString(DatabaseDefinitions.KEY_GIVEN_NAMES);
+//							if (values.containsKey(DatabaseDefinitions.KEY_AUTHOR_GIVEN_NAMES))
+//								given = values.getString(DatabaseDefinitions.KEY_AUTHOR_GIVEN_NAMES);
 //							if (given != null && given.length() > 0)
 //								authorDetails += ", " + given;
 //						} else if (values.containsKey(DatabaseDefinitions.KEY_AUTHOR_NAME)) {
@@ -284,19 +283,19 @@ public class ImportThread extends ManagedTask {
 //
 //					if (authorDetails == null || authorDetails.length() == 0) {
 //						String s = BookCatalogueApp.getResourceString(R.string.column_is_blank);
-//						throw new ImportException(String.format(s, DatabaseDefinitions.KEY_AUTHOR_DETAILS, row));
+//						throw new ImportException(String.format(s, DatabaseDefinitions.BKEY_AUTHOR_DETAILS, row));
 //					}
 //
 //					// Now build the array for authors
 //					ArrayList<Author> aa = Convert.decodeList(authorDetails, '|', false);
 //					Utils.pruneList(mDb, aa);
-//					values.putSerializable(DatabaseDefinitions.KEY_AUTHOR_ARRAY, aa);
+//					values.putSerializable(DatabaseDefinitions.BKEY_AUTHOR_ARRAY, aa);
 //				}
 //
 //				// Keep series handling local
 //				{
 //					String seriesDetails;
-//					seriesDetails = values.getString(DatabaseDefinitions.KEY_SERIES_DETAILS);
+//					seriesDetails = values.getString(DatabaseDefinitions.BKEY_SERIES_DETAILS);
 //					if (seriesDetails == null || seriesDetails.length() == 0) {
 //						// Try to build from SERIES_NAME and SERIES_NUM. It may all be blank
 //						if (values.containsKey(DatabaseDefinitions.KEY_SERIES_NAME)) {
@@ -315,7 +314,7 @@ public class ImportThread extends ManagedTask {
 //					ArrayList<Series> sa = Convert.decodeList(seriesDetails, '|', false);
 //					Utils.pruneSeriesList(sa);
 //					Utils.pruneList(mDb, sa);
-//					values.putSerializable(DatabaseDefinitions.KEY_SERIES_ARRAY, sa);
+//					values.putSerializable(DatabaseDefinitions.BKEY_SERIES_ARRAY, sa);
 //				}
 //				
 //				

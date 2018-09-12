@@ -27,11 +27,11 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.BooksRowView;
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -78,7 +78,7 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_BOOKSHELF;
 
 /**
  * Class to wrap all GoodReads API calls and manage an API connection.
@@ -148,8 +148,8 @@ public class GoodreadsManager {
         mAccessSecret = "";
         mHhasValidCredentials = false;
         // Get the stored token values from prefs, and setup the consumer if present
-        BookCataloguePreferences.setString(ACCESS_TOKEN, "");
-        BookCataloguePreferences.setString(ACCESS_SECRET, "");
+        BCPreferences.setString(ACCESS_TOKEN, "");
+        BCPreferences.setString(ACCESS_SECRET, "");
     }
 
     /**
@@ -164,8 +164,8 @@ public class GoodreadsManager {
 
         // Get the stored token values from prefs, and setup the consumer if present
 
-        mAccessToken = BookCataloguePreferences.getString(ACCESS_TOKEN, "");
-        mAccessSecret = BookCataloguePreferences.getString(ACCESS_SECRET, "");
+        mAccessToken = BCPreferences.getString(ACCESS_TOKEN, "");
+        mAccessSecret = BCPreferences.getString(ACCESS_SECRET, "");
 
         return mAccessToken != null && mAccessSecret != null &&
                 !mAccessToken.isEmpty() && !mAccessSecret.isEmpty();
@@ -246,7 +246,7 @@ public class GoodreadsManager {
      * @return Last date
      */
     public static Date getLastSyncDate() {
-        String last = BookCataloguePreferences.getString(LAST_SYNC_DATE, null);
+        String last = BCPreferences.getString(LAST_SYNC_DATE, null);
         if (last == null || last.isEmpty()) {
             return null;
         } else {
@@ -266,9 +266,9 @@ public class GoodreadsManager {
      */
     public static void setLastSyncDate(Date d) {
         if (d == null) {
-            BookCataloguePreferences.setString(LAST_SYNC_DATE, null);
+            BCPreferences.setString(LAST_SYNC_DATE, null);
         } else {
-            BookCataloguePreferences.setString(LAST_SYNC_DATE, DateUtils.toSqlDateTime(d));
+            BCPreferences.setString(LAST_SYNC_DATE, DateUtils.toSqlDateTime(d));
         }
     }
 
@@ -321,8 +321,8 @@ public class GoodreadsManager {
      */
     private boolean validateCredentials() {
         // Get the stored token values from prefs, and setup the consumer
-        mAccessToken = BookCataloguePreferences.getString(ACCESS_TOKEN, "");
-        mAccessSecret = BookCataloguePreferences.getString(ACCESS_SECRET, "");
+        mAccessToken = BCPreferences.getString(ACCESS_TOKEN, "");
+        mAccessSecret = BCPreferences.getString(ACCESS_SECRET, "");
 
         mConsumer.setTokenWithSecret(mAccessToken, mAccessSecret);
 
@@ -377,7 +377,7 @@ public class GoodreadsManager {
             authUrl = "http://" + authUrl;
 
         // Save the token; this object may well be destroyed before the web page has returned.
-        SharedPreferences.Editor ed = BookCataloguePreferences.edit();
+        SharedPreferences.Editor ed = BCPreferences.edit();
         ed.putString(REQUEST_TOKEN, mConsumer.getToken());
         ed.putString(REQUEST_SECRET, mConsumer.getTokenSecret());
         ed.commit();
@@ -395,8 +395,8 @@ public class GoodreadsManager {
      */
     public void handleAuthentication() throws NotAuthorizedException {
         // Get the saved request tokens.
-        String tokenString = BookCataloguePreferences.getString(REQUEST_TOKEN, "");
-        String secretString = BookCataloguePreferences.getString(REQUEST_SECRET, "");
+        String tokenString = BCPreferences.getString(REQUEST_TOKEN, "");
+        String secretString = BCPreferences.getString(REQUEST_SECRET, "");
 
         if (tokenString.isEmpty() || secretString.isEmpty())
             throw new RuntimeException("Expected a request token to be stored in preferences; none found");
@@ -418,7 +418,7 @@ public class GoodreadsManager {
         mAccessToken = mConsumer.getToken();
         mAccessSecret = mConsumer.getTokenSecret();
 
-        SharedPreferences.Editor ed = BookCataloguePreferences.edit();
+        SharedPreferences.Editor ed = BCPreferences.edit();
         ed.putString(ACCESS_TOKEN, mAccessToken);
         ed.putString(ACCESS_SECRET, mAccessSecret);
         ed.commit();

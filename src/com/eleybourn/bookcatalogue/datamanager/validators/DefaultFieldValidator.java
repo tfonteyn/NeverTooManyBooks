@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -19,50 +19,55 @@
  */
 package com.eleybourn.bookcatalogue.datamanager.validators;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 
 /**
  * Validator to apply a default String value to empty fields.
- * 
- * @author Philip Warner
  *
+ * @author Philip Warner
  */
 public class DefaultFieldValidator implements DataValidator {
-	private final String mDefault;
-	/**
-	 * Allow for no default value.
-	 */
-	public DefaultFieldValidator() {
-		this("");
-	}
-	/**
-	 * Constructor with default value
-	 * @param defaultValue Default to apply
-	 */
-	public DefaultFieldValidator(String defaultValue) {
-		mDefault = defaultValue;
-	}
+    private final String mDefault;
 
-	@Override
-	public void validate(DataManager data, Datum datum, boolean crossValidating) {
-		if (! datum.isVisible()) {
-			// No validation required for invisible fields
-			return;
-		}
-		Object value = data.get(datum);
-		// Default validator does not cross-validate
-		if (crossValidating)
-			return;
+    /**
+     * Allow for no default value.
+     */
+    public DefaultFieldValidator() {
+        this("");
+    }
 
-		try {
-			if (value.toString().trim().isEmpty()) {
-				data.putString(datum, mDefault);
-			}
-			return;
-		} catch (Exception e) {
-			throw new ValidatorException(R.string.vldt_unable_to_get_value, new Object[]{datum.getKey()});
-		}
-	}
+    /**
+     * Constructor with default value
+     *
+     * @param defaultValue Default to apply
+     */
+    public DefaultFieldValidator(String defaultValue) {
+        mDefault = defaultValue;
+    }
+
+    @Override
+    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, boolean crossValidating)
+            throws ValidatorException {
+        if (!datum.isVisible()) {
+            // No validation required for invisible fields
+            return;
+        }
+        Object value = data.get(datum);
+        // Default validator does not cross-validate
+        if (crossValidating)
+            return;
+
+        try {
+            if (value.toString().trim().isEmpty()) {
+                data.putString(datum, mDefault);
+            }
+            return;
+        } catch (Exception e) {
+            throw new ValidatorException(R.string.vldt_unable_to_get_value, new Object[]{datum.getKey()});
+        }
+    }
 }

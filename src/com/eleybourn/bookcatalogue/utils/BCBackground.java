@@ -33,8 +33,8 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.ListView;
 
+import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
@@ -89,7 +89,7 @@ public class BCBackground {
     //FIXME
     private static void privateInit(View root, boolean bright) {
             try {
-                if (BookCataloguePreferences.getDisableBackgroundImage()) {
+                if (BCPreferences.getDisableBackgroundImage()) {
                     final int backgroundColor = BookCatalogueApp.getBackgroundColor();
                     if (BuildConfig.DEBUG) {
                         System.out.println("init: 0x" + Integer.toHexString(backgroundColor));
@@ -121,7 +121,7 @@ public class BCBackground {
     public static void init(View root, ListView lv, View header) {
             Drawable d = null;
             try {
-                if (BookCataloguePreferences.getDisableBackgroundImage()) {
+                if (BCPreferences.getDisableBackgroundImage()) {
                     d = makeTiledBackground(false);
                 }
             } catch (Exception e) {

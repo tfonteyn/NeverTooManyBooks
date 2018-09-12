@@ -38,7 +38,6 @@ import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
@@ -139,7 +138,7 @@ public class BookEditLoaned extends BookEditFragmentAbstract {
 
     private void saveLoan(@NonNull final String friend) {
         BookData values = mEditManager.getBookData();
-        values.putString(ColumnInfo.KEY_LOANED_TO, friend);
+        values.putString(UniqueId.KEY_LOANED_TO, friend);
         mDb.createLoan(values, true);
     }
 

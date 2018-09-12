@@ -24,7 +24,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import com.eleybourn.bookcatalogue.*;
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
+import com.eleybourn.bookcatalogue.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler;
@@ -255,7 +256,7 @@ class ImportAllTask extends GenericTask {
 		if (mBookshelfLookup == null) {
 			mBookshelfLookup = new Hashtable<>();
 			try(Cursor c = db.fetchAllBookshelves()) {
-				int bsCol = c.getColumnIndex(ColumnInfo.KEY_BOOKSHELF);
+				int bsCol = c.getColumnIndex(UniqueId.KEY_BOOKSHELF);
 				while (c.moveToNext()) {
 					String name = c.getString(bsCol);
 					mBookshelfLookup.put(GoodreadsManager.canonicalizeBookshelfName(name), name);
@@ -279,7 +280,7 @@ class ImportAllTask extends GenericTask {
 		if (!isbn.isEmpty())
 			isbns.add(isbn);
 
-		isbn = review.getString(ColumnInfo.KEY_ISBN).trim();
+		isbn = review.getString(UniqueId.KEY_ISBN).trim();
 		if (!isbn.isEmpty())
 			isbns.add(isbn);
 
@@ -291,7 +292,7 @@ class ImportAllTask extends GenericTask {
 	 */
 	private void updateBook(CatalogueDBAdapter db, BooksRowView rv, Bundle review) {
 		// Get last date book was sent to GR (may be null)
-		final String lastGrSync = rv.getString(DOM_LAST_GOODREADS_SYNC_DATE.name);
+		final String lastGrSync = rv.getString(DOM_GOODREADS_LAST_SYNC_DATE.name);
 		// If the review has an 'updated' date, then see if we can compare to book
 		if (lastGrSync != null && review.containsKey(UPDATED)) {
 			final String lastUpdate = review.getString(ListReviewsFieldNames.UPDATED);
@@ -314,7 +315,7 @@ class ImportAllTask extends GenericTask {
 	private void createBook(CatalogueDBAdapter db, Bundle review) {
 		BookData book = buildBundle(db, null, review);
 		long id = db.createBook(book, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
-		if (book.getBoolean(ColumnInfo.KEY_THUMBNAIL)) {
+		if (book.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
 			String uuid = db.getBookUuid(id);
 			File thumb = ImageUtils.getTempThumbnail();
 			File real = ImageUtils.fetchThumbnailByUuid(uuid);
@@ -345,7 +346,7 @@ class ImportAllTask extends GenericTask {
 		// If it has a rating or a 'read_end' date, assume it's read. If these are missing then
 		// DO NOT overwrite existing data since it *may* be read even without these fields.
 		if ( (rating != null && rating > 0) || (readEnd != null && readEnd.length() > 0) ) {
-			book.putBoolean(ColumnInfo.KEY_READ, true);
+			book.putBoolean(UniqueId.KEY_READ, true);
 		}
 
 		addStringIfNonBlank(review, ListReviewsFieldNames.DB_TITLE, book, ListReviewsFieldNames.DB_TITLE);
@@ -364,14 +365,14 @@ class ImportAllTask extends GenericTask {
 				}
 			}
 			if (bestLen > 0) {
-				book.putString(ColumnInfo.KEY_ISBN, best);
+				book.putString(UniqueId.KEY_ISBN, best);
 			}
 		}
 
         /* Build the pub date based on the components */
         String pubDate = GoodreadsManager.buildDate(review, ListReviewsFieldNames.PUB_YEAR, ListReviewsFieldNames.PUB_MONTH, ListReviewsFieldNames.PUB_DAY, null);
         if (pubDate != null && !pubDate.isEmpty())
-        	book.putString(ColumnInfo.KEY_DATE_PUBLISHED, pubDate);
+        	book.putString(UniqueId.KEY_DATE_PUBLISHED, pubDate);
         
         ArrayList<Bundle> grAuthors = review.getParcelableArrayList(ListReviewsFieldNames.AUTHORS);
         if (grAuthors == null) {
@@ -394,7 +395,7 @@ class ImportAllTask extends GenericTask {
         		authors.add(new Author(name));
         	}
         }
-        book.putSerializable(ColumnInfo.KEY_AUTHOR_ARRAY, authors);
+        book.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, authors);
 
         if (rv == null) {
         	// Use the GR added date for new books
@@ -421,8 +422,8 @@ class ImportAllTask extends GenericTask {
         /*
          * Cleanup the title by removing series name, if present
          */
-        if (book.containsKey(ColumnInfo.KEY_TITLE)) {
-			String thisTitle = book.getString(ColumnInfo.KEY_TITLE);
+        if (book.containsKey(UniqueId.KEY_TITLE)) {
+			String thisTitle = book.getString(UniqueId.KEY_TITLE);
 			Series.SeriesDetails details = Series.findSeries(thisTitle);
 			if (details != null && details.name.length() > 0) {
 				ArrayList<Series> allSeries;
@@ -432,10 +433,10 @@ class ImportAllTask extends GenericTask {
 					allSeries = db.getBookSeriesList(rv.getId());
 
 				allSeries.add(new Series(details.name, details.position));
-				book.putString(ColumnInfo.KEY_TITLE, thisTitle.substring(0, details.startChar-1));
+				book.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar-1));
 
 				Utils.pruneSeriesList(allSeries);
-		        book.putSerializable(ColumnInfo.KEY_SERIES_ARRAY, allSeries);
+		        book.putSerializable(UniqueId.BKEY_SERIES_ARRAY, allSeries);
 			}
         }
 
@@ -464,7 +465,7 @@ class ImportAllTask extends GenericTask {
         // We need to set BOTH of these fields, otherwise the add/update method will set the
         // last_update_date for us, and that will most likely be set ahead of the GR update date
         Date now = new Date();
-        book.putString(DOM_LAST_GOODREADS_SYNC_DATE.name, DateUtils.toSqlDateTime(now));
+        book.putString(DOM_GOODREADS_LAST_SYNC_DATE.name, DateUtils.toSqlDateTime(now));
         book.putString(DOM_LAST_UPDATE_DATE.name, DateUtils.toSqlDateTime(now));
 
         return book;

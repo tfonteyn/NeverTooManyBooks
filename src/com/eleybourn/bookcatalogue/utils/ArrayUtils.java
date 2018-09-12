@@ -24,9 +24,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.AnthologyTitle;
 import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.Series;
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
+import com.eleybourn.bookcatalogue.UniqueId;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,13 +36,164 @@ public class ArrayUtils<T> {
 
     private static ArrayUtils<Author> mAuthorUtils = null;
     private static ArrayUtils<Series> mSeriesUtils = null;
+    private static ArrayUtils<AnthologyTitle> mAnthologyUtils = null;
+
     private Factory<T> mFactory;
 
+    @SuppressWarnings("unused")
     private ArrayUtils() {
     }
 
     private ArrayUtils(Factory<T> factory) {
         mFactory = factory;
+    }
+
+
+    @NonNull
+    public static ArrayUtils<Author> getAuthorUtils() {
+        if (mAuthorUtils == null) {
+            mAuthorUtils = new ArrayUtils<>(new Factory<Author>() {
+                @Override
+                @NonNull
+                public Author get(@NonNull final String source) {
+                    return new Author(source);
+                }
+            });
+        }
+        return mAuthorUtils;
+    }
+
+    @NonNull
+    public static ArrayUtils<Series> getSeriesUtils() {
+        if (mSeriesUtils == null) {
+            mSeriesUtils = new ArrayUtils<>(new Factory<Series>() {
+                @Override
+                @NonNull
+                public Series get(@NonNull final String source) {
+                    return new Series(source);
+                }
+            });
+        }
+        return mSeriesUtils;
+    }
+
+    @NonNull
+    public static ArrayUtils<AnthologyTitle> getAnthologyTitleUtils() {
+        if (mAnthologyUtils == null) {
+            mAnthologyUtils = new ArrayUtils<>(new Factory<AnthologyTitle>() {
+                @Override
+                @NonNull
+                public AnthologyTitle get(@NonNull final String source) {
+                    return new AnthologyTitle(source);
+                }
+            });
+        }
+        return mAnthologyUtils;
+    }
+    /**
+     * Utility routine to get an author list from the intent extras
+     *
+     * @param b Bundle with author list
+     *
+     * @return List of authors
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public static ArrayList<Author> getAuthorsFromBundle(@NonNull final Bundle b) {
+        return (ArrayList<Author>) b.getSerializable(UniqueId.BKEY_AUTHOR_ARRAY);
+    }
+
+    /**
+     * Utility routine to get a series list from the intent extras
+     *
+     * @param b Bundle with series list
+     *
+     * @return List of series
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public static ArrayList<Series> getSeriesFromBundle(@NonNull final Bundle b) {
+        return (ArrayList<Series>) b.getSerializable(UniqueId.BKEY_SERIES_ARRAY);
+    }
+
+    /**
+     * Utility routine to get a anthology titles list from the intent extras
+     *
+     * @param b Bundle with anthology titles list
+     *
+     * @return List of series
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public static ArrayList<AnthologyTitle> getAnthologyTitleFromBundle(@NonNull final Bundle b) {
+        return (ArrayList<AnthologyTitle>) b.getSerializable(UniqueId.BKEY_ANTHOLOGY_TITLE_ARRAY);
+    }
+
+    /**
+     * Utility routine to get the list from the passed bundle. Added to reduce lint warnings...
+     *
+     * @param b   Bundle containing list
+     * @param key element to get
+     *
+     * @return List
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public static <T> ArrayList<T> getListFromBundle(@NonNull final Bundle b, @Nullable final String key) {
+        return (ArrayList<T>) b.getSerializable(key);
+    }
+
+    /**
+     * Utility routine to get the series from the passed intent. Added to reduce lint warnings...
+     *
+     * @param i Intent containing list
+     *
+     * @return List
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public static ArrayList<Author> getAuthorFromIntentExtras(@NonNull final Intent i) {
+        return (ArrayList<Author>) i.getSerializableExtra(UniqueId.BKEY_AUTHOR_ARRAY);
+    }
+
+    /**
+     * Utility routine to get the series from the passed intent. Added to reduce lint warnings...
+     *
+     * @param i Intent containing list
+     *
+     * @return List
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public static ArrayList<Series> getSeriesFromIntentExtras(@NonNull final Intent i) {
+        return (ArrayList<Series>) i.getSerializableExtra(UniqueId.BKEY_SERIES_ARRAY);
+    }
+
+    /**
+     * Utility routine to get the series from the passed intent. Added to reduce lint warnings...
+     *
+     * @param i Intent containing list
+     *
+     * @return List
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public static ArrayList<AnthologyTitle> getAnthologyTitleFromIntentExtras(@NonNull final Intent i) {
+        return (ArrayList<AnthologyTitle>) i.getSerializableExtra(UniqueId.BKEY_ANTHOLOGY_TITLE_ARRAY);
+    }
+
+    /**
+     * Utility routine to get the list from the passed intent. Added to reduce lint warnings...
+     *
+     * @param i   Intent containing list
+     * @param key element to get
+     *
+     * @return List, or null when not present in the intent extras
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public static <T> ArrayList<T> getListFromIntentExtras(@NonNull final Intent i, @Nullable final String key) {
+        return (ArrayList<T>) i.getSerializableExtra(key);
     }
 
     /**
@@ -158,9 +310,10 @@ public class ArrayUtils<T> {
      * Add the current text data to the collection if not present, otherwise
      * append the data as a list.
      *
-     * @param key Key for data to add
+     * @param key   Key for data to add
+     * @param value Data to add
      */
-    public static void appendOrAdd(@NonNull final Bundle values, @Nullable final String key, @Nullable final String value) {
+    public static void appendOrAdd(@NonNull final Bundle values, @Nullable final String key, @NonNull final String value) {
         String s = encodeListItem('|', value);
         if (!values.containsKey(key) || values.getString(key).isEmpty()) {
             values.putString(key, s);
@@ -168,113 +321,6 @@ public class ArrayUtils<T> {
             String curr = values.getString(key);
             values.putString(key, curr + "|" + s);
         }
-    }
-
-    @NonNull
-    public static ArrayUtils<Author> getAuthorUtils() {
-        if (mAuthorUtils == null) {
-            mAuthorUtils = new ArrayUtils<>(new Factory<Author>() {
-                @Override
-                @NonNull
-                public Author get(@NonNull final String source) {
-                    return new Author(source);
-                }
-            });
-        }
-        return mAuthorUtils;
-    }
-
-    @NonNull
-    public static ArrayUtils<Series> getSeriesUtils() {
-        if (mSeriesUtils == null) {
-            mSeriesUtils = new ArrayUtils<>(new Factory<Series>() {
-                @Override
-                @NonNull
-                public Series get(@NonNull final String source) {
-                    return new Series(source);
-                }
-            });
-        }
-        return mSeriesUtils;
-    }
-
-    /**
-     * Utility routine to get an author list from the intent extras
-     *
-     * @param b		Bundle with author list
-     * @return		List of authors
-     */
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public static ArrayList<Author> getAuthorsFromBundle(@NonNull final Bundle b) {
-        return (ArrayList<Author>) b.getSerializable(ColumnInfo.KEY_AUTHOR_ARRAY);
-    }
-
-    /**
-     * Utility routine to get a series list from the intent extras
-     *
-     * @param b		Bundle with series list
-
-     * @return		List of series
-     */
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public static ArrayList<Series> getSeriesFromBundle(@NonNull final Bundle b) {
-        return (ArrayList<Series>) b.getSerializable(ColumnInfo.KEY_SERIES_ARRAY);
-    }
-
-    /**
-     * Utility routine to get the list from the passed bundle. Added to reduce lint warnings...
-     *
-     * @param b		Bundle containing list
-     * @param key   element to get
-     *
-     * @return		List
-     */
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public static <T> ArrayList<T> getListFromBundle(@NonNull final Bundle b, @Nullable final String key) {
-        return (ArrayList<T>) b.getSerializable(key);
-    }
-
-    /**
-     * Utility routine to get the series from the passed intent. Added to reduce lint warnings...
-     *
-     * @param i		Intent containing list
-     *
-     * @return		List
-     */
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public static ArrayList<Author> getAuthorFromIntentExtras(@NonNull final Intent i) {
-        return (ArrayList<Author>) i.getSerializableExtra(ColumnInfo.KEY_AUTHOR_ARRAY);
-    }
-
-    /**
-     * Utility routine to get the series from the passed intent. Added to reduce lint warnings...
-     *
-     * @param i		Intent containing list
-     *
-     * @return		List
-     */
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public static ArrayList<Series> getSeriesFromIntentExtras(@NonNull final Intent i) {
-        return (ArrayList<Series>) i.getSerializableExtra(ColumnInfo.KEY_SERIES_ARRAY);
-    }
-
-    /**
-     * Utility routine to get the list from the passed intent. Added to reduce lint warnings...
-     *
-     * @param i		Intent containing list
-     * @param key   element to get
-     *
-     * @return		List, or null when not present in the intent extras
-     */
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public static <T> ArrayList<T> getListFromIntentExtras(@NonNull final Intent i, @Nullable final String key) {
-        return (ArrayList<T>) i.getSerializableExtra(key);
     }
 
     @NonNull

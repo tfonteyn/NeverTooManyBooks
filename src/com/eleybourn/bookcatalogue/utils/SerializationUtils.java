@@ -43,23 +43,12 @@ public class SerializationUtils {
 	 */
 	public static byte[] serializeObject(Serializable o) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ObjectOutput out;
-		try {
-			out = new ObjectOutputStream(bos);
+		try (ObjectOutput out = new ObjectOutputStream(bos)) {
 			out.writeObject(o);
-			out.close();
-		} catch (Exception e) {
-			out = null;
+		} catch (IOException e) {
+			return null;
 		}
-
-		// Get the bytes of the serialized object
-		byte[] buf;
-		if (out != null) {
-			buf = bos.toByteArray();
-		} else {
-			buf = null; //new byte[]{};
-		}
-		return buf;
+		return bos.toByteArray();
 	}
 
 	/**
@@ -81,10 +70,8 @@ public class SerializationUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T deserializeObject(byte[] blob) throws DeserializationException {
-		try {
-			ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(blob));
-			Object o = in.readObject();
-		    return (T)o;
+		try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(blob))) {
+		    return (T)in.readObject();
 		} catch (ClassCastException | ClassNotFoundException | IOException e) {
 			throw new DeserializationException(e);
 		}

@@ -20,7 +20,7 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
+import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.properties.Property.IntegerValue;
 
@@ -54,12 +54,12 @@ public class IntegerListProperty extends ListProperty<Integer> implements Intege
 
     @Override
     protected Integer getGlobalDefault() {
-        return BookCataloguePreferences.getInt(getPreferenceKey(), getDefaultValue());
+        return BCPreferences.getInt(getPreferenceKey(), getDefaultValue());
     }
 
     @Override
     protected IntegerListProperty setGlobalDefault(Integer value) {
-        BookCataloguePreferences.setInt(getPreferenceKey(), value);
+        BCPreferences.setInt(getPreferenceKey(), value);
         return this;
     }
 

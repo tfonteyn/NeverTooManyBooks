@@ -48,15 +48,16 @@ import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.booklist.*;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder.BookRowInfo;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
-import com.eleybourn.bookcatalogue.database.TrackedCursor;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogMenuItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickListener;
-import com.eleybourn.bookcatalogue.utils.HintManager;
+import com.eleybourn.bookcatalogue.searches.SearchCatalogue;
+import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
@@ -228,9 +229,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             mDb.open();
 
             // Restore bookshelf and position
-            mCurrentBookshelf = BookCataloguePreferences.getString(PREF_BOOKSHELF, mCurrentBookshelf);
-            mTopRow = BookCataloguePreferences.getInt(PREF_TOP_ROW, 0);
-            mTopRowTop = BookCataloguePreferences.getInt(PREF_TOP_ROW_TOP, 0);
+            mCurrentBookshelf = BCPreferences.getString(PREF_BOOKSHELF, mCurrentBookshelf);
+            mTopRow = BCPreferences.getInt(PREF_TOP_ROW, 0);
+            mTopRowTop = BCPreferences.getInt(PREF_TOP_ROW_TOP, 0);
 
             // Restore view style
             refreshStyle();
@@ -361,7 +362,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 startActivity(new Intent(this, BooklistPreferencesActivity.class));
                 return true;
             case R.id.nav_other_prefs:
-                startActivity(new Intent(this, OtherPreferences.class));
+                startActivity(new Intent(this, PreferencesActivity.class));
                 return true;
             case R.id.nav_admin:
                 startActivity(new Intent(this, AdministrationFunctions.class));
@@ -742,11 +743,11 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             // Make sure we have a style chosen
             BooklistStyles styles = BooklistStyles.getAllStyles(mDb);
             if (mCurrentStyle == null) {
-                String prefStyle = BookCataloguePreferences.getBookListStyle(getString(R.string.sort_author_series));
+                String prefStyle = BCPreferences.getBookListStyle(getString(R.string.sort_author_series));
                 mCurrentStyle = styles.findCanonical(prefStyle);
                 if (mCurrentStyle == null)
                     mCurrentStyle = styles.get(0);
-                BookCataloguePreferences.setString(BookCataloguePreferences.PREF_BOOKLIST_STYLE, mCurrentStyle.getCanonicalName());
+                BCPreferences.setString(BCPreferences.PREF_BOOKLIST_STYLE, mCurrentStyle.getCanonicalName());
             }
 
             // get a new builder and add the required extra domains
@@ -779,7 +780,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         if (mIsDead)
             return;
 
-        final Editor ed = BookCataloguePreferences.edit();
+        final Editor ed = BCPreferences.edit();
 
         // Save position in list
         if (mListHasBeenLoaded) {
@@ -886,7 +887,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 if (new_bookshelf != null && !new_bookshelf.equalsIgnoreCase(mCurrentBookshelf)) {
                     mCurrentBookshelf = new_bookshelf;
                     // save the current bookshelf into the preferences
-                    SharedPreferences.Editor ed = BookCataloguePreferences.edit();
+                    SharedPreferences.Editor ed = BCPreferences.edit();
                     ed.putString(PREF_BOOKSHELF, mCurrentBookshelf);
                     ed.commit();
                     setupList(true);
@@ -1020,8 +1021,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         switch (requestCode) {
             case UniqueId.ACTIVITY_CREATE_BOOK_SCAN:
                 try {
-                    if (intent != null && intent.hasExtra(ColumnInfo.KEY_ID)) {
-                        long newId = intent.getLongExtra(ColumnInfo.KEY_ID, 0);
+                    if (intent != null && intent.hasExtra(UniqueId.KEY_ID)) {
+                        long newId = intent.getLongExtra(UniqueId.KEY_ID, 0);
                         if (newId != 0) {
                             mMarkBookId = newId;
                         }
@@ -1039,8 +1040,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             case UniqueId.ACTIVITY_VIEW_BOOK:
             case UniqueId.ACTIVITY_EDIT_BOOK:
                 try {
-                    if (intent != null && intent.hasExtra(ColumnInfo.KEY_ID)) {
-                        long id = intent.getLongExtra(ColumnInfo.KEY_ID, 0);
+                    if (intent != null && intent.hasExtra(UniqueId.KEY_ID)) {
+                        long id = intent.getLongExtra(UniqueId.KEY_ID, 0);
                         if (id != 0) {
                             mMarkBookId = id;
                         }
@@ -1118,7 +1119,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         String styleName;
 
         if (mCurrentStyle == null) {
-            styleName = BookCataloguePreferences.getString(PREF_LIST_STYLE, "");
+            styleName = BCPreferences.getString(PREF_LIST_STYLE, "");
         } else {
             styleName = mCurrentStyle.getCanonicalName();
         }

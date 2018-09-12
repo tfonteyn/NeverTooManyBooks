@@ -24,7 +24,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.baseactivity.PreferencesBase;
+import com.eleybourn.bookcatalogue.baseactivity.PreferencesBaseActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.properties.BooleanListProperty;
@@ -34,19 +34,20 @@ import com.eleybourn.bookcatalogue.properties.Properties;
 import com.eleybourn.bookcatalogue.properties.Property;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.ValuePropertyWithGlobalDefault;
-import com.eleybourn.bookcatalogue.utils.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.HintManager;
 
 /**
  * Activity to manage the preferences associate with Book lists (and the BooksOnBookshelf activity).
  *
  * @author Philip Warner
  */
-public class BooklistPreferencesActivity extends PreferencesBase {
+public class BooklistPreferencesActivity extends PreferencesBaseActivity {
 
     // ID values for state preservation property
     public static final int BOOKLISTS_ALWAYS_EXPANDED = 1;
     public static final int BOOKLISTS_ALWAYS_COLLAPSED = 2;
     public static final int BOOKLISTS_STATE_PRESERVED = 3;
+
     /** Prefix for all preferences */
     private static final String TAG = "BookList.Global";
     /** Show flat backgrounds in Book lists */
@@ -59,6 +60,8 @@ public class BooklistPreferencesActivity extends PreferencesBase {
     private static final String PREF_CHANGED = TAG + ".PrefChanged";
     /** Always expand/collapse/preserve book list state */
     private static final String PREF_BOOKLISTS_STATE = TAG + ".BooklistState";
+
+
     /** Booklist state preservation property */
     private static final ItemEntries<Integer> mBooklistStateListItems = new ItemEntries<>();
     private static final IntegerListProperty mBooklistStateProperty = new IntegerListProperty(
@@ -66,6 +69,7 @@ public class BooklistPreferencesActivity extends PreferencesBase {
             PREF_BOOKLISTS_STATE,
             PropertyGroup.GRP_GENERAL,
             R.string.book_list_state, null, PREF_BOOKLISTS_STATE, BOOKLISTS_ALWAYS_EXPANDED);
+
     /** Flat Backgrounds property definition */
     private static final ItemEntries<Boolean> mFlatBackgroundListItems = new ItemEntries<>();
     private static final BooleanListProperty mFlatBackgroundProperty = new BooleanListProperty(
@@ -73,6 +77,7 @@ public class BooklistPreferencesActivity extends PreferencesBase {
             PREF_FLAT_BACKGROUND,
             PropertyGroup.GRP_GENERAL,
             R.string.booklist_background_style, null, PREF_FLAT_BACKGROUND, false);
+
     /** Enable Thumbnail Cache property definition */
     private static final ItemEntries<Boolean> mCacheThumbnailsListItems = new ItemEntries<>();
     private static final BooleanListProperty mCacheThumbnailsProperty = new BooleanListProperty(
@@ -80,6 +85,7 @@ public class BooklistPreferencesActivity extends PreferencesBase {
             PREF_CACHE_THUMBNAILS,
             PropertyGroup.GRP_THUMBNAILS,
             R.string.resizing_cover_thumbnails, null, PREF_CACHE_THUMBNAILS, false);
+
     /** Enable Background Thumbnail fetch property definition */
     private static final ItemEntries<Boolean> mBackgroundThumbnailsListItems = new ItemEntries<>();
     private static final BooleanListProperty mBackgroundThumbnailsProperty = new BooleanListProperty(
@@ -88,30 +94,19 @@ public class BooklistPreferencesActivity extends PreferencesBase {
             PropertyGroup.GRP_THUMBNAILS,
             R.string.generating_cover_thumbnails, null, PREF_BACKGROUND_THUMBNAILS, false);
 
-    static {
-        mBooklistStateListItems.add(null, R.string.use_default_setting);
-        mBooklistStateListItems.add(BOOKLISTS_ALWAYS_EXPANDED, R.string.always_start_booklists_expanded);
-        mBooklistStateListItems.add(BOOKLISTS_ALWAYS_COLLAPSED, R.string.always_start_booklists_collapsed);
-        mBooklistStateListItems.add(BOOKLISTS_STATE_PRESERVED, R.string.remember_booklists_state);
-        mBooklistStateProperty.setGlobal(true);
-    }
 
     static {
         mFlatBackgroundListItems.add(null, R.string.use_default_setting);
         mFlatBackgroundListItems.add(false, R.string.textured_backgroud);
         mFlatBackgroundListItems.add(true, R.string.plain_background_b_reduces_flicker_b);
         mFlatBackgroundProperty.setGlobal(true);
-    }
 
-    static {
         mCacheThumbnailsListItems.add(null, R.string.use_default_setting);
         mCacheThumbnailsListItems.add(false, R.string.resize_each_time);
         mCacheThumbnailsListItems.add(true, R.string.cache_resized_thumbnails_for_later_use);
         mCacheThumbnailsProperty.setWeight(100);
         mCacheThumbnailsProperty.setGlobal(true);
-    }
 
-    static {
         mBackgroundThumbnailsListItems.add(null, R.string.use_default_setting);
         mBackgroundThumbnailsListItems.add(false, R.string.generate_immediately);
         mBackgroundThumbnailsListItems.add(true, R.string.use_background_thread);

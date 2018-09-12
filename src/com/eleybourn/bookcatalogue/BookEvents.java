@@ -29,16 +29,19 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+
+import com.eleybourn.bookcatalogue.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.searches.goodreads.SendOneBookTask;
 import com.eleybourn.bookcatalogue.utils.BCQueueManager;
-import com.eleybourn.bookcatalogue.utils.HintManager.HintOwner;
+import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import net.philipwarner.taskqueue.*;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
 
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ID;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_ID;
 
 /**
  * Class to define all book-related events that may be stored in the QueueManager.

@@ -24,6 +24,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -60,7 +61,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
     /**
      * Constructor that will attempt to parse a single string into an author name.
      */
-    public Author(String name) {
+    public Author(@NonNull final String name) {
         id = 0;
         fromString(name);
     }
@@ -71,7 +72,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      * @param family Family name
      * @param given  Given names
      */
-    Author(String family, String given) {
+    Author(@NonNull final String family, @NonNull final String given) {
         this(0L, family, given);
     }
 

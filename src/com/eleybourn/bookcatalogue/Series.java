@@ -25,6 +25,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.Serializable;
@@ -55,7 +56,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 
     private static final String SERIES_REGEX_SUFFIX =
             BookCatalogueApp.getResourceString(R.string.series_number_prefixes)
-                    /**
+                    /*
                      * Trim extraneous punctuation and whitespace from the titles and authors
                      *
                      * Original code had:

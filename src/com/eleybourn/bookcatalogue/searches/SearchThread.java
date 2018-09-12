@@ -31,8 +31,8 @@ import com.eleybourn.bookcatalogue.utils.TaskManager;
 
 import java.util.ArrayList;
 
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_DETAILS;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
+import static com.eleybourn.bookcatalogue.UniqueId.BKEY_SERIES_DETAILS;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_TITLE;
 
 abstract public class SearchThread extends ManagedTask {
     protected static boolean mFetchThumbnail;
@@ -84,13 +84,13 @@ abstract public class SearchThread extends ManagedTask {
                     SeriesDetails details = Series.findSeries(thisTitle);
                     if (details != null && !details.name.isEmpty()) {
                         ArrayList<Series> sl;
-                        if (mBookData.containsKey(KEY_SERIES_DETAILS)) {
-                            sl = ArrayUtils.getSeriesUtils().decodeList('|', mBookData.getString(KEY_SERIES_DETAILS), false);
+                        if (mBookData.containsKey(BKEY_SERIES_DETAILS)) {
+                            sl = ArrayUtils.getSeriesUtils().decodeList('|', mBookData.getString(BKEY_SERIES_DETAILS), false);
                         } else {
                             sl = new ArrayList<>();
                         }
                         sl.add(new Series(details.name, details.position));
-                        mBookData.putString(KEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList('|', sl));
+                        mBookData.putString(BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList('|', sl));
                         mBookData.putString(KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
                     }
                 }

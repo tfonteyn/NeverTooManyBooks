@@ -27,8 +27,8 @@ import android.util.TypedValue;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ABSOLUTE_POSITION;
@@ -165,7 +165,7 @@ public class BooklistRowView {
 	 * Checks if list displays series numbers anywhere.
 	 */
 	public boolean hasSeries() {
-		return hasColumn(ColumnInfo.KEY_SERIES_NUM);
+		return hasColumn(UniqueId.KEY_SERIES_NUM);
 	}
 
 	/**

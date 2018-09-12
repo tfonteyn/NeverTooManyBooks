@@ -31,13 +31,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
-import com.eleybourn.bookcatalogue.utils.FieldUsage;
 import com.eleybourn.bookcatalogue.utils.FieldUsages;
 import com.eleybourn.bookcatalogue.utils.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
@@ -69,7 +67,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.update_fields);
             LibraryThingManager.showLtAlertIfNecessary(this, false, "update_from_internet");
-            mPrefs = getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
+            mPrefs = getSharedPreferences(BCPreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
             setupFields();
         } catch (Exception e) {
             Logger.logError(e);
@@ -88,7 +86,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
         if (visField == null || visField.trim().isEmpty())
             visField = field;
         if (mPrefs.getBoolean(FieldVisibilityActivity.TAG + visField, true))
-            mFieldUsages.put(new FieldUsage(field, stringId, usage, canAppend));
+            mFieldUsages.put(new FieldUsages.FieldUsage(field, stringId, usage, canAppend));
     }
 
     /**
@@ -96,23 +94,23 @@ public class UpdateFromInternet extends ActivityWithTasks {
      * to each field checkbox
      */
     private void setupFields() {
-        addIfVisible(ColumnInfo.KEY_AUTHOR_ARRAY, ColumnInfo.KEY_AUTHOR_ID, R.string.author, FieldUsages.Usages.ADD_EXTRA, true);
-        addIfVisible(ColumnInfo.KEY_TITLE, null, R.string.title, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnInfo.KEY_ISBN, null, R.string.isbn, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnInfo.KEY_THUMBNAIL, null, R.string.thumbnail, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnInfo.KEY_SERIES_ARRAY, ColumnInfo.KEY_SERIES_NAME, R.string.series, FieldUsages.Usages.ADD_EXTRA, true);
-        addIfVisible(ColumnInfo.KEY_PUBLISHER, null, R.string.publisher, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnInfo.KEY_DATE_PUBLISHED, null, R.string.date_published, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnInfo.KEY_PAGES, null, R.string.pages, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnInfo.KEY_LIST_PRICE, null, R.string.list_price, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnInfo.KEY_FORMAT, null, R.string.format, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnInfo.KEY_DESCRIPTION, null, R.string.description, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(ColumnInfo.KEY_GENRE, null, R.string.genre, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(DatabaseDefinitions.DOM_LANGUAGE.name, null, R.string.language, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.BKEY_AUTHOR_ARRAY, UniqueId.KEY_AUTHOR_ID, R.string.author, FieldUsages.Usages.ADD_EXTRA, true);
+        addIfVisible(UniqueId.KEY_TITLE, null, R.string.title, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.KEY_ISBN, null, R.string.isbn, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.BKEY_THUMBNAIL, null, R.string.thumbnail, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES_NAME, R.string.series, FieldUsages.Usages.ADD_EXTRA, true);
+        addIfVisible(UniqueId.KEY_PUBLISHER, null, R.string.publisher, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.KEY_DATE_PUBLISHED, null, R.string.date_published, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.KEY_PAGES, null, R.string.pages, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.KEY_LIST_PRICE, null, R.string.list_price, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.KEY_FORMAT, null, R.string.format, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.KEY_DESCRIPTION, null, R.string.description, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.KEY_GENRE, null, R.string.genre, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.KEY_LANGUAGE, null, R.string.language, FieldUsages.Usages.COPY_IF_BLANK, false);
 
         // Display the list of fields
         LinearLayout parent = findViewById(R.id.manage_fields_scrollview);
-        for (FieldUsage usage : mFieldUsages.values()) {
+        for (FieldUsages.FieldUsage usage : mFieldUsages.values()) {
             //Create the LinearLayout to hold each row
             ViewGroup layout = new LinearLayout(this);
             layout.setPadding(5, 0, 0, 0);
@@ -127,7 +125,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                 @Override
                 public void onClick(View v) {
                     final CheckBox thiscb = (CheckBox) v;
-                    final FieldUsage usage = (FieldUsage) ViewTagger.getTag(thiscb);
+                    final FieldUsages.FieldUsage usage = (FieldUsages.FieldUsage) ViewTagger.getTag(thiscb);
                     if (usage != null) {
                         if (!thiscb.isChecked() && thiscb.getText().toString().contains(getResources().getString(R.string.usage_copy_if_blank))) {
                             if (usage.canAppend) {
@@ -195,7 +193,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                 // If they have selected thumbnails, check if they want to download ALL.
                 boolean thumbnail_check = false;
                 try {
-                    thumbnail_check = mFieldUsages.get(ColumnInfo.KEY_THUMBNAIL).selected;
+                    thumbnail_check = mFieldUsages.get(UniqueId.BKEY_THUMBNAIL).selected;
                 } catch (NullPointerException e) {
                     Logger.logError(e);
                 }
@@ -206,7 +204,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                     alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
                     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternet.this.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            mFieldUsages.get(ColumnInfo.KEY_THUMBNAIL).usage = FieldUsages.Usages.OVERWRITE;
+                            mFieldUsages.get(UniqueId.BKEY_THUMBNAIL).usage = FieldUsages.Usages.OVERWRITE;
                             startUpdate();
                             return;
                         }
@@ -220,7 +218,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                     });
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, UpdateFromInternet.this.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            mFieldUsages.get(ColumnInfo.KEY_THUMBNAIL).usage = FieldUsages.Usages.COPY_IF_BLANK;
+                            mFieldUsages.get(UniqueId.BKEY_THUMBNAIL).usage = FieldUsages.Usages.COPY_IF_BLANK;
                             startUpdate();
                             return;
                         }
@@ -250,7 +248,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
             View v = parent.getChildAt(i);
             CheckBox cb = v.findViewById(R.id.UPDATE_FROM_INTERNET_FIELD_CHECKBOX);
             if (cb != null) {
-                FieldUsage usage = (FieldUsage) ViewTagger.getTag(cb);
+                FieldUsages.FieldUsage usage = (FieldUsages.FieldUsage) ViewTagger.getTag(cb);
                 usage.selected = cb.isChecked();
                 if (usage.selected)
                     nSelected++;

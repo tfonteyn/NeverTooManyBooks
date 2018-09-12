@@ -91,8 +91,9 @@ public class DateUtils {
      */
     private static void addParseDateFormat(boolean needEnglish, @NonNull final String format) {
         mParseDateFormats.add(new SimpleDateFormat(format));
-        if (needEnglish)
+        if (needEnglish) {
             mParseDateFormats.add(new SimpleDateFormat(format, Locale.ENGLISH));
+        }
     }
 
     public static String toLocalSqlDateOnly(Date d) {
@@ -143,7 +144,7 @@ public class DateUtils {
     @Nullable
     private static Date parseDate(@NonNull final String s, boolean lenient) {
         Date d;
-        for ( SimpleDateFormat sdf : mParseDateFormats ) {
+        for (SimpleDateFormat sdf : mParseDateFormats ) {
             try {
                 sdf.setLenient(lenient);
                 d = sdf.parse(s);
@@ -187,11 +188,10 @@ public class DateUtils {
     @SuppressLint("DefaultLocale")
     @NonNull
     public static String buildPartialDate(@Nullable final Integer year, @Nullable final Integer month, @Nullable final Integer day) {
-        String value;
         if (year == null) {
-            value = "";
+            return "";
         } else {
-            value = String.format("%04d", year);
+            String value = String.format("%04d", year);
             if (month != null && month > 0) {
                 String mm = month.toString();
                 if (mm.length() == 1) {
@@ -208,8 +208,8 @@ public class DateUtils {
                     value += "-" + dd;
                 }
             }
+            return value;
         }
-        return value;
     }
 
 //    public String convertDate(String date) {

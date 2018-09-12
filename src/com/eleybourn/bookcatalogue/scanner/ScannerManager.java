@@ -1,6 +1,6 @@
 package com.eleybourn.bookcatalogue.scanner;
 
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
+import com.eleybourn.bookcatalogue.BCPreferences;
 
 import java.util.Hashtable;
 
@@ -70,7 +70,7 @@ public class ScannerManager {
      */
     public static Scanner getScanner() {
         // Find out what the user prefers if any
-        int prefScanner = BookCataloguePreferences.getInt(PREF_PREFERRED_SCANNER, SCANNER_ZXING_COMPATIBLE);
+        int prefScanner = BCPreferences.getInt(PREF_PREFERRED_SCANNER, SCANNER_ZXING_COMPATIBLE);
 
         // See if preferred one is present, if so return a new instance
         ScannerFactory psf = myScannerFactories.get(prefScanner);

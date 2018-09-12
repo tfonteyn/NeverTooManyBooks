@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupInfo;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
-import com.eleybourn.bookcatalogue.utils.Convert;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -83,7 +83,7 @@ public class BackupFileDetails implements FileDetails {
 			// Display date and backup details
             image.setImageDrawable(res.getDrawable(R.drawable.ic_archive));
 			date.setVisibility(View.VISIBLE);
-			String formattedFleSize = Convert.formatFileSize(mFile.length());
+			String formattedFleSize = Utils.formatFileSize(mFile.length());
 			if (mInfo != null) {
 				String books = res.getQuantityString(R.plurals.n_books, mInfo.getBookCount(), mInfo.getBookCount());
 				if (mInfo.hasCoverCount()) {

@@ -20,6 +20,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class ImportTypeSelectionDialogFragment extends DialogFragment {
 	private int mDialogId;
@@ -88,7 +89,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
     	mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
-    	mFile = new File(getArguments().getString(UniqueId.BKEY_FILE_SPEC));
+    	mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
 
 		try {
 			BackupReader reader = BackupManager.readBackup(mFile);

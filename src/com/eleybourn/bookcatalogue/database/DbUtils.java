@@ -171,8 +171,9 @@ public class DbUtils {
      * @author Philip Warner
      */
     public static class TableDefinition implements AutoCloseable {
-        final static String mExistsSql = "Select (SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?) + "
-                + "(SELECT count(*) FROM sqlite_temp_master WHERE type='table' AND name=?)";
+        final static String mExistsSql =
+                "Select (SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?) + " +
+                "(SELECT count(*) FROM sqlite_temp_master WHERE type='table' AND name=?)";
         /** List of index definitions for this table */
         final Hashtable<String, IndexDefinition> mIndexes = new Hashtable<>();
         /** List of domains in this table */
@@ -220,7 +221,7 @@ public class DbUtils {
          */
         public static void drop(SynchronizedDb db, String name) {
             if (BuildConfig.DEBUG) {
-                System.out.println("DROP table " + name);
+                System.out.println("Drop Table If Exists " + name);
             }
             db.execSQL("Drop Table If Exists " + name);
         }

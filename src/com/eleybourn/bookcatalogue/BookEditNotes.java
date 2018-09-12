@@ -30,14 +30,12 @@ import android.widget.ArrayAdapter;
 import com.eleybourn.bookcatalogue.Fields.AfterFieldChangeListener;
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment.OnPartialDatePickerListener;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -56,7 +54,7 @@ public class BookEditNotes extends BookEditFragmentAbstract implements OnPartial
 		ArrayList<String> location_list = new ArrayList<>();
 		try(Cursor location_cur = mDb.fetchAllLocations()) {
 			while (location_cur.moveToNext()) {
-				String location = location_cur.getString(location_cur.getColumnIndexOrThrow(ColumnInfo.KEY_LOCATION));
+				String location = location_cur.getString(location_cur.getColumnIndexOrThrow(UniqueId.KEY_LOCATION));
 				try {
 					if (location.length() > 2) {
 						location_list.add(location);
@@ -88,38 +86,38 @@ public class BookEditNotes extends BookEditFragmentAbstract implements OnPartial
 			//FieldValidator blankOrDateValidator = new Fields.OrValidator(new Fields.BlankValidator(), new Fields.DateValidator());
 			FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
 
-			mFields.add(R.id.rating, ColumnInfo.KEY_RATING, null);
-			mFields.add(R.id.rating_label, "",  ColumnInfo.KEY_RATING, null);
-			mFields.add(R.id.read, ColumnInfo.KEY_READ, null);
-			mFields.add(R.id.notes, ColumnInfo.KEY_NOTES, null);
+			mFields.add(R.id.rating, UniqueId.KEY_RATING, null);
+			mFields.add(R.id.rating_label, "",  UniqueId.KEY_RATING, null);
+			mFields.add(R.id.read, UniqueId.KEY_READ, null);
+			mFields.add(R.id.notes, UniqueId.KEY_NOTES, null);
 
 			ArrayAdapter<String> location_adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, getLocations());
-			mFields.add(R.id.location, ColumnInfo.KEY_LOCATION, null);
+			mFields.add(R.id.location, UniqueId.KEY_LOCATION, null);
 			mFields.setAdapter(R.id.location, location_adapter);
 
 			// ENHANCE: Add a partial date validator. Or not.
-			f = mFields.add(R.id.read_start, ColumnInfo.KEY_READ_START, null, dateFormatter);
+			f = mFields.add(R.id.read_start, UniqueId.KEY_READ_START, null, dateFormatter);
 			f.getView().setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
 					BookEditNotes.this.showReadStartDialog();
 				}
 			});
 
-			f = mFields.add(R.id.read_end, ColumnInfo.KEY_READ_END, null, dateFormatter);
+			f = mFields.add(R.id.read_end, UniqueId.KEY_READ_END, null, dateFormatter);
 			f.getView().setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
 					BookEditNotes.this.showReadEndDialog();
 				}
 			});
 
-			mFields.add(R.id.signed, ColumnInfo.KEY_SIGNED,  null);
+			mFields.add(R.id.signed, UniqueId.KEY_SIGNED,  null);
 
 			mFields.addCrossValidator(new Fields.FieldCrossValidator() {
 				public void validate(Fields fields, Bundle values) {
-					String start = values.getString(ColumnInfo.KEY_READ_START);
+					String start = values.getString(UniqueId.KEY_READ_START);
 					if (start == null || start.isEmpty())
 						return;
-					String end = values.getString(ColumnInfo.KEY_READ_END);
+					String end = values.getString(UniqueId.KEY_READ_END);
 					if (end == null || end.isEmpty())
 						return;
 					if (start.compareToIgnoreCase(end) > 0)

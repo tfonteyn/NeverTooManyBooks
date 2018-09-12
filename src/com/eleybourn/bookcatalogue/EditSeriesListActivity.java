@@ -31,17 +31,17 @@ import android.view.View;
 import android.widget.*;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_ARRAY;
+import static com.eleybourn.bookcatalogue.UniqueId.BKEY_SERIES_ARRAY;
 
 public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
     private ArrayAdapter<String> mSeriesAdapter;
 
     public EditSeriesListActivity() {
-        super(KEY_SERIES_ARRAY, R.layout.activity_edit_list_series, R.layout.row_edit_series_list);
+        super(BKEY_SERIES_ARRAY, R.layout.activity_edit_list_series, R.layout.row_edit_series_list);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
     @Override
     protected void onRowClick(View target, final Series series, int position) {
-        final Dialog dialog = new BasicDialog(this);
+        final Dialog dialog = new StandardDialogs.BasicDialog(this);
         dialog.setContentView(R.layout.dialog_edit_book_series);
         dialog.setTitle(R.string.edit_book_series);
 

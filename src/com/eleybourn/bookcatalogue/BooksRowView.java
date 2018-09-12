@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue;
 import android.database.Cursor;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 
 /**
@@ -109,7 +108,7 @@ public class BooksRowView {
 
     public final String getPrimaryAuthorName() {
         if (mPrimaryAuthorCol < 0) {
-            mPrimaryAuthorCol = mCursor.getColumnIndex(ColumnInfo.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+            mPrimaryAuthorCol = mCursor.getColumnIndex(UniqueId.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
             if (mPrimaryAuthorCol < 0)
                 throw new RuntimeException("Primary author column not in result set");
         }
@@ -196,7 +195,7 @@ public class BooksRowView {
 
     public final String getDatePublished() {
         if (mDatePublishedCol < 0) {
-            mDatePublishedCol = mCursor.getColumnIndex(ColumnInfo.KEY_DATE_PUBLISHED);
+            mDatePublishedCol = mCursor.getColumnIndex(UniqueId.KEY_DATE_PUBLISHED);
             if (mDatePublishedCol < 0)
                 throw new RuntimeException("DATE_PUBLISHED column not in result set");
         }

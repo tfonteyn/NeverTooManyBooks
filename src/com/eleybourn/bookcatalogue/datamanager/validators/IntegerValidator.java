@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -19,48 +19,51 @@
  */
 package com.eleybourn.bookcatalogue.datamanager.validators;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 
 /**
  * Validator to apply a default value and validate as integer.
- * 
- * @author Philip Warner
  *
+ * @author Philip Warner
  */
 public class IntegerValidator extends DefaultFieldValidator {
-	public IntegerValidator() {
-		super();
-	}
-	public IntegerValidator(String defaultValue) {
-		super(defaultValue);
-	}
-	@Override
-	public void validate(DataManager data, Datum datum, boolean crossValidating) {
-		if (!datum.isVisible()) {
-			// No validation required for invisible fields
-			return;
-		}
-		if (crossValidating)
-			return;
+    public IntegerValidator() {
+        super();
+    }
 
-		// Will throw on failure...
-		super.validate(data, datum, crossValidating);
+    public IntegerValidator(String defaultValue) {
+        super(defaultValue);
+    }
 
-		Object o;
-		try {
-			o = data.get(datum);
-			Integer v;
-			if (o instanceof Integer) {
-				v = (Integer)o;
-			} else {
-				v = Integer.parseInt(o.toString());
-			}
-			data.putInt(datum, v);
-			return;
-		} catch (Exception e) {
-			throw new ValidatorException(R.string.vldt_integer_expected, new Object[]{datum.getKey()});
-		}
-	}
+    @Override
+    public void validate(@NonNull DataManager data, @NonNull Datum datum, boolean crossValidating)
+            throws ValidatorException {
+        if (!datum.isVisible()) {
+            // No validation required for invisible fields
+            return;
+        }
+        if (crossValidating)
+            return;
+
+        super.validate(data, datum, crossValidating);
+
+        Object o;
+        try {
+            o = data.get(datum);
+            Integer v;
+            if (o instanceof Integer) {
+                v = (Integer) o;
+            } else {
+                v = Integer.parseInt(o.toString());
+            }
+            data.putInt(datum, v);
+            return;
+        } catch (Exception e) {
+            throw new ValidatorException(R.string.vldt_integer_expected, new Object[]{datum.getKey()});
+        }
+    }
 }

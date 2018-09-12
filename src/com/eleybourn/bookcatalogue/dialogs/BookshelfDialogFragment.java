@@ -33,7 +33,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
@@ -41,7 +41,7 @@ import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import java.util.ArrayList;
 
 import static com.eleybourn.bookcatalogue.BookDetailsFragmentAbstract.BOOKSHELF_SEPARATOR;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_BOOKSHELF;
 
 /**
  * Fragment wrapper for the Bookshelf list

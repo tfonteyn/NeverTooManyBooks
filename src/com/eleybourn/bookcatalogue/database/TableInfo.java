@@ -2,7 +2,6 @@ package com.eleybourn.bookcatalogue.database;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -17,7 +16,7 @@ import java.util.Map;
  *
  * @author Philip Warner
  */
-public class TableInfo implements Iterable<ColumnInfo> {
+public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
 
     public static final int CLASS_INTEGER = 1;
     public static final int CLASS_TEXT = 2;
@@ -115,4 +114,24 @@ public class TableInfo implements Iterable<ColumnInfo> {
     }
 
 
+    /**
+     * Column info support. This is useful for auto-building queries from maps that have
+     * more columns than are in the table.
+     *
+     * @author Philip Warner
+     */
+    public static class ColumnInfo {
+        /** bit flags, used for {@link DatabaseDefinitions#DOM_ANTHOLOGY_MASK} */
+        public static final int ANTHOLOGY_NO = 0;
+        public static final int ANTHOLOGY_IS_ANTHOLOGY = 1;
+        public static final int ANTHOLOGY_MULTIPLE_AUTHORS = 2;
+
+        public int position;
+        public String name;
+        public String typeName;
+        public boolean allowNull;
+        public boolean isPrimaryKey;
+        public String defaultValue;
+        public int typeClass;
+    }
 }

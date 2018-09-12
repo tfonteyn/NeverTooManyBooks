@@ -1,7 +1,7 @@
 /*
  * @copyright 2011 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -28,75 +28,76 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
 public class EditFormatDialog {
-	private final Context mContext;
-	private final ArrayAdapter<String> mAdapter;
-	private final CatalogueDBAdapter mDb;
-	private final Runnable mOnChanged;
+    private final Context mContext;
+    private final ArrayAdapter<String> mAdapter;
+    private final CatalogueDBAdapter mDb;
+    private final Runnable mOnChanged;
 
-	EditFormatDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
-		mDb = db;
-		mContext = context;
-		mAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDb.getFormats());
-		mOnChanged = onChanged;
-	}
+    EditFormatDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
+        mDb = db;
+        mContext = context;
+        mAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDb.getFormats());
+        mOnChanged = onChanged;
+    }
 
-	public void edit(final String origFormat) {
-		final Dialog dialog = new BasicDialog(mContext);
-		dialog.setContentView(R.layout.dialog_edit_format);
-		dialog.setTitle(R.string.edit_format_name);
+    public void edit(final String origFormat) {
+        final Dialog dialog = new StandardDialogs.BasicDialog(mContext);
+        dialog.setContentView(R.layout.dialog_edit_format);
+        dialog.setTitle(R.string.edit_format_name);
 
-		AutoCompleteTextView nameView = dialog.findViewById(R.id.name);
-		try {
-			nameView.setText(origFormat);
-		} catch (NullPointerException e) {
-			Logger.logError(e);
-		}
-		nameView.setAdapter(mAdapter);
+        AutoCompleteTextView nameView = dialog.findViewById(R.id.name);
+        try {
+            nameView.setText(origFormat);
+        } catch (NullPointerException e) {
+            Logger.logError(e);
+        }
+        nameView.setAdapter(mAdapter);
 
-		Button saveButton = dialog.findViewById(R.id.confirm);
-		saveButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				AutoCompleteTextView nameView = dialog.findViewById(R.id.name);
-				String newName = nameView.getText().toString().trim();
-				if (newName.isEmpty()) {
-					Toast.makeText(mContext, R.string.name_can_not_be_blank, Toast.LENGTH_LONG).show();
-					return;
-				}
-				confirmEditFormat(origFormat, newName);
-				dialog.dismiss();
-			}
-		});
-		Button cancelButton = dialog.findViewById(R.id.cancel);
-		cancelButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dialog.dismiss();
-			}
-		});
-		
-		dialog.show();		
-	}
+        Button saveButton = dialog.findViewById(R.id.confirm);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AutoCompleteTextView nameView = dialog.findViewById(R.id.name);
+                String newName = nameView.getText().toString().trim();
+                if (newName.isEmpty()) {
+                    Toast.makeText(mContext, R.string.name_can_not_be_blank, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                confirmEditFormat(origFormat, newName);
+                dialog.dismiss();
+            }
+        });
+        Button cancelButton = dialog.findViewById(R.id.cancel);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
 
-	private void confirmEditFormat(final String oldFormat, final String newFormat) {
-		// First, deal with a some special cases...
+        dialog.show();
+    }
 
-		// Case: Unchanged.
-		try {
-			if (oldFormat.equals(newFormat)) {
-				// No change to anything; nothing to do
-				return;
-			}
-		} catch (NullPointerException e) {
-			Logger.logError(e);
-		}
+    private void confirmEditFormat(final String oldFormat, final String newFormat) {
+        // First, deal with a some special cases...
 
-		mDb.globalReplaceFormat(oldFormat, newFormat);
+        // Case: Unchanged.
+        try {
+            if (oldFormat.equals(newFormat)) {
+                // No change to anything; nothing to do
+                return;
+            }
+        } catch (NullPointerException e) {
+            Logger.logError(e);
+        }
 
-		mOnChanged.run();
-	}
+        mDb.globalReplaceFormat(oldFormat, newFormat);
+
+        mOnChanged.run();
+    }
 }

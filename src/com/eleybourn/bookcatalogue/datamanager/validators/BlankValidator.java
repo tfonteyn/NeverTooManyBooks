@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -19,38 +19,40 @@
  */
 package com.eleybourn.bookcatalogue.datamanager.validators;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 
 /**
  * Validator that requires a blank field
- * 
- * @author Philip Warner
  *
+ * @author Philip Warner
  */
 public class BlankValidator implements DataValidator {
-	@Override
-	public void validate(DataManager data, Datum datum, boolean crossValidating) {
-		if (!datum.isVisible()) {
-			// No validation required for invisible fields
-			return;
-		}
-		
-		if (crossValidating)
-			return;
-		try {
-			String s = data.getString(datum);
-			if (!s.isEmpty()) {
-				s = s.trim();
-				if (!s.isEmpty()) {
-					throw new ValidatorException(R.string.vldt_blank_required, new Object[]{datum.getKey()});
-				}
-				data.putString(datum, s);
-			}
-			return;
-		} catch (Exception e) {
-			throw new ValidatorException(R.string.vldt_blank_required, new Object[]{datum.getKey()});
-		}
-	}
+    @Override
+    public void validate(@NonNull DataManager data, @NonNull Datum datum, boolean crossValidating)
+            throws ValidatorException {
+        if (!datum.isVisible()) {
+            // No validation required for invisible fields
+            return;
+        }
+
+        if (crossValidating)
+            return;
+        try {
+            String s = data.getString(datum);
+            if (!s.isEmpty()) {
+                s = s.trim();
+                if (!s.isEmpty()) {
+                    throw new ValidatorException(R.string.vldt_blank_required, new Object[]{datum.getKey()});
+                }
+                data.putString(datum, s);
+            }
+            return;
+        } catch (Exception e) {
+            throw new ValidatorException(R.string.vldt_blank_required, new Object[]{datum.getKey()});
+        }
+    }
 }

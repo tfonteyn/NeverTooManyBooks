@@ -44,14 +44,13 @@ import android.view.View;
  * @author Philip Warner
  */
 public class ViewTagger {
-    private ViewTagger() {
-    }
-
     /**
      * Stores the basic tag referred to without an ID
      */
     private Object mBareTag = null;
     private SparseArray<Object> mTags = null;
+    private ViewTagger() {
+    }
 
     /**
      * Internal static method to get (and optionally create) a ViewTagger object
@@ -75,8 +74,9 @@ public class ViewTagger {
             }
         } else {
             // Make sure it's a valid object type
-            if (!(o instanceof ViewTagger))
+            if (!(o instanceof ViewTagger)) {
                 throw new RuntimeException("View already has a tag that is not a ViewTagger");
+            }
             tagger = (ViewTagger) o;
         }
         return tagger;
@@ -121,7 +121,8 @@ public class ViewTagger {
      * @param value Object to store at specified tag
      */
     public static void setTag(@NonNull final View v, Object value) {
-        getTagger(v, true).set(value);
+        getTagger(v, true)
+                .set(value);
     }
 
     /**
@@ -132,7 +133,8 @@ public class ViewTagger {
      * @param value Object to store at specified tag
      */
     public static void setTag(@NonNull final View v, int key, Object value) {
-        getTagger(v, true).set(key, value);
+        getTagger(v, true)
+                .set(key, value);
     }
 
     /**

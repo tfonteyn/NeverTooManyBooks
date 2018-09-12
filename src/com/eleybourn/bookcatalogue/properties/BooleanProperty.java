@@ -26,7 +26,7 @@ import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
+import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.properties.Property.BooleanValue;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
@@ -162,12 +162,12 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
 
     @Override
     protected Boolean getGlobalDefault() {
-        return BookCataloguePreferences.getBoolean(getPreferenceKey(), getDefaultValue());
+        return BCPreferences.getBoolean(getPreferenceKey(), getDefaultValue());
     }
 
     @Override
     protected BooleanProperty setGlobalDefault(Boolean value) {
-        BookCataloguePreferences.setBoolean(getPreferenceKey(), value);
+        BCPreferences.setBoolean(getPreferenceKey(), value);
         return this;
     }
 

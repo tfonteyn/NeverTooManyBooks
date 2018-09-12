@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -24,11 +24,10 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 /**
  * Interface for all cross-validators; these are applied after all field-level validators
  * have succeeded.
- * 
- * @author Philip Warner
  *
+ * @author Philip Warner
  */
 public interface DataCrossValidator {
 
-	void validate(DataManager data);
+    void validate(DataManager data) throws ValidatorException;
 }

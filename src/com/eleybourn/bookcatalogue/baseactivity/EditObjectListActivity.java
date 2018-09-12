@@ -30,9 +30,9 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
@@ -299,9 +299,9 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
             // Look for title and title_label
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
-                mRowId = extras.getLong(ColumnInfo.KEY_ID);
+                mRowId = extras.getLong(UniqueId.KEY_ID);
 
-                mBookTitle = extras.getString(ColumnInfo.KEY_TITLE);
+                mBookTitle = extras.getString(UniqueId.KEY_TITLE);
                 setTextOrHideView(R.id.title, mBookTitle);
             }
 

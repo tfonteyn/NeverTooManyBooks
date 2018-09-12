@@ -31,7 +31,7 @@ import android.view.View;
 import android.widget.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.scanner.Scanner;
@@ -58,7 +58,7 @@ import java.util.HashSet;
  *   For books, the ASIN is the same as the ISBN number, but for all other products a new ASIN
  *   is created when the item is uploaded to their catalogue.
  */
-public class BookISBNSearch extends ActivityWithTasks {
+public class BookISBNSearchActivity extends ActivityWithTasks {
     public static final String BKEY_BY = "by";
     public static final String BY_ISBN = "isbn";
     public static final String BY_NAME = "name";
@@ -101,7 +101,7 @@ public class BookISBNSearch extends ActivityWithTasks {
     private final SearchManager.SearchListener mSearchHandler = new SearchManager.SearchListener() {
         @Override
         public boolean onSearchFinished(Bundle bookData, boolean cancelled) {
-            return BookISBNSearch.this.onSearchFinished(bookData, cancelled);
+            return BookISBNSearchActivity.this.onSearchFinished(bookData, cancelled);
         }
     };
 
@@ -144,7 +144,7 @@ public class BookISBNSearch extends ActivityWithTasks {
 
             // Must do this before super.onCreate as getLayoutId() needs them
             Bundle extras = getIntent().getExtras();
-            mIsbn = extras.getString(ColumnInfo.KEY_ISBN);
+            mIsbn = extras.getString(UniqueId.KEY_ISBN);
             mBy = extras.getString(BKEY_BY);
 
             super.onCreate(savedInstanceState);
@@ -176,15 +176,15 @@ public class BookISBNSearch extends ActivityWithTasks {
             // In order to avoid this problem, we just check for nulls and finish(). THIS IS NOT A FIX
             // it is a MESSY WORK-AROUND.
             //
-            // TODO: Find out why BookISBNSearch gets restarted with no data
+            // TODO: Find out why BookISBNSearchActivity gets restarted with no data
             //
             // So...we save the extras in savedInstanceState, and look for it when missing
             //
             if (mIsbn == null && (mBy == null || mBy.isEmpty())) {
-                Logger.logError(new RuntimeException("Empty args for BookISBNSearch"));
+                Logger.logError(new RuntimeException("Empty args for BookISBNSearchActivity"));
                 if (savedInstanceState != null) {
-                    if (mIsbn == null && savedInstanceState.containsKey(ColumnInfo.KEY_ISBN)) {
-                        mIsbn = savedInstanceState.getString(ColumnInfo.KEY_ISBN);
+                    if (mIsbn == null && savedInstanceState.containsKey(UniqueId.KEY_ISBN)) {
+                        mIsbn = savedInstanceState.getString(UniqueId.KEY_ISBN);
                     }
                     if (savedInstanceState.containsKey(BKEY_BY)) {
                         mBy = savedInstanceState.getString(BKEY_BY);
@@ -240,12 +240,12 @@ public class BookISBNSearch extends ActivityWithTasks {
                 startScannerActivity();
             } else {
                 // It's a saved state, so see if we have an ISBN
-                if (savedInstanceState.containsKey(ColumnInfo.KEY_ISBN)) {
-                    go(savedInstanceState.getString(ColumnInfo.KEY_ISBN), "", "");
+                if (savedInstanceState.containsKey(UniqueId.KEY_ISBN)) {
+                    go(savedInstanceState.getString(UniqueId.KEY_ISBN), "", "");
                 }
             }
         } catch (SecurityException e) {
-            AlertDialog alertDialog = new AlertDialog.Builder(BookISBNSearch.this)
+            AlertDialog alertDialog = new AlertDialog.Builder(BookISBNSearchActivity.this)
                     .setMessage(R.string.bad_scanner)
                     .setTitle(R.string.install_scan_title)
                     .setIcon(android.R.drawable.ic_menu_info_details)
@@ -279,7 +279,7 @@ public class BookISBNSearch extends ActivityWithTasks {
             // -> yes, it threw another ActivityNotFoundException if Cancel is used
             // so now enclosed in another try.
             try {
-                AlertDialog alertDialog = new AlertDialog.Builder(BookISBNSearch.this)
+                AlertDialog alertDialog = new AlertDialog.Builder(BookISBNSearchActivity.this)
                         .setMessage(R.string.install_scan)
                         .setTitle(R.string.install_scan_title)
                         .setIcon(android.R.drawable.ic_menu_info_details)
@@ -385,7 +385,7 @@ public class BookISBNSearch extends ActivityWithTasks {
         getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         // Setup the 'Allow ASIN' button
-        final CheckBox allowAsinCb = BookISBNSearch.this.findViewById(R.id.asinCheckbox);
+        final CheckBox allowAsinCb = BookISBNSearchActivity.this.findViewById(R.id.asinCheckbox);
         allowAsinCb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -583,7 +583,7 @@ public class BookISBNSearch extends ActivityWithTasks {
             if (isbn != null && !isbn.isEmpty()) {
 
                 // If the layout has an 'Allow ASIN' checkbox, see if it is checked.
-                final CheckBox allowAsinCb = BookISBNSearch.this.findViewById(R.id.asinCheckbox);
+                final CheckBox allowAsinCb = BookISBNSearchActivity.this.findViewById(R.id.asinCheckbox);
                 final boolean allowAsin = allowAsinCb != null && allowAsinCb.isChecked();
 
                 if (!IsbnUtils.isValid(isbn) && (!allowAsin || !AsinUtils.isValid(isbn))) {
@@ -631,7 +631,7 @@ public class BookISBNSearch extends ActivityWithTasks {
                                 this.getResources().getString(R.string.edit_book),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        BookEdit.editBook(BookISBNSearch.this, existingId, BookEdit.TAB_EDIT);
+                                        BookEdit.editBook(BookISBNSearchActivity.this, existingId, BookEdit.TAB_EDIT);
                                     }
                                 });
                         alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
@@ -771,7 +771,7 @@ public class BookISBNSearch extends ActivityWithTasks {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        //System.out.println("BookISBNSearch onActivityResult " + resultCode);
+        //System.out.println("BookISBNSearchActivity onActivityResult " + resultCode);
         super.onActivityResult(requestCode, resultCode, intent);
         switch (requestCode) {
             case UniqueId.ACTIVITY_SCAN:
@@ -784,10 +784,8 @@ public class BookISBNSearch extends ActivityWithTasks {
                         go(contents, "", "");
                     } else {
                         // Scanner Cancelled/failed. Exit if no dialog present.
-                        if (mLastBookIntent != null)
-                            this.setResult(RESULT_OK, mLastBookIntent);
-                        else
-                            this.setResult(RESULT_CANCELED, mLastBookIntent);
+                        this.setResult(mLastBookIntent != null ? RESULT_OK : RESULT_CANCELED, mLastBookIntent);
+
                         if (!mDisplayingAlert)
                             finish();
                     }
@@ -880,8 +878,8 @@ public class BookISBNSearch extends ActivityWithTasks {
         // handsets. Search for "BUG NOTE 1" in this source file for a discussion
         Bundle b = getIntent().getExtras();
         if (b != null) {
-            if (b.containsKey(ColumnInfo.KEY_ISBN)) {
-                inState.putString(ColumnInfo.KEY_ISBN, b.getString(ColumnInfo.KEY_ISBN));
+            if (b.containsKey(UniqueId.KEY_ISBN)) {
+                inState.putString(UniqueId.KEY_ISBN, b.getString(UniqueId.KEY_ISBN));
             }
             if (b.containsKey(BKEY_BY)) {
                 inState.putString(BKEY_BY, b.getString(BKEY_BY));
@@ -890,9 +888,9 @@ public class BookISBNSearch extends ActivityWithTasks {
 
         inState.putParcelable(BKEY_LAST_BOOK_INTENT, mLastBookIntent);
         // Save the current search details as this may be called as a result of a rotate during an alert dialog.
-        inState.putString(ColumnInfo.KEY_AUTHOR_ID, mAuthor);
-        inState.putString(ColumnInfo.KEY_ISBN, mIsbn);
-        inState.putString(ColumnInfo.KEY_TITLE, mTitle);
+        inState.putString(UniqueId.KEY_AUTHOR_ID, mAuthor);
+        inState.putString(UniqueId.KEY_ISBN, mIsbn);
+        inState.putString(UniqueId.KEY_TITLE, mTitle);
         inState.putBoolean(BKEY_SCANNER_STARTED, mScannerStarted);
         if (mSearchManagerId != 0) {
             inState.putLong(BKEY_SEARCH_MANAGER_ID, mSearchManagerId);

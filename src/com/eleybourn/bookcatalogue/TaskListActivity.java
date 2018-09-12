@@ -27,9 +27,10 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 
 import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsExportFailuresActivity;
-import com.eleybourn.bookcatalogue.utils.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import net.philipwarner.taskqueue.BindableItem;

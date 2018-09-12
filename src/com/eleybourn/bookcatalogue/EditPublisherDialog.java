@@ -27,7 +27,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
 /**
  * TODO: unify with {@link EditAuthorDialog}
@@ -44,7 +45,7 @@ public class EditPublisherDialog {
 	}
 
 	public void edit(final Publisher publisher) {
-		final Dialog dialog = new BasicDialog(mContext);
+		final Dialog dialog = new StandardDialogs.BasicDialog(mContext);
 		dialog.setContentView(R.layout.dialog_edit_publisher);
 		dialog.setTitle(R.string.edit_publisher_details);
 

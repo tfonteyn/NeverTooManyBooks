@@ -109,7 +109,7 @@ public class BookCatalogueApp extends Application {
      * @return  true is a change was detected
      */
     public synchronized static boolean hasThemeChanged() {
-        int current = BookCataloguePreferences.getTheme(DEFAULT_THEME);
+        int current = BCPreferences.getTheme(DEFAULT_THEME);
         if (current != mLastTheme) {
             mLastTheme = current;
             return true;
@@ -181,8 +181,8 @@ public class BookCatalogueApp extends Application {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             switch (key) {
-                case BookCataloguePreferences.PREF_APP_LOCALE:
-                    String prefLocale = BookCataloguePreferences.getLocale();
+                case BCPreferences.PREF_APP_LOCALE:
+                    String prefLocale = BCPreferences.getLocale();
                     if (prefLocale != null && !prefLocale.isEmpty()) {
                         mPreferredLocale = localeFromName(prefLocale);
                     } else {
@@ -191,7 +191,7 @@ public class BookCatalogueApp extends Application {
                     applyPreferredLocaleIfNecessary(getBaseContext().getResources());
                     notifyLocaleChanged();
                     break;
-                case BookCataloguePreferences.PREF_APP_THEME:
+                case BCPreferences.PREF_APP_THEME:
                     //TODO: implement global them change ?
                     break;
                 default:
@@ -525,7 +525,7 @@ public class BookCatalogueApp extends Application {
             // Save the original locale
             mInitialLocale = Locale.getDefault();
             // See if user has set a preference
-            String prefLocale = BookCataloguePreferences.getLocale();
+            String prefLocale = BCPreferences.getLocale();
             //prefLocale = "ru";
             // If we have a preference, set it
             if (prefLocale != null && !prefLocale.isEmpty()) {
@@ -555,12 +555,12 @@ public class BookCatalogueApp extends Application {
             mQueueManager = new BCQueueManager(this.getApplicationContext());
 
         // Initialise the Theme
-        mLastTheme = BookCataloguePreferences.getTheme(DEFAULT_THEME);
+        mLastTheme = BCPreferences.getTheme(DEFAULT_THEME);
 
         super.onCreate();
 
         // Watch the preferences and handle changes as necessary
-        SharedPreferences p = BookCataloguePreferences.getSharedPreferences();
+        SharedPreferences p = BCPreferences.getSharedPreferences();
         p.registerOnSharedPreferenceChangeListener(mPrefsListener);
     }
 

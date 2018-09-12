@@ -44,9 +44,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
+import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.lang.ref.WeakReference;
@@ -192,7 +192,7 @@ public class Fields extends ArrayList<Fields.Field> {
 	Fields(Activity a) {
 		super();
 		mContext = new ActivityContext(a);
-		mPrefs = a.getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
+		mPrefs = a.getSharedPreferences(BCPreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
 	}
 
 	/**
@@ -203,7 +203,7 @@ public class Fields extends ArrayList<Fields.Field> {
 	Fields(Fragment f) {
 		super();
 		mContext = new FragmentContext(f);
-		mPrefs = f.getActivity().getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
+		mPrefs = f.getActivity().getSharedPreferences(BCPreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
 	}
 
 	/**
@@ -562,7 +562,7 @@ public class Fields extends ArrayList<Fields.Field> {
 			if (s != null) {
 				try {
 					s = field.format(s);
-					v.setChecked(Convert.toBoolean(s, true));
+					v.setChecked(Datum.toBoolean(s, true));
 				} catch (Exception e) {
 					v.setChecked(false);
 				}
@@ -951,7 +951,7 @@ public class Fields extends ArrayList<Fields.Field> {
 			// Lookup the view
 			final View view = c.findViewById(id);
 			if (view != null) {
-				visible = BookCataloguePreferences.getBoolean(FieldVisibilityActivity.TAG + group, true);
+				visible = BCPreferences.getBoolean(FieldVisibilityActivity.TAG + group, true);
                 view.setVisibility(visible ? View.VISIBLE : View.GONE);
 			}
 		}

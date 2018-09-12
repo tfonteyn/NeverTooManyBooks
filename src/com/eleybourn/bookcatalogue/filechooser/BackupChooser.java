@@ -22,7 +22,7 @@ package com.eleybourn.bookcatalogue.filechooser;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
+import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.Exporter;
@@ -34,10 +34,10 @@ import com.eleybourn.bookcatalogue.dialogs.ImportTypeSelectionDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.ImportTypeSelectionDialogFragment.OnImportTypeSelectionDialogResultListener;
 import com.eleybourn.bookcatalogue.dialogs.MessageDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.MessageDialogFragment.OnMessageDialogResultListener;
-import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
 import java.util.Date;
@@ -99,7 +99,7 @@ public class BackupChooser extends FileChooser implements
      */
     @Override
     protected FileChooserFragment getChooserFragment() {
-        String lastBackup = BookCataloguePreferences.getLastBackupFile();
+        String lastBackup = BCPreferences.getLastBackupFile();
         return FileChooserFragment.newInstance(lastBackup, getDefaultFileName());
     }
 
@@ -161,7 +161,7 @@ public class BackupChooser extends FileChooser implements
                     return;
                 }
                 // Show a helpful message
-                String msg = getString(R.string.archive_complete_details, mBackupFile.getParent(), mBackupFile.getName(), Convert.formatFileSize(mBackupFile.length()));
+                String msg = getString(R.string.archive_complete_details, mBackupFile.getParent(), mBackupFile.getName(), Utils.formatFileSize(mBackupFile.length()));
                 MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_SAVE,
                         R.string.backup_to_archive, msg, android.R.string.ok, 0, 0);
                 frag.show(getSupportFragmentManager(), null);
@@ -236,7 +236,7 @@ public class BackupChooser extends FileChooser implements
                 return;
             default:
                 if (settings.dateFrom == null) {
-                    String lastBackup = BookCataloguePreferences.getLastBackupDate();
+                    String lastBackup = BCPreferences.getLastBackupDate();
                     if (lastBackup != null && !lastBackup.isEmpty()) {
                         settings.dateFrom = DateUtils.parseDate(lastBackup);
                     } else {

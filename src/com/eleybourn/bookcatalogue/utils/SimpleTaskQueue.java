@@ -23,7 +23,7 @@ package com.eleybourn.bookcatalogue.utils;
 import android.os.Handler;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;

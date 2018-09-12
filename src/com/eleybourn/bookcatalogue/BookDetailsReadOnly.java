@@ -15,13 +15,12 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
+import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
-import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
@@ -133,8 +132,6 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
 
     /**
      * FIXME: use a background task to build the list instead of on the UI thread !
-     *
-     * @param book
      */
     private void showAnthologySection(final BookData book) {
         View section = getView().findViewById(R.id.anthology_section);
@@ -249,15 +246,15 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
      */
     private void addFields() {
         // From 'My comments' tab
-        mFields.add(R.id.rating, ColumnInfo.KEY_RATING, null);
-        mFields.add(R.id.notes, ColumnInfo.KEY_NOTES, null)
+        mFields.add(R.id.rating, UniqueId.KEY_RATING, null);
+        mFields.add(R.id.notes, UniqueId.KEY_NOTES, null)
                 .setShowHtml(true);
-        mFields.add(R.id.read_start, ColumnInfo.KEY_READ_START, null, new Fields.DateFieldFormatter());
-        mFields.add(R.id.read_end, ColumnInfo.KEY_READ_END, null, new Fields.DateFieldFormatter());
-        mFields.add(R.id.location, ColumnInfo.KEY_LOCATION, null);
+        mFields.add(R.id.read_start, UniqueId.KEY_READ_START, null, new Fields.DateFieldFormatter());
+        mFields.add(R.id.read_end, UniqueId.KEY_READ_END, null, new Fields.DateFieldFormatter());
+        mFields.add(R.id.location, UniqueId.KEY_LOCATION, null);
         // Make sure the label is hidden when the ISBN is
-        mFields.add(R.id.isbn_label, "", ColumnInfo.KEY_ISBN, null);
-        mFields.add(R.id.publishing_details, "", ColumnInfo.KEY_PUBLISHER, null);
+        mFields.add(R.id.isbn_label, "", UniqueId.KEY_ISBN, null);
+        mFields.add(R.id.publishing_details, "", UniqueId.KEY_PUBLISHER, null);
     }
 
     /**
@@ -267,21 +264,21 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
     private void formatFormatSection(BookData book) {
         // Number of pages
         boolean hasPages = false;
-        if (FieldVisibilityActivity.isVisible(ColumnInfo.KEY_PAGES)) {
+        if (FieldVisibilityActivity.isVisible(UniqueId.KEY_PAGES)) {
             Field pagesField = mFields.getField(R.id.pages);
-            String pages = book.getString(ColumnInfo.KEY_PAGES);
+            String pages = book.getString(UniqueId.KEY_PAGES);
             hasPages = pages != null && !pages.isEmpty();
             if (hasPages) {
                 pagesField.setValue(getString(R.string.book_details_readonly_pages, pages));
             }
         }
         // 'format' field
-        if (FieldVisibilityActivity.isVisible(ColumnInfo.KEY_FORMAT)) {
+        if (FieldVisibilityActivity.isVisible(UniqueId.KEY_FORMAT)) {
             Field formatField = mFields.getField(R.id.format);
-            String format = book.getString(ColumnInfo.KEY_FORMAT);
+            String format = book.getString(UniqueId.KEY_FORMAT);
             boolean hasFormat = format != null && !format.isEmpty();
             if (hasFormat) {
-                if (hasPages && FieldVisibilityActivity.isVisible(ColumnInfo.KEY_PAGES)) {
+                if (hasPages && FieldVisibilityActivity.isVisible(UniqueId.KEY_PAGES)) {
                     formatField.setValue(getString(R.string.brackets, format));
                 } else {
                     formatField.setValue(format);
@@ -295,9 +292,9 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
      * of 'publisher' and 'date published' fields.
      */
     private void formatPublishingSection(BookData book) {
-        String date = book.getString(ColumnInfo.KEY_DATE_PUBLISHED);
+        String date = book.getString(UniqueId.KEY_DATE_PUBLISHED);
         boolean hasDate = date != null && !date.isEmpty();
-        String pub = book.getString(ColumnInfo.KEY_PUBLISHER);
+        String pub = book.getString(UniqueId.KEY_PUBLISHER);
         boolean hasPub = pub != null && !pub.isEmpty();
         String value;
 
@@ -351,7 +348,7 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
      */
     private void showReadStatus(final BookData book) {
         final CheckedTextView readField = getView().findViewById(R.id.read);
-        boolean visible = FieldVisibilityActivity.isVisible(ColumnInfo.KEY_READ);
+        boolean visible = FieldVisibilityActivity.isVisible(UniqueId.KEY_READ);
         readField.setVisibility(visible ? View.VISIBLE : View.GONE);
 
         if (visible) {
@@ -424,7 +421,7 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
          */
         public String format(Field f, String source) {
             try {
-                boolean val = Convert.toBoolean(source, false);
+                boolean val = Datum.toBoolean(source, false);
                 return BookCatalogueApp.getResourceString(val ? R.string.yes : R.string.no);
             } catch (Exception e) {
                 return source;
@@ -436,7 +433,7 @@ public class BookDetailsReadOnly extends BookDetailsFragmentAbstract {
          */
         public String extract(Field f, String source) {
             try {
-                return Convert.toBoolean(source, false) ? "1" : "0";
+                return Datum.toBoolean(source, false) ? "1" : "0";
             } catch (Exception e) {
                 return source;
             }

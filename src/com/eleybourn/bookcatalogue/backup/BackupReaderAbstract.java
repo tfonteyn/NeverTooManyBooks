@@ -21,10 +21,10 @@ package com.eleybourn.bookcatalogue.backup;
 
 import android.content.SharedPreferences;
 
+import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
@@ -162,7 +162,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
 	 */
 	private void restorePreferences(BackupReaderListener listener, ReaderEntity entity) throws IOException {
 		listener.step("Preferences...", 1);
-		SharedPreferences prefs = BookCataloguePreferences.getSharedPreferences();
+		SharedPreferences prefs = BCPreferences.getSharedPreferences();
 		entity.getPreferences(prefs);
 	}
 

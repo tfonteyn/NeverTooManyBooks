@@ -21,13 +21,16 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import java.util.Stack;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Based loosely on LinkedBlockingQueue. Ideally we would use BlockingDeque but that is only
- * available in Android 2.3.
+ * Based loosely on {@link LinkedBlockingQueue}.
+ *
+ * Ideally we would use {@link BlockingDeque} but that is only available in Android 2.3.
  *
  * A much-simplified blocking stack that satisfies the need of this application. Should be 
  * TODO: replaceable with BlockingDeque when we set the min. version requirement to 2.3!
@@ -65,7 +68,7 @@ public class BlockingStack<T> {
 			return mStack.remove(o);
 		}
 	}
-	
+
 	/**
 	 * Return a copy of all elements for safe examination. Obviously this
 	 * collection will not reflect reality for very long, but is safe to
@@ -171,7 +174,7 @@ public class BlockingStack<T> {
 			}
 			// If, after popping, there would be more left, resignal.
 			if (count > 1)
-				mNotEmpty.signal();					
+				mNotEmpty.signal();
 
 		} finally {
 			popLock.unlock();

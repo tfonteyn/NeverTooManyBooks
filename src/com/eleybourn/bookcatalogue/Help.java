@@ -30,10 +30,11 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * 
@@ -120,7 +121,7 @@ public class Help extends BookCatalogueActivity {
 				cleanupBtn.setVisibility(View.VISIBLE);
 				cleanupTxt.setVisibility(View.VISIBLE);
 				String fmt = getString(R.string.cleanup_files_text);
-				String sizeStr = Convert.formatFileSize(space);
+				String sizeStr = Utils.formatFileSize(space);
 				cleanupTxt.setText(String.format(fmt, sizeStr));
 
 			}			

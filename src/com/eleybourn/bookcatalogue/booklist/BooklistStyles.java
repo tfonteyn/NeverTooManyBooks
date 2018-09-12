@@ -24,8 +24,8 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
@@ -87,7 +87,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
      * @param hash HashTable of names
      */
     private static void getPreferredStyleNames(HashSet<String> hash) {
-        String itemStr = BookCataloguePreferences.getString(PREF_MENU_ITEMS, null);
+        String itemStr = BCPreferences.getString(PREF_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.equals("")) {
             ArrayList<String> list = ArrayUtils.decodeList('|', itemStr);
             for (int i = 0; i < list.size(); i++) {
@@ -283,17 +283,15 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
         BooklistStyles styles = new BooklistStyles();
 
         // Get the user preference
-        String itemStr = BookCataloguePreferences.getString(PREF_MENU_ITEMS, null);
+        String itemStr = BCPreferences.getString(PREF_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.isEmpty()) {
             // Break it up and process in order
             ArrayList<String> list = ArrayUtils.decodeList('|', itemStr);
-            if (list != null) {
-                for (String n : list) {
-                    // Add any exiting style that is preferred
-                    BooklistStyle s = allStyles.findCanonical(n);
-                    if (s != null)
-                        styles.add(s);
-                }
+            for (String n : list) {
+                // Add any exiting style that is preferred
+                BooklistStyle s = allStyles.findCanonical(n);
+                if (s != null)
+                    styles.add(s);
             }
         }
 
@@ -354,7 +352,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
                 items.append(ArrayUtils.encodeListItem('|', s.getCanonicalName()));
             }
         }
-        Editor e = BookCataloguePreferences.edit();
+        Editor e = BCPreferences.edit();
         e.putString(PREF_MENU_ITEMS, items.toString());
         e.commit();
     }

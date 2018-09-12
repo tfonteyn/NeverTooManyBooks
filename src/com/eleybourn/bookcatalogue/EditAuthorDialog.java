@@ -27,7 +27,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
 public class EditAuthorDialog {
 	private final Context mContext;
@@ -41,7 +42,7 @@ public class EditAuthorDialog {
 	}
 
 	public void edit(final Author author) {
-		final Dialog dialog = new BasicDialog(mContext);
+		final Dialog dialog = new StandardDialogs.BasicDialog(mContext);
 		dialog.setContentView(R.layout.dialog_edit_author);
 		dialog.setTitle(R.string.edit_author_details);
 

@@ -27,8 +27,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.properties.Property.StringValue;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
@@ -102,13 +102,13 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
     /** Get underlying preferences value */
     @Override
     protected String getGlobalDefault() {
-        return BookCataloguePreferences.getString(getPreferenceKey(), getDefaultValue());
+        return BCPreferences.getString(getPreferenceKey(), getDefaultValue());
     }
 
     /** Set underlying preferences value */
     @Override
     protected StringProperty setGlobalDefault(String value) {
-        BookCataloguePreferences.setString(getPreferenceKey(), value);
+        BCPreferences.setString(getPreferenceKey(), value);
         return this;
     }
 

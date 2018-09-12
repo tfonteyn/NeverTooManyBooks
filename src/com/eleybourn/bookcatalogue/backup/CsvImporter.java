@@ -24,7 +24,7 @@ import android.os.Bundle;
 import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookData;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
@@ -32,7 +32,6 @@ import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.ImportThread.ImportException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
-import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -43,22 +42,22 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ANTHOLOGY_MASK;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_ARRAY;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_DETAILS;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_FORMATTED;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_NAME;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_FAMILY_NAME;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_GIVEN_NAMES;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ID;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_ARRAY;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_DETAILS;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_NAME;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_NUM;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_ANTHOLOGY_MASK;
+import static com.eleybourn.bookcatalogue.UniqueId.BKEY_AUTHOR_ARRAY;
+import static com.eleybourn.bookcatalogue.UniqueId.BKEY_AUTHOR_DETAILS;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_ID;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_NAME;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_FAMILY_NAME;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_GIVEN_NAMES;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_LOANED_TO;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_ID;
+import static com.eleybourn.bookcatalogue.UniqueId.BKEY_SERIES_ARRAY;
+import static com.eleybourn.bookcatalogue.UniqueId.BKEY_SERIES_DETAILS;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_SERIES_NUM;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_TITLE;
 
 /**
  * Implementation of Importer that reads a CSV file.
@@ -118,7 +117,7 @@ public class CsvImporter {
         // make an attempt at escaping characters etc to preserve formatting.
         boolean fullEscaping;
         fullEscaping = !values.containsKey(KEY_AUTHOR_ID)
-                || !values.containsKey(KEY_FAMILY_NAME);
+                || !values.containsKey(KEY_AUTHOR_FAMILY_NAME);
 
         // Make sure required fields are present.
         // ENHANCE: Rationalize import to allow updates using 1 or 2 columns. For now we require complete data.
@@ -126,10 +125,11 @@ public class CsvImporter {
         // ENHANCE: Only make some columns mandatory if the ID is not in import, or not in DB (ie. if not an update)
         // ENHANCE: Export/Import should use GUIDs for book IDs, and put GUIDs on Image file names.
         requireColumnOr(values, KEY_ID, DatabaseDefinitions.DOM_BOOK_UUID.name);
-        requireColumnOr(values, KEY_FAMILY_NAME,
+        requireColumnOr(values,
+                KEY_AUTHOR_FAMILY_NAME,
                 KEY_AUTHOR_FORMATTED,
                 KEY_AUTHOR_NAME,
-                KEY_AUTHOR_DETAILS);
+                BKEY_AUTHOR_DETAILS);
 
         boolean updateOnlyIfNewer;
         if ((importFlags & Importer.IMPORT_NEW_OR_UPDATED) != 0) {
@@ -197,7 +197,7 @@ public class CsvImporter {
 
                 // Get the UUID, and remove from collection if null/blank
                 boolean hasUuid;
-                final String uuidColumnName = DatabaseDefinitions.DOM_BOOK_UUID.name.toLowerCase();
+                final String uuidColumnName = DatabaseDefinitions.DOM_BOOK_UUID.name;
                 String uuidVal = values.getString(uuidColumnName);
                 if (uuidVal != null && !uuidVal.isEmpty()) {
                     hasUuid = true;
@@ -410,7 +410,7 @@ public class CsvImporter {
 
     private void importBooks_handleSeries(CatalogueDBAdapter db, BookData values) {
         String seriesDetails;
-        seriesDetails = values.getString(KEY_SERIES_DETAILS);
+        seriesDetails = values.getString(BKEY_SERIES_DETAILS);
         if (seriesDetails == null || seriesDetails.isEmpty()) {
             // Try to build from SERIES_NAME and SERIES_NUM. It may all be blank
             if (values.containsKey(KEY_SERIES_NAME)) {
@@ -429,21 +429,21 @@ public class CsvImporter {
         ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList('|', seriesDetails, false);
         Utils.pruneSeriesList(sa);
         Utils.pruneList(db, sa);
-        values.putSerializable(KEY_SERIES_ARRAY, sa);
+        values.putSerializable(BKEY_SERIES_ARRAY, sa);
     }
 
     private void importBooks_handleAuthors(CatalogueDBAdapter db, BookData values) {
         // Get the list of authors from whatever source is available.
         String authorDetails;
-        authorDetails = values.getString(KEY_AUTHOR_DETAILS);
+        authorDetails = values.getString(BKEY_AUTHOR_DETAILS);
         if (authorDetails == null || authorDetails.isEmpty()) {
             // Need to build it from other fields.
-            if (values.containsKey(KEY_FAMILY_NAME)) {
+            if (values.containsKey(KEY_AUTHOR_FAMILY_NAME)) {
                 // Build from family/given
-                authorDetails = values.getString(KEY_FAMILY_NAME);
+                authorDetails = values.getString(KEY_AUTHOR_FAMILY_NAME);
                 String given = "";
-                if (values.containsKey(KEY_GIVEN_NAMES))
-                    given = values.getString(KEY_GIVEN_NAMES);
+                if (values.containsKey(KEY_AUTHOR_GIVEN_NAMES))
+                    given = values.getString(KEY_AUTHOR_GIVEN_NAMES);
                 if (given != null && !given.isEmpty())
                     authorDetails += ", " + given;
             } else if (values.containsKey(KEY_AUTHOR_NAME)) {
@@ -459,13 +459,13 @@ public class CsvImporter {
         if (authorDetails == null || authorDetails.isEmpty()) {
             authorDetails = BookCatalogueApp.getResourceString(R.string.author) + ", " + BookCatalogueApp.getResourceString(R.string.unknown);
             //String s = BookCatalogueApp.getResourceString(R.string.column_is_blank);
-            //throw new ImportException(String.format(s, DatabaseDefinitions.KEY_AUTHOR_DETAILS, row));
+            //throw new ImportException(String.format(s, DatabaseDefinitions.BKEY_AUTHOR_DETAILS, row));
         }
 
         // Now build the array for authors
         ArrayList<Author> aa = ArrayUtils.getAuthorUtils().decodeList('|', authorDetails, false);
         Utils.pruneList(db, aa);
-        values.putSerializable(KEY_AUTHOR_ARRAY, aa);
+        values.putSerializable(BKEY_AUTHOR_ARRAY, aa);
     }
 
     //
@@ -597,7 +597,7 @@ public class CsvImporter {
                 return;
 
         String s = BookCatalogueApp.getResourceString(R.string.file_must_contain_any_column);
-        throw new ImportException(String.format(s, Convert.join(",", names)));
+        throw new ImportException(String.format(s, Utils.join(",", names)));
     }
 
     private void requireNonblank(BookData values, int row, String name) {
@@ -614,7 +614,7 @@ public class CsvImporter {
                 return;
 
         String s = BookCatalogueApp.getResourceString(R.string.columns_are_blank);
-        throw new ImportException(String.format(s, Convert.join(",", names), row));
+        throw new ImportException(String.format(s, Utils.join(",", names), row));
     }
 
 }

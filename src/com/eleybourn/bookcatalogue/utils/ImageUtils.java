@@ -18,7 +18,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.ThumbnailCacheWriterTask;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 
 import org.apache.http.HttpEntity;
@@ -38,7 +38,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_THUMBNAIL;
+import static com.eleybourn.bookcatalogue.UniqueId.BKEY_THUMBNAIL;
 
 public class ImageUtils {
     /**
@@ -427,7 +427,7 @@ public class ImageUtils {
                 }
                 // Finally, cleanup the data
                 result.remove(SearchManager.BKEY_THUMBNAIL_SEARCHES);
-                result.putBoolean(KEY_THUMBNAIL, true);
+                result.putBoolean(BKEY_THUMBNAIL, true);
             }
         }
     }
@@ -504,7 +504,7 @@ public class ImageUtils {
             if (opt.outHeight <= 0 || opt.outWidth <= 0) {
                 Toast.makeText(activity, R.string.cover_corrupt, Toast.LENGTH_LONG).show();
             } else {
-                final Dialog dialog = new BasicDialog(activity, false);
+                final Dialog dialog = new StandardDialogs.BasicDialog(activity, false);
                 dialog.setContentView(R.layout.dialog_zoom_thumb);
 
                 ImageView cover = new ImageView(activity);

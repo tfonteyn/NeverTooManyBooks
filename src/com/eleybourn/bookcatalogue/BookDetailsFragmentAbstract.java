@@ -22,10 +22,9 @@ import com.eleybourn.bookcatalogue.CoverBrowser.OnImageSelectedListener;
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.cropper.CropCropImage;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.utils.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -39,19 +38,21 @@ import java.io.InputStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_FORMATTED;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_FORMAT;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_GENRE;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ISBN;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_LIST_PRICE;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_PAGES;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_NAME;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SIGNED;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_FORMAT;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_GENRE;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_ISBN;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_LANGUAGE;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_LIST_PRICE;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_PAGES;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_PUBLISHER;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_SIGNED;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_TITLE;
 
 /**
  * Abstract class for creating activities containing book details.
@@ -175,7 +176,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
                         Bitmap x = (Bitmap) intent.getExtras().get(BKEY_DATA);
                         if (x != null && x.getWidth() > 0 && x.getHeight() > 0) {
                             Matrix m = new Matrix();
-                            m.postRotate(BookCataloguePreferences.getAutoRotateCameraImagesInDegrees());
+                            m.postRotate(BCPreferences.getAutoRotateCameraImagesInDegrees());
                             x = Bitmap.createBitmap(x, 0, 0, x.getWidth(), x.getHeight(), m, true);
                             // Create a file to copy the thumbnail into
                             FileOutputStream f;
@@ -204,7 +205,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
                             // If no 'content' scheme, then use the content resolver.
                             try {
                                 InputStream in = getActivity().getContentResolver().openInputStream(selectedImageUri);
-                                imageOk = Utils.saveInputToFile(in, getCoverFile(mEditManager.getBookData().getRowId()));
+                                imageOk = Utils.saveInputToFile(Objects.requireNonNull(in), getCoverFile(mEditManager.getBookData().getRowId()));
                             } catch (FileNotFoundException e) {
                                 Logger.logError(e, "Unable to copy content to file");
                             }
@@ -423,7 +424,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
     }
 
     private void cropCoverImage(File thumbFile) {
-        if (BookCataloguePreferences.getUseExternalImageCropper()) {
+        if (BCPreferences.getUseExternalImageCropper()) {
             cropCoverImageExternal(thumbFile);
         } else {
             cropCoverImageInternal(thumbFile);
@@ -435,7 +436,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
         // here you have to pass absolute path to your file
         crop_intent.putExtra(BKEY_IMAGE_PATH, thumbFile.getAbsolutePath());
         crop_intent.putExtra(BKEY_SCALE, true);
-        crop_intent.putExtra(BKEY_WHOLE_IMAGE, BookCataloguePreferences.getCropFrameWholeImage());
+        crop_intent.putExtra(BKEY_WHOLE_IMAGE, BCPreferences.getCropFrameWholeImage());
         // Get and set the output file spec, and make sure it does not already exist.
         File cropped = this.getCroppedImageFileName();
         if (cropped.exists()) {
@@ -664,7 +665,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
         mFields.add(R.id.description, KEY_DESCRIPTION, null)
                 .setShowHtml(true);
         mFields.add(R.id.genre, KEY_GENRE, null);
-        mFields.add(R.id.language, DatabaseDefinitions.DOM_LANGUAGE.name, null);
+        mFields.add(R.id.language, KEY_LANGUAGE, null);
 
         mFields.add(R.id.row_img, "", THUMBNAIL, null);
         mFields.getField(R.id.row_img).getView().setOnCreateContextMenuListener(mCreateBookThumbContextMenuListener);

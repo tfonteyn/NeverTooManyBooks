@@ -21,11 +21,12 @@
 package com.eleybourn.bookcatalogue.searches.googlebooks;
 
 import android.os.Bundle;
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
+
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -147,32 +148,32 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
 	public void endElement(String uri, String localName, String name) throws SAXException {
 		super.endElement(uri, localName, name);
 		if (localName.equalsIgnoreCase(TITLE)){
-			addIfNotPresent(ColumnInfo.KEY_TITLE);
+			addIfNotPresent(UniqueId.KEY_TITLE);
 		} else if (localName.equalsIgnoreCase(ISBN)){
 			String tmp = builder.toString(); 
 			if (tmp.indexOf("ISBN:") == 0) {
 				tmp = tmp.substring(5); 
-				if (!mValues.containsKey(ColumnInfo.KEY_ISBN) || tmp.length() > mValues.getString(ColumnInfo.KEY_ISBN).length()) {
-					mValues.putString(ColumnInfo.KEY_ISBN, tmp);
+				if (!mValues.containsKey(UniqueId.KEY_ISBN) || tmp.length() > mValues.getString(UniqueId.KEY_ISBN).length()) {
+					mValues.putString(UniqueId.KEY_ISBN, tmp);
 				}
 			}
 		} else if (localName.equalsIgnoreCase(AUTHOR)){
-			ArrayUtils.appendOrAdd(mValues, ColumnInfo.KEY_AUTHOR_DETAILS, builder.toString());
+			ArrayUtils.appendOrAdd(mValues, UniqueId.BKEY_AUTHOR_DETAILS, builder.toString());
 		} else if (localName.equalsIgnoreCase(PUBLISHER)){
-			addIfNotPresent(ColumnInfo.KEY_PUBLISHER);
+			addIfNotPresent(UniqueId.KEY_PUBLISHER);
 		} else if (localName.equalsIgnoreCase(DATE_PUBLISHED)){
-			addIfNotPresent(ColumnInfo.KEY_DATE_PUBLISHED);
+			addIfNotPresent(UniqueId.KEY_DATE_PUBLISHED);
 		} else if (localName.equalsIgnoreCase(PAGES)){
 			String tmp = builder.toString();
 			int index = tmp.indexOf(" pages");
 			if (index > -1) {
 				tmp = tmp.substring(0, index).trim(); 
-				mValues.putString(ColumnInfo.KEY_PAGES, tmp);
+				mValues.putString(UniqueId.KEY_PAGES, tmp);
 			}
 		} else if (localName.equalsIgnoreCase(GENRE)){
-			mValues.putString(ColumnInfo.KEY_GENRE, builder.toString());
+			mValues.putString(UniqueId.KEY_GENRE, builder.toString());
 		} else if (localName.equalsIgnoreCase(DESCRIPTION)){
-			addIfNotPresent(ColumnInfo.KEY_DESCRIPTION);
+			addIfNotPresent(UniqueId.KEY_DESCRIPTION);
 		}
 		builder.setLength(0);
 	}
@@ -187,7 +188,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
 	public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, name, attributes);
 		if (mFetchThumbnail && localName.equalsIgnoreCase(THUMBNAIL)){
-			if ((BookCataloguePreferences.WEBSITE_URL_GOOGLE_SCHEMAS + "/books/2008/thumbnail").equals(attributes.getValue("", "rel"))) {
+			if (("http://schemas.google.com/books/2008/thumbnail").equals(attributes.getValue("", "rel"))) {
 				String thumbnail = attributes.getValue("", "href");
 				String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, "_GB");
 				if (fileSpec.length() > 0)

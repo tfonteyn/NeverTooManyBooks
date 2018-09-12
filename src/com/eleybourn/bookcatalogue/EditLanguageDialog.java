@@ -28,11 +28,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
-/**
- * TODO: ? unify with {@link EditAuthorDialog}
- */
 public class EditLanguageDialog {
 	private final Context mContext;
 	private final CatalogueDBAdapter mDb;
@@ -45,7 +43,7 @@ public class EditLanguageDialog {
 	}
 
 	public void edit(final String language) {
-		final Dialog dialog = new BasicDialog(mContext);
+		final Dialog dialog = new StandardDialogs.BasicDialog(mContext);
 		dialog.setContentView(R.layout.dialog_edit_language);
 		dialog.setTitle(R.string.edit_language_details);
 

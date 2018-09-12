@@ -62,7 +62,6 @@ package com.eleybourn.bookcatalogue.widgets;
  */
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -233,10 +232,8 @@ public class FastScroller {
         mPaint.setAntiAlias(true);
         mPaint.setTextAlign(Paint.Align.CENTER);
         mPaint.setTextSize(mOverlaySize / 3);
-        TypedArray ta = context.getTheme().obtainStyledAttributes(new int[] {
-                android.R.attr.textColorPrimary });
-        ColorStateList textColor = ta.getColorStateList(ta.getIndex(0));
-        int textColorNormal = textColor.getDefaultColor();
+        TypedArray ta = context.getTheme().obtainStyledAttributes(new int[] { android.R.attr.textColorPrimary });
+        int textColorNormal = ta.getColorStateList(ta.getIndex(0)).getDefaultColor();
         mPaint.setColor(textColorNormal);
         mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources >
 <string name="app_name">Book Catalogue</string>
 <string name="menu_insert">Add Book</string>
 <string name="menu_delete">Delete Book</string>

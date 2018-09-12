@@ -26,10 +26,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.Fields.AfterFieldChangeListener;
 import com.eleybourn.bookcatalogue.Fields.Field;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -37,6 +39,8 @@ import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * Based class for all fragments that appear in the {@link BookEdit} activity
@@ -191,18 +195,12 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
 
     private String getAuthorFromBook() {
         ArrayList<Author> authors = mEditManager.getBookData().getAuthors();
-        if (authors.size() > 0)
-            return authors.get(0).getDisplayName();
-        else
-            return null;
+        return authors.size() > 0 ? authors.get(0).getDisplayName() : null;
     }
 
     private String getSeriesFromBook() {
         ArrayList<Series> list = mEditManager.getBookData().getSeries();
-        if (list.size() > 0)
-            return list.get(0).name;
-        else
-            return null;
+        return list.size() > 0 ? list.get(0).name : null;
     }
 
     @Override
@@ -360,7 +358,6 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
      * @author pjw
      */
     public interface BookEditManager {
-        //public Fields getFields();
         void setShowAnthology(boolean showAnthology);
 
         boolean isDirty();
@@ -378,5 +375,163 @@ public abstract class BookEditFragmentAbstract extends Fragment implements DataE
         ArrayList<String> getLanguages();
 
         ArrayList<String> getPublishers();
+    }
+
+    public static class ViewUtils {
+        private ViewUtils() {
+        }
+
+        /**
+         * Ensure that next up/down/left/right View is visible for all sub-views of the passed view.
+         */
+        public static void fixFocusSettings(View root) {
+            final INextView getDown = new INextView() {
+                @Override
+                public int getNext(View v) {
+                    return v.getNextFocusDownId();
+                }
+
+                @Override
+                public void setNext(View v, int id) {
+                    v.setNextFocusDownId(id);
+                }
+            };
+            final INextView getUp = new INextView() {
+                @Override
+                public int getNext(View v) {
+                    return v.getNextFocusUpId();
+                }
+
+                @Override
+                public void setNext(View v, int id) {
+                    v.setNextFocusUpId(id);
+                }
+            };
+            final INextView getLeft = new INextView() {
+                @Override
+                public int getNext(View v) {
+                    return v.getNextFocusLeftId();
+                }
+
+                @Override
+                public void setNext(View v, int id) {
+                    v.setNextFocusLeftId(id);
+                }
+            };
+            final INextView getRight = new INextView() {
+                @Override
+                public int getNext(View v) {
+                    return v.getNextFocusRightId();
+                }
+
+                @Override
+                public void setNext(View v, int id) {
+                    v.setNextFocusRightId(id);
+                }
+            };
+
+            Hashtable<Integer, View> vh = new Hashtable<>();
+            getViews(root, vh);
+
+            for (Map.Entry<Integer, View> ve : vh.entrySet()) {
+                final View v = ve.getValue();
+                if (v.getVisibility() == View.VISIBLE) {
+                    fixNextView(vh, v, getDown);
+                    fixNextView(vh, v, getUp);
+                    fixNextView(vh, v, getLeft);
+                    fixNextView(vh, v, getRight);
+                }
+            }
+        }
+
+        /**
+         * Passed a collection of views, a specific View and an INextView, ensure that the
+         * currently set 'next' view is actually a visible view, updating it if necessary.
+         *
+         * @param vh     Collection of all views
+         * @param v      View to check
+         * @param getter Methods to get/set 'next' view
+         */
+        private static void fixNextView(Hashtable<Integer, View> vh, View v, INextView getter) {
+            int nextId = getter.getNext(v);
+            if (nextId != View.NO_ID) {
+                int actualNextId = getNextView(vh, nextId, getter);
+                if (actualNextId != nextId)
+                    getter.setNext(v, actualNextId);
+            }
+        }
+
+        /**
+         * Passed a collection of views, a specific view and an INextView object find the
+         * first VISIBLE object returned by INextView when called recursively.
+         *
+         * @param vh     Collection of all views
+         * @param nextId ID of 'next' view to get
+         * @param getter Interface to lookup 'next' ID given a view
+         *
+         * @return ID if first visible 'next' view
+         */
+        private static int getNextView(Hashtable<Integer, View> vh, int nextId, INextView getter) {
+            final View v = vh.get(nextId);
+            if (v == null)
+                return View.NO_ID;
+
+            if (v.getVisibility() == View.VISIBLE)
+                return nextId;
+
+            return getNextView(vh, getter.getNext(v), getter);
+        }
+
+        /**
+         * Passed a parent view, add it and all children view (if any) to the passed collection
+         *
+         * @param p  Parent View
+         * @param vh Collection
+         */
+        private static void getViews(View p, Hashtable<Integer, View> vh) {
+            // Get the view ID and add it to collection if not already present.
+            final int id = p.getId();
+            if (id != View.NO_ID && !vh.containsKey(id)) {
+                vh.put(id, p);
+            }
+            // If it's a ViewGroup, then process children recursively.
+            if (p instanceof ViewGroup) {
+                final ViewGroup g = (ViewGroup) p;
+                final int nChildren = g.getChildCount();
+                for (int i = 0; i < nChildren; i++) {
+                    getViews(g.getChildAt(i), vh);
+                }
+            }
+        }
+
+        private interface INextView {
+            int getNext(View v);
+
+            void setNext(View v, int id);
+        }
+
+        /*
+         * Debug utility to dump an entire view hierarchy to the output.
+         *
+         * @param depth
+         * @param v
+         */
+        //public static void dumpViewTree(int depth, View v) {
+        //	for(int i = 0; i < depth*4; i++)
+        //		System.out.print(" ");
+        //	System.out.print(v.getClass().getName() + " (" + v.getId() + ")" + (v.getId() == R.id.descriptionLabelzzz? "DESC! ->" : " ->"));
+        //	if (v instanceof TextView) {
+        //		String s = ((TextView)v).getText().toString();
+        //		System.out.println(s.substring(0, Math.min(s.length(), 20)));
+        //	} else {
+        //		System.out.println();
+        //	}
+        //	if (v instanceof ViewGroup) {
+        //		ViewGroup g = (ViewGroup)v;
+        //		for(int i = 0; i < g.getChildCount(); i++) {
+        //			dumpViewTree(depth+1, g.getChildAt(i));
+        //		}
+        //	}
+        //}
     }
 }

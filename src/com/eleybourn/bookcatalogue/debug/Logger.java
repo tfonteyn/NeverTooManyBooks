@@ -1,7 +1,7 @@
 /*
-* @copyright 2011 Evan Leybourn
+ * @copyright 2011 Evan Leybourn
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -37,68 +37,78 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Logger {
-	private Logger() {
-	}
+    private Logger() {
+    }
 
-	public static void logError(String msg) {
-		logError(null,msg);
-	}
-	public static void logError(Exception e) {
-		logError(e, "");
-	}
-	/**
-	 * Write the exception stacktrace to the error log file 
-	 * @param e The exception to log
-	 */
-	public static void logError(Exception e, String msg) {
-		@SuppressLint("SimpleDateFormat")
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String now = dateFormat.format(new Date());
-		
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		if (e != null) {
-			e.printStackTrace(pw);
-		}
-		
-		String error = "An Exception/Error Occurred @ " + now + "\n" +
-			"In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ") \n" + 
-			msg + "\n" + 
-			sw.toString();
-		//Log.e("BookCatalogue", error);
-		
-		try {
-			// RELEASE Remove Log.e! Replace with ACRA?
-			Log.e("BC Logger", error);
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
-			out.write(error);
-			out.close();
-		} catch (Exception ignored) {
-			// do nothing - we can't log an error in the error logger. (and we don't want to FC the app)
-		}
-	}
+    public static void logError(String msg) {
+        logError(null, msg);
+    }
 
-	/**
-	 * Clear the error log each time the app is started; preserve previous if non-empty
-	 */
-	public static void clearLog() {
-		try {
-			try { 
-				File orig = new File(StorageUtils.getErrorLog());
-				if (orig.exists() && orig.length() > 0) {
-					File backup = new File(StorageUtils.getErrorLog() + ".bak");
-					//noinspection ResultOfMethodCallIgnored
-					orig.renameTo(backup);
-				}
-			} catch (Exception ignored) {
-				// Ignore backup failure...
-			}
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
-			out.write("");
-			out.close();
-		} catch (Exception ignored) {
-			// do nothing - we can't log an error in the error logger. (and we don't want to FC the app)
-		}
-	}
-	
+    public static void logError(Exception e) {
+        logError(e, "");
+    }
+
+    /**
+     * Write the exception stacktrace to the error log file
+     *
+     * @param e The exception to log
+     */
+    public static void logError(Exception e, String msg) {
+        @SuppressLint("SimpleDateFormat")
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String now = dateFormat.format(new Date());
+
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        if (e != null) {
+            e.printStackTrace(pw);
+        }
+
+        String error = "An Exception/Error Occurred @ " + now + "\n" +
+                "In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ") \n" +
+                msg + "\n" +
+                sw.toString();
+        //Log.e("BookCatalogue", error);
+
+        try {
+            // RELEASE Remove Log.e! Replace with ACRA?
+            Log.e("BC Logger", error);
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
+            out.write(error);
+            out.close();
+        } catch (Exception ignored) {
+            // do nothing - we can't log an error in the error logger. (and we don't want to FC the app)
+        }
+    }
+
+    /**
+     * Clear the error log each time the app is started; preserve previous if non-empty
+     */
+    public static void clearLog() {
+        try {
+            try {
+                File orig = new File(StorageUtils.getErrorLog());
+                if (orig.exists() && orig.length() > 0) {
+                    File backup = new File(StorageUtils.getErrorLog() + ".bak");
+                    //noinspection ResultOfMethodCallIgnored
+                    orig.renameTo(backup);
+                }
+            } catch (Exception ignored) {
+                // Ignore backup failure...
+            }
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
+            out.write("");
+            out.close();
+        } catch (Exception ignored) {
+            // do nothing - we can't log an error in the error logger. (and we don't want to FC the app)
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static void printStackTrace() {
+        StackTraceElement[] all = Thread.currentThread().getStackTrace();
+        for (StackTraceElement element : all) {
+            System.out.println(element);
+        }
+    }
 }

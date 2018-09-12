@@ -23,6 +23,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.datamanager.validators.BlankValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.DataCrossValidator;
@@ -33,7 +34,6 @@ import com.eleybourn.bookcatalogue.datamanager.validators.NonBlankValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.OrValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
-import com.eleybourn.bookcatalogue.utils.Convert;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -50,13 +50,16 @@ import java.util.Set;
 public class DataManager {
 	// Generic validators; if field-specific defaults are needed, create a new one.
 	protected static final DataValidator integerValidator = new IntegerValidator("0");
+
 	protected static final DataValidator nonBlankValidator = new NonBlankValidator();
+
 	protected static final DataValidator blankOrIntegerValidator = new OrValidator(new BlankValidator(),
 			new IntegerValidator("0"));
+
 	protected static final DataValidator blankOrFloatValidator = new OrValidator(new BlankValidator(),
 			new FloatValidator("0.00"));
-	// FieldValidator blankOrDateValidator = new Fields.OrValidator(new Fields.BlankValidator(),
-	// new Fields.DateValidator());
+
+	// DataValidator blankOrDateValidator = new OrValidator(new BlankValidator(), new DateValidator());
 
 	/** Raw data storage */
 	protected final Bundle mBundle = new Bundle();
@@ -94,7 +97,7 @@ public class DataManager {
 		 * Get the specified Datum, and create a stub if not present
 		 */
 		@Override 
-		public Datum get(Object key) {
+		public Datum get(@NonNull final Object key) {
 			Datum datum = super.get(key);
 			if (datum == null) {
 				datum = new Datum(key.toString(), null, true);
@@ -113,7 +116,7 @@ public class DataManager {
 	 * @return				the DataManager, for chaining
 	 */
 	@SuppressWarnings("UnusedReturnValue")
-	protected DataManager addValidator(String key, DataValidator validator) {
+	protected DataManager addValidator(@NonNull final String key, DataValidator validator) {
 		mData.get(key).setValidator(validator);
 		return this;
 	}
@@ -127,7 +130,7 @@ public class DataManager {
 	 * @return				the DataManager, for chaining
 	 */
 	@SuppressWarnings("UnusedReturnValue")
-	protected DataManager addAccessor(String key, DataAccessor accessor) {
+	protected DataManager addAccessor(@NonNull final String key, DataAccessor accessor) {
 		mData.get(key).setAccessor(accessor);
 		return this;
 	}
@@ -139,7 +142,7 @@ public class DataManager {
 	 * 
 	 * @return		Data object
 	 */
-	public Object get(String key) {
+	public Object get(@NonNull final String key) {
 		return get(mData.get(key));
 	}
 
@@ -150,109 +153,109 @@ public class DataManager {
 	 * 
 	 * @return		Data object
 	 */
-	public Object get(Datum datum) {
+	public Object get(@NonNull final Datum datum) {
 		return datum.get(this, mBundle);
 	}
 	
 	/** Retrieve a boolean value */
-	public boolean getBoolean(String key) {
+	public boolean getBoolean(@NonNull final String key) {
 		return mData.get(key).getBoolean(this, mBundle);
 	}
 	/** Store a boolean value */
 	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putBoolean(String key, boolean value) {
+	public DataManager putBoolean(@NonNull final String key, boolean value) {
 		mData.get(key).putBoolean(this, mBundle, value);
 		return this;
 	}
 	/** Store a boolean value */
 	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putBoolean(Datum datum, boolean value) {
+	public DataManager putBoolean(@NonNull final Datum datum, boolean value) {
 		datum.putBoolean(this, mBundle, value);
 		return this;
 	}
 
 	/** Get a double value */
-	public double getDouble(String key) {
+	public double getDouble(@NonNull final String key) {
 		return mData.get(key).getDouble(this, mBundle);
 	}
 	/** Store a double value */
 	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putDouble(String key, double value) {
+	public DataManager putDouble(@NonNull final String key, double value) {
 		mData.get(key).putDouble(this, mBundle, value);
 		return this;
 	}
 	/** Store a double value */
-	public DataManager putDouble(Datum datum, double value) {
+	public DataManager putDouble(@NonNull final Datum datum, double value) {
 		datum.putDouble(this, mBundle, value);
 		return this;
 	}
 
 	/** Get a float value */
-	public float getFloat(String key) {
+	public float getFloat(@NonNull final String key) {
 		return mData.get(key).getFloat(this, mBundle);
 	}
 	/** Store a float value */
 	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putFloat(String key, float value) {
+	public DataManager putFloat(@NonNull final String key, float value) {
 		mData.get(key).putFloat(this, mBundle, value);
 		return this;
 	}
 	/** Store a float value */
 	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putFloat(Datum datum, float value) {
+	public DataManager putFloat(@NonNull final Datum datum, float value) {
 		datum.putFloat(this, mBundle, value);
 		return this;
 	}
 
 	/** Get an int value */
-	public int getInt(String key) {
+	public int getInt(@NonNull final String key) {
 		return mData.get(key).getInt(this, mBundle);
 	}
 	/** Store an int value */
 	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putInt(String key, int value) {
+	public DataManager putInt(@NonNull final String key, int value) {
 		mData.get(key).putInt(this, mBundle, value);
 		return this;
 	}
 	/** Store an int value */
 	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putInt(Datum datum, int value) {
+	public DataManager putInt(@NonNull final Datum datum, int value) {
 		datum.putInt(this, mBundle, value);
 		return this;
 	}
 
 	/** Get a long value */
-	public long getLong(long key) {
+	public long getLong(@NonNull final String key) {
 		return mData.get(key).getLong(this, mBundle);
 	}
 	/** Store a long value */
 	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putLong(String key, long value) {
+	public DataManager putLong(@NonNull final String key, long value) {
 		mData.get(key).putLong(this, mBundle, value);
 		return this;
 	}
 	/** Store a long value */
-	public DataManager putLong(Datum datum, long value) {
+	public DataManager putLong(@NonNull final Datum datum, long value) {
 		datum.putLong(this, mBundle, value);
 		return this;
 	}
 
 	/** Get a String value */
-	public String getString(String key) {
+	public String getString(@NonNull final String key) {
 		return mData.get(key).getString(this, mBundle);
 	}
 	/** Get a String value */
-	public String getString(Datum datum) {
+	public String getString(@NonNull final Datum datum) {
 		return datum.getString(this, mBundle);
 	}
 	/** Store a String value */
 	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putString(String key, String value) {
+	public DataManager putString(@NonNull final String key, String value) {
 		mData.get(key).putString(this, mBundle, value);
 		return this;
 	}
 	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putString(Datum datum, String value) {
+	public DataManager putString(@NonNull final Datum datum, String value) {
 		datum.putString(this, mBundle, value);
 		return this;
 	}
@@ -262,7 +265,7 @@ public class DataManager {
 	 * We do the laborious method here to allow Accessors to do their thing.
 	 */
 	@SuppressWarnings("UnusedReturnValue")
-	protected DataManager putAll(Bundle src) {
+	protected DataManager putAll(@NonNull final Bundle src) {
 		for(String key: src.keySet()) {
 			Object o = src.get(key);
 			if (o instanceof String) {
@@ -292,7 +295,7 @@ public class DataManager {
 	/**
 	 * Store the contents of the passed cursor
 	 */
-	protected void putAll(Cursor cursor) {
+	protected void putAll(@NonNull final Cursor cursor) {
 
 		cursor.moveToFirst();
 
@@ -326,7 +329,7 @@ public class DataManager {
 	 * 
 	 * @return		The data
 	 */
-	protected Object getSerializable(String key) {
+	protected Object getSerializable(@NonNull final String key) {
 		return mData.get(key).getSerializable(this, mBundle);
 	}
 
@@ -340,7 +343,7 @@ public class DataManager {
 	 * @return		The data manager for chaining
 	 */
 	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putSerializable(String key, Serializable value) {
+	public DataManager putSerializable(@NonNull final String key, Serializable value) {
 		mData.get(key).putSerializable(mBundle, value);
 		return this;
 	}
@@ -402,7 +405,7 @@ public class DataManager {
 	/**
 	 * Check if the underlying data contains the specified key.
 	 */
-	public boolean containsKey(String key) {
+	public boolean containsKey(@NonNull final String key) {
 		Datum datum = mData.get(key);
 		if (datum.getAccessor() == null) {
 			return mBundle.containsKey(key);
@@ -419,7 +422,7 @@ public class DataManager {
 	 * @return  the old datum
 	 */
 	@SuppressWarnings("UnusedReturnValue")
-	public Datum remove(String key) {
+	public Datum remove(@NonNull final String key) {
 		Datum datum = mData.remove(key);
 		mBundle.remove(key);
 		return datum;
@@ -433,11 +436,12 @@ public class DataManager {
 	}
 
 	/**
-	 * Retrieve the text message associated with the last validation exception t occur.
+	 * Retrieve the text message associated with the last validation exception to occur.
 	 * 
 	 * @return res The resource manager to use when looking up strings.
 	 */
-	public String getValidationExceptionMessage(Resources res) {
+	@NonNull
+	public String getValidationExceptionMessage(@NonNull final Resources res) {
 		if (mValidationExceptions.size() == 0)
 			return "No error";
 		else {
@@ -459,14 +463,15 @@ public class DataManager {
 	 * 
 	 * @return		Formatted string
 	 */
+	@NonNull
 	public String getDataAsString() {
-		return Convert.toString(mBundle);
+		return Datum.toString(mBundle);
 	}
 	
 	/**
 	 * Append a string to a list value in this collection
 	 */
-	public void appendOrAdd(String key, String value) {
+	public void appendOrAdd(@NonNull final String key, String value) {
 		String s = ArrayUtils.encodeListItem('|', value);
 		if (!containsKey(key) || getString(key).isEmpty()) {
 			putString(key, s);

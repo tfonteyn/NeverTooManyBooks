@@ -41,7 +41,8 @@ import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistRowView;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistSupportProvider;
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
+import com.eleybourn.bookcatalogue.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DomainDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -699,7 +700,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 
                         if ((mFlags & BooklistStyle.EXTRAS_AUTHOR) != 0) {
                             if (mAuthorCol < 0)
-                                mAuthorCol = c.getColumnIndex(ColumnInfo.KEY_AUTHOR_FORMATTED);
+                                mAuthorCol = c.getColumnIndex(UniqueId.KEY_AUTHOR_FORMATTED);
                             //if (mLocationRes == null)
                             //	mLocationRes = BookCatalogueApp.getResourceString(R.string.location);
 
@@ -708,7 +709,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 
                         if ((mFlags & BooklistStyle.EXTRAS_LOCATION) != 0) {
                             if (mLocationCol < 0) {
-                                mLocationCol = c.getColumnIndex(ColumnInfo.KEY_LOCATION);
+                                mLocationCol = c.getColumnIndex(UniqueId.KEY_LOCATION);
                             }
                             if (mLocationRes == null) {
                                 mLocationRes = BookCatalogueApp.getResourceString(R.string.location);
@@ -719,7 +720,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 
                         if ((mFlags & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
                             if (mPublisherCol < 0) {
-                                mPublisherCol = c.getColumnIndex(ColumnInfo.KEY_PUBLISHER);
+                                mPublisherCol = c.getColumnIndex(UniqueId.KEY_PUBLISHER);
                             }
                             if (mPublisherRes == null) {
                                 mPublisherRes = BookCatalogueApp.getResourceString(R.string.publisher);
@@ -730,7 +731,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 
                         if ((mFlags & BooklistStyle.EXTRAS_FORMAT) != 0) {
                             if (mFormatCol < 0) {
-                                mFormatCol = c.getColumnIndex(ColumnInfo.KEY_FORMAT);
+                                mFormatCol = c.getColumnIndex(UniqueId.KEY_FORMAT);
                             }
                             if (mFormatRes == null) {
                                 mFormatRes = BookCatalogueApp.getResourceString(R.string.format);
@@ -883,7 +884,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
             float scale = style.isCondensed() ? 0.8f : 1.0f;
 
             read = v.findViewById(R.id.read);
-            if (!FieldVisibilityActivity.isVisible(ColumnInfo.KEY_READ)) {
+            if (!FieldVisibilityActivity.isVisible(UniqueId.KEY_READ)) {
                 read.setVisibility(View.GONE);
             } //else {
             // use the title text size to scale the 'read' icon
@@ -990,7 +991,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
             }
 
             // Read
-            if (FieldVisibilityActivity.isVisible(ColumnInfo.KEY_READ)) {
+            if (FieldVisibilityActivity.isVisible(UniqueId.KEY_READ)) {
                 read.setChecked(rowView.isRead());
                 read.setOnClickListener(new View.OnClickListener() {
                     @Override

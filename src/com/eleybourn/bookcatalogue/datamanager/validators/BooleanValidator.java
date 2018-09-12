@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -19,52 +19,53 @@
  */
 package com.eleybourn.bookcatalogue.datamanager.validators;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
-import com.eleybourn.bookcatalogue.utils.Convert;
 
 /**
  * Validator to apply a default value and validate as Boolean
- * 
- * @author Philip Warner
  *
+ * @author Philip Warner
  */
 public class BooleanValidator extends DefaultFieldValidator {
-	public BooleanValidator() {
-		super();
-	}
-	public BooleanValidator(String defaultValue) {
-		super(defaultValue);
-	}
+    public BooleanValidator() {
+        super();
+    }
 
-	@Override
-	public void validate(DataManager data, Datum datum, boolean crossValidating) {
-		if (!datum.isVisible()) {
-			// No validation required for invisible fields
-			return;
-		}
-		if (crossValidating)
-			return;
+    public BooleanValidator(String defaultValue) {
+        super(defaultValue);
+    }
 
-		// Will throw on failure...
-		super.validate(data, datum, crossValidating);
+    @Override
+    public void validate(@NonNull DataManager data, @NonNull Datum datum, boolean crossValidating)
+            throws ValidatorException {
+        if (!datum.isVisible()) {
+            // No validation required for invisible fields
+            return;
+        }
+        if (crossValidating)
+            return;
 
-		try {
-			Object o = data.get(datum);
-			Boolean v;
-			if (o instanceof Boolean) {
-				v = (Boolean)o;
-			} else if (o instanceof Integer) {
-				v = (((Integer)o) != 0);
-			} else {
-				String s = o.toString();
-				v = Convert.toBoolean(s, true);
-			}
-			data.putBoolean(datum, v);
-			return;
-		} catch (Exception e) {
-			throw new ValidatorException(R.string.vldt_boolean_expected, new Object[]{datum.getKey()});
-		}
-	}
+        super.validate(data, datum, crossValidating);
+
+        try {
+            Object o = data.get(datum);
+            Boolean v;
+            if (o instanceof Boolean) {
+                v = (Boolean) o;
+            } else if (o instanceof Integer) {
+                v = (((Integer) o) != 0);
+            } else {
+                String s = o.toString();
+                v = Datum.toBoolean(s, true);
+            }
+            data.putBoolean(datum, v);
+            return;
+        } catch (Exception e) {
+            throw new ValidatorException(R.string.vldt_boolean_expected, new Object[]{datum.getKey()});
+        }
+    }
 }

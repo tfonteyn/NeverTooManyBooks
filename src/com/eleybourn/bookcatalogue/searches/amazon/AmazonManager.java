@@ -3,7 +3,7 @@ package com.eleybourn.bookcatalogue.searches.amazon;
 import android.net.ParseException;
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
+import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -25,10 +25,10 @@ public class AmazonManager {
         if (BuildConfig.DEBUG) {
             System.out.println("AmazonManager new base url: " + url);
         }
-		BookCataloguePreferences.setString(PREFS_HOST_URL, url);
+		BCPreferences.setString(PREFS_HOST_URL, url);
 	}
 	public static String getBaseURL() {
-		return BookCataloguePreferences.getString(PREFS_HOST_URL, "http://www.amazon.com");
+		return BCPreferences.getString(PREFS_HOST_URL, "http://www.amazon.com");
 	}
 
 	/**

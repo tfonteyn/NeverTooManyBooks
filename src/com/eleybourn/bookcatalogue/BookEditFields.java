@@ -38,7 +38,6 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.Fields.Field;
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.BookshelfDialogFragment;
@@ -53,12 +52,8 @@ import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEd
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
-import com.eleybourn.bookcatalogue.utils.ViewUtils;
 
 import java.util.ArrayList;
-
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_THUMBNAIL;
-
 
 public class BookEditFields extends BookDetailsFragmentAbstract
         implements OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
@@ -102,9 +97,9 @@ public class BookEditFields extends BookDetailsFragmentAbstract
                         @Override
                         public void onClick(View v) {
                             Intent i = new Intent(getActivity(), EditAuthorListActivity.class);
-                            i.putExtra(ColumnInfo.KEY_AUTHOR_ARRAY, mEditManager.getBookData().getAuthors());
-                            i.putExtra(ColumnInfo.KEY_ID, mEditManager.getBookData().getRowId());
-                            i.putExtra(ColumnInfo.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
+                            i.putExtra(UniqueId.BKEY_AUTHOR_ARRAY, mEditManager.getBookData().getAuthors());
+                            i.putExtra(UniqueId.KEY_ID, mEditManager.getBookData().getRowId());
+                            i.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
                             startActivityForResult(i, ACTIVITY_EDIT_AUTHORS);
                         }
                     });
@@ -114,9 +109,9 @@ public class BookEditFields extends BookDetailsFragmentAbstract
                         @Override
                         public void onClick(View v) {
                             Intent i = new Intent(getActivity(), EditSeriesListActivity.class);
-                            i.putExtra(ColumnInfo.KEY_SERIES_ARRAY, mEditManager.getBookData().getSeries());
-                            i.putExtra(ColumnInfo.KEY_ID, mEditManager.getBookData().getRowId());
-                            i.putExtra(ColumnInfo.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
+                            i.putExtra(UniqueId.BKEY_SERIES_ARRAY, mEditManager.getBookData().getSeries());
+                            i.putExtra(UniqueId.KEY_ID, mEditManager.getBookData().getRowId());
+                            i.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
                             startActivityForResult(i, ACTIVITY_EDIT_SERIES);
                         }
                     });
@@ -267,7 +262,7 @@ public class BookEditFields extends BookDetailsFragmentAbstract
             Bundle extras = getActivity().getIntent().getExtras();
             if (extras != null) {
                 // From the ISBN Search (add)
-                if (extras.containsKey(ColumnInfo.KEY_BOOK)) {
+                if (extras.containsKey(UniqueId.KEY_BOOK)) {
                     throw new RuntimeException("[book] array passed in Intent");
                 } else {
                     Bundle values = extras.getParcelable(UniqueId.BKEY_BOOK_DATA);
@@ -310,7 +305,7 @@ public class BookEditFields extends BookDetailsFragmentAbstract
         final BookData book = mEditManager.getBookData();
         final String list = book.getBookshelfList();
         if (list == null || list.isEmpty()) {
-            String currShelf = BookCataloguePreferences.getString(BooksOnBookshelf.PREF_BOOKSHELF, "");
+            String currShelf = BCPreferences.getString(BooksOnBookshelf.PREF_BOOKSHELF, "");
             if (currShelf.isEmpty()) {
                 currShelf = mDb.getBookshelfName(1);
             }
@@ -338,7 +333,7 @@ public class BookEditFields extends BookDetailsFragmentAbstract
 
             switch (requestCode) {
                 case ACTIVITY_EDIT_AUTHORS:
-                    if (resultCode == Activity.RESULT_OK && intent.hasExtra(ColumnInfo.KEY_AUTHOR_ARRAY)) {
+                    if (resultCode == Activity.RESULT_OK && intent.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
                         mEditManager.getBookData().setAuthorList(ArrayUtils.getAuthorFromIntentExtras(intent));
                         mEditManager.setDirty(true);
                     } else {
@@ -352,7 +347,7 @@ public class BookEditFields extends BookDetailsFragmentAbstract
                     populateAuthorListField();
                     mEditManager.setDirty(oldDirty);
                 case ACTIVITY_EDIT_SERIES:
-                    if (resultCode == Activity.RESULT_OK && intent.hasExtra(ColumnInfo.KEY_SERIES_ARRAY)) {
+                    if (resultCode == Activity.RESULT_OK && intent.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
                         mEditManager.getBookData().setSeriesList(ArrayUtils.getSeriesFromIntentExtras(intent));
                         populateSeriesListField();
                         mEditManager.setDirty(true);
@@ -391,7 +386,7 @@ public class BookEditFields extends BookDetailsFragmentAbstract
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (FieldVisibilityActivity.isVisible(KEY_THUMBNAIL)) {
+        if (FieldVisibilityActivity.isVisible(UniqueId.BKEY_THUMBNAIL)) {
             menu.add(0, BookEditFragmentAbstract.THUMBNAIL_OPTIONS_ID, 0, R.string.cover_options_cc_ellipsis)
                     .setIcon(android.R.drawable.ic_menu_camera)
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);

@@ -44,8 +44,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter.AnthologyTitleExistsException;
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter.AnthologyTitleExistsException;
+import com.eleybourn.bookcatalogue.database.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaEntryHandler;
 import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaHandler;
@@ -58,8 +58,8 @@ import java.util.ArrayList;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_FORMATTED;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_TITLE;
 
 public class BookEditAnthology extends BookEditFragmentAbstract {
 
@@ -70,13 +70,13 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
      * Trim extraneous punctuation and whitespace from the titles and authors
      *
      * Original code had:
-     *    CLEANUP_REGEX = "[\\,\\.\\'\\:\\;\\`\\~\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\_\\+]*$";
+     * CLEANUP_REGEX = "[\\,\\.\\'\\:\\;\\`\\~\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\_\\+]*$";
      *
-     *    Android Studio:
-     *    Reports character escapes that are replaceable with the unescaped character without a
-     *    change in meaning. Note that inside the square brackets of a character class, many
-     *    escapes are unnecessary that would be necessary outside of a character class.
-     *    For example the regex [\.] is identical to [.]
+     * Android Studio:
+     * Reports character escapes that are replaceable with the unescaped character without a
+     * change in meaning. Note that inside the square brackets of a character class, many
+     * escapes are unnecessary that would be necessary outside of a character class.
+     * For example the regex [\.] is identical to [.]
      */
     private static final String CLEANUP_REGEX = "[,.':;`~@#$%^&*()\\-=_+]*$";
 
@@ -111,13 +111,13 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
      */
     private void loadPage() {
 
-        BookData book = mEditManager.getBookData();
+        final BookData book = mEditManager.getBookData();
         mBookAuthor = book.getString(KEY_AUTHOR_FORMATTED);
         mBookTitle = book.getString(KEY_TITLE);
 
         // Setup the same author field
         mSame = getView().findViewById(R.id.same_author);
-        mSame.setChecked(((book.getInt(ColumnInfo.KEY_ANTHOLOGY_MASK) & ColumnInfo.ANTHOLOGY_MULTIPLE_AUTHORS) == ColumnInfo.ANTHOLOGY_NO));
+        mSame.setChecked(((book.getInt(UniqueId.KEY_ANTHOLOGY_MASK) & TableInfo.ColumnInfo.ANTHOLOGY_MULTIPLE_AUTHORS) == TableInfo.ColumnInfo.ANTHOLOGY_NO));
         mSame.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 saveState(mEditManager.getBookData());
@@ -143,7 +143,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
                     }
                     AnthologyTitleListAdapter adapter = ((AnthologyTitleListAdapter) BookEditAnthology.this.getListView().getAdapter());
                     if (mEditPosition == null) {
-                        AnthologyTitle anthology = new AnthologyTitle(new Author(author), title);
+                        AnthologyTitle anthology = new AnthologyTitle(book.getRowId(), new Author(author), title);
                         adapter.add(anthology);
                     } else {
                         AnthologyTitle anthology = adapter.getItem(mEditPosition);
@@ -212,7 +212,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
      * FIXME: android.os.NetworkOnMainThreadException, use a task...
      */
     private void searchWikipedia() {
-        String basepath = BookCataloguePreferences.WEBSITE_URL_EN_WIKIPEDIA_ORG;
+        String host = "https://en.wikipedia.org";
         String pathAuthor = mBookAuthor.replace(" ", "+");
         pathAuthor = pathAuthor.replace(",", "");
         // Strip everything past the , from the title
@@ -222,51 +222,39 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
             pathTitle = pathTitle.substring(0, comma);
         }
         pathTitle = pathTitle.replace(" ", "+");
-        String path = basepath + "/w/index.php?title=Special:Search&search=%22" + pathTitle + "%22+" + pathAuthor + "";
-        boolean success = false;
-        URL url;
+        String path = host + "/w/index.php?title=Special:Search&search=%22" + pathTitle + "%22+" + pathAuthor + "";
+
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser;
         SearchWikipediaHandler handler = new SearchWikipediaHandler();
         SearchWikipediaEntryHandler entryHandler = new SearchWikipediaEntryHandler();
 
+        boolean found = false;
         try {
-            url = new URL(path);
             parser = factory.newSAXParser();
-            try {
-                parser.parse(Utils.getInputStream(url), handler);
-            } catch (RuntimeException e) {
-                Toast.makeText(getActivity(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();
-                Logger.logError(e);
-                return;
-            }
+            parser.parse(Utils.getInputStream(new URL(path)), handler);
+
             String[] links = handler.getLinks();
             for (String link : links) {
-                if (link.isEmpty() || success) {
+                if (link.isEmpty() || found) {
                     break;
                 }
-                url = new URL(basepath + link);
-
-                if (BuildConfig.DEBUG) {
-                    System.out.println("BEA: Calling out: " + url.toString());
-                }
-
                 parser = factory.newSAXParser();
                 try {
-                    parser.parse(Utils.getInputStream(url), entryHandler);
+                    parser.parse(Utils.getInputStream(new URL(host + link)), entryHandler);
                     ArrayList<String> titles = entryHandler.getList();
                     /* Display the confirm dialog */
                     if (titles.size() > 0) {
-                        success = true;
                         showAnthologyConfirm(titles);
+                        found = true;
                     }
                 } catch (RuntimeException e) {
                     Logger.logError(e);
                     Toast.makeText(getActivity(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();
                 }
             }
-            if (!success) {
+            if (!found) {
                 Toast.makeText(getActivity(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();
                 return;
             }
@@ -279,6 +267,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
     }
 
     private void showAnthologyConfirm(final ArrayList<String> titles) {
+        final BookData book = mEditManager.getBookData();
         StringBuilder anthology_title = new StringBuilder();
         for (int j = 0; j < titles.size(); j++) {
             anthology_title.append("* ").append(titles.get(j)).append("\n");
@@ -310,7 +299,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
                                     .replace("\n", " ")
                                     .replaceAll(CLEANUP_REGEX, "")
                                     .trim();
-                            AnthologyTitle anthology = new AnthologyTitle(new Author(anthology_author), anthology_title);
+                            AnthologyTitle anthology = new AnthologyTitle(book.getRowId(), new Author(anthology_author), anthology_title);
                             mList.add(anthology);
                         }
                         AnthologyTitleListAdapter adapter = ((AnthologyTitleListAdapter) BookEditAnthology.this.getListView().getAdapter());
@@ -376,10 +365,10 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
 
     private void saveState(BookData book) {
         book.setAnthologyTitles(mList);
-        book.putInt(ColumnInfo.KEY_ANTHOLOGY_MASK,
+        book.putInt(UniqueId.KEY_ANTHOLOGY_MASK,
                 mSame.isChecked() ?
-                        ColumnInfo.ANTHOLOGY_IS_ANTHOLOGY
-                        : ColumnInfo.ANTHOLOGY_MULTIPLE_AUTHORS ^ ColumnInfo.ANTHOLOGY_IS_ANTHOLOGY);
+                        TableInfo.ColumnInfo.ANTHOLOGY_IS_ANTHOLOGY
+                        : TableInfo.ColumnInfo.ANTHOLOGY_MULTIPLE_AUTHORS ^ TableInfo.ColumnInfo.ANTHOLOGY_IS_ANTHOLOGY);
     }
 
     @Override

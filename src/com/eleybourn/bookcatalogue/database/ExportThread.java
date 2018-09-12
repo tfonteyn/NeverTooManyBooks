@@ -1,7 +1,6 @@
 package com.eleybourn.bookcatalogue.database;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.Exporter;
@@ -138,7 +137,7 @@ public class ExportThread extends ManagedTask {
 //
 //		StringBuilder export = new StringBuilder(
 //			'"' + DatabaseDefinitions.KEY_ID + "\"," + 			//0
-//			'"' + DatabaseDefinitions.KEY_AUTHOR_DETAILS + "\"," + 	//2
+//			'"' + DatabaseDefinitions.BKEY_AUTHOR_DETAILS + "\"," + 	//2
 //			'"' + DatabaseDefinitions.KEY_TITLE + "\"," + 			//4
 //			'"' + DatabaseDefinitions.KEY_ISBN + "\"," + 			//5
 //			'"' + DatabaseDefinitions.KEY_PUBLISHER + "\"," + 		//6
@@ -147,7 +146,7 @@ public class ExportThread extends ManagedTask {
 //			'"' + "bookshelf_id\"," + 								//9
 //			'"' + DatabaseDefinitions.KEY_BOOKSHELF + "\"," +		//10
 //			'"' + DatabaseDefinitions.KEY_READ + "\"," +				//11
-//			'"' + DatabaseDefinitions.KEY_SERIES_DETAILS + "\"," +	//12
+//			'"' + DatabaseDefinitions.BKEY_SERIES_DETAILS + "\"," +	//12
 //			'"' + DatabaseDefinitions.KEY_PAGES + "\"," + 			//14
 //			'"' + DatabaseDefinitions.KEY_NOTES + "\"," + 			//15
 //			'"' + DatabaseDefinitions.KEY_LIST_PRICE + "\"," + 		//16
@@ -163,7 +162,7 @@ public class ExportThread extends ManagedTask {
 //			'"' + DatabaseDefinitions.KEY_GENRE+ "\"," + 			//26
 //			'"' + DatabaseDefinitions.KEY_DATE_ADDED+ "\"," + 		//27
 //			'"' + DatabaseDefinitions.DOM_GOODREADS_BOOK_ID + "\"," + 		//28
-//			'"' + DatabaseDefinitions.DOM_LAST_GOODREADS_SYNC_DATE + "\"," + 		//29
+//			'"' + DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE + "\"," + 		//29
 //			'"' + DatabaseDefinitions.DOM_LAST_UPDATE_DATE + "\"," + 		//30
 //			'"' + DatabaseDefinitions.DOM_BOOK_UUID + "\"," + 		//31
 //			"\n");
@@ -278,7 +277,7 @@ public class ExportThread extends ManagedTask {
 //						row.append("\"" + formatCell(rv.getGenre()) + "\",");
 //						row.append("\"" + formatCell(dateAddedString) + "\",");
 //						row.append("\"" + formatCell(rv.getGoodreadsBookId()) + "\",");
-//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.DOM_LAST_GOODREADS_SYNC_DATE.name))) + "\",");
+//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE.name))) + "\",");
 //						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.DOM_LAST_UPDATE_DATE.name))) + "\",");
 //						row.append("\"" + formatCell(rv.getBookUuid()) + "\",");
 //						row.append("\n");

@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -19,30 +19,40 @@
  */
 package com.eleybourn.bookcatalogue.datamanager.validators;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 
 /**
  * 'Meta' Validator to evaluate a list of validators; ALL validators must be true.
- * 
- * @author Philip Warner
  *
+ * @author Philip Warner
  */
 public class AndValidator extends MetaValidator implements DataValidator {
-	// Java likes this
-	public static final long serialVersionUID = 1L;
+    // Java likes this
+    public static final long serialVersionUID = 1L;
 
-	// Constructors
-	public AndValidator(DataValidator v1) { super(v1); }
-	public AndValidator(DataValidator v1, DataValidator v2) { super(v1, v2); }
-	public AndValidator(DataValidator v1, DataValidator v2, DataValidator v3) { super(v1, v2, v3); }
+    // Constructors
+    public AndValidator(DataValidator v1) {
+        super(v1);
+    }
 
-	@Override
-	public void validate(DataManager data, Datum datum, boolean crossValidating) {
-		for (DataValidator v : this) {
-			// Only set the Bundle for the last in the list
-			v.validate(data, datum, crossValidating);
-		}
-		return;
-	}
+    public AndValidator(DataValidator v1, DataValidator v2) {
+        super(v1, v2);
+    }
+
+    public AndValidator(DataValidator v1, DataValidator v2, DataValidator v3) {
+        super(v1, v2, v3);
+    }
+
+    @Override
+    public void validate(@NonNull DataManager data, @NonNull Datum datum, boolean crossValidating)
+            throws ValidatorException {
+        for (DataValidator v : this) {
+            // Only set the Bundle for the last in the list
+            v.validate(data, datum, crossValidating);
+        }
+        return;
+    }
 }

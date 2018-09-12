@@ -30,9 +30,10 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQuery;
 import android.database.sqlite.SQLiteStatement;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.LockTypes;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -344,7 +345,6 @@ public class DbSync {
 					} finally {
 						if (l != null) {
 							l.unlock();
-							l = null;
 						}
 					}				
 				} while (true);
@@ -643,7 +643,7 @@ public class DbSync {
 		 *
 		 * @return		Number of current references
 		 */
-		public static void printRefCount(String msg, SQLiteDatabase db) {
+		public static void printRefCount(@Nullable final String msg, @NonNull final SQLiteDatabase db) {
             if (BuildConfig.DEBUG) {
                 System.gc();
                 Field f;
@@ -817,7 +817,7 @@ public class DbSync {
 	public static class SynchronizedCursor extends SQLiteCursor {
 		private final Synchronizer mSync;
 
-		SynchronizedCursor(SQLiteCursorDriver driver,
+		public SynchronizedCursor(SQLiteCursorDriver driver,
                            String editTable, SQLiteQuery query, Synchronizer sync) {
 			super(driver, editTable, query);
 			mSync = sync;

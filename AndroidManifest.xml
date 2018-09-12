@@ -46,14 +46,14 @@
             android:value="my_goodreads_secret" />
 
         <provider
-            android:name=".SearchSuggestionProvider"
-            android:authorities="com.eleybourn.bookcatalogue.SearchSuggestionProvider"
+            android:name=".searches.SearchSuggestionProvider"
+            android:authorities="${packageName}.SearchSuggestionProvider"
             android:exported="false" />
 
         <!-- Authority same as set in GenericFileProvider.class -->
         <provider
             android:name=".utils.GenericFileProvider"
-            android:authorities="com.eleybourn.bookcatalogue.GenericFileProvider"
+            android:authorities="${packageName}.GenericFileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -198,17 +198,17 @@
 
         <!-- Search -->
         <activity
-            android:name=".SearchCatalogue"
+            android:name=".searches.SearchCatalogue"
             android:windowSoftInputMode="adjustResize" />
 
         <!-- Booklist Preferences -->
         <activity android:name=".booklist.BooklistPreferencesActivity" />
 
         <!-- Other preferences (e.g. non-booklist -->
-        <activity android:name=".OtherPreferences" />
+        <activity android:name=".PreferencesActivity" />
 
         <!-- Add Book; this activity then sub divides Add by scan,isbn,internet, or add manually -->
-        <activity android:name=".BookISBNSearch" />
+        <activity android:name=".BookISBNSearchActivity" />
 
         <!-- Edit a book + the related author/series -->
         <activity android:name=".BookEdit" />
@@ -247,7 +247,7 @@
 
                 <data
                     android:host="goodreadsauth"
-                    android:scheme="com.eleybourn.bookcatalogue" />
+                    android:scheme="${packageName}" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -256,7 +256,7 @@
 
                 <data
                     android:host="goodreadsauth"
-                    android:scheme="com.eleybourn.bookcatalogue" />
+                    android:scheme="${packageName}" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.GET" />
@@ -267,7 +267,7 @@
 
                 <data
                     android:host="goodreadsauth"
-                    android:scheme="com.eleybourn.bookcatalogue" />
+                    android:scheme="${packageName}" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

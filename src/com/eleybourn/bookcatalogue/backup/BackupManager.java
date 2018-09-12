@@ -19,7 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
+import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupReader.BackupReaderListener;
@@ -189,9 +189,9 @@ public class BackupManager {
                 fragment.setSuccess(mBackupOk);
                 if (mBackupOk) {
                     if ((backupFlags == Exporter.EXPORT_ALL)) {
-                        BookCataloguePreferences.setLastBackupDate(mBackupDate);
+                        BCPreferences.setLastBackupDate(mBackupDate);
                     }
-                    BookCataloguePreferences.setLastBackupFile(resultingFile.getAbsolutePath());
+                    BCPreferences.setLastBackupFile(resultingFile.getAbsolutePath());
                 }
             }
 

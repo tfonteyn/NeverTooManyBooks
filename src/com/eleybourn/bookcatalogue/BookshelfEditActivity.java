@@ -25,9 +25,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ID;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_ID;
 
 /**
  * Activity where we can edit a Bookshelf (its name)

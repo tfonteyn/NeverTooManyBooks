@@ -20,7 +20,7 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
+import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.R;
 
 /**
@@ -56,12 +56,12 @@ public class StringListProperty extends ListProperty<String> implements Property
 
     @Override
     protected String getGlobalDefault() {
-        return BookCataloguePreferences.getString(getPreferenceKey(), getDefaultValue());
+        return BCPreferences.getString(getPreferenceKey(), getDefaultValue());
     }
 
     @Override
     protected StringListProperty setGlobalDefault(String value) {
-        BookCataloguePreferences.setString(getPreferenceKey(), value);
+        BCPreferences.setString(getPreferenceKey(), value);
         return this;
     }
 

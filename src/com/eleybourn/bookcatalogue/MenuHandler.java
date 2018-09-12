@@ -124,10 +124,10 @@ public class MenuHandler {
                 createBookScan(a);
                 return true;
             case MENU_ITEM_ADD_BOOK_ISBN:
-                createBookISBN(a, BookISBNSearch.BY_ISBN);
+                createBookISBN(a, BookISBNSearchActivity.BY_ISBN);
                 return true;
             case MENU_ITEM_ADD_BOOK_NAMES:
-                createBookISBN(a, BookISBNSearch.BY_NAME);
+                createBookISBN(a, BookISBNSearchActivity.BY_NAME);
                 return true;
             case MENU_ITEM_ADD_BOOK_MANUAL:
                 createBook(a);
@@ -143,8 +143,8 @@ public class MenuHandler {
      * Load the Search by ISBN Activity to begin scanning.
      */
     private void createBookScan(Activity a) {
-        Intent i = new Intent(a, BookISBNSearch.class);
-        i.putExtra(BookISBNSearch.BKEY_BY, BookISBNSearch.BY_SCAN);
+        Intent i = new Intent(a, BookISBNSearchActivity.class);
+        i.putExtra(BookISBNSearchActivity.BKEY_BY, BookISBNSearchActivity.BY_SCAN);
         a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_SCAN);
     }
 
@@ -152,8 +152,8 @@ public class MenuHandler {
      * Load the Search by ISBN Activity
      */
     private void createBookISBN(Activity a, String by) {
-        Intent i = new Intent(a, BookISBNSearch.class);
-        i.putExtra(BookISBNSearch.BKEY_BY, by);
+        Intent i = new Intent(a, BookISBNSearchActivity.class);
+        i.putExtra(BookISBNSearchActivity.BKEY_BY, by);
         a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_ISBN);
     }
 

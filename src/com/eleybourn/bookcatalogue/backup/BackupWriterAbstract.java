@@ -22,10 +22,10 @@ package com.eleybourn.bookcatalogue.backup;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 
+import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
@@ -316,7 +316,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
      * Get the preferences and save them
      */
     private void writePreferences(final BackupWriterListener listener) throws IOException {
-        SharedPreferences prefs = BookCataloguePreferences.getSharedPreferences();
+        SharedPreferences prefs = BCPreferences.getSharedPreferences();
         putPreferences(prefs);
         listener.step(null, 1);
     }

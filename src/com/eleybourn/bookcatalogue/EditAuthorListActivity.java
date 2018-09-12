@@ -32,10 +32,10 @@ import android.view.View;
 import android.widget.*;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.BasicDialog;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_ARRAY;
+import static com.eleybourn.bookcatalogue.UniqueId.BKEY_AUTHOR_ARRAY;
 
 /**
  * Activity to edit a list of authors provided in an ArrayList<Author> and
@@ -49,7 +49,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
      * Constructor; pass the superclass the main and row based layouts to use.
      */
     public EditAuthorListActivity() {
-        super(KEY_AUTHOR_ARRAY, R.layout.activity_edit_list_author, R.layout.row_edit_author_list);
+        super(BKEY_AUTHOR_ARRAY, R.layout.activity_edit_list_author, R.layout.row_edit_author_list);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
 
     @Override
     protected void onRowClick(View target, final Author author, int position) {
-        final Dialog dialog = new BasicDialog(this);
+        final Dialog dialog = new StandardDialogs.BasicDialog(this);
         dialog.setContentView(R.layout.dialog_edit_author);
         dialog.setTitle(R.string.edit_author_details);
 

@@ -29,8 +29,8 @@ import com.eleybourn.bookcatalogue.*;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistAuthorGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistSeriesGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle.CompoundKey;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.CollationCaseSensitive;
-import com.eleybourn.bookcatalogue.database.ColumnInfo;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
@@ -49,8 +49,8 @@ import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Map.Entry;
 
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.EMPTY_STRING_ARRAY;
-import static com.eleybourn.bookcatalogue.CatalogueDBAdapter.encodeString;
+import static com.eleybourn.bookcatalogue.database.CatalogueDBAdapter.EMPTY_STRING_ARRAY;
+import static com.eleybourn.bookcatalogue.database.CatalogueDBAdapter.encodeString;
 import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.*;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.*;
 
@@ -77,15 +77,15 @@ public class BooklistBuilder implements AutoCloseable {
      * Convenience expression for the SQL which gets formatted author names in 'Last, Given' form
      */
     private static final String AUTHOR_FORMATTED_LAST_FIRST_EXPRESSION = "Case "
-            + "When " + TBL_AUTHORS.dot(DOM_GIVEN_NAMES) + " = '' Then " + TBL_AUTHORS.dot(DOM_FAMILY_NAME)
-            + " Else " + TBL_AUTHORS.dot(DOM_FAMILY_NAME) + "|| ', ' || " + TBL_AUTHORS.dot(DOM_GIVEN_NAMES)
+            + "When " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " = '' Then " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
+            + " Else " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + "|| ', ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
             + " End";
     /**
      * Convenience expression for the SQL which gets formatted author names in 'Given Last' form
      */
     private static final String AUTHOR_FORMATTED_FIRST_LAST_EXPRESSION = "Case "
-            + "When " + TBL_AUTHORS.dot(DOM_GIVEN_NAMES) + " = '' Then " + TBL_AUTHORS.dot(DOM_FAMILY_NAME)
-            + " Else " + TBL_AUTHORS.dot(DOM_GIVEN_NAMES) + "|| ' ' || " + TBL_AUTHORS.dot(DOM_FAMILY_NAME)
+            + "When " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " = '' Then " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
+            + " Else " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "|| ' ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
             + " End";
 
     /** Counter for BooklistBuilder IDs */
@@ -432,8 +432,8 @@ public class BooklistBuilder implements AutoCloseable {
 
             // We can not use triggers to fill in headings in API < 8 since SQLite 3.5.9 is broken
             // Allow for the user preferences to override in case another build is broken.
-            final int listMode = BookCataloguePreferences.getInt(
-                    BookCataloguePreferences.PREF_BOOKLIST_GENERATION_MODE,
+            final int listMode = BCPreferences.getInt(
+                    BCPreferences.PREF_BOOKLIST_GENERATION_MODE,
                     BooklistBuilder.BOOKLIST_GENERATE_AUTOMATIC);
             boolean useTriggers;
             boolean flatTriggers = false;
@@ -576,9 +576,9 @@ public class BooklistBuilder implements AutoCloseable {
                         // Saved for later to indicate group was present
                         hasGroupLOANED = true;
                         g.displayDomain = DOM_LOANED_TO;
-                        summary.addDomain(DOM_LOANED_TO_SORT, "Case When " + TBL_LOAN.dot(ColumnInfo.KEY_LOANED_TO) + " is null then 1 else 0 end", SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                        summary.addDomain(DOM_LOANED_TO, "Case When " + TBL_LOAN.dot(ColumnInfo.KEY_LOANED_TO) + " is null then '" + BookCatalogueApp.getResourceString(R.string.available) + "'" +
-                                        " else '" + BookCatalogueApp.getResourceString(R.string.loaned_to_2) + "' || " + TBL_LOAN.dot(ColumnInfo.KEY_LOANED_TO) + " end",
+                        summary.addDomain(DOM_LOANED_TO_SORT, "Case When " + TBL_LOAN.dot(UniqueId.KEY_LOANED_TO) + " is null then 1 else 0 end", SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                        summary.addDomain(DOM_LOANED_TO, "Case When " + TBL_LOAN.dot(UniqueId.KEY_LOANED_TO) + " is null then '" + BookCatalogueApp.getResourceString(R.string.available) + "'" +
+                                        " else '" + BookCatalogueApp.getResourceString(R.string.loaned_to_2) + "' || " + TBL_LOAN.dot(UniqueId.KEY_LOANED_TO) + " end",
                                 SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                         g.setKeyComponents("l", DOM_LOANED_TO);
                         break;
@@ -593,7 +593,7 @@ public class BooklistBuilder implements AutoCloseable {
                     case ROW_KIND_YEAR_PUBLISHED:
                         g.displayDomain = DOM_PUBLICATION_YEAR;
                         // Use our standard glob expression
-                        String yearPubExpr = yearGlob(TBL_BOOKS.dot(ColumnInfo.KEY_DATE_PUBLISHED), false);
+                        String yearPubExpr = yearGlob(TBL_BOOKS.dot(UniqueId.KEY_DATE_PUBLISHED), false);
                         summary.addDomain(DOM_PUBLICATION_YEAR, yearPubExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                         g.setKeyComponents("yrp", DOM_PUBLICATION_YEAR);
                         break;
@@ -601,7 +601,7 @@ public class BooklistBuilder implements AutoCloseable {
                     case ROW_KIND_MONTH_PUBLISHED:
                         g.displayDomain = DOM_PUBLICATION_MONTH;
                         // Use our standard glob expression
-                        String monthPubExpr = monthGlob(TBL_BOOKS.dot(ColumnInfo.KEY_DATE_PUBLISHED), false);
+                        String monthPubExpr = monthGlob(TBL_BOOKS.dot(UniqueId.KEY_DATE_PUBLISHED), false);
                         summary.addDomain(DOM_PUBLICATION_MONTH, monthPubExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                         g.setKeyComponents("mnp", DOM_PUBLICATION_MONTH);
                         break;

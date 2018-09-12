@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.datamanager.validators;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
@@ -26,36 +28,37 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 /**
  * Validator to apply a default value and validate as a Date
- * 
- * @author Philip Warner
  *
+ * @author Philip Warner
  */
 public class DateValidator extends DefaultFieldValidator {
 
-	public DateValidator() {
-		super();
-	}
-	public DateValidator(String defaultValue) {
-		super(defaultValue);
-	}
-	@Override
-	public void validate(DataManager data, Datum datum, boolean crossValidating) {
-		if (!datum.isVisible()) {
-			// No validation required for invisible fields
-			return;
-		}
-		if (crossValidating)
-			return;
+    public DateValidator() {
+        super();
+    }
 
-		// Will throw on failure...
-		super.validate(data, datum, crossValidating);
+    public DateValidator(String defaultValue) {
+        super(defaultValue);
+    }
 
-		try {
-			java.util.Date d = DateUtils.parseDate(data.getString(datum));
-			data.putString(datum, DateUtils.toSqlDateTime(d));
-		} catch (Exception e) {
-			throw new ValidatorException(R.string.vldt_date_expected, new Object[]{datum.getKey()});
-		}
-		return;
-	}
+    @Override
+    public void validate(@NonNull DataManager data, @NonNull Datum datum, boolean crossValidating)
+            throws ValidatorException {
+        if (!datum.isVisible()) {
+            // No validation required for invisible fields
+            return;
+        }
+        if (crossValidating)
+            return;
+
+        super.validate(data, datum, crossValidating);
+
+        try {
+            java.util.Date d = DateUtils.parseDate(data.getString(datum));
+            data.putString(datum, DateUtils.toSqlDateTime(d));
+        } catch (Exception e) {
+            throw new ValidatorException(R.string.vldt_date_expected, new Object[]{datum.getKey()});
+        }
+        return;
+    }
 }

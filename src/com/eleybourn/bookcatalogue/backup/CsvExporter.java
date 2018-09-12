@@ -23,10 +23,10 @@ import android.database.Cursor;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookEditFields;
-import com.eleybourn.bookcatalogue.BooksCursor;
+import com.eleybourn.bookcatalogue.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.BooksRowView;
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -39,30 +39,35 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Date;
 
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ANTHOLOGY_MASK;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_DETAILS;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_AUTHOR_NAME;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_DATE_ADDED;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_FORMAT;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_GENRE;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ISBN;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_LIST_PRICE;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_LOCATION;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_NOTES;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_PAGES;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_RATING;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_READ;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_READ_END;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_READ_START;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_ID;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SERIES_DETAILS;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_SIGNED;
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
+import static com.eleybourn.bookcatalogue.UniqueId.BKEY_AUTHOR_DETAILS;
+import static com.eleybourn.bookcatalogue.UniqueId.BKEY_SERIES_DETAILS;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_ANTHOLOGY_MASK;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_NAME;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_DATE_ADDED;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_FORMAT;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_GENRE;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_GOODREADS_BOOK_ID;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_GOODREADS_LAST_SYNC_DATE;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_ID;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_ISBN;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_LANGUAGE;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_LAST_UPDATE_DATE;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_LIST_PRICE;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_LOANED_TO;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_LOCATION;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_NOTES;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_PAGES;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_PUBLISHER;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_RATING;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_READ;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_READ_END;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_READ_START;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_SIGNED;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_TITLE;
 
 /**
  * Implementation of Exporter that creates a CSV file.
@@ -105,16 +110,16 @@ public class CsvExporter implements Exporter {
 
         StringBuilder export = new StringBuilder(
                 '"' + KEY_ID + "\"," +            //0
-                        '"' + KEY_AUTHOR_DETAILS + "\"," +    //2
+                        '"' + BKEY_AUTHOR_DETAILS + "\"," +    //2
                         '"' + KEY_TITLE + "\"," +            //4
                         '"' + KEY_ISBN + "\"," +            //5
                         '"' + KEY_PUBLISHER + "\"," +        //6
                         '"' + KEY_DATE_PUBLISHED + "\"," +    //7
                         '"' + KEY_RATING + "\"," +            //8
-                        '"' + "bookshelf_id\"," +                                //9
+                        '"' + "bookshelf_id\"," +              //9
                         '"' + KEY_BOOKSHELF + "\"," +        //10
                         '"' + KEY_READ + "\"," +                //11
-                        '"' + KEY_SERIES_DETAILS + "\"," +    //12
+                        '"' + BKEY_SERIES_DETAILS + "\"," +    //12
                         '"' + KEY_PAGES + "\"," +            //14
                         '"' + KEY_NOTES + "\"," +            //15
                         '"' + KEY_LIST_PRICE + "\"," +        //16
@@ -125,15 +130,15 @@ public class CsvExporter implements Exporter {
                         '"' + KEY_FORMAT + "\"," +            //21
                         '"' + KEY_SIGNED + "\"," +            //22
                         '"' + KEY_LOANED_TO + "\"," +            //23
-                        '"' + "anthology_titles" + "\"," +                        //24
+                        '"' + "anthology_titles" + "\"," +       //24
                         '"' + KEY_DESCRIPTION + "\"," +        //25
                         '"' + KEY_GENRE + "\"," +            //26
-                        '"' + DatabaseDefinitions.DOM_LANGUAGE + "\"," +            //+1
+                        '"' + KEY_LANGUAGE + "\"," +            //+1
                         '"' + KEY_DATE_ADDED + "\"," +        //27
-                        '"' + DatabaseDefinitions.DOM_GOODREADS_BOOK_ID + "\"," +        //28
-                        '"' + DatabaseDefinitions.DOM_LAST_GOODREADS_SYNC_DATE + "\"," +        //29
-                        '"' + DatabaseDefinitions.DOM_LAST_UPDATE_DATE + "\"," +        //30
-                        '"' + DatabaseDefinitions.DOM_BOOK_UUID + "\"," +        //31
+                        '"' + KEY_GOODREADS_BOOK_ID + "\"," +        //28
+                        '"' + KEY_GOODREADS_LAST_SYNC_DATE + "\"," + //29
+                        '"' + KEY_LAST_UPDATE_DATE + "\"," +         //30
+                        '"' + KEY_BOOK_UUID + "\"," +        //31
                         "\n");
 
         long lastUpdate = 0;
@@ -144,11 +149,11 @@ public class CsvExporter implements Exporter {
         db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         db.open();
 
-        BooksCursor books = db.exportBooks(since);
-        BooksRowView rv = books.getRowView();
+        BooksCursor bookCursor = db.exportBooks(since);
+        BooksRowView rv = bookCursor.getRowView();
 
         try {
-            final int totalBooks = books.getCount();
+            final int totalBooks = bookCursor.getCount();
 
             if (!listener.isCancelled()) {
 
@@ -157,21 +162,21 @@ public class CsvExporter implements Exporter {
                 /* write to the SDCard */
                 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream, UTF8), BUFFER_SIZE);
                 out.write(export.toString());
-                if (books.moveToFirst()) {
+                if (bookCursor.moveToFirst()) {
                     do {
                         num++;
-                        long id = books.getLong(books.getColumnIndexOrThrow(KEY_ID));
+                        long id = bookCursor.getLong(bookCursor.getColumnIndexOrThrow(KEY_ID));
                         // Just get the string from the database and save it. It should be in standard SQL form already.
                         String dateString = "";
                         try {
-                            dateString = books.getString(books.getColumnIndexOrThrow(KEY_DATE_PUBLISHED));
+                            dateString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(KEY_DATE_PUBLISHED));
                         } catch (Exception e) {
                             //do nothing
                         }
                         // Just get the string from the database and save it. It should be in standard SQL form already.
                         String dateReadStartString = "";
                         try {
-                            dateReadStartString = books.getString(books.getColumnIndexOrThrow(KEY_READ_START));
+                            dateReadStartString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(KEY_READ_START));
                         } catch (Exception e) {
                             Logger.logError(e);
                             //do nothing
@@ -179,7 +184,7 @@ public class CsvExporter implements Exporter {
                         // Just get the string from the database and save it. It should be in standard SQL form already.
                         String dateReadEndString = "";
                         try {
-                            dateReadEndString = books.getString(books.getColumnIndexOrThrow(KEY_READ_END));
+                            dateReadEndString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(KEY_READ_END));
                         } catch (Exception e) {
                             Logger.logError(e);
                             //do nothing
@@ -187,12 +192,12 @@ public class CsvExporter implements Exporter {
                         // Just get the string from the database and save it. It should be in standard SQL form already.
                         String dateAddedString = "";
                         try {
-                            dateAddedString = books.getString(books.getColumnIndexOrThrow(KEY_DATE_ADDED));
+                            dateAddedString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(KEY_DATE_ADDED));
                         } catch (Exception e) {
                             //do nothing
                         }
 
-                        int anthology = books.getInt(books.getColumnIndexOrThrow(KEY_ANTHOLOGY_MASK));
+                        int anthology = bookCursor.getInt(bookCursor.getColumnIndexOrThrow(KEY_ANTHOLOGY_MASK));
                         StringBuilder anthology_titles = new StringBuilder();
                         if (anthology != 0) {
                             try (Cursor titles = db.fetchAnthologyTitlesByBook(id)) {
@@ -205,7 +210,7 @@ public class CsvExporter implements Exporter {
                                 }
                             }
                         }
-                        String title = books.getString(books.getColumnIndexOrThrow(KEY_TITLE));
+                        String title = bookCursor.getString(bookCursor.getColumnIndexOrThrow(KEY_TITLE));
                         // Sanity check: ensure title is non-blank. This has not happened yet, but we
                         // know if does for author, so completeness suggests making sure all 'required'
                         // fields are non-blank.
@@ -228,7 +233,7 @@ public class CsvExporter implements Exporter {
 
                         String authorDetails = ArrayUtils.getAuthorUtils().encodeList('|', db.getBookAuthorList(id));
                         // Sanity check: ensure author is non-blank. This HAPPENS. Probably due to constraint failures.
-                        if (authorDetails == null || authorDetails.trim().isEmpty())
+                        if (authorDetails.trim().isEmpty())
                             authorDetails = AUTHOR + ", " + UNKNOWN;
 
                         String seriesDetails = ArrayUtils.getSeriesUtils().encodeList('|', db.getBookSeriesList(id));
@@ -240,29 +245,29 @@ public class CsvExporter implements Exporter {
                         row.append("\"").append(formatCell(rv.getIsbn())).append("\",");
                         row.append("\"").append(formatCell(rv.getPublisher())).append("\",");
                         row.append("\"").append(formatCell(dateString)).append("\",");
-                        row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_RATING)))).append("\",");
+                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DatabaseDefinitions.DOM_RATING.name)))).append("\",");
                         row.append("\"").append(formatCell(bookshelves_id_text)).append("\",");
                         row.append("\"").append(formatCell(bookshelves_name_text)).append("\",");
                         row.append("\"").append(formatCell(rv.getRead())).append("\",");
                         row.append("\"").append(formatCell(seriesDetails)).append("\",");
-                        row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_PAGES)))).append("\",");
+                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DatabaseDefinitions.DOM_PAGES.name)))).append("\",");
                         row.append("\"").append(formatCell(rv.getNotes())).append("\",");
-                        row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_LIST_PRICE)))).append("\",");
+                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DatabaseDefinitions.DOM_LIST_PRICE.name)))).append("\",");
                         row.append("\"").append(formatCell(anthology)).append("\",");
                         row.append("\"").append(formatCell(rv.getLocation())).append("\",");
                         row.append("\"").append(formatCell(dateReadStartString)).append("\",");
                         row.append("\"").append(formatCell(dateReadEndString)).append("\",");
-                        row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_FORMAT)))).append("\",");
-                        row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_SIGNED)))).append("\",");
-                        row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(KEY_LOANED_TO)) + "")).append("\",");
+                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DatabaseDefinitions.DOM_FORMAT.name)))).append("\",");
+                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DatabaseDefinitions.DOM_SIGNED.name)))).append("\",");
+                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DatabaseDefinitions.DOM_LOANED_TO.name)) + "")).append("\",");
                         row.append("\"").append(formatCell(anthology_titles.toString())).append("\",");
                         row.append("\"").append(formatCell(rv.getDescription())).append("\",");
                         row.append("\"").append(formatCell(rv.getGenre())).append("\",");
                         row.append("\"").append(formatCell(rv.getLanguage())).append("\",");
                         row.append("\"").append(formatCell(dateAddedString)).append("\",");
                         row.append("\"").append(formatCell(rv.getGoodreadsBookId())).append("\",");
-                        row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.DOM_LAST_GOODREADS_SYNC_DATE.name)))).append("\",");
-                        row.append("\"").append(formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.DOM_LAST_UPDATE_DATE.name)))).append("\",");
+                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE.name)))).append("\",");
+                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DatabaseDefinitions.DOM_LAST_UPDATE_DATE.name)))).append("\",");
                         row.append("\"").append(formatCell(rv.getBookUuid())).append("\",");
                         row.append("\n");
                         out.write(row.toString());
@@ -277,7 +282,7 @@ public class CsvExporter implements Exporter {
                             lastUpdate = now;
                         }
                     }
-                    while (books.moveToNext() && !listener.isCancelled());
+                    while (bookCursor.moveToNext() && !listener.isCancelled());
                 }
 
                 out.close();
@@ -294,7 +299,7 @@ public class CsvExporter implements Exporter {
                 }
             }
             try {
-                books.close();
+                bookCursor.close();
             } catch (Exception ignored) {
             }
             db.close();

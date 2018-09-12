@@ -29,32 +29,32 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BookCataloguePreferences;
-import com.eleybourn.bookcatalogue.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
-import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegister;
 import com.eleybourn.bookcatalogue.searches.librarything.AdministrationLibraryThing;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
-import com.eleybourn.bookcatalogue.utils.Convert;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
-
-import static com.eleybourn.bookcatalogue.database.ColumnInfo.KEY_TITLE;
 
 public class StandardDialogs {
 
@@ -64,31 +64,34 @@ public class StandardDialogs {
      * Show a dialog asking if unsaved edits should be ignored. Finish if so.
      */
     public static void showConfirmUnsavedEditsDialog(@NonNull final Activity activity, @Nullable final Runnable r) {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setTitle(R.string.details_have_changed)
+                .setMessage(R.string.you_have_unsaved_changes)
+                .setCancelable(false)
+                .create();
 
-        dialog.setTitle(R.string.details_have_changed);
-        dialog.setMessage(R.string.you_have_unsaved_changes);
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getResources().getString(R.string.exit),
+                new AlertDialog.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        if (r != null) {
+                            r.run();
+                        } else {
+                            activity.finish();
+                        }
+                    }
+                });
 
-        dialog.setPositiveButton(R.string.exit, new AlertDialog.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                if (r != null) {
-                    r.run();
-                } else {
-                    activity.finish();
-                }
-            }
-        });
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, activity.getResources().getString(R.string.continue_editing),
+                new AlertDialog.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
 
-        dialog.setNegativeButton(R.string.continue_editing, new AlertDialog.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        dialog.setCancelable(false);
-        dialog.create().show();
+        dialog.show();
     }
 
     public static void needLibraryThingAlert(@NonNull final Context context,
@@ -99,7 +102,7 @@ public class StandardDialogs {
         final String prefName = LibraryThingManager.LT_HIDE_ALERT_PREF_NAME + "_" + prefSuffix;
         if (!ltRequired) {
             msgId = R.string.uses_library_thing_info;
-            SharedPreferences prefs = context.getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
+            SharedPreferences prefs = context.getSharedPreferences(BCPreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
             showAlert = !prefs.getBoolean(prefName, false);
         } else {
             msgId = R.string.require_library_thing_info;
@@ -109,78 +112,77 @@ public class StandardDialogs {
         if (!showAlert)
             return;
 
-        final AlertDialog dlg = new AlertDialog.Builder(context).setMessage(msgId).create();
+        final AlertDialog dialog = new AlertDialog.Builder(context).setMessage(msgId)
+                .setTitle(R.string.reg_library_thing_title)
+                .setIcon(android.R.drawable.ic_menu_info_details)
+                .create();
 
-        dlg.setTitle(R.string.reg_library_thing_title);
-        dlg.setIcon(android.R.drawable.ic_menu_info_details);
-
-        dlg.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(R.string.more_info), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                Intent i = new Intent(context, AdministrationLibraryThing.class);
-                context.startActivity(i);
-                dlg.dismiss();
-            }
-        });
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(R.string.more_info),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent i = new Intent(context, AdministrationLibraryThing.class);
+                        context.startActivity(i);
+                        dialog.dismiss();
+                    }
+                });
 
         if (!ltRequired) {
-            dlg.setButton(DialogInterface.BUTTON_NEUTRAL, context.getResources().getString(R.string.disable_dialogue), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    SharedPreferences prefs = context.getSharedPreferences(BookCataloguePreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
-                    SharedPreferences.Editor ed = prefs.edit();
-                    ed.putBoolean(prefName, true);
-                    ed.apply();
-                    dlg.dismiss();
-                }
-            });
+            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getResources().getString(R.string.disable_dialogue),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            SharedPreferences prefs = context.getSharedPreferences(BCPreferences.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+                            SharedPreferences.Editor ed = prefs.edit();
+                            ed.putBoolean(prefName, true);
+                            ed.apply();
+                            dialog.dismiss();
+                        }
+                    });
         }
 
-        dlg.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dlg.dismiss();
-            }
-        });
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(android.R.string.cancel),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
 
-        dlg.show();
+        dialog.show();
     }
 
-    public static void deleteSeriesAlert(Context context,
-                                         final CatalogueDBAdapter db,
-                                         final Series series,
+    public static void deleteSeriesAlert(@NonNull final Context context,
+                                         @NonNull final CatalogueDBAdapter db,
+                                         @NonNull final Series series,
                                          final Runnable onDeleted) {
 
-        // When we get here, we know the names are genuinely different and the old series is used in more than one place.
-        String message = "Delete series";
-        try {
-            message = String.format(context.getResources().getString(R.string.really_delete_series), series.name);
-        } catch (NullPointerException e) {
-            Logger.logError(e);
-        }
-        final AlertDialog alertDialog = new AlertDialog.Builder(context).setMessage(message).create();
+        final AlertDialog dialog = new AlertDialog.Builder(context)
+                .setMessage(String.format(context.getResources().getString(R.string.really_delete_series), series.name))
+                .setTitle(R.string.delete_series)
+                .setIcon(android.R.drawable.ic_menu_info_details)
+                .create();
 
-        alertDialog.setTitle(R.string.delete_series);
-        alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
-        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE,
-                context.getResources().getString(android.R.string.ok),
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         db.deleteSeries(series);
-                        alertDialog.dismiss();
+                        dialog.dismiss();
                         onDeleted.run();
                     }
                 });
 
-        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                context.getResources().getString(android.R.string.cancel),
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        alertDialog.dismiss();
+                        dialog.dismiss();
                     }
                 });
 
-        alertDialog.show();
+        dialog.show();
     }
 
-    public static int deleteBookAlert(Context context,
+    /**
+     * @return the resource id for a string in case of error, 0 for ok
+     */
+    public static int deleteBookAlert(@NonNull final Context context,
                                       @NonNull final CatalogueDBAdapter dba,
                                       final long id,
                                       final Runnable onDeleted) {
@@ -188,101 +190,106 @@ public class StandardDialogs {
         ArrayList<Author> authorList = dba.getBookAuthorList(id);
 
         String title;
-        try(Cursor cur = dba.fetchBookById(id)) {
-            if (cur == null || !cur.moveToFirst())
+        try (Cursor cur = dba.fetchBookById(id)) {
+            if (cur == null || !cur.moveToFirst()) {
                 return R.string.unable_to_find_book;
+            }
 
-            title = cur.getString(cur.getColumnIndex(KEY_TITLE));
-            if (title == null || title.isEmpty())
+            title = cur.getString(cur.getColumnIndex(UniqueId.KEY_TITLE));
+            if (title == null || title.isEmpty()) {
                 title = UNKNOWN;
+            }
         }
 
         // Format the list of authors nicely
         StringBuilder authors = new StringBuilder();
-        if (authorList.size() == 0)
+        if (authorList.size() == 0) {
             authors.append(UNKNOWN);
-        else {
+        } else {
             authors.append(authorList.get(0).getDisplayName());
             for (int i = 1; i < authorList.size() - 1; i++) {
                 authors.append(", ").append(authorList.get(i).getDisplayName());
             }
-            if (authorList.size() > 1)
+            if (authorList.size() > 1) {
                 authors.append(" ").append(context.getResources().getString(R.string.list_and)).append(" ").append(authorList.get(authorList.size() - 1).getDisplayName());
+            }
         }
 
-        // Get the title
-        String format = context.getResources().getString(R.string.really_delete_book);
+        final AlertDialog dialog = new AlertDialog.Builder(context)
+                .setMessage((context.getResources().getString(R.string.really_delete_book, title, authors)))
+                .setTitle(R.string.menu_delete)
+                .setIcon(android.R.drawable.ic_menu_info_details)
+                .create();
 
-        String message = String.format(format, title, authors);
-        final AlertDialog alertDialog = new AlertDialog.Builder(context).setMessage(message).create();
-
-        alertDialog.setTitle(R.string.menu_delete);
-        alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
-        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE,
-                context.getResources().getString(android.R.string.ok),
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dba.deleteBook(id);
-                        alertDialog.dismiss();
+                        dialog.dismiss();
                         onDeleted.run();
                     }
                 });
 
-        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                context.getResources().getString(android.R.string.cancel),
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        alertDialog.dismiss();
+                        dialog.dismiss();
                     }
                 });
 
-        alertDialog.show();
+        dialog.show();
         return 0;
 
     }
 
     /**
-     * Display a dialog warning the user that goodreads authentication is required; gives them
-     * the options: 'request now', 'more info' or 'cancel'.
+     * Display a dialog warning the user that goodreads authentication is required;
+     * gives the options: 'request now', 'more info' or 'cancel'.
      */
-    public static void goodreadsAuthAlert(final FragmentActivity context) {
+    public static void goodreadsAuthAlert(@NonNull final FragmentActivity context) {
         // Get the title
-        final AlertDialog alertDialog = new AlertDialog.Builder(context).setTitle(R.string.authorize_access).setMessage(R.string.goodreads_action_cannot_blah_blah).create();
+        final AlertDialog dialog = new AlertDialog.Builder(context)
+                .setTitle(R.string.authorize_access)
+                .setMessage(R.string.goodreads_action_cannot_blah_blah)
+                .setIcon(android.R.drawable.ic_menu_info_details)
+                .create();
 
-        alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
-        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                alertDialog.dismiss();
-                GoodreadsRegister.requestAuthorizationInBackground(context);
-            }
-        });
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(android.R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        GoodreadsRegister.requestAuthorizationInBackground(context);
+                    }
+                });
 
-        alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getResources().getString(R.string.tell_me_more), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                alertDialog.dismiss();
-                Intent i = new Intent(context, GoodreadsRegister.class);
-                context.startActivity(i);
-            }
-        });
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getResources().getString(R.string.tell_me_more),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        Intent i = new Intent(context, GoodreadsRegister.class);
+                        context.startActivity(i);
+                    }
+                });
 
-        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                alertDialog.dismiss();
-            }
-        });
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(android.R.string.cancel),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
 
-        alertDialog.show();
+        dialog.show();
 
     }
 
     /**
      * Select a custom item from a list, and call handler when/if item is selected.
      */
-    public static void selectItemDialog(LayoutInflater inflater,
-                                        String message,
-                                        ArrayList<SimpleDialogItem> items,
-                                        SimpleDialogItem selectedItem,
-                                        final SimpleDialogOnClickListener handler) {
+    public static void selectItemDialog(@NonNull final LayoutInflater inflater,
+                                        @Nullable final String message,
+                                        @NonNull final ArrayList<SimpleDialogItem> items,
+                                        @Nullable final SimpleDialogItem selectedItem,
+                                        @NonNull final SimpleDialogOnClickListener handler) {
         // Get the view and the radio group
         final View root = inflater.inflate(R.layout.dialog_select_from_list, null);
         TextView msg = root.findViewById(R.id.message);
@@ -334,10 +341,12 @@ public class StandardDialogs {
         LinearLayout list = root.findViewById(R.id.list);
         for (SimpleDialogItem item : items) {
             View v = item.getView(inflater);
+            v.setOnClickListener(listener);
             v.setBackgroundResource(android.R.drawable.list_selector_background);
+
             ViewTagger.setTag(v, R.id.TAG_DIALOG_ITEM, item);
             list.addView(v);
-            v.setOnClickListener(listener);
+
             RadioButton btn = item.getSelector(v);
             if (btn != null) {
                 ViewTagger.setTag(btn, R.id.TAG_DIALOG_ITEM, item);
@@ -351,10 +360,10 @@ public class StandardDialogs {
     /**
      * Wrapper class to present a list of files for selection
      */
-    public static void selectFileDialog(LayoutInflater inflater,
-                                        String title,
-                                        ArrayList<File> files,
-                                        final SimpleDialogOnClickListener handler) {
+    public static void selectFileDialog(@NonNull final LayoutInflater inflater,
+                                        @Nullable final String title,
+                                        @NonNull final ArrayList<File> files,
+                                        @NonNull final SimpleDialogOnClickListener handler) {
         ArrayList<SimpleDialogItem> items = new ArrayList<>();
         for (File file : files) {
             items.add(new SimpleDialogFileItem(file));
@@ -366,11 +375,11 @@ public class StandardDialogs {
      * Wrapper class to present a list of arbitrary objects for selection; it uses
      * the toString() method to display a simple list.
      */
-    public static <T> void selectStringDialog(LayoutInflater inflater,
-                                              String title,
-                                              ArrayList<T> objects,
-                                              String current,
-                                              final SimpleDialogOnClickListener handler) {
+    public static <T> void selectStringDialog(@NonNull final LayoutInflater inflater,
+                                              @Nullable final String title,
+                                              @NonNull final ArrayList<T> objects,
+                                              @Nullable final String current,
+                                              @NonNull final SimpleDialogOnClickListener handler) {
         ArrayList<SimpleDialogItem> items = new ArrayList<>();
         SimpleDialogItem selectedItem = null;
         for (T o : objects) {
@@ -431,7 +440,7 @@ public class StandardDialogs {
             location.setText(mFile.getParent());
             // Set the size
             TextView size = v.findViewById(R.id.size);
-            size.setText(Convert.formatFileSize(mFile.length()));
+            size.setText(Utils.formatFileSize(mFile.length()));
             // Set the last modified date
             TextView update = v.findViewById(R.id.updated);
             update.setText(DateUtils.toPrettyDateTime(new Date(mFile.lastModified())));
@@ -466,7 +475,7 @@ public class StandardDialogs {
 
         /**
          * Get the underlying object as a string
-        */
+         */
         @Override
         public String toString() {
             return mObject.toString();
@@ -495,6 +504,44 @@ public class StandardDialogs {
             // Now make the actual RadioButton gone
             getSelector(v).setVisibility(View.GONE);
             return v;
+        }
+    }
+
+    /**
+     * This class exists only for:
+     * - we use AppCompatDialog in ONE place (here) .. so any future removal is easy
+     * - optional (default:true) ActionBar
+     * - optional Close Button, if your layout has a Button with id=android.R.id.closeButton
+     */
+    public static class BasicDialog extends AppCompatDialog {
+
+        /**
+         * a Dialog WITH an ActionBar
+         *
+         * @param context the context
+         */
+        public BasicDialog(Context context) {
+            this(context, true);
+        }
+
+        /**
+         * Dialog with optional ActionBar
+         *
+         * @param context         the context
+         * @param enableActionBar flag
+         */
+        public BasicDialog(Context context, boolean enableActionBar) {
+            super(context, enableActionBar ? BookCatalogueApp.getDialogThemeResId() : 0);
+
+            Button closeButton = findViewById(android.R.id.closeButton);
+            if (closeButton != null) {
+                closeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        BasicDialog.this.dismiss();
+                    }
+                });
+            }
         }
     }
 }
