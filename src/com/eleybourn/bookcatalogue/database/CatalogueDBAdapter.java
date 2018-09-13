@@ -56,7 +56,6 @@ import com.eleybourn.bookcatalogue.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -83,7 +82,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOK_SERIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_LOAN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_SERIES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_DATE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_MASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
@@ -93,7 +92,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED;
@@ -238,7 +237,7 @@ public class CatalogueDBAdapter {
 			alias + "." + DOM_DESCRIPTION + " as " + DOM_DESCRIPTION + ", " +
 			alias + "." + DOM_GENRE  + " as " + DOM_GENRE + ", " +
 			alias + "." + DOM_LANGUAGE  + " as " + DOM_LANGUAGE + ", " +
-			alias + "." + DOM_ADDED_DATE  + " as " + DOM_ADDED_DATE + ", " +
+			alias + "." + DOM_DATE_ADDED + " as " + DOM_DATE_ADDED + ", " +
 			alias + "." + DOM_GOODREADS_BOOK_ID  + " as " + DOM_GOODREADS_BOOK_ID + ", " +
 			alias + "." + DOM_GOODREADS_LAST_SYNC_DATE + " as " + DOM_GOODREADS_LAST_SYNC_DATE + ", " +
 			alias + "." + DOM_LAST_UPDATE_DATE  + " as " + DOM_LAST_UPDATE_DATE + ", " +
@@ -1913,7 +1912,7 @@ public class CatalogueDBAdapter {
 		return mSyncedDb.rawQuery(sql, new String[]{});
 	}
 	
-	class AnthologyTitleExistsException extends RuntimeException {
+	public class AnthologyTitleExistsException extends RuntimeException {
 		private static final long serialVersionUID = -9052087086134217566L;
 
 		AnthologyTitleExistsException() {
@@ -2071,8 +2070,8 @@ public class CatalogueDBAdapter {
 			/* We may want to provide default values for these fields:
 			 * KEY_RATING, KEY_READ, KEY_NOTES, KEY_LOCATION, KEY_READ_START, KEY_READ_END, KEY_SIGNED, & DATE_ADDED
 			 */
-			if (!values.containsKey(DOM_ADDED_DATE.name))
-				values.putString(DOM_ADDED_DATE.name, DateUtils.toSqlDateTime(new Date()));
+			if (!values.containsKey(DOM_DATE_ADDED.name))
+				values.putString(DOM_DATE_ADDED.name, DateUtils.toSqlDateTime(new Date()));
 
 			// Make sure we have an author
 			ArrayList<Author> authors = values.getAuthors();
@@ -2655,7 +2654,7 @@ public class CatalogueDBAdapter {
 		// never be blank.
 		for (String name : new String[] {
 				DOM_BOOK_UUID.name, DOM_ANTHOLOGY_MASK.name,
-				DOM_RATING.name, DOM_READ.name, DOM_SIGNED.name, DOM_ADDED_DATE.name,
+				DOM_RATING.name, DOM_READ.name, DOM_SIGNED.name, DOM_DATE_ADDED.name,
 				DOM_GOODREADS_LAST_SYNC_DATE.name,
 				DOM_LAST_UPDATE_DATE.name }) {
 			if (values.containsKey(name)) {
@@ -2956,7 +2955,7 @@ public class CatalogueDBAdapter {
 	private void setBooksDirtyByBookshelf(long bookshelfId) {
 		// Mark all related books as dirty
 		String sql = "Update " + TBL_BOOKS + " set " + DOM_LAST_UPDATE_DATE + " = current_timestamp where "
-				+ " Exists(Select * From " + TBL_BOOK_BOOKSHELF.ref() + " Where " + TBL_BOOK_BOOKSHELF.dot(DOM_BOOKSHELF_ID) + " = " + bookshelfId
+				+ " Exists(Select * From " + TBL_BOOK_BOOKSHELF.ref() + " Where " + TBL_BOOK_BOOKSHELF.dot(DOM_BOOKSHELF) + " = " + bookshelfId
 				+ " and " + TBL_BOOK_BOOKSHELF.dot(DOM_BOOK) + " = " + TBL_BOOKS + "." + DOM_ID + ")";
 		mSyncedDb.execSQL(sql);
 	}
@@ -3292,11 +3291,11 @@ public class CatalogueDBAdapter {
 		// Delete thumbnail(s)
 		if (uuid != null) {
 			try {
-				File f = ImageUtils.fetchThumbnailByUuid(uuid);
+				File f = StorageUtils.getThumbnailByUuid(uuid);
 				while (f.exists()) {
 					//noinspection ResultOfMethodCallIgnored
 					f.delete();
-					f = ImageUtils.fetchThumbnailByUuid(uuid);
+					f = StorageUtils.getThumbnailByUuid(uuid);
 				}	
 			} catch (Exception e) {
 				Logger.logError(e, "Failed to delete cover thumbnail");

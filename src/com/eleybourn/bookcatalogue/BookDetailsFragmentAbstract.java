@@ -326,7 +326,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
             switch (item.getItemId()) {
                 case CONTEXT_ID_DELETE:
                     deleteThumbnail();
-                    ImageUtils.fetchFileIntoImageView(thumbFile, iv, mThumbEditSize, mThumbEditSize, true);
+                    ImageUtils.fetchFileIntoImageView(iv, thumbFile, mThumbEditSize, mThumbEditSize, true);
                     return true;
                 case CONTEXT_ID_SUBMENU_ROTATE_THUMB:
                     // Just a submenu; skip, but display a hint if user is rotating a camera image
@@ -337,15 +337,15 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
                     return true;
                 case CONTEXT_ID_ROTATE_THUMB_CW:
                     rotateThumbnail(90);
-                    ImageUtils.fetchFileIntoImageView(thumbFile, iv, mThumbEditSize, mThumbEditSize, true);
+                    ImageUtils.fetchFileIntoImageView(iv, thumbFile, mThumbEditSize, mThumbEditSize, true);
                     return true;
                 case CONTEXT_ID_ROTATE_THUMB_CCW:
                     rotateThumbnail(-90);
-                    ImageUtils.fetchFileIntoImageView(thumbFile, iv, mThumbEditSize, mThumbEditSize, true);
+                    ImageUtils.fetchFileIntoImageView(iv, thumbFile, mThumbEditSize, mThumbEditSize, true);
                     return true;
                 case CONTEXT_ID_ROTATE_THUMB_180:
                     rotateThumbnail(180);
-                    ImageUtils.fetchFileIntoImageView(thumbFile, iv, mThumbEditSize, mThumbEditSize, true);
+                    ImageUtils.fetchFileIntoImageView(iv, thumbFile, mThumbEditSize, mThumbEditSize, true);
                     return true;
                 case CODE_ADD_PHOTO:
                     // Increment the temp counter and cleanup the temp directory
@@ -510,9 +510,9 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
      */
     private File getCoverFile(Long rowId) {
         if (rowId == null || rowId == 0)
-            return ImageUtils.getTempThumbnail();
+            return StorageUtils.getTempThumbnail();
         else
-            return ImageUtils.fetchThumbnailByUuid(mDb.getBookUuid(rowId));
+            return StorageUtils.getThumbnailByUuid(mDb.getBookUuid(rowId));
     }
 
     /**
@@ -580,7 +580,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
             try {
                 File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
 
-                Bitmap origBm = ImageUtils.fetchFileIntoImageView(thumbFile, null, mThumbZoomSize * 2, mThumbZoomSize * 2, true);
+                Bitmap origBm = ImageUtils.fetchFileIntoImageView(null, thumbFile, mThumbZoomSize * 2, mThumbZoomSize * 2, true);
                 if (origBm == null)
                     return;
 
@@ -712,7 +712,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
     protected void setBookThumbnail(Long rowId, int maxWidth, int maxHeight) {
         // Sets book thumbnail
         ImageView iv = getView().findViewById(R.id.row_img);
-        ImageUtils.fetchFileIntoImageView(getCoverFile(rowId), iv, maxWidth, maxHeight, true);
+        ImageUtils.fetchFileIntoImageView(iv, getCoverFile(rowId), maxWidth, maxHeight, true);
     }
 
     // unused in Context itself. But IS used in android\support\v7\view\ContextThemeWrapper.java
@@ -754,7 +754,7 @@ public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstra
 
     protected void setCoverImage() {
         ImageView iv = getView().findViewById(R.id.row_img);
-        ImageUtils.fetchFileIntoImageView(getCoverFile(mEditManager.getBookData().getRowId()), iv, mThumbEditSize, mThumbEditSize, true);
+        ImageUtils.fetchFileIntoImageView(iv, getCoverFile(mEditManager.getBookData().getRowId()), mThumbEditSize, mThumbEditSize, true);
         // Make sure the cached thumbnails (if present) are deleted
         invalidateCachedThumbnail();
     }

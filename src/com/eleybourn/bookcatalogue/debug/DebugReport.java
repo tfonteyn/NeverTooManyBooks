@@ -33,7 +33,7 @@ public class DebugReport {
     /**
      * Return the MD5 hash of the public key that signed this app, or a useful
      * text message if an error or other problem occurred.
-     * <p>
+     *
      * No longer caching as only needed at a crash anyhow
      */
     public static String signedBy(Context context) {
@@ -87,7 +87,7 @@ public class DebugReport {
 
     /**
      * Collect and send com.eleybourn.bookcatalogue.debug info to a support email address.
-     * <p>
+     *
      * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MAILING LIST OR FORUM!
      */
     public static void sendDebugInfo(Context context, CatalogueDBAdapter db) {
@@ -192,7 +192,7 @@ public class DebugReport {
             // We used to only send it if there are any files to send, but later versions added
             // useful debugging info. So now we always send.
             emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            context.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.send_mail)));
 
         } catch (NullPointerException e) {
             Logger.logError(e);

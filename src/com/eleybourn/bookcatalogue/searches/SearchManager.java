@@ -1,7 +1,7 @@
 /*
  * @copyright 2011 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -18,15 +18,15 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
- package com.eleybourn.bookcatalogue.searches;
+package com.eleybourn.bookcatalogue.searches;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.Author;
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
@@ -52,59 +52,32 @@ import java.util.Hashtable;
 
 /**
  * Class to co-ordinate multiple SearchThread objects using an existing TaskManager.
- * 
+ *
  * It uses the task manager it is passed and listens to OnTaskEndedListener messages;
  * it maintain its own internal list of tasks and as tasks it knows about end, it
  * processes the data. Once all tasks are complete, it sends a message to its
  * creator via its SearchHandler.
- * 
+ *
  * @author Philip Warner
  */
 public class SearchManager implements TaskManagerListener {
-	private static final String TAG = "SearchManager";
+    /** Flag indicating a search source to use */
+    public static final int SEARCH_GOOGLE = 1;
+    /** Flag indicating a search source to use */
+    public static final int SEARCH_AMAZON = 2;
+    /** Flag indicating a search source to use */
+    public static final int SEARCH_LIBRARY_THING = 4;
+    /** Flag indicating a search source to use */
+    public static final int SEARCH_GOODREADS = 8;
+    /** Mask including all search sources */
+    public static final int SEARCH_ALL = SEARCH_GOOGLE | SEARCH_AMAZON | SEARCH_LIBRARY_THING | SEARCH_GOODREADS;
 
-	/** Flag indicating a search source to use */
-	public static final int SEARCH_GOOGLE = 1;
-	/** Flag indicating a search source to use */
-	public static final int SEARCH_AMAZON = 2;
-	/** Flag indicating a search source to use */
-	public static final int SEARCH_LIBRARY_THING = 4;
-	/** Flag indicating a search source to use */
-	public static final int SEARCH_GOODREADS = 8;
-	/** Mask including all search sources */
-	public static final int SEARCH_ALL = SEARCH_GOOGLE | SEARCH_AMAZON | SEARCH_LIBRARY_THING | SEARCH_GOODREADS;
-
-    public static class SearchSite {
-		final int id;
-		final String name;
-		boolean enabled;
-        int order;
-        int reliability;
-
-        SearchSite(final int order, final int reliability, final int bit, final String name, final boolean enabled) {
-			this.id = bit;
-            this.order = order;
-            this.reliability = reliability;
-			this.name = name;
-			this.enabled = enabled;
-		}
-
-//        @Override
-//        public String toString() {
-//            return "SearchSite{" +
-//                    "id=" + id +
-//                    ", name='" + name + '\'' +
-//                    ", enabled=" + enabled +
-//                    ", order=" + order +
-//                    ", reliability=" + reliability +
-//                    '}';
-//        }
-    }
-
-	private static final ArrayList<SearchSite> mSearchOrderDefaults;
-    private static ArrayList<SearchSite> mSearchOrder;
+    private static final String TAG = "SearchManager";
+    private static final ArrayList<SearchSite> mSearchOrderDefaults;
     // TODO: not user configurable for now, but plumbing installed
     private static final ArrayList<SearchSite> mReliabilityOrder;
+    private static final TaskSwitch mMessageSwitch = new TaskSwitch();
+    private static ArrayList<SearchSite> mSearchOrder;
 
     static {
         /*
@@ -115,10 +88,10 @@ public class SearchManager implements TaskManagerListener {
          *  {SEARCH_GOODREADS, SEARCH_AMAZON, SEARCH_GOOGLE, SEARCH_LIBRARY_THING}
          */
         mSearchOrderDefaults = new ArrayList<>();
-        mSearchOrderDefaults.add(new SearchSite(0,1,SEARCH_AMAZON,"Amazon",true));
-        mSearchOrderDefaults.add(new SearchSite(1,0,SEARCH_GOODREADS,"GoodReads",true));
-        mSearchOrderDefaults.add(new SearchSite(2,2,SEARCH_GOOGLE,"Google",true));
-        mSearchOrderDefaults.add(new SearchSite(3,3,SEARCH_LIBRARY_THING,"LibraryThing",true));
+        mSearchOrderDefaults.add(new SearchSite(0, 1, SEARCH_AMAZON, "Amazon", true));
+        mSearchOrderDefaults.add(new SearchSite(1, 0, SEARCH_GOODREADS, "GoodReads", true));
+        mSearchOrderDefaults.add(new SearchSite(2, 2, SEARCH_GOOGLE, "Google", true));
+        mSearchOrderDefaults.add(new SearchSite(3, 3, SEARCH_LIBRARY_THING, "LibraryThing", true));
 
         mSearchOrder = new ArrayList<>(mSearchOrderDefaults);
         mReliabilityOrder = new ArrayList<>(mSearchOrderDefaults);
@@ -138,60 +111,56 @@ public class SearchManager implements TaskManagerListener {
 //        }
     }
 
-    private static void saveSearchSites() {
-        SharedPreferences.Editor e =  BCPreferences.getSharedPreferences().edit();
-        for (SearchSite site :  mSearchOrder) {
-            e.putBoolean(TAG + "." + site.name + ".enabled", site.enabled);
-            e.putInt(TAG + "." + site.name + ".order", site.order);
-            e.putInt(TAG + "." + site.name + ".reliability", site.reliability);
+    // TaskManager for threads; may have other threads than the ones this object creates.
+    @NonNull
+    private final TaskManager mTaskManager;
+    // List of threads created by *this* object.
+    private final ArrayList<ManagedTask> mRunningTasks = new ArrayList<>();
+    private final SearchController mController = new SearchController() {
+        public void requestAbort() {
+            mTaskManager.cancelAllTasks();
         }
-        e.apply();
-//        if (BuildConfig.DEBUG) {
-//            BCPreferences.dumpPreferences();
-//        }
+
+        @Override
+        public SearchManager getSearchManager() {
+            return SearchManager.this;
+        }
+    };
+    private final long mMessageSenderId = mMessageSwitch.createSender(mController);
+    /** Flags applicable to *current* search */
+    private int mSearchFlags;
+    // Accumulated book data
+    private Bundle mBookData = null;
+    // Flag indicating searches will be non-concurrent title/author found via ASIN
+    private boolean mSearchingAsin = false;
+    // Flag indicating searches will be non-concurrent until an ISBN is found
+    private boolean mWaitingForIsbn = false;
+    // Flag indicating a task was cancelled.
+    private boolean mCancelledFlg = false;
+    // Original author for search
+    private String mAuthor;
+    // Original title for search
+    private String mTitle;
+    // Original ISBN for search
+    private String mIsbn;
+    // Indicates original ISBN is really present
+    private boolean mHasIsbn;
+    // Whether of not to fetch thumbnails
+    private boolean mFetchThumbnail;
+
+    /** Output from search threads */
+    private Hashtable<Integer, Bundle> mSearchResults = new Hashtable<>();
+
+    /**
+     * Constructor.
+     *
+     * @param taskManager TaskManager to use
+     * @param taskHandler SearchHandler to send results
+     */
+    public SearchManager(@NonNull final TaskManager taskManager, SearchListener taskHandler) {
+        mTaskManager = taskManager;
+        getMessageSwitch().addListener(getSenderId(), taskHandler, false);
     }
-
-	public static ArrayList<SearchSite> getSiteSearchOrder() {
-        return mSearchOrder;
-	}
-
-    public static void setSearchOrder(@NonNull final ArrayList<SearchSite> newList) {
-        mSearchOrder = newList;
-        saveSearchSites();
-    }
-
-	/** bundle key for thumbnail searches */
-	public static final String BKEY_THUMBNAIL_SEARCHES = "__thumbnail";
-
-	/** Flags applicable to *current* search */
-	private int mSearchFlags;
-
-	// TaskManager for threads; may have other threads tham the ones this object creates.
-	private final TaskManager mTaskManager;
-	// Accumulated book data
-	private Bundle mBookData = null;
-	// Flag indicating searches will be non-concurrent title/author found via ASIN
-	private boolean mSearchingAsin = false;
-	// Flag indicating searches will be non-concurrent until an ISBN is found
-	private boolean mWaitingForIsbn = false;
-	// Flag indicating a task was cancelled.
-	private boolean mCancelledFlg = false;
-	// Original author for search
-	private String mAuthor;
-	// Original title for search
-	private String mTitle;
-	// Original ISBN for search
-	private String mIsbn;
-	// Indicates original ISBN is really present
-	private boolean mHasIsbn;
-	// Whether of not to fetch thumbnails
-	private boolean mFetchThumbnail;
-
-	/** Output from search threads */
-	private Hashtable<Integer,Bundle> mSearchResults = new Hashtable<>();
-
-	// List of threads created by *this* object.
-	private final ArrayList<ManagedTask> mRunningTasks = new ArrayList<>();
 
 //	/**
 //	 * Task handler for thread management; caller MUST implement this to get
@@ -203,550 +172,593 @@ public class SearchManager implements TaskManagerListener {
 //		void onSearchFinished(Bundle bookData, boolean cancelled);
 //	}
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param taskManager	TaskManager to use
-	 * @param taskHandler	SearchHandler to send results
-	 */
-	public SearchManager(@NonNull final TaskManager taskManager, SearchListener taskHandler) {
-		mTaskManager = taskManager;
-		if (taskManager == null)
-			throw new RuntimeException("TaskManager must be specified");
-		getMessageSwitch().addListener(getSenderId(), taskHandler, false);
-	}
+    private static void saveSearchSites() {
+        SharedPreferences.Editor e = BCPreferences.getSharedPreferences().edit();
+        for (SearchSite site : mSearchOrder) {
+            e.putBoolean(TAG + "." + site.name + ".enabled", site.enabled);
+            e.putInt(TAG + "." + site.name + ".order", site.order);
+            e.putInt(TAG + "." + site.name + ".reliability", site.reliability);
+        }
+        e.apply();
+//        if (BuildConfig.DEBUG) {
+//            BCPreferences.dumpPreferences();
+//        }
+    }
 
-	/**
-	 * When a task has ended, see if we are finished (no more tasks running).
-	 * If so, finish.
-	 */
-	@Override
-	public void onTaskEnded(@NonNull final TaskManager manager, @NonNull final ManagedTask task) {
-		int size;
+    public static ArrayList<SearchSite> getSiteSearchOrder() {
+        return mSearchOrder;
+    }
+
+    public static void setSearchOrder(@NonNull final ArrayList<SearchSite> newList) {
+        mSearchOrder = newList;
+        saveSearchSites();
+    }
+
+    public static TaskSwitch getMessageSwitch() {
+        return mMessageSwitch;
+    }
+
+    /**
+     * When a task has ended, see if we are finished (no more tasks running).
+     * If so, finish.
+     */
+    @Override
+    public void onTaskEnded(@NonNull final TaskManager manager, @NonNull final ManagedTask task) {
+        int size;
         if (BuildConfig.DEBUG) {
-            System.out.println(task.getClass().getSimpleName() + "(" +  + task.getId() + ") onTaskEnded starting");
+            System.out.println(task.getClass().getSimpleName() + "(" + +task.getId() + ") onTaskEnded starting");
         }
 
-		// Handle the result, and optionally queue another task
-		if (task instanceof SearchThread)
-			handleSearchTaskFinished((SearchThread)task);
+        // Handle the result, and optionally queue another task
+        if (task instanceof SearchThread)
+            handleSearchTaskFinished((SearchThread) task);
 
-		// Remove the finished task, and terminate if no more.
-		synchronized(mRunningTasks) {
-			mRunningTasks.remove(task);
-			size = mRunningTasks.size();
+        // Remove the finished task, and terminate if no more.
+        synchronized (mRunningTasks) {
+            mRunningTasks.remove(task);
+            size = mRunningTasks.size();
             if (BuildConfig.DEBUG) {
-                for(ManagedTask t: mRunningTasks) {
-                	System.out.println(t.getClass().getSimpleName() + "(" +  + t.getId() + ") still running");
+                for (ManagedTask t : mRunningTasks) {
+                    System.out.println(t.getClass().getSimpleName() + "(" + +t.getId() + ") still running");
                 }
             }
-		}
-		if (size == 0) {
-			// Stop listening FIRST...otherwise, if sendResults() calls a listener that starts
-			// a new task, we will stop listening for the new task.
-			TaskManager.getMessageSwitch().removeListener(mTaskManager.getSenderId(), this);
-			if (BuildConfig.DEBUG) {
-				System.out.println("SearchManager not listening(1)");
-			}
-			// Notify the listeners.
-			sendResults();
-		}
-		if (BuildConfig.DEBUG) {
+        }
+        if (size == 0) {
+            // Stop listening FIRST...otherwise, if sendResults() calls a listener that starts
+            // a new task, we will stop listening for the new task.
+            TaskManager.getMessageSwitch().removeListener(mTaskManager.getSenderId(), this);
+            if (BuildConfig.DEBUG) {
+                System.out.println("SearchManager not listening(1)");
+            }
+            // Notify the listeners.
+            sendResults();
+        }
+        if (BuildConfig.DEBUG) {
             System.out.println(task.getClass().getSimpleName() + "(" + +task.getId() + ") onTaskEnded Exiting");
         }
-	}
+    }
 
-	/**
-	 * Other taskManager messages...we ignore them
-	 */
-	@Override
-	public void onProgress(int count, int max, String message) { }
-	@Override
-	public void onToast(String message) { }
-	@Override
-	public void onFinished() { }
+    /**
+     * Other taskManager messages...we ignore them
+     */
+    @Override
+    public void onProgress(int count, int max, String message) {
+    }
 
+    @Override
+    public void onToast(String message) {
+    }
 
-	/**
-	 * Utility routine to start a task
-	 * 
-	 * @param thread	Task to start
-	 */
-	private void startOne(@NonNull final SearchThread thread) {
-		synchronized(mRunningTasks) {
-			mRunningTasks.add(thread);
-			mTaskManager.addTask(thread);
-			if (BuildConfig.DEBUG) {
-                System.out.println(thread.getClass().getSimpleName() + "(" +  + thread.getId() + ") STARTING");
+    @Override
+    public void onFinished() {
+    }
+
+    /**
+     * Utility routine to start a task
+     *
+     * @param thread Task to start
+     */
+    private void startOne(@NonNull final SearchThread thread) {
+        synchronized (mRunningTasks) {
+            mRunningTasks.add(thread);
+            mTaskManager.addTask(thread);
+            if (BuildConfig.DEBUG) {
+                System.out.println(thread.getClass().getSimpleName() + "(" + +thread.getId() + ") STARTING");
             }
-		}
-		thread.start();
-	}
+        }
+        thread.start();
+    }
 
-	/**
-	 * Start an Amazon search
-	 */
-	private boolean startAmazon() {
-		if (!mCancelledFlg) {
-			startOne( new SearchAmazonThread(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail) );
-			return true;
-		} else {
-			return false;
-		}
-	}
+    /**
+     * Start an Amazon search
+     */
+    private boolean startAmazon() {
+        if (!mCancelledFlg) {
+            startOne(new SearchAmazonThread(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	/**
-	 * Start a Google search
-	 */
-	private boolean startGoogle() {
-		if (!mCancelledFlg) {
-			startOne( new SearchGoogleBooksThread(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail) );
-			return true;
-		} else {
-			return false;			
-		}
-	}
-	/**
-	 * Start an Amazon search
-	 */
-	private boolean startLibraryThing(){
-		if (!mCancelledFlg && mHasIsbn) {
-			startOne( new SearchLibraryThingThread(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
-			return true;
-		} else {
-			return false;
-		}
-	}
+    /**
+     * Start a Google search
+     */
+    private boolean startGoogle() {
+        if (!mCancelledFlg) {
+            startOne(new SearchGoogleBooksThread(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	/**
-	 * Start an Goodreads search
-	 */
-	private boolean startGoodreads(){
-		if (!mCancelledFlg) {
-			startOne( new SearchGoodreadsThread(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
-			return true;
-		} else {
-			return false;			
-		}
-	}
+    /**
+     * Start an Amazon search
+     */
+    private boolean startLibraryThing() {
+        if (!mCancelledFlg && mHasIsbn) {
+            startOne(new SearchLibraryThingThread(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	/**
-	 * Start a search
-	 * 
-	 * @param author	Author to search for
-	 * @param title		Title to search for
-	 * @param isbn		ISBN to search for
-	 */
-	public void search(String author, String title, String isbn, boolean fetchThumbnail, int searchFlags) {
-		if ( (searchFlags & SEARCH_ALL) == 0)
-			throw new RuntimeException("Must specify at least one source to use");
+    /**
+     * Start an Goodreads search
+     */
+    private boolean startGoodreads() {
+        if (!mCancelledFlg) {
+            startOne(new SearchGoodreadsThread(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-		if (mRunningTasks.size() > 0) {
-			throw new RuntimeException("Attempting to start new search while previous search running");			
-		}
+    /**
+     * Start a search
+     *
+     * @param author Author to search for
+     * @param title  Title to search for
+     * @param isbn   ISBN to search for
+     */
+    public void search(String author, String title, String isbn, boolean fetchThumbnail, int searchFlags) {
+        if ((searchFlags & SEARCH_ALL) == 0)
+            throw new RuntimeException("Must specify at least one source to use");
 
-		// Save the flags
-		mSearchFlags = searchFlags;
-		if (!Utils.USE_LT) {
-			mSearchFlags &= ~SEARCH_LIBRARY_THING;
-		}
+        if (mRunningTasks.size() > 0) {
+            throw new RuntimeException("Attempting to start new search while previous search running");
+        }
 
-		// Save the input and initialize
-		mBookData = new Bundle();
-		mSearchResults = new Hashtable<>();
+        // Save the flags
+        mSearchFlags = searchFlags;
+        if (!Utils.USE_LT) {
+            mSearchFlags &= ~SEARCH_LIBRARY_THING;
+        }
 
-		mWaitingForIsbn = false;
-		mCancelledFlg = false;
+        // Save the input and initialize
+        mBookData = new Bundle();
+        mSearchResults = new Hashtable<>();
 
-		mAuthor = author;
-		mTitle = title;
-		mIsbn = isbn;
-		mHasIsbn = mIsbn != null && mIsbn.trim().length() > 0 && IsbnUtils.isValid(mIsbn);
+        mWaitingForIsbn = false;
+        mCancelledFlg = false;
 
-		mFetchThumbnail = fetchThumbnail;
+        mAuthor = author;
+        mTitle = title;
+        mIsbn = isbn;
+        mHasIsbn = mIsbn != null && mIsbn.trim().length() > 0 && IsbnUtils.isValid(mIsbn);
 
-		// XXXX: Not entirely sure why this code was targetted at the UI thread.
-		doSearch();
-		//if (mTaskManager.runningInUiThread()) {
-		//	doSearch();
-		//} else {
-		//	mTaskManager.postToUiThread(new Runnable() {
-		//		@Override
-		//		public void run() {
-		//			doSearch();
-		//		}});
-		//}
-	}
+        mFetchThumbnail = fetchThumbnail;
 
-	private void doSearch() {
-		// List for task ends
-		TaskManager.getMessageSwitch().addListener(mTaskManager.getSenderId(), this, false);
+        // XXXX: Not entirely sure why this code was targetted at the UI thread.
+        doSearch();
+        //if (mTaskManager.runningInUiThread()) {
+        //	doSearch();
+        //} else {
+        //	mTaskManager.postToUiThread(new Runnable() {
+        //		@Override
+        //		public void run() {
+        //			doSearch();
+        //		}});
+        //}
+    }
+
+    private void doSearch() {
+        // List for task ends
+        TaskManager.getMessageSwitch().addListener(mTaskManager.getSenderId(), this, false);
         if (BuildConfig.DEBUG) {
             System.out.println("SearchManager.doSearch listener started");
         }
 
-		// We really want to ensure we get the same book from each, so if isbn is not present, do
-		// these in series.
+        // We really want to ensure we get the same book from each, so if isbn is not present, do
+        // these in series.
 
-		boolean tasksStarted = false;
-		mSearchingAsin = false;
-		try {
-			if (mIsbn != null && mIsbn.length() > 0) {
-				if (IsbnUtils.isValid(mIsbn)) {
-					// We have an ISBN, just do the search
-					mWaitingForIsbn = false;
-					tasksStarted = this.startSearches(mSearchFlags);
-				} else {
-					// Assume it's an ASIN, and just search Amazon
-					mSearchingAsin = true;
-					mWaitingForIsbn = false;
-					//mSearchFlags = SEARCH_AMAZON;
-					tasksStarted = startOneSearch(SEARCH_AMAZON);
-					//tasksStarted = this.startSearches(mSearchFlags);
-				}
-			} else {
-				// Run one at a time, startNext() defined the order.
-				mWaitingForIsbn = true;
-				tasksStarted = startNext();
-			}			
-		} finally {
-			if (!tasksStarted) {
-				sendResults();
-				TaskManager.getMessageSwitch().removeListener(mTaskManager.getSenderId(), this);
-				if (BuildConfig.DEBUG) {
-					System.out.println("SearchManager.doSearch listener stopped");
-				}
-			}
-		}
+        boolean tasksStarted = false;
+        mSearchingAsin = false;
+        try {
+            if (mIsbn != null && mIsbn.length() > 0) {
+                if (IsbnUtils.isValid(mIsbn)) {
+                    // We have an ISBN, just do the search
+                    mWaitingForIsbn = false;
+                    tasksStarted = this.startSearches(mSearchFlags);
+                } else {
+                    // Assume it's an ASIN, and just search Amazon
+                    mSearchingAsin = true;
+                    mWaitingForIsbn = false;
+                    //mSearchFlags = SEARCH_AMAZON;
+                    tasksStarted = startOneSearch(SEARCH_AMAZON);
+                    //tasksStarted = this.startSearches(mSearchFlags);
+                }
+            } else {
+                // Run one at a time, startNext() defined the order.
+                mWaitingForIsbn = true;
+                tasksStarted = startNext();
+            }
+        } finally {
+            if (!tasksStarted) {
+                sendResults();
+                TaskManager.getMessageSwitch().removeListener(mTaskManager.getSenderId(), this);
+                if (BuildConfig.DEBUG) {
+                    System.out.println("SearchManager.doSearch listener stopped");
+                }
+            }
+        }
 
-	}
+    }
 
-	/**
-	 * Utility routine to append text data from one Bundle to another
-	 * 
-	 * @param key		Key of data
-	 * @param source	Source Bundle
-	 * @param dest		Destination Bundle
-	 */
-	private void appendData(@NonNull final String key, @NonNull final Bundle source, @NonNull final Bundle dest) {
-		String res = dest.getString(key) + "|" + source.getString(key);
-		dest.putString(key, res);
-	}
-
-	/**
-	 * Copy data from passed Bundle to current accumulated data. Does some careful
-	 * processing of the data.
-	 * 
-	 * @param searchId	Source
-	 */
-	private void accumulateData(int searchId) {
-		// See if we got data from this source
-		if (!mSearchResults.containsKey(searchId))
-			return;
-		Bundle bookData = mSearchResults.get(searchId);
-
-		// See if we REALLY got data from this source
-		if (bookData == null)
-			return;
-
-		for (String k : bookData.keySet()) {
-			// If its not there, copy it.
-			if (!mBookData.containsKey(k) || mBookData.getString(k) == null || mBookData.getString(k).trim().isEmpty())
-				mBookData.putString(k, bookData.get(k).toString());
-			else {
-				// Copy, append or update data as appropriate.
-				switch (k) {
-					case UniqueId.BKEY_AUTHOR_DETAILS:
-						appendData(k, bookData, mBookData);
-						break;
-					case UniqueId.BKEY_SERIES_DETAILS:
-						appendData(k, bookData, mBookData);
-						break;
-					case UniqueId.KEY_DATE_PUBLISHED:
-						// Grab a different date if we can parse it.
-						Date newDate = DateUtils.parseDate(bookData.getString(k));
-						if (newDate != null) {
-							String curr = mBookData.getString(k);
-							if (DateUtils.parseDate(curr) == null) {
-								mBookData.putString(k, DateUtils.toSqlDateOnly(newDate));
-							}
-						}
-						break;
-					case SearchManager.BKEY_THUMBNAIL_SEARCHES:
-						appendData(k, bookData, mBookData);
-						break;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Combine all the data and create a book or display an error.
-	 */
-	private void sendResults() {
-		// This list will be the actual order of the result we apply, based on the
-		// actual results and the default order.
-		final ArrayList<Integer> results = new ArrayList<>();
-		
-		if (mHasIsbn) {
-			// If ISBN was passed, ignore entries with the wrong ISBN, and put entries with no ISBN at the end
-			final ArrayList<Integer> uncertain = new ArrayList<>();
-			for(SearchSite site: mReliabilityOrder) {
-				if (mSearchResults.containsKey(site.id)) {
-					Bundle bookData = mSearchResults.get(site.id);
-					if (bookData.containsKey(UniqueId.KEY_ISBN)) {
-						if (IsbnUtils.matches(mIsbn, bookData.getString(UniqueId.KEY_ISBN))) {
-							results.add(site.id);
-						}
-					} else {
-						uncertain.add(site.id);
-					}						
-				}
-			}
-			results.addAll(uncertain);
-			// Add the passed ISBN first; avoid overwriting
-			mBookData.putString(UniqueId.KEY_ISBN, mIsbn);
-		} else {
-			// If ISBN was not passed, then just used the default order
-			for(SearchSite site: mReliabilityOrder)
-				results.add(site.id);
-		}
-
-		
-		// Merge the data we have. We do this in a fixed order rather than as the threads finish.
-		for(int i: results)
-			accumulateData(i);
-
-		// If there are thumbnails present, pick the biggest, delete others and rename.
-		ImageUtils.cleanupThumbnails(mBookData);
-
-		// Try to use/construct authors
-		String authors = null;
-		try {
-			authors = mBookData.getString(UniqueId.BKEY_AUTHOR_DETAILS);
-		} catch (Exception ignored) {}
-
-		if (authors == null || authors.isEmpty()) {
-			authors = mAuthor;
-		}
-
-		if (authors != null && !authors.isEmpty()) {
-			ArrayList<Author> aa = ArrayUtils.getAuthorUtils().decodeList('|', authors, false);
-			mBookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, aa);
-		}
-
-		// Try to use/construct title
-		String title = null;
-		try {
-			title = mBookData.getString(UniqueId.KEY_TITLE);
-		} catch (Exception ignored) {}
-
-		if (title == null || title.isEmpty())
-			title = mTitle;
-
-		if (title != null && !title.isEmpty()) {
-			mBookData.putString(UniqueId.KEY_TITLE, title);
-		}
-
-		// Try to use/construct isbn
-		String isbn = null;
-		try {
-			isbn = mBookData.getString(UniqueId.KEY_ISBN);
-		} catch (Exception ignored) {}
-
-		if (isbn == null || isbn.isEmpty())
-			isbn = mIsbn;
-
-		if (isbn != null && !isbn.isEmpty()) {
-			mBookData.putString(UniqueId.KEY_ISBN, isbn);
-		}
-		
-		// Try to use/construct series
-		String series = null;
-		try {
-			series = mBookData.getString(UniqueId.BKEY_SERIES_DETAILS);
-		} catch (Exception ignored) {}
-
-		if (series != null && !series.isEmpty()) {
-			try {
-				ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList('|', series, false);
-				mBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, sa);
-			} catch (Exception e) {
-				Logger.logError(e);
-			}
-		} else {
-			//add series to stop crashing
-			mBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, new ArrayList<Series>());
-		}
-
-		//
-		// TODO: this needs to be locale-specific. Currently we probably get good-enough data without 
-		// forcing a cleanup.
-		//
-		// Removed 20-Jan-2016 PJW; see Issue 717.
-		//
-		// Cleanup other fields
-		//Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_TITLE);
-		//Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_PUBLISHER);
-		//Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_DATE_PUBLISHED);
-		//Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_SERIES_NAME);
-		
-		// If book is not found or missing required data, warn the user
-		if (authors == null || authors.isEmpty() || title == null || title.isEmpty()) {
-			mTaskManager.doToast(BookCatalogueApp.getResourceString(R.string.book_not_found));
-		}
-		// Pass the data back
-		sendSearchFinished();
-	}
-
-	private void sendSearchFinished() {
-		mMessageSwitch.send(mMessageSenderId, new MessageSwitch.Message<SearchListener>() {
-			@Override
-			public boolean deliver(SearchListener listener) {
-				return listener.onSearchFinished(mBookData, mCancelledFlg);
-			}}
-		);		
-	}
-	/**
-	 * When running in single-stream mode, start the next thread that has no data.
-	 * While Google is reputedly most likely to succeed, it also produces garbage a lot. 
-	 * So we search Amazon, Goodreads, Google and LT last as it REQUIRES an ISBN.
-	 */
-	private boolean startNext() {
-		// Loop though in 'search-priority' order
-		for (SearchSite source: mSearchOrder) {
-			// If this search includes the source, check it
-			if (source.enabled && ((mSearchFlags & source.id) != 0)) {
-				// If the source has not been searched, search it
-				if (!mSearchResults.containsKey(source.id)) {
-					return startOneSearch(source.id);
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Start all searches listed in passed parameter that have not been run yet.
-	 */
-	private boolean startSearches(int sources) {
-		// Scan searches in priority order
-		boolean started = false;
-		for(SearchSite source: mSearchOrder) {
-			// If requested search contains this source...
-			if (source.enabled && ((sources & source.id) != 0))
-				// If we have not run this search...
-				if (!mSearchResults.containsKey(source.id)) {
-					// Run it now
-					if (startOneSearch(source.id))
-						started = true;
-				}
-		}
-		return started;
-	}
-	
-	/**
-	 * Start specific search listed in passed parameter.
-	 */
-	private boolean startOneSearch(int source) {
-		switch(source) {
-		case SEARCH_GOOGLE:
-			return startGoogle();
-		case SEARCH_AMAZON:
-			return startAmazon();
-		case SEARCH_LIBRARY_THING:
-			return startLibraryThing();
-		case SEARCH_GOODREADS:
-			return startGoodreads();
-		default:
-			throw new RuntimeException("Unexpected search source: " + source);				
-		}
-	}
-
-	/**
-	 * Handle task search results; start another task if necessary.
-	 */
-	private void handleSearchTaskFinished(@NonNull final SearchThread t) {
-		mCancelledFlg = t.isCancelled();
-		Bundle bookData = t.getBookData();
-		mSearchResults.put(t.getSearchId(), bookData);
-		if (mCancelledFlg) {
-			mWaitingForIsbn = false;
-		} else {
-			if (mSearchingAsin) {
-				// If we searched AMAZON for an Asin, then see what we found
-				mSearchingAsin = false;
-				// Clear the 'isbn'
-				mIsbn = "";
-				if (Utils.isNonBlankString(bookData, UniqueId.KEY_ISBN)) {
-					// We got an ISBN, so pretend we were searching for an ISBN
-					mWaitingForIsbn = true;
-				} else {
-					// See if we got author/title
-					mAuthor = bookData.getString(UniqueId.KEY_AUTHOR_NAME);
-					mTitle = bookData.getString(UniqueId.KEY_TITLE);
-					if (mAuthor != null && !mAuthor.isEmpty() && mTitle != null && !mTitle.isEmpty()) {
-						// We got them, so pretend we are searching by author/title now, and waiting for an ASIN...
-						mWaitingForIsbn = true;
-					}
-				}
-			}
-			if (mWaitingForIsbn) {
-				if (Utils.isNonBlankString(bookData, UniqueId.KEY_ISBN)) {
-					mWaitingForIsbn = false;
-					// Start the other two...even if they have run before
-					mIsbn = bookData.getString(UniqueId.KEY_ISBN);
-					startSearches(mSearchFlags);
-				} else {
-					// Start next one that has not run. 
-					startNext();
-				}
-			}				
-		}
-	}
-
-	/* ===================================================================== 
-	 * Message Switchboard implementation
-	 * =====================================================================
-	 */
-	/**
-	 * Allows other objects to know when a task completed.
-	 * 
-	 * @author Philip Warner
-	 */
-	public interface SearchListener {
-		boolean onSearchFinished(Bundle bookData, boolean cancelled);
-	}
-
-	public interface SearchController {
-		void requestAbort();
-		SearchManager getSearchManager();
-	}
-	
-	private final SearchController mController = new SearchController() {
-		public void requestAbort() {
-			mTaskManager.cancelAllTasks();
-		}
-		@Override
-		public SearchManager getSearchManager() {
-			return SearchManager.this;
-		}
-	};
-
-	/**
-	 * 	STATIC Object for passing messages from background tasks to activities that may be recreated 
-	 *
-	 *  This object handles all underlying OnTaskEndedListener messages for every instance of this class.
+    /**
+     * Utility routine to append text data from one Bundle to another
      *
-     *  REMINDER: must be public or compile fails... lint is to eager here.
-	 */
-	@SuppressWarnings("WeakerAccess")
-    public static class TaskSwitch extends MessageSwitch<SearchListener, SearchController> {}
+     * @param key    Key of data
+     * @param source Source Bundle
+     * @param dest   Destination Bundle
+     */
+    private void appendData(@NonNull final String key, @NonNull final Bundle source, @NonNull final Bundle dest) {
+        String res = dest.getString(key) + "|" + source.getString(key);
+        dest.putString(key, res);
+    }
 
-    private static final TaskSwitch mMessageSwitch = new TaskSwitch();
-	public static TaskSwitch getMessageSwitch() { return mMessageSwitch; }
+    /**
+     * Copy data from passed Bundle to current accumulated data. Does some careful
+     * processing of the data.
+     *
+     * @param searchId Source
+     */
+    private void accumulateData(int searchId) {
+        // See if we got data from this source
+        if (!mSearchResults.containsKey(searchId))
+            return;
+        Bundle bookData = mSearchResults.get(searchId);
 
-	private final long mMessageSenderId = mMessageSwitch.createSender(mController);
-	public long getSenderId() { return mMessageSenderId; }
+        // See if we REALLY got data from this source
+        if (bookData == null)
+            return;
+
+        for (String k : bookData.keySet()) {
+            // If its not there, copy it.
+            if (!mBookData.containsKey(k) || mBookData.getString(k) == null || mBookData.getString(k).trim().isEmpty())
+                mBookData.putString(k, bookData.get(k).toString());
+            else {
+                // Copy, append or update data as appropriate.
+                if (UniqueId.BKEY_AUTHOR_DETAILS.equals(k)) {
+                    appendData(k, bookData, mBookData);
+
+                } else if (UniqueId.BKEY_SERIES_DETAILS.equals(k)) {
+                    appendData(k, bookData, mBookData);
+
+                } else if (UniqueId.KEY_DATE_PUBLISHED.equals(k)) {// Grab a different date if we can parse it.
+                    String pd = bookData.getString(k);
+                    if (pd != null) {
+                        Date newDate = DateUtils.parseDate(pd);
+                        if (newDate != null) {
+                            String curr = mBookData.getString(k);
+                            if (curr != null && DateUtils.parseDate(curr) == null) {
+                                mBookData.putString(k, DateUtils.toSqlDateOnly(newDate));
+                            }
+                        }
+                    }
+
+                } else if (UniqueId.BKEY_THUMBNAIL_USCORE.equals(k)) {
+                    appendData(k, bookData, mBookData);
+
+                }
+            }
+        }
+    }
+
+    /**
+     * Combine all the data and create a book or display an error.
+     */
+    private void sendResults() {
+        // This list will be the actual order of the result we apply, based on the
+        // actual results and the default order.
+        final ArrayList<Integer> results = new ArrayList<>();
+
+        if (mHasIsbn) {
+            // If ISBN was passed, ignore entries with the wrong ISBN, and put entries with no ISBN at the end
+            final ArrayList<Integer> uncertain = new ArrayList<>();
+            for (SearchSite site : mReliabilityOrder) {
+                if (mSearchResults.containsKey(site.id)) {
+                    Bundle bookData = mSearchResults.get(site.id);
+                    if (bookData.containsKey(UniqueId.KEY_ISBN)) {
+                        if (IsbnUtils.matches(mIsbn, bookData.getString(UniqueId.KEY_ISBN))) {
+                            results.add(site.id);
+                        }
+                    } else {
+                        uncertain.add(site.id);
+                    }
+                }
+            }
+            results.addAll(uncertain);
+            // Add the passed ISBN first; avoid overwriting
+            mBookData.putString(UniqueId.KEY_ISBN, mIsbn);
+        } else {
+            // If ISBN was not passed, then just used the default order
+            for (SearchSite site : mReliabilityOrder)
+                results.add(site.id);
+        }
+
+
+        // Merge the data we have. We do this in a fixed order rather than as the threads finish.
+        for (int i : results)
+            accumulateData(i);
+
+        // If there are thumbnails present, pick the biggest, delete others and rename.
+        ImageUtils.cleanupThumbnails(mBookData);
+
+        // Try to use/construct authors
+        String authors = null;
+        try {
+            authors = mBookData.getString(UniqueId.BKEY_AUTHOR_DETAILS);
+        } catch (Exception ignored) {
+        }
+
+        if (authors == null || authors.isEmpty()) {
+            authors = mAuthor;
+        }
+
+        if (authors != null && !authors.isEmpty()) {
+            ArrayList<Author> aa = ArrayUtils.getAuthorUtils().decodeList('|', authors, false);
+            mBookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, aa);
+        }
+
+        // Try to use/construct title
+        String title = null;
+        try {
+            title = mBookData.getString(UniqueId.KEY_TITLE);
+        } catch (Exception ignored) {
+        }
+
+        if (title == null || title.isEmpty())
+            title = mTitle;
+
+        if (title != null && !title.isEmpty()) {
+            mBookData.putString(UniqueId.KEY_TITLE, title);
+        }
+
+        // Try to use/construct isbn
+        String isbn = null;
+        try {
+            isbn = mBookData.getString(UniqueId.KEY_ISBN);
+        } catch (Exception ignored) {
+        }
+
+        if (isbn == null || isbn.isEmpty())
+            isbn = mIsbn;
+
+        if (isbn != null && !isbn.isEmpty()) {
+            mBookData.putString(UniqueId.KEY_ISBN, isbn);
+        }
+
+        // Try to use/construct series
+        String series = null;
+        try {
+            series = mBookData.getString(UniqueId.BKEY_SERIES_DETAILS);
+        } catch (Exception ignored) {
+        }
+
+        if (series != null && !series.isEmpty()) {
+            try {
+                ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList('|', series, false);
+                mBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, sa);
+            } catch (Exception e) {
+                Logger.logError(e);
+            }
+        } else {
+            //add series to stop crashing
+            mBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, new ArrayList<Series>());
+        }
+
+        //
+        // TODO: this needs to be locale-specific. Currently we probably get good-enough data without
+        // forcing a cleanup.
+        //
+        // Removed 20-Jan-2016 PJW; see Issue 717.
+        //
+        // Cleanup other fields
+        //Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_TITLE);
+        //Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_PUBLISHER);
+        //Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_DATE_PUBLISHED);
+        //Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_SERIES_NAME);
+
+        // If book is not found or missing required data, warn the user
+        if (authors == null || authors.isEmpty() || title == null || title.isEmpty()) {
+            mTaskManager.doToast(BookCatalogueApp.getResourceString(R.string.book_not_found));
+        }
+        // Pass the data back
+        sendSearchFinished();
+    }
+
+    private void sendSearchFinished() {
+        mMessageSwitch.send(mMessageSenderId, new MessageSwitch.Message<SearchListener>() {
+                    @Override
+                    public boolean deliver(SearchListener listener) {
+                        return listener.onSearchFinished(mBookData, mCancelledFlg);
+                    }
+                }
+        );
+    }
+
+    /**
+     * When running in single-stream mode, start the next thread that has no data.
+     * While Google is reputedly most likely to succeed, it also produces garbage a lot.
+     * So we search Amazon, Goodreads, Google and LT last as it REQUIRES an ISBN.
+     */
+    private boolean startNext() {
+        // Loop though in 'search-priority' order
+        for (SearchSite source : mSearchOrder) {
+            // If this search includes the source, check it
+            if (source.enabled && ((mSearchFlags & source.id) != 0)) {
+                // If the source has not been searched, search it
+                if (!mSearchResults.containsKey(source.id)) {
+                    return startOneSearch(source.id);
+                }
+            }
+        }
+        return false;
+    }
+
+    /* =====================================================================
+     * Message Switchboard implementation
+     * =====================================================================
+     */
+
+    /**
+     * Start all searches listed in passed parameter that have not been run yet.
+     */
+    private boolean startSearches(int sources) {
+        // Scan searches in priority order
+        boolean started = false;
+        for (SearchSite source : mSearchOrder) {
+            // If requested search contains this source...
+            if (source.enabled && ((sources & source.id) != 0))
+                // If we have not run this search...
+                if (!mSearchResults.containsKey(source.id)) {
+                    // Run it now
+                    if (startOneSearch(source.id))
+                        started = true;
+                }
+        }
+        return started;
+    }
+
+    /**
+     * Start specific search listed in passed parameter.
+     */
+    private boolean startOneSearch(int source) {
+        switch (source) {
+            case SEARCH_GOOGLE:
+                return startGoogle();
+            case SEARCH_AMAZON:
+                return startAmazon();
+            case SEARCH_LIBRARY_THING:
+                return startLibraryThing();
+            case SEARCH_GOODREADS:
+                return startGoodreads();
+            default:
+                throw new RuntimeException("Unexpected search source: " + source);
+        }
+    }
+
+    /**
+     * Handle task search results; start another task if necessary.
+     */
+    private void handleSearchTaskFinished(@NonNull final SearchThread t) {
+        mCancelledFlg = t.isCancelled();
+        Bundle bookData = t.getBookData();
+        mSearchResults.put(t.getSearchId(), bookData);
+        if (mCancelledFlg) {
+            mWaitingForIsbn = false;
+        } else {
+            if (mSearchingAsin) {
+                // If we searched AMAZON for an Asin, then see what we found
+                mSearchingAsin = false;
+                // Clear the 'isbn'
+                mIsbn = "";
+                if (Utils.isNonBlankString(bookData, UniqueId.KEY_ISBN)) {
+                    // We got an ISBN, so pretend we were searching for an ISBN
+                    mWaitingForIsbn = true;
+                } else {
+                    // See if we got author/title
+                    mAuthor = bookData.getString(UniqueId.KEY_AUTHOR_NAME);
+                    mTitle = bookData.getString(UniqueId.KEY_TITLE);
+                    if (mAuthor != null && !mAuthor.isEmpty() && mTitle != null && !mTitle.isEmpty()) {
+                        // We got them, so pretend we are searching by author/title now, and waiting for an ASIN...
+                        mWaitingForIsbn = true;
+                    }
+                }
+            }
+            if (mWaitingForIsbn) {
+                if (Utils.isNonBlankString(bookData, UniqueId.KEY_ISBN)) {
+                    mWaitingForIsbn = false;
+                    // Start the other two...even if they have run before
+                    mIsbn = bookData.getString(UniqueId.KEY_ISBN);
+                    startSearches(mSearchFlags);
+                } else {
+                    // Start next one that has not run.
+                    startNext();
+                }
+            }
+        }
+    }
+
+    public long getSenderId() {
+        return mMessageSenderId;
+    }
+
+    /**
+     * Allows other objects to know when a task completed.
+     *
+     * @author Philip Warner
+     */
+    public interface SearchListener {
+        boolean onSearchFinished(Bundle bookData, boolean cancelled);
+    }
+
+    public interface SearchController {
+        void requestAbort();
+
+        SearchManager getSearchManager();
+    }
+
+    public static class SearchSite {
+        final int id;
+        final String name;
+        boolean enabled;
+        int order;
+        int reliability;
+
+        SearchSite(final int order, final int reliability, final int bit, final String name, final boolean enabled) {
+            this.id = bit;
+            this.order = order;
+            this.reliability = reliability;
+            this.name = name;
+            this.enabled = enabled;
+        }
+
+//        @Override
+//        public String toString() {
+//            return "SearchSite{" +
+//                    "id=" + id +
+//                    ", name='" + name + '\'' +
+//                    ", enabled=" + enabled +
+//                    ", order=" + order +
+//                    ", reliability=" + reliability +
+//                    '}';
+//        }
+    }
+
+    /**
+     * STATIC Object for passing messages from background tasks to activities that may be recreated
+     *
+     * This object handles all underlying OnTaskEndedListener messages for every instance of this class.
+     *
+     * REMINDER: must be public or compile fails... lint is to eager here.
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static class TaskSwitch extends MessageSwitch<SearchListener, SearchController> {
+    }
 
 }

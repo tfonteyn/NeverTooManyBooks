@@ -20,10 +20,12 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 /**
  * Class used to manage groups of properties in the UI
@@ -91,7 +93,7 @@ public class PropertyGroup {
     }
 
     /** Compare two groups for sorting purposes */
-    public static int compare(PropertyGroup lhs, PropertyGroup rhs) {
+    public static int compare(@NonNull final PropertyGroup lhs, @NonNull final PropertyGroup rhs) {
         // Compare weights
         final int wCmp = lhs.weight.compareTo(rhs.weight);
         if (wCmp != 0)
@@ -120,7 +122,7 @@ public class PropertyGroup {
      *
      * @author Philip Warner
      */
-    public static class PropertyGroups extends Hashtable<Integer, PropertyGroup> {
+    public static class PropertyGroups extends HashMap<Integer, PropertyGroup> {
         private static final long serialVersionUID = 1L;
 
         /** Add the passed group */

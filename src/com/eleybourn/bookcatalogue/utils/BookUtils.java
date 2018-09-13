@@ -32,6 +32,7 @@ import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 import com.eleybourn.bookcatalogue.*;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
@@ -61,23 +62,23 @@ public class BookUtils {
 		Bundle book = new Bundle();
 		try(Cursor thisBook = dba.fetchBookById(rowId)) {
 			thisBook.moveToFirst();
-			book.putString(UniqueId.KEY_TITLE, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_TITLE)));
-			book.putString(UniqueId.KEY_ISBN, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_ISBN)));
-			book.putString(UniqueId.KEY_PUBLISHER, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_PUBLISHER)));
-			book.putString(UniqueId.KEY_DATE_PUBLISHED, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_DATE_PUBLISHED)));
-			book.putString(UniqueId.KEY_RATING, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_RATING)));
-			book.putString(UniqueId.KEY_READ, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_READ)));
-			book.putString(UniqueId.KEY_PAGES, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_PAGES)));
-			book.putString(UniqueId.KEY_NOTES, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_NOTES)));
-			book.putString(UniqueId.KEY_LIST_PRICE, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_LIST_PRICE)));
-			book.putString(UniqueId.KEY_ANTHOLOGY_MASK, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_ANTHOLOGY_MASK)));
-			book.putString(UniqueId.KEY_LOCATION, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_LOCATION)));
-			book.putString(UniqueId.KEY_READ_START, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_READ_START)));
-			book.putString(UniqueId.KEY_READ_END, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_READ_END)));
-			book.putString(UniqueId.KEY_FORMAT, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_FORMAT)));
-			book.putString(UniqueId.KEY_SIGNED, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_SIGNED)));
-			book.putString(UniqueId.KEY_DESCRIPTION, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_DESCRIPTION)));
-			book.putString(UniqueId.KEY_GENRE, thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_GENRE)));
+			book.putString(UniqueId.KEY_TITLE, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_TITLE.name)));
+			book.putString(UniqueId.KEY_ISBN, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_ISBN.name)));
+			book.putString(UniqueId.KEY_PUBLISHER, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_PUBLISHER.name)));
+			book.putString(UniqueId.KEY_DATE_PUBLISHED, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_DATE_PUBLISHED.name)));
+			book.putString(UniqueId.KEY_RATING, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_RATING.name)));
+			book.putString(UniqueId.KEY_READ, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_READ.name)));
+			book.putString(UniqueId.KEY_PAGES, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_PAGES.name)));
+			book.putString(UniqueId.KEY_NOTES, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_NOTES.name)));
+			book.putString(UniqueId.KEY_LIST_PRICE, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_LIST_PRICE.name)));
+			book.putString(UniqueId.KEY_ANTHOLOGY_MASK, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_ANTHOLOGY_MASK.name)));
+			book.putString(UniqueId.KEY_LOCATION, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_LOCATION.name)));
+			book.putString(UniqueId.KEY_READ_START, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_READ_START.name)));
+			book.putString(UniqueId.KEY_READ_END, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_READ_END.name)));
+			book.putString(UniqueId.KEY_FORMAT, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_FORMAT.name)));
+			book.putString(UniqueId.KEY_SIGNED, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_SIGNED.name)));
+			book.putString(UniqueId.KEY_DESCRIPTION, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_DESCRIPTION.name)));
+			book.putString(UniqueId.KEY_GENRE, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_GENRE.name)));
 			
 			book.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, dba.getBookAuthorList(rowId));
 			book.putSerializable(UniqueId.BKEY_SERIES_ARRAY, dba.getBookSeriesList(rowId));
@@ -134,13 +135,13 @@ public class BookUtils {
 
 		try(Cursor thisBook = db.fetchBookById(rowId)) {
 			thisBook.moveToFirst();
-			title = thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_TITLE));
-			rating = thisBook.getDouble(thisBook.getColumnIndex(UniqueId.KEY_RATING));
-			author = thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_AUTHOR_FORMATTED_GIVEN_FIRST));
-			series = thisBook.getString(thisBook.getColumnIndex(UniqueId.KEY_SERIES_FORMATTED));
+			title = thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_TITLE.name));
+			rating = thisBook.getDouble(thisBook.getColumnIndex(DatabaseDefinitions.DOM_RATING.name));
+			author = thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name));
+			series = thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_SERIES_FORMATTED.name));
 		}
 
-		File image = ImageUtils.fetchThumbnailByUuid(db.getBookUuid(rowId));
+		File image = StorageUtils.getThumbnailByUuid(db.getBookUuid(rowId));
 
 		if (!series.isEmpty()) {
 			series = " (" + series.replace("#", "%23") + ")";
@@ -170,7 +171,7 @@ public class BookUtils {
 		 * it will not post any text unless the user types it.
 		 */
 		Intent share = new Intent(Intent.ACTION_SEND); 
-		String text = context.getString(R.string.share_book_i_reading,title, author, series, ratingString);
+		String text = context.getString(R.string.share_book_im_reading,title, author, series, ratingString);
 		share.putExtra(Intent.EXTRA_TEXT, text); 
 		share.putExtra(Intent.EXTRA_STREAM, coverURI);
         share.setType("text/plain");

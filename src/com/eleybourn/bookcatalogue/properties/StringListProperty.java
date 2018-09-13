@@ -20,8 +20,9 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BCPreferences;
-import com.eleybourn.bookcatalogue.R;
 
 /**
  * Extends ListProperty to create a nullable integer property with associated editing support.
@@ -30,28 +31,9 @@ import com.eleybourn.bookcatalogue.R;
  */
 public class StringListProperty extends ListProperty<String> implements Property.StringValue {
 
-    @SuppressWarnings("unused")
-    public StringListProperty(ItemEntries<String> list, String uniqueId, PropertyGroup group, int nameResourceId, String value, String defaultPref, String defaultValue) {
-        super(list, uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
-    }
-
-    @SuppressWarnings("unused")
-    public StringListProperty(ItemEntries<String> list, String uniqueId, PropertyGroup group, int nameResourceId, String value, String defaultValue) {
-        super(list, uniqueId, group, nameResourceId, value, null, defaultValue);
-    }
-
-    @SuppressWarnings("unused")
-    public StringListProperty(ItemEntries<String> list, String uniqueId, PropertyGroup group, int nameResourceId, String value) {
-        super(list, uniqueId, group, nameResourceId, value, null, value);
-    }
-
-    public StringListProperty(ItemEntries<String> list, String uniqueId, PropertyGroup group, int nameResourceId) {
+    public StringListProperty(@NonNull final ItemEntries<String> list, @NonNull final String uniqueId,
+                              @NonNull final PropertyGroup group, int nameResourceId) {
         super(list, uniqueId, group, nameResourceId, null, null, null);
-    }
-
-    @SuppressWarnings("unused")
-    public StringListProperty(ItemEntries<String> list, String uniqueId) {
-        super(list, uniqueId, PropertyGroup.GRP_GENERAL, R.string.unknown, null, null, null);
     }
 
     @Override

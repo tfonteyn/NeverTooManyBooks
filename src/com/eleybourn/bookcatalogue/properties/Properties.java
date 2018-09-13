@@ -31,7 +31,7 @@ import com.eleybourn.bookcatalogue.properties.Property.ValidationException;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 
 /**
@@ -41,7 +41,7 @@ import java.util.Iterator;
  */
 public class Properties implements Iterable<Property> {
     private final ArrayList<Property> mList = new ArrayList<>();
-    private final Hashtable<String, Property> mHash = new Hashtable<>();
+    private final HashMap<String, Property> mHash = new HashMap<>();
 
     /** Sort the properties based on their group weight, group name, weight and name. */
     private void sort() {
@@ -58,7 +58,7 @@ public class Properties implements Iterable<Property> {
     /**
      * @return the named property from this collection.
      */
-    public Property get(String name) {
+    public Property get(@NonNull final String name) {
         return mHash.get(name);
     }
 
@@ -66,7 +66,7 @@ public class Properties implements Iterable<Property> {
      * Passed a parent ViewGroup, build the property editors for all properties
      * inside the parent.
      */
-    public void buildView(LayoutInflater inflater, ViewGroup parent) {
+    public void buildView(@NonNull final LayoutInflater inflater, @NonNull final ViewGroup parent) {
         // Sort them correctly
         sort();
         // Record last group used, so we know when to output a header.

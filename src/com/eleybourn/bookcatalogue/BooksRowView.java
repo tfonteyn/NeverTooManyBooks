@@ -108,7 +108,7 @@ public class BooksRowView {
 
     public final String getPrimaryAuthorName() {
         if (mPrimaryAuthorCol < 0) {
-            mPrimaryAuthorCol = mCursor.getColumnIndex(UniqueId.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+            mPrimaryAuthorCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
             if (mPrimaryAuthorCol < 0)
                 throw new RuntimeException("Primary author column not in result set");
         }
@@ -193,9 +193,10 @@ public class BooksRowView {
         return mCursor.getString(mPublisherCol);
     }
 
+    @SuppressWarnings("unused")
     public final String getDatePublished() {
         if (mDatePublishedCol < 0) {
-            mDatePublishedCol = mCursor.getColumnIndex(UniqueId.KEY_DATE_PUBLISHED);
+            mDatePublishedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_DATE_PUBLISHED.name);
             if (mDatePublishedCol < 0)
                 throw new RuntimeException("DATE_PUBLISHED column not in result set");
         }

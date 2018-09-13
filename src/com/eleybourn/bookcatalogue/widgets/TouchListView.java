@@ -43,6 +43,31 @@ import com.eleybourn.bookcatalogue.R;
  * for TouchInterceptor which was (reputedly) removed in Android 2.2.
  *
  * https://github.com/timsu/cwac-touchlist
+ *
+ * You have five customizable attributes:
+ *
+ * normal_height:
+ *      the height of one of your regular rows (required)
+ *
+ * expanded_height:
+ *      the largest possible height of one of your rows (defaults to the value of normal_height)
+ *
+ * grabber:
+ *      the android:id value of an icon in your rows that should be used as the "grab handle"
+ *      for the drag-and-drop operation (required)
+ *
+ * dragndrop_background:
+ *      a color to use as the background of your row when it is being dragged
+ *      (defaults to being fully transparent)
+ *
+ * remove_mode:
+ *      ="none"         (default) user cannot remove entries
+ *      ="slideRight"   user can remove entries by dragging to the right quarter of the list
+ *      ="slideLeft"    user can remove entries by dragging to the left quarter of the list)
+ *      ="fling"        ...not quite sure what this does
+ *
+ * NOTE: remove_mode of slide is equivalent to slideRight, but slideRight is recommended.
+ *
  */
 public class TouchListView extends ListView {
     private static final int FLING = 0;

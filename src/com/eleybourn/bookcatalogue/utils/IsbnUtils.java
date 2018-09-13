@@ -34,7 +34,7 @@ public class IsbnUtils {
 	public static boolean isValid(@NonNull final String isbn) {
 		try {
 			return new IsbnInfo(isbn).isValid;
-		} catch (Exception e) {
+		} catch (NumberFormatException e) {
 			return false;
 		}
 	}
@@ -59,10 +59,10 @@ public class IsbnUtils {
     /**
      * switches an ISBN-10 to ISBN-13 and reverse
      */
-    public static String isbn2isbn(@NonNull final String isbn) {
+    public static String isbn2isbn(@NonNull final String isbn) throws NumberFormatException {
         IsbnInfo info = new IsbnInfo(isbn);
         if (!info.isValid)
-            throw new RuntimeException("Unable to convert invalid ISBN");
+            throw new NumberFormatException("Unable to convert invalid ISBN");
 
         if (isbn.length() == 10) {
             return info.getIsbn13();
@@ -94,7 +94,7 @@ public class IsbnUtils {
          * ISBN-10 is "0-345-30054-?"
          * The ISBN check digit is omitted from the bar code but can be calculated; in this case it's 8
          *
-         * # UPC Prefix -- ISBN Prefix mapping file
+         * UPC Prefix -- ISBN Prefix mapping file (may not be complete)
          */
         private static final HashMap<String, String> upc2isbnPrefix = new HashMap<>();
 
@@ -149,11 +149,11 @@ public class IsbnUtils {
             isValid =  isnbToDigits(s) || upcToDigits(s);
         }
 
-        private boolean isValid10(final int[] digits) {
+        private boolean isValid10(@NonNull final int[] digits) {
             return (getChecksum10(digits) == 0);
         }
 
-        private boolean isValid13(final int[] digits) {
+        private boolean isValid13(@NonNull final int[] digits) {
             // Start with 978 or 979
             return digits[0] == 9 && digits[1] == 7 && (digits[2] == 8 || digits[2] == 9)
                     && (getChecksum13(digits) == 0);
@@ -164,7 +164,7 @@ public class IsbnUtils {
          *
          * @return the ISBN number as a string (10 or 13)
          */
-        private String concat(final int[] digits) {
+        private String concat(@NonNull final int[] digits) {
             StringBuilder sb = new StringBuilder();
             for (int d : digits) {
                 if (d == 10) {
@@ -181,9 +181,10 @@ public class IsbnUtils {
          *
          * @return a valid ISBN-10
          */
-		String getIsbn10() {
+        @NonNull
+		String getIsbn10() throws NumberFormatException {
             if (!isValid) {
-                throw new RuntimeException("Unable to convert invalid ISBN");
+                throw new NumberFormatException("Unable to convert invalid ISBN");
             }
 
             // already in ISBN-10 format, just return
@@ -207,7 +208,7 @@ public class IsbnUtils {
         /**
          * @return digit 10, the checksum
          */
-        private int getChecksum10(final int[] digits) {
+        private int getChecksum10(@NonNull final int[] digits) {
             int multiplier = 10;
             int sum = 0;
             for (int i = 0; i < 10; i++) {
@@ -222,9 +223,10 @@ public class IsbnUtils {
          *
          * @return a valid ISBN-13
          */
-		String getIsbn13() {
+        @NonNull
+		String getIsbn13() throws NumberFormatException {
             if (!isValid) {
-                throw new RuntimeException("Unable to convert invalid ISBN");
+                throw new NumberFormatException("Unable to convert invalid ISBN");
             }
 
             // already in ISBN-13 format, just return
@@ -253,7 +255,7 @@ public class IsbnUtils {
         /**
          * @return digit 13, the checksum
          */
-        private int getChecksum13(final int[] digits) {
+        private int getChecksum13(@NonNull final int[] digits) {
             int sum = 0;
             for (int i = 0; i <= 12; i += 2) {
                 sum += digits[i];
@@ -364,7 +366,7 @@ public class IsbnUtils {
             }
         }
 
-        private boolean digitsMatch(final int len, int pos1, final int[] dig2, int pos2) {
+        private boolean digitsMatch(final int len, int pos1, @NonNull final int[] dig2, int pos2) {
             for (int i = 0; i < len; i++) {
                 if (this.mDigits[pos1++] != dig2[pos2++])
                     return false;

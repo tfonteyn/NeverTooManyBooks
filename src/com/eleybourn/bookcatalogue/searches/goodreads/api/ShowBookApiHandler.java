@@ -26,7 +26,6 @@ import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.Series;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -494,7 +493,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             if (bestImage != null) {
                 String filename = ImageUtils.saveThumbnailFromUrl(bestImage, UniqueId.GOODREADS_FILENAME_SUFFIX);
                 if (filename.length() > 0)
-                    ArrayUtils.appendOrAdd(mBook, SearchManager.BKEY_THUMBNAIL_SEARCHES, filename);
+                    ArrayUtils.appendOrAdd(mBook, UniqueId.BKEY_THUMBNAIL_USCORE, filename);
             }
         }
 

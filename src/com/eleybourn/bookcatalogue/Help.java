@@ -101,29 +101,25 @@ public class Help extends BookCatalogueActivity {
 
 	private void setupCleanupButton() {
 		try {
-			Button cleanupBtn = findViewById(R.id.cleanup_button);
-			TextView cleanupTxt = findViewById(R.id.cleanup_text);
+			final Button cleanupBtn = findViewById(R.id.cleanup_button);
+			final TextView cleanupTxt = findViewById(R.id.cleanup_text);
 
 			cleanupBtn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					StorageUtils.cleanupFiles();
+					StorageUtils.cleanupFiles(true);
 					setupCleanupButton();
 				}
 			});
 
-
-			float space = StorageUtils.cleanupFilesTotalSize();
+			final float space = StorageUtils.cleanupFiles(false);
 			if (space == 0) {
 				cleanupBtn.setVisibility(View.GONE);
 				cleanupTxt.setVisibility(View.GONE);
 			} else {
 				cleanupBtn.setVisibility(View.VISIBLE);
 				cleanupTxt.setVisibility(View.VISIBLE);
-				String fmt = getString(R.string.cleanup_files_text);
-				String sizeStr = Utils.formatFileSize(space);
-				cleanupTxt.setText(String.format(fmt, sizeStr));
-
+				cleanupTxt.setText(getString(R.string.cleanup_files_text, Utils.formatFileSize(space)));
 			}			
 		} catch (Exception e) {
 			Logger.logError(e);

@@ -72,7 +72,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      * @param family Family name
      * @param given  Given names
      */
-    Author(@NonNull final String family, @NonNull final String given) {
+    public Author(@NonNull final String family, @NonNull final String given) {
         this(0L, family, given);
     }
 
@@ -83,7 +83,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      * @param family Family name
      * @param given  Given names
      */
-    Author(long id, @NonNull final String family, @NonNull final String given) {
+    public Author(long id, @NonNull final String family, @NonNull final String given) {
         this.id = id;
         familyName = family.trim();
         givenNames = given.trim();

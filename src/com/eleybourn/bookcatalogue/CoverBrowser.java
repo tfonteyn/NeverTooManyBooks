@@ -290,7 +290,7 @@ public class CoverBrowser {
                 coverImage.setImageResource(android.R.drawable.ic_menu_help);
             } else {
                 // Present, so use it.
-                ImageUtils.fetchFileIntoImageView(file, coverImage, mPreviewSizeWidth, mPreviewSizeHeight, true);
+                ImageUtils.fetchFileIntoImageView(coverImage, file, mPreviewSizeWidth, mPreviewSizeHeight, true);
             }
 
             coverImage.setOnClickListener(new OnClickListener() {
@@ -414,7 +414,7 @@ public class CoverBrowser {
             // Load the file and apply to view
             File file = new File(mFilename);
             file.deleteOnExit();
-            ImageUtils.fetchFileIntoImageView(file, mImageView, mMaxWidth, mMaxHeight, true);
+            ImageUtils.fetchFileIntoImageView(mImageView, file, mMaxWidth, mMaxHeight, true);
         }
     }
 
@@ -468,7 +468,7 @@ public class CoverBrowser {
             // the 100 is arbitrary...
             if (file.exists() && file.length() > 100) {
                 Drawable image = new BitmapDrawable(mActivity.getResources(),
-                        ImageUtils.fetchFileIntoImageView(file, null,
+                        ImageUtils.fetchFileIntoImageView(null, file,
                                 mPreviewSizeWidth * 4, mPreviewSizeHeight * 4, true));
                 mSwitcher.setImageDrawable(image);
                 ViewTagger.setTag(mSwitcher, file.getAbsolutePath());

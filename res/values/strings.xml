@@ -1077,12 +1077,13 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="search_with_text">Search: %1$s</string>
     <string name="internet_update_fields">Update Fields</string>
     <string name="share">Share</string>
-    <string name="share_book_i_reading">I\'m reading %1$s by %2$s %3$s %4$s</string>
+    <string name="share_book_im_reading">I\'m reading %1$s by %2$s %3$s %4$s</string>
     <string name="done">Done</string>
     <string name="search_hosts">Search Sites</string>
     <string name="search_site_order">Search Site Order</string>
     <string name="google_books" translatable="false">Google Books</string>
     <string name="starting">Starting</string>
+    <string name="send_mail">Send mail…</string>
 
 
     <!-- End: Added/Updated in  [Next Version]  -->

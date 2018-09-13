@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
@@ -68,7 +69,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
      * @param manager         Object to manage background tasks
      * @param requestedFields fields to update
      */
-    public UpdateThumbnailsThread(TaskManager manager, FieldUsages requestedFields, TaskListener listener) {
+    public UpdateThumbnailsThread(@NonNull final TaskManager manager, FieldUsages requestedFields, TaskListener listener) {
         super(manager);
         mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         mDb.open();
@@ -113,7 +114,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
     public void onRun() throws InterruptedException {
         int counter = 0;
         /* Test write to the SDCard; abort if not writable */
-        if (!StorageUtils.sdCardWritable()) {
+        if (!StorageUtils.isWritable()) {
             mFinalMessage = getString(R.string.thumbnail_failed_sdcard);
             return;
         }
@@ -165,7 +166,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
                                 // - If it's a thumbnail, then see if it's missing or empty.
                                 switch (usage.fieldName) {
                                     case UniqueId.BKEY_THUMBNAIL:
-                                        File file = ImageUtils.fetchThumbnailByUuid(mCurrUuid);
+                                        File file = StorageUtils.getThumbnailByUuid(mCurrUuid);
                                         if (!file.exists() || file.length() == 0)
                                             mCurrFieldUsages.put(usage);
                                         break;
@@ -203,7 +204,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
                 if (tmpThumbWanted) {
                     // delete any temporary thumbnails //
                     try {
-                        File delthumb = ImageUtils.getTempThumbnail();
+                        File delthumb = StorageUtils.getTempThumbnail();
                         //noinspection ResultOfMethodCallIgnored
                         delthumb.delete();
                     } catch (Exception e) {
@@ -314,16 +315,16 @@ public class UpdateThumbnailsThread extends ManagedTask {
             if (newData.containsKey(usage.fieldName)) {
                 // Handle thumbnail specially
                 if (usage.fieldName.equals(UniqueId.BKEY_THUMBNAIL)) {
-                    File downloadedFile = ImageUtils.getTempThumbnail();
+                    File downloadedFile = StorageUtils.getTempThumbnail();
                     boolean copyThumb = false;
                     if (usage.usage == FieldUsages.Usages.COPY_IF_BLANK) {
-                        File file = ImageUtils.fetchThumbnailByUuid(bookUuid);
+                        File file = StorageUtils.getThumbnailByUuid(bookUuid);
                         copyThumb = (!file.exists() || file.length() == 0);
                     } else if (usage.usage == FieldUsages.Usages.OVERWRITE) {
                         copyThumb = true;
                     }
                     if (copyThumb) {
-                        File file = ImageUtils.fetchThumbnailByUuid(bookUuid);
+                        File file = StorageUtils.getThumbnailByUuid(bookUuid);
                         //noinspection ResultOfMethodCallIgnored
                         downloadedFile.renameTo(file);
                     } else {

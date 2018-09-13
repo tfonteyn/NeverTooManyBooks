@@ -51,7 +51,7 @@ import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment.OnPartialDa
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEditorListener;
-import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -675,8 +675,8 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 
             if (id > 0) {
                 setRowId(id);
-                File thumb = ImageUtils.getTempThumbnail();
-                File real = ImageUtils.fetchThumbnailByUuid(mDb.getBookUuid(mRowId));
+                File thumb = StorageUtils.getTempThumbnail();
+                File real = StorageUtils.getThumbnailByUuid(mDb.getBookUuid(mRowId));
                 //noinspection ResultOfMethodCallIgnored
                 thumb.renameTo(real);
             }

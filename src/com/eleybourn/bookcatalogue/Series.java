@@ -102,7 +102,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
         this(0L, name, number);
     }
 
-    Series(long id, @NonNull final String name, @Nullable String number) {
+    public Series(long id, @NonNull final String name, @Nullable String number) {
         this.id = id;
         this.name = name.trim();
         this.number = cleanupSeriesPosition(number);

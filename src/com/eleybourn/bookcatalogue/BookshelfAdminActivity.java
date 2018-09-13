@@ -48,6 +48,7 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
 {
     private static final int ACTIVITY_CREATE = 0;
     private static final int ACTIVITY_EDIT = 1;
+
     private static final int INSERT_ID = Menu.FIRST;
     private static final int DELETE_ID = Menu.FIRST + 1;
 
@@ -77,6 +78,7 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
         // Now create a simple cursor adapter and set it to display
         String[] fieldsToDisplay = new String[]{KEY_BOOKSHELF, KEY_ID};
         int[] fieldsToBindTo = new int[]{R.id.row_bookshelf};
+
         SimpleCursorAdapter books = new SimpleCursorAdapter(this, R.layout.row_bookshelf,
                 bookshelfCursor, fieldsToDisplay, fieldsToBindTo);
         this.setListAdapter(books);

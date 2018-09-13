@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -22,40 +22,37 @@ package com.eleybourn.bookcatalogue.utils;
 import android.support.annotation.NonNull;
 
 public class AsinUtils {
-	private AsinUtils() {
-	}
+    private AsinUtils() {
+    }
 
-	private static final String mValidAsinCharacters = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	
-	/**
-	 * Validate an ASIN
-	 * 
-	 * Amazon have apparently designed ASINs without (public) validation methods. All we can do is check length and characters;
-	 * the apparent rule is that it must be an ISBN10 or be a 10 character string containing at least on non-numeric.
-	 */
-	public static boolean isValid(@NonNull String asin) {
-		try {
-			asin = asin.toUpperCase().trim();
-			if (asin.length() != 10)
-				return false;
+    /**
+     * Validate an ASIN
+     *
+     * Amazon have apparently designed ASINs without (public) validation methods. All we can do is check length and characters;
+     * the apparent rule is that it must be an ISBN10 or be a 10 character string containing at least on non-numeric.
+     */
+    public static boolean isValid(@NonNull String asin) {
 
-			// Check 10 char field for being ISBN; if true, then is also ASIN
-			if (IsbnUtils.isValid(asin))
-				return true;
+        asin = asin.toUpperCase().trim();
+        if (asin.length() != 10)
+            return false;
 
-			boolean foundAlpha = false;
-			for(int i = 0; i < asin.length(); i++) {
-				int pos = mValidAsinCharacters.indexOf(asin.charAt(i));
-				// Make sure it's a valid char
-				if (pos == -1)
-					return false;
-				// See if we got a non-numeric
-				if (pos >= 10)
-					foundAlpha = true;
-			}
-			return foundAlpha;
-		} catch (Exception e) {
-			return false;
-		}
-	}
+        // Check 10 char field for being ISBN; if true, then is also ASIN
+        if (IsbnUtils.isValid(asin))
+            return true;
+
+        boolean foundAlpha = false;
+        for (int i = 0; i < asin.length(); i++) {
+            int pos = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(asin.charAt(i));
+            // Make sure it's a valid char
+            if (pos == -1) {
+                return false;
+            }
+            // See if we got a non-numeric
+            if (pos >= 10) {
+                foundAlpha = true;
+            }
+        }
+        return foundAlpha;
+    }
 }

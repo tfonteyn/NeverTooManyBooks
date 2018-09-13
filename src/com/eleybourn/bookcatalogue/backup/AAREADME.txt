@@ -19,7 +19,7 @@ AppVersion
    BC Version that created it
 CompatArchiver
    Last known compatible archiver version (initially 1, ideally always 1) that can read this archive
-   We may in th dim distance future decide to make a new TAR format that older versions will be unable to
+   We may in the dim distance future decide to make a new TAR format that older versions will be unable to
    understand. This is only a relevant field for DOWNGRADING.
 
 Optional Entries: INFO_*.xml

@@ -78,37 +78,24 @@ public class PreferencesActivity extends PreferencesBaseActivity {
             /* *****************************************************************************
              * GRP_USER_INTERFACE:
              ******************************************************************************/
-            .add(new BooleanProperty(BCPreferences.PREF_CLASSIC_MY_BOOKS)
+            .add(new BooleanProperty(BCPreferences.PREF_CLASSIC_MY_BOOKS, PropertyGroup.GRP_USER_INTERFACE, R.string.include_classic_catalogue_view)
                     .setDefaultValue(false)
                     .setPreferenceKey(BCPreferences.PREF_CLASSIC_MY_BOOKS)
                     .setGlobal(true)
-                    .setWeight(100)
-                    //.setNameResourceId(R.string.start_in_my_books)
-                    .setNameResourceId(R.string.include_classic_catalogue_view)
-                    .setGroup(PropertyGroup.GRP_USER_INTERFACE))
+                    .setWeight(100))
 
             /*
              * Enabling/disabling read-only mode when opening book. If enabled book
              * is opened in read-only mode (editing through menu), else in edit mode.
              */
-            .add(new BooleanProperty(BCPreferences.PREF_OPEN_BOOK_READ_ONLY)
+            .add(new BooleanProperty(BCPreferences.PREF_OPEN_BOOK_READ_ONLY,
+                    PropertyGroup.GRP_USER_INTERFACE, R.string.prefs_global_opening_book_mode)
                     .setDefaultValue(true)
                     .setPreferenceKey(BCPreferences.PREF_OPEN_BOOK_READ_ONLY)
-                    .setGlobal(true)
-                    .setNameResourceId(R.string.prefs_global_opening_book_mode)
-                    .setGroup(PropertyGroup.GRP_USER_INTERFACE))
-
-            .add(new BooleanProperty(BCPreferences.PREF_DISABLE_BACKGROUND_IMAGE)
-                    .setDefaultValue(false)
-                    .setPreferenceKey(BCPreferences.PREF_DISABLE_BACKGROUND_IMAGE)
-                    .setGlobal(true)
-                    .setWeight(200)
-                    .setNameResourceId(R.string.disable_background_image)
-                    .setGroup(PropertyGroup.GRP_USER_INTERFACE))
+                    .setGlobal(true))
 
             .add(new StringListProperty(mLocalesListItems, BCPreferences.PREF_APP_LOCALE,
                     PropertyGroup.GRP_USER_INTERFACE, R.string.preferred_interface_language)
-                    .setDefaultValue(null)
                     .setPreferenceKey(BCPreferences.PREF_APP_LOCALE)
                     .setGlobal(true)
                     .setWeight(200)
@@ -126,66 +113,58 @@ public class PreferencesActivity extends PreferencesBaseActivity {
              * GRP_SCANNER:
              ******************************************************************************/
 
-            .add(new BooleanProperty(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_INVALID)
+            .add(new BooleanProperty(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_INVALID,
+                    PropertyGroup.GRP_SCANNER, R.string.beep_if_scanned_isbn_invalid)
                     .setDefaultValue(true)
                     .setPreferenceKey(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_INVALID)
                     .setGlobal(true)
-                    .setWeight(300)
-                    .setNameResourceId(R.string.beep_if_scanned_isbn_invalid)
-                    .setGroup(PropertyGroup.GRP_SCANNER))
+                    .setWeight(300))
 
-            .add(new BooleanProperty(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_VALID)
+            .add(new BooleanProperty(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_VALID,
+                    PropertyGroup.GRP_SCANNER, R.string.beep_if_scanned_isbn_valid)
                     .setDefaultValue(false)
                     .setPreferenceKey(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_VALID)
                     .setGlobal(true)
-                    .setWeight(300)
-                    .setNameResourceId(R.string.beep_if_scanned_isbn_valid)
-                    .setGroup(PropertyGroup.GRP_SCANNER))
+                    .setWeight(300))
 
-            .add(new IntegerListProperty(mScannerListItems, ScannerManager.PREF_PREFERRED_SCANNER)
+            .add(new IntegerListProperty(mScannerListItems, ScannerManager.PREF_PREFERRED_SCANNER,
+                    PropertyGroup.GRP_SCANNER,R.string.preferred_scanner)
                     .setDefaultValue(ScannerManager.SCANNER_ZXING_COMPATIBLE)
                     .setPreferenceKey(ScannerManager.PREF_PREFERRED_SCANNER)
-                    .setGlobal(true)
-                    .setNameResourceId(R.string.preferred_scanner)
-                    .setGroup(PropertyGroup.GRP_SCANNER))
+                    .setGlobal(true))
 
             /* *****************************************************************************
              * GRP_THUMBNAILS:
              ******************************************************************************/
 
-            .add(new BooleanProperty(BCPreferences.PREF_CROP_FRAME_WHOLE_IMAGE)
+            .add(new BooleanProperty(BCPreferences.PREF_CROP_FRAME_WHOLE_IMAGE,
+                    PropertyGroup.GRP_THUMBNAILS, R.string.default_crop_frame_is_whole_image)
                     .setDefaultValue(false)
                     .setPreferenceKey(BCPreferences.PREF_CROP_FRAME_WHOLE_IMAGE)
-                    .setGlobal(true)
-                    .setNameResourceId(R.string.default_crop_frame_is_whole_image)
-                    .setGroup(PropertyGroup.GRP_THUMBNAILS))
+                    .setGlobal(true))
 
-            .add(new IntegerListProperty(mRotationListItems, BCPreferences.PREF_AUTOROTATE_CAMERA_IMAGES)
+            .add(new IntegerListProperty(mRotationListItems, BCPreferences.PREF_AUTOROTATE_CAMERA_IMAGES,
+                    PropertyGroup.GRP_THUMBNAILS, R.string.auto_rotate_camera_images)
                     .setDefaultValue(90)
                     .setPreferenceKey(BCPreferences.PREF_AUTOROTATE_CAMERA_IMAGES)
-                    .setGlobal(true)
-                    .setNameResourceId(R.string.auto_rotate_camera_images)
-                    .setGroup(PropertyGroup.GRP_THUMBNAILS))
+                    .setGlobal(true))
 
-            .add(new BooleanProperty(BCPreferences.PREF_USE_EXTERNAL_IMAGE_CROPPER)
+            .add(new BooleanProperty(BCPreferences.PREF_USE_EXTERNAL_IMAGE_CROPPER,
+                    PropertyGroup.GRP_THUMBNAILS, R.string.use_external_image_cropper)
                     .setDefaultValue(false)
                     .setPreferenceKey(BCPreferences.PREF_USE_EXTERNAL_IMAGE_CROPPER)
-                    .setGlobal(true)
-                    .setNameResourceId(R.string.use_external_image_cropper)
-                    .setGroup(PropertyGroup.GRP_THUMBNAILS))
+                    .setGlobal(true))
 
             /* *****************************************************************************
              * GRP_ADVANCED_OPTIONS:
              ******************************************************************************/
 
             // Book list compatibility mode setting
-            .add(new IntegerListProperty(mListGenerationOptionsListItems, BCPreferences.PREF_BOOKLIST_GENERATION_MODE)
+            .add(new IntegerListProperty(mListGenerationOptionsListItems, BCPreferences.PREF_BOOKLIST_GENERATION_MODE,
+                    PropertyGroup.GRP_ADVANCED_OPTIONS, R.string.booklist_generation)
                     .setDefaultValue(BooklistBuilder.BOOKLIST_GENERATE_AUTOMATIC)
                     .setPreferenceKey(BCPreferences.PREF_BOOKLIST_GENERATION_MODE)
-                    .setGlobal(true)
-                    .setNameResourceId(R.string.booklist_generation)
-                    .setGroup(PropertyGroup.GRP_ADVANCED_OPTIONS));
-
+                    .setGlobal(true));
 
     /**
      * Listener for Locale changes; update list and maybe reload

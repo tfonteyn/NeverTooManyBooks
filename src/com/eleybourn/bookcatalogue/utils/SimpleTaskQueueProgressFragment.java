@@ -51,6 +51,9 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      * Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
      */
     private static final boolean DEBUG = false;
+    private static final String BKEY_TITLE = "title";
+    private static final String BKEY_IS_INDETERMINATE = "isIndeterminate";
+    private static final String BKEY_TASK_ID = "taskId";
 
 
     /**
@@ -169,9 +172,9 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     private static SimpleTaskQueueProgressFragment newInstance(int title, boolean isIndeterminate, int taskId) {
         SimpleTaskQueueProgressFragment frag = new SimpleTaskQueueProgressFragment();
         Bundle args = new Bundle();
-        args.putInt("title", title);
-        args.putInt("taskId", taskId);
-        args.putBoolean("isIndeterminate", isIndeterminate);
+        args.putInt(BKEY_TITLE, title);
+        args.putInt(BKEY_TASK_ID, taskId);
+        args.putBoolean(BKEY_IS_INDETERMINATE, isIndeterminate);
         frag.setArguments(args);
         return frag;
     }
@@ -306,7 +309,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         // VERY IMPORTANT. We do not want this destroyed!
         setRetainInstance(true);
-        mTaskId = getArguments().getInt("taskId");
+        mTaskId = getArguments().getInt(BKEY_TASK_ID);
     }
 
     @Override
@@ -336,10 +339,11 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(false);
 
-        int msg = getArguments().getInt("title");
-        if (msg != 0)
+        int msg = getArguments().getInt(BKEY_TITLE);
+        if (msg != 0) {
             dialog.setMessage(getActivity().getString(msg));
-        final boolean isIndet = getArguments().getBoolean("isIndeterminate");
+        }
+        final boolean isIndet = getArguments().getBoolean(BKEY_IS_INDETERMINATE);
         dialog.setIndeterminate(isIndet);
         if (isIndet) {
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -351,8 +355,9 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         if (!isIndet) {
             dialog.setMax(mMax);
             dialog.setProgress(mProgress);
-            if (mMessage != null)
+            if (mMessage != null) {
                 dialog.setMessage(mMessage);
+            }
             setDialogNumberFormat(dialog);
         }
 
@@ -515,7 +520,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
 
     /**
      * Work-around for bug in compatibility library:
-     * <p>
+     *
      * http://code.google.com/p/android/issues/detail?id=17423
      */
     @Override
@@ -548,8 +553,8 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     }
 
     /**
-     * Interface for 'FragmentTask' objects. Closely based on SimpleTask, but takes the fragment as a parameter
-     * to all calls.
+     * Interface for 'FragmentTask' objects. Closely based on SimpleTask, but takes the
+     * fragment as a parameter to all calls.
      *
      * @author pjw
      */
@@ -567,7 +572,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
 
     /**
      * Trivial implementation of FragmentTask that never calls onFinish(). The setState()/getState()
-     * calles can be used to store state info by a caller, eg. if they override requiresOnFinish() etc.
+     * calls can be used to store state info by a caller, eg. if they override requiresOnFinish() etc.
      *
      * @author pjw
      */
@@ -593,7 +598,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
 
     /**
      * TaskFinished message.
-     * <p>
+     *
      * We only deliver onFinish() to the FragmentTask when the activity is present.
      */
     private class TaskFinishedMessage implements TaskMessage {

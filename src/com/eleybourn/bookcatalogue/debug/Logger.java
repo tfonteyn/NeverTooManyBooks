@@ -47,7 +47,9 @@ public class Logger {
     public static void logError(Exception e) {
         logError(e, "");
     }
-
+    public static void logError(Error e) {
+        logError(new RuntimeException(e), "");
+    }
     /**
      * Write the exception stacktrace to the error log file
      *

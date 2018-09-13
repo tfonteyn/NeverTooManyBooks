@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- only in BookCatalogue.getBackgroundColor fallback color; normally the one from the Theme is used. -->
-    <color name="background_grey">#2D2D2D</color>
-
     <!-- the book cover thumbnail -->
     <color name="background_thumb">#80808080</color>
 
@@ -12,4 +9,6 @@
     <!-- for about/donate pages only -->
     <color name="link_blue">#006699</color>
     <color name="link_donate">#11D2EF</color>
+
+    <color name="toolbar_background">#03a9f4</color>
 </resources>

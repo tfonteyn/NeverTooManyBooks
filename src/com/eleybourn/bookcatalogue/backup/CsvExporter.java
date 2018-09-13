@@ -23,12 +23,12 @@ import android.database.Cursor;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookEditFields;
-import com.eleybourn.bookcatalogue.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.BooksRowView;
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -41,33 +41,33 @@ import java.util.Date;
 
 import static com.eleybourn.bookcatalogue.UniqueId.BKEY_AUTHOR_DETAILS;
 import static com.eleybourn.bookcatalogue.UniqueId.BKEY_SERIES_DETAILS;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_ANTHOLOGY_MASK;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_NAME;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_DATE_ADDED;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_FORMAT;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_GENRE;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_GOODREADS_BOOK_ID;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_GOODREADS_LAST_SYNC_DATE;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_ID;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_ISBN;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_LANGUAGE;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_LAST_UPDATE_DATE;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_LIST_PRICE;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_LOANED_TO;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_LOCATION;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_NOTES;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_PAGES;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_PUBLISHER;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_RATING;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_READ;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_READ_END;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_READ_START;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_SIGNED;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_TITLE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_MASK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_NAME;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FORMAT;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GENRE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ISBN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LANGUAGE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LIST_PRICE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOCATION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PAGES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_RATING;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_END;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_START;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
 /**
  * Implementation of Exporter that creates a CSV file.
@@ -77,6 +77,7 @@ import static com.eleybourn.bookcatalogue.UniqueId.KEY_TITLE;
 public class CsvExporter implements Exporter {
     private static final String UTF8 = "utf8";
     private static final int BUFFER_SIZE = 32768;
+
     private String mLastError;
 
     public String getLastError() {
@@ -89,7 +90,7 @@ public class CsvExporter implements Exporter {
 
         /* RELEASE: Handle flags! */
         int num = 0;
-        if (!StorageUtils.sdCardWritable()) {
+        if (!StorageUtils.isWritable()) {
             mLastError = "Export Failed - Could not write to SDCard";
             return false;
         }
@@ -109,36 +110,36 @@ public class CsvExporter implements Exporter {
         boolean displayingStartupMessage = true;
 
         StringBuilder export = new StringBuilder(
-                '"' + KEY_ID + "\"," +            //0
+                '"' + DOM_ID.name + "\"," +            //0
                         '"' + BKEY_AUTHOR_DETAILS + "\"," +    //2
-                        '"' + KEY_TITLE + "\"," +            //4
-                        '"' + KEY_ISBN + "\"," +            //5
-                        '"' + KEY_PUBLISHER + "\"," +        //6
-                        '"' + KEY_DATE_PUBLISHED + "\"," +    //7
-                        '"' + KEY_RATING + "\"," +            //8
+                        '"' + DOM_TITLE + "\"," +            //4
+                        '"' + DOM_ISBN + "\"," +            //5
+                        '"' + DOM_PUBLISHER + "\"," +        //6
+                        '"' + DOM_DATE_PUBLISHED + "\"," +    //7
+                        '"' + DOM_RATING + "\"," +            //8
                         '"' + "bookshelf_id\"," +              //9
-                        '"' + KEY_BOOKSHELF + "\"," +        //10
-                        '"' + KEY_READ + "\"," +                //11
+                        '"' + DOM_BOOKSHELF + "\"," +        //10
+                        '"' + DOM_READ + "\"," +                //11
                         '"' + BKEY_SERIES_DETAILS + "\"," +    //12
-                        '"' + KEY_PAGES + "\"," +            //14
-                        '"' + KEY_NOTES + "\"," +            //15
-                        '"' + KEY_LIST_PRICE + "\"," +        //16
-                        '"' + KEY_ANTHOLOGY_MASK + "\"," +        //17
-                        '"' + KEY_LOCATION + "\"," +            //18
-                        '"' + KEY_READ_START + "\"," +        //19
-                        '"' + KEY_READ_END + "\"," +            //20
-                        '"' + KEY_FORMAT + "\"," +            //21
-                        '"' + KEY_SIGNED + "\"," +            //22
-                        '"' + KEY_LOANED_TO + "\"," +            //23
-                        '"' + "anthology_titles" + "\"," +       //24
-                        '"' + KEY_DESCRIPTION + "\"," +        //25
-                        '"' + KEY_GENRE + "\"," +            //26
-                        '"' + KEY_LANGUAGE + "\"," +            //+1
-                        '"' + KEY_DATE_ADDED + "\"," +        //27
-                        '"' + KEY_GOODREADS_BOOK_ID + "\"," +        //28
-                        '"' + KEY_GOODREADS_LAST_SYNC_DATE + "\"," + //29
-                        '"' + KEY_LAST_UPDATE_DATE + "\"," +         //30
-                        '"' + KEY_BOOK_UUID + "\"," +        //31
+                        '"' + DOM_PAGES + "\"," +            //14
+                        '"' + DOM_NOTES + "\"," +            //15
+                        '"' + DOM_LIST_PRICE + "\"," +        //16
+                        '"' + DOM_ANTHOLOGY_MASK + "\"," +        //17
+                        '"' + DOM_LOCATION + "\"," +            //18
+                        '"' + DOM_READ_START + "\"," +        //19
+                        '"' + DOM_READ_END + "\"," +            //20
+                        '"' + DOM_FORMAT + "\"," +            //21
+                        '"' + DOM_SIGNED + "\"," +            //22
+                        '"' + DOM_LOANED_TO + "\"," +            //23
+                        '"' + UniqueId.BKEY_ANTHOLOGY_TITLES + "\"," +       //24
+                        '"' + DOM_DESCRIPTION + "\"," +        //25
+                        '"' + DOM_GENRE + "\"," +            //26
+                        '"' + DOM_LANGUAGE + "\"," +            //+1
+                        '"' + DOM_DATE_ADDED + "\"," +        //27
+                        '"' + DOM_GOODREADS_BOOK_ID + "\"," +        //28
+                        '"' + DOM_GOODREADS_LAST_SYNC_DATE + "\"," + //29
+                        '"' + DOM_LAST_UPDATE_DATE + "\"," +         //30
+                        '"' + DOM_BOOK_UUID + "\"," +        //31
                         "\n");
 
         long lastUpdate = 0;
@@ -165,18 +166,18 @@ public class CsvExporter implements Exporter {
                 if (bookCursor.moveToFirst()) {
                     do {
                         num++;
-                        long id = bookCursor.getLong(bookCursor.getColumnIndexOrThrow(KEY_ID));
+                        long id = bookCursor.getLong(bookCursor.getColumnIndexOrThrow(DOM_ID.name));
                         // Just get the string from the database and save it. It should be in standard SQL form already.
                         String dateString = "";
                         try {
-                            dateString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(KEY_DATE_PUBLISHED));
+                            dateString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_DATE_PUBLISHED.name));
                         } catch (Exception e) {
                             //do nothing
                         }
                         // Just get the string from the database and save it. It should be in standard SQL form already.
                         String dateReadStartString = "";
                         try {
-                            dateReadStartString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(KEY_READ_START));
+                            dateReadStartString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_READ_START.name));
                         } catch (Exception e) {
                             Logger.logError(e);
                             //do nothing
@@ -184,7 +185,7 @@ public class CsvExporter implements Exporter {
                         // Just get the string from the database and save it. It should be in standard SQL form already.
                         String dateReadEndString = "";
                         try {
-                            dateReadEndString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(KEY_READ_END));
+                            dateReadEndString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_READ_END.name));
                         } catch (Exception e) {
                             Logger.logError(e);
                             //do nothing
@@ -192,25 +193,25 @@ public class CsvExporter implements Exporter {
                         // Just get the string from the database and save it. It should be in standard SQL form already.
                         String dateAddedString = "";
                         try {
-                            dateAddedString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(KEY_DATE_ADDED));
+                            dateAddedString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_DATE_ADDED.name));
                         } catch (Exception e) {
                             //do nothing
                         }
 
-                        int anthology = bookCursor.getInt(bookCursor.getColumnIndexOrThrow(KEY_ANTHOLOGY_MASK));
+                        int anthology = bookCursor.getInt(bookCursor.getColumnIndexOrThrow(DOM_ANTHOLOGY_MASK.name));
                         StringBuilder anthology_titles = new StringBuilder();
                         if (anthology != 0) {
                             try (Cursor titles = db.fetchAnthologyTitlesByBook(id)) {
                                 if (titles.moveToFirst()) {
                                     do {
-                                        String anth_title = titles.getString(titles.getColumnIndexOrThrow(KEY_TITLE));
-                                        String anth_author = titles.getString(titles.getColumnIndexOrThrow(KEY_AUTHOR_NAME));
+                                        String anth_title = titles.getString(titles.getColumnIndexOrThrow(DOM_TITLE.name));
+                                        String anth_author = titles.getString(titles.getColumnIndexOrThrow(DOM_AUTHOR_NAME.name));
                                         anthology_titles.append(anth_title).append(" * ").append(anth_author).append("|");
                                     } while (titles.moveToNext());
                                 }
                             }
                         }
-                        String title = bookCursor.getString(bookCursor.getColumnIndexOrThrow(KEY_TITLE));
+                        String title = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_TITLE.name));
                         // Sanity check: ensure title is non-blank. This has not happened yet, but we
                         // know if does for author, so completeness suggests making sure all 'required'
                         // fields are non-blank.
@@ -223,10 +224,10 @@ public class CsvExporter implements Exporter {
                         try (Cursor bookshelves = db.fetchAllBookshelvesByBook(id)) {
                             while (bookshelves.moveToNext()) {
                                 bookshelves_id_text
-                                        .append(bookshelves.getString(bookshelves.getColumnIndex(KEY_ID)))
+                                        .append(bookshelves.getString(bookshelves.getColumnIndex(DOM_ID.name)))
                                         .append(BookEditFields.BOOKSHELF_SEPARATOR);
                                 bookshelves_name_text
-                                        .append(ArrayUtils.encodeListItem(BookEditFields.BOOKSHELF_SEPARATOR, bookshelves.getString(bookshelves.getColumnIndex(KEY_BOOKSHELF))))
+                                        .append(ArrayUtils.encodeListItem(BookEditFields.BOOKSHELF_SEPARATOR, bookshelves.getString(bookshelves.getColumnIndex(DOM_BOOKSHELF.name))))
                                         .append(BookEditFields.BOOKSHELF_SEPARATOR);
                             }
                         }
@@ -245,29 +246,29 @@ public class CsvExporter implements Exporter {
                         row.append("\"").append(formatCell(rv.getIsbn())).append("\",");
                         row.append("\"").append(formatCell(rv.getPublisher())).append("\",");
                         row.append("\"").append(formatCell(dateString)).append("\",");
-                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DatabaseDefinitions.DOM_RATING.name)))).append("\",");
+                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_RATING.name)))).append("\",");
                         row.append("\"").append(formatCell(bookshelves_id_text)).append("\",");
                         row.append("\"").append(formatCell(bookshelves_name_text)).append("\",");
                         row.append("\"").append(formatCell(rv.getRead())).append("\",");
                         row.append("\"").append(formatCell(seriesDetails)).append("\",");
-                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DatabaseDefinitions.DOM_PAGES.name)))).append("\",");
+                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_PAGES.name)))).append("\",");
                         row.append("\"").append(formatCell(rv.getNotes())).append("\",");
-                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DatabaseDefinitions.DOM_LIST_PRICE.name)))).append("\",");
+                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_LIST_PRICE.name)))).append("\",");
                         row.append("\"").append(formatCell(anthology)).append("\",");
                         row.append("\"").append(formatCell(rv.getLocation())).append("\",");
                         row.append("\"").append(formatCell(dateReadStartString)).append("\",");
                         row.append("\"").append(formatCell(dateReadEndString)).append("\",");
-                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DatabaseDefinitions.DOM_FORMAT.name)))).append("\",");
-                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DatabaseDefinitions.DOM_SIGNED.name)))).append("\",");
-                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DatabaseDefinitions.DOM_LOANED_TO.name)) + "")).append("\",");
+                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_FORMAT.name)))).append("\",");
+                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_SIGNED.name)))).append("\",");
+                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_LOANED_TO.name)) + "")).append("\",");
                         row.append("\"").append(formatCell(anthology_titles.toString())).append("\",");
                         row.append("\"").append(formatCell(rv.getDescription())).append("\",");
                         row.append("\"").append(formatCell(rv.getGenre())).append("\",");
                         row.append("\"").append(formatCell(rv.getLanguage())).append("\",");
                         row.append("\"").append(formatCell(dateAddedString)).append("\",");
                         row.append("\"").append(formatCell(rv.getGoodreadsBookId())).append("\",");
-                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE.name)))).append("\",");
-                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DatabaseDefinitions.DOM_LAST_UPDATE_DATE.name)))).append("\",");
+                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_GOODREADS_LAST_SYNC_DATE.name)))).append("\",");
+                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_LAST_UPDATE_DATE.name)))).append("\",");
                         row.append("\"").append(formatCell(rv.getBookUuid())).append("\",");
                         row.append("\n");
                         out.write(row.toString());

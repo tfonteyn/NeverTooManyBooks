@@ -4,8 +4,8 @@ import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
@@ -36,9 +36,9 @@ public class GoogleBooksManager {
         Bundle b = new Bundle();
         try {
             searchGoogle(isbn, "", "", b, true);
-            if (b.containsKey(SearchManager.BKEY_THUMBNAIL_SEARCHES)
-                    && b.getString(SearchManager.BKEY_THUMBNAIL_SEARCHES) != null) {
-                File f = new File(Objects.requireNonNull(b.getString(SearchManager.BKEY_THUMBNAIL_SEARCHES)));
+            if (b.containsKey(UniqueId.BKEY_THUMBNAIL_USCORE)
+                    && b.getString(UniqueId.BKEY_THUMBNAIL_USCORE) != null) {
+                File f = new File(Objects.requireNonNull(b.getString(UniqueId.BKEY_THUMBNAIL_USCORE)));
                 File newName = new File(f.getAbsolutePath() + "_" + isbn);
                 //noinspection ResultOfMethodCallIgnored
                 f.renameTo(newName);

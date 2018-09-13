@@ -32,7 +32,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
-import android.util.TypedValue;
 
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -371,24 +370,6 @@ public class BookCatalogueApp extends Application {
         }
 
         return ai.metaData.getString(name);
-    }
-
-    /**
-     * should be removed together with BCBackground ?
-     */
-    public static int getBackgroundColor() {
-
-        TypedValue tv = new TypedValue();
-        mInstance.getTheme().resolveAttribute(android.R.attr.windowBackground, tv, true);
-        if (tv.type >= TypedValue.TYPE_FIRST_COLOR_INT && tv.type <= TypedValue.TYPE_LAST_COLOR_INT) {
-            // windowBackground is a color
-            return tv.data;
-        } else {
-            // windowBackground is not a color, probably a drawable
-            //Drawable d = activity.getResources().getDrawable(tv.resourceId);
-            //TODO: is this ever reached ?
-            return R.color.background_grey;
-        }
     }
 
     /**

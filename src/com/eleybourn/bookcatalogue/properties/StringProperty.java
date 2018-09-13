@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -38,32 +39,18 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
  *
  * @author Philip Warner
  */
-@SuppressWarnings("unused")
 public class StringProperty extends ValuePropertyWithGlobalDefault<String> implements StringValue {
     /** Flag indicating value must be non-blank */
     private boolean mRequireNonBlank = false;
 
-    public StringProperty(String uniqueId, PropertyGroup group, int nameResourceId, String value, String defaultPref, String defaultValue) {
-        super(uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
+    public StringProperty(@NonNull final String uniqueId, @NonNull final PropertyGroup group,
+                          final int nameResourceId) {
+        super(uniqueId, group, nameResourceId, "", null, null);
     }
 
-    public StringProperty(String uniqueId, PropertyGroup group, int nameResourceId, String defaultPref) {
-        super(uniqueId, group, nameResourceId, null, defaultPref, "");
-    }
-
-    public StringProperty(String uniqueId, PropertyGroup group, int nameResourceId) {
-        super(uniqueId, group, nameResourceId, null, null, "");
-    }
-
-    /** Accessor */
-    @SuppressWarnings("WeakerAccess")
-    public boolean getRequireNonBlank() {
-        return mRequireNonBlank;
-    }
-
-    /** Accessor */
-    public void setRequireNonBlank(boolean requireNonBlank) {
+    public StringProperty setRequireNonBlank(boolean requireNonBlank) {
         mRequireNonBlank = requireNonBlank;
+        return this;
     }
 
     /** Build the editor for this property */
@@ -113,6 +100,30 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
     }
 
     @Override
+    public StringProperty setDefaultValue(final String value) {
+        super.setDefaultValue(value);
+        return this;
+    }
+
+    @Override
+    public StringProperty setWeight(final int weight) {
+        super.setWeight(weight);
+        return this;
+    }
+
+    @Override
+    public StringProperty setGroup(final PropertyGroup group) {
+        super.setGroup(group);
+        return this;
+    }
+
+    @Override
+    public StringProperty setNameResourceId(final int id) {
+        super.setNameResourceId(id);
+        return this;
+    }
+
+    @Override
     public StringProperty set(Property p) {
         if (!(p instanceof StringValue))
             throw new RuntimeException("Can not find a compatible interface for string parameter");
@@ -124,7 +135,7 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
     /** Optional validator. */
     @Override
     public void validate() {
-        if (getRequireNonBlank()) {
+        if (mRequireNonBlank) {
             String s = get();
             if (s == null || s.trim().isEmpty())
                 throw new ValidationException(BookCatalogueApp.getResourceString(R.string.thing_must_not_be_blank, getName()));

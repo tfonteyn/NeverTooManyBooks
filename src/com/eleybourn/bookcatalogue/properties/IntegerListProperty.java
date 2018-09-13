@@ -20,8 +20,9 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BCPreferences;
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.properties.Property.IntegerValue;
 
 /**
@@ -31,25 +32,10 @@ import com.eleybourn.bookcatalogue.properties.Property.IntegerValue;
  */
 public class IntegerListProperty extends ListProperty<Integer> implements IntegerValue {
 
-    public IntegerListProperty(ItemEntries<Integer> list, String uniqueId, PropertyGroup group, int nameResourceId, Integer value, String defaultPref, Integer defaultValue) {
-        super(list, uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
-    }
-
-    @SuppressWarnings("unused")
-    public IntegerListProperty(ItemEntries<Integer> list, String uniqueId, PropertyGroup group, int nameResourceId, Integer value, Integer defaultValue) {
-        super(list, uniqueId, group, nameResourceId, value, null, defaultValue);
-    }
-
-    public IntegerListProperty(ItemEntries<Integer> list, String uniqueId, PropertyGroup group, int nameResourceId, Integer value) {
-        super(list, uniqueId, group, nameResourceId, value, null, value);
-    }
-
-    public IntegerListProperty(ItemEntries<Integer> list, String uniqueId, PropertyGroup group, int nameResourceId) {
+    public IntegerListProperty(@NonNull final ItemEntries<Integer> list,
+                               @NonNull final String uniqueId, @NonNull final PropertyGroup group,
+                               final int nameResourceId) {
         super(list, uniqueId, group, nameResourceId, null, null, null);
-    }
-
-    public IntegerListProperty(ItemEntries<Integer> list, String uniqueId) {
-        super(list, uniqueId, PropertyGroup.GRP_GENERAL, R.string.unknown, null, null, null);
     }
 
     @Override
@@ -58,15 +44,36 @@ public class IntegerListProperty extends ListProperty<Integer> implements Intege
     }
 
     @Override
-    protected IntegerListProperty setGlobalDefault(Integer value) {
+    protected IntegerListProperty setGlobalDefault(final Integer value) {
         BCPreferences.setInt(getPreferenceKey(), value);
         return this;
     }
 
+
+
     @Override
-    public IntegerListProperty set(Property p) {
-        if (!(p instanceof IntegerValue))
+    public IntegerListProperty setGlobal(final boolean isGlobal) {
+        super.setGlobal(isGlobal);
+        return this;
+    }
+
+    @Override
+    public IntegerListProperty setDefaultValue(final Integer value) {
+        super.setDefaultValue(value);
+        return this;
+    }
+
+    @Override
+    public IntegerListProperty setPreferenceKey(final String key) {
+        super.setPreferenceKey(key);
+        return this;
+    }
+
+    @Override
+    public IntegerListProperty set(final Property p) {
+        if (!(p instanceof IntegerValue)) {
             throw new RuntimeException("Can not find a compatible interface for integer parameter");
+        }
         IntegerValue v = (IntegerValue) p;
         set(v.get());
         return this;

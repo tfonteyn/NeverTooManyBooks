@@ -19,13 +19,15 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
+
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupReader.BackupReaderListener;
 import com.eleybourn.bookcatalogue.backup.BackupWriter.BackupWriterListener;
 import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
-import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
@@ -49,10 +51,11 @@ public class BackupManager {
      *
      * @param file File to read
      *
-     * @throws IOException (inaccessible, invalid other other errors)
      * @return a new reader
+     *
+     * @throws IOException (inaccessible, invalid other other errors)
      */
-    public static BackupReader readBackup(File file) throws IOException {
+    public static BackupReader readBackup(@NonNull final File file) throws IOException {
         if (!file.exists())
             throw new java.io.FileNotFoundException("Attempt to open non-existent backup file");
 
@@ -60,8 +63,9 @@ public class BackupManager {
         // explore the file to determine which format to use
         TarBackupContainer bkp = new TarBackupContainer(file);
         // Each format should provide a validator of some kind
-        if (!bkp.isValid())
+        if (!bkp.isValid()) {
             throw new IOException("Not a valid backup file");
+        }
 
         return bkp.newReader();
     }
@@ -69,7 +73,7 @@ public class BackupManager {
     /**
      * Esnure the file name extension is what we want
      */
-    private static File cleanupFile(File requestedFile) {
+    private static File cleanupFile(@NonNull final File requestedFile) {
         if (!requestedFile.getName().toUpperCase().endsWith(".BCBK")) {
             return new File(requestedFile.getAbsoluteFile() + ".bcbk");
         } else {
@@ -80,10 +84,11 @@ public class BackupManager {
 
     /**
      * Start a foreground task that backs up the entire catalogue.
-     * <p>
+     *
      * We use a FragmentTask so that long actions do not occur in the UI thread.
      */
-    public static File backupCatalogue(final BookCatalogueActivity context, final File requestedFile, int taskId, final int backupFlags, final Date since) {
+    public static File backupCatalogue(@NonNull final FragmentActivity context, @NonNull final File requestedFile,
+                                       int taskId, final int backupFlags, final Date since) {
         final int flags = backupFlags & Exporter.EXPORT_MASK;
         if (flags == 0)
             throw new RuntimeException("Backup flags must be specified");
@@ -142,8 +147,10 @@ public class BackupManager {
                             System.out.println("Cancelled " + resultingFile.getAbsolutePath());
                         }
                         if (tempFile.exists())
+                        {
                             //noinspection ResultOfMethodCallIgnored
                             tempFile.delete();
+                        }
                     } else {
                         if (resultingFile.exists()) {
                             //noinspection ResultOfMethodCallIgnored
@@ -158,20 +165,16 @@ public class BackupManager {
                     }
                 } catch (Exception e) {
                     Logger.logError(e);
-                    if (tempFile.exists())
-                        try {
-                            //noinspection ResultOfMethodCallIgnored
-                            tempFile.delete();
-                        } catch (Exception e2) {
-                            // Ignore
-                        }
+                    if (tempFile.exists()) {
+                        //noinspection ResultOfMethodCallIgnored
+                        tempFile.delete();
+                    }
                     throw new RuntimeException("Error during backup", e);
                 } finally {
                     if (wrt != null) {
                         try {
                             wrt.close();
-                        } catch (Exception e2) {
-                            // Ignore
+                        } catch (Exception ignore) {
                         }
                     }
                 }
@@ -203,10 +206,10 @@ public class BackupManager {
 
     /**
      * Start a foreground task that backs up the entire catalogue.
-     * <p>
+     *
      * We use a FragmentTask so that long actions do not occur in the UI thread.
      */
-    public static void restoreCatalogue(final BookCatalogueActivity context, final File inputFile, int taskId, final int importFlags) {
+    public static void restoreCatalogue(@NonNull final FragmentActivity context, final File inputFile, int taskId, final int importFlags) {
 
         FragmentTask task = new FragmentTaskAbstract() {
             @Override

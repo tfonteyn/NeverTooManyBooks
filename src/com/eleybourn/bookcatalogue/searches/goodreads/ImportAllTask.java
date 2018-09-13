@@ -27,7 +27,6 @@ import com.eleybourn.bookcatalogue.*;
 import com.eleybourn.bookcatalogue.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames;
 import com.eleybourn.bookcatalogue.utils.*;
@@ -317,8 +316,8 @@ class ImportAllTask extends GenericTask {
 		long id = db.createBook(book, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
 		if (book.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
 			String uuid = db.getBookUuid(id);
-			File thumb = ImageUtils.getTempThumbnail();
-			File real = ImageUtils.fetchThumbnailByUuid(uuid);
+			File thumb = StorageUtils.getTempThumbnail();
+			File real = StorageUtils.getThumbnailByUuid(uuid);
 			//noinspection ResultOfMethodCallIgnored
 			thumb.renameTo(real);
 		}
@@ -399,7 +398,7 @@ class ImportAllTask extends GenericTask {
 
         if (rv == null) {
         	// Use the GR added date for new books
-        	addStringIfNonBlank(review, ListReviewsFieldNames.ADDED, book, DOM_ADDED_DATE.name);
+        	addStringIfNonBlank(review, ListReviewsFieldNames.ADDED, book, DOM_DATE_ADDED.name);
         	// Also fetch thumbnail if add
         	String thumbnail;
         	if (review.containsKey(ListReviewsFieldNames.LARGE_IMAGE)
@@ -414,7 +413,7 @@ class ImportAllTask extends GenericTask {
         	if (thumbnail != null) {
     			String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, UniqueId.GOODREADS_FILENAME_SUFFIX);
     			if (fileSpec.length() > 0)
-    				book.appendOrAdd(SearchManager.BKEY_THUMBNAIL_SEARCHES, fileSpec);
+    				book.appendOrAdd(UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
     			book.cleanupThumbnails();        		
         	}
         }

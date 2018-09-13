@@ -20,8 +20,9 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BCPreferences;
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.properties.Property.BooleanValue;
 
 /**
@@ -33,32 +34,11 @@ import com.eleybourn.bookcatalogue.properties.Property.BooleanValue;
  */
 public class BooleanListProperty extends ListProperty<Boolean> implements BooleanValue {
 
-    public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId, Boolean value, String defaultPref, Boolean defaultValue) {
-        super(list, uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
-    }
-
-    public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId, String defaultPref) {
-        super(list, uniqueId, group, nameResourceId, null, defaultPref, false);
-    }
-
-    @SuppressWarnings("unused")
-    public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId, Boolean value, Boolean defaultValue) {
-        super(list, uniqueId, group, nameResourceId, value, null, defaultValue);
-    }
-
-    @SuppressWarnings("unused")
-    public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId, Boolean value) {
-        super(list, uniqueId, group, nameResourceId, value, null, false);
-    }
-
-    @SuppressWarnings("unused")
-    public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId, PropertyGroup group, int nameResourceId) {
-        super(list, uniqueId, group, nameResourceId, null, null, false);
-    }
-
-    @SuppressWarnings("unused")
-    public BooleanListProperty(ItemEntries<Boolean> list, String uniqueId) {
-        super(list, uniqueId, PropertyGroup.GRP_GENERAL, R.string.unknown, null, null, null);
+    public BooleanListProperty(@NonNull final ItemEntries<Boolean> list,
+                                @NonNull final String uniqueId,
+                               final PropertyGroup group,
+                               final int nameResourceId) {
+        super(list, uniqueId, group, nameResourceId, false, null, false);
     }
 
     @Override
@@ -69,6 +49,36 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
     @Override
     protected BooleanListProperty setGlobalDefault(Boolean value) {
         BCPreferences.setBoolean(getPreferenceKey(), value);
+        return this;
+    }
+
+    @Override
+    public BooleanListProperty setGlobal(final boolean isGlobal) {
+        super.setGlobal(isGlobal);
+        return this;
+    }
+
+    @Override
+    public BooleanListProperty setHint(final int hint) {
+        super.setHint(hint);
+        return this;
+    }
+
+    @Override
+    public BooleanListProperty setDefaultValue(final Boolean value) {
+        super.setDefaultValue(value);
+        return this;
+    }
+
+    @Override
+    public BooleanListProperty setWeight(final int weight) {
+        super.setWeight(weight);
+        return this;
+    }
+
+    @Override
+    public BooleanListProperty setPreferenceKey(final String key) {
+        super.setPreferenceKey(key);
         return this;
     }
 

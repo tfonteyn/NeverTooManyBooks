@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.searches.googlebooks;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
@@ -192,7 +191,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
 				String thumbnail = attributes.getValue("", "href");
 				String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, "_GB");
 				if (fileSpec.length() > 0)
-					ArrayUtils.appendOrAdd(mValues, SearchManager.BKEY_THUMBNAIL_SEARCHES, fileSpec);
+					ArrayUtils.appendOrAdd(mValues, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
 			}
 		}
 	}

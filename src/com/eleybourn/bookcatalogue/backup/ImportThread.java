@@ -1,10 +1,10 @@
-package com.eleybourn.bookcatalogue.database;
+package com.eleybourn.bookcatalogue.backup;
+
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.backup.CsvImporter;
-import com.eleybourn.bookcatalogue.backup.Importer;
-import com.eleybourn.bookcatalogue.backup.LocalCoverFinder;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -28,7 +28,7 @@ public class ImportThread extends ManagedTask {
 
     private final String mFileSpec;
     private CatalogueDBAdapter mDb;
-	private final LocalCoverFinder mCoverFinder;
+	private final Importer.CoverFinder mCoverFinder;
 	
 	public static class ImportException extends RuntimeException {
 		private static final long serialVersionUID = 1660687786319003483L;
@@ -38,17 +38,17 @@ public class ImportThread extends ManagedTask {
 		}
 	}
 
-	public ImportThread(TaskManager manager, String fileSpec) {
+	public ImportThread(@NonNull final TaskManager manager, @NonNull final String fileSpec) {
 		super(manager);
-        File mFile = new File(fileSpec);
+        File file = new File(fileSpec);
 		// Changed getCanonicalPath to getAbsolutePath based on this bug in Android 2.1:
 		//     http://code.google.com/p/android/issues/detail?id=4961
-		mFileSpec = mFile.getAbsolutePath();
+		mFileSpec = file.getAbsolutePath();
 
 		mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
 		mDb.open();
 
-		mCoverFinder = new LocalCoverFinder(mFile.getParent(),
+		mCoverFinder = new LocalCoverFinder(file.getParent(),
 				StorageUtils.getSharedStorage().getAbsolutePath());
 
 		//getMessageSwitch().addListener(getSenderId(), taskHandler, false);
@@ -111,15 +111,11 @@ public class ImportThread extends ManagedTask {
 
 	@Override
 	protected void onRun() {
-		// Initialize
-		//ArrayList<String> export = readFile(mFileSpec);
-		
-		CsvImporter importer = new CsvImporter();
-		
 		FileInputStream in = null;
 		try {
 			in = new FileInputStream(mFileSpec);
-			importer.importBooks(in, mCoverFinder, mImportListener, Importer.IMPORT_ALL);
+            new CsvImporter().importBooks(in, mCoverFinder, mImportListener, Importer.IMPORT_ALL);
+
 			if (isCancelled()) {
 				doToast(getString(R.string.cancelled));
 			} else {
@@ -136,7 +132,6 @@ public class ImportThread extends ManagedTask {
 					Logger.logError(e);
 				}
 		}
-
 	}
 
     /**
@@ -154,6 +149,9 @@ public class ImportThread extends ManagedTask {
         cleanup();
         super.finalize();
     }
+
+
+	//  see {@link ImportThread}
 
 //		if (export == null || export.size() == 0)
 //			return;
@@ -481,13 +479,13 @@ public class ImportThread extends ManagedTask {
 //	private File getNewCoverFile(File orig, String newUuid) {
 //		File newFile;
 //		// Check for ANY current image; delete empty ones and retry
-//		newFile = CatalogueDBAdapter.fetchThumbnailByUuid(newUuid);
+//		newFile = CatalogueDBAdapter.getThumbnailByUuid(newUuid);
 //		while (newFile.exists()) {
 //			if (newFile.length() > 0)
 //				return newFile;
 //			else
 //				newFile.delete();
-//			newFile = CatalogueDBAdapter.fetchThumbnailByUuid(newUuid);
+//			newFile = CatalogueDBAdapter.getThumbnailByUuid(newUuid);
 //		}
 //		
 //		// Get the new path based on the input file type.

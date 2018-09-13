@@ -58,6 +58,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
         setNavigationView((NavigationView)findViewById(R.id.nav_view));
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
+            toolbar.setBackgroundColor(getResources().getColor(R.color.toolbar_background));
             setSupportActionBar(toolbar);
         }
 

@@ -19,17 +19,15 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
-import android.os.Bundle;
-
 import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookData;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.Series;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
-import com.eleybourn.bookcatalogue.database.ImportThread.ImportException;
+import com.eleybourn.bookcatalogue.backup.ImportThread.ImportException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -42,19 +40,21 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_ANTHOLOGY_MASK;
 import static com.eleybourn.bookcatalogue.UniqueId.BKEY_AUTHOR_ARRAY;
 import static com.eleybourn.bookcatalogue.UniqueId.BKEY_AUTHOR_DETAILS;
+import static com.eleybourn.bookcatalogue.UniqueId.BKEY_SERIES_ARRAY;
+import static com.eleybourn.bookcatalogue.UniqueId.BKEY_SERIES_DETAILS;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_ANTHOLOGY_MASK;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_GIVEN_NAMES;
 import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_NAME;
 import static com.eleybourn.bookcatalogue.UniqueId.KEY_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_FAMILY_NAME;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_GIVEN_NAMES;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_LOANED_TO;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.UniqueId.KEY_ID;
-import static com.eleybourn.bookcatalogue.UniqueId.BKEY_SERIES_ARRAY;
-import static com.eleybourn.bookcatalogue.UniqueId.BKEY_SERIES_DETAILS;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_LAST_UPDATE_DATE;
+import static com.eleybourn.bookcatalogue.UniqueId.KEY_LOANED_TO;
 import static com.eleybourn.bookcatalogue.UniqueId.KEY_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.UniqueId.KEY_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.UniqueId.KEY_TITLE;
@@ -62,9 +62,11 @@ import static com.eleybourn.bookcatalogue.UniqueId.KEY_TITLE;
 /**
  * Implementation of Importer that reads a CSV file.
  *
+ * reminder: use UniqueId.KEY, not DOM.
+ *
  * @author pjw
  */
-public class CsvImporter {
+public class CsvImporter implements Importer {
     private static final String UTF8 = "utf8";
     private static final int BUFFER_SIZE = 32768;
     private final static char QUOTE_CHAR = '"';
@@ -124,8 +126,9 @@ public class CsvImporter {
         // ENHANCE: Do a search if mandatory columns missing (eg. allow 'import' of a list of ISBNs).
         // ENHANCE: Only make some columns mandatory if the ID is not in import, or not in DB (ie. if not an update)
         // ENHANCE: Export/Import should use GUIDs for book IDs, and put GUIDs on Image file names.
-        requireColumnOr(values, KEY_ID, DatabaseDefinitions.DOM_BOOK_UUID.name);
         requireColumnOr(values,
+                KEY_ID,
+                KEY_BOOK_UUID,
                 KEY_AUTHOR_FAMILY_NAME,
                 KEY_AUTHOR_FORMATTED,
                 KEY_AUTHOR_NAME,
@@ -133,8 +136,8 @@ public class CsvImporter {
 
         boolean updateOnlyIfNewer;
         if ((importFlags & Importer.IMPORT_NEW_OR_UPDATED) != 0) {
-            if (!values.containsKey(DatabaseDefinitions.DOM_LAST_UPDATE_DATE.name)) {
-                throw new RuntimeException("Imported data does not contain " + DatabaseDefinitions.DOM_LAST_UPDATE_DATE);
+            if (!values.containsKey(KEY_LAST_UPDATE_DATE)) {
+                throw new RuntimeException("Imported data does not contain " + KEY_LAST_UPDATE_DATE);
             }
             updateOnlyIfNewer = true;
         } else {
@@ -142,7 +145,7 @@ public class CsvImporter {
         }
 
 
-        CatalogueDBAdapter db;
+        final CatalogueDBAdapter db;
         db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         db.open();
 
@@ -197,7 +200,7 @@ public class CsvImporter {
 
                 // Get the UUID, and remove from collection if null/blank
                 boolean hasUuid;
-                final String uuidColumnName = DatabaseDefinitions.DOM_BOOK_UUID.name;
+                final String uuidColumnName = KEY_BOOK_UUID;
                 String uuidVal = values.getString(uuidColumnName);
                 if (uuidVal != null && !uuidVal.isEmpty()) {
                     hasUuid = true;
@@ -263,8 +266,7 @@ public class CsvImporter {
                             if (doUpdate) {
                                 db.updateBook(idLong, values,
                                         CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES
-                                                |
-                                                CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+                                                | CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
                                 nUpdated++;
                             }
                             //mImportUpdated++;
@@ -286,7 +288,7 @@ public class CsvImporter {
                     }
 
                     if (doUpdate) {
-                        if (values.containsKey(KEY_LOANED_TO) && !values.get(KEY_LOANED_TO).equals("")) {
+                        if (values.containsKey(KEY_LOANED_TO) && !"".equals(values.get(KEY_LOANED_TO))) {
                             importBooks_handleLoan(db, values);
                         }
 
@@ -355,7 +357,7 @@ public class CsvImporter {
                 bookDate = null; // Treat as if never updated
             }
         }
-        String importDateStr = values.getString(DatabaseDefinitions.DOM_LAST_UPDATE_DATE.name);
+        String importDateStr = values.getString(KEY_LAST_UPDATE_DATE);
         if (importDateStr == null || importDateStr.isEmpty()) {
             importDate = null; // Imported record has never been updated
         } else {
@@ -381,7 +383,7 @@ public class CsvImporter {
             // We have anthology details, delete the current details.
             db.deleteAnthologyTitles(id, false);
             int oldi = 0;
-            String anthology_titles = values.getString("anthology_titles");
+            String anthology_titles = values.getString(UniqueId.BKEY_ANTHOLOGY_TITLES);
             try {
                 int i = anthology_titles.indexOf("|", oldi);
                 while (i > -1) {
@@ -581,17 +583,7 @@ public class CsvImporter {
     }
 
     // Require a column
-    @SuppressWarnings("unused")
-    private void requireColumn(Bundle values, String name) {
-        if (values.containsKey(name))
-            return;
-
-        String s = BookCatalogueApp.getResourceString(R.string.file_must_contain_column);
-        throw new ImportException(String.format(s, name));
-    }
-
-    // Require a column
-    private void requireColumnOr(BookData values, String... names) {
+    private void requireColumnOr(BookData values, String... names) throws ImportException {
         for (String name : names)
             if (values.containsKey(name))
                 return;
@@ -600,7 +592,7 @@ public class CsvImporter {
         throw new ImportException(String.format(s, Utils.join(",", names)));
     }
 
-    private void requireNonblank(BookData values, int row, String name) {
+    private void requireNonblank(BookData values, int row, String name) throws ImportException {
         if (!values.getString(name).isEmpty())
             return;
         String s = BookCatalogueApp.getResourceString(R.string.column_is_blank);
@@ -608,7 +600,7 @@ public class CsvImporter {
     }
 
     @SuppressWarnings("unused")
-    private void requireAnyNonblank(BookData values, int row, String... names) {
+    private void requireAnyNonblank(BookData values, int row, String... names) throws ImportException {
         for (String name : names)
             if (values.containsKey(name) && !values.getString(name).isEmpty())
                 return;

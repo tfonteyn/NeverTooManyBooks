@@ -1,9 +1,8 @@
-package com.eleybourn.bookcatalogue.database;
+package com.eleybourn.bookcatalogue.backup;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.backup.CsvExporter;
-import com.eleybourn.bookcatalogue.backup.Exporter;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -22,9 +21,6 @@ public class ExportThread extends ManagedTask {
 
     private static final String EXPORT_FILE_NAME = "export.csv";
     private static final String EXPORT_TEMP_FILE_NAME = "export.tmp";
-
-//    private static final String UTF8 = "utf8";
-//    private static final int BUFFER_SIZE = 8192;
 
     private final Exporter.ExportListener mOnExportListener = new Exporter.ExportListener() {
         @Override
@@ -49,22 +45,22 @@ public class ExportThread extends ManagedTask {
     };
     private CatalogueDBAdapter mDb;
 
-    public ExportThread(TaskManager ctx) {
-        super(ctx);
+    public ExportThread(TaskManager manager) {
+        super(manager);
         mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         mDb.open();
     }
 
     @Override
     protected void onRun() {
-        if (!StorageUtils.sdCardWritable()) {
-            mManager.doToast("Export Failed - Could not write to SDCard");
+        if (!StorageUtils.isWritable()) {
+            mManager.doToast("Export Failed - Could not write to external storage");
             return;
         }
         try {
             FileOutputStream out = new FileOutputStream(StorageUtils.getFile(EXPORT_TEMP_FILE_NAME));
-            CsvExporter exporter = new CsvExporter();
-            exporter.export(out, mOnExportListener, Exporter.EXPORT_ALL, null);
+            new CsvExporter().export(out, mOnExportListener, Exporter.EXPORT_ALL, null);
+
             if (out.getChannel().isOpen()) {
                 out.close();
             }
@@ -74,8 +70,11 @@ public class ExportThread extends ManagedTask {
             mManager.doToast(getString(R.string.export_failed_sdcard));
         }
 
-        // was commented out in version 5.2.2.
-        // not removed, but moved to a private method (untested obviously) so it's more readable
+        /* was commented out in version 5.2.2.
+           not removed, but moved to a private method (untested obviously) so it's more readable
+           Also see {@link ExportThread}
+         */
+
         //someThingOnRunUsedToDo();
     }
 

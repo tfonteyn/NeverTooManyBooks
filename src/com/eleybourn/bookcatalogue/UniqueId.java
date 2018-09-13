@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_MASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
@@ -10,8 +9,9 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FORMAT;
@@ -78,7 +78,10 @@ public class UniqueId {
     public static final String BKEY_DIALOG_ID = "dialogId";
     public static final String BKEY_FILE_SPEC = "fileSpec";
     public static final String BKEY_BOOK_DATA = "bookData";
+    public static final String BKEY_ANTHOLOGY_TITLES = "anthology_titles";
+
     public static final String BKEY_THUMBNAIL = "thumbnail";
+    public static final String BKEY_THUMBNAIL_USCORE = "__thumbnail";
 
     public static final String BKEY_ANTHOLOGY_TITLE_ARRAY = "anthology_title_array";
     public static final String BKEY_AUTHOR_ARRAY = "author_array";
@@ -102,9 +105,9 @@ public class UniqueId {
 
     public static final String KEY_BOOK = DOM_BOOK.name;
     public static final String KEY_BOOK_UUID = DOM_BOOK_UUID.name;
-    public static final String KEY_BOOKSHELF = DOM_BOOKSHELF_ID.name;
-    public static final String KEY_DATE_ADDED = DOM_ADDED_DATE.name;
-    public static final String KEY_DATE_PUBLISHED = DOM_DATE_PUBLISHED.name;
+    public static final String KEY_BOOKSHELF = DOM_BOOKSHELF.name;
+    public static final String KEY_DATE_ADDED = DOM_DATE_ADDED.name;
+    public static final String KEY_DATE_PUBLISHED= DOM_DATE_PUBLISHED.name;
     public static final String KEY_DESCRIPTION = DOM_DESCRIPTION.name;
     public static final String KEY_FORMAT = DOM_FORMAT.name;
     public static final String KEY_GENRE = DOM_GENRE.name;
@@ -118,6 +121,7 @@ public class UniqueId {
     public static final String KEY_POSITION = DOM_POSITION.name;
     public static final String KEY_PUBLISHER = DOM_PUBLISHER.name;
     public static final String KEY_RATING = DOM_RATING.name;
+
     public static final String KEY_READ = DOM_READ.name;
     public static final String KEY_READ_END = DOM_READ_END.name;
     public static final String KEY_READ_START = DOM_READ_START.name;

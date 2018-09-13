@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -20,6 +20,9 @@
 
 package com.eleybourn.bookcatalogue.utils;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -30,57 +33,66 @@ import java.io.Serializable;
 
 /**
  * Collection of methods to wrap common serialization routines.
- * 
+ *
  * @author Philip Warner
  */
 public class SerializationUtils {
 
-	/**
-	 * Utility routine to convert a Serializable object to a byte array.
-	 * 
-	 * @param o		Object to convert
-	 * @return		Resulting byte array. NULL on failure.
-	 */
-	public static byte[] serializeObject(Serializable o) {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		try (ObjectOutput out = new ObjectOutputStream(bos)) {
-			out.writeObject(o);
-		} catch (IOException e) {
-			return null;
-		}
-		return bos.toByteArray();
-	}
+    /**
+     * Utility routine to convert a Serializable object to a byte array.
+     *
+     * @param o Object to convert
+     *
+     * @return Resulting byte array. NULL on failure.
+     */
+    @Nullable
+    public static byte[] serializeObject(@NonNull final Serializable o) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (ObjectOutput out = new ObjectOutputStream(bos)) {
+            out.writeObject(o);
+        } catch (IOException e) {
+            return null;
+        }
+        return bos.toByteArray();
+    }
 
-	/**
-	 * Catchall class for errors in serialization
-	 * 
-	 * @author Philip Warner
-	 */
-	public static class DeserializationException extends Exception {
-		private static final long serialVersionUID = -2040548134317746620L;
-		final Exception inner;
-		DeserializationException(Exception e) {
-			super();
-			inner = e;
-		}
-	}
+    /**
+     * Deserialize the passed byte array
+     */
+    @SuppressWarnings("unchecked")
+    @NonNull
+    public static <T> T deserializeObject(@NonNull final byte[] blob) throws DeserializationException {
+        try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(blob))) {
+            return (T) in.readObject();
+        } catch (ClassCastException | ClassNotFoundException | IOException e) {
+            throw new DeserializationException(e);
+        }
+    }
 
-	/**
-	 * Deserialize the passed byte array
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T deserializeObject(byte[] blob) throws DeserializationException {
-		try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(blob))) {
-		    return (T)in.readObject();
-		} catch (ClassCastException | ClassNotFoundException | IOException e) {
-			throw new DeserializationException(e);
-		}
-	}
+    /**
+     * Serialize then de-serialize to create a deep clone.
+     */
+    @Nullable
+    public static <T extends Serializable> T cloneObject(@NonNull final T o) throws DeserializationException {
+        byte[] bytes = serializeObject(o);
+        if (bytes == null) {
+            return null;
+        }
+        return deserializeObject(bytes);
+    }
 
-	/**
-	 * Serialize then de-serialize to create a deep clone.
-	 */
-	public static <T extends Serializable> T cloneObject(T o) throws DeserializationException {
-		return deserializeObject(serializeObject(o));
-	}
+    /**
+     * Catchall class for errors in serialization
+     *
+     * @author Philip Warner
+     */
+    public static class DeserializationException extends Exception {
+        private static final long serialVersionUID = -2040548134317746620L;
+        final Exception inner;
+
+        DeserializationException(Exception e) {
+            super();
+            inner = e;
+        }
+    }
 }

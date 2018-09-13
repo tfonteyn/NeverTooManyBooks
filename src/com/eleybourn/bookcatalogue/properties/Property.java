@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -47,11 +48,14 @@ public abstract class Property {
     private static Integer mViewIdCounter = 0;
 
     /** Unique 'name' of this property. */
+    @NonNull
     private final String mUniqueId;
     /** PropertyGroup in which this property should reside. Display-purposes only */
+    @NonNull
     private transient PropertyGroup mGroup;
     /** Resource ID for name of this property */
     private transient int mNameResourceId;
+
     /** Property weight (for sorting). Most will remain set at 0. */
     private int mWeight = 0;
     /** Hint associated with this property. Subclasses need to use, where appropriate */
@@ -64,10 +68,13 @@ public abstract class Property {
      * @param group          PropertyGroup in which this property belongs
      * @param nameResourceId Resource ID for name of this property
      */
-    public Property(String uniqueId, PropertyGroup group, int nameResourceId) {
+    public Property(@NonNull final String uniqueId, @NonNull final PropertyGroup group, final int nameResourceId) {
         mUniqueId = uniqueId;
         mGroup = group;
         mNameResourceId = nameResourceId;
+        if (nameResourceId == 0) {
+            throw new NullPointerException("nameResourceId was =0");
+        }
     }
 
     /** Increment and return the view counter */
@@ -86,7 +93,7 @@ public abstract class Property {
         return mWeight;
     }
 
-    public Property setWeight(int weight) {
+    public Property setWeight(final int weight) {
         mWeight = weight;
         return this;
     }
@@ -99,7 +106,7 @@ public abstract class Property {
         return mGroup;
     }
 
-    public Property setGroup(PropertyGroup group) {
+    public Property setGroup(final PropertyGroup group) {
         mGroup = group;
         return this;
     }
@@ -108,7 +115,7 @@ public abstract class Property {
         return mNameResourceId;
     }
 
-    public Property setNameResourceId(int id) {
+    public Property setNameResourceId(final int id) {
         mNameResourceId = id;
         return this;
     }
@@ -122,7 +129,7 @@ public abstract class Property {
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public Property setHint(int hint) {
+    public Property setHint(final int hint) {
         mHint = hint;
         return this;
     }
@@ -133,10 +140,10 @@ public abstract class Property {
 
     /** Children must implement set(Property) */
     @SuppressWarnings("UnusedReturnValue")
-    public abstract Property set(Property p);
+    public abstract Property set(final Property p);
 
     /** Children must implement getView to return an editor for this object */
-    public abstract View getView(LayoutInflater inflater);
+    public abstract View getView(final LayoutInflater inflater);
 
     /**
      * Interface used to help setting one property based on another property value.

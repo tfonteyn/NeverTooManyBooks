@@ -26,15 +26,15 @@ public class TouchListViewWithDropListener<T> extends TouchListView implements T
     @Override
     public void drop(final int from, final int to) {
         // Check if nothing to do; also avoids the nasty case where list size == 1
-        if (from == to)
+        if (from == to) {
             return;
+        }
 
         // before remove/insert
         final int firstPos = getFirstVisiblePosition();
 
-        //FIXME oh boy... unchecked or unsafe operations.
-        ArrayAdapter adapter = (ArrayAdapter)getAdapter();
-        Object item = adapter.getItem(from);
+        ArrayAdapter<T> adapter = (ArrayAdapter)getAdapter();
+        T item = adapter.getItem(from);
         adapter.remove(item);
         adapter.insert(item, to);
         onListChanged();
@@ -62,8 +62,9 @@ public class TouchListViewWithDropListener<T> extends TouchListView implements T
                     public void run() {
                         for (int i = 0; ; i++) {
                             View c = getChildAt(i);
-                            if (c == null)
+                            if (c == null) {
                                 break;
+                            }
                             if (getPositionForView(c) == to) {
                                 setSelectionFromTop(to, c.getTop());
                                 //c.requestFocusFromTouch();

@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -80,7 +81,7 @@ public class EditAuthorDialog {
 		dialog.show();
 	}
 	
-	private void confirmEdit(final Author oldAuthor, final Author newAuthor) {
+	private void confirmEdit(@NonNull final Author oldAuthor, @NonNull final Author newAuthor) {
 		// First, deal with a some special cases...
 		
 		// Case: Unchanged.

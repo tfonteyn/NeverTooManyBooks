@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.properties;
 
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,9 +51,10 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
     /** List of valid values */
     private final ItemEntries<T> mList;
 
-    @SuppressWarnings("WeakerAccess")
-    public ListProperty(ItemEntries<T> list, String uniqueId, PropertyGroup group, int nameResourceId, T value, String defaultPref, T defaultValue) {
-        super(uniqueId, group, nameResourceId, value, defaultPref, defaultValue);
+    ListProperty(@NonNull final ItemEntries<T> list,
+                 @NonNull final String uniqueId, @NonNull final PropertyGroup group,
+                 final int nameResourceId, @Nullable final T defaultValue, @Nullable final String defaultPref, @Nullable final T value) {
+        super(uniqueId, group, nameResourceId, defaultValue, defaultPref, value);
         mList = list;
     }
 

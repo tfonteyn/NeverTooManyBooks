@@ -40,56 +40,58 @@ public class DateUtils {
     private DateUtils() {
     }
 
-    // Used for formatting dates for sql; everything is assumed to be UTC, or converted to UTC since
-    // UTC is the default SQLite TZ.
-    private static final TimeZone tzUtc = TimeZone.getTimeZone("UTC");
+    /** Used for formatting dates for sql; everything is assumed to be UTC, or converted to UTC since
+     *  UTC is the default SQLite TZ.
+     */
+    private static final TimeZone TZ_UTC = TimeZone.getTimeZone("UTC");
 
     // Used for date parsing and display
-    private static final SimpleDateFormat mDateFullHMSSqlSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    static { mDateFullHMSSqlSdf.setTimeZone(tzUtc); }
-    private static final SimpleDateFormat mDateFullHMSqlSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-    static { mDateFullHMSqlSdf.setTimeZone(tzUtc); }
-    private static final SimpleDateFormat mDateSqlSdf = new SimpleDateFormat("yyyy-MM-dd");
-    static { mDateSqlSdf.setTimeZone(tzUtc); }
-    private static final DateFormat mDateDispSdf = DateFormat.getDateInstance(java.text.DateFormat.MEDIUM);
-    private static final SimpleDateFormat mLocalDateSqlSdf = new SimpleDateFormat("yyyy-MM-dd");
-    static { mLocalDateSqlSdf.setTimeZone(Calendar.getInstance().getTimeZone()); }
+    private static final SimpleDateFormat DATE_FULL_HMSS_SQL = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    static { DATE_FULL_HMSS_SQL.setTimeZone(TZ_UTC); }
+    private static final SimpleDateFormat DATE_FULL_HMS_SQL = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    static { DATE_FULL_HMS_SQL.setTimeZone(TZ_UTC); }
+    private static final SimpleDateFormat DATE_SQL = new SimpleDateFormat("yyyy-MM-dd");
+    static { DATE_SQL.setTimeZone(TZ_UTC); }
+    private static final SimpleDateFormat LOCAL_DATE_SQL = new SimpleDateFormat("yyyy-MM-dd");
+    static { LOCAL_DATE_SQL.setTimeZone(Calendar.getInstance().getTimeZone()); }
+    private static final DateFormat DATE_DISPLAY = DateFormat.getDateInstance(java.text.DateFormat.MEDIUM);
 
     private static final ArrayList<SimpleDateFormat> mParseDateFormats = new ArrayList<>();
     static {
         final boolean isEnglish = (Locale.getDefault().getLanguage().equals(Locale.ENGLISH.getLanguage()));
-        addParseDateFormat(!isEnglish, "dd-MMM-yyyy HH:mm:ss");
-        addParseDateFormat(!isEnglish, "dd-MMM-yyyy HH:mm");
-        addParseDateFormat(!isEnglish, "dd-MMM-yyyy");
+        addParseDateFormat("dd-MMM-yyyy HH:mm:ss", !isEnglish);
+        addParseDateFormat("dd-MMM-yyyy HH:mm", !isEnglish);
+        addParseDateFormat("dd-MMM-yyyy", !isEnglish);
 
-        addParseDateFormat(!isEnglish, "dd-MMM-yy HH:mm:ss");
-        addParseDateFormat(!isEnglish, "dd-MMM-yy HH:mm");
-        addParseDateFormat(!isEnglish, "dd-MMM-yy");
+        addParseDateFormat("dd-MMM-yy HH:mm:ss", !isEnglish);
+        addParseDateFormat("dd-MMM-yy HH:mm", !isEnglish);
+        addParseDateFormat("dd-MMM-yy", !isEnglish);
 
-        addParseDateFormat(false, "MM-dd-yyyy HH:mm:ss");
-        addParseDateFormat(false, "MM-dd-yyyy HH:mm");
-        addParseDateFormat(false, "MM-dd-yyyy");
+        addParseDateFormat("MM-dd-yyyy HH:mm:ss", false);
+        addParseDateFormat("MM-dd-yyyy HH:mm", false);
+        addParseDateFormat("MM-dd-yyyy", false);
 
-        addParseDateFormat(false, "dd-MM-yyyy HH:mm:ss");
-        addParseDateFormat(false, "dd-MM-yyyy HH:mm");
-        addParseDateFormat(false, "dd-MM-yyyy");
+        addParseDateFormat("dd-MM-yyyy HH:mm:ss", false);
+        addParseDateFormat("dd-MM-yyyy HH:mm", false);
+        addParseDateFormat("dd-MM-yyyy", false);
 
         // Dates of the form: 'Fri May 5 17:23:11 -0800 2012'
-        addParseDateFormat(!isEnglish, "EEE MMM dd HH:mm:ss ZZZZ yyyy");
-        addParseDateFormat(!isEnglish, "EEE MMM dd HH:mm ZZZZ yyyy");
-        addParseDateFormat(!isEnglish, "EEE MMM dd ZZZZ yyyy");
+        addParseDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy", !isEnglish);
+        addParseDateFormat("EEE MMM dd HH:mm ZZZZ yyyy", !isEnglish);
+        addParseDateFormat("EEE MMM dd ZZZZ yyyy", !isEnglish);
 
-        mParseDateFormats.add(mDateFullHMSSqlSdf);
-        mParseDateFormats.add(mDateFullHMSqlSdf);
-        mParseDateFormats.add(mDateSqlSdf);
+        mParseDateFormats.add(DATE_FULL_HMSS_SQL);
+        mParseDateFormats.add(DATE_FULL_HMS_SQL);
+        mParseDateFormats.add(DATE_SQL);
     }
+
     /**
      * Add a format to the parser list
      *
-     * @param needEnglish   if set, also add the localized english version
      * @param format        date format to add
+     * @param needEnglish   if set, also add the localized english version
      */
-    private static void addParseDateFormat(boolean needEnglish, @NonNull final String format) {
+    private static void addParseDateFormat(@NonNull final String format, boolean needEnglish) {
         mParseDateFormats.add(new SimpleDateFormat(format));
         if (needEnglish) {
             mParseDateFormats.add(new SimpleDateFormat(format, Locale.ENGLISH));
@@ -97,16 +99,16 @@ public class DateUtils {
     }
 
     public static String toLocalSqlDateOnly(Date d) {
-        return mLocalDateSqlSdf.format(d);
+        return LOCAL_DATE_SQL.format(d);
     }
     public static String toSqlDateOnly(Date d) {
-        return mDateSqlSdf.format(d);
+        return DATE_SQL.format(d);
     }
     public static String toSqlDateTime(Date d) {
-        return mDateFullHMSSqlSdf.format(d);
+        return DATE_FULL_HMSS_SQL.format(d);
     }
     public static String toPrettyDate(Date d) {
-        return mDateDispSdf.format(d);
+        return DATE_DISPLAY.format(d);
     }
     public static String toPrettyDateTime(Date d) {
         return DateFormat.getDateTimeInstance().format(d);
@@ -119,13 +121,12 @@ public class DateUtils {
      * @return		Resulting date if parsed, otherwise null
      */
     @Nullable
-    public static Date parseDate(String s) {
-        Date d;
+    public static Date parseDate(@NonNull final String s) {
         // First try to parse using strict rules
-        d = parseDate(s, false);
-        // If we got a date, exit
-        if (d != null)
+        Date d = parseDate(s, false);
+        if (d != null) {
             return d;
+        }
         // OK, be lenient
         return parseDate(s, true);
     }
@@ -142,22 +143,20 @@ public class DateUtils {
      * @return				Resulting date if parsed, otherwise null
      */
     @Nullable
-    private static Date parseDate(@NonNull final String s, boolean lenient) {
-        Date d;
+    private static Date parseDate(@NonNull final String s, final boolean lenient) {
         for (SimpleDateFormat sdf : mParseDateFormats ) {
             try {
                 sdf.setLenient(lenient);
-                d = sdf.parse(s);
-                return d;
+                return sdf.parse(s);
             } catch (ParseException ignore) {
             }
         }
+
         // All SDFs failed, try locale-specific...
         try {
-            java.text.DateFormat df = java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT);
+            DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
             df.setLenient(lenient);
-            d = df.parse(s);
-            return d;
+            return df.parse(s);
         } catch (ParseException ignore) {
         }
         return null;
@@ -169,14 +168,16 @@ public class DateUtils {
     private static SimpleDateFormat mMonthNameFormatter = null;
 
     @NonNull
-    public static String getMonthName(int month) {
-        if (mMonthNameFormatter == null)
+    public static String getMonthName(final int month) {
+        if (mMonthNameFormatter == null) {
             mMonthNameFormatter = new SimpleDateFormat("MMMM");
+        }
         // Create static calendar if necessary
-        if (mCalendar == null)
+        if (mCalendar == null) {
             mCalendar = Calendar.getInstance();
+        }
         // Assumes months are integers and in sequence...which everyone seems to assume
-        mCalendar.set(Calendar.MONTH, month - 1 + java.util.Calendar.JANUARY);
+        mCalendar.set(Calendar.MONTH, month - 1 + Calendar.JANUARY);
         return mMonthNameFormatter.format(mCalendar.getTime());
     }
 
@@ -212,7 +213,7 @@ public class DateUtils {
         }
     }
 
-//    public String convertDate(String date) {
+//    public String convertDate(@NonNull String date) {
 //        switch (date.length()) {
 //            case 2:
 //                //assume yy

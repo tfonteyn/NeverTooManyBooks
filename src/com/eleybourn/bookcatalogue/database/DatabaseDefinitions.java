@@ -53,15 +53,15 @@ public class DatabaseDefinitions {
     /**
      * Actual table names
      */
-    public static final String DB_TB_ANTHOLOGY = "anthology";
-    public static final String DB_TB_AUTHORS = "authors";
-    public static final String DB_TB_BOOK_AUTHOR = "book_author";
-    public static final String DB_TB_BOOK_SERIES = "book_series";
-    public static final String DB_TB_BOOK_BOOKSHELF_WEAK = "book_bookshelf_weak";
-    public static final String DB_TB_BOOKS = "books";
-    public static final String DB_TB_BOOKSHELF = "bookshelf";
-    public static final String DB_TB_LOAN = "loan";
-    public static final String DB_TB_SERIES = "series";
+    static final String DB_TB_ANTHOLOGY = "anthology";
+    static final String DB_TB_AUTHORS = "authors";
+    static final String DB_TB_BOOK_AUTHOR = "book_author";
+    static final String DB_TB_BOOK_SERIES = "book_series";
+    static final String DB_TB_BOOK_BOOKSHELF_WEAK = "book_bookshelf_weak";
+    static final String DB_TB_BOOKS = "books";
+    static final String DB_TB_BOOKSHELF = "bookshelf";
+    static final String DB_TB_LOAN = "loan";
+    static final String DB_TB_SERIES = "series";
 
     private static final String NOT_NULL = "not null";
     /*
@@ -73,7 +73,7 @@ public class DatabaseDefinitions {
     public static final DomainDefinition DOM_ID = new DomainDefinition("_id", TableInfo.TYPE_INTEGER, "primary key autoincrement", NOT_NULL);
 
     public static final DomainDefinition DOM_ABSOLUTE_POSITION = new DomainDefinition("absolute_position", TableInfo.TYPE_INTEGER, "", NOT_NULL);
-    public static final DomainDefinition DOM_ADDED_DATE = new DomainDefinition("date_added", TableInfo.TYPE_TEXT);
+    public static final DomainDefinition DOM_DATE_ADDED = new DomainDefinition("date_added", TableInfo.TYPE_TEXT);
     public static final DomainDefinition DOM_ADDED_DAY = new DomainDefinition("added_day", TableInfo.TYPE_INT);
     public static final DomainDefinition DOM_ADDED_MONTH = new DomainDefinition("added_month", TableInfo.TYPE_INT);
     public static final DomainDefinition DOM_ADDED_YEAR = new DomainDefinition("added_year", TableInfo.TYPE_INT);
@@ -92,9 +92,10 @@ public class DatabaseDefinitions {
     public static final DomainDefinition DOM_BOOK_COUNT = new DomainDefinition("book_count", TableInfo.TYPE_INTEGER);
     public static final DomainDefinition DOM_BOOK_UUID = new DomainDefinition("book_uuid", TableInfo.TYPE_TEXT, "default (lower(hex(randomblob(16))))", NOT_NULL);
     public static final DomainDefinition DOM_BOOKSHELF_NAME = new DomainDefinition("bookshelf", TableInfo.TYPE_TEXT, "", NOT_NULL);
-    public static final DomainDefinition DOM_BOOKSHELF_ID = new DomainDefinition("bookshelf", TableInfo.TYPE_INTEGER, "", NOT_NULL);
+    public static final DomainDefinition DOM_BOOKSHELF = new DomainDefinition("bookshelf", TableInfo.TYPE_INTEGER, "", NOT_NULL);
     public static final DomainDefinition DOM_DATE_PUBLISHED = new DomainDefinition("date_published", TableInfo.TYPE_DATE);
     public static final DomainDefinition DOM_DESCRIPTION = new DomainDefinition("description", TableInfo.TYPE_TEXT);
+    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_DOCID = new DomainDefinition("docid", TableInfo.TYPE_INTEGER, "primary key autoincrement", NOT_NULL);
     public static final DomainDefinition DOM_EXPANDED = new DomainDefinition("expanded", TableInfo.TYPE_INT, "default 0");
     public static final DomainDefinition DOM_FORMAT = new DomainDefinition("format", TableInfo.TYPE_TEXT, "default ''");
@@ -192,6 +193,7 @@ public class DatabaseDefinitions {
     /**
      * Partial representation of ANTHOLOGY table
      */
+    @SuppressWarnings("WeakerAccess")
     public static final TableDefinition TBL_ANTHOLOGY = new TableDefinition(DB_TB_ANTHOLOGY)
             .addDomains(DOM_ID, DOM_BOOK, DOM_AUTHOR_ID, DOM_TITLE, DOM_POSITION)
             .setAlias(ALIAS_ANTHOLOGY)
@@ -220,11 +222,11 @@ public class DatabaseDefinitions {
      * Partial representation of BOOK_BOOKSHELF table
      */
     public static final TableDefinition TBL_BOOK_BOOKSHELF = new TableDefinition(DB_TB_BOOK_BOOKSHELF_WEAK)
-            .addDomains(DOM_BOOK, DOM_BOOKSHELF_ID)
+            .addDomains(DOM_BOOK, DOM_BOOKSHELF)
             .setAlias(ALIAS_BOOK_BOOKSHELF)
-            .setPrimaryKey(DOM_BOOK, DOM_BOOKSHELF_ID)
+            .setPrimaryKey(DOM_BOOK, DOM_BOOKSHELF)
             .addReference(TBL_BOOKS, DOM_BOOK)
-            .addReference(TBL_BOOKSHELF, DOM_BOOKSHELF_ID);
+            .addReference(TBL_BOOKSHELF, DOM_BOOKSHELF);
 
 
     /**

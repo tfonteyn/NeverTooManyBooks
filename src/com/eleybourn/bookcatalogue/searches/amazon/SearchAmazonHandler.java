@@ -26,7 +26,6 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
@@ -269,7 +268,7 @@ public class SearchAmazonHandler extends DefaultHandler {
         if (mFetchThumbnail && mThumbnailUrl.length() > 0) {
             String fileSpec = ImageUtils.saveThumbnailFromUrl(mThumbnailUrl, "_AM");
             if (fileSpec.length() > 0)
-                ArrayUtils.appendOrAdd(mBookData, SearchManager.BKEY_THUMBNAIL_SEARCHES, fileSpec);
+                ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
         }
     }
 

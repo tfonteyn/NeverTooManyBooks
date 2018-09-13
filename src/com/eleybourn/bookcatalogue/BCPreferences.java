@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -31,7 +32,6 @@ public class BCPreferences {
     // All new prefs should start with TAG
     private static final String TAG = "App";
     public static final String PREF_CLASSIC_MY_BOOKS = TAG + ".includeClassicView";
-    public static final String PREF_DISABLE_BACKGROUND_IMAGE = TAG + ".DisableBackgroundImage";
     public static final String PREF_USE_EXTERNAL_IMAGE_CROPPER = TAG + ".UseExternalImageCropper";
     public static final String PREF_CROP_FRAME_WHOLE_IMAGE = TAG + ".CropFrameWholeImage";
     /** Degrees by which to rotate images automatically */
@@ -68,10 +68,6 @@ public class BCPreferences {
         return getBoolean(PREF_CLASSIC_MY_BOOKS, false);
     }
 
-    public static boolean getDisableBackgroundImage() {
-        return getBoolean(PREF_DISABLE_BACKGROUND_IMAGE, false);
-    }
-
     public static boolean getUseExternalImageCropper() {
         return getBoolean(PREF_USE_EXTERNAL_IMAGE_CROPPER, false);
     }
@@ -99,7 +95,7 @@ public class BCPreferences {
     /**
      * Setters
      */
-    public static void setLastBackupFile(String file) {
+    public static void setLastBackupFile(@NonNull final String file) {
         setString(PREF_LAST_BACKUP_FILE, file);
     }
 
@@ -107,7 +103,7 @@ public class BCPreferences {
         return getString(PREF_LAST_BACKUP_DATE, null);
     }
 
-    public static void setLastBackupDate(String date) {
+    public static void setLastBackupDate(@NonNull final String date) {
         setString(PREF_LAST_BACKUP_DATE, date);
     }
 
@@ -115,7 +111,7 @@ public class BCPreferences {
         return getBoolean(PREF_OPEN_BOOK_READ_ONLY, true);
     }
 
-    public static String getBookListStyle(String defaultValue) {
+    public static String getBookListStyle(@NonNull final String defaultValue) {
         return getString(PREF_BOOKLIST_STYLE, defaultValue);
     }
 
@@ -124,7 +120,7 @@ public class BCPreferences {
      ***********************************************************************/
 
     /** Get a named boolean preference */
-    public static boolean getBoolean(String name, boolean defaultValue) {
+    public static boolean getBoolean(@NonNull final String name, final boolean defaultValue) {
         boolean result;
         try {
             result = mPrefs.getBoolean(name, defaultValue);
@@ -135,7 +131,7 @@ public class BCPreferences {
     }
 
     /** Set a named boolean preference */
-    public static void setBoolean(String name, boolean value) {
+    public static void setBoolean(@NonNull final String name, final boolean value) {
         Editor ed = edit();
         try {
             ed.putBoolean(name, value);
@@ -145,7 +141,7 @@ public class BCPreferences {
     }
 
     /** Get a named string preference */
-    public static String getString(String name, String defaultValue) {
+    public static String getString(@NonNull final String name, final String defaultValue) {
         String result;
         try {
             result = mPrefs.getString(name, defaultValue);
@@ -156,7 +152,7 @@ public class BCPreferences {
     }
 
     /** Set a named string preference */
-    public static void setString(String name, String value) {
+    public static void setString(@NonNull final String name, String value) {
         Editor ed = edit();
         try {
             ed.putString(name, value);
@@ -166,7 +162,7 @@ public class BCPreferences {
     }
 
     /** Get a named string preference */
-    public static int getInt(String name, int defaultValue) {
+    public static int getInt(@NonNull final String name, int defaultValue) {
         int result;
         try {
             result = mPrefs.getInt(name, defaultValue);
@@ -177,7 +173,7 @@ public class BCPreferences {
     }
 
     /** Set a named string preference */
-    public static void setInt(String name, int value) {
+    public static void setInt(@NonNull final String name, int value) {
         Editor ed = edit();
         try {
             ed.putInt(name, value);
@@ -190,6 +186,7 @@ public class BCPreferences {
     public static Editor edit() {
         return mPrefs.edit();
     }
+
 
     /**
      * DEBUG method
