@@ -165,13 +165,13 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnButton("Search");
 		t.sleep(10000); //wait 10 seconds for the page to search and load
 		
-		t.assertCurrentActivity("Expected BookEdit activity", "BookEdit");
+		t.assertCurrentActivity("Expected EditBookActivity activity", "EditBookActivity");
 		assertTrue("Expected populated title", t.searchEditText("The Complete Robot"));
 		assertTrue("Expected populated ISBN", t.searchEditText("9780586057247"));
 		t.clickOnButton("Add Book");
 		
 		t.sleep(1000);
-		t.assertCurrentActivity("Expected BookEdit activity", "BookEdit");
+		t.assertCurrentActivity("Expected EditBookActivity activity", "EditBookActivity");
 		t.clickOnButton("Save Book");
 		t.assertCurrentActivity("Expected BookISBNSearch activity", "BookISBNSearch");
 		t.goBack();
@@ -216,7 +216,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.sleep(100);
 		t.clickOnText("Complete Robot");
 		
-		t.assertCurrentActivity("Expected BookEdit activity", "BookEdit");
+		t.assertCurrentActivity("Expected EditBookActivity activity", "EditBookActivity");
 		assertTrue("Expected book title", t.searchText("Complete Robot, The"));
 		t.searchText("Is this book an Anthology?");
 		if (t.isCheckBoxChecked(0) == false) {
@@ -361,14 +361,14 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnButton("Search");
 		t.sleep(10000); //wait 10 seconds for the page to search and load
 		
-		t.assertCurrentActivity("Expected BookEdit activity", "BookEdit");
+		t.assertCurrentActivity("Expected EditBookActivity activity", "EditBookActivity");
 		assertTrue("Expected populated title", t.searchEditText("Nation"));
 		assertTrue("Expected populated author", t.searchText("Terry Pratchett"));
 		assertTrue("Expected populated ISBN", t.searchEditText("9780552557795"));
 		t.clickOnButton("Add Book");
 		
 		t.sleep(1000);
-		t.assertCurrentActivity("Expected BookEdit activity", "BookEdit");
+		t.assertCurrentActivity("Expected EditBookActivity activity", "EditBookActivity");
 		t.clickOnButton("Save Book");
 		t.assertCurrentActivity("Expected BookISBNSearch activity", "BookISBNSearch");
 		t.goBack();
@@ -380,7 +380,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 	public void test106AddBook(){
 		t.clickOnMenuItem("Add Book...");
 		t.clickOnText("Add Book", 2);
-		t.assertCurrentActivity("Expected BookEdit activity", "BookEdit");
+		t.assertCurrentActivity("Expected EditBookActivity activity", "EditBookActivity");
 		
 		//add author
 		t.clickOnText("Set Authors");
@@ -421,7 +421,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		//t.clickOnText("OK");
 		
 		t.clickOnText("Add Book", 3);
-		t.assertCurrentActivity("Expected BookEdit activity", "BookEdit");
+		t.assertCurrentActivity("Expected EditBookActivity activity", "EditBookActivity");
 		t.clickOnButton("Save Book");
 		t.assertCurrentActivity("Expected BookCatalogue activity", "BookCatalogue");
 		
@@ -442,7 +442,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		}
 		t.clickLongOnText("I Robot");
 		t.clickOnText("Your Comments");
-		t.assertCurrentActivity("Expected BookEdit activity", "BookEdit");
+		t.assertCurrentActivity("Expected EditBookActivity activity", "EditBookActivity");
 		
 		//save book
 		t.clickOnText("Have you read this book?");
@@ -455,7 +455,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.assertCurrentActivity("Expected BookEditFields activity", "BookEditFields");
 		//assertFalse("Notes still visible", t.searchText("My Notes", true));
 		t.clickOnText("Your Comments");
-		t.assertCurrentActivity("Expected BookEditNotes activity", "BookEditNotes");
+		t.assertCurrentActivity("Expected EditBookNotesFragment activity", "EditBookNotesFragment");
 		assertTrue("Notes not visible", t.searchText("My Notes", true));
 		
 		t.clickOnText("Has this book been signed");
@@ -770,7 +770,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 	public void test208AdminAutoUpdate(){
 		t.clickOnMenuItem("Add Book...");
 		t.clickOnText("Add Book");
-		t.assertCurrentActivity("Expected BookEdit activity", "BookEdit");
+		t.assertCurrentActivity("Expected EditBookActivity activity", "EditBookActivity");
 		
 		//add author
 		t.clickOnText("Set Authors");

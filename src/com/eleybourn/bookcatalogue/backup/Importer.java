@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -19,46 +19,54 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 public interface Importer {
 
-	/** Flag value to indicate ALL books should be imported */
+    /** Flag value to indicate ALL books should be imported */
     int IMPORT_ALL = 1;
-	/** Flag value to indicate new books and books with more recent update_date fields should be imported */
+    /** Flag value to indicate new books and books with more recent update_date fields should be imported */
     int IMPORT_NEW_OR_UPDATED = 2;
 
-	/**
-	 * Listener interface to get progress messages.
-	 * 
-	 * @author pjw
-	 */
+    /**
+     * Import function
+     *
+     * @param importStream Stream for reading data
+     * @param coverFinder  (Optional) object to find a file on the local device
+     * @param listener     Progress and cancellation provider
+     *
+     * @return true on success
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    boolean importBooks(@NonNull final InputStream importStream,
+                        @Nullable final Importer.CoverFinder coverFinder,
+                        @NonNull final Importer.OnImporterListener listener,
+                        final int importFlags) throws IOException;
+
+    /**
+     * Listener interface to get progress messages.
+     *
+     * @author pjw
+     */
     interface OnImporterListener {
-		void onProgress(String message, int position);
-		boolean isCancelled();
-		void setMax(int max);
-	}
+        void onProgress(String message, int position);
 
-	/**
-	 * Interface for finding a cover file on the local device if missing from bookCatalogue directory.
-	 * Legacy of the "import from a directory" model.
-	 * 
-	 * @author pjw
-	 */
+        boolean isCancelled();
+
+        void setMax(int max);
+    }
+
+    /**
+     * Interface for finding a cover file on the local device if missing from bookCatalogue directory.
+     * Legacy of the "import from a directory" model.
+     *
+     * @author pjw
+     */
     interface CoverFinder {
-		void copyOrRenameCoverFile(String srcUuid, long srcId, long dstId) throws IOException;
-	}
-
-	/**
-	 * Import function
-	 * 
-	 * @param importStream		Stream for reading data	
-	 * @param coverFinder		(Optional) object to find a file on the local device
-	 * @param listener			Progress and cancellation provider
-	 * 
-	 * @return		true on success
-
-	 */
-    boolean importBooks(InputStream importStream, Importer.CoverFinder coverFinder, Importer.OnImporterListener listener, int importFlags) throws IOException;
+        void copyOrRenameCoverFile(String srcUuid, long srcId, long dstId) throws IOException;
+    }
 }

@@ -450,11 +450,11 @@ class ImportAllTask extends GenericTask {
         	for(Bundle sb: shelves) {
         		String shelf = translateBookshelf(db, sb.getString(ListReviewsFieldNames.SHELF));
         		if (shelf != null && !shelf.isEmpty()) {
-        			shelf = ArrayUtils.encodeListItem(BookEditFields.BOOKSHELF_SEPARATOR, shelf);
+        			shelf = ArrayUtils.encodeListItem(EditBookFieldsFragment.BOOKSHELF_SEPARATOR, shelf);
         			if (shelfNames == null)
 		        		shelfNames = new StringBuilder(shelf);
         			else
-        				shelfNames.append(BookEditFields.BOOKSHELF_SEPARATOR).append(shelf);
+        				shelfNames.append(EditBookFieldsFragment.BOOKSHELF_SEPARATOR).append(shelf);
         		}
         	}
         	if (shelfNames != null && shelfNames.length() > 0)

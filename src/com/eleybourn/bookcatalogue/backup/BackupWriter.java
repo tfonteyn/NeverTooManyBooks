@@ -20,6 +20,8 @@
 package com.eleybourn.bookcatalogue.backup;
 
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 
@@ -41,7 +43,7 @@ public interface BackupWriter extends Closeable {
      * <p>
      * See BackupWriterAbstract for a default implementation.
      */
-    void backup(BackupWriterListener listener, final int backupFlags, final Date since) throws IOException;
+    void backup(@NonNull final BackupWriterListener listener, final int backupFlags, @Nullable final Date since) throws IOException;
 
     /**
      * Get the containing archive
@@ -51,27 +53,27 @@ public interface BackupWriter extends Closeable {
     /**
      * Write an info block to the archive
      */
-    void putInfo(BackupInfo info) throws IOException;
+    void putInfo(@NonNull final BackupInfo info) throws IOException;
 
     /**
      * Write an export file to the archive
      */
-    void putBooks(File books) throws IOException;
+    void putBooks(@NonNull final File books) throws IOException;
 
     /**
      * Store a cover file
      */
-    void putCoverFile(File source) throws IOException;
+    void putCoverFile(@NonNull final File source) throws IOException;
 
     /**
      * Store a Booklist Style
      */
-    void putBooklistStyle(BooklistStyle style) throws IOException;
+    void putBooklistStyle(@NonNull final BooklistStyle style) throws IOException;
 
     /**
      * Store a SharedPreferences
      */
-    void putPreferences(SharedPreferences prefs) throws IOException;
+    void putPreferences(@NonNull final SharedPreferences prefs) throws IOException;
 
     /**
      * Close the writer

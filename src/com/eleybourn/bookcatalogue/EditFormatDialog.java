@@ -20,84 +20,26 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.Toast;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
-public class EditFormatDialog {
-    private final Context mContext;
-    private final ArrayAdapter<String> mAdapter;
-    private final CatalogueDBAdapter mDb;
-    private final Runnable mOnChanged;
-
-    EditFormatDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
-        mDb = db;
-        mContext = context;
-        mAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDb.getFormats());
-        mOnChanged = onChanged;
+public class EditFormatDialog extends EditStringDialog {
+    EditFormatDialog(@NonNull final Context context, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
+        super(context, onChanged, db, android.R.layout.simple_dropdown_item_1line, db.getFormats());
     }
 
-    public void edit(final String origFormat) {
-        final Dialog dialog = new StandardDialogs.BasicDialog(mContext);
-        dialog.setContentView(R.layout.dialog_edit_format);
-        dialog.setTitle(R.string.edit_format_name);
-
-        AutoCompleteTextView nameView = dialog.findViewById(R.id.name);
-        try {
-            nameView.setText(origFormat);
-        } catch (NullPointerException e) {
-            Logger.logError(e);
-        }
-        nameView.setAdapter(mAdapter);
-
-        Button saveButton = dialog.findViewById(R.id.confirm);
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AutoCompleteTextView nameView = dialog.findViewById(R.id.name);
-                String newName = nameView.getText().toString().trim();
-                if (newName.isEmpty()) {
-                    Toast.makeText(mContext, R.string.name_can_not_be_blank, Toast.LENGTH_LONG).show();
-                    return;
-                }
-                confirmEditFormat(origFormat, newName);
-                dialog.dismiss();
-            }
-        });
-        Button cancelButton = dialog.findViewById(R.id.cancel);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
+    public void edit(final String s) {
+        super.edit(s, R.layout.dialog_edit_format, R.string.edit_format_name, R.string.name_can_not_be_blank);
     }
 
-    private void confirmEditFormat(final String oldFormat, final String newFormat) {
-        // First, deal with a some special cases...
-
-        // Case: Unchanged.
-        try {
-            if (oldFormat.equals(newFormat)) {
-                // No change to anything; nothing to do
-                return;
-            }
-        } catch (NullPointerException e) {
-            Logger.logError(e);
+    @Override
+    protected void confirmEdit(@NonNull final String from, @NonNull final String to) {
+        if (from.equals(to)) {
+            return;
         }
-
-        mDb.globalReplaceFormat(oldFormat, newFormat);
-
+        mDb.globalReplaceFormat(from, to);
         mOnChanged.run();
     }
 }

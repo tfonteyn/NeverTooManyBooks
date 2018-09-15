@@ -28,12 +28,8 @@ import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.ExportSettings;
-import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.OnExportTypeSelectionDialogResultListener;
 import com.eleybourn.bookcatalogue.dialogs.ImportTypeSelectionDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.ImportTypeSelectionDialogFragment.OnImportTypeSelectionDialogResultListener;
 import com.eleybourn.bookcatalogue.dialogs.MessageDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.MessageDialogFragment.OnMessageDialogResultListener;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
@@ -48,8 +44,9 @@ import java.util.Date;
  * @author pjw
  */
 public class BackupChooser extends FileChooser implements
-        OnMessageDialogResultListener,
-        OnImportTypeSelectionDialogResultListener, OnExportTypeSelectionDialogResultListener {
+        MessageDialogFragment.OnMessageDialogResultListener,
+        ImportTypeSelectionDialogFragment.OnImportTypeSelectionDialogResultListener,
+        ExportTypeSelectionDialogFragment.OnExportTypeSelectionDialogResultListener {
 
     // Used when saving state
     private final static String BKEY_FILENAME = "BackupFileSpec";
@@ -99,8 +96,7 @@ public class BackupChooser extends FileChooser implements
      */
     @Override
     protected FileChooserFragment getChooserFragment() {
-        String lastBackup = BCPreferences.getLastBackupFile();
-        return FileChooserFragment.newInstance(lastBackup, getDefaultFileName());
+        return FileChooserFragment.newInstance(BCPreferences.getLastBackupFile(), getDefaultFileName());
     }
 
     /**
@@ -212,22 +208,20 @@ public class BackupChooser extends FileChooser implements
     }
 
     @Override
-    public void onImportTypeSelectionDialogResult(int dialogId, ImportTypeSelectionDialogFragment dialog, int rowId, File file) {
-        switch (rowId) {
-            case 0:
-                // Do nothing
+    public void onImportTypeSelectionDialogResult(int dialogId, DialogFragment dialog, ImportTypeSelectionDialogFragment.ImportSettings settings) {
+        switch (settings.options) {
+
+            case Importer.IMPORT_ALL:
+                BackupManager.restoreCatalogue(this, settings.file, TASK_ID_OPEN, Importer.IMPORT_ALL);
                 break;
-            case R.id.all_books_row:
-                BackupManager.restoreCatalogue(this, file, TASK_ID_OPEN, Importer.IMPORT_ALL);
-                break;
-            case R.id.new_and_changed_books:
-                BackupManager.restoreCatalogue(this, file, TASK_ID_OPEN, Importer.IMPORT_NEW_OR_UPDATED);
+            case Importer.IMPORT_NEW_OR_UPDATED:
+                BackupManager.restoreCatalogue(this, settings.file, TASK_ID_OPEN, Importer.IMPORT_NEW_OR_UPDATED);
                 break;
         }
     }
 
     @Override
-    public void onExportTypeSelectionDialogResult(int dialogId, DialogFragment dialog, ExportSettings settings) {
+    public void onExportTypeSelectionDialogResult(int dialogId, DialogFragment dialog, ExportTypeSelectionDialogFragment.ExportSettings settings) {
         switch (settings.options) {
             case Exporter.EXPORT_ALL:
                 mBackupFile = BackupManager.backupCatalogue(this, settings.file, TASK_ID_SAVE, Exporter.EXPORT_ALL, null);

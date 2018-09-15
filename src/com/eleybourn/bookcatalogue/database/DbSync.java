@@ -644,7 +644,7 @@ public class DbSync {
 		 * @return		Number of current references
 		 */
 		public static void printRefCount(@Nullable final String msg, @NonNull final SQLiteDatabase db) {
-            if (BuildConfig.DEBUG) {
+            if (DEBUG && BuildConfig.DEBUG) {
                 System.gc();
                 Field f;
                 try {
@@ -687,13 +687,13 @@ public class DbSync {
 		/** Copy of SQL used for debugging */
 		private final String mSql;
 
-		private SynchronizedStatement (final SynchronizedDb db, final String sql) {
+		private SynchronizedStatement(final SynchronizedDb db, final String sql) {
 			mSync = db.getSynchronizer();
 			mSql = sql;
             mIsReadOnly = sql.trim().toLowerCase().startsWith("select");
 			mStatement = db.getUnderlyingDatabase().compileStatement(sql);
-			if (BuildConfig.DEBUG) {
-			    System.out.println("\n" + sql + "\n\n");
+			if (DEBUG && BuildConfig.DEBUG) {
+			    System.out.println("SynchronizedStatement(new): " + sql + "\n\n");
             }
 		}
 		
@@ -776,8 +776,8 @@ public class DbSync {
 			else
 				l = mSync.getExclusiveLock();
 			try {
-				if (BuildConfig.DEBUG) {
-					System.out.println("EXECECUTING STMT: " +mStatement.toString());
+				if (DEBUG && BuildConfig.DEBUG) {
+					System.out.println("SynchronizedStatement execute: " +mStatement);
 				}
 				mStatement.execute();				
 			} finally {
@@ -798,12 +798,14 @@ public class DbSync {
 		}
 		
 		public void finalize() {
-			if (!mIsClosed)
-				Logger.logError(new RuntimeException("Finalizing non-closed statement: " + mSql));
+			if (!mIsClosed && DEBUG && BuildConfig.DEBUG) {
+                Logger.logError(new RuntimeException("DbSync.SynchronizedStatement: Finalizing non-closed statement (potential error/normal)" + (DEBUG ? ": " + mSql : "")));
+            }
+
 			// Try to close the underlying statement.
 			try {
 				mStatement.close();
-			} catch (Exception e) {
+			} catch (Exception ignore) {
 				// Ignore; may have been finalized
 			}
 		}

@@ -61,7 +61,7 @@ import static com.eleybourn.bookcatalogue.UniqueId.KEY_TITLE;
  *
  * @author n.silin
  */
-public abstract class BookDetailsFragmentAbstract extends BookEditFragmentAbstract {
+public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragment {
 
     public static final Character BOOKSHELF_SEPARATOR = ',';
 

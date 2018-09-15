@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -20,48 +19,109 @@ import java.io.IOException;
  * @author Philip Warner
  */
 public class ImportThread extends ManagedTask {
-	public static String UTF8 = "utf8";
-
-	// used in some commented out methods.
-	@SuppressWarnings("unused")
-	private static final int BUFFER_SIZE = 8192;
+    // used in commented out methods
+    //private static final int BUFFER_SIZE = 8192;
+    //public static final String UTF8 = "utf8";
+    //private final CatalogueDBAdapter mDb;
 
     private final String mFileSpec;
-    private CatalogueDBAdapter mDb;
-	private final Importer.CoverFinder mCoverFinder;
-	
-	public static class ImportException extends RuntimeException {
-		private static final long serialVersionUID = 1660687786319003483L;
+    private final Importer.CoverFinder mCoverFinder;
+    private final Importer.OnImporterListener mImportListener = new Importer.OnImporterListener() {
 
-		public ImportException(String s) {
-			super(s);
-		}
-	}
+        @Override
+        public void onProgress(String message, int position) {
+            if (position > 0) {
+                mManager.doProgress(ImportThread.this, message, position);
+            } else {
+                mManager.doProgress(message);
+            }
+        }
 
-	public ImportThread(@NonNull final TaskManager manager, @NonNull final String fileSpec) {
-		super(manager);
-        File file = new File(fileSpec);
-		// Changed getCanonicalPath to getAbsolutePath based on this bug in Android 2.1:
-		//     http://code.google.com/p/android/issues/detail?id=4961
-		mFileSpec = file.getAbsolutePath();
+        @Override
+        public boolean isCancelled() {
+            return ImportThread.this.isCancelled();
+        }
 
-		mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-		mDb.open();
+        @Override
+        public void setMax(int max) {
+            mManager.setMax(ImportThread.this, max);
+        }
+    };
 
-		mCoverFinder = new LocalCoverFinder(file.getParent(),
-				StorageUtils.getSharedStorage().getAbsolutePath());
+    public ImportThread(@NonNull final TaskManager manager, @NonNull final String fileSpec) {
+        super(manager);
+        final File file = new File(fileSpec);
+        // Changed getCanonicalPath to getAbsolutePath based on this bug in Android 2.1:
+        //     http://code.google.com/p/android/issues/detail?id=4961
+        mFileSpec = file.getAbsolutePath();
 
-		//getMessageSwitch().addListener(getSenderId(), taskHandler, false);
-		//Debug.startMethodTracing();
-	}
+        //mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+        //mDb.open();
 
-	@Override
-	protected void onThreadFinish() {
-		cleanup();
-	}
+        mCoverFinder = new LocalCoverFinder(file.getParent(),
+                StorageUtils.getSharedStorage().getAbsolutePath());
 
-	//private int mImportUpdated;
-	//private int mImportCreated;
+        //getMessageSwitch().addListener(getSenderId(), taskHandler, false);
+        //Debug.startMethodTracing();
+    }
+
+    @Override
+    protected void onThreadFinish() {
+        cleanup();
+    }
+
+    @Override
+    protected void onRun() {
+        FileInputStream in = null;
+        try {
+            in = new FileInputStream(mFileSpec);
+            new CsvImporter().importBooks(in, mCoverFinder, mImportListener, Importer.IMPORT_ALL);
+
+            if (isCancelled()) {
+                doToast(getString(R.string.cancelled));
+            } else {
+                doToast(getString(R.string.import_complete));
+            }
+        } catch (IOException e) {
+            doToast(BookCatalogueApp.getResourceString(R.string.import_failed_is_location_correct));
+            Logger.logError(e);
+        } finally {
+            if (in != null && in.getChannel().isOpen())
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    Logger.logError(e);
+                }
+        }
+    }
+
+    /**
+     * Cleanup any DB connection etc after main task has run.
+     */
+    private void cleanup() {
+//        if (mDb != null) {
+//            mDb.close();
+//            mDb = null;
+//        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        cleanup();
+        super.finalize();
+    }
+
+    static class ImportException extends RuntimeException {
+        private static final long serialVersionUID = 1660687786319003483L;
+
+        ImportException(String s) {
+            super(s);
+        }
+    }
+
+
+    //private int mImportUpdated;
+    //private int mImportCreated;
 
 //	/**
 //	 * This program reads a text file line by line and print to the console. It uses
@@ -86,72 +146,9 @@ public class ImportThread extends ManagedTask {
 //		}
 //		return importedString;
 //	}
-	
-	private final Importer.OnImporterListener mImportListener = new Importer.OnImporterListener() {
-
-		@Override
-		public void onProgress(String message, int position) {
-			if (position > 0) {
-				mManager.doProgress(ImportThread.this, message, position);
-			} else {
-				mManager.doProgress(message);
-			}
-		}
-
-		@Override
-		public boolean isCancelled() {
-			return ImportThread.this.isCancelled();
-		}
-
-		@Override
-		public void setMax(int max) {
-			mManager.setMax(ImportThread.this, max);
-		}
-	};
-
-	@Override
-	protected void onRun() {
-		FileInputStream in = null;
-		try {
-			in = new FileInputStream(mFileSpec);
-            new CsvImporter().importBooks(in, mCoverFinder, mImportListener, Importer.IMPORT_ALL);
-
-			if (isCancelled()) {
-				doToast(getString(R.string.cancelled));
-			} else {
-				doToast(getString(R.string.import_complete));
-			}
-		} catch (IOException e) {
-			doToast(BookCatalogueApp.getResourceString(R.string.import_failed_is_location_correct));
-			Logger.logError(e);
-		} finally {
-			if (in != null && in.getChannel().isOpen())
-				try {
-					in.close();
-				} catch (IOException e) {
-					Logger.logError(e);
-				}
-		}
-	}
-
-    /**
-     * Cleanup any DB connection etc after main task has run.
-     */
-    private void cleanup() {
-        if (mDb != null) {
-            mDb.close();
-            mDb = null;
-        }
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        cleanup();
-        super.finalize();
-    }
 
 
-	//  see {@link ImportThread}
+    //  see {@link ImportThread}
 
 //		if (export == null || export.size() == 0)
 //			return;

@@ -36,6 +36,7 @@ import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.Fragmen
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTaskAbstract;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 
@@ -46,29 +47,7 @@ import java.util.Date;
  */
 public class BackupManager {
 
-    /**
-     * Create a BackupReader for the specified file.
-     *
-     * @param file File to read
-     *
-     * @return a new reader
-     *
-     * @throws IOException (inaccessible, invalid other other errors)
-     */
-    public static BackupReader readBackup(@NonNull final File file) throws IOException {
-        if (!file.exists())
-            throw new java.io.FileNotFoundException("Attempt to open non-existent backup file");
 
-        // We only support one backup format; so we use that. In future we would need to
-        // explore the file to determine which format to use
-        TarBackupContainer bkp = new TarBackupContainer(file);
-        // Each format should provide a validator of some kind
-        if (!bkp.isValid()) {
-            throw new IOException("Not a valid backup file");
-        }
-
-        return bkp.newReader();
-    }
 
     /**
      * Esnure the file name extension is what we want
@@ -87,23 +66,26 @@ public class BackupManager {
      *
      * We use a FragmentTask so that long actions do not occur in the UI thread.
      */
-    public static File backupCatalogue(@NonNull final FragmentActivity context, @NonNull final File requestedFile,
-                                       int taskId, final int backupFlags, final Date since) {
+    public static File backupCatalogue(@NonNull final FragmentActivity context,
+                                       @NonNull final File requestedFile, final int taskId,
+                                       final int backupFlags, final Date since) {
         final int flags = backupFlags & Exporter.EXPORT_MASK;
-        if (flags == 0)
+        if (flags == 0) {
             throw new RuntimeException("Backup flags must be specified");
-        //if (flags == (Exporter.EXPORT_ALL | Exporter.EXPORT_NEW_OR_UPDATED) )
+        }
+        //if (flags == (Exporter.EXPORT_ALL | Exporter.EXPORT_NEW_OR_UPDATED) ) {
         //	throw new RuntimeException("Illegal backup flag combination: ALL and NEW_OR_UPADTED");
+        //}
 
         final File resultingFile = cleanupFile(requestedFile);
         final File tempFile = new File(resultingFile.getAbsolutePath() + ".tmp");
 
-        FragmentTask task = new FragmentTaskAbstract() {
+        final FragmentTask task = new FragmentTaskAbstract() {
             private final String mBackupDate = DateUtils.toSqlDateTime(new Date());
             private boolean mBackupOk = false;
 
             @Override
-            public void run(final SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
+            public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
                 BackupWriter wrt = null;
 
                 try {
@@ -199,7 +181,8 @@ public class BackupManager {
             }
 
         };
-        SimpleTaskQueueProgressFragment frag = SimpleTaskQueueProgressFragment.runTaskWithProgress(context, R.string.backing_up_ellipsis, task, false, taskId);
+        SimpleTaskQueueProgressFragment frag = SimpleTaskQueueProgressFragment
+                .runTaskWithProgress(context, R.string.backing_up_ellipsis, task, false, taskId);
         frag.setNumberFormat(null);
         return resultingFile;
     }
@@ -209,17 +192,19 @@ public class BackupManager {
      *
      * We use a FragmentTask so that long actions do not occur in the UI thread.
      */
-    public static void restoreCatalogue(@NonNull final FragmentActivity context, final File inputFile, int taskId, final int importFlags) {
+    public static void restoreCatalogue(@NonNull final FragmentActivity context,
+                                        @NonNull final File inputFile, final int taskId,
+                                        final int importFlags) {
 
-        FragmentTask task = new FragmentTaskAbstract() {
+        final FragmentTask task = new FragmentTaskAbstract() {
             @Override
-            public void run(final SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
+            public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
                 try {
                     if (BuildConfig.DEBUG) {
-                        System.out.println("Starting " + inputFile.getAbsolutePath());
+                        System.out.println("Importing " + inputFile.getAbsolutePath());
                     }
-                    BackupReader rdr = BackupManager.readBackup(inputFile);
-                    rdr.restore(new BackupReaderListener() {
+
+                    readBackup(inputFile).restore(new BackupReaderListener() {
                         @Override
                         public void setMax(int max) {
                             fragment.setMax(max);
@@ -235,7 +220,8 @@ public class BackupManager {
                             return fragment.isCancelled();
                         }
                     }, importFlags);
-                } catch (Exception e) {
+
+                } catch (IOException e) {
                     Logger.logError(e);
                     throw new RuntimeException("Error during restore", e);
                 }
@@ -247,5 +233,30 @@ public class BackupManager {
         SimpleTaskQueueProgressFragment frag = SimpleTaskQueueProgressFragment.runTaskWithProgress(context,
                 R.string.importing_ellipsis, task, false, taskId);
         frag.setNumberFormat(null);
+    }
+
+    /**
+     * Create a BackupReader for the specified file.
+     *
+     * @param file File to read
+     *
+     * @return a new reader
+     *
+     * @throws IOException (inaccessible, invalid other other errors)
+     */
+    public static BackupReader readBackup(@NonNull final File file) throws IOException {
+        if (!file.exists()) {
+            throw new FileNotFoundException("Attempt to open non-existent backup file");
+        }
+
+        // We only support one backup format; so we use that. In future we would need to
+        // explore the file to determine which format to use
+        TarBackupContainer bkp = new TarBackupContainer(file);
+        // Each format should provide a validator of some kind
+        if (!bkp.isValid()) {
+            throw new IOException("Not a valid backup file");
+        }
+
+        return bkp.newReader();
     }
 }

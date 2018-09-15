@@ -211,7 +211,7 @@
         <activity android:name=".BookISBNSearchActivity" />
 
         <!-- Edit a book + the related author/series -->
-        <activity android:name=".BookEdit" />
+        <activity android:name=".EditBookActivity" />
         <activity android:name=".EditAuthorListActivity" />
         <activity android:name=".EditSeriesListActivity" />
 

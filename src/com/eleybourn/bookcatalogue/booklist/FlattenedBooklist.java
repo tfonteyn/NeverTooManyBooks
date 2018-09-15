@@ -1,6 +1,8 @@
 package com.eleybourn.bookcatalogue.booklist;
 
 import android.database.sqlite.SQLiteDoneException;
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
@@ -26,6 +28,7 @@ public class FlattenedBooklist implements AutoCloseable {
     private static final String COUNT_STMT_NAME = "count";
     /** Name for the 'absolute-position' statement */
     private static final String POSITION_STMT_NAME = "position";
+
     /** Underlying temporary table definition */
     private TableDefinition mTable;
     /** Connection to db; we need this to keep the table alive */
@@ -43,7 +46,7 @@ public class FlattenedBooklist implements AutoCloseable {
      * @param db    Database connection
      * @param table Table definition
      */
-    FlattenedBooklist(SynchronizedDb db, TableDefinition table) {
+    FlattenedBooklist(@NonNull final SynchronizedDb db, @NonNull final TableDefinition table) {
         init(db, table.clone());
     }
 
@@ -53,7 +56,7 @@ public class FlattenedBooklist implements AutoCloseable {
      * @param db        Database connection
      * @param tableName Name of underlying table
      */
-    public FlattenedBooklist(SynchronizedDb db, String tableName) {
+    public FlattenedBooklist(@NonNull final SynchronizedDb db, @NonNull final String tableName) {
         TableDefinition flat = TBL_ROW_NAVIGATOR_FLATTENED_DEFN.clone();
         flat.setName(tableName);
         flat.setType(TableTypes.Temporary); //RELEASE Make sure is TEMPORARY
@@ -66,7 +69,7 @@ public class FlattenedBooklist implements AutoCloseable {
      * @param db    Database connection
      * @param table Table definition
      */
-    private void init(SynchronizedDb db, TableDefinition table) {
+    private void init(@NonNull final SynchronizedDb db, @NonNull final TableDefinition table) {
         mSyncedDb = db;
         mTable = table;
         mStatements = new SqlStatementManager(mSyncedDb);
@@ -99,7 +102,7 @@ public class FlattenedBooklist implements AutoCloseable {
     /**
      * Passed a statement update the 'current' row details based on the columns returned
      */
-    private boolean updateDetailsFromStatement(SynchronizedStatement stmt) {
+    private boolean updateDetailsFromStatement(@NonNull final SynchronizedStatement stmt) {
         // Get a pair of ID's separated by a '/'
         String info;
         try {
@@ -180,11 +183,11 @@ public class FlattenedBooklist implements AutoCloseable {
      * @return true if successful
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean moveTo(Integer pos) {
+    public boolean moveTo(@NonNull final Integer pos) {
         SynchronizedStatement stmt = mStatements.get(MOVE_STMT_NAME);
         if (stmt == null) {
-            String sql = "Select " + mTable.dot(DOM_ID) + "|| '/' || " + mTable.dot(DOM_BOOK)
-                    + " From " + mTable.ref() + " Where " + mTable.dot(DOM_ID) + " = ?";
+            String sql = "Select " + mTable.dot(DOM_ID) + "|| '/' || " + mTable.dot(DOM_BOOK) +
+                    " From " + mTable.ref() + " Where " + mTable.dot(DOM_ID) + " = ?";
             stmt = mStatements.add(MOVE_STMT_NAME, sql);
         }
         stmt.bindLong(1, pos);
@@ -256,8 +259,8 @@ public class FlattenedBooklist implements AutoCloseable {
     public long getAbsolutePosition() {
         SynchronizedStatement stmt = mStatements.get(POSITION_STMT_NAME);
         if (stmt == null) {
-            String sql = "Select Count(*) From " + mTable.ref()
-                    + " where " + mTable.dot(DOM_ID) + " <= ?";
+            String sql = "Select Count(*) From " + mTable.ref() +
+                    " where " + mTable.dot(DOM_ID) + " <= ?";
             stmt = mStatements.add(POSITION_STMT_NAME, sql);
         }
         stmt.bindLong(1, mPosition);

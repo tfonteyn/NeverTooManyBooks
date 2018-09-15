@@ -41,6 +41,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GENRE
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_KIND;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LANGUAGE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LEVEL;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ;
@@ -450,6 +451,18 @@ public class BooklistRowView {
 				throw new RuntimeException("Column " + DOM_GENRE + " not present in cursor");
 		}
 		return mCursor.getString(mGenreCol);
+	}
+	/**
+	 * Convenience function to retrieve column value.
+	 */
+	private int mLocationCol = -2;
+	public String getLocation() {
+		if (mLocationCol < 0) {
+			mLocationCol = mCursor.getColumnIndex(DOM_LOCATION.name);
+			if (mLocationCol < 0)
+				throw new RuntimeException("Column " + DOM_LOCATION + " not present in cursor");
+		}
+		return mCursor.getString(mLocationCol);
 	}
 	/**
 	 * Convenience function to retrieve column value.

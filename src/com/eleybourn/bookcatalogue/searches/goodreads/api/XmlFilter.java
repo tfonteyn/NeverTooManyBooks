@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -20,240 +20,263 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
-import org.xml.sax.Attributes;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
 
 /**
- * A class to help parsing Sax Xml output. For goodreads XML output, 90% of the XML can be 
+ * A class to help parsing Sax Xml output. For goodreads XML output, 90% of the XML can be
  * thrown away but we do need to ensure we get the tags from the right context. The XmlFilter
  * objects build a tree of filters and XmlHandler objects that make this process more manageable.
- * 
+ *
  * See SearchBooksApiHandler for an example of usage.
- * 
+ *
  * @author Philip Warner
  */
 public class XmlFilter {
-	/** The tag for this specific filter */
-	private final String mTagName;
-	/** A hashtable to ensure that there are no more than one sub-filter per tag at a given level */
+    /** The tag for this specific filter */
+    private final String mTagName;
+    /** A hashtable to ensure that there are no more than one sub-filter per tag at a given level */
     private final Hashtable<String, XmlFilter> mSubFilterHash = new Hashtable<>();
-	/** List of sub-filters for this filter */
+    /** List of sub-filters for this filter */
     private final ArrayList<XmlFilter> mSubFilters = new ArrayList<>();
-	/** Action to perform, if any, when the associated tag is started */
+    /** Action to perform, if any, when the associated tag is started */
     private XmlHandler mStartAction = null;
-	/** Optional parameter put in context before action is called */
+    /** Optional parameter put in context before action is called */
     private Object mStartArg = null;
-	
-	/** Action to perform, if any, when the associated tag is finished */
+
+    /** Action to perform, if any, when the associated tag is finished */
     private XmlHandler mEndAction = null;
-	/** Optional parameter put in context before action is called */
+    /** Optional parameter put in context before action is called */
     private Object mEndArg = null;
 
-	/** Interface definition for filter handlers */
-	public interface XmlHandler {
-		void process(ElementContext context);
-	}
+    /**
+     * Constructor
+     *
+     * @param pattern The tag that this filter handles
+     */
+    public XmlFilter(@NonNull final String pattern) {
+        mTagName = pattern;
+    }
 
-	/** Interface definition for filter handlers */
-	public interface XmlHandlerExt<T> {
-		void process(ElementContext context, T arg);
-	}
+    /**
+     * Static method to add a filter to a passed tree and return the matching XmlFilter
+     *
+     * @param root    Root XmlFilter object.
+     * @param filters Names of tags to add to tree, if not present.
+     *
+     * @return The filter matching the final tag name passed.
+     */
+    @Nullable
+    public static XmlFilter buildFilter(@NonNull final XmlFilter root, final String... filters) {
+        if (filters.length <= 0)
+            return null;
+        return buildFilter(root, 0, Arrays.asList(filters).iterator());
+    }
 
-	/**
-	 * Class used to define the context of a specific tag. The 'body' element will only be
-	 * filled in the call to the 'processEnd' method.
-	 * @author Philip Warner
-	 *
-	 */
-	public static class ElementContext {
-		public final String uri;
-		public final String localName;
-		public final String name;
-		public final Attributes attributes;
-		public final String preText;
-		public String body;
-		public XmlFilter filter;
-		public ElementContext(String uri, String localName, String name, Attributes attributes, String preText) {
-			this.uri = uri;
-			this.localName = localName;
-			this.name = name;
-			this.attributes = attributes;
-			this.preText = preText;
-		}
-		public Object userArg;
-	}
+    /**
+     * Static method to add a filter to a passed tree and return the matching XmlFilter
+     *
+     * @param root    Root XmlFilter object.
+     * @param filters Names of tags to add to tree, if not present.
+     *
+     * @return The filter matching the final tag name passed.
+     */
+    @Nullable
+    public static XmlFilter buildFilter(@NonNull final XmlFilter root, @NonNull final ArrayList<String> filters) {
+        if (filters.size() <= 0)
+            return null;
+        return buildFilter(root, 0, filters.iterator());
+    }
 
-	/**
-	 * Constructor
-	 * 
-	 * @param pattern The tag that this filter handles
-	 */
-	public XmlFilter(String pattern) {
-		mTagName = pattern;
-	}
+    /**
+     * Internal implementation of method to add a filter to a passed tree and return the matching XmlFilter.
+     * This is called recursively to process the filter list.
+     *
+     * @param root  Root XmlFilter object.
+     * @param depth Recursion depth
+     * @param iter  Names of tags to add to tree, if not present.
+     *
+     * @return The filter matching the final tag name passed.
+     */
+    @NonNull
+    private static XmlFilter buildFilter(@NonNull final XmlFilter root, int depth, @NonNull final Iterator<String> iter) {
+        //if (!root.matches(filters[depth]))
+        //	throw new RuntimeException("Filter at depth=" + depth + " does not match first filter parameter");
+        final String curr = iter.next();
+        XmlFilter sub = root.getSubFilter(curr);
+        if (sub == null) {
+            sub = new XmlFilter(curr);
+            root.addFilter(sub);
+        }
+        if (!iter.hasNext()) {
+            // At end
+            return sub;
+        } else {
+            // We are still finding leaf
+            return buildFilter(sub, depth + 1, iter);
+        }
+    }
 
-	/**
-	 * Check if this filter matches the passed XML tag
-	 * 
-	 * @param tag	Tag name
-	 *
-	 * @return		Boolean indicating it matches.
-	 */
-	private boolean matches(String tag) {
-		return mTagName.equalsIgnoreCase(tag);
-	}
-	
-	/**
-	 * Find a sub-filter for the passed context.
-	 * Currently just used local_name from the context.
-	 */
-	public XmlFilter getSubFilter(ElementContext context) {
-		return getSubFilter(context.localName);
-	}
-	/**
-	 * Find a sub-filter based on the passed tag name.
-	 * 
-	 * @param name	XML tag name
-	 * @return		Matching filter, or NULL
-	 */
-	private XmlFilter getSubFilter(String name) {
-		for(XmlFilter f : mSubFilters) {
-			if (f.matches(name))
-				return f;
-		}
-		return null;
-	}
-	/**
-	 * Called when associated tag is started.
-	 */
-	public void processStart(ElementContext context) {
-		if (mStartAction != null) {
-			context.userArg = mStartArg;
-			mStartAction.process(context);			
-		}
-	}
-	/**
-	 * Called when associated tag is finished.
-	 */
-	public void processEnd(ElementContext context) {
-		if (mEndAction != null) {
-			context.userArg = mEndArg;
-			mEndAction.process(context);			
-		}
-	}
-	/**
-	 * Get the tag that this filter will match
-	 */
-	private String getTagName() {
-		return mTagName;
-	}
+    /**
+     * Check if this filter matches the passed XML tag
+     *
+     * @param tag Tag name
+     *
+     * @return Boolean indicating it matches.
+     */
+    private boolean matches(String tag) {
+        return mTagName.equalsIgnoreCase(tag);
+    }
 
-	/**
-	 * Set the action to perform when the tag associated with this filter is finished.
-	 * 
-	 * @param endAction		XmlHandler to call
-	 * 
-	 * @return		This XmlFilter, to allow chaining
-	 */
-	@SuppressWarnings("UnusedReturnValue")
-	public XmlFilter setEndAction(XmlHandler endAction) {
-		return setEndAction(endAction, null);
-	}
-	public XmlFilter setEndAction(XmlHandler endAction, Object userArg) {
-		if (mEndAction != null)
-			throw new RuntimeException("End Action already set");			
-		mEndAction = endAction;
-		mEndArg = userArg;
-		return this;
-	}
+    /**
+     * Find a sub-filter for the passed context.
+     * Currently just used local_name from the context.
+     */
+    public XmlFilter getSubFilter(@NonNull final ElementContext context) {
+        return getSubFilter(context.localName);
+    }
 
-	/**
-	 * Set the action to perform when the tag associated with this filter is started.
-	 * 
-	 * @param startAction		XmlHandler to call
-	 * 
-	 * @return		This XmlFilter, to allow chaining
-	 */
-	public XmlFilter setStartAction(XmlHandler startAction) {
-		return setStartAction(startAction, null);
-	}
-	public XmlFilter setStartAction(XmlHandler startAction, Object userArg) {
-		if (mStartAction != null)
-			throw new RuntimeException("Start Action already set");			
-		mStartAction = startAction;
-		mStartArg = userArg;
-		return this;
-	}
+    /**
+     * Find a sub-filter based on the passed tag name.
+     *
+     * @param name XML tag name
+     *
+     * @return Matching filter, or NULL
+     */
+    @Nullable
+    private XmlFilter getSubFilter(String name) {
+        for (XmlFilter f : mSubFilters) {
+            if (f.matches(name))
+                return f;
+        }
+        return null;
+    }
 
-	/**
-	 * Add a filter at this level; ensure it is unique.
-	 * 
-	 * @param filter	filter to add
-	 */
-	private void addFilter(XmlFilter filter) {
-		String lcPat = filter.getTagName().toLowerCase();
-		if (mSubFilterHash.containsKey(lcPat))
-			throw new RuntimeException("Filter " + filter.getTagName() + " already exists");
-		mSubFilterHash.put(lcPat, filter);
-		mSubFilters.add(filter);
-	}
+    /**
+     * Called when associated tag is started.
+     */
+    public void processStart(@NonNull final ElementContext context) throws SAXException {
+        if (mStartAction != null) {
+            context.userArg = mStartArg;
+            mStartAction.process(context);
+        }
+    }
 
-	/**
-	 * Static method to add a filter to a passed tree and return the matching XmlFilter
-	 * 
-	 * @param root		Root XmlFilter object.
-	 * @param filters	Names of tags to add to tree, if not present. 
-	 * 
-	 * @return			The filter matching the final tag name passed.
-	 */
-	public static XmlFilter buildFilter(XmlFilter root, String... filters ) {
-		if (filters.length <= 0)
-			return null;
-		return buildFilter(root, 0, Arrays.asList(filters).iterator());
-	}
-	/**
-	 * Static method to add a filter to a passed tree and return the matching XmlFilter
-	 * 
-	 * @param root		Root XmlFilter object.
-	 * @param filters	Names of tags to add to tree, if not present. 
-	 * 
-	 * @return			The filter matching the final tag name passed.
-	 */
-	public static XmlFilter buildFilter(XmlFilter root, ArrayList<String> filters ) {
-		if (filters.size() <= 0)
-			return null;
-		return buildFilter(root, 0, filters.iterator());
-	}
-	/**
-	 * Internal implementation of method to add a filter to a passed tree and return the matching XmlFilter.
-	 * This is called recursively to process the filter list.
-	 * 
-	 * @param root		Root XmlFilter object.
-	 * @param depth		Recursion depth
-	 * @param iter		Names of tags to add to tree, if not present.
-	 *
-	 * @return			The filter matching the final tag name passed.
-	 */
-	private static XmlFilter buildFilter(XmlFilter root, int depth, Iterator<String> iter ) {
-		//if (!root.matches(filters[depth]))
-		//	throw new RuntimeException("Filter at depth=" + depth + " does not match first filter parameter");
-		final String curr = iter.next();
-		XmlFilter sub = root.getSubFilter(curr);
-		if (sub == null) {
-			sub = new XmlFilter(curr);
-			root.addFilter(sub);
-		}
-		if (!iter.hasNext()) {
-			// At end
-			return sub;
-		} else {
-			// We are still finding leaf
-			return buildFilter( sub, depth+1, iter );			
-		}
-	}
-	
+    /**
+     * Called when associated tag is finished.
+     */
+    public void processEnd(@NonNull final ElementContext context) throws SAXException {
+        if (mEndAction != null) {
+            context.userArg = mEndArg;
+            mEndAction.process(context);
+        }
+    }
+
+    /**
+     * Get the tag that this filter will match
+     */
+    private String getTagName() {
+        return mTagName;
+    }
+
+    /**
+     * Set the action to perform when the tag associated with this filter is finished.
+     *
+     * @param endAction XmlHandler to call
+     *
+     * @return This XmlFilter, to allow chaining
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    public XmlFilter setEndAction(@NonNull final XmlHandler endAction) {
+        return setEndAction(endAction, null);
+    }
+
+    @NonNull
+    public XmlFilter setEndAction(@NonNull final XmlHandler endAction, final Object userArg) {
+        if (mEndAction != null)
+            throw new RuntimeException("End Action already set");
+        mEndAction = endAction;
+        mEndArg = userArg;
+        return this;
+    }
+
+    /**
+     * Set the action to perform when the tag associated with this filter is started.
+     *
+     * @param startAction XmlHandler to call
+     *
+     * @return This XmlFilter, to allow chaining
+     */
+    @NonNull
+    public XmlFilter setStartAction(@NonNull final XmlHandler startAction) {
+        return setStartAction(startAction, null);
+    }
+
+    @NonNull
+    public XmlFilter setStartAction(@NonNull final XmlHandler startAction, final Object userArg) {
+        if (mStartAction != null)
+            throw new RuntimeException("Start Action already set");
+        mStartAction = startAction;
+        mStartArg = userArg;
+        return this;
+    }
+
+    /**
+     * Add a filter at this level; ensure it is unique.
+     *
+     * @param filter filter to add
+     */
+    private void addFilter(@NonNull final XmlFilter filter) {
+        String lcPat = filter.getTagName().toLowerCase();
+        if (mSubFilterHash.containsKey(lcPat))
+            throw new RuntimeException("Filter " + filter.getTagName() + " already exists");
+        mSubFilterHash.put(lcPat, filter);
+        mSubFilters.add(filter);
+    }
+
+    /** Interface definition for filter handlers */
+    public interface XmlHandler {
+        void process(ElementContext context);
+    }
+
+    /** Interface definition for filter handlers */
+    public interface XmlHandlerExt<T> {
+        void process(ElementContext context, T arg) throws IOException;
+    }
+
+    /**
+     * Class used to define the context of a specific tag. The 'body' element will only be
+     * filled in the call to the 'processEnd' method.
+     *
+     * @author Philip Warner
+     */
+    public static class ElementContext {
+        public final String uri;
+        public final String localName;
+        public final String name;
+        public final Attributes attributes;
+        public final String preText;
+        public String body;
+        public XmlFilter filter;
+        public Object userArg;
+
+        public ElementContext(String uri, String localName, String name, Attributes attributes, String preText) {
+            this.uri = uri;
+            this.localName = localName;
+            this.name = name;
+            this.attributes = attributes;
+            this.preText = preText;
+        }
+    }
+
 }

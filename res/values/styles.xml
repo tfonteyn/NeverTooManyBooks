@@ -290,7 +290,48 @@
         <item name="android:paddingEnd">@dimen/padding_border</item>
         <item name="android:paddingStart">@dimen/padding_border</item>
     </style>
-    <!--
-    **************************************************************************************
-    -->
+
+    <!-- experimenting with colours -->
+
+    <style name="booksonbookshelf_header">
+        <item name="android:backgroundTint">#d7ccc8</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="booksonbookshelf_list">
+    </style>
+
+    <style name="booksonbookshelf_nav_view_header">
+        <item name="android:padding">@dimen/padding_border_triple</item>
+        <item name="android:background">#3d5afe</item>
+    </style>
+
+    <style name="booksonbookshelf_nav_view">
+        <item name="android:background">#e6ffffff</item>
+    </style>
+
+    <style name="booklist_book_row_minor_fields">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingEnd">@dimen/padding_border</item>
+        <item name="android:paddingStart">@dimen/padding_border</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textIsSelectable">true</item>
+    </style>
+
+    <style name="read_checkbox">
+        <item name="android:layout_weight">0</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:checkMark">?android:attr/textCheckMark</item>
+        <item name="android:padding">0dp</item>
+    </style>
+
+    <style name="ImageViewButton">
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:paddingEnd">@dimen/padding_border</item>
+        <item name="android:paddingStart">@dimen/padding_border</item>
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+    </style>
 </resources>

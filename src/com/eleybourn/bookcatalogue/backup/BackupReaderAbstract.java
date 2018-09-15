@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -20,12 +20,13 @@
 package com.eleybourn.bookcatalogue.backup;
 
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -36,158 +37,158 @@ import java.io.InputStream;
 import java.util.Date;
 
 /**
- * Basic implementation of format-agnostic BackupReader methods using 
+ * Basic implementation of format-agnostic BackupReader methods using
  * only a limited set of methods from the base interface.
- * 
+ *
  * @author pjw
  */
 public abstract class BackupReaderAbstract implements BackupReader {
-	private final CatalogueDBAdapter mDb;
+    private final CatalogueDBAdapter mDb;
 
-	/**
-	 * Constructor
-	 */
-	protected BackupReaderAbstract() {
-		mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-		mDb.open();
-	}
-
-	/**
-	 * Do a full restore, sending progress to the listener
-	 */
-	@Override
-	public void restore(BackupReaderListener listener, int importFlags) throws IOException {
-		// Just a stat for progress
-		int coverCount = 0;
-
-		// This is an estimate only; we actually don't know how many covers
-		// there are in the backup.
-		BackupInfo info = getInfo();
-		int maxSteps = info.getBookCount();
-		if (info.hasCoverCount())
-			maxSteps += info.getCoverCount();
-		else 
-			maxSteps *= 2;
-		maxSteps++;
-		listener.setMax(maxSteps);
-
-		// Get first entity (this will be the entity AFTER the INFO entities)
-		ReaderEntity entity = nextEntity();
-		// While not at end, loop, processing each entry based on type
-		while (entity != null && !listener.isCancelled()) {
-			switch (entity.getType()) {
-			case Books:
-				restoreBooks(listener, entity, importFlags);
-				break;
-			case Cover:
-				coverCount++;
-				restoreCover(listener, entity, importFlags);
-				break;
-			case Database:
-				break;
-			case Preferences:
-				restorePreferences(listener, entity);
-				break;
-			case BooklistStyle:
-				restoreStyle(listener, entity);
-				break;
-			case Info:
-				break;
-			default:
-				throw new RuntimeException("Unknown Entity type: " + entity.getType().toString());
-			}
-			entity = nextEntity();
-		}
-		close();
-
-		if (BuildConfig.DEBUG) {
-			System.out.println("Restored " + coverCount + " covers");
-		}
-	}
-
-	/**
-	 * Restore the books from the export file.
-	 */
-	private void restoreBooks(final BackupReaderListener listener, ReaderEntity entity, int importFlags) throws IOException {
-		// Make a listener for the 'export' function that just passes on the progress to out listener
-		Importer.OnImporterListener importListener = new Importer.OnImporterListener() {
-			private int mLastPos = 0;
-
-			@Override
-			public void onProgress(String message, int position) {
-				// The progress is sent periodically and has jumps, so we calculate deltas
-				listener.step(message, position - mLastPos);
-				mLastPos = position;
-			}
-
-			@Override
-			public boolean isCancelled() {
-				return listener.isCancelled();
-			}
-
-			@Override
-			public void setMax(int max) {
-				// Ignore; we know how many books there are
-			}
-		};
-
-		// Now do the import
-		InputStream in = entity.getStream();
-		CsvImporter importer = new CsvImporter();
-		importer.importBooks(in, null, importListener, importFlags);
-	}
-
-	/**
-	 * Restore a cover file.
-	 */
-	private void restoreCover(BackupReaderListener listener, ReaderEntity cover, int flags) throws IOException {
-		listener.step("Processing Covers...", 1);
-		final File curr = StorageUtils.getFile(cover.getName());
-		final Date covDate = cover.getDateModified();
-		if ( (flags & Importer.IMPORT_NEW_OR_UPDATED) != 0) {			
-			if (curr.exists()) {
-				Date currFileDate = new Date(curr.lastModified());
-				if (currFileDate.compareTo(covDate) >= 0) {
-					return;
-				}
-			}
-		}
-		cover.saveToDirectory(StorageUtils.getSharedStorage());
-		//noinspection ResultOfMethodCallIgnored
-		curr.setLastModified(covDate.getTime());
+    /**
+     * Constructor
+     */
+    protected BackupReaderAbstract() {
+        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+        mDb.open();
     }
 
-	/**
-	 * Restore the app preferences
-	 */
-	private void restorePreferences(BackupReaderListener listener, ReaderEntity entity) throws IOException {
-		listener.step("Preferences...", 1);
-		SharedPreferences prefs = BCPreferences.getSharedPreferences();
-		entity.getPreferences(prefs);
-	}
+    /**
+     * Do a full restore, sending progress to the listener
+     */
+    @Override
+    public void restore(@NonNull final BackupReaderListener listener, final int importFlags) throws IOException {
+        // Just a stat for progress
+        int coverCount = 0;
 
-	/**
-	 * Restore a booklist style
-	 */
-	private void restoreStyle(BackupReaderListener listener, ReaderEntity entity) throws IOException {
-		listener.step("Booklist Styles...", 1);
-		BooklistStyle s = null;
-		try {
-			s = (BooklistStyle) entity.getSerializable();
-		} catch (DeserializationException e) {
-			Logger.logError(e, "Unable to restore style");
-		}
-		if (s != null) {
-			s.saveToDb(mDb);
-		}
-	}
+        // This is an estimate only; we actually don't know how many covers
+        // there are in the backup.
+        final BackupInfo info = getInfo();
+        int maxSteps = info.getBookCount();
+        if (info.hasCoverCount())
+            maxSteps += info.getCoverCount();
+        else
+            maxSteps *= 2;
+        maxSteps++;
+        listener.setMax(maxSteps);
 
-	/**
-	 * Close the reader
-	 */
-	@Override
-	public void close() throws IOException {
-		mDb.close();
-	}
+        // Get first entity (this will be the entity AFTER the INFO entities)
+        ReaderEntity entity = nextEntity();
+        // While not at end, loop, processing each entry based on type
+        while (entity != null && !listener.isCancelled()) {
+            switch (entity.getType()) {
+                case Books:
+                    restoreBooks(listener, entity, importFlags);
+                    break;
+                case Cover:
+                    coverCount++;
+                    restoreCover(listener, entity, importFlags);
+                    break;
+                case Database:
+                    break;
+                case Preferences:
+                    restorePreferences(listener, entity);
+                    break;
+                case BooklistStyle:
+                    restoreStyle(listener, entity);
+                    break;
+                case Info:
+                    break;
+                default:
+                    throw new RuntimeException("Unknown Entity type: " + entity.getType());
+            }
+            entity = nextEntity();
+        }
+        close();
+
+        if (BuildConfig.DEBUG) {
+            System.out.println("Restored " + coverCount + " covers");
+        }
+    }
+
+    /**
+     * Restore the books from the export file.
+     */
+    private void restoreBooks(@NonNull final BackupReaderListener listener, @NonNull final ReaderEntity entity, final int importFlags) throws IOException {
+        // Make a listener for the 'export' function that just passes on the progress to out listener
+        Importer.OnImporterListener importListener = new Importer.OnImporterListener() {
+            private int mLastPos = 0;
+
+            @Override
+            public void onProgress(String message, int position) {
+                // The progress is sent periodically and has jumps, so we calculate deltas
+                listener.step(message, position - mLastPos);
+                mLastPos = position;
+            }
+
+            @Override
+            public boolean isCancelled() {
+                return listener.isCancelled();
+            }
+
+            @Override
+            public void setMax(int max) {
+                // Ignore; we know how many books there are
+            }
+        };
+
+        // Now do the import
+        InputStream in = entity.getStream();
+        CsvImporter importer = new CsvImporter();
+        importer.importBooks(in, null, importListener, importFlags);
+    }
+
+    /**
+     * Restore a cover file.
+     */
+    private void restoreCover(@NonNull final BackupReaderListener listener, @NonNull final ReaderEntity cover, final int flags) throws IOException {
+        listener.step("Processing Covers...", 1);
+        final File curr = StorageUtils.getFile(cover.getName());
+        final Date covDate = cover.getDateModified();
+        if ((flags & Importer.IMPORT_NEW_OR_UPDATED) != 0) {
+            if (curr.exists()) {
+                Date currFileDate = new Date(curr.lastModified());
+                if (currFileDate.compareTo(covDate) >= 0) {
+                    return;
+                }
+            }
+        }
+        cover.saveToDirectory(StorageUtils.getSharedStorage());
+        //noinspection ResultOfMethodCallIgnored
+        curr.setLastModified(covDate.getTime());
+    }
+
+    /**
+     * Restore the app preferences
+     */
+    private void restorePreferences(@NonNull final BackupReaderListener listener, @NonNull final ReaderEntity entity) throws IOException {
+        listener.step("Preferences...", 1);
+        SharedPreferences prefs = BCPreferences.getSharedPreferences();
+        entity.getPreferences(prefs);
+    }
+
+    /**
+     * Restore a booklist style
+     */
+    private void restoreStyle(@NonNull final BackupReaderListener listener, @NonNull final ReaderEntity entity) throws IOException {
+        listener.step("Booklist Styles...", 1);
+        BooklistStyle s = null;
+        try {
+            s = (BooklistStyle) entity.getSerializable();
+        } catch (DeserializationException e) {
+            Logger.logError(e, "Unable to restore style");
+        }
+        if (s != null) {
+            s.saveToDb(mDb);
+        }
+    }
+
+    /**
+     * Close the reader
+     */
+    @Override
+    public void close() throws IOException {
+        mDb.close();
+    }
 
 }

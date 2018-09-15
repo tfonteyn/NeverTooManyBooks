@@ -25,18 +25,12 @@
         android:layout_weight="1"
         android:gravity="start"
         android:orientation="vertical"
-        android:paddingBottom="@dimen/padding_border"
-        android:paddingEnd="@dimen/padding_border"
-        android:paddingStart="@dimen/padding_border"
-        android:paddingTop="@dimen/padding_border">
+        android:padding="@dimen/padding_border">
 
         <TextView
             android:id="@+id/series_num_long"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingEnd="@dimen/padding_border"
-            android:paddingStart="@dimen/padding_border"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            style="@style/booklist_book_row_minor_fields"
+            tools:ignore="SelectableText"
             tools:text="series_num_long" />
 
         <LinearLayout
@@ -49,6 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
+                tools:ignore="SelectableText"
                 tools:text="###" />
 
             <TextView
@@ -59,68 +54,46 @@
                 android:paddingStart="@dimen/padding_border"
                 android:singleLine="false"
                 android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:ignore="SelectableText"
                 tools:text="book title" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/author"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingEnd="@dimen/padding_border"
-            android:paddingStart="@dimen/padding_border"
-            android:singleLine="true"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            style="@style/booklist_book_row_minor_fields"
+            tools:ignore="SelectableText"
             tools:text="author name" />
 
         <TextView
             android:id="@+id/shelves"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingEnd="@dimen/padding_border"
-            android:paddingStart="@dimen/padding_border"
-            android:singleLine="true"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            style="@style/booklist_book_row_minor_fields"
+            tools:ignore="SelectableText"
             tools:text="bookshelves" />
 
         <TextView
             android:id="@+id/location"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingEnd="@dimen/padding_border"
-            android:paddingStart="@dimen/padding_border"
-            android:singleLine="true"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            style="@style/booklist_book_row_minor_fields"
+            tools:ignore="SelectableText"
             tools:text="location" />
 
         <TextView
             android:id="@+id/publisher"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingEnd="@dimen/padding_border"
-            android:paddingStart="@dimen/padding_border"
-            android:singleLine="true"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            style="@style/booklist_book_row_minor_fields"
+            tools:ignore="SelectableText"
             tools:text="publisher" />
 
         <TextView
             android:id="@+id/format"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingEnd="@dimen/padding_border"
-            android:paddingStart="@dimen/padding_border"
-            android:singleLine="true"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            style="@style/booklist_book_row_minor_fields"
+            tools:ignore="SelectableText"
             tools:text="format" />
     </LinearLayout>
 
     <CheckedTextView
         android:id="@+id/read"
+        style="@style/read_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight="0"
-        android:background="@android:color/transparent"
-        android:checkMark="?android:attr/textCheckMark"
-        android:padding="0dp"
         tools:checked="true" />
 
 </LinearLayout>

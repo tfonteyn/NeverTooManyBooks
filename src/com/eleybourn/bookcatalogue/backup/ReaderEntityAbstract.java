@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.backup;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
@@ -47,23 +48,23 @@ import java.io.Serializable;
 public abstract class ReaderEntityAbstract implements ReaderEntity {
 	
 	@Override
-	public void saveToDirectory(File dir) throws IOException {
+	public void saveToDirectory(@NonNull final File dir) throws IOException {
 		// Make sure it's a directory
 		if (!dir.isDirectory())
 			throw new RuntimeException("Specified path is not a directory");
 
 		// Build the new File and save
-		File output = new File(dir.getAbsoluteFile() + "/" + getName());
+		final File output = new File(dir.getAbsoluteFile() + File.separator + getName());
 		saveToFile(output);
 	}
 
 	@Override
-	public void saveToFile(File outFile) throws IOException {
+	public void saveToFile(@NonNull final File outFile) throws IOException {
 		// Open output and copy bytes.
-		FileOutputStream out = new FileOutputStream(outFile);
+		final FileOutputStream out = new FileOutputStream(outFile);
 		try {
-			byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
-			InputStream in = getStream();
+			final byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
+			final InputStream in = getStream();
 			while (true) {
 				int cnt = in.read(buffer);
 				if (cnt <= 0)
@@ -89,15 +90,15 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
 	 * Read the input as XML and put it into a Bundle
 	 */
 	public Bundle getBundle() throws IOException {
-		BufferedReader in = new BufferedReaderNoClose(new InputStreamReader(getStream(), TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
+		final BufferedReader in = new BufferedReaderNoClose(new InputStreamReader(getStream(), TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
 		return BackupUtils.bundleFromXml(in);
 	}
 
 	/**
 	 * Read the input as XML and put it into a SharedPreferences
 	 */
-	public void getPreferences(SharedPreferences prefs) throws IOException {
-		BufferedReader in = new BufferedReaderNoClose(new InputStreamReader(getStream(), TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
+	public void getPreferences(@NonNull final SharedPreferences prefs) throws IOException {
+		final BufferedReader in = new BufferedReaderNoClose(new InputStreamReader(getStream(), TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
 		BackupUtils.preferencesFromXml(in, prefs);
 	}
 
@@ -108,7 +109,7 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
 	 */
 	private static class BufferedReaderNoClose extends BufferedReader
     {
-        BufferedReaderNoClose(Reader in, int flags) {
+        BufferedReaderNoClose(@NonNull final Reader in, final int flags) {
 			super(in, flags);
 		}
 
@@ -120,9 +121,9 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
 	@Override
 	public Serializable getSerializable() throws IOException, DeserializationException {
 		// Turn the input into a byte array
-		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+		final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 
-		byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
+		final byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
 		
 		while (true) {
 			int cnt = getStream().read(buffer);

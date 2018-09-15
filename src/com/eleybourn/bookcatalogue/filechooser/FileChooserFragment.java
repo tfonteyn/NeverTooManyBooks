@@ -57,12 +57,14 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
     private ArrayList<FileDetails> mList = new ArrayList<>();
 
     /** Create a new chooser fragment */
-    public static FileChooserFragment newInstance(String rootPath, String fileName) {
+    @NonNull
+    public static FileChooserFragment newInstance(@NonNull final String rootPath, String fileName) {
         return newInstance(new File(rootPath), fileName);
     }
 
     /** Create a new chooser fragment */
-    public static FileChooserFragment newInstance(File root, String fileName) {
+    @NonNull
+    public static FileChooserFragment newInstance(@NonNull final File root, final String fileName) {
         String path;
         // Turn the passed File into a directory
         if (root.isDirectory()) {
@@ -111,7 +113,6 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 
         // If it's new, just build from scratch, otherwise, get the saved directory and list
         if (savedInstanceState == null) {
-            String path = getArguments().getString(BKEY_ROOT_PATH);
             mRootPath = new File(Objects.requireNonNull(getArguments().getString(BKEY_ROOT_PATH)));
 
             String fileName = getArguments().getString(BKEY_FILE_NAME);

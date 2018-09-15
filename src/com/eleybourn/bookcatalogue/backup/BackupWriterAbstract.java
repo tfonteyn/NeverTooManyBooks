@@ -21,6 +21,8 @@ package com.eleybourn.bookcatalogue.backup;
 
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -59,7 +61,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
      * Do a full backup, sending progress to the listener
      */
     @Override
-    public void backup(BackupWriterListener listener, final int backupFlags, Date since) throws IOException {
+    public void backup(@NonNull final BackupWriterListener listener, final int backupFlags, @Nullable Date since) throws IOException {
 
         try {
             // Estimate the total steps
@@ -84,7 +86,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
             listener.setMax(estTotal);
 
             // Generate the book list first, so we know how many there are.
-            File temp = generateBooks(listener, backupFlags, since, coverCount);
+            final File temp = generateBooks(listener, backupFlags, since, coverCount);
 
             listener.setMax(coverCount + listener.getTotalBooks() + 1);
 
@@ -115,8 +117,8 @@ public abstract class BackupWriterAbstract implements BackupWriter {
     /**
      * Generate a bundle containing the INFO block, and send it to the archive
      */
-    private void writeInfo(BackupWriterListener listener, int bookCount, int coverCount) throws IOException {
-        BackupInfo info = BackupInfo.createInfo(getContainer(), BookCatalogueApp.getAppContext(), bookCount, coverCount);
+    private void writeInfo(@NonNull final BackupWriterListener listener, final int bookCount, final int coverCount) throws IOException {
+        final BackupInfo info = BackupInfo.createInfo(getContainer(), BookCatalogueApp.getAppContext(), bookCount, coverCount);
         putInfo(info);
         listener.step(null, 1);
     }
@@ -132,12 +134,12 @@ public abstract class BackupWriterAbstract implements BackupWriter {
      * It IS convenient to do it here because we can capture the progress, but we could also
      * have writer.putBooks(exporter, listener) as the method.
      */
-    private File generateBooks(final BackupWriterListener listener, final int backupFlags, final Date since, final int numCovers) throws IOException {
+    private File generateBooks(@NonNull final BackupWriterListener listener, final int backupFlags, final Date since, final int numCovers) throws IOException {
         // This is an estimate only; we actually don't know how many covers
         // there are in the backup.
         listener.setMax((int) (mDb.getBookCount() * 2 + 1));
 
-        Exporter.ExportListener exportListener = new Exporter.ExportListener() {
+        final Exporter.ExportListener exportListener = new Exporter.ExportListener() {
             private int mLastPos = 0;
 
             @Override
@@ -165,7 +167,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
         if (BuildConfig.DEBUG) {
             System.out.println("Getting books");
         }
-        File temp = File.createTempFile("bookcat", ".tmp");
+        final File temp = File.createTempFile("bookcat", ".tmp");
         temp.deleteOnExit();
         FileOutputStream output = null;
         try {
@@ -184,7 +186,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
     /**
      * @param exportFile the file containing the exported books in CSV format
      */
-    private void writeBooks(File exportFile) throws IOException {
+    private void writeBooks(@NonNull final File exportFile) throws IOException {
         try {
             if (BuildConfig.DEBUG) {
                 System.out.println("Writing Books");
@@ -258,7 +260,8 @@ public abstract class BackupWriterAbstract implements BackupWriter {
     /**
      * Write each cover file corresponding to a book to the archive
      */
-    private int writeCovers(final BackupWriterListener listener, final int backupFlags, final Date since, boolean dryRun) throws IOException {
+    private int writeCovers(@NonNull final BackupWriterListener listener, final int backupFlags,
+                            @Nullable final Date since, boolean dryRun) throws IOException {
         long sinceTime = 0;
         if (since != null && (backupFlags & Exporter.EXPORT_SINCE) != 0) {
             try {
@@ -315,7 +318,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
     /**
      * Get the preferences and save them
      */
-    private void writePreferences(final BackupWriterListener listener) throws IOException {
+    private void writePreferences(@NonNull final BackupWriterListener listener) throws IOException {
         SharedPreferences prefs = BCPreferences.getSharedPreferences();
         putPreferences(prefs);
         listener.step(null, 1);
@@ -324,7 +327,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
     /**
      * Save all USER styles
      */
-    private void writeStyles(final BackupWriterListener listener) throws IOException {
+    private void writeStyles(@NonNull final BackupWriterListener listener) throws IOException {
         BooklistStyles styles = BooklistStyles.getAllStyles(mDb);
         for (BooklistStyle style : styles) {
             if (style.isUserDefined()) {

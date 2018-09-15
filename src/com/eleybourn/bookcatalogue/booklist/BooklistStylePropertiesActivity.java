@@ -30,16 +30,16 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.properties.Properties;
 import com.eleybourn.bookcatalogue.properties.Property.ValidationException;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.StringProperty;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 /**
@@ -49,31 +49,19 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
  */
 public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
     private static final String TAG = "BooklistStyleProperties";
-    /**
-     * Parameter used to pass data to this activity
-     */
+    /** Parameter used to pass data to this activity */
     public static final String BKEY_STYLE = TAG + ".Style";
-    /**
-     * Parameter used to pass data to this activity
-     */
+    /** Parameter used to pass data to this activity */
     private static final String BKEY_SAVE_TO_DATABASE = TAG + ".SaveToDb";
 
-    /**
-     * Database connection, if used
-     */
+    /** Database connection, if used */
     private CatalogueDBAdapter mDb = null;
 
-    /**
-     * Flag indicating style should be saved to the database on exit
-     */
+    /** Flag indicating style should be saved to the database on exit */
     private boolean mSaveToDb = true;
-    /**
-     * Style we are editing
-     */
+    /** Style we are editing */
     private BooklistStyle mStyle;
-    /**
-     * Properties object constructed from current style
-     */
+    /** Properties object constructed from current style */
     private Properties mProperties;
 
     @Override
@@ -101,11 +89,12 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
         });
 
         // Get the intent and get the style and other details
-        Intent i = this.getIntent();
-        mStyle = (BooklistStyle) i.getSerializableExtra(BKEY_STYLE);
+        Intent intent = this.getIntent();
+        mStyle = (BooklistStyle) intent.getSerializableExtra(BKEY_STYLE);
 
-        if (i.hasExtra(BKEY_SAVE_TO_DATABASE))
-            mSaveToDb = i.getBooleanExtra(BKEY_SAVE_TO_DATABASE, true);
+        if (intent.hasExtra(BKEY_SAVE_TO_DATABASE)) {
+            mSaveToDb = intent.getBooleanExtra(BKEY_SAVE_TO_DATABASE, true);
+        }
 
         // Display all the style properties
         displayProperties();
@@ -154,21 +143,21 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
      * Called when 'save' button is clicked.
      */
     private void handleSave() {
-        boolean ok = true;
         try {
             mProperties.validate();
         } catch (ValidationException e) {
-            ok = false;
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+            return;
         }
-        if (ok) {
-            if (mSaveToDb)
-                mStyle.saveToDb(getDb());
-            Intent i = new Intent();
-            i.putExtra(BKEY_STYLE, mStyle);
-            setResult(RESULT_OK, i);
-            finish();
+
+        if (mSaveToDb) {
+            mStyle.saveToDb(getDb());
         }
+        Intent i = new Intent();
+        i.putExtra(BKEY_STYLE, mStyle);
+        setResult(RESULT_OK, i);
+        finish();
+
     }
 
     @Override

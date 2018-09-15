@@ -1,7 +1,7 @@
 /*
  * @copyright 2011 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -34,63 +34,63 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
  * TODO: unify with {@link EditAuthorDialog}
  */
 public class EditPublisherDialog {
-	private final Context mContext;
-	private final CatalogueDBAdapter mDb;
-	private final Runnable mOnChanged;
+    private final Context mContext;
+    private final CatalogueDBAdapter mDb;
+    private final Runnable mOnChanged;
 
-	EditPublisherDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
-		mDb = db;
-		mContext = context;
-		mOnChanged = onChanged;
-	}
+    EditPublisherDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
+        mDb = db;
+        mContext = context;
+        mOnChanged = onChanged;
+    }
 
-	public void edit(final Publisher publisher) {
-		final Dialog dialog = new StandardDialogs.BasicDialog(mContext);
-		dialog.setContentView(R.layout.dialog_edit_publisher);
-		dialog.setTitle(R.string.edit_publisher_details);
+    public void edit(final Publisher publisher) {
+        final Dialog dialog = new StandardDialogs.BasicDialog(mContext);
+        dialog.setContentView(R.layout.dialog_edit_publisher);
+        dialog.setTitle(R.string.edit_publisher_details);
 
-		EditText familyView = dialog.findViewById(R.id.name);
-		familyView.setText(publisher.name);
+        EditText familyView = dialog.findViewById(R.id.name);
+        familyView.setText(publisher.name);
 
-		Button saveButton = dialog.findViewById(R.id.confirm);
-		saveButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				EditText nameView = dialog.findViewById(R.id.name);
-				String newName = nameView.getText().toString().trim();
-				if (newName.isEmpty()) {
-					Toast.makeText(mContext, R.string.publisher_is_blank, Toast.LENGTH_LONG).show();
-					return;
-				}
-				Publisher newPublisher = new Publisher(newName);
-				dialog.dismiss();
-				confirmEdit(publisher, newPublisher);
-			}
-		});
+        Button saveButton = dialog.findViewById(R.id.confirm);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText nameView = dialog.findViewById(R.id.name);
+                String newName = nameView.getText().toString().trim();
+                if (newName.isEmpty()) {
+                    Toast.makeText(mContext, R.string.publisher_is_blank, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                Publisher newPublisher = new Publisher(newName);
+                dialog.dismiss();
+                confirmEdit(publisher, newPublisher);
+            }
+        });
 
-		Button cancelButton = dialog.findViewById(R.id.cancel);
-		cancelButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dialog.dismiss();
-			}
-		});
-		
-		dialog.show();
-	}
-	
-	private void confirmEdit(final Publisher oldPublisher, final Publisher newPublisher) {
-		// First, deal with a some special cases...
-		
-		// Case: Unchanged.
-		if (newPublisher.name.compareTo(oldPublisher.name) == 0) {
-			// No change; nothing to do
-			return;
-		}
+        Button cancelButton = dialog.findViewById(R.id.cancel);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
 
-		mDb.globalReplacePublisher(oldPublisher, newPublisher);
-		oldPublisher.copyFrom(newPublisher);
+        dialog.show();
+    }
 
-		mOnChanged.run();
-	}
+    private void confirmEdit(final Publisher oldPublisher, final Publisher newPublisher) {
+        // First, deal with a some special cases...
+
+        // Case: Unchanged.
+        if (newPublisher.name.compareTo(oldPublisher.name) == 0) {
+            // No change; nothing to do
+            return;
+        }
+
+        mDb.globalReplacePublisher(oldPublisher, newPublisher);
+        oldPublisher.copyFrom(newPublisher);
+
+        mOnChanged.run();
+    }
 }

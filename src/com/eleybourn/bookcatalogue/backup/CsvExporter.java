@@ -20,9 +20,10 @@
 package com.eleybourn.bookcatalogue.backup;
 
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BookEditFields;
+import com.eleybourn.bookcatalogue.EditBookFieldsFragment;
 import com.eleybourn.bookcatalogue.BooksRowView;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
@@ -84,7 +85,9 @@ public class CsvExporter implements Exporter {
         return mLastError;
     }
 
-    public boolean export(OutputStream outputStream, Exporter.ExportListener listener, final int backupFlags, Date since) throws IOException {
+    public boolean export(@NonNull final OutputStream outputStream,
+                          @NonNull final Exporter.ExportListener listener,
+                          final int backupFlags, Date since) throws IOException {
         final String UNKNOWN = BookCatalogueApp.getResourceString(R.string.unknown);
         final String AUTHOR = BookCatalogueApp.getResourceString(R.string.author);
 
@@ -109,7 +112,7 @@ public class CsvExporter implements Exporter {
         listener.onProgress(BookCatalogueApp.getResourceString(R.string.export_starting_ellipsis), 0);
         boolean displayingStartupMessage = true;
 
-        StringBuilder export = new StringBuilder(
+        final StringBuilder export = new StringBuilder(
                 '"' + DOM_ID.name + "\"," +            //0
                         '"' + BKEY_AUTHOR_DETAILS + "\"," +    //2
                         '"' + DOM_TITLE + "\"," +            //4
@@ -144,14 +147,13 @@ public class CsvExporter implements Exporter {
 
         long lastUpdate = 0;
 
-        StringBuilder row = new StringBuilder();
+        final StringBuilder row = new StringBuilder();
 
-        CatalogueDBAdapter db;
-        db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+        final CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         db.open();
 
-        BooksCursor bookCursor = db.exportBooks(since);
-        BooksRowView rv = bookCursor.getRowView();
+        final BooksCursor bookCursor = db.exportBooks(since);
+        final BooksRowView rv = bookCursor.getRowView();
 
         try {
             final int totalBooks = bookCursor.getCount();
@@ -161,7 +163,7 @@ public class CsvExporter implements Exporter {
                 listener.setMax(totalBooks);
 
                 /* write to the SDCard */
-                BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream, UTF8), BUFFER_SIZE);
+                final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream, UTF8), BUFFER_SIZE);
                 out.write(export.toString());
                 if (bookCursor.moveToFirst()) {
                     do {
@@ -225,10 +227,10 @@ public class CsvExporter implements Exporter {
                             while (bookshelves.moveToNext()) {
                                 bookshelves_id_text
                                         .append(bookshelves.getString(bookshelves.getColumnIndex(DOM_ID.name)))
-                                        .append(BookEditFields.BOOKSHELF_SEPARATOR);
+                                        .append(EditBookFieldsFragment.BOOKSHELF_SEPARATOR);
                                 bookshelves_name_text
-                                        .append(ArrayUtils.encodeListItem(BookEditFields.BOOKSHELF_SEPARATOR, bookshelves.getString(bookshelves.getColumnIndex(DOM_BOOKSHELF.name))))
-                                        .append(BookEditFields.BOOKSHELF_SEPARATOR);
+                                        .append(ArrayUtils.encodeListItem(EditBookFieldsFragment.BOOKSHELF_SEPARATOR, bookshelves.getString(bookshelves.getColumnIndex(DOM_BOOKSHELF.name))))
+                                        .append(EditBookFieldsFragment.BOOKSHELF_SEPARATOR);
                             }
                         }
 
@@ -308,13 +310,12 @@ public class CsvExporter implements Exporter {
         return true;
     }
 
-    private String formatCell(StringBuilder cell) {
+    private String formatCell(@NonNull final StringBuilder cell) {
         return cell.toString();
     }
 
-    private String formatCell(long cell) {
-        String newcell = cell + "";
-        return formatCell(newcell);
+    private String formatCell(final long cell) {
+        return formatCell(cell + "");
     }
 
     /**
@@ -324,12 +325,13 @@ public class CsvExporter implements Exporter {
      *
      * @return The formatted cell
      */
-    private String formatCell(String cell) {
+    @NonNull
+    private String formatCell(@NonNull final String cell) {
         try {
-            if (cell.equals("null") || cell.trim().isEmpty()) {
+            if ("null".equals(cell) || cell.trim().isEmpty()) {
                 return "";
             }
-            StringBuilder bld = new StringBuilder();
+            final StringBuilder bld = new StringBuilder();
             int endPos = cell.length() - 1;
             int pos = 0;
             while (pos <= endPos) {

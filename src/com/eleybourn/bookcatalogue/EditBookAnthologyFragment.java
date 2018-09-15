@@ -61,7 +61,7 @@ import javax.xml.parsers.SAXParserFactory;
 import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.UniqueId.KEY_TITLE;
 
-public class BookEditAnthology extends BookEditFragmentAbstract {
+public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 
     private static final int DELETE_ID = Menu.FIRST;
     private static final int POPULATE = Menu.FIRST + 1;
@@ -141,7 +141,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
                     if (mSame.isChecked()) {
                         author = mBookAuthor;
                     }
-                    AnthologyTitleListAdapter adapter = ((AnthologyTitleListAdapter) BookEditAnthology.this.getListView().getAdapter());
+                    AnthologyTitleListAdapter adapter = ((AnthologyTitleListAdapter) EditBookAnthologyFragment.this.getListView().getAdapter());
                     if (mEditPosition == null) {
                         AnthologyTitle anthology = new AnthologyTitle(book.getRowId(), new Author(author), title);
                         adapter.add(anthology);
@@ -302,7 +302,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
                             AnthologyTitle anthology = new AnthologyTitle(book.getRowId(), new Author(anthology_author), anthology_title);
                             mList.add(anthology);
                         }
-                        AnthologyTitleListAdapter adapter = ((AnthologyTitleListAdapter) BookEditAnthology.this.getListView().getAdapter());
+                        AnthologyTitleListAdapter adapter = ((AnthologyTitleListAdapter) EditBookAnthologyFragment.this.getListView().getAdapter());
                         adapter.notifyDataSetChanged();
                         return;
                     }
@@ -355,7 +355,7 @@ public class BookEditAnthology extends BookEditFragmentAbstract {
         switch (item.getItemId()) {
             case DELETE_ID:
                 AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-                AnthologyTitleListAdapter adapter = ((AnthologyTitleListAdapter) BookEditAnthology.this.getListView().getAdapter());
+                AnthologyTitleListAdapter adapter = ((AnthologyTitleListAdapter) EditBookAnthologyFragment.this.getListView().getAdapter());
                 adapter.remove(adapter.getItem((int) info.id));
                 mEditManager.setDirty(true);
                 return true;

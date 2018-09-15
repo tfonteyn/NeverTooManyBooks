@@ -82,7 +82,7 @@ import static com.eleybourn.bookcatalogue.UniqueId.KEY_BOOKSHELF;
 
 /**
  * Class to wrap all GoodReads API calls and manage an API connection.
- * <p>
+ *
  * ENHANCE: Add 'send to goodreads'/'update from internet' option in book edit menu
  * ENHANCE: Change 'update from internet' to allow source selection and single-book execution
  * ENHANCE: Link an Event to a book, and display in book list with exclamation triangle overwriting cover.
@@ -177,7 +177,7 @@ public class GoodreadsManager {
      * <p>
      * Note that as a result of this approach mLastRequestTime may in fact be
      * in the future; callers to this routine effectively allocate time slots.
-     * <p>
+     *
      * This method will sleep() until it can make a request; if ten threads call this
      * simultaneously, one will return immediately, one will return 1 second later, another
      * two seconds etc.

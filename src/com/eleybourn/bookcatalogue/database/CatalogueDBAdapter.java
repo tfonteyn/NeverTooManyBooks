@@ -38,7 +38,7 @@ import com.eleybourn.bookcatalogue.AnthologyTitle;
 import com.eleybourn.bookcatalogue.Author;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookData;
-import com.eleybourn.bookcatalogue.BookEditFields;
+import com.eleybourn.bookcatalogue.EditBookFieldsFragment;
 import com.eleybourn.bookcatalogue.BooksRowView;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.Publisher;
@@ -287,7 +287,9 @@ public class CatalogueDBAdapter {
      */
 	@SuppressWarnings("unused")
     private static void addInstance(CatalogueDBAdapter db) {
-		mInstances.add(new InstanceRef(db));
+        if (DEBUG && BuildConfig.DEBUG) {
+            mInstances.add(new InstanceRef(db));
+        }
 	}
 
     /**
@@ -295,35 +297,39 @@ public class CatalogueDBAdapter {
      */
 	@SuppressWarnings("unused")
     private static void removeInstance(CatalogueDBAdapter db) {
-		ArrayList< InstanceRef > toDelete = new ArrayList<>();
-		for( InstanceRef ref: mInstances) {
-			CatalogueDBAdapter refDb = ref.get();
-			if (refDb == null) {
-				System.out.println("<-- **** Missing ref (not closed?) **** vvvvvvv");
-				ref.getCreationException().printStackTrace();
-				System.out.println("--> **** Missing ref (not closed?) **** ^^^^^^^");
-			} else {
-				if (refDb == db) {
-					toDelete.add(ref);
-				}
-			}
-		}
-		for( WeakReference<CatalogueDBAdapter> ref: toDelete) {
-			mInstances.remove(ref);
-		}
+	    if (DEBUG && BuildConfig.DEBUG) {
+            ArrayList<InstanceRef> toDelete = new ArrayList<>();
+            for (InstanceRef ref : mInstances) {
+                CatalogueDBAdapter refDb = ref.get();
+                if (refDb == null) {
+                    System.out.println("<-- **** Missing ref (not closed?) **** vvvvvvv");
+                    Logger.logError(ref.getCreationException());
+                    System.out.println("--> **** Missing ref (not closed?) **** ^^^^^^^");
+                } else {
+                    if (refDb == db) {
+                        toDelete.add(ref);
+                    }
+                }
+            }
+            for (WeakReference<CatalogueDBAdapter> ref : toDelete) {
+                mInstances.remove(ref);
+            }
+        }
 	}
+
 	@SuppressWarnings("unused")
     public static void dumpInstances() {
-		for( InstanceRef ref: mInstances) {
-			CatalogueDBAdapter db = ref.get();
-			if (db == null) {
-				System.out.println("<-- **** Missing ref (not closed?) **** vvvvvvv");
-				ref.getCreationException().printStackTrace();
-				System.out.println("--> **** Missing ref (not closed?) **** ^^^^^^^");
-			} else {
-				ref.getCreationException().printStackTrace();
-			}
-		}
+        if (DEBUG && BuildConfig.DEBUG) {
+            for (InstanceRef ref : mInstances) {
+                if (ref.get() == null) {
+                    System.out.println("<-- **** Missing ref (not closed?) **** vvvvvvv");
+                    Logger.logError(ref.getCreationException());
+                    System.out.println("--> **** Missing ref (not closed?) **** ^^^^^^^");
+                } else {
+                    Logger.logError(ref.getCreationException());
+                }
+            }
+        }
 	}
 	
 	
@@ -1492,19 +1498,24 @@ public class CatalogueDBAdapter {
 	/**
 	 * 
 	 * @param isbn The isbn to search by
-	 * @return boolean indicating ISBN already in DB
+     *
+	 * @return  book id
 	 */
-	public long getIdFromIsbn(String isbn, boolean checkAltIsbn) {
+	public long getIdFromIsbn(@NonNull String isbn, final boolean checkAltIsbn) {
 		SynchronizedStatement stmt;
 		if (checkAltIsbn && IsbnUtils.isValid(isbn)) {
 			if (mGetIdFromIsbn2Stmt == null) {
-				mGetIdFromIsbn2Stmt = mStatements.add("mGetIdFromIsbn2Stmt", "Select Coalesce(max(" + DOM_ID + "), -1) From " + DB_TB_BOOKS + " Where Upper(" + DOM_ISBN + ") in (Upper(?), Upper(?))");
+				mGetIdFromIsbn2Stmt = mStatements.add("mGetIdFromIsbn2Stmt",
+						"Select Coalesce(max(" + DOM_ID + "), -1) From " + DB_TB_BOOKS +
+								" Where Upper(" + DOM_ISBN + ") in (Upper(?), Upper(?))");
 			}
 			stmt = mGetIdFromIsbn2Stmt;
 			stmt.bindString(2, IsbnUtils.isbn2isbn(isbn));
 		} else {
 			if (mGetIdFromIsbn1Stmt == null) {
-				mGetIdFromIsbn1Stmt = mStatements.add("mGetIdFromIsbn1Stmt", "Select Coalesce(max(" + DOM_ID + "), -1) From " + DB_TB_BOOKS + " Where Upper(" + DOM_ISBN + ") = Upper(?)");
+				mGetIdFromIsbn1Stmt = mStatements.add("mGetIdFromIsbn1Stmt",
+						"Select Coalesce(max(" + DOM_ID + "), -1) From " + DB_TB_BOOKS +
+								" Where Upper(" + DOM_ISBN + ") = Upper(?)");
 			}
 			stmt = mGetIdFromIsbn1Stmt;
 		}
@@ -2093,7 +2104,7 @@ public class CatalogueDBAdapter {
 
 			String bookshelf = values.getBookshelfList();
 			if (bookshelf != null && !bookshelf.trim().isEmpty()) {
-				createBookshelfBooks(rowId, ArrayUtils.decodeList(BookEditFields.BOOKSHELF_SEPARATOR, bookshelf), false);
+				createBookshelfBooks(rowId, ArrayUtils.decodeList(EditBookFieldsFragment.BOOKSHELF_SEPARATOR, bookshelf), false);
 			}
 
 			createBookAuthors(rowId, authors, false);
@@ -2158,7 +2169,7 @@ public class CatalogueDBAdapter {
 		}
 
 		//Insert the new ones
-		//String[] bookshelves = bookshelf.split(BookEditFields.BOOKSHELF_SEPARATOR.toString());
+		//String[] bookshelves = bookshelf.split(EditBookFieldsFragment.BOOKSHELF_SEPARATOR.toString());
 		for (int i = 0; i < bookshelves.size(); i++) {
 			String name = bookshelves.get(i).trim();
 			if (name.isEmpty()) {
@@ -2395,6 +2406,24 @@ public class CatalogueDBAdapter {
 		}
 	}
 
+    /**
+     * Returns a unique list of all locations in the database; uses the pre-defined ones if none.
+     *
+     * @return The list
+     */
+    public ArrayList<String> getGenres() {
+        String sql = "Select distinct " + DOM_GENRE + " from " + DB_TB_BOOKS
+                + " Order by lower(" + DOM_GENRE + ") " + COLLATION;
+
+        try (Cursor c = mSyncedDb.rawQuery(sql)) {
+            ArrayList<String> list = singleColumnCursorToArrayList(c);
+            if (list.size() == 0) {
+                Collections.addAll(list, BookCatalogueApp.getResourceStringArray(R.array.predefined_genres));
+            }
+            return list;
+        }
+    }
+
 	/**
 	 * Returns a unique list of all languages in the database; uses the pre-defined ones if none.
 	 *
@@ -2412,6 +2441,38 @@ public class CatalogueDBAdapter {
 			return list;
 		}
 	}
+
+    /**
+     * Returns a unique list of all locations in the database; uses the pre-defined ones if none.
+     *
+     * @return The list
+     */
+    public ArrayList<String> getLocations() {
+        String sql = "Select distinct " + DOM_LOCATION + " from " + DB_TB_BOOKS
+                + " Order by lower(" + DOM_LOCATION + ") " + COLLATION;
+
+        try (Cursor c = mSyncedDb.rawQuery(sql)) {
+            ArrayList<String> list = singleColumnCursorToArrayList(c);
+            if (list.size() == 0) {
+                Collections.addAll(list, BookCatalogueApp.getResourceStringArray(R.array.predefined_locations));
+            }
+            return list;
+        }
+    }
+
+    /**
+     * Returns a unique list of all publishers in the database
+     *
+     * @return The list
+     */
+    public ArrayList<String> getPublishers() {
+        String sql = "Select distinct " + DOM_PUBLISHER + " from " + DB_TB_BOOKS
+                + " Order by lower(" + DOM_PUBLISHER + ") " + COLLATION;
+
+        try (Cursor c = mSyncedDb.rawQuery(sql)) {
+            return singleColumnCursorToArrayList(c);
+        }
+    }
 
     /**
      * Takes the ResultSet from a Cursor, and fetches column 0 as a String into an ArrayList
@@ -2708,7 +2769,7 @@ public class CatalogueDBAdapter {
 
 			String bookshelf = values.getBookshelfList();
 			if (bookshelf != null && !bookshelf.trim().isEmpty()) {
-				createBookshelfBooks(rowId, ArrayUtils.decodeList(BookEditFields.BOOKSHELF_SEPARATOR, bookshelf), false);
+				createBookshelfBooks(rowId, ArrayUtils.decodeList(EditBookFieldsFragment.BOOKSHELF_SEPARATOR, bookshelf), false);
 			}
 
 			if (values.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)) {
@@ -3572,36 +3633,56 @@ public class CatalogueDBAdapter {
 
     }
 
-	public void globalReplacePublisher(@NonNull Publisher oldPublisher, @NonNull Publisher newPublisher) {
-		if (Objects.equals(oldPublisher, newPublisher))
-			return;
 
-		SyncLock l = mSyncedDb.beginTransaction(true);
-		try {
-			String sql;
-			// Update books but prevent duplicate index errors
-			sql = "Update " + DB_TB_BOOKS + " Set " + DOM_PUBLISHER + " = '" + encodeString(newPublisher.name)
-					+ "', " + DOM_LAST_UPDATE_DATE + " = current_timestamp "
-					+ " Where " + DOM_PUBLISHER + " = '" + encodeString(oldPublisher.name) + "'";
-			mSyncedDb.execSQL(sql);
+    public void globalReplaceAuthor(@NonNull final Author from, @NonNull final Author to) {
+        // Create or update the new author
+        if (to.id == 0)
+            syncAuthor(to);
+        else
+            sendAuthor(to);
 
-			mSyncedDb.setTransactionSuccessful();
-		} finally {
-			mSyncedDb.endTransaction(l);
-		}
-	}
+        // Do some basic sanity checks
+        if (from.id == 0)
+            from.id = lookupAuthorId(from);
+        if (from.id == 0)
+            throw new RuntimeException("Old Author is not defined");
 
-    public void globalReplaceLanguage(@NonNull String oldLanguage, @NonNull String newLanguage) {
-        if (Objects.equals(oldLanguage, newLanguage))
+        if (from.id == to.id)
+            return;
+
+        SyncLock l = mSyncedDb.beginTransaction(true);
+        try {
+            setBooksDirtyByAuthor(from.id);
+
+            // First handle anthologies; they have a single author and are easy
+            String sql = "Update " + DB_TB_ANTHOLOGY + " set " + DOM_AUTHOR_ID + " = " + to.id
+                    + " Where " + DOM_AUTHOR_ID + " = " + from.id;
+            mSyncedDb.execSQL(sql);
+
+            globalReplacePositionedBookItem(DB_TB_BOOK_AUTHOR, DOM_AUTHOR_ID.name, DOM_AUTHOR_POSITION.name, from.id, to.id);
+
+            //sql = "Delete from " + DB_TB_BOOK_AUTHOR + " Where " + KEY_AUTHOR_ID + " = " + oldAuthor.id
+            //+ " And Exists(Select NULL From " + DB_TB_BOOK_AUTHOR + " ba Where "
+            //+ "                 ba." + KEY_BOOK + " = " + DB_TB_BOOK_AUTHOR + "." + KEY_BOOK
+            //+ "                 and ba." + KEY_AUTHOR_ID + " = " + newAuthor.id + ")";
+            //mSyncedDb.execSQL(sql);
+
+            mSyncedDb.setTransactionSuccessful();
+        } finally {
+            mSyncedDb.endTransaction(l);
+        }
+    }
+    public void globalReplaceGenre(@NonNull final String from, @NonNull final String to) {
+        if (Objects.equals(from, to))
             return;
 
         SyncLock l = mSyncedDb.beginTransaction(true);
         try {
             String sql;
             // Update books but prevent duplicate index errors
-            sql = "Update " + DB_TB_BOOKS + " Set " + DOM_LANGUAGE + " = '" + encodeString(newLanguage)
+            sql = "Update " + DB_TB_BOOKS + " Set " + DOM_GENRE + " = '" + encodeString(to)
                     + "', " + DOM_LAST_UPDATE_DATE + " = current_timestamp "
-                    + " Where " + DOM_LANGUAGE + " = '" + encodeString(oldLanguage) + "'";
+                    + " Where " + DOM_GENRE + " = '" + encodeString(from) + "'";
             mSyncedDb.execSQL(sql);
 
             mSyncedDb.setTransactionSuccessful();
@@ -3609,45 +3690,62 @@ public class CatalogueDBAdapter {
             mSyncedDb.endTransaction(l);
         }
     }
-    public void globalReplaceAuthor(@NonNull final Author oldAuthor, @NonNull final Author newAuthor) {
-		// Create or update the new author
-		if (newAuthor.id == 0)
-			syncAuthor(newAuthor);
-		else
-			sendAuthor(newAuthor);
+    public void globalReplaceLanguage(@NonNull final String from, @NonNull final String to) {
+        if (Objects.equals(from, to))
+            return;
 
-		// Do some basic sanity checks
-		if (oldAuthor.id == 0)
-			oldAuthor.id = lookupAuthorId(oldAuthor);
-		if (oldAuthor.id == 0)
-			throw new RuntimeException("Old Author is not defined");
+        SyncLock l = mSyncedDb.beginTransaction(true);
+        try {
+            String sql;
+            // Update books but prevent duplicate index errors
+            sql = "Update " + DB_TB_BOOKS + " Set " + DOM_LANGUAGE + " = '" + encodeString(to)
+                    + "', " + DOM_LAST_UPDATE_DATE + " = current_timestamp "
+                    + " Where " + DOM_LANGUAGE + " = '" + encodeString(from) + "'";
+            mSyncedDb.execSQL(sql);
 
-		if (oldAuthor.id == newAuthor.id)
+            mSyncedDb.setTransactionSuccessful();
+        } finally {
+            mSyncedDb.endTransaction(l);
+        }
+    }
+    public void globalReplaceLocation(@NonNull final String from, @NonNull final String to) {
+        if (Objects.equals(from, to))
+            return;
+
+        SyncLock l = mSyncedDb.beginTransaction(true);
+        try {
+            String sql;
+            // Update books but prevent duplicate index errors
+            sql = "Update " + DB_TB_BOOKS + " Set " + DOM_LANGUAGE + " = '" + encodeString(to)
+                    + "', " + DOM_LAST_UPDATE_DATE + " = current_timestamp "
+                    + " Where " + DOM_LANGUAGE + " = '" + encodeString(from) + "'";
+            mSyncedDb.execSQL(sql);
+
+            mSyncedDb.setTransactionSuccessful();
+        } finally {
+            mSyncedDb.endTransaction(l);
+        }
+    }
+    public void globalReplacePublisher(@NonNull final Publisher from, @NonNull final Publisher to) {
+		if (Objects.equals(from, to))
 			return;
 
 		SyncLock l = mSyncedDb.beginTransaction(true);
 		try {
-			setBooksDirtyByAuthor(oldAuthor.id);
-
-			// First handle anthologies; they have a single author and are easy
-			String sql = "Update " + DB_TB_ANTHOLOGY + " set " + DOM_AUTHOR_ID + " = " + newAuthor.id
-						+ " Where " + DOM_AUTHOR_ID + " = " + oldAuthor.id;
+			String sql;
+			// Update books but prevent duplicate index errors
+			sql = "Update " + DB_TB_BOOKS + " Set " + DOM_PUBLISHER + " = '" + encodeString(to.name)
+					+ "', " + DOM_LAST_UPDATE_DATE + " = current_timestamp "
+					+ " Where " + DOM_PUBLISHER + " = '" + encodeString(from.name) + "'";
 			mSyncedDb.execSQL(sql);
-
-			globalReplacePositionedBookItem(DB_TB_BOOK_AUTHOR, DOM_AUTHOR_ID.name, DOM_AUTHOR_POSITION.name, oldAuthor.id, newAuthor.id);
-
-			//sql = "Delete from " + DB_TB_BOOK_AUTHOR + " Where " + KEY_AUTHOR_ID + " = " + oldAuthor.id 
-			//+ " And Exists(Select NULL From " + DB_TB_BOOK_AUTHOR + " ba Where "
-			//+ "                 ba." + KEY_BOOK + " = " + DB_TB_BOOK_AUTHOR + "." + KEY_BOOK
-			//+ "                 and ba." + KEY_AUTHOR_ID + " = " + newAuthor.id + ")";
-			//mSyncedDb.execSQL(sql);
 
 			mSyncedDb.setTransactionSuccessful();
 		} finally {
 			mSyncedDb.endTransaction(l);
 		}
 	}
-    
+
+
     public void globalReplaceSeries(@NonNull final Series oldSeries, @NonNull final Series newSeries) {
 		// Create or update the new author
 		if (newSeries.id == 0)
@@ -3691,7 +3789,7 @@ public class CatalogueDBAdapter {
 	}
 
     private void globalReplacePositionedBookItem(@NonNull final String tableName, @NonNull final String objectIdField,
-                                                 @NonNull final String positionField, long oldId, long newId) {
+                                                 @NonNull final String positionField, final long oldId, final long newId) {
     	String sql;
  
     	if ( !mSyncedDb.inTransaction() )
@@ -4129,9 +4227,9 @@ public class CatalogueDBAdapter {
 			// Set the parameters and call
 			bindStringOrNull(stmt, 1, authorText.toString());
 			// Titles should only contain title, not SERIES
-			bindStringOrNull(stmt, 2, book.getTitle() + "; " + titleText.toString());
-			// We could add a 'series' column, or just add it as part of the desciption
-			bindStringOrNull(stmt, 3, book.getDescription() + seriesText.toString());
+			bindStringOrNull(stmt, 2, book.getTitle() + "; " + titleText);
+			// We could add a 'series' column, or just add it as part of the description
+			bindStringOrNull(stmt, 3, book.getDescription() + seriesText);
 			bindStringOrNull(stmt, 4, book.getNotes());
 			bindStringOrNull(stmt, 5, book.getPublisher());
 			bindStringOrNull(stmt, 6, book.getGenre());

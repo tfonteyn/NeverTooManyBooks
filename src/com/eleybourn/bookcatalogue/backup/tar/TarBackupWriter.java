@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.backup.tar;
 
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.backup.BackupContainer;
 import com.eleybourn.bookcatalogue.backup.BackupInfo;
@@ -48,7 +49,7 @@ import java.io.OutputStreamWriter;
  */
 public class TarBackupWriter extends BackupWriterAbstract {
     private final TarBackupContainer mContainer;
-    private TarArchiveOutputStream mOutput;
+    private final TarArchiveOutputStream mOutput;
     private int mStyleCounter = 0;
 
     /**
@@ -56,7 +57,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
      *
      * @param container Parent
      */
-    TarBackupWriter(TarBackupContainer container) throws IOException {
+    TarBackupWriter(@NonNull final TarBackupContainer container) throws IOException {
         mContainer = container;
         // Open the archive for writing
         FileOutputStream out = new FileOutputStream(container.getFile());
@@ -73,7 +74,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
      * Save the books export file
      */
     @Override
-    public void putBooks(File books) throws IOException {
+    public void putBooks(@NonNull final File books) throws IOException {
         TarArchiveEntry entry = new TarArchiveEntry(new File(TarBackupContainer.BOOKS_FILE));
         entry.setModTime(books.lastModified());
         entry.setSize(books.length());
@@ -86,12 +87,12 @@ public class TarBackupWriter extends BackupWriterAbstract {
      * Save a cover file
      */
     @Override
-    public void putCoverFile(File source) throws IOException {
-        TarArchiveEntry entry = new TarArchiveEntry(source.getName());
+    public void putCoverFile(@NonNull final File source) throws IOException {
+        final TarArchiveEntry entry = new TarArchiveEntry(source.getName());
         entry.setModTime(source.lastModified());
         entry.setSize(source.length());
         mOutput.putArchiveEntry(entry);
-        FileInputStream in = new FileInputStream(source);
+        final FileInputStream in = new FileInputStream(source);
         streamToArchive(in);
     }
 
@@ -99,9 +100,9 @@ public class TarBackupWriter extends BackupWriterAbstract {
      * Save the INFO data
      */
     @Override
-    public void putInfo(BackupInfo info) throws IOException {
-        ByteArrayOutputStream infoData = new ByteArrayOutputStream();
-        BufferedWriter infoOut = new BufferedWriter(new OutputStreamWriter(infoData, TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
+    public void putInfo(@NonNull final BackupInfo info) throws IOException {
+        final ByteArrayOutputStream infoData = new ByteArrayOutputStream();
+        final BufferedWriter infoOut = new BufferedWriter(new OutputStreamWriter(infoData, TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
         BackupUtils.bundleToXml(infoOut, info.getBundle());
         infoOut.close();
         bytesToArchive(TarBackupContainer.INFO_FILE, infoData.toByteArray());
@@ -111,9 +112,9 @@ public class TarBackupWriter extends BackupWriterAbstract {
      * Save a Booklist style. We save them with increasing suffix counters to ensure uniqueness
      */
     @Override
-    public void putBooklistStyle(BooklistStyle style) throws IOException {
+    public void putBooklistStyle(@NonNull final BooklistStyle style) throws IOException {
         // Turn the object into a byte array
-        byte[] blob = SerializationUtils.serializeObject(style);
+        final byte[] blob = SerializationUtils.serializeObject(style);
         mStyleCounter++;
         bytesToArchive(TarBackupContainer.STYLE_PREFIX + mStyleCounter, blob);
     }
@@ -124,10 +125,10 @@ public class TarBackupWriter extends BackupWriterAbstract {
      * It would be nice to support groups (ie. more than one preference name), but ... we don't need it.
      */
     @Override
-    public void putPreferences(SharedPreferences prefs) throws IOException {
+    public void putPreferences(@NonNull final SharedPreferences prefs) throws IOException {
         // Turn the preferences into an XML file in a byte array
-        ByteArrayOutputStream infoData = new ByteArrayOutputStream();
-        BufferedWriter infoOut = new BufferedWriter(new OutputStreamWriter(infoData, TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
+        final ByteArrayOutputStream infoData = new ByteArrayOutputStream();
+        final BufferedWriter infoOut = new BufferedWriter(new OutputStreamWriter(infoData, TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
         BackupUtils.preferencesToXml(infoOut, prefs);
         infoOut.close();
         // Save them
@@ -139,9 +140,9 @@ public class TarBackupWriter extends BackupWriterAbstract {
      *
      * @param in Stream to be saved
      */
-    private void streamToArchive(InputStream in) throws IOException {
+    private void streamToArchive(@NonNull final InputStream in) throws IOException {
         try {
-            byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
+            final byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
             while (true) {
                 int cnt = in.read(buffer);
                 if (cnt <= 0)
@@ -160,11 +161,11 @@ public class TarBackupWriter extends BackupWriterAbstract {
      * @param name  name of "file" in archive
      * @param bytes bytes to write
      */
-    private void bytesToArchive(String name, byte[] bytes) throws IOException {
-        TarArchiveEntry entry = new TarArchiveEntry(name);
+    private void bytesToArchive(@NonNull final String name, @NonNull final byte[] bytes) throws IOException {
+        final TarArchiveEntry entry = new TarArchiveEntry(name);
         entry.setSize(bytes.length);
         mOutput.putArchiveEntry(entry);
-        InputStream in = new ByteArrayInputStream(bytes);
+        final InputStream in = new ByteArrayInputStream(bytes);
         streamToArchive(in);
     }
 

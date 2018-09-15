@@ -394,7 +394,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      * Passed a Properties object, update the properties of this style
      * based on the values of the passed properties.
      */
-    public void setProperties(Properties newProps) {
+    public void setProperties(@NonNull final Properties newProps) {
         Properties props = getProperties();
         for (Property newVal : newProps) {
             Property thisProp = props.get(newVal.getUniqueName());
@@ -407,7 +407,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Passed a template style, copy the group structure to this style.
      */
-    public void setGroups(BooklistStyle fromStyle) {
+    public void setGroups(@NonNull final BooklistStyle fromStyle) {
         Properties newProps = new Properties();
 
         // Save the current groups
@@ -511,7 +511,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Custom serialization support.
      */
-    private void writeObject(ObjectOutputStream out) throws IOException {
+    private void writeObject(@NonNull final ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
         out.writeObject(realSerialVersion); // always write latest
         out.writeObject(mXtraShowThumbnails.get());
@@ -530,7 +530,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Pseudo-constructor for custom serialization support.
      */
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    private void readObject(@NonNull final ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         initProperties();
         Object o = in.readObject();
@@ -609,7 +609,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      * Save this style as a custom user style to the database.
      * Either updates or creates as necessary
      */
-    public void saveToDb(CatalogueDBAdapter db) {
+    public void saveToDb(@NonNull final CatalogueDBAdapter db) {
         if (getRowId() == 0)
             mRowId = db.insertBooklistStyle(this);
         else
@@ -619,7 +619,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Delete this style from the database
      */
-    public void deleteFromDb(CatalogueDBAdapter db) {
+    public void deleteFromDb(@NonNull final CatalogueDBAdapter db) {
         if (getRowId() == 0)
             throw new RuntimeException("Style is not stored in the database, can not be deleted");
         db.deleteBooklistStyle(this.getRowId());

@@ -11,23 +11,38 @@
         android:text="@string/export_books_blurb"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <RadioButton
-        android:id="@+id/all_books"
-        style="@style/option_button"
-        android:text="@string/all_books" />
+    <LinearLayout
+        android:id="@+id/all_books_row"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/all_books_blurb"
-        style="@style/option_blurb"
-        android:text="@string/export_all_blurb" />
+        <RadioButton
+            android:id="@+id/all_books"
+            style="@style/option_button"
+            android:text="@string/all_books" />
 
-    <RadioButton
-        android:id="@+id/advanced_options"
-        style="@style/option_button"
-        android:text="@string/advanced_options" />
+        <TextView
+            android:id="@+id/all_books_blurb"
+            style="@style/option_blurb"
+            android:text="@string/export_all_blurb" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/export_advanced_blurb"
-        style="@style/option_blurb"
-        android:text="@string/export_advanced_blurb" />
+    <LinearLayout
+        android:id="@+id/advanced_options_row"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/advanced_options"
+            style="@style/option_button"
+            android:text="@string/advanced_options" />
+
+        <TextView
+            android:id="@+id/export_advanced_blurb"
+            style="@style/option_blurb"
+            android:text="@string/export_advanced_blurb" />
+    </LinearLayout>
+
 </LinearLayout>

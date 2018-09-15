@@ -1037,6 +1037,17 @@ and you can edit the book via the options menu using the menu button or overflow
         <item>Italian</item>
     </string-array>
 
+    <!-- adding more does not require code changes -->
+    <string-array name="predefined_locations">
+        <item>Library</item>
+    </string-array>
+
+    <!-- adding more does not require code changes -->
+    <string-array name="predefined_genres">
+        <item>Fiction</item>
+        <item>Non-Fiction</item>
+    </string-array>
+
     <string name="preferred_theme">Preferred Interface Theme</string>
     <!-- adding more DOES require code changes -->
     <string-array name="supported_themes">
@@ -1073,6 +1084,14 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="menu_edit_language">Edit Language&#8230;</string>
     <string name="language_is_blank">Language field is blank</string>
     <string name="edit_language_details">Edit Language Details</string>
+
+    <string name="menu_edit_location">Edit Location&#8230;</string>
+    <string name="location_is_blank">Location field is blank</string>
+    <string name="edit_location_details">Edit Language Details</string>
+
+    <string name="menu_edit_genre">Edit Genre&#8230;</string>
+    <string name="genre_is_blank">Genre field is blank</string>
+    <string name="edit_genre_details">Edit Genre Details</string>
 
     <string name="search_with_text">Search: %1$s</string>
     <string name="internet_update_fields">Update Fields</string>

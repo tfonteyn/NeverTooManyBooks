@@ -1168,15 +1168,15 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return true;
 
 		case EDIT_BOOK:
-			BookEdit.editBook(this, info.id, BookEdit.TAB_EDIT);
+			EditBookActivity.editBook(this, info.id, EditBookActivity.TAB_EDIT);
 			return true;
 
 		case EDIT_BOOK_NOTES:
-			BookEdit.editBook(this, info.id, BookEdit.TAB_EDIT_NOTES);
+			EditBookActivity.editBook(this, info.id, EditBookActivity.TAB_EDIT_NOTES);
 			return true;
 
 		case EDIT_BOOK_FRIENDS:
-			BookEdit.editBook(this, info.id, BookEdit.TAB_EDIT_FRIENDS);
+			EditBookActivity.editBook(this, info.id, EditBookActivity.TAB_EDIT_FRIENDS);
 			return true;
 
 		case EDIT_BOOK_SEND_TO_GR:
@@ -1260,7 +1260,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	public boolean onChildClick(ExpandableListView l, View v, int position, int childPosition, long id) {
 		boolean result = super.onChildClick(l, v, position, childPosition, id);
 		adjustCurrentGroup(position, 1, true);
-		BookEdit.openBook(this, id);
+		EditBookActivity.openBook(this, id);
 		return result;
 	}
 
@@ -1296,36 +1296,36 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		case UniqueId.ACTIVITY_ADMIN:
 			try {
 				// Use the ADDED_* fields if present.
-				if (intent != null && intent.hasExtra(BookEdit.ADDED_HAS_INFO)) {
+				if (intent != null && intent.hasExtra(EditBookActivity.ADDED_HAS_INFO)) {
 					String justAdded;
 					switch (sort) {
 						case SORT_TITLE:
                         {
-							justAdded = intent.getStringExtra(BookEdit.ADDED_TITLE);
+							justAdded = intent.getStringExtra(EditBookActivity.ADDED_TITLE);
 							int position = mDb.fetchBookPositionByTitle(justAdded, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}
 						case SORT_AUTHOR: {
-							justAdded = intent.getStringExtra(BookEdit.ADDED_AUTHOR);
+							justAdded = intent.getStringExtra(EditBookActivity.ADDED_AUTHOR);
 							int position = mDb.fetchAuthorPositionByName(justAdded, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}
 						case SORT_AUTHOR_GIVEN: {
-							justAdded = intent.getStringExtra(BookEdit.ADDED_AUTHOR);
+							justAdded = intent.getStringExtra(EditBookActivity.ADDED_AUTHOR);
 							int position = mDb.fetchAuthorPositionByGivenName(justAdded, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}
 						case SORT_SERIES: {
-							justAdded = intent.getStringExtra(BookEdit.ADDED_SERIES);
+							justAdded = intent.getStringExtra(EditBookActivity.ADDED_SERIES);
 							int position = mDb.fetchSeriesPositionBySeries(justAdded, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}
 						case SORT_GENRE: {
-							justAdded = intent.getStringExtra(BookEdit.ADDED_GENRE);
+							justAdded = intent.getStringExtra(EditBookActivity.ADDED_GENRE);
 							int position = mDb.fetchGenrePositionByGenre(justAdded, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;

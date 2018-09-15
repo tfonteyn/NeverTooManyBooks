@@ -70,7 +70,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
 
     @Override
     protected int getLayoutId() {
-        return R.layout.file_chooser_base;
+        return R.layout.activity_file_chooser_base;
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -78,12 +78,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
 
         // Determine the dialog type
         Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            mIsSaveDialog = false;
-        } else {
-            String mode = extras.getString(BKEY_MODE);
-            mIsSaveDialog = BVAL_MODE_SAVE_AS.equals(mode);
-        }
+        mIsSaveDialog = extras != null && BVAL_MODE_SAVE_AS.equals(extras.getString(BKEY_MODE));
 
         // Get and display the fragment
         FragmentManager fragmentManager = getSupportFragmentManager();

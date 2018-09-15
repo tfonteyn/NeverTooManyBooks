@@ -120,7 +120,7 @@ public class BookData extends DataManager {
     @NonNull
     public String getBookshelfText() {
         final String list = getBookshelfList();
-        final ArrayList<String> items = ArrayUtils.decodeList(BookDetailsFragmentAbstract.BOOKSHELF_SEPARATOR, list);
+        final ArrayList<String> items = ArrayUtils.decodeList(BookDetailsAbstractFragment.BOOKSHELF_SEPARATOR, list);
         if (items.size() == 0)
             return "";
 
@@ -324,11 +324,11 @@ public class BookData extends DataManager {
             StringBuilder bookshelves_list = new StringBuilder();
             while (bookshelves.moveToNext()) {
                 String name = bookshelves.getString(bookshelves.getColumnIndex(UniqueId.KEY_BOOKSHELF));
-                String encoded_name = ArrayUtils.encodeListItem(BookDetailsFragmentAbstract.BOOKSHELF_SEPARATOR, name);
+                String encoded_name = ArrayUtils.encodeListItem(BookDetailsAbstractFragment.BOOKSHELF_SEPARATOR, name);
                 if (bookshelves_list.length() == 0) {
                     bookshelves_list.append(encoded_name);
                 } else {
-                    bookshelves_list.append(BookDetailsFragmentAbstract.BOOKSHELF_SEPARATOR).append(encoded_name);
+                    bookshelves_list.append(BookDetailsAbstractFragment.BOOKSHELF_SEPARATOR).append(encoded_name);
                 }
             }
             return bookshelves_list.toString();

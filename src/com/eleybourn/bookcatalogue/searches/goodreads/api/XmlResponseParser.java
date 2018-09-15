@@ -85,8 +85,9 @@ public class XmlResponseParser extends DefaultHandler {
 			// If new tag has a filter, store it in the new context object
 			ctx.filter = filter;
 			// If we got a filter, tell it a tag is now starting.
-			if (filter != null) 
+			if (filter != null) {
 				filter.processStart(ctx);
+			}
 		}
 		// Add the new tag to the context hierarchy and reset 
 		mParents.add(ctx);

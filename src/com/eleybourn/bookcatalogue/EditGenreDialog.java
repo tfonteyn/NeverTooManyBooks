@@ -25,13 +25,13 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 
-public class EditLanguageDialog extends EditStringDialog {
-    EditLanguageDialog(@NonNull final Context context, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
+public class EditGenreDialog extends EditStringDialog {
+    EditGenreDialog(@NonNull final Context context, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
         super(context, db, onChanged);
     }
 
     public void edit(@NonNull final String s) {
-        super.edit(s, R.layout.dialog_edit_language, R.string.edit_language_details, R.string.name_can_not_be_blank);
+        super.edit(s, R.layout.dialog_edit_genre, R.string.edit_genre_details, R.string.name_can_not_be_blank);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class EditLanguageDialog extends EditStringDialog {
         if (to.equals(from)) {
             return;
         }
-        mDb.globalReplaceLanguage(from, to);
+        mDb.globalReplaceLocation(from, to);
         mOnChanged.run();
     }
 }

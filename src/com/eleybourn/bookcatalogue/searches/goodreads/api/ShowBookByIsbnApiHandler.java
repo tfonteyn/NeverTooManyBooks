@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
@@ -58,7 +59,7 @@ public class ShowBookByIsbnApiHandler extends ShowBookApiHandler {
 	 *
 	 * @return	the array of GoodreadsWork objects.
 	 */
-	public Bundle get(String isbn, boolean fetchThumbnail) throws
+	public Bundle get(@NonNull String isbn, boolean fetchThumbnail) throws
 			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
 			NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 		if (isbn == null)

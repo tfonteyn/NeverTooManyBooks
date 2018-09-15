@@ -78,6 +78,7 @@ public class UniqueId {
     public static final String BKEY_DIALOG_ID = "dialogId";
     public static final String BKEY_FILE_SPEC = "fileSpec";
     public static final String BKEY_BOOK_DATA = "bookData";
+    public static final String BKEY_DIRTY = "Dirty";
     public static final String BKEY_ANTHOLOGY_TITLES = "anthology_titles";
 
     public static final String BKEY_THUMBNAIL = "thumbnail";

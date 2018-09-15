@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:background="@color/background_thumb"
+            android:focusable="true"
             android:gravity="center_horizontal"
             android:padding="@dimen/padding_border"
             tools:ignore="ContentDescription"
@@ -44,10 +45,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/heading"
-                android:nextFocusDown="@id/title"
-                android:nextFocusUp="@id/row_img">
-                <requestFocus/>
+                android:layout_below="@id/heading">
+
+                <requestFocus />
             </Button>
         </RelativeLayout>
 
@@ -64,9 +64,7 @@
             <EditText
                 android:id="@+id/title"
                 style="@style/bookOrSeriesTitleTextEntry"
-                android:layout_below="@id/heading"
-                android:nextFocusDown="@id/isbn"
-                android:nextFocusUp="@id/author" />
+                android:layout_below="@id/heading" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -87,9 +85,7 @@
                 style="@style/editorFieldText"
                 android:layout_alignParentStart="false"
                 android:layout_toEndOf="@id/heading"
-                android:inputType="text"
-                android:nextFocusDown="@+id/series"
-                android:nextFocusUp="@id/title" />
+                android:inputType="text" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -109,9 +105,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/heading"
-                android:nextFocusDown="@id/publisher"
-                android:nextFocusUp="@id/isbn" />
+                android:layout_below="@id/heading" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -129,9 +123,16 @@
                 android:id="@+id/publisher"
                 style="@style/personalNameTextEntry"
                 android:layout_below="@id/heading"
-                android:completionThreshold="2"
-                android:nextFocusDown="@id/date_published"
-                android:nextFocusUp="@id/series" />
+                android:completionThreshold="2" />
+
+            <ImageView
+                android:id="@+id/publisher_button"
+                style="@style/ImageViewButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignBottom="@id/publisher"
+                app:srcCompat="@android:drawable/ic_menu_more"
+                tools:ignore="ContentDescription" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -151,12 +152,11 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/date_published_heading"
-                android:nextFocusDown="@id/bookshelf"
-                android:nextFocusUp="@id/publisher" />
+                android:layout_below="@id/date_published_heading" />
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/row_bookshelf"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -172,9 +172,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/heading"
-                android:nextFocusDown="@id/pages"
-                android:nextFocusUp="@id/date_published" />
+                android:layout_below="@id/heading" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -183,18 +181,19 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/pages_heading"
+                android:id="@+id/heading"
                 style="@style/editorFieldHeader"
+                android:layout_alignParentTop="false"
+                android:layout_centerVertical="true"
                 android:labelFor="@id/pages"
                 android:text="@string/pages" />
 
             <EditText
                 android:id="@+id/pages"
                 style="@style/editorFieldText"
-                android:layout_below="@id/pages_heading"
-                android:inputType="number"
-                android:nextFocusDown="@id/list_price"
-                android:nextFocusUp="@id/bookshelf" />
+                android:layout_alignParentStart="false"
+                android:layout_toEndOf="@id/heading"
+                android:inputType="number" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -203,18 +202,19 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/list_price_heading"
+                android:id="@+id/heading"
                 style="@style/editorFieldHeader"
+                android:layout_alignParentTop="false"
+                android:layout_centerVertical="true"
                 android:labelFor="@id/list_price"
                 android:text="@string/list_price" />
 
             <EditText
                 android:id="@+id/list_price"
                 style="@style/editorFieldText"
-                android:layout_below="@id/list_price_heading"
-                android:inputType="numberDecimal"
-                android:nextFocusDown="@id/format"
-                android:nextFocusUp="@id/pages" />
+                android:layout_alignParentStart="false"
+                android:layout_toEndOf="@id/heading"
+                android:inputType="numberDecimal" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -235,21 +235,12 @@
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/format_button"
                 android:completionThreshold="2"
-                android:nextFocusDown="@id/format_button"
-                android:nextFocusUp="@id/list_price"
                 android:singleLine="true" />
 
             <ImageView
                 android:id="@+id/format_button"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                style="@style/ImageViewButton"
                 android:layout_alignBottom="@id/format"
-                android:layout_alignParentEnd="true"
-                android:focusable="true"
-                android:nextFocusDown="@id/genre"
-                android:nextFocusUp="@id/format"
-                android:paddingEnd="@dimen/padding_border"
-                android:paddingStart="@dimen/padding_border"
                 app:srcCompat="@android:drawable/ic_menu_more"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
@@ -270,9 +261,14 @@
                 style="@style/editorFieldText"
                 android:layout_below="@id/heading"
                 android:completionThreshold="2"
-                android:inputType="textCapWords"
-                android:nextFocusDown="@id/language"
-                android:nextFocusUp="@id/format" />
+                android:inputType="textCapWords" />
+
+            <ImageView
+                android:id="@+id/genre_button"
+                style="@style/ImageViewButton"
+                android:layout_alignBottom="@id/genre"
+                app:srcCompat="@android:drawable/ic_menu_more"
+                tools:ignore="ContentDescription" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -294,21 +290,12 @@
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/language_button"
                 android:completionThreshold="2"
-                android:nextFocusDown="@id/language_button"
-                android:nextFocusUp="@id/genre"
                 android:singleLine="true" />
 
             <ImageView
                 android:id="@+id/language_button"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                style="@style/ImageViewButton"
                 android:layout_alignBottom="@id/language"
-                android:layout_alignParentEnd="true"
-                android:focusable="true"
-                android:nextFocusDown="@id/anthology"
-                android:nextFocusUp="@id/language"
-                android:paddingEnd="@dimen/padding_border"
-                android:paddingStart="@dimen/padding_border"
                 app:srcCompat="@android:drawable/ic_menu_more"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
@@ -318,8 +305,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:nextFocusDown="@id/description"
-            android:nextFocusUp="@id/language"
             android:text="@string/is_anthology" />
 
         <RelativeLayout
@@ -328,7 +313,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/descriptionLabel"
+                android:id="@+id/heading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="12dp"
@@ -337,15 +322,8 @@
 
             <ImageView
                 android:id="@+id/description_edit_button"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_alignBottom="@id/descriptionLabel"
-                android:layout_alignParentEnd="true"
-                android:focusable="true"
-                android:nextFocusDown="@id/row_img"
-                android:nextFocusUp="@id/language"
-                android:paddingEnd="@dimen/padding_border"
-                android:paddingStart="@dimen/padding_border"
+                style="@style/ImageViewButton"
+                android:layout_alignBottom="@id/heading"
                 app:srcCompat="@android:drawable/ic_menu_edit"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
@@ -358,7 +336,8 @@
             android:layout_height="wrap_content"
             android:autoLink="web"
             android:hint="@string/notset"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textIsSelectable="true" />
     </LinearLayout>
 
 </ScrollView>

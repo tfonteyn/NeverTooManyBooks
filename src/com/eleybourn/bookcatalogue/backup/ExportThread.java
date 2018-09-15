@@ -58,7 +58,7 @@ public class ExportThread extends ManagedTask {
             return;
         }
         try {
-            FileOutputStream out = new FileOutputStream(StorageUtils.getFile(EXPORT_TEMP_FILE_NAME));
+            final FileOutputStream out = new FileOutputStream(StorageUtils.getFile(EXPORT_TEMP_FILE_NAME));
             new CsvExporter().export(out, mOnExportListener, Exporter.EXPORT_ALL, null);
 
             if (out.getChannel().isOpen()) {
@@ -100,7 +100,7 @@ public class ExportThread extends ManagedTask {
      * Backup the current file
      */
     private void renameFiles() {
-        File temp = StorageUtils.getFile(EXPORT_TEMP_FILE_NAME);
+        final File temp = StorageUtils.getFile(EXPORT_TEMP_FILE_NAME);
         if (isCancelled()) {
             if (temp.exists())
                 //noinspection ResultOfMethodCallIgnored
@@ -112,13 +112,13 @@ public class ExportThread extends ManagedTask {
                 //noinspection ResultOfMethodCallIgnored,ResultOfMethodCallIgnored
                 fLast.delete();
             for (int i = 4; i > 0; i--) {
-                File fCurr = StorageUtils.getFile(String.format(fmt, i));
+                final File fCurr = StorageUtils.getFile(String.format(fmt, i));
                 if (fCurr.exists())
                     //noinspection ResultOfMethodCallIgnored
                     fCurr.renameTo(fLast);
                 fLast = fCurr;
             }
-            File export = StorageUtils.getFile(EXPORT_FILE_NAME);
+            final File export = StorageUtils.getFile(EXPORT_FILE_NAME);
             if (export.exists()) {
                 //noinspection ResultOfMethodCallIgnored
                 export.renameTo(fLast);
@@ -242,7 +242,7 @@ public class ExportThread extends ManagedTask {
 //						String bookshelves_name_text = "";
 //						while (bookshelves.moveToNext()) {
 //							bookshelves_id_text += bookshelves.getString(bookshelves.getColumnIndex(DatabaseDefinitions.KEY_ID)) + BookEditFields.BOOKSHELF_SEPERATOR;
-//							bookshelves_name_text += Utils.encodeListItem(bookshelves.getString(bookshelves.getColumnIndex(DatabaseDefinitions.KEY_BOOKSHELF)),BookEditFields.BOOKSHELF_SEPARATOR) + BookEditFields.BOOKSHELF_SEPARATOR;
+//							bookshelves_name_text += Utils.encodeListItem(bookshelves.getString(bookshelves.getColumnIndex(DatabaseDefinitions.KEY_BOOKSHELF)),EditBookFieldsFragment.BOOKSHELF_SEPARATOR) + EditBookFieldsFragment.BOOKSHELF_SEPARATOR;
 //						}
 //						bookshelves.close();
 //

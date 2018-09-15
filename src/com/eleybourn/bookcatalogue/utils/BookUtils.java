@@ -58,7 +58,7 @@ public class BookUtils {
         if (rowId == null || rowId == 0) {
             Toast.makeText(activity, R.string.this_option_is_not_available_until_the_book_is_saved, Toast.LENGTH_LONG).show();
         }
-		Intent i = new Intent(activity, BookEdit.class);
+		Intent i = new Intent(activity, EditBookActivity.class);
 		Bundle book = new Bundle();
 		try(Cursor thisBook = dba.fetchBookById(rowId)) {
 			thisBook.moveToFirst();

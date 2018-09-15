@@ -18,6 +18,12 @@ import java.io.File;
 import java.util.Date;
 import java.util.Objects;
 
+/**
+ * Layout clickable items:
+ *
+ *      R.id.all_books_row
+ *      R.id.advanced_options_row
+ */
 public class ExportTypeSelectionDialogFragment extends DialogFragment {
     private int mDialogId;
     private File mFile;
@@ -63,7 +69,7 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
      * @param root root view
      * @param id   Sub-View ID
      */
-    private void setOnClickListener(View root, int id) {
+    private void setOnClickListener(@NonNull final View root, final int id) {
         View v = root.findViewById(id);
         v.setOnClickListener(mRowClickListener);
         v.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -84,14 +90,14 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
         alertDialog.setCanceledOnTouchOutside(false);
 
         setOnClickListener(v, R.id.all_books_row);
-        setOnClickListener(v, R.id.advanced_options);
+        setOnClickListener(v, R.id.advanced_options_row);
 
         return alertDialog;
     }
 
-    private void handleClick(View v) {
+    private void handleClick(@NonNull final View v) {
         try {
-            if (v.getId() == R.id.advanced_options) {
+            if (v.getId() == R.id.advanced_options_row) {
                 ExportAdvancedDialogFragment frag = ExportAdvancedDialogFragment.newInstance(1, mFile);
                 frag.show(getActivity().getSupportFragmentManager(), null);
             } else {

@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.support.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.backup.BackupReader.BackupReaderListener;
 import com.eleybourn.bookcatalogue.backup.BackupWriter.BackupWriterListener;
@@ -31,119 +33,121 @@ import java.io.IOException;
 
 /**
  * Test module. DEBUG ONLY!
- * 
+ *
  * @author pjw
  */
 public class Backuptest {
-	private static final String BACKUP_TAR = "backup.tar";
+    private static final String BACKUP_TAR = "backup.tar";
 
-	public static void testBackupTar() {
-		File f = StorageUtils.getFile(BACKUP_TAR);
-		try {
-			performBackupTar(f);
-		} catch (IOException e) {
-			Logger.logError(e);
-		}
-	}
-	public static void testRestoreTar() {
-		File f = StorageUtils.getFile(BACKUP_TAR);
-		try {
-			performRestoreTar(f);
-		} catch (IOException e) {
-			Logger.logError(e);
-		}
-	}
+    public static void testBackupTar() {
+        File f = StorageUtils.getFile(BACKUP_TAR);
+        try {
+            performBackupTar(f);
+        } catch (IOException e) {
+            Logger.logError(e);
+        }
+    }
 
-	private static void performBackupTar(File file) throws IOException {
-		if (BuildConfig.DEBUG) {
-			System.out.println("Starting " + file.getAbsolutePath());
-		}
-		TarBackupContainer bkp = new TarBackupContainer(file);
+    public static void testRestoreTar() {
+        File f = StorageUtils.getFile(BACKUP_TAR);
+        try {
+            performRestoreTar(f);
+        } catch (IOException e) {
+            Logger.logError(e);
+        }
+    }
 
-		BackupWriter wrt = bkp.newWriter();
+    private static void performBackupTar(File file) throws IOException {
+        if (BuildConfig.DEBUG) {
+            System.out.println("Starting " + file.getAbsolutePath());
+        }
+        new TarBackupContainer(file)
+                .newWriter()
+                .backup(new BackupWriterListener() {
+                    private final boolean mIsCancelled = false;
+                    private long mMax;
+                    private String mMessage = "";
+                    private int mPosition = 0;
+                    private int mTotalBooks;
 
-		wrt.backup(new BackupWriterListener() {
-			private long mMax;
-			private String mMessage = "";
-			private final boolean mIsCancelled = false;
-			private int mPosition = 0;
-			private int mTotalBooks;
+                    @Override
+                    public void setMax(int max) {
+                        mMax = max;
+                    }
 
-			@Override
-			public void setMax(int max) {
-				mMax = max;
-			}
+                    @Override
+                    public void step(@Nullable final String message, final int delta) {
+                        if (message != null)
+                            mMessage = message;
+                        mPosition += delta;
+                        if (BuildConfig.DEBUG) {
+                            System.out.println("BKP: " + mMessage + " " + mPosition + " of " + mMax);
+                        }
+                    }
 
-			@Override
-			public void step(String message, int delta) {
-				if (message != null)
-					mMessage = message;
-				mPosition += delta;
-				if (BuildConfig.DEBUG) {
-					System.out.println("BKP: " + mMessage + " " + mPosition + " of " + mMax);
-				}
-			}
+                    @Override
+                    public boolean isCancelled() {
+                        return mIsCancelled;
+                    }
 
-			@Override
-			public boolean isCancelled() {
-				return mIsCancelled;
-			}
+                    @Override
+                    public int getTotalBooks() {
+                        return mTotalBooks;
+                    }
 
-			@Override
-			public void setTotalBooks(int books) {
-				mTotalBooks = books;
-			}
+                    @Override
+                    public void setTotalBooks(int books) {
+                        mTotalBooks = books;
+                    }
+                }, Exporter.EXPORT_ALL, null);
+        if (BuildConfig.DEBUG) {
+            System.out.println("Finished " + file.getAbsolutePath() + ", size = " + file.length());
+        }
+    }
 
-			@Override
-			public int getTotalBooks() {
-				return mTotalBooks;
-			}}, Exporter.EXPORT_ALL, null);
-		if (BuildConfig.DEBUG) {
-			System.out.println("Finished " + file.getAbsolutePath() + ", size = " + file.length());
-		}
-	}
+    private static void performRestoreTar(File file) throws IOException {
+        if (BuildConfig.DEBUG) {
+            System.out.println("Starting " + file.getAbsolutePath());
+        }
 
-	private static void performRestoreTar(File file) throws IOException {
-		if (BuildConfig.DEBUG) {
-			System.out.println("Starting " + file.getAbsolutePath());
-		}
-		
-		TarBackupContainer bkp = new TarBackupContainer(file);
-		// Each format should provide a validator of some kind
-		if (!bkp.isValid())
-			throw new IOException("Not a valid backup file");
-		BackupReader rdr = bkp.newReader();
+        TarBackupContainer bkp = new TarBackupContainer(file);
+        // Each format should provide a validator of some kind
+        if (!bkp.isValid()) {
+            throw new IOException("Not a valid backup file");
+        }
 
-		rdr.restore(new BackupReaderListener() {
-			private long mMax;
-			private String mMessage = "";
-			private final boolean mIsCancelled = false;
-			private int mPosition = 0;
+        bkp.newReader().restore(new BackupReaderListener() {
+            private final boolean mIsCancelled = false;
+            private long mMax;
+            private String mMessage = "";
+            private int mPosition = 0;
 
-			@Override
-			public void setMax(int max) {
-				mMax = max;
-			}
+            @Override
+            public void setMax(int max) {
+                mMax = max;
+            }
 
-			@Override
-			public void step(String message, int delta) {
-				if (message != null)
-					mMessage = message;
-				mPosition += delta;
-				if (BuildConfig.DEBUG) {
-					System.out.println("RST: " + mMessage + " " + mPosition + " of " + mMax);
-				}
-			}
+            @Override
+            public void step(@Nullable final String message, final int delta) {
+                if (message != null) {
+                    mMessage = message;
+                }
+                mPosition += delta;
+                if (BuildConfig.DEBUG) {
+                    System.out.println("RST: " + mMessage + " " + mPosition + " of " + mMax);
+                }
+            }
 
-			@Override
-			public boolean isCancelled() {
-				return mIsCancelled;
-			}}, Importer.IMPORT_ALL);
+            @Override
+            public boolean isCancelled() {
+                return mIsCancelled;
+            }
+        }, Importer.IMPORT_ALL);
 
-		if (BuildConfig.DEBUG) {
-			System.out.println("Finished " + file.getAbsolutePath() + ", size = " + file.length());
-		}
-	}
+        if (BuildConfig.DEBUG) {
+            System.out.println("Finished " + file.getAbsolutePath() + ", size = " + file.length());
+        }
+    }
 
 
 }

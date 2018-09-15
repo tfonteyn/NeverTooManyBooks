@@ -25,11 +25,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.View;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Toast;
+
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -38,7 +47,11 @@ import com.eleybourn.bookcatalogue.scanner.Scanner;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
-import com.eleybourn.bookcatalogue.utils.*;
+import com.eleybourn.bookcatalogue.utils.AsinUtils;
+import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.SoundManager;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,12 +64,12 @@ import java.util.HashSet;
  * It currently only searches Google Books, but Amazon (ASIN lookups) will be coming soon.
  *
  * ISBN stands for International Standard Book Number.
- *  Every book is assigned a unique ISBN-10 and ISBN-13 when published.
+ * Every book is assigned a unique ISBN-10 and ISBN-13 when published.
  *
  * ASIN stands for Amazon Standard Identification Number.
- *   Almost every product on Amazon has its own ASIN, a unique code used to identify it.
- *   For books, the ASIN is the same as the ISBN number, but for all other products a new ASIN
- *   is created when the item is uploaded to their catalogue.
+ * Almost every product on Amazon has its own ASIN, a unique code used to identify it.
+ * For books, the ASIN is the same as the ISBN number, but for all other products a new ASIN
+ * is created when the item is uploaded to their catalogue.
  */
 public class BookISBNSearchActivity extends ActivityWithTasks {
     public static final String BKEY_BY = "by";
@@ -106,6 +119,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     };
 
     private String mBy;
+
     /**
      * Return the layout to use for this subclass
      */
@@ -217,7 +231,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     }
 
     /**
-     *  ISBN has been passed by another component
+     * ISBN has been passed by another component
      */
     private void onCreateWithISBN() {
 
@@ -564,36 +578,35 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     /**
      * This function takes the isbn and search google books (and soon amazon)
      * to extract the details of the book. The details will then get sent to the
-     * BookEdit activity
+     * EditBookActivity activity
      *
      * @param isbn The ISBN to search
      */
-    private void go(String isbn, String author, String title) {
+    private void go(@NonNull final String isbn, @NonNull final String author, @NonNull final String title) {
         if (BuildConfig.DEBUG) {
-            System.out.println("GO: isbn=" + isbn + ", author=" + author + ", title=" + title);
+            System.out.println("BookISBNSearchActivity.go: isbn=" + isbn + ", author=" + author + ", title=" + title);
         }
 
         // Save the details because we will do some async processing or an alert
-        mIsbn = isbn;
+        mIsbn = IsbnUtils.upc2isbn(isbn); // intercept UPC numbers
         mAuthor = author;
         mTitle = title;
 
         // If the book already exists, do not continue
         try {
-            if (isbn != null && !isbn.isEmpty()) {
-
+            if (!mIsbn.isEmpty()) {
                 // If the layout has an 'Allow ASIN' checkbox, see if it is checked.
                 final CheckBox allowAsinCb = BookISBNSearchActivity.this.findViewById(R.id.asinCheckbox);
                 final boolean allowAsin = allowAsinCb != null && allowAsinCb.isChecked();
 
-                if (!IsbnUtils.isValid(isbn) && (!allowAsin || !AsinUtils.isValid(isbn))) {
+                if (!IsbnUtils.isValid(mIsbn) && (!allowAsin || !AsinUtils.isValid(mIsbn))) {
                     int msg;
                     if (allowAsin) {
                         msg = R.string.x_is_not_a_valid_isbn_or_asin;
                     } else {
                         msg = R.string.x_is_not_a_valid_isbn;
                     }
-                    Toast.makeText(this, getString(msg, isbn), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(msg, mIsbn), Toast.LENGTH_LONG).show();
                     if (mMode == MODE_SCAN) {
                         // Optionally beep if scan failed.
                         SoundManager.beepLow();
@@ -610,32 +623,29 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                         SoundManager.beepHigh();
                     }
                     // See if ISBN exists in catalogue
-                    final long existingId = mDb.getIdFromIsbn(isbn, true);
+                    final long existingId = mDb.getIdFromIsbn(mIsbn, true);
                     if (existingId > 0) {
                         // Verify - this can be a dangerous operation
-                        AlertDialog alertDialog = new AlertDialog.Builder(this)
+                        AlertDialog dialog = new AlertDialog.Builder(this)
                                 .setMessage(R.string.duplicate_book_message)
                                 .setTitle(R.string.duplicate_book_title)
                                 .setIcon(android.R.drawable.ic_menu_info_details)
                                 .create();
 
-                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                                this.getResources().getString(R.string.add),
+                        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getResources().getString(R.string.add),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         doSearchBook();
                                         return;
                                     }
                                 });
-                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,
-                                this.getResources().getString(R.string.edit_book),
+                        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getResources().getString(R.string.edit_book),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        BookEdit.editBook(BookISBNSearchActivity.this, existingId, BookEdit.TAB_EDIT);
+                                        EditBookActivity.editBook(BookISBNSearchActivity.this, existingId, EditBookActivity.TAB_EDIT);
                                     }
                                 });
-                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                                this.getResources().getString(android.R.string.cancel),
+                        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getResources().getString(android.R.string.cancel),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         //do nothing
@@ -649,7 +659,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                                         return;
                                     }
                                 });
-                        alertDialog.show();
+                        dialog.show();
                         return;
                     }
                 }
@@ -664,7 +674,6 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     }
 
     private void doSearchBook() {
-        // System.out.println(mId + " doSearchBook");
         /* Delete any hanging around temporary thumbs */
         try {
             File thumb = StorageUtils.getTempThumbnail();
@@ -680,7 +689,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
             try {
                 // Start the lookup in background.
                 //mTaskManager.doProgress("Searching");
-                SearchManager sm = new SearchManager(getTaskManager(), mSearchHandler);
+                final SearchManager sm = new SearchManager(getTaskManager(), mSearchHandler);
                 mSearchManagerId = sm.getSenderId();
                 Tracker.handleEvent(this, "Searching" + mSearchManagerId, Tracker.States.Running);
 
@@ -755,12 +764,12 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     }
 
     /*
-     * Load the BookEdit Activity
+     * Load the EditBookActivity Activity
      *
      * return void
      */
     private void createBook(Bundle book) {
-        Intent i = new Intent(this, BookEdit.class);
+        Intent i = new Intent(this, EditBookActivity.class);
         i.putExtra(UniqueId.BKEY_BOOK_DATA, book);
         startActivityForResult(i, UniqueId.ACTIVITY_EDIT_BOOK);
         //dismissProgress();
@@ -794,6 +803,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                     finish();
                 }
                 break;
+
             case UniqueId.ACTIVITY_EDIT_BOOK:
                 if (intent != null)
                     mLastBookIntent = intent;

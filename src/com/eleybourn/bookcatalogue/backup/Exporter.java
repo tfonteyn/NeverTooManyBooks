@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -19,50 +19,55 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.support.annotation.NonNull;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 
 /**
  * Interface definition for ant 'books' importer.
- * 
+ *
  * Currently (Feb 2013) there is only one, but there will probably be
  * an XML export/import one day.
- * 
+ *
  * @author pjw
  */
 public interface Exporter {
-	/** Flag value to indicate new books and books with more recent update_date fields should be exported */
-	int EXPORT_NOTHING = 0;
+    /** Flag value to indicate new books and books with more recent update_date fields should be exported */
+    int EXPORT_NOTHING = 0;
     int EXPORT_SINCE = 2;
-	int EXPORT_PREFERENCES = 4;
-	int EXPORT_STYLES = 8;
-	int EXPORT_COVERS = 16;
-	int EXPORT_DETAILS = 32;
-	/** Flag value to indicate ALL books should be exported */
+    int EXPORT_PREFERENCES = 4;
+    int EXPORT_STYLES = 8;
+    int EXPORT_COVERS = 16;
+    int EXPORT_DETAILS = 32;
+    /** Flag value to indicate ALL books should be exported */
     int EXPORT_ALL = EXPORT_PREFERENCES | EXPORT_STYLES | EXPORT_COVERS | EXPORT_DETAILS;
-	int EXPORT_ALL_SINCE = EXPORT_PREFERENCES | EXPORT_STYLES | EXPORT_COVERS | EXPORT_DETAILS | EXPORT_SINCE;
-	int EXPORT_MASK = EXPORT_ALL | EXPORT_SINCE;
+    int EXPORT_ALL_SINCE = EXPORT_PREFERENCES | EXPORT_STYLES | EXPORT_COVERS | EXPORT_DETAILS | EXPORT_SINCE;
+    int EXPORT_MASK = EXPORT_ALL | EXPORT_SINCE;
 
-	/**
-	 * Listener interface to get progress messages.
-	 * 
-	 * @author pjw
-	 */
+    /**
+     * Export function
+     *
+     * @param outputStream Stream to send data
+     * @param listener     Progress & cancellation interface
+     *
+     * @return true on success
+     */
+    boolean export(@NonNull final OutputStream outputStream, @NonNull final Exporter.ExportListener listener,
+                   final int backupFlags, final Date since) throws IOException;
+
+    /**
+     * Listener interface to get progress messages.
+     *
+     * @author pjw
+     */
     interface ExportListener {
-		void setMax(int max);
-		void onProgress(String message, int position);
-		boolean isCancelled();
-	}
+        void setMax(int max);
 
-	/** 
-	 * Export function
-	 * 
-	 * @param outputStream		Stream to send data
-	 * @param listener			Progress & cancellation interface
-	 * 
-	 * @return	true on success
-	 */
-    boolean export(OutputStream outputStream, Exporter.ExportListener listener, final int backupFlags, Date since) throws IOException;
+        void onProgress(String message, int position);
+
+        boolean isCancelled();
+    }
 
 }

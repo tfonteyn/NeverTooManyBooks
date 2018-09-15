@@ -552,25 +552,25 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 			/*
 			try {
 				// Use the ADDED_* fields if present.
-				if (intent != null && intent.hasExtra(BookEditFields.ADDED_HAS_INFO)) {
+				if (intent != null && intent.hasExtra(EditBookFieldsFragment.ADDED_HAS_INFO)) {
 					if (sort == SORT_TITLE) {
-						justAdded = intent.getStringExtra(BookEditFields.ADDED_TITLE);
+						justAdded = intent.getStringExtra(EditBookFieldsFragment.ADDED_TITLE);
 						int position = mDb.fetchBookPositionByTitle(justAdded, bookshelf);
 						adjustCurrentGroup(position, 1, true, false);
 					} else if (sort == SORT_AUTHOR) {
-						justAdded = intent.getStringExtra(BookEditFields.ADDED_AUTHOR);
+						justAdded = intent.getStringExtra(EditBookFieldsFragment.ADDED_AUTHOR);
 						int position = mDb.fetchAuthorPositionByName(justAdded, bookshelf);
 						adjustCurrentGroup(position, 1, true, false);
 					} else if (sort == SORT_AUTHOR_GIVEN) {
-						justAdded = intent.getStringExtra(BookEditFields.ADDED_AUTHOR);
+						justAdded = intent.getStringExtra(EditBookFieldsFragment.ADDED_AUTHOR);
 						int position = mDb.fetchAuthorPositionByGivenName(justAdded, bookshelf);
 						adjustCurrentGroup(position, 1, true, false);
 					} else if (sort == SORT_SERIES) {
-						justAdded = intent.getStringExtra(BookEditFields.ADDED_SERIES);
+						justAdded = intent.getStringExtra(EditBookFieldsFragment.ADDED_SERIES);
 						int position = mDb.fetchSeriesPositionBySeries(justAdded, bookshelf);
 						adjustCurrentGroup(position, 1, true, false);
 					} else if (sort == SORT_GENRE) {
-						justAdded = intent.getStringExtra(BookEditFields.ADDED_GENRE);
+						justAdded = intent.getStringExtra(EditBookFieldsFragment.ADDED_GENRE);
 						int position = mDb.fetchGenrePositionByGenre(justAdded, bookshelf);
 						adjustCurrentGroup(position, 1, true, false);
 					}
@@ -903,7 +903,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 // If it's a book, edit it.
                 int rowKind = mList.getRowView().getKind();
                 if (rowKind == RowKinds.ROW_KIND_BOOK) {
-                    BookEdit.openBook(BooksOnBookshelf.this, mList.getRowView().getBookId(), mList.getBuilder(), position);
+                    EditBookActivity.openBook(BooksOnBookshelf.this, mList.getRowView().getBookId(), mList.getBuilder(), position);
                 } else {
                     // If it's level, expand/collapse. Technically, TODO: we could expand/collapse any level
                     // but storing and recovering the view becomes unmanageable.
@@ -1199,8 +1199,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
          * @param isFullRebuild Indicates whole table structure needs rebuild, vs. just do a reselect of underlying data
          */
         GetListTask(boolean isFullRebuild) {
-            if (BuildConfig.DEBUG) {
-                System.out.println("GetListTask constructor, isFullRebuild=" + isFullRebuild);
+            if (!isFullRebuild && BuildConfig.DEBUG) {
+                System.out.println("GetListTask constructor, isFullRebuild=false");
                 Logger.printStackTrace();
             }
             //TOMF FIXME

@@ -158,23 +158,23 @@ public class MenuHandler {
     }
 
     /**
-     * Load the BookEdit Activity
+     * Load the EditBookActivity Activity
      */
     private void createBook(Activity a) {
-        Intent i = new Intent(a, BookEdit.class);
+        Intent i = new Intent(a, EditBookActivity.class);
         a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_MANUALLY);
     }
 
 //    /**
-//     * Load the EditBook activity based on the provided id. Also open to the provided tab
+//     * Load the EditBookActivity activity based on the provided id. Also open to the provided tab
 //     *
 //     * @param id  The id of the book to edit
 //     * @param tab Which tab to open first
 //     */
 //    public static void editBook(Activity a, long id, int tab) {
-//        Intent i = new Intent(a, BookEdit.class);
+//        Intent i = new Intent(a, EditBookActivity.class);
 //        i.putExtra(DatabaseDefinitions.KEY_ID, id);
-//        i.putExtra(BookEdit.TAB, tab);
+//        i.putExtra(EditBookActivity.TAB, tab);
 //        a.startActivityForResult(i, UniqueId.ACTIVITY_EDIT_BOOK);
 //        return;
 //    }

@@ -23,7 +23,10 @@ package com.eleybourn.bookcatalogue.database;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 
 /**
  * Utility class to manage the construction and closure of persisted SQLiteStatement obejcts.
@@ -74,6 +77,20 @@ public class SqlStatementManager implements AutoCloseable {
             stmt = add(db, name, sql);
         }
         return stmt;
+    }
+
+    /**
+     * DEBUG help
+     *
+     * @return list of all the names of the managed statements
+     */
+    public List<String> getNames(){
+        List<String> list = new ArrayList<>();
+        Enumeration<String> all = mStatements.keys();
+        while (all.hasMoreElements()) {
+            list.add(all.nextElement());
+        }
+        return list;
     }
 
     @Override

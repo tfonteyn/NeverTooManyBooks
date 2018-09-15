@@ -19,16 +19,17 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+
+import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
-
-import android.content.SharedPreferences;
-import android.os.Bundle;
-
-import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
 
 /**
  * Interface provided by every entity read from a backup file.
@@ -46,13 +47,13 @@ public interface ReaderEntity {
 	/** get the stream to read the entity */
 	InputStream getStream() throws IOException;
 	/** Save the data to a directory, using the original file name */
-	void saveToDirectory(File dir) throws IOException;
+	void saveToDirectory(@NonNull final File dir) throws IOException;
 	/** Save the data to a file, using the passed file name & path */
-	void saveToFile(File outFile) throws IOException;
+	void saveToFile(@NonNull final File outFile) throws IOException;
 	/** Read the data into a bundle */
     Bundle getBundle() throws IOException;
 	/** Read the data into preferences */
-    void getPreferences(SharedPreferences prefs) throws IOException;
+    void getPreferences(@NonNull final SharedPreferences prefs) throws IOException;
 	/** Read the data as a Serializable object */
     Serializable getSerializable() throws IOException, DeserializationException;
 	/** Modified date from archive entry */

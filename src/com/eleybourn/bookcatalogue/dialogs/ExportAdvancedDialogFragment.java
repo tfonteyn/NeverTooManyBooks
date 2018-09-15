@@ -12,6 +12,7 @@ import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.Exporter;
@@ -44,9 +45,9 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
      *
      * @return Created fragment
      */
-    public static ExportAdvancedDialogFragment newInstance(int dialogId, File file) {
-        ExportAdvancedDialogFragment frag = new ExportAdvancedDialogFragment();
-        Bundle args = new Bundle();
+    public static ExportAdvancedDialogFragment newInstance(final int dialogId, @NonNull final File file) {
+        final ExportAdvancedDialogFragment frag = new ExportAdvancedDialogFragment();
+        final Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_DIALOG_ID, dialogId);
         args.putString(UniqueId.BKEY_FILE_SPEC, file.getAbsolutePath());
         frag.setArguments(args);
@@ -72,9 +73,15 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
      * @param cbId  checkbox view id
      * @param relId Related view id
      */
-    private void setRelatedView(View root, int cbId, int relId) {
+    private void setRelatedView(@NonNull final View root, final int cbId, final int relId) {
         final CheckBox cb = root.findViewById(cbId);
         final View rel = root.findViewById(relId);
+        if (BuildConfig.DEBUG) {
+            // catch layout issues before we click on them.
+            if (cb == null || rel == null) {
+                throw new NullPointerException("Layout must have: " + cbId + " and " + relId);
+            }
+        }
         rel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,9 +118,13 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
 
         View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_export_advanced_options, null);
-        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(v).setTitle(R.string.advanced_options).create();
-        alertDialog.setIcon(android.R.drawable.ic_menu_help);
-        alertDialog.setCanceledOnTouchOutside(false);
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setView(v)
+                .setTitle(R.string.advanced_options)
+                .setIcon(android.R.drawable.ic_menu_help)
+                .create();
+
+        dialog.setCanceledOnTouchOutside(false);
 
         v.findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
@@ -121,7 +132,6 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
                 dismiss();
             }
         });
-
         v.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -132,7 +142,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         setRelatedView(v, R.id.books_check, R.id.all_books_row);
         setRelatedView(v, R.id.covers_check, R.id.covers_row);
 
-        return alertDialog;
+        return dialog;
     }
 
     private void handleClick(@SuppressWarnings("unused") View v) {
@@ -153,7 +163,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
     }
 
     private ExportSettings createSettings() {
-        ExportSettings settings = new ExportSettings();
+        final ExportSettings settings = new ExportSettings();
 
         settings.file = mFile;
         settings.options = 0;

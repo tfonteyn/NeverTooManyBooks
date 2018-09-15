@@ -347,9 +347,9 @@ public class BookEvents {
 	 * Method to edit a book details.
 	 */
 	private static void editBook(Context ctx, long bookId) {
-		Intent i = new Intent(ctx, BookEdit.class);
+		Intent i = new Intent(ctx, EditBookActivity.class);
 		i.putExtra(KEY_ID, bookId);
-		i.putExtra(BookEdit.TAB, BookEdit.TAB_EDIT);
+		i.putExtra(EditBookActivity.TAB, EditBookActivity.TAB_EDIT);
 		ctx.startActivity(i);	
 	}
 

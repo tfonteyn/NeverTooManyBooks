@@ -1247,8 +1247,8 @@ public class BooklistBuilder implements AutoCloseable {
                 {
                     String sql = "Create Index " + mNavTable + "_IX1" + " On " + mNavTable + "(" + DOM_LEVEL + "," + DOM_EXPANDED + "," + DOM_ROOT_KEY + ")";
                     SynchronizedStatement ixStmt = mStatements.add("navIx1", sql);
-                    mLevelBuildStmts.add(ixStmt);
-                    ixStmt.execute();
+                        mLevelBuildStmts.add(ixStmt);
+                        ixStmt.execute();
                 }
 
                 long t4a = System.currentTimeMillis();
@@ -1256,8 +1256,8 @@ public class BooklistBuilder implements AutoCloseable {
                     // Essential for main query! If not present, will make getCount() take ages because main query is a cross with no index.
                     String sql = "Create Unique Index " + mNavTable + "_IX2" + " On " + mNavTable + "(" + DOM_REAL_ROW_ID + ")";
                     SynchronizedStatement ixStmt = mStatements.add("navIx2", sql);
-                    mLevelBuildStmts.add(ixStmt);
-                    ixStmt.execute();
+                        mLevelBuildStmts.add(ixStmt);
+                        ixStmt.execute();
                 }
 
                 long t4b = System.currentTimeMillis();
@@ -1996,35 +1996,38 @@ public class BooklistBuilder implements AutoCloseable {
     private void cleanup(final boolean isFinalize) {
         if (mStatements.size() != 0) {
             if (DEBUG && BuildConfig.DEBUG && isFinalize) {
-                System.out.println("Finalizing BooklistBuilder with active statements");
+                System.out.println("BooklistBuilder Finalizing with active statements (this is not an error): ");
+                for (String name : mStatements.getNames()) {
+                    System.out.print(name + ", ");
+                }
             }
             try {
                 mStatements.close();
-            } catch (Exception e) {
-                Logger.logError(e);
+            } catch (Exception ignore) {
+                Logger.logError(ignore);
             }
         }
 
         if (mNavTable != null) {
             if (DEBUG && BuildConfig.DEBUG && isFinalize) {
-                System.out.println("Finalizing BooklistBuilder with nav table");
+                System.out.println("BooklistBuilder Finalizing wth mNavTable (this is not an error)");
             }
             try {
                 mNavTable.close();
                 mNavTable.drop(mSyncedDb);
-            } catch (Exception e) {
-                Logger.logError(e);
+            } catch (Exception ignore) {
+                Logger.logError(ignore);
             }
         }
         if (mListTable != null) {
             if (DEBUG && BuildConfig.DEBUG && isFinalize) {
-                System.out.println("Finalizing BooklistBuilder with list table");
+                System.out.println("BooklistBuilder Finalizing  with list table (this is not an error)");
             }
             try {
                 mListTable.close();
                 mListTable.drop(mSyncedDb);
-            } catch (Exception e) {
-                Logger.logError(e);
+            } catch (Exception ignore) {
+                Logger.logError(ignore);
             }
         }
 

@@ -40,7 +40,7 @@ import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 
 import java.util.ArrayList;
 
-import static com.eleybourn.bookcatalogue.BookDetailsFragmentAbstract.BOOKSHELF_SEPARATOR;
+import static com.eleybourn.bookcatalogue.BookDetailsAbstractFragment.BOOKSHELF_SEPARATOR;
 import static com.eleybourn.bookcatalogue.UniqueId.KEY_BOOKSHELF;
 
 /**
@@ -95,7 +95,7 @@ public class BookshelfDialogFragment extends DialogFragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_fragment_bookshelves, null);
+        return inflater.inflate(R.layout.fragment_bookshelves, null);
     }
 
     /**

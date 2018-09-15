@@ -294,20 +294,6 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                     addMenuItem(menu, R.id.MENU_AUTHOR_EDIT, R.string.menu_edit_author, android.R.drawable.ic_menu_edit);
                     break;
                 }
-                case RowKinds.ROW_KIND_PUBLISHER: {
-                    String publisher = rowView.getPublisherName();
-                    if (publisher != null && !publisher.isEmpty()) {
-                        addMenuItem(menu, R.id.MENU_PUBLISHER_EDIT, R.string.menu_edit_publisher, android.R.drawable.ic_menu_edit);
-                    }
-                    break;
-                }
-                case RowKinds.ROW_KIND_LANGUAGE: {
-                    String language = rowView.getLanguage();
-                    if (language != null && !language.isEmpty()) {
-                        addMenuItem(menu, R.id.MENU_LANGUAGE_EDIT, R.string.menu_edit_language, android.R.drawable.ic_menu_edit);
-                    }
-                    break;
-                }
                 case RowKinds.ROW_KIND_SERIES: {
                     long id = rowView.getSeriesId();
                     if (id != 0) {
@@ -316,9 +302,38 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                     }
                     break;
                 }
+
+                case RowKinds.ROW_KIND_PUBLISHER: {
+                    String s = rowView.getPublisherName();
+                    if (s != null && !s.isEmpty()) {
+                        addMenuItem(menu, R.id.MENU_PUBLISHER_EDIT, R.string.menu_edit_publisher, android.R.drawable.ic_menu_edit);
+                    }
+                    break;
+                }
+                case RowKinds.ROW_KIND_LANGUAGE: {
+                    String s = rowView.getLanguage();
+                    if (s != null && !s.isEmpty()) {
+                        addMenuItem(menu, R.id.MENU_LANGUAGE_EDIT, R.string.menu_edit_language, android.R.drawable.ic_menu_edit);
+                    }
+                    break;
+                }
+                case RowKinds.ROW_KIND_LOCATION: {
+                    String s = rowView.getLocation();
+                    if (s != null && !s.isEmpty()) {
+                        addMenuItem(menu, R.id.MENU_LOCATION_EDIT, R.string.menu_edit_location, android.R.drawable.ic_menu_edit);
+                    }
+                    break;
+                }
+                case RowKinds.ROW_KIND_GENRE: {
+                    String s = rowView.getGenre();
+                    if (s != null && !s.isEmpty()) {
+                        addMenuItem(menu, R.id.MENU_GENRE_EDIT, R.string.menu_edit_genre, android.R.drawable.ic_menu_edit);
+                    }
+                    break;
+                }
                 case RowKinds.ROW_KIND_FORMAT: {
-                    String format = rowView.getFormat();
-                    if (format != null && !format.isEmpty()) {
+                    String s = rowView.getFormat();
+                    if (s != null && !s.isEmpty()) {
                         addMenuItem(menu, R.id.MENU_FORMAT_EDIT, R.string.menu_edit_format, android.R.drawable.ic_menu_edit);
                     }
                     break;
@@ -384,17 +399,17 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
 
             case R.id.MENU_BOOK_EDIT:
                 // Start the activity in the correct tab
-                BookEdit.editBook(context, rowView.getBookId(), BookEdit.TAB_EDIT);
+                EditBookActivity.editBook(context, rowView.getBookId(), EditBookActivity.TAB_EDIT);
                 return true;
 
             case R.id.MENU_BOOK_EDIT_NOTES:
                 // Start the activity in the correct tab
-                BookEdit.editBook(context, rowView.getBookId(), BookEdit.TAB_EDIT_NOTES);
+                EditBookActivity.editBook(context, rowView.getBookId(), EditBookActivity.TAB_EDIT_NOTES);
                 return true;
 
             case R.id.MENU_BOOK_EDIT_LOANS:
                 // Start the activity in the correct tab
-                BookEdit.editBook(context, rowView.getBookId(), BookEdit.TAB_EDIT_FRIENDS);
+                EditBookActivity.editBook(context, rowView.getBookId(), EditBookActivity.TAB_EDIT_FRIENDS);
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
@@ -485,7 +500,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                 break;
             }
             case R.id.MENU_PUBLISHER_EDIT: {
-                String name = rowView.getPublisherName();
+                String s = rowView.getPublisherName();
                 EditPublisherDialog d = new EditPublisherDialog(context, db, new Runnable() {
                     @Override
                     public void run() {
@@ -496,11 +511,11 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                         }
                     }
                 });
-                d.edit(new Publisher(name));
+                d.edit(new Publisher(s));
                 break;
             }
             case R.id.MENU_LANGUAGE_EDIT: {
-                String language = rowView.getLanguage();
+                String s = rowView.getLanguage();
                 EditLanguageDialog d = new EditLanguageDialog(context, db, new Runnable() {
                     @Override
                     public void run() {
@@ -511,11 +526,41 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                         }
                     }
                 });
-                d.edit(language);
+                d.edit(s);
+                break;
+            }
+            case R.id.MENU_LOCATION_EDIT: {
+                String s = rowView.getLocation();
+                EditLocationDialog d = new EditLocationDialog(context, db, new Runnable() {
+                    @Override
+                    public void run() {
+                        // Let the Activity know
+                        if (context instanceof BooklistChangeListener) {
+                            final BooklistChangeListener l = (BooklistChangeListener) context;
+                            l.onBooklistChange(BooklistChangeListener.FLAG_LOCATION);
+                        }
+                    }
+                });
+                d.edit(s);
+                break;
+            }
+            case R.id.MENU_GENRE_EDIT: {
+                String s = rowView.getGenre();
+                EditGenreDialog d = new EditGenreDialog(context, db, new Runnable() {
+                    @Override
+                    public void run() {
+                        // Let the Activity know
+                        if (context instanceof BooklistChangeListener) {
+                            final BooklistChangeListener l = (BooklistChangeListener) context;
+                            l.onBooklistChange(BooklistChangeListener.FLAG_GENRE);
+                        }
+                    }
+                });
+                d.edit(s);
                 break;
             }
             case R.id.MENU_FORMAT_EDIT: {
-                String format = rowView.getFormat();
+                String s = rowView.getFormat();
                 EditFormatDialog d = new EditFormatDialog(context, db, new Runnable() {
                     @Override
                     public void run() {
@@ -526,7 +571,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                         }
                     }
                 });
-                d.edit(format);
+                d.edit(s);
                 break;
             }
             case R.id.MENU_MARK_AS_READ: {
@@ -614,6 +659,8 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
         int FLAG_FORMAT = 4;
         int FLAG_PUBLISHER = 8;
         int FLAG_LANGUAGE = 16;
+        int FLAG_LOCATION = 32;
+        int FLAG_GENRE = 64;
 
         void onBooklistChange(int flags);
     }

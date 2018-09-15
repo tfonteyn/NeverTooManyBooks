@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.backup.tar;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.backup.BackupContainer;
 import com.eleybourn.bookcatalogue.backup.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.BackupReaderAbstract;
@@ -51,11 +53,11 @@ public class TarBackupReader extends BackupReaderAbstract {
 	 * 
 	 * @param container		Parent 
 	 */
-	TarBackupReader(TarBackupContainer container) throws IOException {
+	TarBackupReader(@NonNull final TarBackupContainer container) throws IOException {
 		mContainer = container;
 
 		// Open the file and create the archive stream
-		FileInputStream in = new FileInputStream(container.getFile());
+		final FileInputStream in = new FileInputStream(container.getFile());
 		mInput = new TarArchiveInputStream(in);
 
 		// Process the INFO entry. Should be first.

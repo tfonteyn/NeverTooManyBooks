@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -65,11 +64,9 @@ import java.util.ArrayList;
  *
  * @author Evan Leybourn
  */
-public class BookEdit extends BookCatalogueActivity implements BookEditFragmentAbstract.BookEditManager,
+public class EditBookActivity extends BookCatalogueActivity implements EditBookAbstractFragment.BookEditManager,
         OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
 
-    private static final String FLATTENED_BOOKLIST_POSITION = "FlattenedBooklistPosition";
-    private static final String BKEY_FLATTENED_BOOKLIST = "FlattenedBooklist";
     /**
      * Tabs in order, see {@link #mTabClasses}
      */
@@ -78,11 +75,20 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     public static final int TAB_EDIT_NOTES = 1;
     public static final int TAB_EDIT_FRIENDS = 2;
     public static final int TAB_EDIT_ANTHOLOGY = 3;
+
     public static final String ADDED_HAS_INFO = "ADDED_HAS_INFO";
+    // used in Classic mode only, new fields not added there....
+    public static final String ADDED_FORMAT = "ADDED_FORMAT";
     public static final String ADDED_GENRE = "ADDED_GENRE";
+    public static final String ADDED_LANGUAGE = "ADDED_LANGUAGE";
+    public static final String ADDED_LOCATION = "ADDED_LOCATION";
+    public static final String ADDED_PUBLISHER = "ADDED_PUBLISHER";
     public static final String ADDED_SERIES = "ADDED_SERIES";
     public static final String ADDED_TITLE = "ADDED_TITLE";
     public static final String ADDED_AUTHOR = "ADDED_AUTHOR";
+
+    private static final String FLATTENED_BOOKLIST_POSITION = "FlattenedBooklistPosition";
+    private static final String BKEY_FLATTENED_BOOKLIST = "FlattenedBooklist";
     /**
      * Key using in intent to start this class in read-only mode
      */
@@ -91,16 +97,20 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
      * Classes used for the Tabs (in order)
      */
     private static final Class[] mTabClasses = {
-            BookEditFields.class,
-            BookEditNotes.class,
-            BookEditLoaned.class,
-            BookEditAnthology.class
+            EditBookFieldsFragment.class,
+            EditBookNotesFragment.class,
+            EditBookLoanedFragment.class,
+            EditBookAnthologyFragment.class
     };
     private final CatalogueDBAdapter mDb = new CatalogueDBAdapter(this);
     private FlattenedBooklist mList = null;
     private GestureDetector mGestureDetector;
     private boolean mIsDirtyFlg = false;
+    private String added_format = "";
     private String added_genre = "";
+    private String added_language = "";
+    private String added_location = "";
+    private String added_publisher= "";
     private String added_series = "";
     private String added_title = "";
     private String added_author = "";
@@ -139,13 +149,13 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 
     private TabLayout mTabLayout;
     private TabLayout.Tab mAnthologyTab;
-    private ArrayList<String> mPublishers;
-    private ArrayList<String> mGenres;
-    /**
-     * List of languages , formats in database so far
-     */
-    private ArrayList<String> mLanguages;
+
+    /** Lists in database so far */
     private ArrayList<String> mFormats;
+    private ArrayList<String> mGenres;
+    private ArrayList<String> mLanguages;
+    private ArrayList<String> mLocations;
+    private ArrayList<String> mPublishers;
 
     /**
      * @see #openBook(Activity, long, BooklistBuilder, Integer)
@@ -173,27 +183,27 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
             }
             viewBook(a, id, listTable, position);
         } else {
-            editBook(a, id, BookEdit.TAB_EDIT);
+            editBook(a, id, EditBookActivity.TAB_EDIT);
         }
     }
 
     /**
-     * Load the EditBook activity based on the provided id in edit mode. Also
+     * Load the EditBookActivity activity based on the provided id in edit mode. Also
      * open to the provided tab.
      *
      * @param id  The id of the book to edit
      * @param tab Which tab to open first
      */
     public static void editBook(Activity a, long id, int tab) {
-        Intent i = new Intent(a, BookEdit.class);
+        Intent i = new Intent(a, EditBookActivity.class);
         i.putExtra(UniqueId.KEY_ID, id);
-        i.putExtra(BookEdit.TAB, tab);
+        i.putExtra(EditBookActivity.TAB, tab);
         a.startActivityForResult(i, UniqueId.ACTIVITY_EDIT_BOOK);
         return;
     }
 
     /**
-     * Load the EditBook tab activity in read-only mode. The first tab is book
+     * Load the EditBookActivity tab activity in read-only mode. The first tab is book
      * details.
      *
      * @param a         current activity from which we start
@@ -204,14 +214,14 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
      *                  read-only view.
      */
     private static void viewBook(Activity a, long id, String listTable, Integer position) {
-        Intent i = new Intent(a, BookEdit.class);
+        Intent i = new Intent(a, EditBookActivity.class);
         i.putExtra(BKEY_FLATTENED_BOOKLIST, listTable);
         if (position != null) {
             i.putExtra(FLATTENED_BOOKLIST_POSITION, position);
         }
         i.putExtra(UniqueId.KEY_ID, id);
-        i.putExtra(BookEdit.TAB, BookEdit.TAB_EDIT); // needed extra for creating BookEdit
-        i.putExtra(BookEdit.KEY_READ_ONLY, true);
+        i.putExtra(EditBookActivity.TAB, EditBookActivity.TAB_EDIT); // needed extra for creating EditBookActivity
+        i.putExtra(EditBookActivity.KEY_READ_ONLY, true);
         a.startActivityForResult(i, UniqueId.ACTIVITY_VIEW_BOOK);
         return;
     }
@@ -249,7 +259,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         mTabLayout.addOnTabSelectedListener(new TabListener());
 
         if (mIsReadOnly) {
-            BookDetailsReadOnly details = new BookDetailsReadOnly();
+            BookDetailsReadOnlyFragment details = new BookDetailsReadOnlyFragment();
             details.setArguments(extras);
             replaceTab(details);
 
@@ -277,7 +287,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
                     setShowAnthology(isAnthology);
                 }
             } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException("Creating BookEdit tabs failed?");
+                throw new RuntimeException("Creating EditBookActivity tabs failed?");
             }
 
 
@@ -292,7 +302,6 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
                 //replaceTab(mAllTabs.get(TAB_EDIT));
             }
             mTabLayout.setVisibility(View.VISIBLE);
-
             findViewById(R.id.buttonbar_cancel_save).setVisibility(View.VISIBLE);
         }
 
@@ -312,14 +321,14 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         Button mCancelButton = findViewById(R.id.cancel);
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                // Cleanup because we may have made global changes
+                // Cleanup because we may have made global changes TODO: detect this if actually needed
                 mDb.purgeAuthors();
                 mDb.purgeSeries();
                 // We're done.
                 setResult(Activity.RESULT_OK);
 
                 if (isDirty()) {
-                    StandardDialogs.showConfirmUnsavedEditsDialog(BookEdit.this, null);
+                    StandardDialogs.showConfirmUnsavedEditsDialog(EditBookActivity.this, null);
                 } else {
                     finish();
                 }
@@ -440,7 +449,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
 
     /**
      * Close the list object (frees statements) and if we are finishing, delete the temp table.
-     * <p>
+     *
      * This is an ESSENTIAL step; for some reason, in Android 2.1 if these statements are not
      * cleaned up, then the underlying SQLiteDatabase gets double-dereference'd, resulting in
      * the database being closed by the deeply dodgy auto-close code in Android.
@@ -466,7 +475,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         if (mList != null) {
             outState.putInt(FLATTENED_BOOKLIST_POSITION, (int) mList.getPosition());
         }
-        outState.putInt(BookEdit.TAB, mTabLayout.getSelectedTabPosition());
+        outState.putInt(EditBookActivity.TAB, mTabLayout.getSelectedTabPosition());
         Tracker.exitOnSaveInstanceState(this);
     }
 
@@ -489,7 +498,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     /**
      * If 'back' is pressed, and the user has made changes, ask them if they
      * really want to lose the changes.
-     * <p>
+     *
      * We don't use onBackPressed because it does not work with API level 4.
      */
     @Override
@@ -541,7 +550,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
             if (mAnthologyTab == null) {
                 try {
                     mAnthologyTab = mTabLayout.newTab()
-                            .setText(R.string.anthology_titles)
+                            .setText(R.string.anthology)
                             .setTag(mTabClasses[TAB_EDIT_ANTHOLOGY].newInstance());
                 } catch (InstantiationException | IllegalAccessException ignore) {
                 }
@@ -627,36 +636,36 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         if (mRowId == 0) {
             String isbn = mBookData.getString(UniqueId.KEY_ISBN);
             /* Check if the book currently exists */
-            if (!isbn.isEmpty()) {
-                if (mDb.checkIsbnExists(isbn, true)) {
-                    /*
-                     * If it exists, show a dialog and use it to perform the
-                     * next action, according to the users choice.
-                     */
-                    SaveAlert alert = new SaveAlert();
-                    alert.setMessage(getResources().getString(R.string.duplicate_book_message));
-                    alert.setTitle(R.string.duplicate_book_title);
-                    alert.setIcon(android.R.drawable.ic_menu_info_details);
-                    alert.setButton(SaveAlert.BUTTON_POSITIVE,
-                            this.getResources().getString(android.R.string.ok),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    updateOrCreate();
-                                    nextStep.success();
-                                    return;
-                                }
-                            });
-                    alert.setButton(SaveAlert.BUTTON_NEGATIVE,
-                            this.getResources().getString(android.R.string.cancel),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    nextStep.failure();
-                                    return;
-                                }
-                            });
-                    alert.show();
-                    return;
-                }
+            if (!isbn.isEmpty() && (mDb.checkIsbnExists(isbn, true))) {
+                /*
+                 * If it exists, show a dialog and use it to perform the
+                 * next action, according to the users choice.
+                 */
+                AlertDialog dialog = new AlertDialog.Builder(this)
+                        .setMessage(getResources().getString(R.string.duplicate_book_message))
+                        .setTitle(R.string.duplicate_book_title)
+                        .setIcon(android.R.drawable.ic_menu_info_details)
+                        .create();
+
+                dialog.setButton(AlertDialog.BUTTON_POSITIVE,
+                        this.getResources().getString(android.R.string.ok),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                updateOrCreate();
+                                nextStep.success();
+                                return;
+                            }
+                        });
+                dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
+                        this.getResources().getString(android.R.string.cancel),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                nextStep.failure();
+                                return;
+                            }
+                        });
+                dialog.show();
+                return;
             }
         }
 
@@ -695,21 +704,26 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
             } else {
                 added_author = "";
             }
-        } catch (Exception e) {
-            Logger.logError(e);
+        } catch (Exception ignore) {
+            Logger.logError(ignore);
         }
+
         try {
             ArrayList<Series> series = mBookData.getSeries();
             if (series.size() > 0)
                 added_series = series.get(0).name;
             else
                 added_series = "";
-        } catch (Exception e) {
-            Logger.logError(e);
+        } catch (Exception ignore) {
+            Logger.logError(ignore);
         }
 
         added_title = mBookData.getString(UniqueId.KEY_TITLE);
+        added_format = mBookData.getString(UniqueId.KEY_FORMAT);
         added_genre = mBookData.getString(UniqueId.KEY_GENRE);
+        added_language = mBookData.getString(UniqueId.KEY_LANGUAGE);
+        added_location = mBookData.getString(UniqueId.KEY_LOCATION);
+        added_publisher = mBookData.getString(UniqueId.KEY_PUBLISHER);
     }
 
     /**
@@ -720,6 +734,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         if (bar != null) {
             if (mIsReadOnly && mList != null) {
                 // display a book
+//   to long, doesn't fit
 //                bar.setTitle(mBookData.getString(KEY_TITLE));
 //                bar.setSubtitle(mBookData.getAuthorTextShort()
 //                                + String.format(" (" + getResources().getString(R.string.x_of_y) + ")",
@@ -749,14 +764,7 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     @Override
     public ArrayList<String> getPublishers() {
         if (mPublishers == null) {
-            mPublishers = new ArrayList<>();
-
-            try (Cursor publisher_cur = mDb.fetchAllPublishers()) {
-                final int col = publisher_cur.getColumnIndexOrThrow(UniqueId.KEY_PUBLISHER);
-                while (publisher_cur.moveToNext()) {
-                    mPublishers.add(publisher_cur.getString(col));
-                }
-            }
+            mPublishers = mDb.getPublishers();
         }
         return mPublishers;
     }
@@ -765,23 +773,28 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
      * Load a genre list; reloading this list every time a tab changes is slow.
      * So we cache it.
      *
-     * @return List of publishers
+     * @return List of genres
      */
     @Override
     public ArrayList<String> getGenres() {
         if (mGenres == null) {
-            mGenres = new ArrayList<>();
-
-            try (Cursor genre_cur = mDb.fetchAllGenres("")) {
-                final int col = genre_cur.getColumnIndexOrThrow(UniqueId.KEY_ID);
-                while (genre_cur.moveToNext()) {
-                    mGenres.add(genre_cur.getString(col));
-                }
-            }
+            mGenres = mDb.getGenres();
         }
         return mGenres;
     }
-
+    /**
+     * Load a location list; reloading this list every time a tab changes is slow.
+     * So we cache it.
+     *
+     * @return List of locations
+     */
+    @Override
+    public ArrayList<String> getLocations() {
+        if (mLocations == null) {
+            mLocations = mDb.getLocations();
+        }
+        return mLocations;
+    }
     /**
      * Load a language list; reloading this list every time a tab changes is slow.
      * So we cache it.
@@ -791,26 +804,15 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
     @Override
     public ArrayList<String> getLanguages() {
         if (mLanguages == null) {
-            mLanguages = new ArrayList<>();
-
-            try (Cursor cur = mDb.fetchAllLanguages("")) {
-                final int col = cur.getColumnIndexOrThrow(UniqueId.KEY_ID);
-                while (cur.moveToNext()) {
-                    String s = cur.getString(col);
-                    if (s != null && !s.isEmpty()) {
-                        mLanguages.add(cur.getString(col));
-                    }
-                }
-            }
+            mLanguages = mDb.getLanguages();
         }
         return mLanguages;
     }
-
     /**
      * Load a format list; reloading this list every time a tab changes is slow.
      * So we cache it.
      *
-     * @return List of publishers
+     * @return List of formats
      */
     public ArrayList<String> getFormats() {
         if (mFormats == null) {
@@ -945,13 +947,6 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
         }
     }
 
-    private class SaveAlert extends AlertDialog {
-
-        SaveAlert() {
-            super(BookEdit.this);
-        }
-    }
-
     private class DoConfirmAction implements PostSaveAction {
 
         DoConfirmAction() {
@@ -962,6 +957,10 @@ public class BookEdit extends BookCatalogueActivity implements BookEditFragmentA
             i.putExtra(UniqueId.KEY_ID, mBookData.getRowId());
             i.putExtra(ADDED_HAS_INFO, true);
             i.putExtra(ADDED_GENRE, added_genre);
+            i.putExtra(ADDED_FORMAT, added_format);
+            i.putExtra(ADDED_LANGUAGE, added_language);
+            i.putExtra(ADDED_LOCATION, added_location);
+            i.putExtra(ADDED_PUBLISHER, added_publisher);
             i.putExtra(ADDED_SERIES, added_series);
             i.putExtra(ADDED_TITLE, added_title);
             i.putExtra(ADDED_AUTHOR, added_author);

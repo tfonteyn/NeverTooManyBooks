@@ -54,8 +54,6 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
     private static final String PREF_BACKGROUND_THUMBNAILS = TAG + ".BackgroundThumbnails";
     /** Show flat backgrounds in Book lists */
     private static final String PREF_CACHE_THUMBNAILS = TAG + ".CacheThumbnails";
-    /** Show flat backgrounds in Book lists */
-    private static final String PREF_FLAT_BACKGROUND = TAG + ".FlatBackground";
     /** Key added to resulting Intent */
     private static final String PREF_CHANGED = TAG + ".PrefChanged";
     /** Always expand/collapse/preserve book list state */
@@ -69,14 +67,6 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
                     PropertyGroup.GRP_GENERAL, R.string.book_list_state)
                     .setPreferenceKey(PREF_BOOKLISTS_STATE)
                     .setDefaultValue(BOOKLISTS_ALWAYS_EXPANDED)
-                    .setGlobal(true);
-    /** Flat Backgrounds property definition */
-    private static final ItemEntries<Boolean> mFlatBackgroundListItems = new ItemEntries<>();
-    private static final BooleanListProperty mFlatBackgroundProperty =
-            new BooleanListProperty(mFlatBackgroundListItems, PREF_FLAT_BACKGROUND,
-                    PropertyGroup.GRP_GENERAL, R.string.booklist_background_style)
-                    .setPreferenceKey(PREF_FLAT_BACKGROUND)
-                    .setDefaultValue(false)
                     .setGlobal(true);
     /** Enable Thumbnail Cache property definition */
     private static final ItemEntries<Boolean> mCacheThumbnailsListItems = new ItemEntries<>();
@@ -102,10 +92,6 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
         mBooklistStateListItems.add(BOOKLISTS_ALWAYS_EXPANDED, R.string.always_start_booklists_expanded);
         mBooklistStateListItems.add(BOOKLISTS_ALWAYS_COLLAPSED, R.string.always_start_booklists_collapsed);
         mBooklistStateListItems.add(BOOKLISTS_STATE_PRESERVED, R.string.remember_booklists_state);
-
-        mFlatBackgroundListItems.add(null, R.string.use_default_setting);
-        mFlatBackgroundListItems.add(false, R.string.textured_backgroud);
-        mFlatBackgroundListItems.add(true, R.string.plain_background_b_reduces_flicker_b);
 
         mCacheThumbnailsListItems.add(null, R.string.use_default_setting);
         mCacheThumbnailsListItems.add(false, R.string.resize_each_time);
@@ -183,7 +169,6 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
             }
         }
         // Add the locally constructed properties
-        globalProperties.add(mFlatBackgroundProperty);
         globalProperties.add(mBooklistStateProperty);
         globalProperties.add(mCacheThumbnailsProperty);
         globalProperties.add(mBackgroundThumbnailsProperty);
