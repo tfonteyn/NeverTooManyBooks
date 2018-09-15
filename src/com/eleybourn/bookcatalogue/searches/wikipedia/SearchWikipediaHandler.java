@@ -59,7 +59,7 @@ public class SearchWikipediaHandler extends DefaultHandler {
 		super.startElement(uri, localName, name, attributes);
 		if (localName.equalsIgnoreCase(UL)){
 			String className = attributes.getValue("class");
-			if (className != null && className.equals("mw-search-results")) {
+			if (className != null && "mw-search-results".equals(className)) {
 				entry = true;
 			}
 		}

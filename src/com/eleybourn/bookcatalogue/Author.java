@@ -93,8 +93,8 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      * Constructor using a Parcel.
      */
     private Author(@NonNull final Parcel in) {
-        familyName = in.readString();
-        givenNames = in.readString();
+        familyName = in.readString().trim();
+        givenNames = in.readString().trim();
         id = in.readLong();
     }
 

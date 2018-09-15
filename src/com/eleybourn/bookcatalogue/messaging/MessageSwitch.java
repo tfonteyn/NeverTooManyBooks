@@ -26,8 +26,10 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -57,11 +59,11 @@ public class MessageSwitch<T, U> {
     /** ID counter for unique sender IDs; set > 0 to allow for possible future static senders **/
     private static Long mSenderIdCounter = 1024L;
     /** List of message sources */
-    private final Hashtable<Long, MessageSender<U>> mSenders = new Hashtable<>();
+    private final Map<Long, MessageSender<U>> mSenders = Collections.synchronizedMap(new HashMap<Long, MessageSender<U>>());
     /** List of all messages in the message queue, both messages and replies */
     private final LinkedBlockingQueue<RoutingSlip> mMessageQueue = new LinkedBlockingQueue<>();
     /** List of message listener queues */
-    private final Hashtable<Long, MessageListeners> mListeners = new Hashtable<>();
+    private final Map<Long, MessageListeners> mListeners = Collections.synchronizedMap(new HashMap<Long, MessageListeners>());
 
     /**
      * Accessor. Sometimes senders (or receivers) need to check which thread they are on and possibly post runnables.

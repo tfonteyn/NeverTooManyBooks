@@ -198,7 +198,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
                 "mList=[");
 
         for (ItemEntry entry : mList) {
-            sb.append("{").append(entry.toString()).append("}");
+            sb.append("{").append(entry).append("}");
         }
         sb.append("]}");
         return sb.toString();

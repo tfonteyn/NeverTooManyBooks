@@ -68,7 +68,7 @@ public class SearchWikipediaEntryHandler extends DefaultHandler {
 		if (!intoc) {
 			if (localName.equalsIgnoreCase(ENTRY)){
 				if (entry1 && entry2) {
-					String title = this_title + builder.toString();
+					String title = this_title + builder;
 					title = title.replace("\"", "").trim();
 					if (!title.isEmpty()) {
 						titles.add(title);
@@ -132,14 +132,14 @@ public class SearchWikipediaEntryHandler extends DefaultHandler {
 		if (localName.equalsIgnoreCase(DIV)) {
 			div++;
 			String idName = attributes.getValue("id");
-			if (idName != null && idName.equals("bodyContent")) {
+			if (idName != null && "bodyContent".equals(idName)) {
 				entrydiv = div;
 				entry1 = true;
 			}
 		}
 		if (entry1 && localName.equalsIgnoreCase(TOC_TABLE)) {
 			String idName = attributes.getValue("id");
-			if (idName != null && idName.equals("toc")) {
+			if (idName != null && "toc".equals(idName)) {
 				intoc = true;
 			}
 		}

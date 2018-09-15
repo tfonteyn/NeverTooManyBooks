@@ -47,9 +47,9 @@ public class IsbnUtils {
     /**
      * (try to) convert a UPC number to a real ISBN
      *
-     * @param input     UPC, isbn
+     * @param input UPC, isbn
      *
-     * @return  either the valid ISBN equivalent, or the input string if conversion failed.
+     * @return either the valid ISBN equivalent, or the input string if conversion failed.
      */
     @NonNull
     public static String upc2isbn(@NonNull String input) {
@@ -175,6 +175,7 @@ public class IsbnUtils {
         }
 
         /** kept for faster conversion between 10/13 formats */
+        @SuppressWarnings("FieldMayBeFinal")
         private List<Integer> mDigits;
 
         /**

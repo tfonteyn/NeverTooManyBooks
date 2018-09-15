@@ -23,11 +23,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
-import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -79,9 +77,6 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
 				outFile.setLastModified(this.getDateModified().getTime());
 			} catch (Exception e) {
 				// Ignore...it's nice to set the date, but not mandatory
-				if (BuildConfig.DEBUG) {
-                    Logger.logError(e);
-				}
 			}
 		}
 	}

@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
@@ -47,10 +48,6 @@ import java.util.ArrayList;
  * @author pjw
  */
 public class SimpleTaskQueueProgressFragment extends DialogFragment {
-    /**
-     * Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
-     */
-    private static final boolean DEBUG = false;
     private static final String BKEY_TITLE = "title";
     private static final String BKEY_IS_INDETERMINATE = "isIndeterminate";
     private static final String BKEY_TASK_ID = "taskId";
@@ -321,7 +318,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
 
         // If no tasks left, exit
         if (!mQueue.hasActiveTasks()) {
-            if (DEBUG && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.DEBUG_SQPFragment && BuildConfig.DEBUG) {
                 System.out.println("STQPF: Tasks finished while activity absent, closing");
             }
             dismiss();
@@ -404,7 +401,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      * Refresh the dialog, or post a refresh to the UI thread
      */
     private void requestUpdateProgress() {
-        if (DEBUG && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.DEBUG_SQPFragment && BuildConfig.DEBUG) {
             System.out.println("STQPF: " + mMessage + " (" + mProgress + "/" + mMax + ")");
         }
         if (Thread.currentThread() == mHandler.getLooper().getThread()) {
@@ -489,13 +486,8 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     }
 
     private void setDialogNumberFormat(ProgressDialog d) {
-        try {
-            d.setProgressNumberFormat(mNumberFormat);
-        } catch (Exception e) {
-            // Ignore and log; Android 3.2 seems not to like NULL format despite docs,
-            // and this is a non-critical feature
-            Logger.logError(e);
-        }
+        // previously seen null issue fixed in .. at least API 21 probably earlier
+        d.setProgressNumberFormat(mNumberFormat);
     }
 
     /**

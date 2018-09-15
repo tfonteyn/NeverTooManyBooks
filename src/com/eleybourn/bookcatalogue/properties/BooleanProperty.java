@@ -176,12 +176,6 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     }
 
     @Override
-    public BooleanProperty setNameResourceId(int id) {
-        super.setNameResourceId(id);
-        return this;
-    }
-
-    @Override
     public BooleanProperty setPreferenceKey(String key) {
         super.setPreferenceKey(key);
         return this;

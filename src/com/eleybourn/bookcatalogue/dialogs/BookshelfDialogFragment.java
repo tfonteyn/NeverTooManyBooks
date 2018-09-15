@@ -33,15 +33,15 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 
 import java.util.ArrayList;
 
 import static com.eleybourn.bookcatalogue.BookDetailsAbstractFragment.BOOKSHELF_SEPARATOR;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_BOOKSHELF;
 
 /**
  * Fragment wrapper for the Bookshelf list
@@ -156,7 +156,7 @@ public class BookshelfDialogFragment extends DialogFragment {
                 do {
                     final CheckBox cb = new CheckBox(getActivity());
                     boolean checked = false;
-                    String db_bookshelf = bookshelves_for_book.getString(bookshelves_for_book.getColumnIndex(KEY_BOOKSHELF)).trim();
+                    String db_bookshelf = bookshelves_for_book.getString(bookshelves_for_book.getColumnIndex(DatabaseDefinitions.DOM_BOOKSHELF.name)).trim();
                     String db_encoded_bookshelf = ArrayUtils.encodeListItem(BOOKSHELF_SEPARATOR, db_bookshelf);
                     if (shelves.contains(BOOKSHELF_SEPARATOR + db_encoded_bookshelf + BOOKSHELF_SEPARATOR)) {
                         checked = true;

@@ -241,7 +241,7 @@ public class SimpleTaskQueue {
 				mQueue.push(wrapper);
 				mManagedTaskCount++;
 			}
-		} catch (InterruptedException e) {
+		} catch (InterruptedException ignore) {
 			// Ignore. This happens if the queue object is being terminated.
 		}
 		//System.out.println("SimpleTaskQueue(added): " + mQueue.size());
@@ -321,8 +321,7 @@ public class SimpleTaskQueue {
 		if (mTaskStartListener != null) {
 			try {
 				mTaskStartListener.onTaskStart(task);
-			} catch (Exception e) {
-				// Ignore
+			} catch (Exception ignore) {
 			}
 		}
 

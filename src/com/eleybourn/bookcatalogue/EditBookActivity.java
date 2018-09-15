@@ -76,8 +76,8 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
     public static final int TAB_EDIT_FRIENDS = 2;
     public static final int TAB_EDIT_ANTHOLOGY = 3;
 
+    // used in Classic mode only, new fields added here for completeness of THIS class, but not added there.... maybe later
     public static final String ADDED_HAS_INFO = "ADDED_HAS_INFO";
-    // used in Classic mode only, new fields not added there....
     public static final String ADDED_FORMAT = "ADDED_FORMAT";
     public static final String ADDED_GENRE = "ADDED_GENRE";
     public static final String ADDED_LANGUAGE = "ADDED_LANGUAGE";
@@ -106,6 +106,11 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
     private FlattenedBooklist mList = null;
     private GestureDetector mGestureDetector;
     private boolean mIsDirtyFlg = false;
+    private long mRowId;
+    private BookData mBookData;
+    private boolean mIsReadOnly;
+
+    // used in Classic mode only, new fields added here for completeness of THIS class, but not added there.... maybe later
     private String added_format = "";
     private String added_genre = "";
     private String added_language = "";
@@ -114,9 +119,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
     private String added_series = "";
     private String added_title = "";
     private String added_author = "";
-    private long mRowId;
-    private BookData mBookData;
-    private boolean mIsReadOnly;
+
     /**
      * Listener to handle 'fling' events; we could handle others but need to be
      * careful about possible clicks and scrolling.
@@ -595,21 +598,17 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
 
     /**
      * This will save a book into the database, by either updating or created a
-     * book. Minor modifications will be made to the strings: - Titles will be
-     * rewords so 'a', 'the', 'an' will be moved to the end of the string (this
-     * is only done for NEW books)
-     * <p>
-     * - Date published will be converted from a date to a string
-     * <p>
-     * Thumbnails will also be saved to the correct location
-     * <p>
-     * It will check if the book already exists (isbn search) if you are
-     * creating a book; if so the user will be prompted to confirm.
-     * <p>
-     * In all cases, once the book is added/created, or not, the appropriate
-     * method of the passed nextStep parameter will be executed. Passing
-     * nextStep is necessary because this method may return after displaying a
-     * dialogue.
+     * book. Minor modifications will be made to the strings:
+     * <ul>
+     * <li>strings will be .trim()'d
+     * <li>Titles will be reworded so 'a', 'the', 'an' will be moved to the end of the string (only for NEW books)
+     * <li>Date published will be converted from a date to a string
+     * <li>Thumbnails will also be saved to the correct location
+     * <li>It will check if the book already exists (isbn search) if you are creating a book; if so the user will be prompted to confirm.
+     * </ul>
+     * In all cases, once the book is added/created, or not, the appropriate method of the
+     * passed nextStep parameter will be executed. Passing nextStep is necessary because
+     * this method may return after displaying a dialogue.
      *
      * @param nextStep The next step to be executed on success/failure.
      */
@@ -694,26 +693,18 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
         }
 
         /*
-         * These are global variables that will be sent via intent back to the
-         * list view, if added/created
+         * Global variables that will be sent back via intent to the list view, if added/created
          */
         try {
             ArrayList<Author> authors = mBookData.getAuthors();
-            if (authors.size() > 0) {
-                added_author = authors.get(0).getSortName();
-            } else {
-                added_author = "";
-            }
+            added_author = authors.size() > 0 ? authors.get(0).getSortName() : "";
         } catch (Exception ignore) {
             Logger.logError(ignore);
         }
 
         try {
             ArrayList<Series> series = mBookData.getSeries();
-            if (series.size() > 0)
-                added_series = series.get(0).name;
-            else
-                added_series = "";
+            added_series = series.size() > 0 ? series.get(0).name : "";
         } catch (Exception ignore) {
             Logger.logError(ignore);
         }

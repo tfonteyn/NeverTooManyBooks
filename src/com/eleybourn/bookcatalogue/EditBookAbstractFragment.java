@@ -21,6 +21,8 @@ package com.eleybourn.bookcatalogue;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -101,13 +103,13 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
 
             MenuItem duplicate = menu.add(0, DUPLICATE_ID, 0, R.string.menu_duplicate);
             duplicate.setIcon(android.R.drawable.ic_menu_add);
-        }
 
-        // TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books.
-        MenuItem tweet = menu.add(0, SHARE_ID, 0, R.string.menu_share_this);
-        tweet.setIcon(R.drawable.ic_menu_twitter);
-        // Very rarely used, and easy to miss-click.
-        //tweet.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            // TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books.
+            MenuItem tweet = menu.add(0, SHARE_ID, 0, R.string.menu_share_this);
+            tweet.setIcon(R.drawable.ic_menu_twitter);
+            // Very rarely used, and easy to miss-click.
+            //tweet.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        }
 
         if (this instanceof BookDetailsReadOnlyFragment) {
             MenuItem item = menu.add(0, EDIT_OPTIONS_ID, 0, R.string.edit_book);
@@ -239,7 +241,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         // Set the listener to monitor edits
         mFields.setAfterFieldChangeListener(new AfterFieldChangeListener() {
             @Override
-            public void afterFieldChange(Field field, String newValue) {
+            public void afterFieldChange(@NonNull Field field, @Nullable String newValue) {
                 mEditManager.setDirty(true);
             }
         });

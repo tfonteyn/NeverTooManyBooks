@@ -28,9 +28,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Utilities and classes to make defining databases a little easier and provide synchronization across threads.
@@ -175,19 +177,19 @@ public class DbUtils {
                 "Select (SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?) + " +
                 "(SELECT count(*) FROM sqlite_temp_master WHERE type='table' AND name=?)";
         /** List of index definitions for this table */
-        final Hashtable<String, IndexDefinition> mIndexes = new Hashtable<>();
+        final Map<String, IndexDefinition> mIndexes = Collections.synchronizedMap(new HashMap<String, IndexDefinition>());
         /** List of domains in this table */
         private final ArrayList<DomainDefinition> mDomains;
         /** Used for checking if a domain has already been added */
-        private final HashSet<DomainDefinition> mDomainCheck = new HashSet<>();
+        private final Set<DomainDefinition> mDomainCheck = new HashSet<>();
         /** Used for checking if a domain NAME has already been added */
-        private final Hashtable<String, DomainDefinition> mDomainNameCheck = new Hashtable<>();
+        private final Map<String, DomainDefinition> mDomainNameCheck = Collections.synchronizedMap(new HashMap<String, DomainDefinition>());
         /** List of domains forming primary key */
         private final ArrayList<DomainDefinition> mPrimaryKey = new ArrayList<>();
         /** List of parent tables (tables referred to by foreign keys on this table) */
-        private final Hashtable<TableDefinition, FkReference> mParents = new Hashtable<>();
+        private final Map<TableDefinition, FkReference> mParents = Collections.synchronizedMap(new HashMap<TableDefinition, FkReference>());
         /** List of child tables (tables referring to by foreign keys to this table) */
-        private final Hashtable<TableDefinition, FkReference> mChildren = new Hashtable<>();
+        private final Map<TableDefinition, FkReference> mChildren = Collections.synchronizedMap(new HashMap<TableDefinition, FkReference>());
         /** Table name */
         private String mName;
         /** Table alias */
@@ -503,7 +505,7 @@ public class DbUtils {
             if (mDomainCheck.contains(domain))
                 return this;
             // Make sure one with same name is not already in table
-            if (mDomainNameCheck.contains(domain.name.toLowerCase()))
+            if (mDomainNameCheck.containsKey(domain.name.toLowerCase()))
                 throw new RuntimeException("A domain with that name has already been added");
             // Add it
             mDomains.add(domain);
@@ -630,7 +632,7 @@ public class DbUtils {
             s.append(domains[0]);
             for (int i = 1; i < domains.length; i++) {
                 s.append(",\n	");
-                s.append(domains[i].toString());
+                s.append(domains[i]);
             }
             s.append(")");
             return s.toString();
@@ -678,7 +680,7 @@ public class DbUtils {
             s.append(" = ?");
             for (int i = 1; i < domains.length; i++) {
                 s.append(",\n	");
-                s.append(domains[i].toString());
+                s.append(domains[i]);
                 s.append(" = ?");
             }
             s.append("\n");
@@ -702,12 +704,12 @@ public class DbUtils {
 
             for (int i = 1; i < domains.length; i++) {
                 s.append(", ");
-                s.append(domains[i].toString());
+                s.append(domains[i]);
 
                 sPlaceholders.append(", ?");
             }
             s.append(")\n	values (");
-            s.append(sPlaceholders.toString());
+            s.append(sPlaceholders);
             s.append(")\n");
             return s.toString();
         }

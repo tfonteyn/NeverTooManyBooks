@@ -980,7 +980,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		}
 	}
 
-	@SuppressWarnings({"FieldCanBeLocal", "unused"})
+	@SuppressWarnings({"unused"})
     private MenuHandler mMenuHandler;
 
 	/*

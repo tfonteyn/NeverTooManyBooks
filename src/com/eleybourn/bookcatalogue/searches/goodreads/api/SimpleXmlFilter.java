@@ -25,7 +25,6 @@ import android.os.Bundle;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -106,8 +105,8 @@ public class SimpleXmlFilter {
             try {
                 long l = Long.parseLong(context.body.trim());
                 c.getData().putLong(name, l);
-            } catch (Exception e) {
-                // Ignore but dont add
+            } catch (Exception ignore) {
+                // Ignore but don't add
             }
         }
     };
@@ -120,8 +119,8 @@ public class SimpleXmlFilter {
             try {
                 double d = Double.parseDouble(context.body.trim());
                 c.getData().putDouble(name, d);
-            } catch (Exception e) {
-                // Ignore but dont add
+            } catch (Exception ignore) {
+                // Ignore but don't add
             }
         }
     };
@@ -134,8 +133,8 @@ public class SimpleXmlFilter {
             try {
                 boolean b = textToBoolean(context.body.trim());
                 c.getData().putBoolean(name, b);
-            } catch (Exception e) {
-                // Ignore but dont add
+            } catch (Exception ignore) {
+                // Ignore but don't add
             }
         }
     };
@@ -330,7 +329,7 @@ public class SimpleXmlFilter {
         ArrayList<AttrFilter> attrs = null;
         XmlListener listener = null;
         XmlHandler finishHandler = null;
-        private XmlFilter mFilter;
+        private final XmlFilter mFilter;
         private Bundle mLocalBundle = null;
         private ArrayList<Bundle> mArrayItems = null;
 

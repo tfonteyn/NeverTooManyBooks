@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
@@ -70,9 +71,11 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
         allFields.add(new FieldInfo(UniqueId.KEY_DESCRIPTION, R.string.description, false));
         allFields.add(new FieldInfo(UniqueId.KEY_GENRE, R.string.genre, false));
         allFields.add(new FieldInfo(UniqueId.KEY_LANGUAGE, R.string.language, false));
+
+        //NEWKIND: when adding fields that can be invisible, add them here
     }
 
-    public static boolean isVisible(String fieldName) {
+    public static boolean isVisible(@NonNull final String fieldName) {
         return BCPreferences.getBoolean(TAG + fieldName, true);
     }
 

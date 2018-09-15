@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.dialogs;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,7 +50,7 @@ public class TextFieldEditor extends AlertDialog {
 	 * @author pjw
 	 */
 	protected interface OnEditListener {
-		void onSaved(TextFieldEditor dialog, String newText);
+		void onSaved(TextFieldEditor dialog, @NonNull final String newText);
 		void onCancel(TextFieldEditor dialog);
 	}
 

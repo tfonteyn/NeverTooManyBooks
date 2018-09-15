@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads.api;
 import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -106,7 +107,7 @@ public class BookshelfListApiHandler extends ApiHandler {
         // When we get here, the data has been collected but needs to be processed into standard form.
         Bundle results = mFilters.getData();
 
-		if (BuildConfig.DEBUG) {
+		if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
 			long t1 = System.currentTimeMillis();
 			System.out.println("Found " + results.getLong(BookshelfListFieldNames.TOTAL) + " shelves in " + (t1 - t0) + "ms");
 		}

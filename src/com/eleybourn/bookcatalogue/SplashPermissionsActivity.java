@@ -144,8 +144,7 @@ abstract public class SplashPermissionsActivity extends AppCompatActivity {
         try {
             permissions = getPackageManager().getPackageInfo(getPackageName(),
                     PackageManager.GET_PERMISSIONS).requestedPermissions;
-        } catch (NameNotFoundException e) {
-            e.printStackTrace();
+        } catch (NameNotFoundException ignore) {
         }
         if (permissions == null) {
             return new String[0];

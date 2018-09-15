@@ -3,7 +3,7 @@ package com.eleybourn.bookcatalogue.database;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -33,7 +33,7 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
     private final Map<String, ColumnInfo> mColumns;
     private final DbSync.SynchronizedDb mSyncedDb;
 
-    public TableInfo(DbSync.SynchronizedDb db, String tableName) {
+    TableInfo(DbSync.SynchronizedDb db, String tableName) {
         mSyncedDb = db;
         mColumns = describeTable(tableName);
     }
@@ -62,7 +62,7 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
     private Map<String, ColumnInfo> describeTable(@NonNull String tableName) {
         String sql = "PRAGMA table_info(" + tableName + ")";
 
-        Map<String, ColumnInfo> allColumns = new Hashtable<>();
+        Map<String, ColumnInfo> allColumns = new HashMap<>();
 
         try (Cursor colCsr = mSyncedDb.rawQuery(sql, new String[]{})) {
             if (colCsr == null)

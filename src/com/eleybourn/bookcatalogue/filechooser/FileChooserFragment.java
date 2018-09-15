@@ -168,7 +168,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      */
     public File getSelectedFile() {
         EditText et = getView().findViewById(R.id.file_name);
-        return new File(mRootPath.getAbsolutePath() + "/" + et.getText().toString());
+        return new File(mRootPath.getAbsolutePath() + "/" + et.getText());
     }
 
     /**

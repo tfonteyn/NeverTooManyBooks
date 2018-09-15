@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -28,68 +28,72 @@ import java.util.ArrayList;
 
 /**
  * Utilities related to building an AlertDialog that is just a list of clickable options.
- * 
+ *
  * @author Philip Warner
  */
 public class AlertDialogUtils {
-	private AlertDialogUtils() {
-	}
+    private AlertDialogUtils() {
+    }
 
-	/**
-	 * Class to make building a 'context menu' from an AlertDialog a little easier.
-	 * Used in Event.buildDialogItems and related Activities.
-	 * 
-	 * @author Philip Warner
-	 *
-	 */
-	public static class AlertDialogItem implements CharSequence {
-		public final String name;
-		public final Runnable handler;
-		public AlertDialogItem(String name, Runnable handler ) {
-			this.name = name;
-			this.handler = handler;
-		}
-		@NonNull
+    /**
+     * Utility routine to display an array of ContextDialogItems in an alert.
+     *
+     * @param title Title of Alert
+     * @param items Items to display
+     */
+    public static void showContextDialogue(Context context, String title, ArrayList<AlertDialogItem> items) {
+        if (items.size() > 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle(title);
+
+            final AlertDialogItem[] itemArray = new AlertDialogItem[items.size()];
+            items.toArray(itemArray);
+
+            builder.setItems(itemArray, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int item) {
+                    itemArray[item].handler.run();
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+    }
+
+    /**
+     * Class to make building a 'context menu' from an AlertDialog a little easier.
+     * Used in Event.buildDialogItems and related Activities.
+     *
+     * @author Philip Warner
+     */
+    public static class AlertDialogItem implements CharSequence {
+        public final String name;
+        public final Runnable handler;
+
+        public AlertDialogItem(String name, Runnable handler) {
+            this.name = name;
+            this.handler = handler;
+        }
+
+        @NonNull
         @Override
-		public String toString() {
-			return name;
-		}
-		@Override
-		public char charAt(int index) {
-			return name.charAt(index);
-		}
-		@Override
-		public int length() {
-			return name.length();
-		}
-		@Override
-		public CharSequence subSequence(int start, int end) {
-			return name.subSequence(start, end);
-		}
-	}
+        public String toString() {
+            return name;
+        }
 
-	/**
-	 * Utility routine to display an array of ContextDialogItems in an alert.
-	 * 
-	 * @param title		Title of Alert
-	 * @param items		Items to display
-	 */
-	public static void showContextDialogue(Context context, String title, ArrayList<AlertDialogItem> items) {
-		if (items.size() > 0) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(context);
-			builder.setTitle(title);
+        @Override
+        public char charAt(int index) {
+            return name.charAt(index);
+        }
 
-			final AlertDialogItem[] itemArray = new AlertDialogItem[items.size()];
-			items.toArray(itemArray);
-	
-			builder.setItems(itemArray, new DialogInterface.OnClickListener() {
-			    public void onClick(DialogInterface dialog, int item) {
-			    	itemArray[item].handler.run();
-			    }
-			});
-			AlertDialog alert = builder.create();	
-			alert.show();
-		}		
-	}
+        @Override
+        public int length() {
+            return name.length();
+        }
+
+        @Override
+        public CharSequence subSequence(int start, int end) {
+            return name.subSequence(start, end);
+        }
+    }
 
 }

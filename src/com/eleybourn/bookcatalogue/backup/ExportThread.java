@@ -109,7 +109,7 @@ public class ExportThread extends ManagedTask {
             String fmt = "export.%s.csv";
             File fLast = StorageUtils.getFile(String.format(fmt, 5));
             if (fLast.exists())
-                //noinspection ResultOfMethodCallIgnored,ResultOfMethodCallIgnored
+                // noinspection ResultOfMethodCallIgnored
                 fLast.delete();
             for (int i = 4; i > 0; i--) {
                 final File fCurr = StorageUtils.getFile(String.format(fmt, i));

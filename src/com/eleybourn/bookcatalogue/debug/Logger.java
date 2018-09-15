@@ -64,12 +64,14 @@ public class Logger {
         PrintWriter pw = new PrintWriter(sw);
         if (e != null) {
             e.printStackTrace(pw);
+        } else {
+            printStackTrace();
         }
 
         String error = "An Exception/Error Occurred @ " + now + "\n" +
                 "In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ") \n" +
                 msg + "\n" +
-                sw.toString();
+                sw;
         //Log.e("BookCatalogue", error);
 
         try {
@@ -95,13 +97,13 @@ public class Logger {
                     //noinspection ResultOfMethodCallIgnored
                     orig.renameTo(backup);
                 }
-            } catch (Exception ignored) {
+            } catch (Exception ignore) {
                 // Ignore backup failure...
             }
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
             out.write("");
             out.close();
-        } catch (Exception ignored) {
+        } catch (Exception ignore) {
             // do nothing - we can't log an error in the error logger. (and we don't want to FC the app)
         }
     }

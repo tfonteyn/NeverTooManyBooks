@@ -54,30 +54,30 @@ public class Tracker {
 	private static int mNextEventBufferPos = 0;
 
 	public static void enterOnActivityCreated(Object a) {
-		handleEvent(a,"OnActivityCreated (" + a.toString() + ")", States.Enter);				
+		handleEvent(a,"OnActivityCreated (" + a + ")", States.Enter);
 	}
 	public static void exitOnActivityCreated(Object a) {
-		handleEvent(a,"OnActivityCreated (" + a.toString() + ")", States.Exit);				
+		handleEvent(a,"OnActivityCreated (" + a + ")", States.Exit);
 	}
 
 	public static void enterOnActivityResult(Object a, int requestCode, int resultCode) {
-		handleEvent(a,"OnActivityResult[" + requestCode + "," + resultCode + "] (" + a.toString() + ")", States.Enter);				
+		handleEvent(a,"OnActivityResult[" + requestCode + "," + resultCode + "] (" + a + ")", States.Enter);
 	}
 	public static void exitOnActivityResult(Object a, int requestCode, int resultCode) {
-		handleEvent(a,"OnActivityResult[" + requestCode + "," + resultCode + "] (" + a.toString() + ")", States.Exit);				
+		handleEvent(a,"OnActivityResult[" + requestCode + "," + resultCode + "] (" + a + ")", States.Exit);
 	}
 
 	public static void enterOnCreate(Object a) {
-		handleEvent(a,"OnCreate (" + a.toString() + ")", States.Enter);
+		handleEvent(a,"OnCreate (" + a + ")", States.Enter);
 	}
 	public static void exitOnCreate(Object a) {
-		handleEvent(a,"OnCreate (" + a.toString() + ")", States.Exit);		
+		handleEvent(a,"OnCreate (" + a + ")", States.Exit);
 	}
 	public static void enterOnCreateView(Object a) {
-		handleEvent(a,"OnCreateView (" + a.toString() + ")", States.Enter);
+		handleEvent(a,"OnCreateView (" + a + ")", States.Enter);
 	}
 	public static void exitOnCreateView(Object a) {
-		handleEvent(a,"OnCreateView (" + a.toString() + ")", States.Exit);
+		handleEvent(a,"OnCreateView (" + a + ")", States.Exit);
 	}
 	public static void enterOnDestroy(Object a) {
 		handleEvent(a,"OnDestroy", States.Enter);
@@ -86,16 +86,16 @@ public class Tracker {
 		handleEvent(a,"OnDestroy", States.Exit);		
 	}
 	public static void enterOnPause(Object a) {
-		handleEvent(a,"OnPause (" + a.toString() + ")", States.Enter);		
+		handleEvent(a,"OnPause (" + a + ")", States.Enter);
 	}
 	public static void exitOnPause(Object a) {
-		handleEvent(a,"OnPause (" + a.toString() + ")", States.Exit);				
+		handleEvent(a,"OnPause (" + a + ")", States.Exit);
 	}
 	public static void enterOnResume(Object a) {
-		handleEvent(a,"OnResume (" + a.toString() + ")", States.Enter);				
+		handleEvent(a,"OnResume (" + a + ")", States.Enter);
 	}
 	public static void exitOnResume(Object a) {
-		handleEvent(a,"OnResume (" + a.toString() + ")", States.Exit);						
+		handleEvent(a,"OnResume (" + a + ")", States.Exit);
 	}
 	public static void enterOnSaveInstanceState(Object a) {
 		handleEvent(a,"OnSaveInstanceState", States.Enter);		
@@ -106,7 +106,7 @@ public class Tracker {
 	public static void enterFunction(Object a, String name, Object... params) {
 		StringBuilder fullname = new StringBuilder(name + "(");
 		for (Object o : params) {
-			fullname.append(o.toString()).append(",");
+			fullname.append(o).append(",");
 		}
 		fullname.append(")");
 

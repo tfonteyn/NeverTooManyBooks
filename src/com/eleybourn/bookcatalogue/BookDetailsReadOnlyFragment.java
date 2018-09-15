@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -419,7 +420,7 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
         /**
          * Display as a human-friendly date
          */
-        public String format(Field f, String source) {
+        public String format(@NonNull Field f, @Nullable String source) {
             try {
                 boolean val = Datum.toBoolean(source, false);
                 return BookCatalogueApp.getResourceString(val ? R.string.yes : R.string.no);
@@ -431,7 +432,7 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
         /**
          * Extract as an SQL date.
          */
-        public String extract(Field f, String source) {
+        public String extract(@NonNull Field f, @NonNull String source) {
             try {
                 return Datum.toBoolean(source, false) ? "1" : "0";
             } catch (Exception e) {

@@ -19,141 +19,142 @@ import java.util.Date;
 
 /**
  * Implementation of FileDetails that record data about backup files in a background thread.
- * 
+ *
  * @author pjw
  */
 public class BackupFileDetails implements FileDetails {
-	// IMPORTANT NOTE: If fields are added, then writeToParcelable and the parcelable constructor
-	// must also be modified.
-	
-	/** File for this item */
-	private final File mFile;
-	/** The BackupInfo we use when displaying the object */
-	private BackupInfo mInfo;
+    // IMPORTANT NOTE: If fields are added, then writeToParcelable and the parcelable constructor
+    // must also be modified.
 
-	/**
-	 * Constructor
-	 */
-	BackupFileDetails(File file) {
-		mFile = file;
-	}
+    /**
+     * PARCELABLE INTERFACE.
+     *
+     * Need a CREATOR
+     */
+    public static final Parcelable.Creator<BackupFileDetails> CREATOR = new Parcelable.Creator<BackupFileDetails>() {
+        public BackupFileDetails createFromParcel(Parcel in) {
+            return new BackupFileDetails(in);
+        }
 
-	/**
-	 * Accessor
-	 */
-	public void setInfo(BackupInfo info) {
-		mInfo = info;
-	}
+        public BackupFileDetails[] newArray(int size) {
+            return new BackupFileDetails[size];
+        }
+    };
+    /** File for this item */
+    private final File mFile;
+    /** The BackupInfo we use when displaying the object */
+    private BackupInfo mInfo;
 
-	@Override
-	public File getFile() {
-		return mFile;
-	}
+    /**
+     * Constructor
+     */
+    BackupFileDetails(File file) {
+        mFile = file;
+    }
 
-	/**
-	 * Return the view we use.
-	 * 
-	 * THIS SHOULD ALWAYS RETURN THE SAME VIEW. IT IS NOT A MULTI-TYPE LIST.
-	 */
-	@Override
-	public int getViewId() {
-		return R.layout.backup_chooser_item;
-	}
+    /**
+     * PARCELABLE INTERFACE.
+     *
+     * Constructor, using a Parcel as source.
+     */
+    private BackupFileDetails(Parcel in) {
+        mFile = (File) in.readSerializable();
+        byte infoFlag = in.readByte();
+        if (infoFlag != (byte) 0) {
+            mInfo = new BackupInfo(in.readBundle());
+        } else {
+            mInfo = null;
+        }
+    }
 
-	/**
-	 * Fill in the details for the view we returned above.
-	 */
-	@Override
-	public void onSetupView(Context c, int position, View target) {
+    /**
+     * Accessor
+     */
+    public void setInfo(BackupInfo info) {
+        mInfo = info;
+    }
 
-		// Set the basic data
-		TextView name = target.findViewById(R.id.name);
-		name.setText(mFile.getName());
-		TextView date = target.findViewById(R.id.date);
-		ImageView image = target.findViewById(R.id.icon);
-		TextView details = target.findViewById(R.id.details);
+    @Override
+    public File getFile() {
+        return mFile;
+    }
+
+    /**
+     * Return the view we use.
+     *
+     * THIS SHOULD ALWAYS RETURN THE SAME VIEW. IT IS NOT A MULTI-TYPE LIST.
+     */
+    @Override
+    public int getViewId() {
+        return R.layout.backup_chooser_item;
+    }
+
+    /**
+     * Fill in the details for the view we returned above.
+     */
+    @Override
+    public void onSetupView(Context c, int position, View target) {
+
+        // Set the basic data
+        TextView name = target.findViewById(R.id.name);
+        name.setText(mFile.getName());
+        TextView date = target.findViewById(R.id.date);
+        ImageView image = target.findViewById(R.id.icon);
+        TextView details = target.findViewById(R.id.details);
 
         Resources res = c.getResources();
-		// For directories, hide the extra data
-		if (mFile.isDirectory()) {
-			date.setVisibility(View.GONE);
-			details.setVisibility(View.GONE);
-			image.setImageDrawable(res.getDrawable(R.drawable.ic_closed_folder));
-		} else {
-			// Display date and backup details
+        // For directories, hide the extra data
+        if (mFile.isDirectory()) {
+            date.setVisibility(View.GONE);
+            details.setVisibility(View.GONE);
+            image.setImageDrawable(res.getDrawable(R.drawable.ic_closed_folder));
+        } else {
+            // Display date and backup details
             image.setImageDrawable(res.getDrawable(R.drawable.ic_archive));
-			date.setVisibility(View.VISIBLE);
-			String formattedFleSize = Utils.formatFileSize(mFile.length());
-			if (mInfo != null) {
-				String books = res.getQuantityString(R.plurals.n_books, mInfo.getBookCount(), mInfo.getBookCount());
-				if (mInfo.hasCoverCount()) {
-					String covers = res.getQuantityString(R.plurals.n_covers, mInfo.getCoverCount(), mInfo.getCoverCount());
+            date.setVisibility(View.VISIBLE);
+            String formattedFleSize = Utils.formatFileSize(mFile.length());
+            if (mInfo != null) {
+                String books = res.getQuantityString(R.plurals.n_books, mInfo.getBookCount(), mInfo.getBookCount());
+                if (mInfo.hasCoverCount()) {
+                    String covers = res.getQuantityString(R.plurals.n_covers, mInfo.getCoverCount(), mInfo.getCoverCount());
                     details.setText(res.getString(R.string.a_comma_b, books, covers));
-				} else {
+                } else {
                     details.setText(books);
-				}
-    			date.setText(res.getString(R.string.a_comma_b, formattedFleSize, DateFormat.getDateTimeInstance().format(mInfo.getCreateDate())));
+                }
+                date.setText(res.getString(R.string.a_comma_b, formattedFleSize,
+                        DateFormat.getDateTimeInstance().format(mInfo.getCreateDate())));
                 details.setVisibility(View.VISIBLE);
-			} else {
-				date.setText(res.getString(R.string.a_comma_b, formattedFleSize,DateFormat.getDateTimeInstance().format(new Date(mFile.lastModified()))));
-				details.setVisibility(View.GONE);
-			}
-		}
-	}
+            } else {
+                date.setText(res.getString(R.string.a_comma_b, formattedFleSize, DateFormat.getDateTimeInstance().format(new Date(mFile.lastModified()))));
+                details.setVisibility(View.GONE);
+            }
+        }
+    }
 
-	/**
-	 * PARCELABLE INTERFACE.
-	 * 
-	 * Default to 0. Not really used.
-	 */
-	@Override
-	public int describeContents() {
-		return 0;
-	}
+    /**
+     * PARCELABLE INTERFACE.
+     *
+     * Default to 0. Not really used.
+     */
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
-	/**
-	 * PARCELABLE INTERFACE.
-	 * 
-	 * Save all fields that must be persisted.
-	 */
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeSerializable(mFile);
-		if (mInfo != null) {
-			dest.writeByte((byte) 1);
-			dest.writeBundle(mInfo.getBundle());
-		} else {
-			dest.writeByte((byte) 0);			
-		}
-	}
-
-	/**
-	 * PARCELABLE INTERFACE.
-	 * 
-	 * Constructor, using a Parcel as source.
-	 */
-	private BackupFileDetails(Parcel in) {
-		mFile = (File) in.readSerializable();
-		byte infoFlag = in.readByte();
-		if (infoFlag != (byte)0) {
-			mInfo = new BackupInfo(in.readBundle());
-		} else {
-			mInfo = null;
-		}
-	}
-
-	/**
-	 * PARCELABLE INTERFACE.
-	 * 
-	 * Need a CREATOR
-	 */
-	public static final Parcelable.Creator<BackupFileDetails> CREATOR = new Parcelable.Creator<BackupFileDetails>() {
-		public BackupFileDetails createFromParcel(Parcel in) {
-			return new BackupFileDetails(in);
-		}
-		public BackupFileDetails[] newArray(int size) {
-			return new BackupFileDetails[size];
-		}
-	};
+    /**
+     * PARCELABLE INTERFACE.
+     *
+     * Save all fields that must be persisted.
+     */
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeSerializable(mFile);
+        if (mInfo != null) {
+            dest.writeByte((byte) 1);
+            dest.writeBundle(mInfo.getBundle());
+        } else {
+            dest.writeByte((byte) 0);
+        }
+    }
 
 }

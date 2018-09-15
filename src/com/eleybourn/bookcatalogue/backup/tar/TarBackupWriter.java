@@ -27,6 +27,7 @@ import com.eleybourn.bookcatalogue.backup.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.BackupUtils;
 import com.eleybourn.bookcatalogue.backup.BackupWriterAbstract;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -115,6 +116,10 @@ public class TarBackupWriter extends BackupWriterAbstract {
     public void putBooklistStyle(@NonNull final BooklistStyle style) throws IOException {
         // Turn the object into a byte array
         final byte[] blob = SerializationUtils.serializeObject(style);
+        if (blob == null) {
+            Logger.logError("serializeObject failed?");
+            throw new RuntimeException("serializeObject failed?");
+        }
         mStyleCounter++;
         bytesToArchive(TarBackupContainer.STYLE_PREFIX + mStyleCounter, blob);
     }

@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -138,7 +139,7 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
             });
 
             mFields.addCrossValidator(new Fields.FieldCrossValidator() {
-                public void validate(Fields fields, Bundle values) {
+                public void validate(@NonNull Fields fields, @NonNull Bundle values) {
                     String start = values.getString(UniqueId.KEY_READ_START);
                     if (start == null || start.isEmpty())
                         return;
@@ -160,7 +161,7 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
 
             mFields.setAfterFieldChangeListener(new AfterFieldChangeListener() {
                 @Override
-                public void afterFieldChange(Field field, String newValue) {
+                public void afterFieldChange(@NonNull final Field field, @Nullable final String newValue) {
                     mEditManager.setDirty(true);
                 }
             });

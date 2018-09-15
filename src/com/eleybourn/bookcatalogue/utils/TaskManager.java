@@ -20,7 +20,10 @@
 
 package com.eleybourn.bookcatalogue.utils;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch.Message;
@@ -235,7 +238,7 @@ public class TaskManager implements AutoCloseable {
 	/**
 	 * Called when the onTaskFinished message is received by the listener object.
 	 */
-	private void onTaskFinished(ManagedTask task) {
+	private void onTaskFinished(@NonNull final ManagedTask task) {
 		boolean doClose;
 		
 		// Remove from the list of tasks. From now on, it should
@@ -311,7 +314,7 @@ public class TaskManager implements AutoCloseable {
 	 * @param message	Message text
 	 * @param count		Counter for progress
 	 */
-	public void doProgress(ManagedTask task, String message, int count) {
+	public void doProgress(@NonNull final ManagedTask task, final String message, final int count) {
 		TaskInfo t = getTaskInfo(task);
 		if (t != null) {
 			t.progressMessage = message;
@@ -396,7 +399,7 @@ public class TaskManager implements AutoCloseable {
 	 *
 	 * @return			TaskInfo associated with task.
 	 */
-	private TaskInfo getTaskInfo(ManagedTask task) {
+	private TaskInfo getTaskInfo(@NonNull final ManagedTask task) {
 		synchronized(mTasks) {
 			for(TaskInfo t : mTasks) {
 				if (t.task == task) {
@@ -410,7 +413,7 @@ public class TaskManager implements AutoCloseable {
 	/**
 	 * Set the maximum value for progress for the passed task.
 	 */
-	public void setMax(ManagedTask task, int max) {
+	public void setMax(@NonNull final ManagedTask task, int max) {
 		TaskInfo t = getTaskInfo(task);
 		if (t != null) {
 			t.progressMax = max;
@@ -422,7 +425,7 @@ public class TaskManager implements AutoCloseable {
 	/**
 	 * Set the count value for progress for the passed task.
 	 */
-	public void setCount(ManagedTask task, int count) {
+	public void setCount(@NonNull final ManagedTask task, int count) {
 		TaskInfo t = getTaskInfo(task);
 		if (t != null) {
 			t.progressCurrent = count;
@@ -436,7 +439,7 @@ public class TaskManager implements AutoCloseable {
 	 */
 	@Override
 	public void close() {
-		if (BuildConfig.DEBUG) {
+		if (DEBUG_SWITCHES.DEBUG_TASK_MANAGER && BuildConfig.DEBUG) {
 			System.out.println("DBG: Task Manager close requested");
 		}
 

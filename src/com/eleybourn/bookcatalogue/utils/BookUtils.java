@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -27,10 +27,14 @@ import android.database.CursorIndexOutOfBoundsException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.widget.Toast;
-import com.eleybourn.bookcatalogue.*;
+
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BookData;
+import com.eleybourn.bookcatalogue.EditBookActivity;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -40,129 +44,122 @@ import java.io.File;
 
 /**
  * Class to implement common Book functions
- * 
+ *
  * @author pjw
  */
 public class BookUtils {
 
-	private BookUtils() {
-	}
+    private BookUtils() {
+    }
 
-	/**
-	 * Open a new book editing activity with fields copied from saved book.
-	 * Saved book (original of duplicating) is defined by its row _id in database.
-	 *
-	 * @param rowId The id of the book to copy fields
-	 */
-	public static void duplicateBook(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter dba, @Nullable final Long rowId){
-        if (rowId == null || rowId == 0) {
-            Toast.makeText(activity, R.string.this_option_is_not_available_until_the_book_is_saved, Toast.LENGTH_LONG).show();
-        }
-		Intent i = new Intent(activity, EditBookActivity.class);
-		Bundle book = new Bundle();
-		try(Cursor thisBook = dba.fetchBookById(rowId)) {
-			thisBook.moveToFirst();
-			book.putString(UniqueId.KEY_TITLE, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_TITLE.name)));
-			book.putString(UniqueId.KEY_ISBN, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_ISBN.name)));
-			book.putString(UniqueId.KEY_PUBLISHER, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_PUBLISHER.name)));
-			book.putString(UniqueId.KEY_DATE_PUBLISHED, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_DATE_PUBLISHED.name)));
-			book.putString(UniqueId.KEY_RATING, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_RATING.name)));
-			book.putString(UniqueId.KEY_READ, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_READ.name)));
-			book.putString(UniqueId.KEY_PAGES, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_PAGES.name)));
-			book.putString(UniqueId.KEY_NOTES, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_NOTES.name)));
-			book.putString(UniqueId.KEY_LIST_PRICE, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_LIST_PRICE.name)));
-			book.putString(UniqueId.KEY_ANTHOLOGY_MASK, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_ANTHOLOGY_MASK.name)));
-			book.putString(UniqueId.KEY_LOCATION, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_LOCATION.name)));
-			book.putString(UniqueId.KEY_READ_START, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_READ_START.name)));
-			book.putString(UniqueId.KEY_READ_END, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_READ_END.name)));
-			book.putString(UniqueId.KEY_FORMAT, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_FORMAT.name)));
-			book.putString(UniqueId.KEY_SIGNED, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_SIGNED.name)));
-			book.putString(UniqueId.KEY_DESCRIPTION, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_DESCRIPTION.name)));
-			book.putString(UniqueId.KEY_GENRE, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_GENRE.name)));
-			
-			book.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, dba.getBookAuthorList(rowId));
-			book.putSerializable(UniqueId.BKEY_SERIES_ARRAY, dba.getBookSeriesList(rowId));
-			
-			i.putExtra(UniqueId.BKEY_BOOK_DATA, book);
-
-			activity.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_MANUALLY);
-		} catch (CursorIndexOutOfBoundsException e) {
-			Toast.makeText(activity, R.string.unknown_error, Toast.LENGTH_LONG).show();
-			Logger.logError(e);
-		}
-	}
-	
-	/**
-	 * Delete book by its database row _id and close current activity. 
-	 * @param rowId The database id of the book for deleting
-	 */
-	public static void deleteBook(@NonNull final Context context, @NonNull final CatalogueDBAdapter dba, @Nullable final Long rowId, final Runnable runnable){
-		if (rowId == null || rowId == 0) {
-			Toast.makeText(context, R.string.this_option_is_not_available_until_the_book_is_saved, Toast.LENGTH_LONG).show();
-			return;
-		}
-		int res = StandardDialogs.deleteBookAlert(context, dba, rowId, new Runnable() {
-			@Override
-			public void run() {
-				dba.purgeAuthors();
-				dba.purgeSeries();
-				if (runnable != null)
-					runnable.run();
-			}});
-		if (res != 0) {
-			Toast.makeText(context, res, Toast.LENGTH_LONG).show();
-		}
-	}
-	
-	/**
-	 * Perform sharing of book by its database rowId. Create chooser with matched 
-	 * apps for sharing some text like the next:<br>
-	 * <b>"I'm reading " + title + " by " + author + series + " " + ratingString</b>
+    /**
+     * Open a new book editing activity with fields copied from saved book.
+     * Saved book (original of duplicating) is defined by its row _id in database.
      *
-	 * @param rowId The database id of the book for deleting
-	 */
-	public static void shareBook(@NonNull final Context context, @NonNull final CatalogueDBAdapter db, @Nullable final Long rowId){
-		if (rowId == null || rowId == 0) {
-			Toast.makeText(context, R.string.this_option_is_not_available_until_the_book_is_saved, Toast.LENGTH_LONG).show();
-			return;
-		}
+     * @param rowId The id of the book to copy fields
+     */
+    public static void duplicateBook(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final Long rowId) {
+        Intent i = new Intent(activity, EditBookActivity.class);
+        final Bundle book = new Bundle();
+        try (Cursor thisBook = db.fetchBookById(rowId)) {
+            thisBook.moveToFirst();
+            book.putString(UniqueId.KEY_ANTHOLOGY_MASK, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_ANTHOLOGY_MASK.name)));
+            book.putString(UniqueId.KEY_DATE_PUBLISHED, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_DATE_PUBLISHED.name)));
+            book.putString(UniqueId.KEY_DESCRIPTION, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_DESCRIPTION.name)));
+            book.putString(UniqueId.KEY_FORMAT, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_FORMAT.name)));
+            book.putString(UniqueId.KEY_GENRE, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_GENRE.name)));
+            book.putString(UniqueId.KEY_ISBN, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_ISBN.name)));
+            book.putString(UniqueId.KEY_LIST_PRICE, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_LIST_PRICE.name)));
+            book.putString(UniqueId.KEY_LANGUAGE, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_LANGUAGE.name)));
+            book.putString(UniqueId.KEY_LOCATION, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_LOCATION.name)));
+            book.putString(UniqueId.KEY_NOTES, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_NOTES.name)));
+            book.putString(UniqueId.KEY_PAGES, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_PAGES.name)));
+            book.putString(UniqueId.KEY_PUBLISHER, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_PUBLISHER.name)));
+            book.putString(UniqueId.KEY_RATING, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_RATING.name)));
+            book.putString(UniqueId.KEY_READ, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_READ.name)));
+            book.putString(UniqueId.KEY_READ_END, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_READ_END.name)));
+            book.putString(UniqueId.KEY_READ_START, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_READ_START.name)));
+            book.putString(UniqueId.KEY_SIGNED, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_SIGNED.name)));
+            book.putString(UniqueId.KEY_TITLE, thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_TITLE.name)));
 
-		String title;
-		double rating;
-		String ratingString = "";
-		String author;
-		String series;
+            book.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, db.getBookAuthorList(rowId));
+            book.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(rowId));
+            book.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLE_ARRAY, db.getBookAnthologyTitleList(rowId));
 
-		try(Cursor thisBook = db.fetchBookById(rowId)) {
-			thisBook.moveToFirst();
-			title = thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_TITLE.name));
-			rating = thisBook.getDouble(thisBook.getColumnIndex(DatabaseDefinitions.DOM_RATING.name));
-			author = thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name));
-			series = thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_SERIES_FORMATTED.name));
-		}
+            i.putExtra(UniqueId.BKEY_BOOK_DATA, book);
 
-		File image = StorageUtils.getThumbnailByUuid(db.getBookUuid(rowId));
+            activity.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_MANUALLY);
+        } catch (CursorIndexOutOfBoundsException e) {
+            Toast.makeText(activity, R.string.unknown_error, Toast.LENGTH_LONG).show();
+            Logger.logError(e);
+        }
+    }
 
-		if (!series.isEmpty()) {
-			series = " (" + series.replace("#", "%23") + ")";
-		}
-		//remove trailing 0's
-		if (rating > 0) {
-			int ratingTmp = (int)rating;
-			double decimal = rating - ratingTmp;
-			if (decimal > 0) {
-				ratingString = rating + "/5";
-			} else {
-				ratingString = ratingTmp + "/5";
-			}
-		}
-		
-		if (!ratingString.isEmpty()){
-			ratingString = "(" + ratingString + ")";
-		}
+    /**
+     * Delete book by its database row _id and close current activity.
+     *
+     * @param rowId The database id of the book for deleting
+     */
+    public static void deleteBook(@NonNull final Context context, @NonNull final CatalogueDBAdapter db,
+                                  @NonNull final Long rowId, final Runnable runnable) {
+        int res = StandardDialogs.deleteBookAlert(context, db, rowId, new Runnable() {
+            @Override
+            public void run() {
+                db.purgeAuthors();
+                db.purgeSeries();
+                if (runnable != null)
+                    runnable.run();
+            }
+        });
+        if (res != 0) {
+            Toast.makeText(context, res, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Perform sharing of book by its database rowId. Create chooser with matched
+     * apps for sharing some text like the next:<br>
+     * <b>"I'm reading " + title + " by " + author + series + " " + ratingString</b>
+     *
+     * @param rowId The database id of the book for deleting
+     */
+    public static void shareBook(@NonNull final Context context, @NonNull final CatalogueDBAdapter db, @NonNull final Long rowId) {
+        String title;
+        double rating;
+        String ratingString = "";
+        String author;
+        String series;
+
+        try (Cursor thisBook = db.fetchBookById(rowId)) {
+            thisBook.moveToFirst();
+            title = thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_TITLE.name));
+            rating = thisBook.getDouble(thisBook.getColumnIndex(DatabaseDefinitions.DOM_RATING.name));
+            author = thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name));
+            series = thisBook.getString(thisBook.getColumnIndex(DatabaseDefinitions.DOM_SERIES_FORMATTED.name));
+        }
+
+        File image = StorageUtils.getThumbnailByUuid(db.getBookUuid(rowId));
+
+        if (!series.isEmpty()) {
+            series = " (" + series.replace("#", "%23") + ")";
+        }
+        //remove trailing 0's
+        if (rating > 0) {
+            int ratingTmp = (int) rating;
+            double decimal = rating - ratingTmp;
+            if (decimal > 0) {
+                ratingString = rating + "/5";
+            } else {
+                ratingString = ratingTmp + "/5";
+            }
+        }
+
+        if (!ratingString.isEmpty()) {
+            ratingString = "(" + ratingString + ")";
+        }
 
 
-		// prepare the cover to post
+        // prepare the cover to post
         Uri coverURI = FileProvider.getUriForFile(context, GenericFileProvider.AUTHORITY, image);
 
         /*
@@ -170,36 +167,36 @@ public class BookUtils {
 		 * There's a problem with the facebook app in android, so despite it being shown on the list
 		 * it will not post any text unless the user types it.
 		 */
-		Intent share = new Intent(Intent.ACTION_SEND); 
-		String text = context.getString(R.string.share_book_im_reading,title, author, series, ratingString);
-		share.putExtra(Intent.EXTRA_TEXT, text); 
-		share.putExtra(Intent.EXTRA_STREAM, coverURI);
+        Intent share = new Intent(Intent.ACTION_SEND);
+        String text = context.getString(R.string.share_book_im_reading, title, author, series, ratingString);
+        share.putExtra(Intent.EXTRA_TEXT, text);
+        share.putExtra(Intent.EXTRA_STREAM, coverURI);
         share.setType("text/plain");
-        
+
         context.startActivity(Intent.createChooser(share, context.getString(R.string.share)));
-	}
+    }
 
     /**
      * Update the 'read' status of a book in the database
      * The 'book' will have its 'read' status updated ONLY if the update went through.
      *
-	 * @param dba     database
-     * @param book    book to update
+     * @param dba  database
+     * @param book book to update
      *
-     * @return    true/false as result from database update
-	 */
+     * @return true/false as result from database update
+     */
     @SuppressWarnings("UnusedReturnValue")
     public static boolean setRead(@NonNull final CatalogueDBAdapter dba, @NonNull final BookData book, boolean read) {
         int prev = book.getInt(UniqueId.KEY_READ);
         book.putInt(UniqueId.KEY_READ, read ? 1 : 0);
-		if (!dba.updateBook(book.getRowId(), book, 0)) {
+        if (!dba.updateBook(book.getRowId(), book, 0)) {
             book.putInt(UniqueId.KEY_READ, prev);
             return false;
         }
         return true;
-	}
-	
-	@SuppressWarnings("UnusedReturnValue")
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
     public static boolean setRead(@NonNull final CatalogueDBAdapter dba, Long bookId, boolean read) {
         BookData book = new BookData(bookId);
         book.putBoolean(UniqueId.KEY_READ, read);

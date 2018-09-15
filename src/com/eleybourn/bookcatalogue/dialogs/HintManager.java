@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.SharedPreferences.Editor;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.View;
@@ -36,8 +35,8 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class to manage the display of 'hints' within the application. Each hint dialog has
@@ -55,48 +54,47 @@ public class HintManager {
     /** Preferences prefix for hints */
     private final static String PREF_HINT = TAG + ".Hint.";
     /** All hints managed by this class */
-    private static final Hints mHints = new Hints()
-            .add("BOOKLIST_STYLES_EDITOR", R.string.hint_booklist_styles_editor)
-            .add("BOOKLIST_STYLE_GROUPS", R.string.hint_booklist_style_groups)
-            .add("BOOKLIST_STYLE_PROPERTIES", R.string.hint_booklist_style_properties)
-            .add("BOOKLIST_GLOBAL_PROPERTIES", R.string.hint_booklist_global_properties)
-            .add("BOOKLIST_MULTI_AUTHORS", R.string.hint_authors_book_may_appear_more_than_once)
-            .add("BOOKLIST_MULTI_SERIES", R.string.hint_series_book_may_appear_more_than_once)
-            .add("BACKGROUND_TASKS", R.string.hint_background_tasks)
-            .add("BACKGROUND_TASK_EVENTS", R.string.hint_background_task_events)
-            .add("STARTUP_SCREEN", R.string.hint_startup_screen)
-            .add("explain_goodreads_no_isbn", R.string.explain_goodreads_no_isbn)
-            .add("explain_goodreads_no_match", R.string.explain_goodreads_no_match)
-            .add("hint_booklist_style_menu", R.string.hint_booklist_style_menu)
-            .add("hint_autorotate_camera_images", R.string.hint_autorotate_camera_images)
-            .add("hint_view_only_book_details", R.string.hint_view_only_book_details)
-            .add("hint_view_only_help", R.string.hint_view_only_help)
-            .add("hint_tempus_locum", R.string.hint_tempus_locum)
-            .add("hint_book_list", R.string.hint_book_list)
-            .add("hint_amazon_links_blurb", R.string.hint_amazon_links_blurb);
+    private static final Map<Integer, Hint> mHints = new HashMap();
+    static {
+        mHints.put(R.string.hint_booklist_styles_editor, new Hint("BOOKLIST_STYLES_EDITOR"));
+        mHints.put(R.string.hint_booklist_style_groups, new Hint("BOOKLIST_STYLE_GROUPS"));
+        mHints.put(R.string.hint_booklist_style_properties, new Hint("BOOKLIST_STYLE_PROPERTIES"));
+        mHints.put(R.string.hint_booklist_global_properties, new Hint("BOOKLIST_GLOBAL_PROPERTIES"));
+        mHints.put(R.string.hint_authors_book_may_appear_more_than_once, new Hint("BOOKLIST_MULTI_AUTHORS"));
+        mHints.put(R.string.hint_series_book_may_appear_more_than_once, new Hint("BOOKLIST_MULTI_SERIES"));
+        mHints.put(R.string.hint_background_tasks, new Hint("BACKGROUND_TASKS"));
+        mHints.put(R.string.hint_background_task_events, new Hint("BACKGROUND_TASK_EVENTS"));
+        mHints.put(R.string.hint_startup_screen, new Hint("STARTUP_SCREEN"));
+        mHints.put(R.string.explain_goodreads_no_isbn, new Hint("explain_goodreads_no_isbn"));
+        mHints.put(R.string.explain_goodreads_no_match, new Hint("explain_goodreads_no_match"));
+        mHints.put(R.string.hint_booklist_style_menu, new Hint("hint_booklist_style_menu"));
+        mHints.put(R.string.hint_autorotate_camera_images, new Hint("hint_autorotate_camera_images"));
+        mHints.put(R.string.hint_view_only_book_details, new Hint("hint_view_only_book_details"));
+        mHints.put(R.string.hint_view_only_help, new Hint("hint_view_only_help"));
+        mHints.put(R.string.hint_tempus_locum, new Hint("hint_tempus_locum"));
+        mHints.put(R.string.hint_book_list, new Hint("hint_book_list"));
+        mHints.put(R.string.hint_amazon_links_blurb, new Hint("hint_amazon_links_blurb"));
+    }
 
     private HintManager() {
     }
 
     /** Reset all hints to that they will be displayed again */
     public static void resetHints() {
-        Enumeration<Hint> hints = mHints.getHints();
-        while (hints.hasMoreElements()) {
-            Hint h = hints.nextElement();
+        for (Hint h : mHints.values()) {
             h.setVisibility(true);
             h.setHasBeenDisplayed(false);
         }
     }
 
     public static boolean shouldBeShown(int hintStringId) {
-        final Hint h = mHints.getHint(hintStringId);
-        return h.shouldBeShown();
+        return mHints.get(hintStringId).shouldBeShown();
     }
 
     /** Display the passed hint, if the user has not disabled it */
     public static void displayHint(Context context, int stringId, final Runnable postRun, Object... args) {
         // Get the hint and return if it has been disabled.
-        final Hint h = mHints.getHint(stringId);
+        final Hint h = mHints.get(stringId);
         if (!h.shouldBeShown()) {
             if (postRun != null)
                 postRun.run();
@@ -142,50 +140,6 @@ public class HintManager {
         int getHint();
     }
 
-    /**
-     * Class to represent a collection of all defined hints
-     *
-     * @author Philip Warner
-     */
-    private static class Hints {
-        /** USed to lookup hint based on string ID */
-        private final Hashtable<Integer, Hint> mHintsById = new Hashtable<>();
-        /* Used to prevent two hints having the same preference name */
-        //private final Hashtable<String, Hint> mHintsByKey = new Hashtable<>();
-
-        /**
-         * Add a hint to the collection
-         *
-         * @param key      Unique preference suffix for this hint
-         * @param stringId String ID to display
-         *
-         * @return Hints, for chaining
-         */
-        public Hints add(String key, int stringId) {
-            Hint h = new Hint(key);
-            mHintsById.put(stringId, h);
-            //mHintsByKey.put(key.trim().toLowerCase(), h);
-            return this;
-        }
-
-        /**
-         * Return the hint based on string ID
-         */
-        Hint getHint(int stringId) {
-            Hint h = mHintsById.get(stringId);
-            if (h == null)
-                throw new RuntimeException("Hint not found for ID " + stringId);
-            return h;
-        }
-
-        /**
-         * Get an enumeration of all hints.
-         */
-        Enumeration<Hint> getHints() {
-            return mHintsById.elements();
-        }
-
-    }
 
     /**
      * Class to represent a single Hint.
@@ -223,10 +177,7 @@ public class HintManager {
          * @param visible Flag indicating future visibility
          */
         public void setVisibility(boolean visible) {
-            Editor ed = BCPreferences.edit();
-            String name = getFullPrefName();
-            ed.putBoolean(name, visible);
-            ed.commit();
+            BCPreferences.edit().putBoolean(getFullPrefName(), visible).commit();
         }
 
         /**

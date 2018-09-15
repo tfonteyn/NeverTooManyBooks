@@ -294,12 +294,11 @@ public class SearchAmazonHandler extends DefaultHandler {
             } else if (localName.equalsIgnoreCase(LANGUAGE)) {
                 mInLanguage = false;
             } else if (localName.equalsIgnoreCase(LIST_PRICE)) {
-                if (mCurrencyCode.equalsIgnoreCase("usd") && !mCurrencyAmount.isEmpty()) {
+                if ("usd".equalsIgnoreCase(mCurrencyCode) && !mCurrencyAmount.isEmpty()) {
                     try {
                         Float price = Float.parseFloat(mCurrencyAmount) / 100;
                         addIfNotPresent(UniqueId.KEY_LIST_PRICE, String.format("%.2f", price));
-                    } catch (Exception e) {
-                        // Ignore
+                    } catch (Exception ignore) {
                     }
                 }
                 mCurrencyCode = "";
@@ -341,7 +340,7 @@ public class SearchAmazonHandler extends DefaultHandler {
                 } else {
                     if (BuildConfig.DEBUG) {
                         // see what we are missing.
-                        System.out.println(localName + "->'" + mBuilder.toString() + "'");
+                        System.out.println(localName + "->'" + mBuilder + "'");
                     }
                 }
             } //else if (localName.equalsIgnoreCase(TOTALRESULTS)){

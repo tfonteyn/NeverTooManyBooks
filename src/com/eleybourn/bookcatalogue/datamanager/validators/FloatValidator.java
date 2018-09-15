@@ -49,7 +49,7 @@ public class FloatValidator extends DefaultFieldValidator {
         if (crossValidating)
             return;
 
-        super.validate(data, datum, crossValidating);
+        super.validate(data, datum, false);
         try {
             Float v;
             Object o = data.get(datum);

@@ -26,6 +26,7 @@ import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -68,10 +69,7 @@ public class LibraryThingManager {
     /** Name of preference that controls display of alert about LT */
     public static final String LT_HIDE_ALERT_PREF_NAME = "lt_hide_alert";
     static final String BASE_URL = "https://www.librarything.com";
-    /**
-     * Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
-     */
-    private static final boolean DEBUG = false;
+
     private static final String AUTHOR = "author";
     private static final String FIELD = "field";
     private static final String ISBN = "isbn";
@@ -531,7 +529,7 @@ public class LibraryThingManager {
      **/
     public String getCoverImage(String isbn, Bundle bookData, ImageSizes size) {
         String url = getCoverImageUrl(isbn, size);
-        if (DEBUG && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.DEBUG_LIBRARYTHING && BuildConfig.DEBUG) {
             System.out.println("LTM: " + url + " " + isbn + " " + size);
         }
 

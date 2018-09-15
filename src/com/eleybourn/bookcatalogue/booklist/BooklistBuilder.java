@@ -29,6 +29,7 @@ import android.database.sqlite.SQLiteQuery;
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistAuthorGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistSeriesGroup;
@@ -48,9 +49,10 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_AUTHOR;
@@ -161,10 +163,6 @@ public class BooklistBuilder implements AutoCloseable {
     public static final int BOOKLIST_GENERATE_NESTED_TRIGGER = 3;
     public static final int BOOKLIST_GENERATE_AUTOMATIC = 4;
     /**
-     * Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
-     */
-    private static final boolean DEBUG = true;
-    /**
      * Convenience expression for the SQL which gets formatted author names in 'Last, Given' form
      */
     private static final String AUTHOR_FORMATTED_LAST_FIRST_EXPRESSION = "Case "
@@ -195,7 +193,7 @@ public class BooklistBuilder implements AutoCloseable {
     /** Internal ID */
     private final int mBooklistBuilderId;
     /** Collection of 'extra' domains requested by caller */
-    private final Hashtable<String, ExtraDomainDetails> mExtraDomains = new Hashtable<>();
+    private final Map<String, ExtraDomainDetails> mExtraDomains = new HashMap<>();
     /** Style to use in building the list */
     private final BooklistStyle mStyle;
     /**
@@ -255,7 +253,7 @@ public class BooklistBuilder implements AutoCloseable {
      * @param style   Book list style to use
      */
     public BooklistBuilder(CatalogueDBAdapter adapter, BooklistStyle style) {
-        if (DEBUG && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.DEBUG_BOOKLIST_BUILDER && BuildConfig.DEBUG) {
             synchronized (mInstanceCount) {
                 mInstanceCount++;
                 System.out.println("Builder instances: " + mInstanceCount);
@@ -334,7 +332,7 @@ public class BooklistBuilder implements AutoCloseable {
             boolean ok;
             ExtraDomainDetails oldInfo = mExtraDomains.get(domain.name);
             if (oldInfo.sourceExpression == null) {
-                ok = info.sourceExpression == null || info.sourceExpression.equals("");
+                ok = info.sourceExpression == null || "".equals(info.sourceExpression);
             } else {
                 if (info.sourceExpression == null) {
                     ok = oldInfo.sourceExpression.isEmpty();
@@ -1273,7 +1271,7 @@ public class BooklistBuilder implements AutoCloseable {
                 long t10 = System.currentTimeMillis();
                 //mSyncedDb.execSQL("analyze " + mTableName);
 
-                if (DEBUG && BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
                     long t11 = System.currentTimeMillis();
 
                     System.out.println("T0a: " + (t0a - t0));
@@ -1791,7 +1789,7 @@ public class BooklistBuilder implements AutoCloseable {
         int cnt = (int) fooStmt.simpleQueryForLong();
         fooStmt.close();
 
-        if (DEBUG && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
             long tc1 = System.currentTimeMillis();
             System.out.println("Pseudo-count (" + name + ") = " + cnt + " completed in " + (tc1 - tc0) + "ms");
         }
@@ -1932,8 +1930,9 @@ public class BooklistBuilder implements AutoCloseable {
             mSyncedDb.execSQL(sql);
             deleteListNodeSettings();
         }
-        long t1 = System.currentTimeMillis() - t0;
-        if (DEBUG && BuildConfig.DEBUG) {
+
+        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+            long t1 = System.currentTimeMillis() - t0;
             System.out.println("Expand All: " + t1);
         }
     }
@@ -1995,7 +1994,7 @@ public class BooklistBuilder implements AutoCloseable {
      */
     private void cleanup(final boolean isFinalize) {
         if (mStatements.size() != 0) {
-            if (DEBUG && BuildConfig.DEBUG && isFinalize) {
+            if (DEBUG_SWITCHES.DEBUG_BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
                 System.out.println("BooklistBuilder Finalizing with active statements (this is not an error): ");
                 for (String name : mStatements.getNames()) {
                     System.out.print(name + ", ");
@@ -2009,7 +2008,7 @@ public class BooklistBuilder implements AutoCloseable {
         }
 
         if (mNavTable != null) {
-            if (DEBUG && BuildConfig.DEBUG && isFinalize) {
+            if (DEBUG_SWITCHES.DEBUG_BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
                 System.out.println("BooklistBuilder Finalizing wth mNavTable (this is not an error)");
             }
             try {
@@ -2020,7 +2019,7 @@ public class BooklistBuilder implements AutoCloseable {
             }
         }
         if (mListTable != null) {
-            if (DEBUG && BuildConfig.DEBUG && isFinalize) {
+            if (DEBUG_SWITCHES.DEBUG_BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
                 System.out.println("BooklistBuilder Finalizing  with list table (this is not an error)");
             }
             try {
@@ -2031,7 +2030,7 @@ public class BooklistBuilder implements AutoCloseable {
             }
         }
 
-        if (DEBUG && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.DEBUG_BOOKLIST_BUILDER && BuildConfig.DEBUG) {
             if (!mReferenceDecremented) {
                 // Only de-reference once!
                 synchronized (mInstanceCount) {
@@ -2143,7 +2142,7 @@ public class BooklistBuilder implements AutoCloseable {
         /** Source expressions for output domains */
         private final ArrayList<String> mExpressions = new ArrayList<>();
         /** Mapping from Domain to source Expression */
-        private final Hashtable<DomainDefinition, String> mExpressionMap = new Hashtable<>();
+        private final Map<DomainDefinition, String> mExpressionMap = new HashMap<>();
 
         /** Domains that are GROUPED */
         private final ArrayList<DomainDefinition> mGroups = new ArrayList<>();
@@ -2218,16 +2217,16 @@ public class BooklistBuilder implements AutoCloseable {
         void recreateTable() {
             //mListTable.setIsTemporary(true); commented in original code
 
-//            long t0 = System.currentTimeMillis();
+            long t0 = System.currentTimeMillis();
             mListTable.drop(mSyncedDb);
-//            long t1 = System.currentTimeMillis();
+            long t1 = System.currentTimeMillis();
             mListTable.create(mSyncedDb, false);
 
-//            if (DEBUG && BuildConfig.DEBUG) {
-//                long t2 = System.currentTimeMillis();
-//                System.out.println("Drop = " + (t1 - t0));
-//                System.out.println("Create = " + (t2 - t1));
-//            }
+            if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                long t2 = System.currentTimeMillis();
+                System.out.println("Drop = " + (t1 - t0));
+                System.out.println("Create = " + (t2 - t1));
+            }
         }
 
         /**
@@ -2277,11 +2276,11 @@ public class BooklistBuilder implements AutoCloseable {
 
             // Setup the SQL phrases.
             cmp.rootkeyExpression = keyExpression.toString();
-            cmp.destinationColumns = columns.toString() + ",\n	" + DOM_ROOT_KEY;
+            cmp.destinationColumns = columns + ",\n	" + DOM_ROOT_KEY;
             cmp.insert = "Insert into " + mListTable + " (\n	" + cmp.destinationColumns + ")";
-            cmp.select = "Select\n	" + expressions.toString() + ",\n	" + keyExpression;
+            cmp.select = "Select\n	" + expressions + ",\n	" + keyExpression;
             cmp.insertSelect = cmp.insert + "\n " + cmp.select + "\n From\n";
-            cmp.insertValues = cmp.insert + "\n    Values (" + values.toString() + ", ?)";
+            cmp.insertValues = cmp.insert + "\n    Values (" + values + ", ?)";
 
             return cmp;
         }

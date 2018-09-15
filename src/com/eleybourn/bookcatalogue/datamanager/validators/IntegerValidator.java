@@ -49,7 +49,7 @@ public class IntegerValidator extends DefaultFieldValidator {
         if (crossValidating)
             return;
 
-        super.validate(data, datum, crossValidating);
+        super.validate(data, datum, false);
 
         Object o;
         try {

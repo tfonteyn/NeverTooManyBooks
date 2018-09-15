@@ -31,7 +31,7 @@ public class CollationCaseSensitive {
 				c.moveToFirst();
 				s = c.getString(0);
 			}
-			return !s.equals("a");
+			return !"a".equals(s);
 		} finally {
 			try { db.execSQL("Drop Table If Exists collation_cs_check");
 			} catch (Exception ignored) {}

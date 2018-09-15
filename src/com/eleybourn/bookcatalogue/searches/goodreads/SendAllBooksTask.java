@@ -186,10 +186,10 @@ public class SendAllBooksTask extends GenericTask {
 			if (books != null)
 				try {
 					books.close();
-				} catch (Exception e)
+				} catch (Exception ignore)
 				{
 					// Ignore failures, but log them
-					Logger.logError(e, "Failed to close GoodReads books cursor");
+					Logger.logError(ignore, "Failed to close GoodReads books cursor");
 				}
 			try {
 				db.close();

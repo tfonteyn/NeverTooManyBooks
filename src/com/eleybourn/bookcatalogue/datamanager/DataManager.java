@@ -47,6 +47,7 @@ import java.util.Set;
  * @author pjw
  *
  */
+@SuppressWarnings("ALL")
 public class DataManager {
 	// Generic validators; if field-specific defaults are needed, create a new one.
 	protected static final DataValidator integerValidator = new IntegerValidator("0");
@@ -175,6 +176,7 @@ public class DataManager {
 	}
 
 	/** Get a double value */
+	@SuppressWarnings("unused")
 	public double getDouble(@NonNull final String key) {
 		return mData.get(key).getDouble(this, mBundle);
 	}
@@ -185,12 +187,14 @@ public class DataManager {
 		return this;
 	}
 	/** Store a double value */
+	@SuppressWarnings("unused")
 	public DataManager putDouble(@NonNull final Datum datum, double value) {
 		datum.putDouble(this, mBundle, value);
 		return this;
 	}
 
 	/** Get a float value */
+	@SuppressWarnings("unused")
 	public float getFloat(@NonNull final String key) {
 		return mData.get(key).getFloat(this, mBundle);
 	}

@@ -136,8 +136,8 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             try {
                 long l = Long.parseLong(context.body.trim());
                 mBook.putLong(name, l);
-            } catch (Exception e) {
-                // Ignore but dont add
+            } catch (Exception ignore) {
+                // Ignore but don't add
             }
         }
     };
@@ -152,8 +152,8 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             try {
                 double d = Double.parseDouble(context.body.trim());
                 mBook.putDouble(name, d);
-            } catch (Exception e) {
-                // Ignore but dont add
+            } catch (Exception ignore) {
+                // Ignore but don't add
             }
         }
     };
@@ -428,8 +428,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         public void process(ElementContext context) {
             try {
                 mCurrSeriesPosition = Integer.parseInt(context.body.trim());
-            } catch (Exception e) {
-                // Ignore
+            } catch (Exception ignore) {
             }
         }
     };

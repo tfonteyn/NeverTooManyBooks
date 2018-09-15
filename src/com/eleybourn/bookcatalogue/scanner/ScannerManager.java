@@ -2,7 +2,8 @@ package com.eleybourn.bookcatalogue.scanner;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class to handle details of specific scanner interfaces and return a
@@ -20,7 +21,7 @@ public class ScannerManager {
     public static final int SCANNER_ZXING = 3;
 
     /** Collection of ScannerFactory objects */
-    private static final Hashtable<Integer, ScannerFactory> myScannerFactories = new Hashtable<>();
+    private static final Map<Integer, ScannerFactory> myScannerFactories = new HashMap<>();
 
     /*
      * Build the collection

@@ -51,7 +51,7 @@ public class DateValidator extends DefaultFieldValidator {
         if (crossValidating)
             return;
 
-        super.validate(data, datum, crossValidating);
+        super.validate(data, datum, false);
 
         try {
             java.util.Date d = DateUtils.parseDate(data.getString(datum));

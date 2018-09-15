@@ -118,12 +118,6 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
     }
 
     @Override
-    public StringProperty setNameResourceId(final int id) {
-        super.setNameResourceId(id);
-        return this;
-    }
-
-    @Override
     public StringProperty set(Property p) {
         if (!(p instanceof StringValue))
             throw new RuntimeException("Can not find a compatible interface for string parameter");

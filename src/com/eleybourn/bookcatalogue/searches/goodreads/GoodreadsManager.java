@@ -789,7 +789,7 @@ public class GoodreadsManager {
                             this.removeBookFromShelf(grShelf, grId);
                     } catch (BookNotFoundException e) {
                         // Ignore for now; probably means book not on shelf anyway
-                    } catch (Exception e) {
+                    } catch (Exception ignore) {
                         return ExportDisposition.error;
                     }
                 }

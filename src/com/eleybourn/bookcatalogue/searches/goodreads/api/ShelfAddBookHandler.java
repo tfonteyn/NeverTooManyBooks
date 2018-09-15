@@ -146,8 +146,7 @@ public class ShelfAddBookHandler extends ApiHandler {
 		public void process(ElementContext context) {
 			try {
 				mReviewId = Long.parseLong(context.body.trim());
-			} catch (Exception e) {
-				// Ignore?
+			} catch (Exception ignore) {
 			}
 		}
 	};

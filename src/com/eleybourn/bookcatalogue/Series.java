@@ -109,7 +109,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
     }
 
     private Series(@NonNull final Parcel in) {
-        name = in.readString();
+        name = in.readString().trim();
         number = in.readString();
         id = in.readLong();
     }

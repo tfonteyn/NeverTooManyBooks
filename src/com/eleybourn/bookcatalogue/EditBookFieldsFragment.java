@@ -59,10 +59,6 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         implements OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
 
     public static final String TAG_BOOKSHELVES_DIALOG = "bookshelves_dialog";
-    /**
-     * Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
-     */
-    private static final boolean DEBUG = false;
     private static final int ACTIVITY_EDIT_AUTHORS = 1000;
     private static final int ACTIVITY_EDIT_SERIES = 1001;
 
@@ -80,11 +76,11 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         double t1;
 
         try {
-            if (DEBUG && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
                 t0 = System.currentTimeMillis();
             }
             super.onActivityCreated(savedInstanceState);
-            if (DEBUG && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
                 t1 = System.currentTimeMillis();
             }
 
@@ -179,12 +175,13 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
             Tracker.exitOnActivityCreated(this);
         }
 
-        if (DEBUG && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
             System.out.println("BEF oAC(super): " + (t1 - t0) + ", BEF oAC: " + (System.currentTimeMillis() - t0));
         }
 
     }
 
+    //TODO: if field not visible, skip
     public void setupMenuMoreButton(final int resId, final int buttonResId, final ArrayList<String> list, final int dialogTitleResId) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_dropdown_item_1line, list);
@@ -212,6 +209,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                         });
             }
         });
+
     }
 
     /**
@@ -222,7 +220,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
      */
     private void populateFields() {
         double t0;
-        if (DEBUG && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
             t0 = System.currentTimeMillis();
         }
         final BookData book = mEditManager.getBookData();
@@ -241,8 +239,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                                 try {
                                     f.setValue(values.getString(f.column));
                                 } catch (Exception ignore) {
-                                    String msg = "Populate field " + f.column + " failed: " + ignore.getMessage();
-                                    Logger.logError(ignore, msg);
+                                    Logger.logError(ignore, "Populate field " + f.column + " failed: " + ignore.getMessage());
                                 }
                             }
                         }
@@ -262,7 +259,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         // Restore default visibility and hide unused/unwanted and empty fields
         showHideFields(false);
 
-        if (DEBUG && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
             System.out.println("BEF popF: " + (System.currentTimeMillis() - t0));
         }
     }
@@ -288,9 +285,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         Tracker.enterOnSaveInstanceState(this);
-
         super.onSaveInstanceState(outState);
-
         Tracker.exitOnSaveInstanceState(this);
     }
 

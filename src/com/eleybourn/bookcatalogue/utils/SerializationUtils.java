@@ -88,11 +88,11 @@ public class SerializationUtils {
      */
     public static class DeserializationException extends Exception {
         private static final long serialVersionUID = -2040548134317746620L;
-        final Exception inner;
 
         DeserializationException(Exception e) {
             super();
-            inner = e;
+            initCause(e);
         }
+
     }
 }

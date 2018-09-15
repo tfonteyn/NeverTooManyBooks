@@ -88,9 +88,9 @@ public class MultitypeListCursorAdapter extends CursorAdapter implements FastScr
 		// NOTE: It DOES NOT fix the error; just gathers more debug info
 		//
 		if (cursor.isClosed()) {
-			throw new RuntimeException("Attempt to get type of item on closed cursor (" + cursor.toString() + ")");
+			throw new RuntimeException("Attempt to get type of item on closed cursor (" + cursor + ")");
 		} else if (position >= cursor.getCount()) {
-			throw new RuntimeException("Attempt to get type of item beyond end of cursor (" + cursor.toString() + ")");
+			throw new RuntimeException("Attempt to get type of item beyond end of cursor (" + cursor + ")");
 		} else {
 			cursor.moveToPosition(position);
 			return mHandler.getItemViewType(cursor);			

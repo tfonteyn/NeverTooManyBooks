@@ -60,7 +60,7 @@ public class Publisher implements Serializable {
      * Constructor using a Parcel.
      */
     private Publisher(@NonNull final Parcel in) {
-        name = in.readString();
+        name = in.readString().trim();
     }
 
     /**

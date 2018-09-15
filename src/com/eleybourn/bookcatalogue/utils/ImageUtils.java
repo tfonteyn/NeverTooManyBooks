@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.GetThumbnailTask;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.ThumbnailCacheWriterTask;
@@ -39,17 +40,12 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class ImageUtils {
-    /**
-     * Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
-     */
-    private static final boolean DEBUG = false;
     // Target size of a thumbnail in edit dialog and zoom dialog
     private static final int MAX_EDIT_THUMBNAIL_SIZE = 256;
     private static final int MAX_ZOOM_THUMBNAIL_SIZE = 1024;
 
     private ImageUtils() {
     }
-
 
     /**
      * Shrinks the image in the passed file to the specified dimensions, and places the image
@@ -109,7 +105,7 @@ public class ImageUtils {
         // Get the nearest *bigger* power of 2.
         final int samplePow2 = (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
-        if (DEBUG && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.DEBUG_IMAGEUTILS && BuildConfig.DEBUG) {
             System.out.println("fetchFileIntoImageView:\n" +
                     " filename = " + fileSpec + "\n" +
                     "  exact       = " + exact + "\n" +
@@ -158,7 +154,7 @@ public class ImageUtils {
             return null;
         }
 
-        if (DEBUG && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.DEBUG_IMAGEUTILS && BuildConfig.DEBUG) {
             System.out.println("\n" +
                     "bm.width = " + bm.getWidth() + "\n" +
                     "bm.height = " + bm.getHeight() + "\n"

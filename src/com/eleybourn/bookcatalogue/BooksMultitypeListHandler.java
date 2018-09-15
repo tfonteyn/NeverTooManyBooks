@@ -709,7 +709,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
         /** Flag indicating we want finished() to be called */
         private boolean mWantFinished = true;
         /** Flags indicating which extras to get */
-        private int mFlags;
+        private final int mFlags;
 
         /**
          * Constructor.
@@ -1203,7 +1203,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
         /*** Field to use */
         TextView text;
         /** String ID to use when data is blank */
-        private int mNoDataId;
+        private final int mNoDataId;
 
         /**
          * Constructor

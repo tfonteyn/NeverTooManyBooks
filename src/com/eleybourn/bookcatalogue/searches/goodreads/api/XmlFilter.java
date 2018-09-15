@@ -24,13 +24,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * A class to help parsing Sax Xml output. For goodreads XML output, 90% of the XML can be
@@ -45,7 +44,7 @@ public class XmlFilter {
     /** The tag for this specific filter */
     private final String mTagName;
     /** A hashtable to ensure that there are no more than one sub-filter per tag at a given level */
-    private final Hashtable<String, XmlFilter> mSubFilterHash = new Hashtable<>();
+    private final Map<String, XmlFilter> mSubFilterHash = new HashMap<>();
     /** List of sub-filters for this filter */
     private final ArrayList<XmlFilter> mSubFilters = new ArrayList<>();
     /** Action to perform, if any, when the associated tag is started */
@@ -164,7 +163,7 @@ public class XmlFilter {
     /**
      * Called when associated tag is started.
      */
-    public void processStart(@NonNull final ElementContext context) throws SAXException {
+    public void processStart(@NonNull final ElementContext context) {
         if (mStartAction != null) {
             context.userArg = mStartArg;
             mStartAction.process(context);
@@ -174,7 +173,7 @@ public class XmlFilter {
     /**
      * Called when associated tag is finished.
      */
-    public void processEnd(@NonNull final ElementContext context) throws SAXException {
+    public void processEnd(@NonNull final ElementContext context) {
         if (mEndAction != null) {
             context.userArg = mEndArg;
             mEndAction.process(context);
@@ -251,7 +250,7 @@ public class XmlFilter {
 
     /** Interface definition for filter handlers */
     public interface XmlHandlerExt<T> {
-        void process(ElementContext context, T arg) throws IOException;
+        void process(ElementContext context, T arg);
     }
 
     /**

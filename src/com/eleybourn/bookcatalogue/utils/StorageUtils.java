@@ -25,6 +25,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.io.BufferedReader;
@@ -54,10 +55,6 @@ public class StorageUtils {
 
     // our root directory to be created on the 'external storage'
     public static final String DIRECTORY_NAME = "bookCatalogue";
-    /**
-     * Used as: if (DEBUG && BuildConfig.DEBUG) { ... }
-     */
-    private static final boolean DEBUG = false;
     private static final String UTF8 = "utf8";
     private static final int BUFFER_SIZE = 8192;
 
@@ -136,7 +133,7 @@ public class StorageUtils {
      * Get a File, don't check on existence or creation
      */
     public static File getFile(@NonNull final String fileName) {
-        if (DEBUG && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
             System.out.println("StorageUtils.getFile: Accessing file: " + EXTERNAL_FILE_PATH + File.separator + fileName);
         }
         return new File(EXTERNAL_FILE_PATH + File.separator + fileName);
@@ -289,8 +286,8 @@ public class StorageUtils {
             }
         };
 
-        StringBuilder debugInfo;
-        if (DEBUG && BuildConfig.DEBUG) {
+        @SuppressWarnings("unused") StringBuilder debugInfo;
+        if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
             //noinspection UnusedAssignment
             debugInfo = new StringBuilder("Getting mounted file systems\n");
         }
@@ -303,7 +300,7 @@ public class StorageUtils {
             in = new BufferedReader(new InputStreamReader(new FileInputStream("/proc/mounts")), 1024);
             String line;
             while ((line = in.readLine()) != null) {
-                if (DEBUG && BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
                     debugInfo.append("   checking ").append(line).append("\n");
                 }
                 final Matcher m = MOUNT_POINT_PATH.matcher(line);
@@ -311,12 +308,12 @@ public class StorageUtils {
                 if (m.find()) {
                     // See if it has a bookCatalogue directory
                     final File dir = new File(m.group(1) + File.separator + DIRECTORY_NAME);
-                    if (DEBUG && BuildConfig.DEBUG) {
+                    if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
                         debugInfo.append("       matched ").append(dir.getAbsolutePath()).append("\n");
                     }
                     dirs.add(dir);
                 } else {
-                    if (DEBUG && BuildConfig.DEBUG) {
+                    if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
                         debugInfo.append("       NO match\n");
                     }
                 }
@@ -332,7 +329,7 @@ public class StorageUtils {
         }
 
         // Sometimes (Android 6?) the /proc/mount search seems to fail, so we revert to environment vars
-        if (DEBUG && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
             debugInfo.append("Found ").append(dirs.size()).append(" directories\n");
         }
 
@@ -341,11 +338,11 @@ public class StorageUtils {
             if (loc1 != null) {
                 final File dir = new File(loc1 + File.separator + DIRECTORY_NAME);
                 dirs.add(dir);
-                if (DEBUG && BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
                     debugInfo.append("EXTERNAL_STORAGE added ").append(dir.getAbsolutePath()).append("\n");
                 }
             } else {
-                if (DEBUG && BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
                     debugInfo.append("EXTERNAL_STORAGE was null\n");
                 }
             }
@@ -354,11 +351,11 @@ public class StorageUtils {
             if (loc2 != null && !loc2.equals(loc1)) {
                 final File dir = new File(loc2 + File.separator + DIRECTORY_NAME);
                 dirs.add(dir);
-                if (DEBUG && BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
                     debugInfo.append("SECONDARY_STORAGE added ").append(dir.getAbsolutePath()).append("\n");
                 }
             } else {
-                if (DEBUG && BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
                     debugInfo.append("SECONDARY_STORAGE ignored: ").append(loc2).append("\n");
                 }
             }
@@ -368,7 +365,7 @@ public class StorageUtils {
 
         final HashSet<String> paths = new HashSet<>();
 
-        if (DEBUG && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
             debugInfo.append("Looking for files in directories\n");
         }
 
@@ -379,33 +376,33 @@ public class StorageUtils {
                     // Scan for csv files
                     final File[] csvFiles = dir.listFiles(csvFilter);
                     if (csvFiles != null) {
-                        if (DEBUG && BuildConfig.DEBUG) {
+                        if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
                             debugInfo.append("    found ").append(csvFiles.length).append(" in ").append(dir.getAbsolutePath()).append("\n");
                         }
                         for (File f : csvFiles) {
-                            if (DEBUG && BuildConfig.DEBUG) {
+                            if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
                                 debugInfo.append("Found: ").append(f.getAbsolutePath());
                             }
                             final String cp = f.getCanonicalPath();
                             if (paths.contains(cp)) {
-                                if (DEBUG && BuildConfig.DEBUG) {
+                                if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
                                     debugInfo.append("        already present as ").append(cp).append("\n");
                                 }
                             } else {
                                 files.add(f);
                                 paths.add(cp);
-                                if (DEBUG && BuildConfig.DEBUG) {
+                                if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
                                     debugInfo.append("        added as ").append(cp).append("\n");
                                 }
                             }
                         }
                     } else {
-                        if (DEBUG && BuildConfig.DEBUG) {
+                        if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
                             debugInfo.append("    null returned by listFiles() in ").append(dir.getAbsolutePath()).append("\n");
                         }
                     }
                 } else {
-                    if (DEBUG && BuildConfig.DEBUG) {
+                    if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
                         debugInfo.append("    ").append(dir.getAbsolutePath()).append(" does not exist\n");
                     }
                 }
@@ -414,7 +411,7 @@ public class StorageUtils {
             }
         }
 
-        if (DEBUG && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.DEBUG_STORAGEUTILS && BuildConfig.DEBUG) {
             Logger.logError(new RuntimeException("INFO"), debugInfo.toString());
         }
 

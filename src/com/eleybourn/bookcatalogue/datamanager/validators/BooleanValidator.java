@@ -49,7 +49,7 @@ public class BooleanValidator extends DefaultFieldValidator {
         if (crossValidating)
             return;
 
-        super.validate(data, datum, crossValidating);
+        super.validate(data, datum, false);
 
         try {
             Object o = data.get(datum);

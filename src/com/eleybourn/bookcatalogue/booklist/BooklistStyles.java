@@ -88,7 +88,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
      */
     private static void getPreferredStyleNames(HashSet<String> hash) {
         String itemStr = BCPreferences.getString(PREF_MENU_ITEMS, null);
-        if (itemStr != null && !itemStr.equals("")) {
+        if (itemStr != null && !"".equals(itemStr)) {
             ArrayList<String> list = ArrayUtils.decodeList('|', itemStr);
             for (int i = 0; i < list.size(); i++) {
                 String name = list.get(i);

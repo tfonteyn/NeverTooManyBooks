@@ -115,7 +115,7 @@ public class AnthologyTitle implements Serializable ,Utils.ItemWithIdFixup {
     @Override
     @NonNull
     public String toString() {
-        return ArrayUtils.encodeListItem(',', mTitle) + " * " + mAuthor.toString();
+        return ArrayUtils.encodeListItem(',', mTitle) + " * " + mAuthor;
     }
 
     private void fromString(@NonNull final String s) {
@@ -129,6 +129,7 @@ public class AnthologyTitle implements Serializable ,Utils.ItemWithIdFixup {
      *
      * @param source AnthologyTitle to copy
      */
+    @SuppressWarnings("unused")
     void copyFrom(@NonNull final AnthologyTitle source) {
         mAuthor = source.getAuthor();
         mTitle = source.getTitle();

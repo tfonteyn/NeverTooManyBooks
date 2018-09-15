@@ -17,15 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.utils;
-
-import com.eleybourn.bookcatalogue.UpdateFromInternet;
+package com.eleybourn.bookcatalogue;
 
 import java.util.LinkedHashMap;
 
 /**
  * Class to manage a collection of fields and the rules for importing them.
- * Inherits from LinkedHashMap to guarantee iteration order.
+ * Inherits from {@link LinkedHashMap} to guarantee iteration order.
  *
  * FIXME: Android Studio 3.1.4 failed to compile this, had to make a standalone
  * class instead of internal to {@link UpdateFromInternet}

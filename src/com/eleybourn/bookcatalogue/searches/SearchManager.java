@@ -348,7 +348,7 @@ public class SearchManager implements TaskManagerListener {
         mAuthor = author;
         mTitle = title;
         mIsbn = isbn;
-        mHasIsbn = mIsbn != null && mIsbn.trim().length() > 0 && IsbnUtils.isValid(mIsbn);
+        mHasIsbn = mIsbn != null && !mIsbn.isEmpty() && IsbnUtils.isValid(mIsbn);
 
         mFetchThumbnail = fetchThumbnail;
 

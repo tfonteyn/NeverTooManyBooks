@@ -24,11 +24,10 @@ import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
 
 import com.eleybourn.bookcatalogue.BooksRowView;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 
 import java.util.HashMap;
-
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_ID;
 
 /**
  * Cursor implementation for book-related queries. The cursor wraps common
@@ -79,7 +78,7 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
 	private int mIdCol = -2;
 	public final long getId() {
 		if (mIdCol < 0) {
-			mIdCol = getColumnIndex(KEY_ID);
+			mIdCol = getColumnIndex(DatabaseDefinitions.DOM_ID.name);
 			if (mIdCol < 0)
 				throw new RuntimeException("ISBN column not in result set");
 		}
