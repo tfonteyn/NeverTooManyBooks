@@ -53,7 +53,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eleybourn.bookcatalogue.BooksMultitypeListHandler.BooklistChangeListener;
+import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler.BooklistChangeListener;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder.BookRowInfo;
@@ -175,7 +175,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     /**
      * Handler to manage all Views on the list
      */
-    private BooksMultitypeListHandler mListHandler;
+    private BooksMultiTypeListHandler mListHandler;
     /**
      * Current displayed list cursor
      */
@@ -183,7 +183,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     /**
      * Multi-type adapter to manage list connection to cursor
      */
-    private MultitypeListCursorAdapter mAdapter;
+    private MultiTypeListCursorAdapter mAdapter;
     /**
      * Preferred booklist state in next rebuild
      */
@@ -620,8 +620,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         mList = newList;
 
         // Get new handler and adapter since list may be radically different structure
-        mListHandler = new BooksMultitypeListHandler();
-        mAdapter = new MultitypeListCursorAdapter(this, mList, mListHandler);
+        mListHandler = new BooksMultiTypeListHandler();
+        mAdapter = new MultiTypeListCursorAdapter(this, mList, mListHandler);
 
         // Get the ListView and set it up
         final ListView lv = getListView();
@@ -1205,7 +1205,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         }
 
         @Override
-        public void run(SimpleTaskContext taskContext) {
+        public void run(@NonNull SimpleTaskContext taskContext) {
             try {
                 long t0 = System.currentTimeMillis();
                 // Build the underlying data

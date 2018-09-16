@@ -37,6 +37,8 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
 
@@ -254,7 +256,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     }
 
     @Override
-    public void saveAllEdits(DataManager data) {
+    public void saveAllEdits(@NonNull DataManager data) {
         mFields.getAll(mEditManager.getBookData());
     }
 
@@ -262,7 +264,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      * This is 'final' because we want inheritors to implement onLoadBookDetails()
      */
     @Override
-    public final void reloadData(DataManager data) {
+    public final void reloadData(@NonNull DataManager data) {
         final boolean wasDirty = mEditManager.isDirty();
         onLoadBookDetails(mEditManager.getBookData(), false);
         mEditManager.setDirty(wasDirty);
@@ -523,7 +525,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         //public static void dumpViewTree(int depth, View v) {
         //	for(int i = 0; i < depth*4; i++)
         //		System.out.print(" ");
-        //	System.out.print(v.getClass().getName() + " (" + v.getId() + ")" + (v.getId() == R.id.descriptionLabelzzz? "DESC! ->" : " ->"));
+        //	System.out.print(v.getClass().getName() + " (" + v.getId() + ")" + (v.getId() == R.id.descriptionLabel? "DESC! ->" : " ->"));
         //	if (v instanceof TextView) {
         //		String s = ((TextView)v).getText().toString();
         //		System.out.println(s.substring(0, Math.min(s.length(), 20)));

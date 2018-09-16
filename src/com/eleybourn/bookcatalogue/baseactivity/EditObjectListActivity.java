@@ -140,7 +140,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * @param baseViewId Resource id of base view
      * @param rowViewId  Resource id of row view
      */
-    protected EditObjectListActivity(String bkey, int baseViewId, int rowViewId) {
+    protected EditObjectListActivity(@NonNull final String bkey, final int baseViewId, final int rowViewId) {
         mBKey = bkey;
         mBaseViewId = baseViewId;
         mRowViewId = rowViewId;
@@ -159,7 +159,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * @param target The target row view object
      * @param object The object (or type T) from which to draw values.
      */
-    abstract protected void onSetupView(@NonNull View target, T object, int position);
+    abstract protected void onSetupView(@NonNull final View target, @NonNull final T object, final int position);
 
     protected void onListChanged() {
     }
@@ -171,7 +171,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * @param target The view clicked
      * @param object The object associated with this row
      */
-    protected void onRowClick(View target, T object, int position) {
+    protected void onRowClick(@NonNull final View target, @NonNull final T object, final int position) {
     }
 
     /**
@@ -183,7 +183,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * @return true if handled
      */
     @SuppressWarnings({"unused", "SameReturnValue"})
-    protected boolean onRowLongClick(View target, T object, int position) {
+    protected boolean onRowLongClick(@NonNull final View target, @NonNull final T object, final int position) {
         return true;
     }
     /**
@@ -191,16 +191,16 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * @return  true if delete is allowed to happen
      */
     @SuppressWarnings({"unused", "SameReturnValue"})
-    protected boolean onRowDelete(View target, T object, int position) {
+    protected boolean onRowDelete(@NonNull final View target, @NonNull final T object, final int position) {
         return true;
     }
 
     @SuppressWarnings("unused")
-    protected void onRowDown(View target, T object, int position) {
+    protected void onRowDown(@NonNull final View target, @NonNull final T object, final int position) {
     }
 
     @SuppressWarnings("unused")
-    protected void onRowUp(View target, T object, int position) {
+    protected void onRowUp(@NonNull final View target, @NonNull final T object, final int position) {
     }
     /**
      * Called when user clicks the 'Save' button (if present). Primary task is
@@ -212,7 +212,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      *
      * @return True if activity should exit, false to abort exit.
      */
-    protected boolean onSave(Intent intent) {
+    protected boolean onSave(@NonNull final Intent intent) {
         return true;
     }
 
@@ -388,18 +388,18 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
         }
 
         @Override
-        protected void onSetupView(int position, View convertView, T object) {
-            EditObjectListActivity.this.onSetupView(convertView, object, position);
+        protected void onSetupView(@NonNull final View convertView, @NonNull final T item, final int position) {
+            EditObjectListActivity.this.onSetupView(convertView, item, position);
         }
 
         @Override
-        protected void onRowClick(View target, T object, int position) {
-            EditObjectListActivity.this.onRowClick(target, object, position);
+        protected void onRowClick(@NonNull final View target, @NonNull final T item, final int position) {
+            EditObjectListActivity.this.onRowClick(target, item, position);
         }
 
         @Override
-        protected boolean onRowLongClick(View target, T object, int position) {
-            return EditObjectListActivity.this.onRowLongClick(target, object, position);
+        protected boolean onRowLongClick(@NonNull final View target, @NonNull final T item, final int position) {
+            return EditObjectListActivity.this.onRowLongClick(target, item, position);
         }
 
         @Override
@@ -408,18 +408,18 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
         }
 
         @Override
-        protected boolean onRowDelete(View target, T object, int position) {
-            return EditObjectListActivity.this.onRowDelete(target, object, position);
+        protected boolean onRowDelete(@NonNull final View target, @NonNull final T item, final int position) {
+            return EditObjectListActivity.this.onRowDelete(target, item, position);
         }
 
         @Override
-        protected void onRowDown(View target, T object, int position) {
-            EditObjectListActivity.this.onRowDown(target, object, position);
+        protected void onRowDown(@NonNull final View target, @NonNull final T item, final int position) {
+            EditObjectListActivity.this.onRowDown(target, item, position);
         }
 
         @Override
-        protected void onRowUp(View target, T object, int position) {
-            EditObjectListActivity.this.onRowUp(target, object, position);
+        protected void onRowUp(@NonNull View target, @NonNull T item, final int position) {
+            EditObjectListActivity.this.onRowUp(target, item, position);
         }
     }
 }

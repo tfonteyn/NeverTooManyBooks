@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.support.annotation.NonNull;
+
 import java.io.Closeable;
 import java.io.IOException;
 
@@ -37,7 +39,7 @@ public interface BackupReader extends Closeable {
      *
      * @param listener Listener to receive progress information.
      */
-    void restore(BackupReaderListener listener, int importFlags) throws IOException;
+    void restore(@NonNull final BackupReaderListener listener, final int importFlags) throws IOException;
 
     /**
      * Read the next ReaderEntity from the backup.
@@ -73,12 +75,12 @@ public interface BackupReader extends Closeable {
         /**
          * Set the end point for the progress
          */
-        void setMax(int max);
+        void setMax(final int max);
 
         /**
          * Advance progress by 'delta'
          */
-        void step(String message, int delta);
+        void step(@NonNull final String message, final int delta);
 
         /**
          * Check if operation is cancelled

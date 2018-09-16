@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.DialogInterface;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -82,7 +83,7 @@ public class GoodreadsUtils {
 		
 		FragmentTask task = new FragmentTaskAbstract() {
 			@Override
-			public void run(SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
+			public void run(@NonNull SimpleTaskQueueProgressFragment fragment, @NonNull SimpleTaskContext taskContext) {
 
 				if (BCQueueManager.getQueueManager().hasActiveTasks(BCQueueManager.CAT_GOODREADS_IMPORT_ALL)) {
 					fragment.showToast(R.string.requested_task_is_already_queued);
@@ -158,7 +159,7 @@ public class GoodreadsUtils {
 	private static void sendToGoodreads(final FragmentActivity context, final boolean updatesOnly) {
 		FragmentTask task = new FragmentTaskAbstract() {
 			@Override
-			public void run(SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
+			public void run(@NonNull SimpleTaskQueueProgressFragment fragment, @NonNull SimpleTaskContext taskContext) {
 				int msg = checkCanSendToGoodreads();
 				if (msg == 0) {
 					QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(updatesOnly), BCQueueManager.QUEUE_MAIN, 0);
@@ -168,7 +169,7 @@ public class GoodreadsUtils {
 			}
 
 			@Override
-			public void onFinish(final SimpleTaskQueueProgressFragment fragment, Exception exception) {
+			public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, Exception exception) {
 				final int msg = getState();
 				if (msg == -1) {
 					fragment.post(new Runnable() {
@@ -201,13 +202,13 @@ public class GoodreadsUtils {
 			 * Just check we can send. If so, onFinish() will be called.
 			 */
 			@Override
-			public void run(SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
+			public void run(@NonNull SimpleTaskQueueProgressFragment fragment, @NonNull SimpleTaskContext taskContext) {
 				int msg = GoodreadsUtils.checkCanSendToGoodreads();
 				setState(msg);
 			}
 
 			@Override
-			public void onFinish(final SimpleTaskQueueProgressFragment fragment, Exception exception) {
+			public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, Exception exception) {
 				switch (getState()) {
 					case 0:
 						final FragmentActivity context = fragment.getActivity();

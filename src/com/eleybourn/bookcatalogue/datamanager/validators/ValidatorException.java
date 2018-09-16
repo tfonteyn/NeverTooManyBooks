@@ -20,15 +20,14 @@
 package com.eleybourn.bookcatalogue.datamanager.validators;
 
 import android.content.res.Resources;
+import android.support.annotation.NonNull;
 
 /**
- * Exception class for all validation errors. String ID and args are stored
- * for later retrieval.
+ * Exception class for all validation errors. String ID and args are stored for later retrieval.
  *
  * @author Philip Warner
  */
 public class ValidatorException extends RuntimeException {
-    // Java likes this
     public static final long serialVersionUID = 1L;
     // String ID of resource string
     private final int mStringId;
@@ -36,13 +35,12 @@ public class ValidatorException extends RuntimeException {
     private final Object[] mArgs;
 
     // Constructor
-    public ValidatorException(int stringId, Object[] args) {
+    public ValidatorException(final int stringId, @NonNull final Object[] args) {
         mStringId = stringId;
         mArgs = args;
     }
 
-    public String getFormattedMessage(Resources res) {
-        String s = res.getString(mStringId);
-        return String.format(s, mArgs);
+    public String getFormattedMessage(@NonNull final Resources res) {
+        return res.getString(mStringId, mArgs);
     }
 }

@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -128,7 +129,7 @@ public class Backuptest {
             }
 
             @Override
-            public void step(@Nullable final String message, final int delta) {
+            public void step(@NonNull final String message, final int delta) {
                 if (message != null) {
                     mMessage = message;
                 }

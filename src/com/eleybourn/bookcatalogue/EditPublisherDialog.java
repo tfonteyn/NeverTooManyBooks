@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.entities.Publisher;
 
 /**
  * TODO: unify with {@link EditAuthorDialog}

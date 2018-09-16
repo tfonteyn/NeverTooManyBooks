@@ -207,7 +207,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 //	 * temp file or a stream were appropriate. Sadly, tar archives need to know size before
 //	 * the header can be written.
 //	 * 
-//	 * It IS convenient to do it here because we can caputre the progress, but we could also
+//	 * It IS convenient to do it here because we can capture the progress, but we could also
 //	 * have writer.putBooks(exporter, listener) as the method.
 //	 * 
 //	 * @param writer
@@ -282,7 +282,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
         String fmt_noskip = BookCatalogueApp.getResourceString(R.string.covers_progress);
         String fmt_skip = BookCatalogueApp.getResourceString(R.string.covers_progress_incr);
 
-        try (Cursor c = mDb.getUuidList()) {
+        try (Cursor c = mDb.getBookUuidList()) {
             final int uuidCol = c.getColumnIndex(DatabaseDefinitions.DOM_BOOK_UUID.toString());
             while (c.moveToNext() && !listener.isCancelled()) {
                 File cover = StorageUtils.getThumbnailByUuid(c.getString(uuidCol));

@@ -50,7 +50,7 @@ public class Datum {
      * @param validator Validator for this Datum
      * @param visible   True if data should be visible
      */
-    public Datum(String key, DataValidator validator, boolean visible) {
+    public Datum(@NonNull final String key, @Nullable final DataValidator validator, final boolean visible) {
         mKey = key;
         mValidator = validator;
         mIsVisible = visible;
@@ -151,7 +151,7 @@ public class Datum {
      *
      * @return Boolean value
      */
-    public static boolean toBoolean(@Nullable final String s, boolean emptyIsFalse) {
+    public static boolean toBoolean(@Nullable final String s, final boolean emptyIsFalse) {
         if (s == null || s.trim().isEmpty())
             if (emptyIsFalse) {
                 return false;
@@ -226,7 +226,7 @@ public class Datum {
      * Accessor. Protected against being set twice.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Datum setValidator(DataValidator validator) {
+    public Datum setValidator(@NonNull final DataValidator validator) {
         if (mValidator != null && validator != mValidator)
             throw new RuntimeException("Datum '" + mKey + "' already has a validator");
         mValidator = validator;
@@ -246,7 +246,7 @@ public class Datum {
      * Accessor. Protected against being set twice.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Datum setAccessor(DataAccessor accessor) {
+    public Datum setAccessor(@NonNull final DataAccessor accessor) {
         if (mAccessor != null && accessor != mAccessor)
             throw new RuntimeException("Datum '" + mKey + "' already has an Accessor");
         mAccessor = accessor;
@@ -261,7 +261,7 @@ public class Datum {
      *
      * @return The object data
      */
-    public Object get(DataManager data, @NonNull final Bundle bundle) {
+    public Object get(@NonNull final DataManager data, @NonNull final Bundle bundle) {
         if (mAccessor == null) {
             return bundle.get(mKey);
         } else {
@@ -277,7 +277,7 @@ public class Datum {
      *
      * @return Value of the data
      */
-    public boolean getBoolean(DataManager data, @NonNull final Bundle bundle) {
+    public boolean getBoolean(@NonNull final DataManager data, @NonNull final Bundle bundle) {
         Object o;
         if (mAccessor == null) {
             o = bundle.getBoolean(mKey);
@@ -300,7 +300,7 @@ public class Datum {
      * @return This Datum, for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Datum putBoolean(DataManager data, @NonNull final Bundle bundle, boolean value) {
+    public Datum putBoolean(@NonNull final DataManager data, @NonNull final Bundle bundle, final boolean value) {
         if (mAccessor == null) {
             bundle.putBoolean(mKey, value);
         } else {
@@ -317,7 +317,7 @@ public class Datum {
      *
      * @return Value of the data
      */
-    public int getInt(DataManager data, @NonNull final Bundle bundle) {
+    public int getInt(@NonNull final DataManager data, @NonNull final Bundle bundle) {
         Object o;
         if (mAccessor == null) {
             o = bundle.get(mKey);
@@ -336,7 +336,7 @@ public class Datum {
      * @return This Datum, for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Datum putInt(DataManager data, @NonNull final Bundle bundle, int value) {
+    public Datum putInt(@NonNull final DataManager data, @NonNull final Bundle bundle, final int value) {
         if (mAccessor == null) {
             bundle.putInt(mKey, value);
         } else {
@@ -353,7 +353,7 @@ public class Datum {
      *
      * @return Value of the data
      */
-    public long getLong(DataManager data, @NonNull final Bundle bundle) {
+    public long getLong(@NonNull final DataManager data, @NonNull final Bundle bundle) {
         Object o;
         if (mAccessor == null) {
             o = bundle.get(mKey);
@@ -373,7 +373,7 @@ public class Datum {
      * @return This Datum, for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Datum putLong(DataManager data, @NonNull final Bundle bundle, long value) {
+    public Datum putLong(@NonNull final DataManager data, @NonNull final Bundle bundle, final long value) {
         if (mAccessor == null) {
             bundle.putLong(mKey, value);
         } else {
@@ -390,7 +390,7 @@ public class Datum {
      *
      * @return Value of the data
      */
-    public double getDouble(DataManager data, @NonNull final Bundle bundle) {
+    public double getDouble(@NonNull final DataManager data, @NonNull final Bundle bundle) {
         Object o;
         if (mAccessor == null) {
             o = bundle.get(mKey);
@@ -409,7 +409,7 @@ public class Datum {
      * @return This Datum, for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Datum putDouble(DataManager data, @NonNull final Bundle bundle, double value) {
+    public Datum putDouble(@NonNull final DataManager data, @NonNull final Bundle bundle, final double value) {
         if (mAccessor == null) {
             bundle.putDouble(mKey, value);
         } else {
@@ -426,7 +426,7 @@ public class Datum {
      *
      * @return Value of the data
      */
-    public float getFloat(DataManager data, @NonNull final Bundle bundle) {
+    public float getFloat(@NonNull final DataManager data, @NonNull final Bundle bundle) {
         Object o;
         if (mAccessor == null) {
             o = bundle.get(mKey);
@@ -445,7 +445,7 @@ public class Datum {
      * @return This Datum, for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Datum putFloat(DataManager data, @NonNull final Bundle bundle, float value) {
+    public Datum putFloat(@NonNull final DataManager data, @NonNull final Bundle bundle, final float value) {
         if (mAccessor == null) {
             bundle.putFloat(mKey, value);
         } else {
@@ -462,7 +462,7 @@ public class Datum {
      *
      * @return Value of the data
      */
-    public String getString(DataManager data, @NonNull final Bundle bundle) {
+    public String getString(@NonNull final DataManager data, @NonNull final Bundle bundle) {
         Object o;
         if (mAccessor == null) {
             o = bundle.get(mKey);
@@ -482,7 +482,7 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public Datum putString(DataManager data, @NonNull Bundle bundle, String value) {
+    public Datum putString(@NonNull final DataManager data, @NonNull Bundle bundle, @NonNull final String value) {
         if (mAccessor == null) {
             bundle.putString(mKey, value);
         } else {
@@ -501,7 +501,7 @@ public class Datum {
      *
      * @return The data
      */
-    public Serializable getSerializable(DataManager data, @NonNull final Bundle bundle) {
+    public Serializable getSerializable(@SuppressWarnings("unused") @NonNull final DataManager data, @NonNull final Bundle bundle) {
         if (mAccessor == null) {
             return bundle.getSerializable(mKey);
         } else {
@@ -520,7 +520,7 @@ public class Datum {
      * @return The data manager for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Datum putSerializable(@NonNull final Bundle bundle, Serializable value) {
+    public Datum putSerializable(@NonNull final Bundle bundle, @NonNull final Serializable value) {
         if (mAccessor == null) {
             bundle.putSerializable(mKey, value);
         } else {

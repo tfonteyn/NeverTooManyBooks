@@ -30,6 +30,9 @@ import com.eleybourn.bookcatalogue.datamanager.DataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
+import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
@@ -351,13 +354,13 @@ public class BookData extends DataManager {
          * activity. */
         addAccessor(KEY_ANTHOLOGY, new DataAccessor() {
             @Override
-            public Object get(DataManager data, Datum datum, Bundle rawData) {
+            public Object get(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData) {
                 Integer mask = data.getInt(UniqueId.KEY_ANTHOLOGY_MASK);
                 return mask != 0 ? "1" : "0";
             }
 
             @Override
-            public void set(DataManager data, Datum datum, Bundle rawData, Object value) {
+            public void set(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData, @NonNull Object value) {
                 Integer mask = getInt(UniqueId.KEY_ANTHOLOGY_MASK);
                 // Parse the string the CheckBox returns us (0 or 1)
                 if (Datum.toBoolean(value)) {
@@ -370,7 +373,7 @@ public class BookData extends DataManager {
             }
 
             @Override
-            public boolean isPresent(DataManager data, Datum datum, Bundle rawData) {
+            public boolean isPresent(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData) {
                 return rawData.containsKey(UniqueId.KEY_ANTHOLOGY_MASK);
             }
 
@@ -379,17 +382,17 @@ public class BookData extends DataManager {
         // Make a formatted list of bookshelves
         addAccessor(KEY_BOOKSHELF_TEXT, new DataAccessor() {
             @Override
-            public Object get(DataManager data, Datum datum, Bundle rawData) {
+            public Object get(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData) {
                 return getBookshelfText();
             }
 
             @Override
-            public void set(DataManager data, Datum datum, Bundle rawData, Object value) {
+            public void set(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData, @NonNull Object value) {
                 throw new RuntimeException("Bookshelf Text can not be set");
             }
 
             @Override
-            public boolean isPresent(DataManager data, Datum datum, Bundle rawData) {
+            public boolean isPresent(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData) {
                 return !getBookshelfText().isEmpty();
             }
         });
@@ -397,18 +400,18 @@ public class BookData extends DataManager {
         // Whenever the row ID is written, make sure mRowId is updated.
         addAccessor(UniqueId.KEY_ID, new DataAccessor() {
             @Override
-            public Object get(DataManager data, Datum datum, Bundle rawData) {
+            public Object get(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData) {
                 return Datum.toLong(rawData.get(datum.getKey()));
             }
 
             @Override
-            public void set(DataManager data, Datum datum, Bundle rawData, Object value) {
+            public void set(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData, @NonNull Object value) {
                 rawData.putLong(datum.getKey(), Datum.toLong(value));
                 mRowId = rawData.getLong(datum.getKey());
             }
 
             @Override
-            public boolean isPresent(DataManager data, Datum datum, Bundle rawData) {
+            public boolean isPresent(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData) {
                 return true;
             }
         });

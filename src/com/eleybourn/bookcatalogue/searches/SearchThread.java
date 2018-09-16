@@ -22,8 +22,8 @@ package com.eleybourn.bookcatalogue.searches;
 
 import android.os.Bundle;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.Series;
-import com.eleybourn.bookcatalogue.Series.SeriesDetails;
+import com.eleybourn.bookcatalogue.entities.Series;
+import com.eleybourn.bookcatalogue.entities.Series.SeriesDetails;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ManagedTask;

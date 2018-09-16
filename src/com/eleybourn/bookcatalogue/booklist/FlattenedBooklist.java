@@ -5,8 +5,8 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
-import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
-import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition.TableTypes;
+import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.TableDefinition.TableTypes;
 import com.eleybourn.bookcatalogue.database.SqlStatementManager;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.*;

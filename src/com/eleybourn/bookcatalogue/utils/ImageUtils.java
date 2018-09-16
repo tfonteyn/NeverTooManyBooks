@@ -457,7 +457,7 @@ public class ImageUtils {
 //     * @param uuid      The id of the book
 //     * @param maxWidth  Maximum desired width of the image
 //     * @param maxHeight Maximum desired height of the image
-//     * @param exact     if true, the image will be propertionally scaled to fit bbox.
+//     * @param exact     if true, the image will be proportionally scaled to fit bbox.
 //     *
 //     * @return The scaled bitmap for the file, or null if no file or bad file.
 //     */

@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.widgets;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -9,12 +10,12 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 
 public class TouchListViewWithDropListener<T> extends TouchListView implements TouchListView.DropListener{
 
-    public TouchListViewWithDropListener(Context context, AttributeSet attrs) {
+    public TouchListViewWithDropListener(@NonNull final Context context, @NonNull final AttributeSet attrs) {
         super(context, attrs);
         setDropListener(this);
     }
 
-    public TouchListViewWithDropListener(Context context, AttributeSet attrs, int defStyle) {
+    public TouchListViewWithDropListener(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
         setDropListener(this);
     }

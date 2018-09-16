@@ -43,12 +43,15 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistSupportProvider;
 import com.eleybourn.bookcatalogue.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.DomainDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogMenuItem;
+import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Publisher;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -103,7 +106,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_UPDAT
  *
  * @author Philip Warner
  */
-public class BooksMultitypeListHandler implements MultitypeListHandler {
+public class BooksMultiTypeListHandler implements MultiTypeListHandler {
     /** Queue for tasks getting extra row details as necessary */
     private static final SimpleTaskQueue mInfoQueue = new SimpleTaskQueue("extra-info", 1);
 
@@ -111,7 +114,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
      * Return the row type for the current cursor position.
      */
     @Override
-    public int getItemViewType(Cursor c) {
+    public int getItemViewType(@NonNull final Cursor c) {
         BooklistRowView rowView = ((BooklistSupportProvider) c).getRowView();
         return rowView.getKind();
     }
@@ -127,14 +130,14 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
     /**
      * Get the text to display in the ListView for the row at the current cursor position.
      *
-     * called by {@link MultitypeListCursorAdapter#getSectionTextForPosition(int)}}
+     * called by {@link MultiTypeListCursorAdapter#getSectionTextForPosition(int)}}
      *
      * @param cursor Cursor, positioned at current row
      *
      * @return the section text as an array with all levels in order
      */
     @Override
-    public String[] getSectionText(Cursor cursor) {
+    public String[] getSectionText(@NonNull final Cursor cursor) {
         Tracker.enterFunction(this, "getSectionTextForPosition", cursor);
         BooklistRowView rowView = ((BooklistSupportProvider) cursor).getRowView();
         String[] st = new String[]{rowView.getLevel1Data(), rowView.getLevel2Data()};
@@ -150,7 +153,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
         return holder.absolutePosition;
     }
 
-    private void scaleViewText(@SuppressWarnings("unused") BooklistRowView rowView, View root) {
+    private void scaleViewText(@SuppressWarnings("unused") @NonNull final BooklistRowView rowView, @NonNull final View root) {
         final float scale = 0.8f;
 
         if (root instanceof TextView) {
@@ -205,8 +208,8 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
      */
     @Override
     @NonNull
-    public View getView(@NonNull final Cursor cursor, final LayoutInflater inflater,
-                        @Nullable View convertView, final ViewGroup parent) {
+    public View getView(@NonNull final Cursor cursor, @NonNull final LayoutInflater inflater,
+                        @Nullable View convertView, @NonNull final ViewGroup parent) {
         final BooklistRowView rowView = ((BooklistSupportProvider) cursor).getRowView();
         final BooklistHolder holder;
         final int level = rowView.getLevel();
@@ -231,7 +234,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
     }
 
     @Nullable
-    private String getAuthorFromRow(@NonNull final CatalogueDBAdapter db, @NonNull BooklistRowView rowView) {
+    private String getAuthorFromRow(@NonNull final CatalogueDBAdapter db, @NonNull final BooklistRowView rowView) {
         if (rowView.hasAuthorId() && rowView.getAuthorId() > 0) {
             return db.getAuthorById(rowView.getAuthorId()).getDisplayName();
         } else if (rowView.getKind() == RowKinds.ROW_KIND_BOOK) {
@@ -245,7 +248,10 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
     @Nullable
     private String getSeriesFromRow(@NonNull final CatalogueDBAdapter db, @NonNull final BooklistRowView rowView) {
         if (rowView.hasSeriesId() && rowView.getSeriesId() > 0) {
-            return db.getSeriesById(rowView.getSeriesId()).name;
+            Series s = db.getSeriesById(rowView.getSeriesId());
+            if (s != null) {
+                return s.name;
+            }
         } else if (rowView.getKind() == RowKinds.ROW_KIND_BOOK) {
             ArrayList<Series> series = db.getBookSeriesList(rowView.getBookId());
             if (series != null && series.size() > 0)
@@ -262,7 +268,8 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
      * @param stringId string ID of string to display
      * @param iconId   icon of menu item
      */
-    private void addMenuItem(@NonNull final ArrayList<SimpleDialogItem> items, int id, int stringId, int iconId) {
+    private void addMenuItem(@NonNull final ArrayList<SimpleDialogItem> items,
+                             final int id, final int stringId, final int iconId) {
         SimpleDialogMenuItem i = new SimpleDialogMenuItem(BookCatalogueApp.getResourceString(stringId), id, iconId);
         items.add(i);
     }
@@ -375,7 +382,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
     public boolean onContextItemSelected(@NonNull final CatalogueDBAdapter db,
                                          @NonNull final BooklistRowView rowView,
                                          @NonNull final Activity context,
-                                         int itemId) {
+                                         final int itemId) {
         switch (itemId) {
 
             case R.id.MENU_BOOK_DELETE:
@@ -470,17 +477,22 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
                 break;
             }
             case R.id.MENU_SERIES_DELETE: {
-                long id = rowView.getSeriesId();
-                StandardDialogs.deleteSeriesAlert(context, db, db.getSeriesById(id), new Runnable() {
-                    @Override
-                    public void run() {
-                        // Let the Activity know
-                        if (context instanceof BooklistChangeListener) {
-                            final BooklistChangeListener l = (BooklistChangeListener) context;
-                            l.onBooklistChange(BooklistChangeListener.FLAG_SERIES);
+                Long id = rowView.getSeriesId();
+                Series s = db.getSeriesById(id);
+                if (s != null) {
+                    StandardDialogs.deleteSeriesAlert(context, db, s, new Runnable() {
+                        @Override
+                        public void run() {
+                            // Let the Activity know
+                            if (context instanceof BooklistChangeListener) {
+                                final BooklistChangeListener l = (BooklistChangeListener) context;
+                                l.onBooklistChange(BooklistChangeListener.FLAG_SERIES);
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    Logger.logError("Series " + id + " not found in database?");
+                }
                 break;
             }
             case R.id.MENU_AUTHOR_EDIT: {
@@ -730,7 +742,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
         }
 
         @Override
-        public void run(SimpleTaskContext taskContext) {
+        public void run(@NonNull SimpleTaskContext taskContext) {
             try {
                 // Make sure we are the right task.
                 synchronized (mHolder) {
@@ -840,7 +852,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
      *
      * @author Philip Warner
      */
-    public abstract static class BooklistHolder extends MultitypeHolder<BooklistRowView> {
+    public abstract static class BooklistHolder extends MultiTypeHolder<BooklistRowView> {
         /** Pointer to the container of all info for this row. */
         View rowInfo;
         /** Absolute position of this row */
@@ -922,7 +934,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
         GetBookExtrasTask extrasTask;
 
         @Override
-        public void map(final BooklistRowView rowView, final View v) {
+        public void map(@NonNull final BooklistRowView rowView, @NonNull final View v) {
             final BooklistStyle style = rowView.getStyle();
 
             title = v.findViewById(R.id.title);
@@ -1008,7 +1020,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
         }
 
         @Override
-        public void set(final BooklistRowView rowView, View v, final int level) {
+        public void set(@NonNull final BooklistRowView rowView, @NonNull View v, final int level) {
 
             final int extras = rowView.getStyle().getExtras();
 
@@ -1087,7 +1099,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
          * The actual book entry
          */
         @Override
-        public View newView(BooklistRowView rowView, LayoutInflater inflater, ViewGroup parent, final int level) {
+        public View newView(@NonNull BooklistRowView rowView, @NonNull LayoutInflater inflater, @NonNull ViewGroup parent, final int level) {
             // All book rows have the same type of view.
             return inflater.inflate(R.layout.booksonbookshelf_row_book, parent, false);
         }
@@ -1113,13 +1125,13 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
         }
 
         @Override
-        public void map(BooklistRowView rowView, View v) {
+        public void map(@NonNull BooklistRowView rowView, @NonNull View v) {
             rowInfo = v.findViewById(R.id.row_info);
             text = v.findViewById(R.id.name);
         }
 
         @Override
-        public void set(BooklistRowView rowView, View v, final int level) {
+        public void set(@NonNull BooklistRowView rowView, @NonNull View v, final int level) {
             // Get the month and try to format it.
             String s = rowView.getString(mSourceCol);
             try {
@@ -1137,7 +1149,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
         }
 
         @Override
-        public View newView(BooklistRowView rowView, LayoutInflater inflater, ViewGroup parent, final int level) {
+        public View newView(@NonNull BooklistRowView rowView, @NonNull LayoutInflater inflater, @NonNull ViewGroup parent, final int level) {
             return inflater.inflate(getDefaultLayoutId(level), parent, false);
         }
     }
@@ -1161,13 +1173,13 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
         }
 
         @Override
-        public void map(BooklistRowView rowView, View v) {
+        public void map(@NonNull BooklistRowView rowView, @NonNull View v) {
             rowInfo = v.findViewById(R.id.row_info);
             text = v.findViewById(R.id.name);
         }
 
         @Override
-        public void set(BooklistRowView rowView, View v, final int level) {
+        public void set(@NonNull BooklistRowView rowView, @NonNull View v, final int level) {
             // Get the month and try to format it.
             String s = rowView.getString(mSourceCol);
             try {
@@ -1185,7 +1197,7 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
         }
 
         @Override
-        public View newView(BooklistRowView rowView, LayoutInflater inflater, ViewGroup parent, final int level) {
+        public View newView(@NonNull BooklistRowView rowView, @NonNull LayoutInflater inflater, @NonNull ViewGroup parent, final int level) {
             return inflater.inflate(getDefaultLayoutId(level), parent, false);
         }
     }
@@ -1220,19 +1232,19 @@ public class BooksMultitypeListHandler implements MultitypeListHandler {
         }
 
         @Override
-        public void map(BooklistRowView rowView, View v) {
+        public void map(@NonNull BooklistRowView rowView, @NonNull View v) {
             rowInfo = v.findViewById(R.id.row_info);
             text = v.findViewById(R.id.name);
         }
 
         @Override
-        public void set(BooklistRowView rowView, View v, final int level) {
+        public void set(@NonNull BooklistRowView rowView, @NonNull View v, final int level) {
             String s = rowView.getString(mColIndex);
             setText(text, s, mNoDataId, level);
         }
 
         @Override
-        public View newView(BooklistRowView rowView, LayoutInflater inflater, ViewGroup parent, final int level) {
+        public View newView(@NonNull BooklistRowView rowView, @NonNull LayoutInflater inflater, @NonNull ViewGroup parent, final int level) {
             return inflater.inflate(getDefaultLayoutId(level), parent, false);
         }
     }

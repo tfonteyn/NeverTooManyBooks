@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.datamanager.validators;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 
 /**
@@ -27,7 +29,6 @@ import java.util.ArrayList;
  * @author Philip Warner
  */
 abstract class MetaValidator extends ArrayList<DataValidator> implements DataValidator {
-	// Java likes this
 	public static final long serialVersionUID = 1L;
 
 	/**
@@ -35,7 +36,7 @@ abstract class MetaValidator extends ArrayList<DataValidator> implements DataVal
 	 * 
 	 * @param v1	Validator to check
 	 */
-	public MetaValidator(DataValidator v1) {
+	MetaValidator(@NonNull final DataValidator v1) {
 		this.add(v1);
 	}
 
@@ -45,7 +46,7 @@ abstract class MetaValidator extends ArrayList<DataValidator> implements DataVal
 	 * @param v1	Validator to check
 	 * @param v2	Validator to check
 	 */
-	public MetaValidator(DataValidator v1, DataValidator v2) {
+	MetaValidator(@NonNull final DataValidator v1, @NonNull final DataValidator v2) {
 		this.add(v1);
 		this.add(v2);
 	}
@@ -57,7 +58,7 @@ abstract class MetaValidator extends ArrayList<DataValidator> implements DataVal
 	 * @param v2	Validator to check
 	 * @param v3	Validator to check
 	 */
-	MetaValidator(DataValidator v1, DataValidator v2,  DataValidator v3) {
+	MetaValidator(@NonNull final DataValidator v1, @NonNull final DataValidator v2,  @NonNull final DataValidator v3) {
 		this.add(v1);
 		this.add(v2);
 		this.add(v3);

@@ -19,6 +19,9 @@ import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
+import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -448,11 +451,11 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
         }
 
         @Override
-        protected void onSetupView(int position, View convertView, AnthologyTitle anthology) {
+        protected void onSetupView(@NonNull View convertView, @NonNull AnthologyTitle item, int position) {
             TextView author = convertView.findViewById(R.id.row_author);
-            author.setText(anthology.getAuthor().getDisplayName());
+            author.setText(item.getAuthor().getDisplayName());
             TextView title = convertView.findViewById(R.id.row_title);
-            title.setText(anthology.getTitle());
+            title.setText(item.getTitle());
         }
     }
 

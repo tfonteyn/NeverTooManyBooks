@@ -28,6 +28,7 @@ import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -255,7 +256,7 @@ public class StartupActivity extends AppCompatActivity {
             // Listen for task completions
             mTaskQueue.setTaskFinishListener(new OnTaskFinishListener() {
                 @Override
-                public void onTaskFinish(SimpleTask task, Exception e) {
+                public void onTaskFinish(@NonNull SimpleTask task, Exception e) {
                     taskCompleted(task);
                 }
             });
@@ -403,7 +404,7 @@ public class StartupActivity extends AppCompatActivity {
     public class RebuildFtsTask implements SimpleTask {
 
         @Override
-        public void run(SimpleTaskContext taskContext) {
+        public void run(@NonNull SimpleTaskContext taskContext) {
             // Get a DB to make sure the FTS rebuild flag is set appropriately
             CatalogueDBAdapter db = taskContext.getDb();
             if (BCPreferences.getBoolean(PREF_FTS_REBUILD_REQUIRED, false)) {
@@ -422,7 +423,7 @@ public class StartupActivity extends AppCompatActivity {
     public class AnalyzeDbTask implements SimpleTask {
 
         @Override
-        public void run(SimpleTaskContext taskContext) {
+        public void run(@NonNull SimpleTaskContext taskContext) {
 
             CatalogueDBAdapter db = taskContext.getDb();
 

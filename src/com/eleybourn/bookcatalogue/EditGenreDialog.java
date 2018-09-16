@@ -39,7 +39,7 @@ public class EditGenreDialog extends EditStringDialog {
         if (to.equals(from)) {
             return;
         }
-        mDb.globalReplaceLocation(from, to);
+        mDb.globalReplaceGenre(from, to);
         mOnChanged.run();
     }
 }

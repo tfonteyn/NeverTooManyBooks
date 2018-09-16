@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.View;
@@ -240,7 +241,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
         go(mIsbn, "", "");
     }
 
-    private boolean onCreateByScan(Bundle savedInstanceState) {
+    private boolean onCreateByScan(@Nullable final Bundle savedInstanceState) {
         mMode = MODE_SCAN;
         mIsbnText = findViewById(R.id.isbn);
 
@@ -254,8 +255,9 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                 startScannerActivity();
             } else {
                 // It's a saved state, so see if we have an ISBN
-                if (savedInstanceState.containsKey(UniqueId.KEY_ISBN)) {
-                    go(savedInstanceState.getString(UniqueId.KEY_ISBN), "", "");
+                String isbn = savedInstanceState.getString(UniqueId.KEY_ISBN);
+                if (isbn != null && !isbn.isEmpty()) {
+                    go(isbn, "", "");
                 }
             }
         } catch (SecurityException e) {
@@ -293,13 +295,13 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
             // -> yes, it threw another ActivityNotFoundException if Cancel is used
             // so now enclosed in another try.
             try {
-                AlertDialog alertDialog = new AlertDialog.Builder(BookISBNSearchActivity.this)
+                AlertDialog dialog = new AlertDialog.Builder(BookISBNSearchActivity.this)
                         .setMessage(R.string.install_scan)
                         .setTitle(R.string.install_scan_title)
                         .setIcon(android.R.drawable.ic_menu_info_details)
                         .create();
 
-                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
+                dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                         /* text hardcoded as a it is a product name */
                         "pic2shop",
                         new DialogInterface.OnClickListener() {
@@ -311,7 +313,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                                 finish();
                             }
                         });
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,
+                dialog.setButton(AlertDialog.BUTTON_NEUTRAL,
                         /* text hardcoded as a it is a product name */
                         "ZXing",
                         new DialogInterface.OnClickListener() {
@@ -322,7 +324,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                                 finish();
                             }
                         });
-                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
+                dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                         getResources().getString(android.R.string.cancel),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -332,7 +334,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                         });
                 // Prevent the activity result from closing this activity.
                 mDisplayingAlert = true;
-                alertDialog.show();
+                dialog.show();
             } catch (ActivityNotFoundException ignore) {
                 // give up....
             }
@@ -388,18 +390,16 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
         Button mConfirmButton = findViewById(R.id.search);
 
         // Not sure this is a great idea; we CAN disable keypad for this item completely.
-        /*
-            android.view.inputmethod.InputMethodManager imm
-        	    = (android.view.inputmethod.InputMethodManager)
-        	        getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(mIsbnText.getWindowToken(), 0);
-        */
+        // ... it is a great idea... it always gets in the way
+        //noinspection ConstantConditions
+        ((android.view.inputmethod.InputMethodManager) getSystemService(android.content.Context.INPUT_METHOD_SERVICE))
+                .hideSoftInputFromWindow(mIsbnText.getWindowToken(), 0);
 
         // For now, just make sure it's hidden on entry
-        getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        //getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         // Setup the 'Allow ASIN' button
-        final CheckBox allowAsinCb = BookISBNSearchActivity.this.findViewById(R.id.asinCheckbox);
+        final CheckBox allowAsinCb = this.findViewById(R.id.asinCheckbox);
         allowAsinCb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -412,7 +412,6 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
             }
         });
 
-        // Set the number buttons
         Button button1 = findViewById(R.id.isbn_1);
         button1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -550,16 +549,11 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     /*
      * Handle character insertion at cursor position in EditText
      */
-    private void handleIsbnKey(String key) {
+    private void handleIsbnKey(@NonNull final String key) {
         int start = mIsbnText.getSelectionStart();
         int end = mIsbnText.getSelectionEnd();
         mIsbnText.getText().replace(start, end, key);
         mIsbnText.setSelection(start + 1, start + 1);
-        // Get instance of Vibrator from current Context
-        //NOTE: Removed due to complaints
-        //Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        // Vibrate for 50 milliseconds
-        //v.vibrate(50);
     }
 
     /*
@@ -588,9 +582,10 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
         }
 
         // Save the details because we will do some async processing or an alert
-        mIsbn = IsbnUtils.upc2isbn(isbn); // intercept UPC numbers
         mAuthor = author;
         mTitle = title;
+        // intercept UPC numbers
+        mIsbn = IsbnUtils.upc2isbn(isbn);
 
         // If the book already exists, do not continue
         try {
@@ -714,10 +709,9 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     }
 
     @SuppressWarnings("SameReturnValue")
-    private boolean onSearchFinished(Bundle bookData, boolean cancelled) {
+    private boolean onSearchFinished(@Nullable final Bundle bookData, final boolean cancelled) {
         Tracker.handleEvent(this, "onSearchFinished" + mSearchManagerId, Tracker.States.Running);
         try {
-            //System.out.println(mId + " onSearchFinished");
             if (cancelled || bookData == null) {
                 if (mMode == MODE_SCAN)
                     startScannerActivity();
@@ -768,7 +762,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
      *
      * return void
      */
-    private void createBook(Bundle book) {
+    private void createBook(@NonNull final Bundle book) {
         Intent i = new Intent(this, EditBookActivity.class);
         i.putExtra(UniqueId.BKEY_BOOK_DATA, book);
         startActivityForResult(i, UniqueId.ACTIVITY_EDIT_BOOK);

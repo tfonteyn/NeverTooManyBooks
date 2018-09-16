@@ -56,6 +56,8 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.scanner.Scanner;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -1308,13 +1310,15 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 						}
 						case SORT_AUTHOR: {
 							justAdded = intent.getStringExtra(EditBookActivity.ADDED_AUTHOR);
-							int position = mDb.fetchAuthorPositionByName(justAdded, mBookshelf);
+                            Author author = Author.toAuthor(justAdded);
+							int position = mDb.fetchAuthorPositionByName(author, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}
 						case SORT_AUTHOR_GIVEN: {
 							justAdded = intent.getStringExtra(EditBookActivity.ADDED_AUTHOR);
-							int position = mDb.fetchAuthorPositionByGivenName(justAdded, mBookshelf);
+                            Author author = Author.toAuthor(justAdded);
+							int position = mDb.fetchAuthorPositionByGivenName(author, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}

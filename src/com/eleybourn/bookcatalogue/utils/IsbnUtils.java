@@ -188,7 +188,7 @@ public class IsbnUtils {
             List<Integer> digits;
             // regular ISBN 10/13
             try {
-                digits = isnbToDigits(s);
+                digits = isbnToDigits(s);
                 if (isValid(digits)) {
                     mDigits = digits;
                     return;
@@ -353,7 +353,7 @@ public class IsbnUtils {
          * @return list of digits
          */
         @NonNull
-        private List<Integer> isnbToDigits(@NonNull final String isbn) throws NumberFormatException {
+        private List<Integer> isbnToDigits(@NonNull final String isbn) throws NumberFormatException {
             // the digit '10' represented as 'X' in an isbn indicates we got to the end
             boolean foundX = false;
 
@@ -399,7 +399,7 @@ public class IsbnUtils {
                 throw new NumberFormatException();
             }
 
-            List<Integer> tmp = isnbToDigits(isbnPrefix + upc.substring(12));
+            List<Integer> tmp = isbnToDigits(isbnPrefix + upc.substring(12));
             tmp.add(10); // bogus
 
             int c = getChecksum(tmp);
@@ -421,7 +421,7 @@ public class IsbnUtils {
                         && digitsMatch(this.mDigits.size(), 0, cmp, 0);
             }
 
-            // same lenth ? simple check
+            // same length ? simple check
             if (this.mDigits.size() == cmp.mDigits.size()) {
                 return digitsMatch(this.mDigits.size(), 0, cmp, 0);
             }

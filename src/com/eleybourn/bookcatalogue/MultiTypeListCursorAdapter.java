@@ -34,15 +34,15 @@ import com.eleybourn.bookcatalogue.widgets.FastScroller;
 /**
  * Cursor adapter for flattened multi-typed ListViews. Simplifies the implementation of such lists.
  * 
- * Users of this class need to implement MultitypeListHandler to manage the creation and display of 
+ * Users of this class need to implement MultiTypeListHandler to manage the creation and display of
  * each view.
  * 
  * @author Philip Warner
  */
-public class MultitypeListCursorAdapter extends CursorAdapter implements FastScroller.SectionIndexerV2 {
+public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScroller.SectionIndexerV2 {
 
 	private final LayoutInflater mInflater;
-	private final MultitypeListHandler mHandler;
+	private final MultiTypeListHandler mHandler;
     /**
      * TODO: the intention is to set a click listener on the cover image... but see fixme below first!
      */
@@ -51,14 +51,14 @@ public class MultitypeListCursorAdapter extends CursorAdapter implements FastScr
 
 	//FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
 
-	MultitypeListCursorAdapter(Activity activity, Cursor c, MultitypeListHandler handler) {
+	MultiTypeListCursorAdapter(Activity activity, Cursor c, MultiTypeListHandler handler) {
 		super(activity, c);
 		mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		mActivity = activity;
 		mHandler = handler;
 	}
 
-    public MultitypeListHandler getHandler() {
+    public MultiTypeListHandler getHandler() {
         return mHandler;
     }
 
@@ -67,14 +67,14 @@ public class MultitypeListCursorAdapter extends CursorAdapter implements FastScr
 	 */
 	@Override
     public void bindView(View view, Context context, Cursor cursor) {
-		throw new RuntimeException("MultitypeListCursorAdapter.bindView is unsupported");
+		throw new RuntimeException("MultiTypeListCursorAdapter.bindView is unsupported");
 	}
 	/**
 	 * NOT USED. Should never be called. Die if it is.
 	 */
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		throw new RuntimeException("MultitypeListCursorAdapter.newView is unsupported");
+		throw new RuntimeException("MultiTypeListCursorAdapter.newView is unsupported");
 	}
 
 	@Override 
@@ -114,7 +114,7 @@ public class MultitypeListCursorAdapter extends CursorAdapter implements FastScr
 	 *
 	 * this method gets called by {@link FastScroller}
 	 *
-     * actual text coming from {@link MultitypeListHandler#getSectionText(Cursor)}}
+     * actual text coming from {@link MultiTypeListHandler#getSectionText(Cursor)}}
 	 */
 	@Override
 	public String[] getSectionTextForPosition(final int position) {

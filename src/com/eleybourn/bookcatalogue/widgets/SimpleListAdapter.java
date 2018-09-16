@@ -49,7 +49,7 @@ import java.util.ArrayList;
  *
  *
  *
- * ArrayAdapter to manage rows of an arbitrary type with row movement via clicking
+ * {@link ArrayAdapter} to manage rows of an arbitrary type with row movement via clicking
  * on predefined sub-views, if present.
  *
  * The layout can optionally contain these "@+id/" :
@@ -83,7 +83,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             try {
                 int pos = getViewRow(v);
                 T item = getItem(pos);
-                return onRowLongClick(v, item, pos);
+                return item != null && onRowLongClick(v, item, pos);
             } catch (Exception e) {
                 Logger.logError(e);
             }
@@ -96,7 +96,9 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             try {
                 int pos = getViewRow(v);
                 T item = getItem(pos);
-                onRowClick(v, item, pos);
+                if (item != null) {
+                    onRowClick(v, item, pos);
+                }
             } catch (Exception e) {
                 Logger.logError(e);
             }
@@ -109,7 +111,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             try {
                 int pos = getViewRow(v);
                 T old = getItem(pos);
-                if (onRowDelete(v, old, pos)) {
+                if (old != null && onRowDelete(v, old, pos)) {
                     remove(old);
                     notifyDataSetChanged();
                     onListChanged();
@@ -127,6 +129,9 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             if (pos == (getCount() - 1))
                 return;
             T old = getItem(pos);
+            if (old == null) {
+                return;
+            }
             try {
                 onRowDown(v, old, pos);
 
@@ -147,6 +152,9 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             if (pos == 0)
                 return;
             T old = getItem(pos - 1);
+            if (old == null) {
+                return;
+            }
             try {
                 onRowUp(v, old, pos);
 
@@ -169,7 +177,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     private boolean mHasDown = false;
     private boolean mHasDelete = false;
 
-    protected SimpleListAdapter(Context context, int rowViewId, ArrayList<T> items) {
+    protected SimpleListAdapter(@NonNull final Context context, final int rowViewId, @NonNull final ArrayList<T> items) {
         super(context, rowViewId, items);
         mRowViewId = rowViewId;
         mItems = items;
@@ -182,55 +190,55 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      * Called when an otherwise inactive part of the row is clicked.
      *
      * @param target The view clicked
-     * @param object The object associated with this row
+     * @param item The object associated with this row
      */
-    protected void onRowClick(View target, T object, int position) {
+    protected void onRowClick(@NonNull final View target, @NonNull final T item, final int position) {
     }
 
     /**
      * Called when an otherwise inactive part of the row is long clicked.
      *
      * @param target The view clicked
-     * @param object The object associated with this row
+     * @param item The object associated with this row
      *
      * @return true if handled
      */
-    protected boolean onRowLongClick(View target, T object, int position) {
+    protected boolean onRowLongClick(@NonNull final View target, @NonNull final T item, final int position) {
         return true;
     }
 
     /**
      * @return true if delete is allowed to happen
      */
-    protected boolean onRowDelete(View target, T object, int position) {
+    protected boolean onRowDelete(@NonNull final View target, @NonNull final T item, final int position) {
         return true;
     }
 
-    protected void onRowDown(View target, T object, int position) {
+    protected void onRowDown(@NonNull final View target, @NonNull final T item, final int position) {
     }
 
-    protected void onRowUp(View target, T object, int position) {
+    protected void onRowUp(@NonNull final View target, @NonNull final T item, final int position) {
     }
 
     /**
      * Call to set up the row view. This is called by the original {@link #getView}
-     *  @param convertView The target row view object
-     * @param object The object (or type T) from which to draw values.
+     * @param convertView The target row view object
+     * @param item The object (or type T) from which to draw values.
      */
-    abstract protected void onSetupView(int position, View convertView, T object);
+    abstract protected void onSetupView(@NonNull final View convertView, @NonNull final T item, final int position);
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        final T object = this.getItem(position);
+        final T item = this.getItem(position);
 
         // Get the view; if not defined, load it.
         if (convertView == null) {
             LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             // If possible, ask the object for the view ID
-            if (object != null && object instanceof ViewProvider) {
+            if (item != null && item instanceof ViewProvider) {
                 //noinspection ConstantConditions
-                convertView = vi.inflate(((ViewProvider) object).getViewId(), null);
+                convertView = vi.inflate(((ViewProvider) item).getViewId(), null);
             } else {
                 //noinspection ConstantConditions
                 convertView = vi.inflate(mRowViewId, null);
@@ -240,7 +248,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         // Save this views position
         ViewTagger.setTag(convertView, R.id.TAG_POSITION, position);
 
-        // If we use a TouchListView, then don't enable the whole row, so grabber/del btns keep working
+        // If we use a TouchListView, then don't enable the whole row, so grabber/del buttons keep working
         View row = convertView.findViewById(R.id.row_details);
         if (row == null) {
             if (BuildConfig.DEBUG) {
@@ -260,7 +268,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         }
 
         // If the object is not null, do some processing
-        if (object != null) {
+        if (item != null) {
             // Try to set position value
             if (mHasPosition || !mCheckedFields) {
                 TextView pt = convertView.findViewById(R.id.ROW_POSITION);
@@ -300,7 +308,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
             // Ask the subclass to set other fields.
             try {
-                onSetupView(position, convertView, object);
+                onSetupView(convertView, item, position);
             } catch (Exception e) {
                 Logger.logError(e);
             }

@@ -34,7 +34,7 @@ import android.text.util.Linkify;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.Series;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -149,7 +149,7 @@ public class Utils {
                      * Using HttpClient and HttpGet explicitly seems to bypass the casting
                      * problem but still does not allow the timeouts to work, or only works intermittently.
                      *
-                     * Finally, there is another problem with faild timeouts:
+                     * Finally, there is another problem with failed timeouts:
                      *
                      *     http://thushw.blogspot.hu/2010/10/java-urlconnection-provides-no-fail.html
                      *
@@ -388,7 +388,7 @@ public class Utils {
 
     /**
      * Remove series from the list where the names are the same, but one entry has a null or empty position.
-     * eg. the followig list should be processed as indicated:
+     * eg. the following list should be processed as indicated:
      * <p>
      * fred(5)
      * fred <-- delete
@@ -565,7 +565,7 @@ public class Utils {
 
 
     public interface ItemWithIdFixup {
-        long fixupId(CatalogueDBAdapter db);
+        long fixupId(@NonNull final CatalogueDBAdapter db);
 
         long getId();
 

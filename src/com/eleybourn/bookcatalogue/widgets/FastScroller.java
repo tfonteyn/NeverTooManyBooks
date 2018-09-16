@@ -15,14 +15,14 @@ package com.eleybourn.bookcatalogue.widgets;
  * scrollable lists: a thumb at 50% in any scrollable list should result in the list being at
  * the mid-point. With an expandableListView, this needs to take into account the total
  * number of items (groups and children), NOT just the summary groups. Doing what the original
- * implementaion did is not only counter-intuitive, but also makes the thumb unusable in the case of 
+ * implementation did is not only counter-intuitive, but also makes the thumb unusable in the case of
  * n groups, where one of those n has O(n) children, and is expanded. In this case, the entire set
  * of children will move through the screen based on the same finger movement as moving between 
  * two unexpanded groups. In the more general case it can be characterised as uneven scrolling
  * if sections have widely varying sizes.
  * 
  * Finally, the original would fail to correctly place the overlay if setFastScrollEnabled was 
- * called after the Activity had been fuly drawn: this is because the only place that set the
+ * called after the Activity had been fully drawn: this is because the only place that set the
  * overlay position was in the onSizeChanged event.
  * 
  * Combine this with the desire to display more than a single letter in the overlay,
@@ -71,6 +71,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.MotionEvent;
@@ -144,11 +145,11 @@ public class FastScroller {
      * than having to build a huge index at start.
      */
     public interface SectionIndexerV2 {
-    	String[] getSectionTextForPosition(int position);
+    	String[] getSectionTextForPosition(final int position);
     }
     private boolean mChangedBounds;
     
-    FastScroller(Context context, AbsListView listView) {
+    FastScroller(@NonNull final Context context, @NonNull final AbsListView listView) {
         mList = listView;
         int overlaySize;
         // Determine the overlay size based on 3xLargeTextSize; if 
@@ -166,7 +167,7 @@ public class FastScroller {
         init(context);
     }
 
-    private void setState(int state) {
+    private void setState(final int state) {
     	
     	//System.out.println("State: " + state);
         switch (state) {
@@ -206,7 +207,7 @@ public class FastScroller {
         mThumbDrawable.setAlpha(ScrollFade.ALPHA_MAX);
     }
     
-    private void useThumbDrawable(Drawable drawable) {
+    private void useThumbDrawable(@NonNull final Drawable drawable) {
         mThumbDrawable = drawable;
         // Can't use the view width yet, because it has probably not been set up
         // so we just use the native width. It will be set later when we come to
@@ -216,7 +217,7 @@ public class FastScroller {
         mChangedBounds = true;
     }
 
-    private void init(Context context) {
+    private void init(@NonNull final Context context) {
         // Get both the scrollbar states drawables
         final Resources res = context.getResources();
         useThumbDrawable(res.getDrawable( R.drawable.scrollbar_handle_accelerated_anim2));
@@ -233,7 +234,7 @@ public class FastScroller {
         mPaint.setTextAlign(Paint.Align.CENTER);
         mPaint.setTextSize(mOverlaySize / 3);
         TypedArray ta = context.getTheme().obtainStyledAttributes(new int[] { android.R.attr.textColorPrimary });
-        int textColorNormal = ta.getColorStateList(ta.getIndex(0)).getDefaultColor();
+        @SuppressWarnings("ConstantConditions") int textColorNormal = ta.getColorStateList(ta.getIndex(0)).getDefaultColor();
         mPaint.setColor(textColorNormal);
         mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         
@@ -257,7 +258,7 @@ public class FastScroller {
         return !(mState == STATE_NONE);
     }
     
-    public void draw(final Canvas canvas) {
+    public void draw(@NonNull final Canvas canvas) {
         
         if (mState == STATE_NONE) {
             // No need to draw anything
@@ -298,7 +299,7 @@ public class FastScroller {
             	has2Lines = false;
             	line1 = mSectionTextV1;
             } else {
-            	// If using V2 data, make sure line 1 is a valid straing
+            	// If using V2 data, make sure line 1 is a valid string
             	if (mSectionTextV2[0] == null)
             		line1 = "";
             	else
@@ -352,7 +353,7 @@ public class FastScroller {
         }
     }
 
-    void onSizeChanged(int w, int h, int oldw, int oldh) {
+    void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
         if (mThumbDrawable != null) {
             mThumbDrawable.setBounds(w - mThumbW, 0, w, mThumbH);
         }
@@ -372,7 +373,7 @@ public class FastScroller {
         }
     }
     
-    void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, 
+    void onScroll(@NonNull final AbsListView view, final int firstVisibleItem, final int visibleItemCount,
             int totalItemCount) {
         // Are there enough pages to require fast scroll? Recompute only if total count changes
         if (mItemCount != totalItemCount && visibleItemCount > 0) {
@@ -437,7 +438,7 @@ public class FastScroller {
         }
     }
 
-	private void scrollTo(float position) {
+	private void scrollTo(final float position) {
 		int count = mList.getCount();
 		mScrollCompleted = false;
 		final Object[] sections = mSections;
@@ -474,7 +475,7 @@ public class FastScroller {
         cancelFling.recycle();
     }
     
-    boolean onInterceptTouchEvent(MotionEvent ev) {
+    boolean onInterceptTouchEvent(@NonNull final MotionEvent ev) {
         if (mState > STATE_NONE && ev.getAction() == MotionEvent.ACTION_DOWN) {
             if (ev.getX() > mList.getWidth() - mThumbW && ev.getY() >= mThumbY &&
                     ev.getY() <= mThumbY + mThumbH) {
@@ -485,7 +486,7 @@ public class FastScroller {
         return false;
     }
 
-    boolean onTouchEvent(MotionEvent me) {
+    boolean onTouchEvent(@NonNull final MotionEvent me) {
         if (mState == STATE_NONE) {
             return false;
         }

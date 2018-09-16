@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
@@ -109,7 +111,7 @@ public class Terminator {
 	private static class TerminatorTask implements SimpleTask {
 
 		@Override
-		public void run(SimpleTaskContext taskContext) {
+		public void run(@NonNull SimpleTaskContext taskContext) {
 			if (BuildConfig.DEBUG) {
 				System.out.println("Terminator starting");
 			}

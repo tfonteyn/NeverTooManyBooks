@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
@@ -153,7 +154,7 @@ public class GetThumbnailTask implements SimpleTask {
      * TODO: fetchBookCoverIntoImageView is an expensive operation. Make sure its still needed.
      */
     @Override
-    public void run(SimpleTaskContext taskContext) {
+    public void run(@NonNull SimpleTaskContext taskContext) {
 			/*
 			try {
 				Thread.sleep(10); // Let the UI have a chance to do something if we are racking up images!

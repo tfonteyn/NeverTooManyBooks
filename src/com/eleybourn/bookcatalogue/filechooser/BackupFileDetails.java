@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,11 +33,11 @@ public class BackupFileDetails implements FileDetails {
      * Need a CREATOR
      */
     public static final Parcelable.Creator<BackupFileDetails> CREATOR = new Parcelable.Creator<BackupFileDetails>() {
-        public BackupFileDetails createFromParcel(Parcel in) {
+        public BackupFileDetails createFromParcel(final Parcel in) {
             return new BackupFileDetails(in);
         }
 
-        public BackupFileDetails[] newArray(int size) {
+        public BackupFileDetails[] newArray(final int size) {
             return new BackupFileDetails[size];
         }
     };
@@ -48,7 +49,7 @@ public class BackupFileDetails implements FileDetails {
     /**
      * Constructor
      */
-    BackupFileDetails(File file) {
+    BackupFileDetails(@NonNull final File file) {
         mFile = file;
     }
 
@@ -57,7 +58,7 @@ public class BackupFileDetails implements FileDetails {
      *
      * Constructor, using a Parcel as source.
      */
-    private BackupFileDetails(Parcel in) {
+    private BackupFileDetails(@NonNull final Parcel in) {
         mFile = (File) in.readSerializable();
         byte infoFlag = in.readByte();
         if (infoFlag != (byte) 0) {
@@ -70,7 +71,7 @@ public class BackupFileDetails implements FileDetails {
     /**
      * Accessor
      */
-    public void setInfo(BackupInfo info) {
+    public void setInfo(@NonNull final BackupInfo info) {
         mInfo = info;
     }
 
@@ -93,7 +94,7 @@ public class BackupFileDetails implements FileDetails {
      * Fill in the details for the view we returned above.
      */
     @Override
-    public void onSetupView(Context c, int position, View target) {
+    public void onSetupView(@NonNull final Context c, final int position, @NonNull final View target) {
 
         // Set the basic data
         TextView name = target.findViewById(R.id.name);
@@ -147,7 +148,7 @@ public class BackupFileDetails implements FileDetails {
      * Save all fields that must be persisted.
      */
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeSerializable(mFile);
         if (mInfo != null) {
             dest.writeByte((byte) 1);

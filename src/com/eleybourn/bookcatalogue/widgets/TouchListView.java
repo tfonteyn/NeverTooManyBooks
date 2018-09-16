@@ -23,6 +23,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -99,11 +100,11 @@ public class TouchListView extends ListView {
 
     private Integer mSavedHeight = null;
 
-    public TouchListView(Context context, AttributeSet attrs) {
+    public TouchListView(@NonNull final Context context, @NonNull final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public TouchListView(Context context, AttributeSet attrs, int defStyle) {
+    public TouchListView(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
 
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
@@ -226,7 +227,7 @@ public class TouchListView extends ListView {
         return super.onInterceptTouchEvent(ev);
     }
 
-    private boolean isDraggableRow(View view) {
+    private boolean isDraggableRow(@NonNull final View view) {
         return (view.findViewById(grabberId) != null);
     }
 
@@ -234,7 +235,7 @@ public class TouchListView extends ListView {
      * pointToPosition() doesn't consider invisible views, but we
      * need to, so implement a slightly different version.
      */
-    private int myPointToPosition(@SuppressWarnings("SameParameterValue") int x, int y) {
+    private int myPointToPosition(@SuppressWarnings("SameParameterValue") final int x, final int y) {
         Rect frame = mTempRect;
         final int count = getChildCount();
         for (int i = count - 1; i >= 0; i--) {
@@ -247,7 +248,7 @@ public class TouchListView extends ListView {
         return INVALID_POSITION;
     }
 
-    private int getItemForPosition(int y) {
+    private int getItemForPosition(final int y) {
         int adjustedy = y - mDragPoint - (mItemHeightNormal / 2);
         int pos = myPointToPosition(0, adjustedy);
         if (pos >= 0) {
@@ -260,7 +261,7 @@ public class TouchListView extends ListView {
         return pos;
     }
 
-    private void adjustScrollBounds(int y) {
+    private void adjustScrollBounds(final int y) {
         if (y >= mHeight / 3) {
             mUpperBound = mHeight / 3;
         }
@@ -270,9 +271,9 @@ public class TouchListView extends ListView {
     }
 
     /*
-     * Restore size and visibility for all listitems
+     * Restore size and visibility for all list items
      */
-    private void unExpandViews(boolean deletion) {
+    private void unExpandViews(final boolean deletion) {
         //if(true) return;
         for (int i = 0; ; i++) {
             View v = getChildAt(i);
@@ -311,15 +312,15 @@ public class TouchListView extends ListView {
      * an item is being dragged around and other items are making
      * room for it:
      * If dropping the item would result in it still being in the
-     * same place, then make the dragged listitem's size normal,
+     * same place, then make the dragged list item's size normal,
      * but make the item invisible.
-     * Otherwise, if the dragged listitem is still on screen, make
+     * Otherwise, if the dragged list item is still on screen, make
      * it as small as possible and expand the item below the insert
      * point.
      * If the dragged item is not on screen, only expand the item
-     * below the current insertpoint.
+     * below the current insert point.
      */
-    private void doExpansion(boolean firstTime) {
+    private void doExpansion(final boolean firstTime) {
 
         // Find the effective child number that we are hovering over
         int childnum = mDragPos - getFirstVisiblePosition() - 1;
@@ -472,7 +473,7 @@ public class TouchListView extends ListView {
         return super.onTouchEvent(ev);
     }
 
-    private void startDragging(Bitmap bm, int x, int y) {
+    private void startDragging(@NonNull final Bitmap bm, final int x, final int y) {
         stopDragging();
 
         mWindowParams = new WindowManager.LayoutParams();
@@ -500,7 +501,7 @@ public class TouchListView extends ListView {
         mDragView = v;
     }
 
-    private void dragView(int x, int y) {
+    private void dragView(final int x, final int y) {
         float alpha = 1.0f;
         int width = mDragView.getWidth();
 
@@ -534,28 +535,28 @@ public class TouchListView extends ListView {
     }
 
     @SuppressWarnings("unused")
-    public void setDragListener(DragListener l) {
+    public void setDragListener(@NonNull final DragListener l) {
         mDragListener = l;
     }
 
-    public void setDropListener(DropListener l) {
+    public void setDropListener(@NonNull final DropListener l) {
         mDropListener = l;
     }
 
     @SuppressWarnings("unused")
-    public void setRemoveListener(RemoveListener l) {
+    public void setRemoveListener(@NonNull final RemoveListener l) {
         mRemoveListener = l;
     }
 
     public interface DragListener {
-        void drag(int from, int to);
+        void drag(final int from, final int to);
     }
 
     public interface DropListener {
-        void drop(int from, int to);
+        void drop(final int from, final int to);
     }
 
     public interface RemoveListener {
-        void remove(int which);
+        void remove(final int which);
     }
 }

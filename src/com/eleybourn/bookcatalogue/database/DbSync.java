@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteClosable;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
@@ -410,7 +411,7 @@ public class DbSync {
          * Locking-aware wrapper for underlying database method.
          */
         public SynchronizedCursor rawQuery(String sql) {
-            return rawQuery(sql, CatalogueDBAdapter.EMPTY_STRING_ARRAY);
+            return rawQuery(sql, new String[]{});
         }
 
         /**
@@ -471,7 +472,7 @@ public class DbSync {
          *
          * @return the row ID of the newly inserted row, or -1 if an error occurred
          */
-        public long insert(String table, String nullColumnHack, ContentValues values) {
+        public long insert(String table, String nullColumnHack, ContentValues values) throws SQLException {
             SyncLock l = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive)
@@ -489,6 +490,8 @@ public class DbSync {
 
         /**
          * Locking-aware wrapper for underlying database method.
+         *
+         * @return the number of rows affected
          */
         public int update(String table, ContentValues values, String whereClause, String[] whereArgs) {
             SyncLock l = null;

@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.messaging;
 
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -75,7 +76,7 @@ public class MessageSwitch<T, U> {
     }
 
     /** Register a new sender and it's controller object; return the unique ID for this sender */
-    public Long createSender(U controller) {
+    public Long createSender(@NonNull final U controller) {
         MessageSenderImpl s = new MessageSenderImpl(controller);
         mSenders.put(s.getId(), s);
         return s.getId();
@@ -88,7 +89,7 @@ public class MessageSwitch<T, U> {
      * @param listener    Listener object
      * @param deliverLast If true, send the last message (if any) to this listener
      */
-    public void addListener(Long senderId, final T listener, boolean deliverLast) {
+    public void addListener(@NonNull final Long senderId, @NonNull final  T listener, final boolean deliverLast) {
         // Add the listener to the queue, creating queue if necessary
         MessageListeners queue;
         synchronized (mListeners) {
@@ -120,7 +121,7 @@ public class MessageSwitch<T, U> {
     }
 
     /** Remove the specified listener from the specified queue */
-    public void removeListener(Long senderId, T l) {
+    public void removeListener(@NonNull final Long senderId, @NonNull final T l) {
         synchronized (mListeners) {
             MessageListeners queue = mListeners.get(senderId);
             if (queue != null)
@@ -134,7 +135,7 @@ public class MessageSwitch<T, U> {
      * @param senderId Queue ID
      * @param message  Message to send
      */
-    public void send(long senderId, Message<T> message) {
+    public void send(@NonNull final Long senderId, @NonNull final Message<T> message) {
         // Create a routing slip
         RoutingSlip m = new MessageRoutingSlip(senderId, message);
         // Add to queue
@@ -150,7 +151,7 @@ public class MessageSwitch<T, U> {
 //	 * @param senderId
 //	 * @param reply
 //	 */
-//	public void reply(long senderId, Message<U> reply) {
+//	public void reply(@NonNull final Long senderId, @NonNull final Message<U> reply) {
 //		RoutingSlip m = new ReplyRoutingSlip(senderId, reply);
 //		synchronized(mMessageQueue) {
 //			mMessageQueue.add(m);
@@ -165,7 +166,7 @@ public class MessageSwitch<T, U> {
      *
      * @return Controller object of type 'U'
      */
-    public U getController(long senderId) {
+    public U getController(@NonNull final Long senderId) {
         MessageSender<U> sender = mSenders.get(senderId);
         if (sender != null) {
             return sender.getController();
@@ -175,7 +176,7 @@ public class MessageSwitch<T, U> {
     }
 
     /** Remove a sender and it's queue */
-    private void removeSender(MessageSender<U> s) {
+    private void removeSender(@NonNull final MessageSender<U> s) {
         synchronized (mSenders) {
             mSenders.remove(s.getId());
         }
@@ -223,7 +224,7 @@ public class MessageSwitch<T, U> {
          * @return true if message should not be delievered to any other listeners or stored for delievery as 'last message'
          * should only return true if the message has been handled and would break the app if delivered more than once.
          */
-        boolean deliver(T listener);
+        boolean deliver(@NonNull final T listener);
     }
 
     /**
@@ -234,7 +235,7 @@ public class MessageSwitch<T, U> {
      * @author pjw
      */
     private interface MessageSender<U> extends AutoCloseable {
-        long getId();
+        Long getId();
 
         @Override
         void close();
@@ -245,7 +246,7 @@ public class MessageSwitch<T, U> {
 //	private class ReplyRoutingSlip implements RoutingSlip {
 //		Long destination;
 //		Message<U> message;
-//		public ReplyRoutingSlip(Long destination, Message<U> message) {
+//		public ReplyRoutingSlip(@NonNull final Long destination, @NonNull final Message<U> message) {
 //			this.destination = destination;
 //			this.message = message;
 //		}
@@ -276,12 +277,12 @@ public class MessageSwitch<T, U> {
             return mLastMessage;
         }
 
-        public void setLastMessage(MessageRoutingSlip m) {
+        public void setLastMessage(@Nullable final MessageRoutingSlip m) {
             mLastMessage = m;
         }
 
         /** Add a listener to this queue */
-        public void add(T listener) {
+        public void add(@NonNull final T listener) {
             synchronized (mList) {
                 mList.add(new WeakReference<>(listener));
             }
@@ -292,7 +293,7 @@ public class MessageSwitch<T, U> {
          *
          * @param listener Listener to be removed
          */
-        public void remove(T listener) {
+        public void remove(@NonNull final T listener) {
             synchronized (mList) {
                 // List of refs to be removed
                 ArrayList<WeakReference<T>> toRemove = new ArrayList<>();
@@ -348,12 +349,12 @@ public class MessageSwitch<T, U> {
     /** RoutingSlip to deliver a Message object to all associated listeners */
     private class MessageRoutingSlip implements RoutingSlip {
         /** Destination queue (sender ID) */
-        final long destination;
+        final Long destination;
         /** Message to deliver */
         final Message<T> message;
 
         /** Constructor */
-        MessageRoutingSlip(long destination, Message<T> message) {
+        MessageRoutingSlip(@NonNull final Long destination, @NonNull final Message<T> message) {
             this.destination = destination;
             this.message = message;
         }
@@ -398,16 +399,16 @@ public class MessageSwitch<T, U> {
 
     /** Implementation of Message sender object */
     private class MessageSenderImpl implements MessageSender<U> {
-        private final long mId = ++mSenderIdCounter;
+        private final Long mId = ++mSenderIdCounter;
         private final U mController;
 
         /** Constructor */
-        MessageSenderImpl(U controller) {
+        MessageSenderImpl(@NonNull final U controller) {
             mController = controller;
         }
 
         @Override
-        public long getId() {
+        public Long getId() {
             return mId;
         }
 

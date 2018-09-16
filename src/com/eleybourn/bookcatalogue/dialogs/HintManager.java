@@ -54,7 +54,7 @@ public class HintManager {
     /** Preferences prefix for hints */
     private final static String PREF_HINT = TAG + ".Hint.";
     /** All hints managed by this class */
-    private static final Map<Integer, Hint> mHints = new HashMap();
+    private static final Map<Integer, Hint> mHints = new HashMap<>();
     static {
         mHints.put(R.string.hint_booklist_styles_editor, new Hint("BOOKLIST_STYLES_EDITOR"));
         mHints.put(R.string.hint_booklist_style_groups, new Hint("BOOKLIST_STYLE_GROUPS"));

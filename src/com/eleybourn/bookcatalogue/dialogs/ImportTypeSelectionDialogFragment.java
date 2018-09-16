@@ -48,7 +48,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
      *
      * @return Created fragment
      */
-    public static ImportTypeSelectionDialogFragment newInstance(int dialogId, File file) {
+    public static ImportTypeSelectionDialogFragment newInstance(final int dialogId, @NonNull final File file) {
         ImportTypeSelectionDialogFragment frag = new ImportTypeSelectionDialogFragment();
         Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_DIALOG_ID, dialogId);
@@ -75,7 +75,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
      * @param root root view
      * @param id   Sub-View ID
      */
-    private void setOnClickListener(View root, int id) {
+    private void setOnClickListener(@NonNull final View root, final int id) {
         View v = root.findViewById(id);
         v.setOnClickListener(mRowClickListener);
         v.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -116,7 +116,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
         return alertDialog;
     }
 
-    private void handleClick(View v) {
+    private void handleClick(@NonNull final View v) {
         if (!mArchiveHasValidDates && v.getId() == R.id.new_and_changed_books_row) {
             Toast.makeText(getActivity(), R.string.old_archive_blurb, Toast.LENGTH_LONG).show();
             return;
@@ -142,7 +142,8 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
      * @author pjw
      */
     public interface OnImportTypeSelectionDialogResultListener {
-        void onImportTypeSelectionDialogResult(int dialogId, DialogFragment dialog, ImportTypeSelectionDialogFragment.ImportSettings settings);
+        void onImportTypeSelectionDialogResult(final int dialogId, @NonNull final DialogFragment dialog,
+                                               @NonNull final ImportTypeSelectionDialogFragment.ImportSettings settings);
     }
 
     public static class ImportSettings {

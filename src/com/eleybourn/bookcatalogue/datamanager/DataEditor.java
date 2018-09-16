@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.datamanager;
 
+import android.support.annotation.NonNull;
+
 /**
  * Interface supported by an editor object (typically an activity)
  * 
@@ -26,7 +28,7 @@ package com.eleybourn.bookcatalogue.datamanager;
  */
 public interface DataEditor {
 	/** Save current data TO the passed DataManager */
-    void saveAllEdits(DataManager data);
+    void saveAllEdits(@NonNull final DataManager data);
 	/** Load current data FROM passed DataManager */
-    void reloadData(DataManager data);
+    void reloadData(@NonNull final DataManager data);
 }

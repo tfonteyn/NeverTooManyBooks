@@ -40,10 +40,10 @@ import com.eleybourn.bookcatalogue.database.DatabaseHelper;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
-import com.eleybourn.bookcatalogue.database.DbUtils.JoinContext;
-import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
-import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition.TableTypes;
-import com.eleybourn.bookcatalogue.database.DomainDefinition;
+import com.eleybourn.bookcatalogue.database.JoinContext;
+import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.TableDefinition.TableTypes;
+import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.SqlStatementManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -79,7 +79,6 @@ import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KI
 import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_ADDED;
 import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_PUBLISHED;
 import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_READ;
-import static com.eleybourn.bookcatalogue.database.CatalogueDBAdapter.EMPTY_STRING_ARRAY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ABSOLUTE_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_DAY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_MONTH;
@@ -230,7 +229,7 @@ public class BooklistBuilder implements AutoCloseable {
     private SynchronizedStatement mGetPositionStmt = null;
 
     ///** Convenience expression for the SQL which gets the name of the person to whom a book has been loaned, if any
-    // *  We do not initialize it here because it needs the app context to be setup for R.string.avaiable */
+    // *  We do not initialize it here because it needs the app context to be setup for R.string.available */
     //private static String LOANED_TO_SQL = null;
     //private static String getLoanedToSql() {
     //	if (LOANED_TO_SQL == null) {
@@ -462,7 +461,7 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Clear and the build the temporary list of books based on the passed criteria.
      *
-     * @param preferredState State to display: expanded, collaped or remembered
+     * @param preferredState State to display: expanded, collapsed or remembered
      * @param markId         TODO: ID of book to 'mark'. DEPRECATED?
      * @param bookshelf      Search criteria: limit to shelf
      * @param authorWhere    Search criteria: additional conditions that apply to authors table
@@ -819,24 +818,24 @@ public class BooklistBuilder implements AutoCloseable {
             }
             long t0c = System.currentTimeMillis();
 
-            //
-            // Build the initial insert statement: 'insert into <tbl> (col-list) select (expr-list) from'.
-            // We just need to add the 'from' tables. It is a fairly static list, for the most part we just
-            // add extra criteria as needed.
-            //
-            // The seriesLevel and authorLevel fields will influend the nature of the join. If at a later
-            // stage some row kinds introduce more table dependencies, a flag (or object) can be set
-            // when processing the level to inform the joining code (below) which tables need to be added.
-            //
-            // Aside: The sql used prior to using DbUtils is included as comments below the doce that replaced it.
-            //
+
+            /*
+             Build the initial insert statement: 'insert into <tbl> (col-list) select (expr-list) from'.
+             We just need to add the 'from' tables. It is a fairly static list, for the most part we just
+             add extra criteria as needed.
+
+             The seriesLevel and authorLevel fields will influenced the nature of the join. If at a later
+             stage some row kinds introduce more table dependencies, a flag (or object) can be set
+             when processing the level to inform the joining code (below) which tables need to be added.
+            */
             SqlComponents sqlCmp = summary.buildSqlComponents(mStyle.getGroupAt(0).getCompoundKey());
 
             long t0d = System.currentTimeMillis();
 
-            //
-            // Now build the 'join' statement based on the groups and extra criteria
-            //
+            /*
+             * Now build the 'join' statement based on the groups and extra criteria
+             * The sql used prior to using {@link JoinContext} is included as comments below the doce that replaced it.
+             */
             JoinContext join;
 
             // If there is a bookshelf specified, start the join there. Otherwise, start with the BOOKS table.
@@ -901,47 +900,59 @@ public class BooklistBuilder implements AutoCloseable {
             // Now build the 'where' clause.
             //
             long t0e = System.currentTimeMillis();
-            String where = "";
+            StringBuilder where = new StringBuilder();
 
             if (!bookshelf.isEmpty()) {
-                if (!where.isEmpty())
-                    where += " and ";
+                if (where.length() != 0) {
+                    where.append(" and ");
+                }
                 if (hasGroupBOOKSHELF) {
-                    where += "Exists(Select NULL From " + TBL_BOOK_BOOKSHELF + " z1 join " + TBL_BOOKSHELF
-                            + " z2 on (z2." + DOM_ID + " = z1." + DOM_BOOKSHELF + ")"
-                            + " where z2." + DOM_BOOKSHELF_NAME + " = '" + CatalogueDBAdapter.encodeString(bookshelf) + "'"
-                            + " and z1." + DOM_BOOK + " = " + TBL_BOOKS.dot(DOM_ID)
-                            + ")";
+                    where.append("Exists(Select NULL From ")
+                            .append(TBL_BOOK_BOOKSHELF)
+                            .append(" z1 join ").append(TBL_BOOKSHELF)
+                            .append(" z2 on (z2.").append(DOM_ID).append(" = z1.").append(DOM_BOOKSHELF).append(")")
+                            .append(" where z2.")
+                            .append(DOM_BOOKSHELF_NAME).append(" = '").append(CatalogueDBAdapter.encodeString(bookshelf)).append("'")
+                            .append(" and z1.").append(DOM_BOOK).append(" = ").append(TBL_BOOKS.dot(DOM_ID)).append(")");
                 } else {
-                    where += "(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF_NAME) + " = '" + CatalogueDBAdapter.encodeString(bookshelf) + "')";
+                    where.append("(").append(TBL_BOOKSHELF.dot(DOM_BOOKSHELF_NAME)).append(" = '").append(CatalogueDBAdapter.encodeString(bookshelf)).append("')");
                 }
             }
             if (!authorWhere.isEmpty()) {
-                if (!where.isEmpty())
-                    where += " and ";
-                where += "(" + authorWhere + ")";
+                if (where.length() != 0) {
+                    where.append(" and ");
+                }
+                where.append("(").append(authorWhere).append(")");
             }
+
             if (!bookWhere.isEmpty()) {
-                if (!where.isEmpty())
-                    where += " and ";
-                where += "(" + bookWhere + ")";
+                if (where.length() != 0) {
+                    where.append(" and ");
+                }
+                where.append("(").append(bookWhere).append(")");
             }
+
             if (!loaned_to.isEmpty()) {
-                if (!where.isEmpty())
-                    where += " and ";
-                where += "Exists(Select NULL From " + TBL_LOAN.ref() + " Where " + TBL_LOAN.dot(DOM_LOANED_TO) + " = '" + CatalogueDBAdapter.encodeString(loaned_to) + "'" +
-                        " and " + TBL_LOAN.fkMatch(TBL_BOOKS) + ")";
+                if (where.length() != 0) {
+                    where.append(" and ");
+                }
+                where.append("Exists(Select NULL From ").append(TBL_LOAN.ref())
+                        .append(" Where ").append(TBL_LOAN.dot(DOM_LOANED_TO)).append(" = '").append(CatalogueDBAdapter.encodeString(loaned_to)).append("'")
+                        .append(" and ").append(TBL_LOAN.fkMatch(TBL_BOOKS)).append(")");
                 // .and()    .op(TBL_LOAN.dot(DOM_BOOK), "=", TBL_BOOKS.dot(DOM_ID)) + ")";
             }
             if (!seriesName.isEmpty()) {
-                if (!where.isEmpty())
-                    where += " and ";
-                where += "(" + TBL_SERIES.dot(DOM_SERIES_NAME) + " = '" + CatalogueDBAdapter.encodeString(seriesName) + "')";
+                if (where.length() != 0) {
+                    where.append(" and ");
+                }
+                where.append("(").append(TBL_SERIES.dot(DOM_SERIES_NAME)).append(" = '").append(CatalogueDBAdapter.encodeString(seriesName)).append("')");
             }
             if (!searchText.isEmpty()) {
-                if (!where.isEmpty())
-                    where += " and ";
-                where += "(" + TBL_BOOKS.dot(DOM_ID) + " in (select docid from " + TBL_BOOKS_FTS + " where " + TBL_BOOKS_FTS + " match '" + CatalogueDBAdapter.encodeString(CatalogueDBAdapter.cleanupFtsCriterion(searchText)) + "'))";
+                if (where.length() != 0) {
+                    where.append(" and ");
+                }
+                where.append("(").append(TBL_BOOKS.dot(DOM_ID)).append(" in (select docid from ").append(TBL_BOOKS_FTS)
+                        .append(" where ").append(TBL_BOOKS_FTS).append(" match '").append(CatalogueDBAdapter.encodeString(CatalogueDBAdapter.cleanupFtsCriterion(searchText))).append("'))");
             }
 
             // Add support for book filter: READ
@@ -958,14 +969,15 @@ public class BooklistBuilder implements AutoCloseable {
                         break;
                 }
                 if (extra != null) {
-                    if (!where.isEmpty())
-                        where += " and ";
-                    where += " " + extra;
+                    if (!(where.length() == 0)) {
+                        where.append(" and ");
+                    }
+                    where.append(" ").append(extra);
                 }
             }
 
             // If we got any conditions, add them to the initial insert statement
-            if (!where.isEmpty()) {
+            if (where.length() != 0) {
                 sqlCmp.where = " where " + where;
             } else {
                 sqlCmp.where = "";
@@ -1121,14 +1133,16 @@ public class BooklistBuilder implements AutoCloseable {
                     // If we are using triggers, then we insert them in order and rely on the
                     // triggers to build the summary rows in the correct place.
                     String tgt = makeTriggers(summary, flatTriggers);
-                    mBaseBuildStmt = mStatements.add("mBaseBuildStmt", "Insert Into " + tgt + "(" + sqlCmp.destinationColumns + ") " + sqlCmp.select + "\n From\n" + sqlCmp.join + sqlCmp.where + " order by " + sortColNameList);
+                    mBaseBuildStmt = mStatements.add("mBaseBuildStmt",
+                            "Insert Into " + tgt + "(" + sqlCmp.destinationColumns + ") " + sqlCmp.select + "\n From\n" + sqlCmp.join + sqlCmp.where + " order by " + sortColNameList);
                     //System.out.println("Base Build:\n" + sql);
                     mBaseBuildStmt.execute();
                     t2 = System.currentTimeMillis();
                     t3 = t2;
                 } else {
                     // Without triggers we just get the base rows and add summary later
-                    mBaseBuildStmt = mStatements.add("mBaseBuildStmt", sqlCmp.insertSelect + sqlCmp.join + sqlCmp.where);
+                    mBaseBuildStmt = mStatements.add("mBaseBuildStmt",
+                            sqlCmp.insertSelect + sqlCmp.join + sqlCmp.where);
                     //System.out.println("Base Build:\n" + sql);
                     mBaseBuildStmt.execute();
                     t2 = System.currentTimeMillis();
@@ -1189,7 +1203,7 @@ public class BooklistBuilder implements AutoCloseable {
 
                 // Now build a lookup table to match row sort position to row ID. This is used to match a specific
                 // book (or other row in result set) to a position directly without having to scan the database. This
-                // is especially useful in expan/collapse operations.
+                // is especially useful in expand/collapse operations.
                 mNavTable.drop(mSyncedDb);
                 mNavTable.create(mSyncedDb, true);
 
@@ -1363,7 +1377,7 @@ public class BooklistBuilder implements AutoCloseable {
             // Flat triggers are compatible with Android 1.6+ but slower
             return makeSingleTrigger(summary);
         } else {
-            // Nexted triggers are compatible with Android 2.2+ and fast
+            // Nested triggers are compatible with Android 2.2+ and fast
             // (or at least relatively fast when there are a 'reasonable'
             // number of headings to be inserted).
             makeNestedTriggers(summary);
@@ -1384,7 +1398,7 @@ public class BooklistBuilder implements AutoCloseable {
         final String viewTblName = mListTable + "_view";
 
         /*
-         * Create a trigger to forward all row detais to real table
+         * Create a trigger to forward all row details to real table
          */
 
         // Name of the trigger to create.
@@ -1572,7 +1586,7 @@ public class BooklistBuilder implements AutoCloseable {
             stmt.execute();
         }
 
-        // Create a trigger to maintaint the 'current' value -- just delete and insert
+        // Create a trigger to maintain the 'current' value -- just delete and insert
         String currTgName = mListTable + "_TG_ZZZ";
         mSyncedDb.execSQL("Drop Trigger if exists " + currTgName);
         String tgSql = "Create Temp Trigger " + currTgName + " after insert on " + mListTable + " for each row when new.level = " + mStyle.size() +
@@ -1670,13 +1684,13 @@ public class BooklistBuilder implements AutoCloseable {
     }
 
 
-//	private void psuedoCursor(String sql, int pos) {
+//	private void pseudoCursor(String sql, int pos) {
 //		long tc0 = System.currentTimeMillis();
-//		final BooklistCursor cfoo = (BooklistCursor) mSyncedDb.rawQueryWithFactory(mBooklistCursorFactory, sql + " Limit 80 offset " + pos, EMPTY_STRING_ARRAY, "");
+//		final BooklistCursor cFoo = (BooklistCursor) mSyncedDb.rawQueryWithFactory(mBooklistCursorFactory, sql + " Limit 80 offset " + pos, EMPTY_STRING_ARRAY, "");
 //		long tc1 = System.currentTimeMillis();
-//		long cCnt = cfoo.getCount();
+//		long cCnt = cFoo.getCount();
 //		long tc2 = System.currentTimeMillis();
-//		cfoo.close();
+//		cFoo.close();
 //
 //		System.out.println("Limit cursor @" + pos + " create in " + (tc1 - tc0) + "ms, count (" + cCnt + ") in " + (tc2-tc1) + "ms");			
 //	}
@@ -1695,7 +1709,7 @@ public class BooklistBuilder implements AutoCloseable {
         String sql = "select " + mNavTable.dot(DOM_ID) + ", " + mNavTable.dot(DOM_VISIBLE) + " From " + mListTable + " bl "
                 + mListTable.join(mNavTable) + " Where " + mListTable.dot(DOM_BOOK) + " = " + bookId;
 
-        try (Cursor c = mSyncedDb.rawQuery(sql, EMPTY_STRING_ARRAY)) {
+        try (Cursor c = mSyncedDb.rawQuery(sql, new String[]{})) {
             ArrayList<BookRowInfo> rows = new ArrayList<>();
             if (c.moveToFirst()) {
                 do {
@@ -1748,7 +1762,7 @@ public class BooklistBuilder implements AutoCloseable {
                 " Limit " + size + " Offset " + position;
 
         // Get and return the cursor
-        return (BooklistCursor) mSyncedDb.rawQueryWithFactory(mBooklistCursorFactory, sql, EMPTY_STRING_ARRAY, "");
+        return (BooklistCursor) mSyncedDb.rawQueryWithFactory(mBooklistCursorFactory, sql, new String[]{}, "");
     }
 
     /**
@@ -1781,7 +1795,7 @@ public class BooklistBuilder implements AutoCloseable {
     }
 
     /**
-     * Utiity routine to perform a single count query.
+     * Utility routine to perform a single count query.
      */
     private int pseudoCount(String name, String foo) {
         long tc0 = System.currentTimeMillis();
@@ -2074,7 +2088,7 @@ public class BooklistBuilder implements AutoCloseable {
         public String insert;
         public String insertSelect;
         public String insertValues;
-        public String rootkeyExpression;
+        public String rootKeyExpression;
         public String join;
         public String where;
     }
@@ -2251,7 +2265,7 @@ public class BooklistBuilder implements AutoCloseable {
             // List of ?'s for the VALUES... part.
             StringBuilder values = new StringBuilder();
 
-            // Build the lists. mDomains and mExpressions were built in synch with each other.
+            // Build the lists. mDomains and mExpressions were built in sync with each other.
             for (int i = 0; i < mDomains.size(); i++) {
                 DomainDefinition d = mDomains.get(i);
                 String e = mExpressions.get(i);
@@ -2275,7 +2289,7 @@ public class BooklistBuilder implements AutoCloseable {
             }
 
             // Setup the SQL phrases.
-            cmp.rootkeyExpression = keyExpression.toString();
+            cmp.rootKeyExpression = keyExpression.toString();
             cmp.destinationColumns = columns + ",\n	" + DOM_ROOT_KEY;
             cmp.insert = "Insert into " + mListTable + " (\n	" + cmp.destinationColumns + ")";
             cmp.select = "Select\n	" + expressions + ",\n	" + keyExpression;
@@ -2452,11 +2466,11 @@ public class BooklistBuilder implements AutoCloseable {
 //		// We just need to add the 'from' tables. It is a fairly static list, for the most part we just
 //		// add extra criteria as needed.
 //		//
-//		// The seriesLevel and authorLevel fields will influend the nature of the join. If at a later
+//		// The seriesLevel and authorLevel fields will influenced the nature of the join. If at a later
 //		// stage some row kinds introduce more table dependencies, a flag (or object) can be set
 //		// when processing the level to inform the joining code (below) which tables need to be added.
 //		// 
-//		// Aside: The sql used prior to using DbUtils is included as comments below the doce that replaced it.
+//		// Aside: The sql used prior to using DbUtils is included as comments below the call that replaced it.
 //		//
 //		String sql = summary.buildBaseInsert(mLevels.get(0).getCompoundKey());
 //

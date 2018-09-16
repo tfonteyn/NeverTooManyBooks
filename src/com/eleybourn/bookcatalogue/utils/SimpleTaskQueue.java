@@ -21,6 +21,8 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -88,11 +90,11 @@ public class SimpleTaskQueue {
 		/**
 		 * Method called in queue thread to perform the background task.
 		 */
-		void run(SimpleTaskContext taskContext);
+		void run(@NonNull final SimpleTaskContext taskContext);
 		/**
 		 * Method called in UI thread after the background task has finished.
 		 */
-		void onFinish(Exception e);
+		void onFinish(@Nullable final Exception e);
 	}
 
 	/**
@@ -101,7 +103,7 @@ public class SimpleTaskQueue {
 	 * @author Philip Warner
 	 */
 	public interface OnTaskStartListener {
-		void onTaskStart(SimpleTask task);
+		void onTaskStart(@NonNull final SimpleTask task);
 	}
 
 	/**
@@ -110,10 +112,10 @@ public class SimpleTaskQueue {
 	 * @author Philip Warner
 	 */
 	public interface OnTaskFinishListener {
-		void onTaskFinish(SimpleTask task, Exception e);
+		void onTaskFinish(@NonNull final SimpleTask task, @Nullable final Exception e);
 	}
 
-	public void setTaskStartListener(OnTaskStartListener listener) {
+	public void setTaskStartListener(@NonNull final OnTaskStartListener listener) {
 		mTaskStartListener = listener;
 	}
 
@@ -121,7 +123,7 @@ public class SimpleTaskQueue {
 		return mTaskStartListener;
 	}
 
-	public void setTaskFinishListener(OnTaskFinishListener listener) {
+	public void setTaskFinishListener(@NonNull final OnTaskFinishListener listener) {
 		mTaskFinishListener = listener;
 	}
 
@@ -152,7 +154,7 @@ public class SimpleTaskQueue {
 		public final long id;
 		SimpleTaskQueueThread activeThread = null;
 
-		SimpleTaskWrapper(SimpleTaskQueue owner, SimpleTask task) {
+		SimpleTaskWrapper(@NonNull final SimpleTaskQueue owner, @NonNull final SimpleTask task) {
 			mOwner = owner;
 			this.task = task;
 			synchronized(mCounter) {
@@ -170,7 +172,7 @@ public class SimpleTaskQueue {
 		}
 
 		@Override
-		public void setRequiresFinish(boolean requiresFinish) {
+		public void setRequiresFinish(final boolean requiresFinish) {
 			this.finishRequested = requiresFinish;
 		}
 		@Override
@@ -189,7 +191,7 @@ public class SimpleTaskQueue {
 	 * @author Philip Warner
 	 *
 	 */
-	public SimpleTaskQueue(String name) {
+	public SimpleTaskQueue(@NonNull final String name) {
 		mName = name;
 		mMaxTasks = 5;
 	}
@@ -200,7 +202,7 @@ public class SimpleTaskQueue {
 	 * @author Philip Warner
 	 *
 	 */
-	public SimpleTaskQueue(String name, int maxTasks) {
+	public SimpleTaskQueue(@NonNull final String name, final int maxTasks) {
 		mName = name;
 		mMaxTasks = maxTasks;
 		if (maxTasks < 1 || maxTasks > 10)
@@ -233,7 +235,7 @@ public class SimpleTaskQueue {
 	 * 
 	 * @param task		Task to run.
 	 */
-	public long enqueue(SimpleTask task) {
+	public long enqueue(@NonNull final SimpleTask task) {
 		SimpleTaskWrapper wrapper = new SimpleTaskWrapper(this, task);
 
 		try {
@@ -260,7 +262,7 @@ public class SimpleTaskQueue {
 	/**
 	 * Remove a previously requested task based on ID, if present
 	 */
-	public boolean remove(long id) {
+	public boolean remove(final long id) {
 		Stack<SimpleTaskWrapper> currTasks = mQueue.getElements();
 		for (SimpleTaskWrapper w : currTasks) {
 			if (w.id == id) {
@@ -279,7 +281,7 @@ public class SimpleTaskQueue {
 	/**
 	 * Remove a previously requested task, if present
 	 */
-	public boolean remove(SimpleTask t) {
+	public boolean remove(@NonNull final SimpleTask t) {
 		Stack<SimpleTaskWrapper> currTasks = mQueue.getElements();
 		for (SimpleTaskWrapper w : currTasks) {
 			if (w.task.equals(t)) {
@@ -315,7 +317,7 @@ public class SimpleTaskQueue {
 	/**
 	 * Run the task then queue the results.
 	 */
-	private void handleRequest(final SimpleTaskQueueThread thread, final SimpleTaskWrapper taskWrapper) {
+	private void handleRequest(@NonNull final SimpleTaskQueueThread thread, @NonNull final SimpleTaskWrapper taskWrapper) {
 		final SimpleTask task = taskWrapper.task;
 
 		if (mTaskStartListener != null) {
@@ -416,7 +418,7 @@ public class SimpleTaskQueue {
 
 	public interface SimpleTaskContext {
 		CatalogueDBAdapter getDb();
-        void setRequiresFinish(boolean requiresFinish);
+        void setRequiresFinish(final boolean requiresFinish);
         boolean getRequiresFinish();
         boolean isTerminating();
 	}

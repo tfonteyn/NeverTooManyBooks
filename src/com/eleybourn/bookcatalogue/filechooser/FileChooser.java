@@ -20,6 +20,8 @@
 package com.eleybourn.bookcatalogue.filechooser;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
@@ -73,6 +75,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
         return R.layout.activity_file_chooser_base;
     }
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -130,14 +133,14 @@ public abstract class FileChooser extends BookCatalogueActivity implements
      *
      * @param file Selected file
      */
-    protected abstract void onOpen(File file);
+    protected abstract void onOpen(@NonNull final File file);
 
     /**
      * Implemented by subclass to handle a click on the 'Save' button
      *
      * @param file Selected file
      */
-    protected abstract void onSave(File file);
+    protected abstract void onSave(@NonNull final File file);
 
     /**
      * Local handler for 'Open'. Perform basic validation, and pass on.
@@ -175,7 +178,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
      * Called by lister fragment to pass on the list of files.
      */
     @Override
-    public void onGotFileList(File root, ArrayList<FileDetails> list) {
+    public void onGotFileList(@NonNull final File root, @NonNull final ArrayList<FileDetails> list) {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.browser_fragment);
         if (frag != null && frag instanceof FileListerListener) {
             ((FileListerListener) frag).onGotFileList(root, list);
@@ -185,13 +188,14 @@ public abstract class FileChooser extends BookCatalogueActivity implements
     /**
      * Get an object for building an list of files in background.
      */
-    protected abstract FileLister getFileLister(File root);
+    protected abstract FileLister getFileLister(@NonNull final File root);
 
     /**
      * Rebuild the file list in background; gather whatever data is necessary to
      * ensure fast building of views in the UI thread.
      */
-    public void onPathChanged(File root) {
+    @Override
+    public void onPathChanged(@Nullable final File root) {
         if (root == null || !root.isDirectory())
             return;
 

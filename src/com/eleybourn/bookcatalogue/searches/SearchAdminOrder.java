@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.searches;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckedTextView;
@@ -75,17 +76,17 @@ public class SearchAdminOrder extends BookCatalogueListActivity {
         }
 
         @Override
-        protected void onSetupView(int position, View convertView, final SearchManager.SearchSite site) {
+        protected void onSetupView(@NonNull View convertView, @NonNull final SearchManager.SearchSite item, int position) {
             final TextView name = convertView.findViewById(R.id.row_name);
-            name.setText(site.name);
+            name.setText(item.name);
 
             final CheckedTextView enabled = convertView.findViewById(R.id.row_enabled);
-            enabled.setChecked(site.enabled);
+            enabled.setChecked(item.enabled);
             enabled.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
                     enabled.setChecked(!enabled.isChecked());
-                    site.enabled = enabled.isChecked();
+                    item.enabled = enabled.isChecked();
                 }
             });
         }

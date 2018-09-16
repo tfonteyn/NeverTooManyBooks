@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
-import android.support.annotation.NonNull;
-
 import java.util.Comparator;
 
 /**
@@ -31,7 +29,7 @@ import java.util.Comparator;
  */
 public class PropertyComparator implements Comparator<Property> {
     @Override
-    public int compare(@NonNull final Property lhs, @NonNull final Property rhs) {
+    public int compare(final Property lhs, final Property rhs) {
         // First compare their groups
         int gCmp = PropertyGroup.compare(lhs.getGroup(), rhs.getGroup());
         if (gCmp != 0)

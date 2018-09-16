@@ -204,10 +204,11 @@ public class BackupUtils {
         Set<T> keySet();
 
         /** Get the object for the specified key */
-        Object get(T key);
+        Object get(@NonNull final T key);
 
         /** Process the passed item to store in the collection */
-        void putItem(final Bundle bundle, @NonNull final String key, @NonNull final String type, @NonNull final String value) throws IOException;
+        void putItem(@NonNull final Bundle bundle, @NonNull final String key,
+                     @NonNull final String type, @NonNull final String value) throws IOException;
     }
 
     /**
@@ -233,7 +234,8 @@ public class BackupUtils {
         }
 
         @Override
-        public void putItem(final Bundle bundle, @NonNull final String key, @NonNull final String type, @NonNull final String value) throws IOException {
+        public void putItem(@NonNull final Bundle bundle, @NonNull final String key,
+                            @NonNull final String type, @NonNull final String value) throws IOException {
             switch (type) {
                 case TYPE_INTEGER:
                     mBundle.putInt(key, Integer.parseInt(value));
@@ -297,7 +299,8 @@ public class BackupUtils {
         }
 
         @Override
-        public void putItem(Bundle bundle, @NonNull final String key, @NonNull final String type, @NonNull final String value) {
+        public void putItem(@NonNull final Bundle bundle, @NonNull final String key,
+                            @NonNull final String type, @NonNull final String value) {
             switch (type) {
                 case TYPE_INTEGER:
                     mEditor.putInt(key, Integer.parseInt(value));

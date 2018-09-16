@@ -26,6 +26,8 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.utils.*;
 
@@ -204,9 +206,8 @@ public class UpdateThumbnailsThread extends ManagedTask {
                 if (tmpThumbWanted) {
                     // delete any temporary thumbnails //
                     try {
-                        File delthumb = StorageUtils.getTempThumbnail();
                         //noinspection ResultOfMethodCallIgnored
-                        delthumb.delete();
+                        StorageUtils.getTempThumbnail().delete();
                     } catch (Exception e) {
                         // do nothing - this is the expected behaviour
                     }

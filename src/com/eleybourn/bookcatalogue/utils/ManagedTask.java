@@ -149,7 +149,7 @@ abstract public class ManagedTask extends Thread {
         // Queue the 'onTaskFinished' message; this should also inform the TaskManager
         mMessageSwitch.send(mMessageSenderId, new MessageSwitch.Message<TaskListener>() {
                     @Override
-                    public boolean deliver(TaskListener listener) {
+                    public boolean deliver(@NonNull TaskListener listener) {
                         listener.onTaskFinished(ManagedTask.this);
                         return false;
                     }

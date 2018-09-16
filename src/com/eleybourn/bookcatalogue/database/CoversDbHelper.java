@@ -30,6 +30,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQuery;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -38,8 +39,10 @@ import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
-import com.eleybourn.bookcatalogue.database.DbUtils.TableDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.IndexDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.cursors.TrackedCursor;
+import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -79,15 +82,15 @@ public class CoversDbHelper implements AutoCloseable {
             return new TrackedCursor(masterQuery, editTable, query, mSynchronizer);
         }
     };
-    private static final DomainDefinition DOM_ID = new DomainDefinition("_id", "integer", "primary key autoincrement", "");
-    private static final DomainDefinition DOM_DATE = new DomainDefinition("date", "datetime", "default current_timestamp", "not null");
+    private static final DomainDefinition DOM_ID = new DomainDefinition("_id", "integer", "", "primary key autoincrement");
+    private static final DomainDefinition DOM_DATE = new DomainDefinition("date", "datetime", "not null", "default current_timestamp");
 
     // Domain definitions
-    private static final DomainDefinition DOM_TYPE = new DomainDefinition("type", "text", "", "not null");    // T = Thumbnail; C = cover?
-    private static final DomainDefinition DOM_IMAGE = new DomainDefinition("image", "blob", "", "not null");
-    private static final DomainDefinition DOM_WIDTH = new DomainDefinition("width", "integer", "", "not null");
-    private static final DomainDefinition DOM_HEIGHT = new DomainDefinition("height", "integer", "", "not null");
-    private static final DomainDefinition DOM_SIZE = new DomainDefinition("size", "integer", "", "not null");
+    private static final DomainDefinition DOM_TYPE = new DomainDefinition("type", "text", "not null", "");    // T = Thumbnail; C = cover?
+    private static final DomainDefinition DOM_IMAGE = new DomainDefinition("image", "blob", "not null", "");
+    private static final DomainDefinition DOM_WIDTH = new DomainDefinition("width", "integer", "not null", "");
+    private static final DomainDefinition DOM_HEIGHT = new DomainDefinition("height", "integer", "not null", "");
+    private static final DomainDefinition DOM_SIZE = new DomainDefinition("size", "integer", "not null", "");
     private static final DomainDefinition DOM_FILENAME = new DomainDefinition("filename", "text", "", "");
     // table definitions
     private static final TableDefinition TBL_IMAGE = new TableDefinition("image",
@@ -146,7 +149,7 @@ public class CoversDbHelper implements AutoCloseable {
      */
     private CoversDbHelper(Context context) {
         if (mSyncedDb == null) {
-            SQLiteOpenHelper mHelper = new CoversHelper(context,
+            final SQLiteOpenHelper mHelper = new CoversHelper(context,
                     StorageUtils.getFile(COVERS_DATABASE_NAME).getAbsolutePath(),
                     mTrackedCursorFactory,
                     COVERS_DATABASE_VERSION);
@@ -220,8 +223,22 @@ public class CoversDbHelper implements AutoCloseable {
      * TODO: is this note still true ?
      * NOTE: Any changes to the resulting name MUST be reflect in CoversDbHelper.eraseCachedBookCover()
      */
-    public static String getThumbnailCoverCacheId(final String hash, final int maxWidth, final int maxHeight) {
+    public static String getThumbnailCoverCacheId(@NonNull final String hash, final int maxWidth, final int maxHeight) {
         return hash + ".thumb." + maxWidth + "x" + maxHeight + ".jpg";
+    }
+
+    /**
+     * Given arrays of table and index definitions, create the database.
+     *  @param db     Blank database
+     * @param tables Table list
+     */
+    static void createTables(@NonNull final SynchronizedDb db, @NonNull final TableDefinition[] tables) {
+        for (TableDefinition t : tables) {
+            t.create(db, true);
+            for (IndexDefinition i : t.getIndexes()) {
+                db.execSQL(i.getSql());
+            }
+        }
     }
 
     @Override
@@ -450,7 +467,7 @@ public class CoversDbHelper implements AutoCloseable {
         // We use encodeString here because it's possible a user screws up the data and imports
         // bad UUIDs...this has happened.
         String sql = DOM_FILENAME + " glob '" + CatalogueDBAdapter.encodeString(uuid) + ".*'";
-        mSyncedDb.delete(TBL_IMAGE.getName(), sql, CatalogueDBAdapter.EMPTY_STRING_ARRAY);
+        mSyncedDb.delete(TBL_IMAGE.getName(), sql, new String[]{});
     }
 
     /**
@@ -476,7 +493,7 @@ public class CoversDbHelper implements AutoCloseable {
          */
         @Override
         public void onCreate(SQLiteDatabase db) {
-            DbUtils.createTables(new SynchronizedDb(db, mSynchronizer), TABLES, true);
+            createTables(new SynchronizedDb(db, mSynchronizer), TABLES);
         }
 
         /**

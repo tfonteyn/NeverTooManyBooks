@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.scanner;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 
@@ -39,16 +40,16 @@ public class Pic2ShopScanner implements Scanner {
                 || isProScannerAppInstalled(BookCatalogueApp.getAppContext());
     }
 
-    private static boolean isIntentAvailable(Context ctx, String action) {
+    private static boolean isIntentAvailable(@NonNull final Context ctx, @NonNull final String action) {
         Intent test = new Intent(action);
         return ctx.getPackageManager().resolveActivity(test, 0) != null;
     }
 
-    private static boolean isFreeScannerAppInstalled(Context ctx) {
+    private static boolean isFreeScannerAppInstalled(@NonNull final Context ctx) {
         return isIntentAvailable(ctx, ACTION);
     }
 
-    private static boolean isProScannerAppInstalled(Context ctx) {
+    private static boolean isProScannerAppInstalled(@NonNull final Context ctx) {
         return isIntentAvailable(ctx, ACTION);
     }
 
@@ -59,7 +60,7 @@ public class Pic2ShopScanner implements Scanner {
      * one of the intents is valid, or catch the resulting errors.
      */
     @Override
-    public void startActivityForResult(final Activity a, final int requestCode) {
+    public void startActivityForResult(@NonNull final  Activity a, final int requestCode) {
         Intent i;
         if (isFreeScannerAppInstalled(a)) {
             i = new Intent(ACTION);
@@ -75,7 +76,7 @@ public class Pic2ShopScanner implements Scanner {
      * Extract the barcode from the result
      */
     @Override
-    public String getBarcode(Intent intent) {
+    public String getBarcode(@NonNull final Intent intent) {
         String barcode = intent.getStringExtra(BARCODE);
         String barcodeFormat = intent.getStringExtra(FORMAT);
         if (barcodeFormat != null && !barcodeFormat.equalsIgnoreCase(BARCODE_FORMAT)) {
@@ -88,19 +89,19 @@ public class Pic2ShopScanner implements Scanner {
         String PACKAGE = "com.visionsmarts.pic2shop";
     }
 
-    public interface Pro {
-        String PACKAGE = "com.visionsmarts.pic2shoppro";
-    }
+//    public interface Pro {
+//        String PACKAGE = "com.visionsmarts.pic2shoppro";
+//    }
 
-//	public static void launchMarketToInstallFreeScannerApp(Context ctx) {
+//	public static void launchMarketToInstallFreeScannerApp(@NonNull final Context ctx) {
 //		launchMarketToInstallApp(ctx, PACKAGE);
 //	}
 //
-//	public static void launchMarketToInstallProScannerApp(Context ctx) {
+//	public static void launchMarketToInstallProScannerApp(@NonNull final Context ctx) {
 //		launchMarketToInstallApp(ctx, Pro.PACKAGE);
 //	}
 //
-//	public static void launchMarketToInstallApp(Context ctx, String pkgName) {
+//	public static void launchMarketToInstallApp(@NonNull final Context ctx, @NonNull final String pkgName) {
 //		try {
 //			Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + pkgName));
 //			ctx.startActivity(intent);

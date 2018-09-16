@@ -34,20 +34,20 @@ public class AndValidator extends MetaValidator implements DataValidator {
     public static final long serialVersionUID = 1L;
 
     // Constructors
-    public AndValidator(DataValidator v1) {
+    public AndValidator(@NonNull final DataValidator v1) {
         super(v1);
     }
 
-    public AndValidator(DataValidator v1, DataValidator v2) {
+    public AndValidator(@NonNull final DataValidator v1, @NonNull final DataValidator v2) {
         super(v1, v2);
     }
 
-    public AndValidator(DataValidator v1, DataValidator v2, DataValidator v3) {
+    public AndValidator(@NonNull final DataValidator v1, @NonNull final DataValidator v2, @NonNull final DataValidator v3) {
         super(v1, v2, v3);
     }
 
     @Override
-    public void validate(@NonNull DataManager data, @NonNull Datum datum, boolean crossValidating)
+    public void validate(@NonNull DataManager data, @NonNull Datum datum, final boolean crossValidating)
             throws ValidatorException {
         for (DataValidator v : this) {
             // Only set the Bundle for the last in the list

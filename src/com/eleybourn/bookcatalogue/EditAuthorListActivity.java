@@ -33,6 +33,7 @@ import android.widget.*;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import static com.eleybourn.bookcatalogue.UniqueId.BKEY_AUTHOR_ARRAY;
@@ -53,7 +54,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     }
 
     @Override
-    protected void onSetupView(@NonNull View target, @Nullable Author object, int position) {
+    protected void onSetupView(@NonNull View target, @NonNull Author object, int position) {
         if (object != null) {
             TextView at = target.findViewById(R.id.row_author);
             if (at != null) {
@@ -93,7 +94,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         if (!authorName.isEmpty()) {
             // Get an author and try to find in DB.
             Author author = new Author(authorField.getText().toString());
-            author.id = mDb.lookupAuthorId(author);
+            author.id = mDb.getAuthorId(author);
             for (Author s : mList) {
                 if (s.equals(author)) {
                     Toast.makeText(this, getResources().getString(R.string.author_already_in_list), Toast.LENGTH_LONG).show();
@@ -109,7 +110,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     }
 
     @Override
-    protected void onRowClick(View target, final Author author, int position) {
+    protected void onRowClick(@NonNull View target, @NonNull final Author author, int position) {
         final Dialog dialog = new StandardDialogs.BasicDialog(this);
         dialog.setContentView(R.layout.dialog_edit_author);
         dialog.setTitle(R.string.edit_author_details);
@@ -161,8 +162,8 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         }
 
         // Get the new author ID
-        oldAuthor.id = mDb.lookupAuthorId(oldAuthor);
-        newAuthor.id = mDb.lookupAuthorId(newAuthor);
+        oldAuthor.id = mDb.getAuthorId(oldAuthor);
+        newAuthor.id = mDb.getAuthorId(newAuthor);
 
         // See if the old author is used in any other books.
         long nRefs = mDb.getAuthorBookCount(oldAuthor) + mDb.getAuthorAnthologyCount(oldAuthor);
@@ -210,7 +211,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     }
 
     @Override
-    protected boolean onSave(Intent intent) {
+    protected boolean onSave(@NonNull Intent intent) {
         final AutoCompleteTextView t = EditAuthorListActivity.this.findViewById(R.id.author);
         Resources res = this.getResources();
         String s = t.getText().toString().trim();

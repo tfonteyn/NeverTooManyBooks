@@ -125,10 +125,10 @@ public class BCQueueManager extends QueueManager {
         }
 
         @Override
-        public void addContextMenuItems(@NonNull final Context ctx, AdapterView<?> parent,
-                                        View v, int position, long id,
-                                        @NonNull final ArrayList<ContextDialogItem> items,
-                                        Object appInfo) {
+        public void addContextMenuItems(final Context ctx, final AdapterView<?> parent,
+                                        final View v, final int position, final long id,
+                                        final ArrayList<ContextDialogItem> items,
+                                        final Object appInfo) {
 
             items.add(new ContextDialogItem(ctx.getString(R.string.delete_event), new Runnable() {
                 @Override
@@ -154,10 +154,10 @@ public class BCQueueManager extends QueueManager {
         }
 
         @Override
-        public void addContextMenuItems(@NonNull final Context ctx, AdapterView<?> parent,
-                                        View v, int position, long id,
-                                        @NonNull final  ArrayList<ContextDialogItem> items,
-                                        Object appInfo) {
+        public void addContextMenuItems(final Context ctx, final AdapterView<?> parent,
+                                        final View v, final int position, final long id,
+                                        final  ArrayList<ContextDialogItem> items,
+                                        final Object appInfo) {
 
             items.add(new ContextDialogItem(ctx.getString(R.string.delete_task), new Runnable() {
                 @Override

@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -112,7 +113,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 						 * Validate the key by getting a known cover
 						 */
 						@Override
-						public void run(SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
+						public void run(@NonNull SimpleTaskQueueProgressFragment fragment, @NonNull SimpleTaskContext taskContext) {
 							//TEST Library Thing
 							Bundle tmp = new Bundle(); 
 							LibraryThingManager ltm = new LibraryThingManager(AdministrationLibraryThing.this);
@@ -132,7 +133,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 						}
 
 						@Override
-						public void onFinish(SimpleTaskQueueProgressFragment fragment, Exception exception) {
+						public void onFinish(@NonNull SimpleTaskQueueProgressFragment fragment, Exception exception) {
 						}
 
 					};

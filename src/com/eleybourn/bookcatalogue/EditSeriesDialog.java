@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.entities.Series;
 
 public class EditSeriesDialog {
 	private final Context mContext;
@@ -98,8 +99,8 @@ public class EditSeriesDialog {
 		}
 
 		// Get the new IDs
-		oldSeries.id = mDb.lookupSeriesId(oldSeries);
-		newSeries.id = mDb.lookupSeriesId(newSeries);
+		oldSeries.id = mDb.getSeriesId(oldSeries);
+		newSeries.id = mDb.getSeriesId(newSeries);
 
 		// Case: series is the same (but different case)
 		if (newSeries.id == oldSeries.id) {

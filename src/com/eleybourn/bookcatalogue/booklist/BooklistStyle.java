@@ -23,11 +23,11 @@ package com.eleybourn.bookcatalogue.booklist;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BooksMultitypeListHandler;
+import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.database.DomainDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.properties.BooleanListProperty;
 import com.eleybourn.bookcatalogue.properties.BooleanProperty;
 import com.eleybourn.bookcatalogue.properties.IntegerListProperty;
@@ -59,11 +59,11 @@ import java.util.Iterator;
  * - add it to {@link BooklistGroup.RowKinds} Update {@link BooklistGroup.RowKinds#ROW_KIND_MAX}
  * - add new domain to {@link DatabaseDefinitions } (if necessary)
  * - modify {@link BooklistBuilder#build} to add the necessary grouped/sorted domains
- * - modify {@link BooksMultitypeListHandler}; if it is just a string field,
- * then use a {@link BooksMultitypeListHandler.GenericStringHolder}.
+ * - modify {@link BooksMultiTypeListHandler}; if it is just a string field,
+ * then use a {@link BooksMultiTypeListHandler.GenericStringHolder}.
  * Otherwise add a new holder.
  *
- * Need to at least modify {@link BooksMultitypeListHandler#newHolder}
+ * Need to at least modify {@link BooksMultiTypeListHandler#newHolder}
  *
  * @author Philip Warner
  */

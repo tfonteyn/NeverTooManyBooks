@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.entities.Author;
 
 public class EditAuthorDialog {
 	private final Context mContext;
@@ -92,8 +93,8 @@ public class EditAuthorDialog {
 		}
 
 		// Get the new author ID
-		oldAuthor.id = mDb.lookupAuthorId(oldAuthor);
-		newAuthor.id = mDb.lookupAuthorId(newAuthor);
+		oldAuthor.id = mDb.getAuthorId(oldAuthor);
+		newAuthor.id = mDb.getAuthorId(newAuthor);
 
 		// Case: author is the same, or is only used in this book
 		if (newAuthor.id == oldAuthor.id) {

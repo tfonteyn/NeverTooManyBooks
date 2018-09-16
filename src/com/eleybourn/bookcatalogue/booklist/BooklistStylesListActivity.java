@@ -102,7 +102,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
     }
 
     @Override
-    protected void onSetupView(@NonNull View target, BooklistStyle style, int position) {
+    protected void onSetupView(@NonNull View target, @NonNull BooklistStyle style, int position) {
         Holder holder;
         holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
         if (holder == null) {
@@ -152,7 +152,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
      * Use the RowClick to present a pseudo context menu.
      */
     @Override
-    protected void onRowClick(View target, final BooklistStyle style, final int position) {
+    protected void onRowClick(@NonNull View target, @NonNull final BooklistStyle style, final int position) {
         // Build the array of menu items based on the style we are editing
         final ArrayList<ContextItem> items = new ArrayList<>();
         if (style.isUserDefined()) {

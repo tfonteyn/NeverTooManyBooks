@@ -352,7 +352,7 @@ public class CoverBrowser {
         }
 
         @Override
-        public void run(SimpleTaskContext taskContext) {
+        public void run(@NonNull SimpleTaskContext taskContext) {
             // Get some editions
             // ENHANCE: the list of editions should be expanded to somehow include Amazon and Google. As well
             // as the alternate user-contributed images from LibraryThing. The latter are often the best
@@ -400,7 +400,7 @@ public class CoverBrowser {
         }
 
         @Override
-        public void run(SimpleTaskContext taskContext) {
+        public void run(@NonNull SimpleTaskContext taskContext) {
             // Start the download
             mFilename = mFileManager.download(mIsbn, ImageSizes.SMALL);
             File file = new File(mFilename);
@@ -443,7 +443,7 @@ public class CoverBrowser {
         }
 
         @Override
-        public void run(SimpleTaskContext taskContext) {
+        public void run(@NonNull SimpleTaskContext taskContext) {
             // If we are shutdown, just return
             if (mShutdown) {
                 taskContext.setRequiresFinish(false);

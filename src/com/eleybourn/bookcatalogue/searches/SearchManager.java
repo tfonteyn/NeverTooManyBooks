@@ -24,12 +24,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.Author;
+import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.Series;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
@@ -242,11 +242,11 @@ public class SearchManager implements TaskManagerListener {
      * Other taskManager messages...we ignore them
      */
     @Override
-    public void onProgress(int count, int max, String message) {
+    public void onProgress(int count, int max, @NonNull String message) {
     }
 
     @Override
-    public void onToast(String message) {
+    public void onToast(@NonNull String message) {
     }
 
     @Override
@@ -594,7 +594,7 @@ public class SearchManager implements TaskManagerListener {
     private void sendSearchFinished() {
         mMessageSwitch.send(mMessageSenderId, new MessageSwitch.Message<SearchListener>() {
                     @Override
-                    public boolean deliver(SearchListener listener) {
+                    public boolean deliver(@NonNull SearchListener listener) {
                         return listener.onSearchFinished(mBookData, mCancelledFlg);
                     }
                 }

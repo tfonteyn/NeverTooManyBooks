@@ -23,7 +23,7 @@ package com.eleybourn.bookcatalogue.booklist;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle.CompoundKey;
-import com.eleybourn.bookcatalogue.database.DomainDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.properties.BooleanListProperty;
 import com.eleybourn.bookcatalogue.properties.ListProperty.ItemEntries;
 import com.eleybourn.bookcatalogue.properties.Properties;
@@ -201,7 +201,7 @@ public class BooklistGroup implements Serializable {
      * Adding new row types needs to involve changes to:
      *
      * - BooklistBuilder (to build the correct SQL)
-     * - BooksMultitypeListHandler (to know what to do with the new type)
+     * - BooksMultiTypeListHandler (to know what to do with the new type)
      *
      * @author Philip Warner
      */

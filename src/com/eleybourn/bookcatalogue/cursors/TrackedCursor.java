@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.cursors;
 
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -32,6 +33,7 @@ import java.io.Closeable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * DEBUG_TRACKED_CURSER CLASS to help com.eleybourn.bookcatalogue.debug cursor leakage.
@@ -50,7 +52,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
     /* =========== */
 
     /** Used as a collection of known cursors */
-    private static final HashSet<WeakReference<TrackedCursor>> mCursors = new HashSet<>();
+    private static final Set<WeakReference<TrackedCursor>> mCursors = new HashSet<>();
     /** Global counter for unique cursor IDs */
     private static Long mIdCounter = 0L;
 
@@ -67,7 +69,8 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
     /** Already closed */
     private boolean mIsClosedFlg = false;
 
-    public TrackedCursor(SQLiteCursorDriver driver, String editTable, SQLiteQuery query, Synchronizer sync) {
+    public TrackedCursor(@NonNull final SQLiteCursorDriver driver, @NonNull final String editTable,
+                         @NonNull final SQLiteQuery query, @NonNull final Synchronizer sync) {
         super(driver, editTable, query, sync);
 
         if (DEBUG_SWITCHES.DEBUG_TRACKED_CURSER && BuildConfig.DEBUG) {
@@ -98,17 +101,16 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
      */
     @SuppressWarnings("unused")
     public static long getCursorCountApproximate() {
-        long count = 0;
         if (DEBUG_SWITCHES.DEBUG_TRACKED_CURSER && BuildConfig.DEBUG) {
             synchronized (mCursors) {
-                count = mCursors.size();
+                return mCursors.size();
             }
         }
-        return count;
+        return 0;
     }
 
     /**
-     * DEBUG_TRACKED_CURSER
+     * DEBUG
      *
      * Get the total number of open cursors; verifies that existing weak refs are valid
      * and removes from collection if not.
@@ -139,7 +141,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
     }
 
     /**
-     * DEBUG_TRACKED_CURSER Dump all open cursors to System.out.
+     * DEBUG Dump all open cursors to System.out.
      */
     public static void dumpCursors() {
         if (DEBUG_SWITCHES.DEBUG_TRACKED_CURSER && BuildConfig.DEBUG) {
@@ -153,7 +155,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
     }
 
     /**
-     * DEBUG_TRACKED_CURSER
+     * DEBUG
      *
      * Get a collection of open cursors at the current time.
      */

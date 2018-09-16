@@ -1,7 +1,10 @@
-package com.eleybourn.bookcatalogue.database;
+package com.eleybourn.bookcatalogue.database.definitions;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DbSync;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,10 +12,6 @@ import java.util.Map;
 
 /**
  * Details of a database table.
- *
- * This used to be an inner class of {@link CatalogueDBAdapter}
- * Externalised ONLY because of the size of the class
- * ONLY used by {@link CatalogueDBAdapter} and {@link DatabaseHelper}
  *
  * @author Philip Warner
  */
@@ -22,18 +21,22 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
     public static final int CLASS_TEXT = 2;
     public static final int CLASS_REAL = 3;
 
-    static final String TYPE_INT = "int";
-    static final String TYPE_INTEGER = "integer";
+    public static final String TYPE_INT = "int";
+    public static final String TYPE_INTEGER = "integer";
+
     public static final String TYPE_TEXT = "text";
-    static final String TYPE_DATE = "date";
-    static final String TYPE_FLOAT = "float";
-    static final String TYPE_BLOB = "blob";
-    static final String TYPE_BOOLEAN = "boolean";
+
+    public static final String TYPE_BLOB = "blob";
+    public static final String TYPE_BOOLEAN = "boolean";
+    public static final String TYPE_DATE = "date";
+    public static final String TYPE_DATETIME = "datetime";
+    public static final String TYPE_FLOAT = "float";
+
 
     private final Map<String, ColumnInfo> mColumns;
     private final DbSync.SynchronizedDb mSyncedDb;
 
-    TableInfo(DbSync.SynchronizedDb db, String tableName) {
+    public TableInfo(DbSync.SynchronizedDb db, String tableName) {
         mSyncedDb = db;
         mColumns = describeTable(tableName);
     }

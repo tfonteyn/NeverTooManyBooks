@@ -22,11 +22,11 @@ package com.eleybourn.bookcatalogue.backup;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.Author;
+import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookData;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.Series;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
@@ -211,7 +211,7 @@ public class CsvImporter implements Importer {
                     hasUuid = false;
                 }
 
-                requireNonblank(values, row, KEY_TITLE);
+                requireNonBlank(values, row, KEY_TITLE);
                 final String title = values.getString(KEY_TITLE);
 
                 // Keep author handling stuff local
@@ -382,7 +382,7 @@ public class CsvImporter implements Importer {
             anthology = 0;
         }
         if (anthology != 0) {
-            int id = Integer.parseInt(values.getString(KEY_ID));
+            long id = Integer.parseInt(values.getString(KEY_ID));
             // We have anthology details, delete the current details.
             db.deleteAnthologyTitles(id, false);
             int oldi = 0;
@@ -394,9 +394,11 @@ public class CsvImporter implements Importer {
 
                     int j = extracted_title.indexOf("*");
                     if (j > -1) {
-                        String anth_title = extracted_title.substring(0, j).trim();
-                        String anth_author = extracted_title.substring((j + 1)).trim();
-                        db.createAnthologyTitle(id, anth_author, anth_title, true, false);
+                        String ant_title = extracted_title.substring(0, j).trim();
+                        String ant_author = extracted_title.substring((j + 1)).trim();
+
+                        Author author = Author.toAuthor(ant_author);
+                        db.createAnthologyTitle(id, author, ant_title, true, false);
                     }
                     oldi = i + 1;
                     i = anthology_titles.indexOf("|", oldi);
@@ -458,7 +460,7 @@ public class CsvImporter implements Importer {
 
         // A pre-existing bug sometimes results in blank author-details due to bad underlying data
         // (it seems a 'book' record gets written without an 'author' record; should not happen)
-        // so we allow blank author_details and full in a regionalized version of "Author, Unknown"
+        // so we allow blank author_details and full in a regional version of "Author, Unknown"
         if (authorDetails == null || authorDetails.isEmpty()) {
             authorDetails = BookCatalogueApp.getResourceString(R.string.author) + ", " + BookCatalogueApp.getResourceString(R.string.unknown);
             //String s = BookCatalogueApp.getResourceString(R.string.column_is_blank);
@@ -581,7 +583,7 @@ public class CsvImporter implements Importer {
             case 'n':
                 return '\n';
             default:
-                // Handle simple escapes. We could go further and allow arbitrary numeric wchars by
+                // Handle simple escapes. We could go further and allow arbitrary numeric chars by
                 // testing for numeric sequences here but that is beyond the scope of this app.
                 return c;
         }
@@ -596,14 +598,14 @@ public class CsvImporter implements Importer {
         throw new ImportException(BookCatalogueApp.getResourceString(R.string.file_must_contain_any_column, Utils.join(",", names)));
     }
 
-    private void requireNonblank(@NonNull final BookData values, int row, String name) throws ImportException {
+    private void requireNonBlank(@NonNull final BookData values, int row, String name) throws ImportException {
         if (!values.getString(name).isEmpty())
             return;
         throw new ImportException(BookCatalogueApp.getResourceString(R.string.column_is_blank, name, row));
     }
 
     @SuppressWarnings("unused")
-    private void requireAnyNonblank(@NonNull final BookData values, int row, String... names) throws ImportException {
+    private void requireAnyNonBlank(@NonNull final BookData values, int row, String... names) throws ImportException {
         for (String name : names)
             if (values.containsKey(name) && !values.getString(name).isEmpty())
                 return;

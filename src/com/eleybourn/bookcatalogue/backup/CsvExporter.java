@@ -206,9 +206,9 @@ public class CsvExporter implements Exporter {
                             try (Cursor titles = db.fetchAnthologyTitlesByBook(id)) {
                                 if (titles.moveToFirst()) {
                                     do {
-                                        String anth_title = titles.getString(titles.getColumnIndexOrThrow(DOM_TITLE.name));
-                                        String anth_author = titles.getString(titles.getColumnIndexOrThrow(DOM_AUTHOR_NAME.name));
-                                        anthology_titles.append(anth_title).append(" * ").append(anth_author).append("|");
+                                        String ant_title = titles.getString(titles.getColumnIndexOrThrow(DOM_TITLE.name));
+                                        String ant_author = titles.getString(titles.getColumnIndexOrThrow(DOM_AUTHOR_NAME.name));
+                                        anthology_titles.append(ant_title).append(" * ").append(ant_author).append("|");
                                     } while (titles.moveToNext());
                                 }
                             }

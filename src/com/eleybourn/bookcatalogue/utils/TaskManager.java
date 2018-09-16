@@ -52,9 +52,9 @@ public class TaskManager implements AutoCloseable {
 	 * @author Philip Warner
 	 */
 	public interface TaskManagerListener {
-		void onTaskEnded(TaskManager manager, ManagedTask task);
-		void onProgress(int count, int max, String message);
-		void onToast(String message);
+		void onTaskEnded(@NonNull final TaskManager manager, @NonNull final ManagedTask task);
+		void onProgress(final int count, final int max, @NonNull final String message);
+		void onToast(@NonNull final String message);
 		void onFinished();
 	}
 
@@ -79,13 +79,13 @@ public class TaskManager implements AutoCloseable {
 		private final TaskManager mManager;
 		private final ManagedTask mTask;
 
-		OnTaskEndedMessage(TaskManager manager, ManagedTask task) {
+		OnTaskEndedMessage(@NonNull final TaskManager manager, @NonNull final ManagedTask task) {
 			mManager = manager;
 			mTask = task;
 		}
 
 		@Override
-		public boolean deliver(TaskManagerListener listener) {
+		public boolean deliver(@NonNull final TaskManagerListener listener) {
 			listener.onTaskEnded(mManager, mTask);
 			return false;
 		}
@@ -96,14 +96,14 @@ public class TaskManager implements AutoCloseable {
 		private final int mMax;
 		private final String mMessage;
 		
-		OnProgressMessage(int count, int max, String message) {
+		OnProgressMessage(final int count, final int max, @NonNull final String message) {
 			mCount = count;
 			mMax = max;
 			mMessage = message;
 		}
 
 		@Override
-		public boolean deliver(TaskManagerListener listener) {
+		public boolean deliver(@NonNull final TaskManagerListener listener) {
 			listener.onProgress(mCount, mMax, mMessage);
 			return false;
 		}
@@ -112,12 +112,12 @@ public class TaskManager implements AutoCloseable {
 	public static class OnToastMessage implements Message<TaskManagerListener> {
 		private final String mMessage;
 		
-		OnToastMessage(String message) {
+		OnToastMessage(@NonNull final String message) {
 			mMessage = message;
 		}
 
 		@Override
-		public boolean deliver(TaskManagerListener listener) {
+		public boolean deliver(@NonNull final TaskManagerListener listener) {
 			listener.onToast(mMessage);
 			return false;
 		}
@@ -125,7 +125,7 @@ public class TaskManager implements AutoCloseable {
 
 	public static class OnFinishedMessage implements Message<TaskManagerListener> {
 		@Override
-		public boolean deliver(TaskManagerListener listener) {
+		public boolean deliver(@NonNull final TaskManagerListener listener) {
 			listener.onFinished();
 			return false;
 		}
@@ -149,9 +149,9 @@ public class TaskManager implements AutoCloseable {
 	/** 
 	 * Object for SENDING messages specific to this instance 
 	 */
-	private final long mMessageSenderId = mMessageSwitch.createSender(mController);
+	private final Long mMessageSenderId = mMessageSwitch.createSender(mController);
 
-	public long getSenderId() {
+	public Long getSenderId() {
 		return mMessageSenderId;
 	}
 

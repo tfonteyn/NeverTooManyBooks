@@ -45,8 +45,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter.AnthologyTitleExistsException;
-import com.eleybourn.bookcatalogue.database.TableInfo;
+import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
+import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaEntryHandler;
 import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaHandler;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -396,18 +398,18 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         }
 
         @Override
-        protected void onSetupView(int position, View convertView, AnthologyTitle anthology) {
+        protected void onSetupView(@NonNull View convertView, @NonNull AnthologyTitle item, int position) {
             TextView author = convertView.findViewById(R.id.row_author);
-            author.setText(anthology.getAuthor().getDisplayName());
+            author.setText(item.getAuthor().getDisplayName());
             TextView title = convertView.findViewById(R.id.row_title);
-            title.setText(anthology.getTitle());
+            title.setText(item.getTitle());
         }
 
         @Override
-        protected void onRowClick(View v, AnthologyTitle anthology, int position) {
+        protected void onRowClick(@NonNull View v, @NonNull AnthologyTitle item, int position) {
+            mTitleText.setText(item.getTitle());
+            mAuthorText.setText(item.getAuthor().getDisplayName());
             mEditPosition = position;
-            mTitleText.setText(anthology.getTitle());
-            mAuthorText.setText(anthology.getAuthor().getDisplayName());
             mAdd.setText(R.string.anthology_save);
         }
 

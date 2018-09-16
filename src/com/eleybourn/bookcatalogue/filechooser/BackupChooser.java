@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.filechooser;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
@@ -103,13 +104,14 @@ public class BackupChooser extends FileChooser implements
      * Get a task suited to building a list of backup files.
      */
     @Override
-    public FileLister getFileLister(File root) {
+    public FileLister getFileLister(@NonNull File root) {
         return new BackupLister(root);
     }
 
     /**
      * Save the state
      */
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mBackupFile != null) {
@@ -121,7 +123,7 @@ public class BackupChooser extends FileChooser implements
      * If a file was selected, restore the archive.
      */
     @Override
-    public void onOpen(File file) {
+    public void onOpen(@NonNull final File file) {
         ImportTypeSelectionDialogFragment frag = ImportTypeSelectionDialogFragment.newInstance(DIALOG_OPEN_IMPORT_TYPE, file);
         frag.show(getSupportFragmentManager(), null);
     }
@@ -130,13 +132,15 @@ public class BackupChooser extends FileChooser implements
      * If a file was selected, save the archive.
      */
     @Override
-    public void onSave(File file) {
+    public void onSave(@NonNull final File file) {
         ExportTypeSelectionDialogFragment frag = ExportTypeSelectionDialogFragment.newInstance(DIALOG_OPEN_IMPORT_TYPE, file);
         frag.show(getSupportFragmentManager(), null);
     }
 
     @Override
-    public void onTaskFinished(SimpleTaskQueueProgressFragment fragment, int taskId, boolean success, boolean cancelled, FragmentTask task) {
+    public void onTaskFinished(@NonNull final SimpleTaskQueueProgressFragment fragment,
+                               final int taskId, final boolean success, final boolean cancelled,
+                               @NonNull final FragmentTask task) {
 
         // Is it a task we care about?
         switch (taskId) {
@@ -190,12 +194,13 @@ public class BackupChooser extends FileChooser implements
     }
 
     @Override
-    public void onAllTasksFinished(SimpleTaskQueueProgressFragment fragment, int taskId, boolean success, boolean cancelled) {
+    public void onAllTasksFinished(@NonNull final SimpleTaskQueueProgressFragment fragment,
+                                   final int taskId, final boolean success, final boolean cancelled) {
         // Nothing to do here; we really only care when backup tasks finish, and there's only ever one task
     }
 
     @Override
-    public void onMessageDialogResult(int dialogId, MessageDialogFragment dialog, int button) {
+    public void onMessageDialogResult(final int dialogId, @NonNull final MessageDialogFragment dialog, final int button) {
         switch (dialogId) {
             case 0:
                 // Do nothing, our dialogs with ID 0 are only 'FYI' type;
@@ -208,7 +213,8 @@ public class BackupChooser extends FileChooser implements
     }
 
     @Override
-    public void onImportTypeSelectionDialogResult(int dialogId, DialogFragment dialog, ImportTypeSelectionDialogFragment.ImportSettings settings) {
+    public void onImportTypeSelectionDialogResult(final int dialogId, @NonNull final DialogFragment dialog,
+                                                  @NonNull final ImportTypeSelectionDialogFragment.ImportSettings settings) {
         switch (settings.options) {
 
             case Importer.IMPORT_ALL:
@@ -221,7 +227,8 @@ public class BackupChooser extends FileChooser implements
     }
 
     @Override
-    public void onExportTypeSelectionDialogResult(int dialogId, DialogFragment dialog, ExportTypeSelectionDialogFragment.ExportSettings settings) {
+    public void onExportTypeSelectionDialogResult(final int dialogId, @NonNull final DialogFragment dialog,
+                                                  @NonNull final ExportTypeSelectionDialogFragment.ExportSettings settings) {
         switch (settings.options) {
             case Exporter.EXPORT_ALL:
                 mBackupFile = BackupManager.backupCatalogue(this, settings.file, TASK_ID_SAVE, Exporter.EXPORT_ALL, null);

@@ -32,6 +32,7 @@ import android.widget.*;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import static com.eleybourn.bookcatalogue.UniqueId.BKEY_SERIES_ARRAY;
@@ -45,7 +46,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected void onSetupView(@NonNull View target, Series object, int position) {
+    protected void onSetupView(@NonNull View target, @NonNull Series object, int position) {
         if (object != null) {
             TextView dt = target.findViewById(R.id.row_series);
             if (dt != null) {
@@ -93,7 +94,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         if (!seriesTitle.isEmpty()) {
             EditText numberField = EditSeriesListActivity.this.findViewById(R.id.series_num);
             Series series = new Series(seriesTitle, numberField.getText().toString());
-            series.id = mDb.lookupSeriesId(series);
+            series.id = mDb.getSeriesId(series);
             for (Series s : mList) {
                 if (s.equals(series)) {
                     Toast.makeText(EditSeriesListActivity.this, getResources().getString(R.string.series_already_in_list), Toast.LENGTH_LONG).show();
@@ -110,7 +111,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected void onRowClick(View target, final Series series, int position) {
+    protected void onRowClick(@NonNull View target, @NonNull final Series series, int position) {
         final Dialog dialog = new StandardDialogs.BasicDialog(this);
         dialog.setContentView(R.layout.dialog_edit_book_series);
         dialog.setTitle(R.string.edit_book_series);
@@ -172,8 +173,8 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         }
 
         // Get the new IDs
-        oldSeries.id = mDb.lookupSeriesId(oldSeries);
-        newSeries.id = mDb.lookupSeriesId(newSeries);
+        oldSeries.id = mDb.getSeriesId(oldSeries);
+        newSeries.id = mDb.getSeriesId(newSeries);
 
         // See if the old series is used in any other books.
         long nRefs = mDb.getSeriesBookCount(oldSeries);
@@ -225,7 +226,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected boolean onSave(Intent intent) {
+    protected boolean onSave(@NonNull Intent intent) {
         final AutoCompleteTextView t = EditSeriesListActivity.this.findViewById(R.id.series);
         Resources res = this.getResources();
         String s = t.getText().toString().trim();

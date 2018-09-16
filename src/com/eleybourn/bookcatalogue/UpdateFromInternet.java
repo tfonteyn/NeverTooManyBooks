@@ -23,6 +23,8 @@ package com.eleybourn.bookcatalogue;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -81,9 +83,11 @@ public class UpdateFromInternet extends ActivityWithTasks {
      * @param stringId ID of field label string
      * @param usage    Usage to apply.
      */
-    private void addIfVisible(String field, String visField, int stringId, FieldUsages.Usages usage, boolean canAppend) {
-        if (visField == null || visField.trim().isEmpty())
+    private void addIfVisible(@NonNull final String field, @Nullable String visField, final int stringId, @NonNull final FieldUsages.Usages usage, final boolean canAppend) {
+        if (visField == null || visField.trim().isEmpty()) {
             visField = field;
+        }
+
         if (mPrefs.getBoolean(FieldVisibilityActivity.TAG + visField, true))
             mFieldUsages.put(new FieldUsages.FieldUsage(field, stringId, usage, canAppend));
     }
@@ -123,28 +127,28 @@ public class UpdateFromInternet extends ActivityWithTasks {
             cb.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final CheckBox thiscb = (CheckBox) v;
-                    final FieldUsages.FieldUsage usage = (FieldUsages.FieldUsage) ViewTagger.getTag(thiscb);
+                    final CheckBox cb = (CheckBox) v;
+                    final FieldUsages.FieldUsage usage = (FieldUsages.FieldUsage) ViewTagger.getTag(cb);
                     if (usage != null) {
-                        if (!thiscb.isChecked() && thiscb.getText().toString().contains(getResources().getString(R.string.usage_copy_if_blank))) {
+                        if (!cb.isChecked() && cb.getText().toString().contains(getResources().getString(R.string.usage_copy_if_blank))) {
                             if (usage.canAppend) {
-                                setCheckBoxText(thiscb, usage.stringId, R.string.usage_add_extra);
-                                thiscb.setChecked(true); //reset to checked
+                                setCheckBoxText(cb, usage.stringId, R.string.usage_add_extra);
+                                cb.setChecked(true); //reset to checked
                                 usage.usage = FieldUsages.Usages.ADD_EXTRA;
                             } else {
-                                setCheckBoxText(thiscb, usage.stringId, R.string.usage_overwrite);
-                                thiscb.setChecked(true); //reset to checked
+                                setCheckBoxText(cb, usage.stringId, R.string.usage_overwrite);
+                                cb.setChecked(true); //reset to checked
                                 usage.usage = FieldUsages.Usages.OVERWRITE;
                             }
-                        } else if (thiscb.getText().toString().contains(getResources().getString(R.string.usage_add_extra))) {
-                            setCheckBoxText(thiscb, usage.stringId, R.string.usage_overwrite);
-                            thiscb.setChecked(true); //reset to checked
+                        } else if (cb.getText().toString().contains(getResources().getString(R.string.usage_add_extra))) {
+                            setCheckBoxText(cb, usage.stringId, R.string.usage_overwrite);
+                            cb.setChecked(true); //reset to checked
                             usage.usage = FieldUsages.Usages.OVERWRITE;
-                        } else if (thiscb.getText().toString().contains(getResources().getString(R.string.usage_overwrite))) {
-                            setCheckBoxText(thiscb, usage.stringId, R.string.usage_copy_if_blank);
+                        } else if (cb.getText().toString().contains(getResources().getString(R.string.usage_overwrite))) {
+                            setCheckBoxText(cb, usage.stringId, R.string.usage_copy_if_blank);
                             usage.usage = FieldUsages.Usages.COPY_IF_BLANK;
                         }
-                        ViewTagger.setTag(thiscb, usage);
+                        ViewTagger.setTag(cb, usage);
                     }
                 }
 

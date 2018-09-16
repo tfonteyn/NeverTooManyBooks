@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
@@ -97,7 +98,7 @@ public class ThumbnailCacheWriterTask implements SimpleTask {
 	 * Do the main work in the background thread.
 	 */
 	@Override
-	public void run(SimpleTaskContext taskContext) {
+	public void run(@NonNull SimpleTaskContext taskContext) {
 		if (mBitmap.isRecycled()) {
 			// Was probably recycled by rapid scrolling of view
 			mBitmap = null;

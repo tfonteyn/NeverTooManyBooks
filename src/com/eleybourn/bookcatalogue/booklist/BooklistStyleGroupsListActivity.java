@@ -145,7 +145,7 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
 	 * Set up the view for a passed wrapper.
 	 */
 	@Override
-	protected void onSetupView(@NonNull View target, GroupWrapper wrapper, int position) {
+	protected void onSetupView(@NonNull View target, @NonNull GroupWrapper wrapper, int position) {
 		// Get a Holder
 		Holder holder;
 		holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
@@ -181,7 +181,7 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
 	 * Save the style in the resulting Intent
 	 */
 	@Override
-	protected boolean onSave(Intent intent) {
+	protected boolean onSave(@NonNull Intent intent) {
 		// Save the properties of this style
 		Properties props = mStyle.getProperties();
 		// Loop through ALL groups
@@ -212,6 +212,6 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
 	 * Required. Do nothing.
 	 */
 	@Override
-	protected void onRowClick(View target, GroupWrapper object, int position) {
+	protected void onRowClick(@NonNull View target, @NonNull GroupWrapper object, int position) {
 	}
 }

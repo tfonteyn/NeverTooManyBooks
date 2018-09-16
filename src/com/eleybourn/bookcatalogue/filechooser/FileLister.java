@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.filechooser;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
@@ -19,7 +20,7 @@ import java.util.Comparator;
  * @author pjw
  */
 public abstract class FileLister implements FragmentTask {
-	private ArrayList<FileDetails> dirs;
+	private ArrayList<FileDetails> mDirs;
 	private final File mRoot;
 
 	/**
@@ -28,7 +29,7 @@ public abstract class FileLister implements FragmentTask {
 	 * @author pjw
 	 */
 	public interface FileListerListener {
-		void onGotFileList(File root, ArrayList<FileDetails> list);
+		void onGotFileList(@NonNull final File root, @NonNull final ArrayList<FileDetails> list);
 	}
 
 	/**
@@ -41,24 +42,24 @@ public abstract class FileLister implements FragmentTask {
 	/** Return a FileFilter appropriate to the types of files being listed */
 	protected abstract FileFilter getFilter();
 	/** Turn an array of Files into an ArrayList of FileDetails. */
-	protected abstract ArrayList<FileDetails> processList(File[] files);
+	protected abstract ArrayList<FileDetails> processList(@NonNull final File[] files);
 
 	@Override
-	public void run(SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
+	public void run(@NonNull SimpleTaskQueueProgressFragment fragment, @NonNull SimpleTaskContext taskContext) {
 		// Get a file list
 		File[] files = mRoot.listFiles(getFilter());
 		// Filter/fill-in using the subclass
-		dirs = processList(files);
+		mDirs = processList(files);
 		// Sort it
-		Collections.sort(dirs, mComparator);
+		Collections.sort(mDirs, mComparator);
 	}
 
 	@Override
-	public void onFinish(SimpleTaskQueueProgressFragment fragment, Exception exception) {
+	public void onFinish(@NonNull SimpleTaskQueueProgressFragment fragment, Exception exception) {
 		// Display it in UI thread.
 		Activity a = fragment.getActivity();
 		if (a != null && a instanceof FileListerListener) {
-			((FileListerListener)a).onGotFileList(mRoot, dirs);
+			((FileListerListener)a).onGotFileList(mRoot, mDirs);
 		}
 	}
 
@@ -66,7 +67,7 @@ public abstract class FileLister implements FragmentTask {
 	 * Perform case-insensitive sorting using default locale.
 	 */
 	private static class FileDetailsComparator implements Comparator<FileDetails> {
-		public int compare(FileDetails f1, FileDetails f2) {
+		public int compare(final FileDetails f1, final FileDetails f2) {
 			return f1.getFile().getName().toUpperCase().compareTo(f2.getFile().getName().toUpperCase());
 		}
 	}

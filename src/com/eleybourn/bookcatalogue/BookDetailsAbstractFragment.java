@@ -25,6 +25,7 @@ import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -351,23 +352,22 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                     // Increment the temp counter and cleanup the temp directory
                     mTempImageCounter++;
                     cleanupTempImages();
-                    Intent pintent;
                     // Get a photo
-                    pintent = new Intent("android.media.action.IMAGE_CAPTURE");
+                    Intent pIntent = new Intent("android.media.action.IMAGE_CAPTURE");
 //				We don't do this because we have no reliable way to rotate a large image
 //				without producing memory exhaustion; Android does not include a file-based
 //				image rotation.
 //				File f = this.getCameraImageFile();
 //				if (f.exists())
 //					f.delete();
-//				pintent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                    startActivityForResult(pintent, CODE_ADD_PHOTO);
+//				pIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                    startActivityForResult(pIntent, CODE_ADD_PHOTO);
                     return true;
                 case CODE_ADD_GALLERY:
-                    Intent gintent = new Intent();
-                    gintent.setType("image/*");
-                    gintent.setAction(Intent.ACTION_GET_CONTENT);
-                    startActivityForResult(Intent.createChooser(gintent, getResources().getString(R.string.select_picture)), CODE_ADD_GALLERY);
+                    Intent gIntent = new Intent();
+                    gIntent.setType("image/*");
+                    gIntent.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(Intent.createChooser(gIntent, getResources().getString(R.string.select_picture)), CODE_ADD_GALLERY);
                     return true;
                 case CONTEXT_ID_CROP_THUMB:
                     cropCoverImage(thumbFile);
@@ -467,7 +467,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
 
             intent.putExtra(BKEY_SCALE, true);
             intent.putExtra(BKEY_NO_FACE_DETECTION, true);
-            // True to return a Bitmap, false to directly save the cropped iamge
+            // True to return a Bitmap, false to directly save the cropped image
             intent.putExtra(BKEY_RETURN_DATA, false);
             // Save output image in uri
             File cropped = this.getCroppedImageFileName();
@@ -634,8 +634,9 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
 
         /* Title has some post-processing on the text, to move leading 'A', 'The' etc to the end.
          * While we could do it in a formatter, it it not really a display-oriented function and
-         * is handled in preprocessing in the database layer since it also needs to be applied
-         * to imported record etc. */
+         * is handled in pre-processing in the database layer since it also needs to be applied
+         * to imported record etc.
+         */
         mFields.add(R.id.title, KEY_TITLE, null);
 
         /* Anthology needs special handling, and we use a formatter to do this. If the original
@@ -644,7 +645,8 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
          * between 2 and 0, not 1 and 0.
          * So, despite if being a checkbox, we use an integerValidator and use a special formatter.
          * We also store it in the tag field so that it is automatically serialized with the
-         * activity. */
+         * activity.
+         */
         mFields.add(R.id.anthology, BookData.KEY_ANTHOLOGY, null);
 
         mFields.add(R.id.author, "", KEY_AUTHOR_FORMATTED, null);
@@ -702,8 +704,8 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      */
     protected void populateBookDetailsFields(BookData book) {
         //Set anthology field
-        Integer anthNo = book.getInt(BookData.KEY_ANTHOLOGY);
-        mFields.getField(R.id.anthology).setValue(anthNo.toString()); // Set checked if anthNo != 0
+        Integer ant = book.getInt(BookData.KEY_ANTHOLOGY);
+        mFields.getField(R.id.anthology).setValue(ant.toString()); // Set checked if ant != 0
     }
 
     /**

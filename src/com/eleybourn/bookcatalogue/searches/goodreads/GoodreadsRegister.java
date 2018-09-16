@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -118,7 +119,7 @@ public class GoodreadsRegister extends BookCatalogueActivity {
 			 * Call the static method to start the web page; this can take a few seconds
 			 */
 			@Override
-			public void run(SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
+			public void run(@NonNull SimpleTaskQueueProgressFragment fragment, @NonNull SimpleTaskContext taskContext) {
 				mMessage = requestAuthorizationImmediate(activity);
 			}
 
@@ -126,7 +127,7 @@ public class GoodreadsRegister extends BookCatalogueActivity {
 			 * Display any error message
 			 */
 			@Override
-			public void onFinish(SimpleTaskQueueProgressFragment fragment, Exception exception) {
+			public void onFinish(@NonNull SimpleTaskQueueProgressFragment fragment, Exception exception) {
 				if (mMessage != 0)
 					fragment.showToast(mMessage);
 			}

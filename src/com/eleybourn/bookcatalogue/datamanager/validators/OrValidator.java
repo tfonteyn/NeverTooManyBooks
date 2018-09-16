@@ -25,8 +25,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 
-import java.util.Iterator;
-
 /**
  * 'Meta' Validator to evaluate a list of validators; any one being true is OK.
  *
@@ -38,25 +36,23 @@ public class OrValidator extends MetaValidator implements DataValidator {
     public static final long serialVersionUID = 1L;
 
     // Constructors
-    public OrValidator(DataValidator v1) {
+    public OrValidator(@NonNull final DataValidator v1) {
         super(v1);
     }
 
-    public OrValidator(DataValidator v1, DataValidator v2) {
+    public OrValidator(@NonNull final DataValidator v1, @NonNull final DataValidator v2) {
         super(v1, v2);
     }
 
-    public OrValidator(DataValidator v1, DataValidator v2, DataValidator v3) {
+    public OrValidator(@NonNull final DataValidator v1, @NonNull final DataValidator v2, @NonNull final DataValidator v3) {
         super(v1, v2, v3);
     }
 
     @Override
-    public void validate(@NonNull DataManager data, @NonNull Datum datum, boolean crossValidating)
+    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
             throws ValidatorException {
-        Iterator<DataValidator> i = this.iterator();
-        ValidatorException lastException = null;
-        while (i.hasNext()) {
-            DataValidator v = i.next();
+       ValidatorException lastException = null;
+       for (DataValidator v : this) {
             try {
                 v.validate(data, datum, crossValidating);
                 return;

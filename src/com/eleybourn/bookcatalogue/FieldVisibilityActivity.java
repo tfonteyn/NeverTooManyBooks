@@ -30,7 +30,7 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
-import com.eleybourn.bookcatalogue.database.DomainDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;

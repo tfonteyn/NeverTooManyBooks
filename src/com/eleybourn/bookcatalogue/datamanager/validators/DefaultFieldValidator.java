@@ -36,7 +36,7 @@ public class DefaultFieldValidator implements DataValidator {
     /**
      * Allow for no default value.
      */
-    public DefaultFieldValidator() {
+    DefaultFieldValidator() {
         this("");
     }
 
@@ -45,12 +45,12 @@ public class DefaultFieldValidator implements DataValidator {
      *
      * @param defaultValue Default to apply
      */
-    public DefaultFieldValidator(String defaultValue) {
+    DefaultFieldValidator(@NonNull final String defaultValue) {
         mDefault = defaultValue;
     }
 
     @Override
-    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, boolean crossValidating)
+    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
             throws ValidatorException {
         if (!datum.isVisible()) {
             // No validation required for invisible fields

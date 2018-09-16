@@ -24,6 +24,7 @@ package com.eleybourn.bookcatalogue.widgets;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -40,17 +41,17 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
     private ViewPager mPager;
     private boolean mNeedsRedraw = false;
 
-    public PagerLayout(Context context) {
+    public PagerLayout(@NonNull final Context context) {
         super(context);
         init();
     }
 
-    public PagerLayout(Context context, AttributeSet attrs) {
+    public PagerLayout(@NonNull final Context context, @NonNull final AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public PagerLayout(Context context, AttributeSet attrs, int defStyle) {
+    public PagerLayout(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
         init();
     }
@@ -86,7 +87,7 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
     private final Point mInitialTouch = new Point();
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+    protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
         mCenter.x = w / 2;
         mCenter.y = h / 2;
     }

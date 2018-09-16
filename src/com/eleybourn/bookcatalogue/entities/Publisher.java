@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue;
+package com.eleybourn.bookcatalogue.entities;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -83,7 +83,7 @@ public class Publisher implements Serializable {
      *
      * @param source publisher to copy
      */
-    void copyFrom(@NonNull final Publisher source) {
+    public void copyFrom(@NonNull final Publisher source) {
         name = source.name;
     }
 

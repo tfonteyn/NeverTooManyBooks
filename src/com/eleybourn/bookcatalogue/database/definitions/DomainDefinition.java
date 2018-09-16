@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.database;
+package com.eleybourn.bookcatalogue.database.definitions;
 
 import android.support.annotation.NonNull;
 
@@ -15,14 +15,20 @@ public class DomainDefinition {
 
     private final String constraint;
 
-    DomainDefinition(@NonNull final String name, @NonNull final String type) {
-        this(name,type,"","");
+    public DomainDefinition(@NonNull final String name, @NonNull final String type) {
+        this(name,type, "", "");
     }
-    DomainDefinition(@NonNull final String name, @NonNull final String type, @NonNull final String extra) {
-        this(name,type,extra,"");
+    public DomainDefinition(@NonNull final String name, @NonNull final String type, @NonNull final String extra) {
+        this(name,type, "", extra);
     }
 
-    DomainDefinition(@NonNull final String name, @NonNull final String type, @NonNull final String extra, @NonNull final String constraint) {
+    /**
+     *  @param name         column name
+     * @param type          column type (text, int, float, ...)
+     * @param constraint    (optional but non null) for example "not null"
+     * @param extra         (optional, but non null) for example "default 0'
+     */
+    public DomainDefinition(@NonNull final String name, @NonNull final String type, @NonNull final String constraint, @NonNull final String extra) {
         this.name = name;
         this.type = type;
         this.extra = extra;

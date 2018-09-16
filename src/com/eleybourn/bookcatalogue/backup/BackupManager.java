@@ -50,7 +50,7 @@ public class BackupManager {
 
 
     /**
-     * Esnure the file name extension is what we want
+     * Ensure the file name extension is what we want
      */
     private static File cleanupFile(@NonNull final File requestedFile) {
         if (!requestedFile.getName().toUpperCase().endsWith(".BCBK")) {
@@ -74,7 +74,7 @@ public class BackupManager {
             throw new RuntimeException("Backup flags must be specified");
         }
         //if (flags == (Exporter.EXPORT_ALL | Exporter.EXPORT_NEW_OR_UPDATED) ) {
-        //	throw new RuntimeException("Illegal backup flag combination: ALL and NEW_OR_UPADTED");
+        //	throw new RuntimeException("Illegal backup flag combination: ALL and NEW_OR_UPDATED");
         //}
 
         final File resultingFile = cleanupFile(requestedFile);
@@ -85,7 +85,7 @@ public class BackupManager {
             private boolean mBackupOk = false;
 
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
+            public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull SimpleTaskContext taskContext) {
                 BackupWriter wrt = null;
 
                 try {
@@ -163,7 +163,7 @@ public class BackupManager {
             }
 
             @Override
-            public void onFinish(SimpleTaskQueueProgressFragment fragment, Exception exception) {
+            public void onFinish(@NonNull SimpleTaskQueueProgressFragment fragment, Exception exception) {
                 super.onFinish(fragment, exception);
                 if (exception != null) {
                     if (tempFile.exists()) {
@@ -198,7 +198,7 @@ public class BackupManager {
 
         final FragmentTask task = new FragmentTaskAbstract() {
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, SimpleTaskContext taskContext) {
+            public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull SimpleTaskContext taskContext) {
                 try {
                     if (BuildConfig.DEBUG) {
                         System.out.println("Importing " + inputFile.getAbsolutePath());
@@ -211,7 +211,7 @@ public class BackupManager {
                         }
 
                         @Override
-                        public void step(String message, int delta) {
+                        public void step(@NonNull String message, int delta) {
                             fragment.step(message, delta);
                         }
 

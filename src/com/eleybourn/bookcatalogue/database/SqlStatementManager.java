@@ -29,7 +29,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 /**
- * Utility class to manage the construction and closure of persisted SQLiteStatement obejcts.
+ * Utility class to manage the construction and closure of persisted SQLiteStatement objects.
  *
  * @author Philip Warner
  */
@@ -65,19 +65,19 @@ public class SqlStatementManager implements AutoCloseable {
         return stmt;
     }
 
-    public SynchronizedStatement addOrGet(String name, String sql) {
-        if (mSyncedDb == null)
-            throw new RuntimeException("Database not set when SqlStatementManager created");
-        return addOrGet(mSyncedDb, name, sql);
-    }
-
-    private SynchronizedStatement addOrGet(final SynchronizedDb db, final String name, final String sql) {
-        SynchronizedStatement stmt = mStatements.get(name);
-        if (stmt == null) {
-            stmt = add(db, name, sql);
-        }
-        return stmt;
-    }
+//    public SynchronizedStatement addOrGet(String name, String sql) {
+//        if (mSyncedDb == null)
+//            throw new RuntimeException("Database not set when SqlStatementManager created");
+//        return addOrGet(mSyncedDb, name, sql);
+//    }
+//
+//    private SynchronizedStatement addOrGet(final SynchronizedDb db, final String name, final String sql) {
+//        SynchronizedStatement stmt = mStatements.get(name);
+//        if (stmt == null) {
+//            stmt = add(db, name, sql);
+//        }
+//        return stmt;
+//    }
 
     /**
      * DEBUG help

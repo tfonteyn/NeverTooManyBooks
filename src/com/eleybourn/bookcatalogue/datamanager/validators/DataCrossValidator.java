@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.datamanager.validators;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 
 /**
@@ -29,5 +31,5 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
  */
 public interface DataCrossValidator {
 
-    void validate(DataManager data) throws ValidatorException;
+    void validate(@NonNull final DataManager data) throws ValidatorException;
 }

@@ -26,6 +26,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
@@ -111,13 +112,13 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
      */
     private final TaskManagerListener mTaskListener = new TaskManagerListener() {
         @Override
-        public void onTaskEnded(TaskManager manager, ManagedTask task) {
+        public void onTaskEnded(@NonNull TaskManager manager, @NonNull ManagedTask task) {
             // Just pass this one on
             ActivityWithTasks.this.onTaskEnded(task);
         }
 
         @Override
-        public void onProgress(int count, int max, String message) {
+        public void onProgress(int count, int max, @NonNull String message) {
             if (BuildConfig.DEBUG) {
                 String dbgMsg = count + "/" + max + ", '" + message.replace("\n", "\\n") + "'";
                 Tracker.handleEvent(ActivityWithTasks.this, "SearchProgress " + dbgMsg, States.Running);
@@ -141,7 +142,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
          * Display a Toast message
          */
         @Override
-        public void onToast(String message) {
+        public void onToast(@NonNull String message) {
             Toast.makeText(ActivityWithTasks.this, message, Toast.LENGTH_LONG).show();
         }
 
