@@ -468,7 +468,8 @@ public class DataManager {
 	 * @return		Formatted string
 	 */
 	@NonNull
-	public String getDataAsString() {
+	@Override
+	public String toString() {
 		return Datum.toString(mBundle);
 	}
 	

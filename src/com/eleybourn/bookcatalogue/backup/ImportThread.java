@@ -321,7 +321,7 @@ public class ImportThread extends ManagedTask {
 //				try {
 //					if (!hasUuid && !hasNumericId) {
 //						// Always import empty IDs...even if they are duplicates.
-//						Long id = mDb.createBook(values);
+//						Long id = mDb.insertBook(values);
 //						values.putString(DatabaseDefinitions.KEY_ID, id.toString());
 //						// Would be nice to import a cover, but with no ID/UUID thats not possible
 //						//mImportCreated++;
@@ -354,7 +354,7 @@ public class ImportThread extends ManagedTask {
 //							mDb.updateBook(idLong, values, false);
 //							//mImportUpdated++;
 //						} else {
-//							newId = mDb.createBook(idLong, values);
+//							newId = mDb.insertBook(idLong, values);
 //							//mImportCreated++;
 //							values.putString(DatabaseDefinitions.KEY_ID, newId.toString());
 //							idLong = newId;

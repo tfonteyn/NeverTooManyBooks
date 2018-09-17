@@ -192,6 +192,7 @@ public class BookData extends DataManager {
      *
      * Build a formatted string for author list.
      */
+    @Nullable
     public String getAuthorTextShort() {
         String newText;
         ArrayList<Author> list = getAuthors();
@@ -230,6 +231,7 @@ public class BookData extends DataManager {
      *
      * @return List of anthology titles
      */
+    @NonNull
     public ArrayList<AnthologyTitle> getAnthologyTitles() {
         ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) getSerializable(UniqueId.BKEY_ANTHOLOGY_TITLE_ARRAY);
         if (list == null) {
@@ -251,6 +253,7 @@ public class BookData extends DataManager {
      * @return List of authors
      */
     @SuppressWarnings("unchecked")
+    @NonNull
     public ArrayList<Author> getAuthors() {
         ArrayList<Author> list = (ArrayList<Author>) getSerializable(UniqueId.BKEY_AUTHOR_ARRAY);
         if (list == null) {
@@ -265,6 +268,7 @@ public class BookData extends DataManager {
      * @return List of series
      */
     @SuppressWarnings("unchecked")
+    @NonNull
     public ArrayList<Series> getSeries() {
         ArrayList<Series> list = (ArrayList<Series>) getSerializable(UniqueId.BKEY_SERIES_ARRAY);
         if (list == null) {

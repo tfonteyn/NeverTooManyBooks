@@ -637,7 +637,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
         if (mRowId == 0) {
             String isbn = mBookData.getString(UniqueId.KEY_ISBN);
             /* Check if the book currently exists */
-            if (!isbn.isEmpty() && (mDb.checkIsbnExists(isbn, true))) {
+            if (!isbn.isEmpty() && (mDb.isbnExists(isbn, true))) {
                 /*
                  * If it exists, show a dialog and use it to perform the
                  * next action, according to the users choice.
@@ -681,7 +681,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
      */
     private void updateOrCreate() {
         if (mRowId == 0) {
-            long id = mDb.createBook(mBookData, 0);
+            long id = mDb.insertBook(mBookData, 0);
 
             if (id > 0) {
                 setRowId(id);

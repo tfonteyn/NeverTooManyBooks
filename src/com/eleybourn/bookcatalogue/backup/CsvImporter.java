@@ -231,7 +231,7 @@ public class CsvImporter implements Importer {
                     if (!hasUuid && !hasNumericId) {
                         doUpdate = true;
                         // Always import empty IDs...even if they are duplicates.
-                        Long id = db.createBook(values, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+                        Long id = db.insertBook(values, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
                         values.putString(KEY_ID, id.toString());
                         // Would be nice to import a cover, but with no ID/UUID that is not possible
                         //mImportCreated++;
@@ -252,11 +252,11 @@ public class CsvImporter implements Importer {
                                 exists = false;
                                 // We have a UUID, but book does not exist. We will create a book.
                                 // Make sure the ID (if present) is not already used.
-                                if (hasNumericId && db.checkBookExists(idLong))
+                                if (hasNumericId && db.bookExists(idLong))
                                     idLong = 0L;
                             }
                         } else {
-                            exists = db.checkBookExists(idLong);
+                            exists = db.bookExists(idLong);
                         }
 
                         if (exists) {
@@ -272,7 +272,7 @@ public class CsvImporter implements Importer {
                             //mImportUpdated++;
                         } else {
                             doUpdate = true;
-                            newId = db.createBook(idLong, values, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+                            newId = db.insertBook(idLong, values, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
                             nCreated++;
                             //mImportCreated++;
                             values.putString(KEY_ID, newId.toString());

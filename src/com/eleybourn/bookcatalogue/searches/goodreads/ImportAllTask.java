@@ -316,7 +316,7 @@ class ImportAllTask extends GenericTask {
 	 */
 	private void createBook(CatalogueDBAdapter db, Bundle review) {
 		BookData book = buildBundle(db, null, review);
-		long id = db.createBook(book, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+		long id = db.insertBook(book, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
 		if (book.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
 			String uuid = db.getBookUuid(id);
 			File thumb = StorageUtils.getTempThumbnail();

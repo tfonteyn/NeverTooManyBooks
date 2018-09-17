@@ -28,6 +28,7 @@ import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQuery;
 import android.database.sqlite.SQLiteStatement;
@@ -760,7 +761,7 @@ public class DbSync {
         /**
          * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
          */
-        public long simpleQueryForLong() {
+        public long simpleQueryForLong() throws SQLiteDoneException {
             SyncLock l = mSync.getSharedLock();
             try {
                 return mStatement.simpleQueryForLong();
@@ -772,7 +773,8 @@ public class DbSync {
         /**
          * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
          */
-        public String simpleQueryForString() {
+        @NonNull
+        public String simpleQueryForString() throws SQLiteDoneException {
             SyncLock l = mSync.getSharedLock();
             try {
                 return mStatement.simpleQueryForString();
