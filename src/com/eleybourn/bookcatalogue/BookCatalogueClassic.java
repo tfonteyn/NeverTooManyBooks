@@ -743,7 +743,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		@Override
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
-				mCursor = mDb.fetchAllSeries(mBookshelf, true);
+				mCursor = mDb.classicFetchAllSeries(mBookshelf);
 			} else {
 				mCursor = mDb.fetchSeries(search_query, mBookshelf);
 			}
@@ -797,7 +797,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		}
 		@Override
 		public Cursor newGroupCursor() {
-			mCursor = mDb.fetchAllUnreadPsuedo();
+			mCursor = mDb.classicFetchAllUnreadPseudo();
 			mGroupIdColumnIndex = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
 			return mCursor;
 		}
@@ -1304,7 +1304,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 						case SORT_TITLE:
                         {
 							justAdded = intent.getStringExtra(EditBookActivity.ADDED_TITLE);
-							int position = mDb.fetchBookPositionByTitle(justAdded, mBookshelf);
+							int position = mDb.classicFetchBookPositionByTitle(justAdded, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}
@@ -1324,7 +1324,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 						}
 						case SORT_SERIES: {
 							justAdded = intent.getStringExtra(EditBookActivity.ADDED_SERIES);
-							int position = mDb.fetchSeriesPositionBySeries(justAdded, mBookshelf);
+							int position = mDb.classicGetSeriesPositionBySeries(justAdded, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}

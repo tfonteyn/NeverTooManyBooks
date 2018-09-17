@@ -2027,6 +2027,28 @@ public class CatalogueDBAdapter {
     //</editor-fold>
 
     //<editor-fold desc="Classic Book">
+    @NonNull
+    private String classicSqlAllSeries() {
+        return "select distinct s." + DOM_ID + " as " + DOM_ID + ", s."+ DOM_SERIES_NAME + " as " + DOM_SERIES_NAME
+                //+ ", s." + KEY_SERIES_NAME + " as series_sort "
+                + " From " + DB_TB_SERIES + " s ";
+    }
+
+    @NonNull
+    private String classicSqlAllSeriesOnBookshelf(@NonNull final String bookshelf) {
+        return "select distinct s." + DOM_ID + " as " + DOM_ID + ", s." + DOM_SERIES_NAME +
+                " as " + DOM_SERIES_NAME//+ ", s." + KEY_SERIES_NAME + " as series_sort "
+                + " From " + DB_TB_SERIES + " s "
+                + " join " + DB_TB_BOOK_SERIES + " bsw "
+                + "    on bsw." + DOM_SERIES_ID + " = s." + DOM_ID
+                + " join " + DB_TB_BOOKS + " b "
+                + "    on b." + DOM_ID + " = bsw." + DOM_BOOK
+                + " join " + DB_TB_BOOK_BOOKSHELF_WEAK + " bbw"
+                + "    on bbw." + DOM_BOOK + " = b." + DOM_ID
+                + " join " + DB_TB_BOOKSHELF + " bs "
+                + "    on bs." + DOM_ID + " = bbw." + DOM_BOOKSHELF_NAME
+                + " where " + makeTextTerm("bs." + DOM_BOOKSHELF_NAME, "=", bookshelf);
+    }
 
     /**
      * Return a list of all the first characters for book titles in the database
@@ -2035,7 +2057,7 @@ public class CatalogueDBAdapter {
      * @return Cursor over all Books
      */
     @NonNull
-    public Cursor classicFetchAllBookChars(String bookshelf) {
+    public Cursor classicFetchAllBookChars(@NonNull final String bookshelf) {
         String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "",
                 "", "", "", "");
         String sql = "SELECT DISTINCT upper(substr(b." + DOM_TITLE + ", 1, 1)) AS " + DOM_ID + " " + baseSql;
@@ -2049,10 +2071,11 @@ public class CatalogueDBAdapter {
      * @param bookshelf Which bookshelf is it in. Can be "All Books"
      * @return Cursor over all Books
      */
+    @NonNull
     public BooksCursor classicFetchAllBooksByAuthor(final int author,
                                                     @NonNull final String bookshelf,
                                                     @NonNull final String search_term,
-                                                    boolean firstOnly) {
+                                                    final boolean firstOnly) {
         String where = " a._id=" + author;
         if (firstOnly) {
             where += " AND ba." + DOM_AUTHOR_POSITION + "=1 ";
@@ -2067,6 +2090,7 @@ public class CatalogueDBAdapter {
      * @param first_char The first title character
      * @return Cursor over all books
      */
+    @NonNull
     public BooksCursor classicFetchAllBooksByChar(@NonNull final String first_char,
                                                   @NonNull final String bookshelf,
                                                   @NonNull final String search_term) {
@@ -2083,6 +2107,7 @@ public class CatalogueDBAdapter {
      *
      * @return Cursor over all books
      */
+    @NonNull
     public BooksCursor classicFetchAllBooksByDatePublished(@Nullable String date,
                                                            @NonNull final String bookshelf,
                                                            @NonNull final String search_term) {
@@ -2108,6 +2133,7 @@ public class CatalogueDBAdapter {
      * @param bookshelf The bookshelf to search within. Can be the string "All Books"
      * @return Cursor over all books
      */
+    @NonNull
     public BooksCursor classicFetchAllBooksByGenre(@NonNull final String genre,
                                                    @NonNull final String bookshelf,
                                                    @NonNull final String search_term) {
@@ -2126,6 +2152,7 @@ public class CatalogueDBAdapter {
      * @param loaned_to The person who had books loaned to
      * @return Cursor over all books
      */
+    @NonNull
     public BooksCursor classicFetchAllBooksByLoan(@NonNull final String loaned_to,
                                                   @NonNull final String search_term) {
         return fetchAllBooks("", "", "", "", search_term, loaned_to, "");
@@ -2137,6 +2164,7 @@ public class CatalogueDBAdapter {
      * @param read "Read" or "Unread"
      * @return Cursor over all books
      */
+    @NonNull
     public BooksCursor classicFetchAllBooksByRead(@NonNull final String read,
                                                   @NonNull final String bookshelf,
                                                   @NonNull final String search_term) {
@@ -2156,6 +2184,7 @@ public class CatalogueDBAdapter {
      * @param bookshelf The bookshelf to search within. Can be the string "All Books"
      * @return Cursor over all books
      */
+    @NonNull
     public BooksCursor classicFetchAllBooksBySeries(@NonNull final String series,
                                                     @NonNull final String bookshelf,
                                                     @NonNull final String search_term) {
@@ -2173,6 +2202,7 @@ public class CatalogueDBAdapter {
      * @param bookshelf The bookshelf to search within. Can be the string "All Books"
      * @return Cursor over all series
      */
+    @NonNull
     public Cursor classicFetchAllDatePublished(@NonNull final String bookshelf) {
         // Null 'order' to suppress ordering
         String baseSql = fetchAllBooksInnerSql(null, bookshelf, "", "", "", "", "");
@@ -2236,7 +2266,8 @@ public class CatalogueDBAdapter {
      * @return A Cursor of book titles meeting the search criteria
      */
     @NonNull
-    public Cursor classicFetchBooksChars(@NonNull final String searchText, @NonNull final String bookshelf) {
+    public Cursor classicFetchBooksChars(@NonNull final String searchText,
+                                         @NonNull final String bookshelf) {
         String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", "", searchText, "", "");
         String sql = "SELECT DISTINCT upper(substr(b." + DOM_TITLE + ", 1, 1)) " + COLLATION + " AS " + DOM_ID + " " + baseSql;
         return mSyncedDb.rawQuery(sql, new String[]{});
@@ -2252,10 +2283,81 @@ public class CatalogueDBAdapter {
      * @return Cursor over all notes
      */
     @NonNull
-    public Cursor classicFetchDatePublished(@NonNull final String searchText, @NonNull final String bookshelf) {
+    public Cursor classicFetchDatePublished(@NonNull final String searchText,
+                                            @NonNull final String bookshelf) {
         String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", "", searchText, "", "");
         String sql = "SELECT DISTINCT Case When " + DOM_DATE_PUBLISHED + " = '' Then '" + META_EMPTY_DATE_PUBLISHED + "' else strftime('%Y', b." + DOM_DATE_PUBLISHED + ") End " + COLLATION + " AS " + DOM_ID + " " + baseSql;
         return mSyncedDb.rawQuery(sql, new String[]{});
+    }
+
+    /**
+     * This will return a list of all series within the given bookshelf
+     *
+     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
+     * @return Cursor over all series
+     */
+    @NonNull
+    public Cursor classicFetchAllSeries(@NonNull final String bookshelf) {
+        String series;
+        if (bookshelf.isEmpty()) {
+            series = classicSqlAllSeries();
+        } else {
+            series = classicSqlAllSeriesOnBookshelf(bookshelf);
+        }
+        // Display blank series as '<Empty Series>' BUT sort as ''. Using a UNION
+        // seems to make ordering fail.
+        String sql = "Select " + DOM_ID + ", Case When " + DOM_SERIES_NAME + " = ''" +
+                " Then '" + META_EMPTY_SERIES + "' Else " + DOM_SERIES_NAME + " End  as " + DOM_SERIES_NAME +
+                " From ( " + series +
+                "   UNION Select -1 as " + DOM_ID + ", '' as " + DOM_SERIES_NAME + ") s" +
+                " Order by Upper(s." + DOM_SERIES_NAME + ") " + COLLATION + " asc ";
+
+        return mSyncedDb.rawQuery(sql, new String[]{});
+    }
+
+    /**
+     * This will return a list consisting of "Read" and "Unread"
+     *
+     * @return Cursor over all the pseudo list
+     */
+    @NonNull
+    public Cursor classicFetchAllUnreadPseudo() {
+        String sql = "SELECT 'Unread' as " + DOM_ID + " UNION SELECT 'Read' as " + DOM_ID + "";
+        return mSyncedDb.rawQuery(sql, new String[]{});
+    }
+
+
+    /**
+     * Return the position of a book in a list of all books (within a bookshelf)
+     *
+     * @param seriesName The book title to search for
+     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
+     * @return The position of the book
+     */
+     public int classicGetSeriesPositionBySeries(@NonNull String seriesName,
+                                                 @NonNull final String bookshelf) {
+        String seriesSql;
+        if (bookshelf.isEmpty()) {
+            seriesSql = classicSqlAllSeries();
+        } else {
+            seriesSql = classicSqlAllSeriesOnBookshelf(bookshelf);
+        }
+        if (seriesName.equals(META_EMPTY_SERIES)) {
+            seriesName = "";
+        }
+
+        // Display blank series as '<Empty Series>' BUT sort as ''. Using a UNION
+        // seems to make ordering fail.
+        String sql = "Select Count(Distinct " + DOM_SERIES_NAME + ") as count"
+                + " From ( " + seriesSql
+                + "       UNION Select -1 as " + DOM_ID + ", '' as " +  DOM_SERIES_NAME
+                + "       ) s "
+                + " WHERE " + makeTextTerm("s." + DOM_SERIES_NAME, "<", seriesName)
+                + " Order by s." + DOM_SERIES_NAME + COLLATION + " asc ";
+
+        try (Cursor results = mSyncedDb.rawQuery(sql, null)) {
+            return getIntValue(results, 0);
+        }
     }
 
     //</editor-fold>
@@ -2528,56 +2630,11 @@ public class CatalogueDBAdapter {
     /**
      * Return the position of a book in a list of all books (within a bookshelf)
      *
-     * @param seriesName The book title to search for
-     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     * @return The position of the book
-     */
-    public int fetchSeriesPositionBySeries(@NonNull String seriesName, @NonNull final String bookshelf) {
-        String seriesSql;
-        if (bookshelf.isEmpty()) {
-            seriesSql = sqlAllSeries();
-        } else {
-            seriesSql = sqlAllSeriesOnBookshelf(bookshelf);
-        }
-        if (seriesName.equals(META_EMPTY_SERIES))
-            seriesName = "";
-
-        // Display blank series as '<Empty Series>' BUT sort as ''. Using a UNION
-        // seems to make ordering fail.
-        String sql = "Select Count(Distinct " + DOM_SERIES_NAME + ") as count"
-                + " From ( " + seriesSql
-                + "       UNION Select -1 as " + DOM_ID + ", '' as " +  DOM_SERIES_NAME
-                + "       ) s "
-                + " WHERE " + makeTextTerm("s." + DOM_SERIES_NAME, "<", seriesName)
-                + " Order by s." + DOM_SERIES_NAME + COLLATION + " asc ";
-
-        try (Cursor results = mSyncedDb.rawQuery(sql, null)) {
-            return getIntValue(results, 0);
-        }
-    }
-
-    /**
-     *
-     * @param family Family name of author
-     * @param given Given name of author
-     * @param title Title of book
-     * @return Cursor of the book
-     */
-    public BooksCursor fetchByAuthorAndTitle(@NonNull final String family, @NonNull final String given, @NonNull final String title) {
-        String authorWhere = makeTextTerm("a." + DOM_AUTHOR_FAMILY_NAME, "=", family)
-                + " AND " + makeTextTerm("a." + DOM_AUTHOR_GIVEN_NAMES, "=", given);
-        String bookWhere = makeTextTerm("b." + DOM_TITLE, "=", title);
-        return fetchAllBooks("", "", authorWhere, bookWhere, "", "", "" );
-    }
-
-    /**
-     * Return the position of a book in a list of all books (within a bookshelf)
-     *
      * @param title The book title to search for
      * @param bookshelf The bookshelf to search within. Can be the string "All Books"
      * @return The position of the book
      */
-    public int fetchBookPositionByTitle(@NonNull final String title, @NonNull final String bookshelf) {
+    public int classicFetchBookPositionByTitle(@NonNull final String title, @NonNull final String bookshelf) {
         String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", makeTextTerm("Substr(b." + DOM_TITLE + ",1,1)", "<", title.substring(0,1)), "", "", "");
         String sql = "SELECT Count(Distinct Upper(Substr(" + DOM_TITLE + ",1,1))" + COLLATION + ") as count " + baseSql;
 
@@ -2605,15 +2662,7 @@ public class CatalogueDBAdapter {
         return mSyncedDb.rawQuery(sql, new String[]{});
     }
 
-    /**
-     * Utility routine to build an arrayList of all series names.
-     */
-    public ArrayList<String> fetchAllSeriesArray() {
-        String sql = "SELECT DISTINCT " + DOM_SERIES_NAME +
-                " FROM " + DB_TB_SERIES + "" +
-                " ORDER BY Upper(" + DOM_SERIES_NAME + ") " + COLLATION;
-        return fetchArray(sql, DOM_SERIES_NAME.name);
-    }
+
 
 
 
@@ -2805,67 +2854,8 @@ public class CatalogueDBAdapter {
 
 
 
-    /**
-     * This will return a list of all series within the given bookshelf
-     *
-     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     * @return Cursor over all series
-     */
-    public Cursor fetchAllSeries(@NonNull final String bookshelf) {
-        return fetchAllSeries(bookshelf, false);
-    }
 
-    private String sqlAllSeriesOnBookshelf(@NonNull final String bookshelf) {
-        return "select distinct s." + DOM_ID + " as " + DOM_ID + ", s." + DOM_SERIES_NAME + " as " + DOM_SERIES_NAME//+ ", s." + KEY_SERIES_NAME + " as series_sort "
-                + " From " + DB_TB_SERIES + " s "
-                + " join " + DB_TB_BOOK_SERIES + " bsw "
-                + "    on bsw." + DOM_SERIES_ID + " = s." + DOM_ID
-                + " join " + DB_TB_BOOKS + " b "
-                + "    on b." + DOM_ID + " = bsw." + DOM_BOOK
-                + " join " + DB_TB_BOOK_BOOKSHELF_WEAK + " bbw"
-                + "    on bbw." + DOM_BOOK + " = b." + DOM_ID
-                + " join " + DB_TB_BOOKSHELF + " bs "
-                + "    on bs." + DOM_ID + " = bbw." + DOM_BOOKSHELF_NAME
-                + " where " + makeTextTerm("bs." + DOM_BOOKSHELF_NAME, "=", bookshelf);
-    }
-    private String sqlAllSeries() {
-        return "select distinct s." + DOM_ID + " as " + DOM_ID + ", s."+ DOM_SERIES_NAME + " as " + DOM_SERIES_NAME //+ ", s." + KEY_SERIES_NAME + " as series_sort "
-                + " From " + DB_TB_SERIES + " s ";
-    }
-    /**
-     * This will return a list of all series within the given bookshelf
-     *
-     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     * @return Cursor over all series
-     */
-    public Cursor fetchAllSeries(@NonNull final String bookshelf, boolean include_blank) {
-        String series;
-        if (bookshelf.isEmpty()) {
-            series = sqlAllSeries();
-        } else {
-            series = sqlAllSeriesOnBookshelf(bookshelf);
-        }
-        // Display blank series as '<Empty Series>' BUT sort as ''. Using a UNION
-        // seems to make ordering fail.
-        String sql = "Select " + DOM_ID + ", Case When " + DOM_SERIES_NAME + " = '' Then '" + META_EMPTY_SERIES + "' Else " + DOM_SERIES_NAME + " End  as " + DOM_SERIES_NAME
-                + " From ( " + series
-                + "       UNION Select -1 as " + DOM_ID + ", '' as " + DOM_SERIES_NAME
-                + "       ) s"
-                + " Order by Upper(s." + DOM_SERIES_NAME + ") " + COLLATION + " asc ";
 
-        return mSyncedDb.rawQuery(sql, new String[]{});
-    }
-
-    /**
-     * This will return a list consisting of "Read" and "Unread"
-     *
-     * @return Cursor over all the pseudo list
-     */
-    public Cursor fetchAllUnreadPsuedo() {
-        String sql = "SELECT 'Unread' as " + DOM_ID + "" +
-                " UNION SELECT 'Read' as " + DOM_ID + "";
-        return mSyncedDb.rawQuery(sql, new String[]{});
-    }
 
 
 
@@ -3511,6 +3501,16 @@ public class CatalogueDBAdapter {
     }
 
     /**
+     * Utility routine to build an arrayList of all series names.
+     */
+    @NonNull
+    public ArrayList<String> getAllSeries() {
+        String sql = "SELECT DISTINCT " + DOM_SERIES_NAME + " FROM " + DB_TB_SERIES + "" +
+                " ORDER BY Upper(" + DOM_SERIES_NAME + ") " + COLLATION;
+        return fetchArray(sql, DOM_SERIES_NAME.name);
+    }
+
+    /**
      * This will return a list of all series within the given bookshelf where the
      * series, title or author meet the search string
      *
@@ -3793,49 +3793,47 @@ public class CatalogueDBAdapter {
     /**
      * Takes the ResultSet from a Cursor, and fetches column 0 as a String into an ArrayList
      *
-     * @param c     cursor
+     * @param cursor     cursor
      * @return      the ArrayList
      */
     @NonNull
-    private ArrayList<String> singleColumnCursorToArrayList(@NonNull final Cursor c) {
+    private ArrayList<String> singleColumnCursorToArrayList(@NonNull final Cursor cursor) {
         ArrayList<String> list = new ArrayList<>();
         try {
-            while (c.moveToNext()) {
-                String name = c.getString(0);
-                if (name != null)
-                    try {
-                        // Hash to *try* to avoid duplicates
-                        HashSet<String> foundSoFar = new HashSet<>();
-                        if (!name.isEmpty() && !foundSoFar.contains(name.toLowerCase())) {
-                            foundSoFar.add(name.toLowerCase());
-                            list.add(name);
-                        }
-                    } catch (NullPointerException ignore) {
-                        // do nothing
+            while (cursor.moveToNext()) {
+                String name = cursor.getString(0);
+                if (name != null) {
+                    // Hash to *try* to avoid duplicates
+                    Set<String> foundSoFar = new HashSet<>();
+                    if (!name.isEmpty() && !foundSoFar.contains(name.toLowerCase())) {
+                        foundSoFar.add(name.toLowerCase());
+                        list.add(name);
                     }
+                }
             }
         } finally {
-            c.close();
+            cursor.close();
         }
         return list;
     }
+
+
+
 
     /**
      * Return a ContentValues collection containing only those values from 'source' that match columns in 'dest'.
      * - Exclude the primary key from the list of columns.
      * - data will be transformed based on the intended type of the underlying column based on column definition.
      *
-     * @param source	Source column data
+     * @param bookData	Source column data
      * @param dest		Destination table definition
      *
      * @return New, filtered, collection
      */
-    private ContentValues filterValues(@NonNull final BookData source, @SuppressWarnings("unused") TableInfo dest) {
-        ContentValues args = new ContentValues();
-
-        final Set<String> keys = source.keySet();
+    private ContentValues filterValues(@NonNull final BookData bookData, TableInfo dest) {
+        ContentValues values = new ContentValues();
         // Create the arguments
-        for (String key : keys) {
+        for (String key : bookData.keySet()) {
             // Get column info for this column.
             TableInfo.ColumnInfo c = mBooksInfo.getColumn(key);
             // Check if we actually have a matching column.
@@ -3843,7 +3841,7 @@ public class CatalogueDBAdapter {
                 // Never update PK.
                 if (!c.isPrimaryKey) {
 
-                    Object entry = source.get(key);
+                    Object entry = bookData.get(key);
 
                     // Try to set the appropriate value, but if that fails, just use TEXT...
                     try {
@@ -3852,41 +3850,41 @@ public class CatalogueDBAdapter {
 
                             case TableInfo.CLASS_REAL:
                                 if (entry instanceof Float)
-                                    args.put(c.name, (Float) entry);
+                                    values.put(c.name, (Float) entry);
                                 else
-                                    args.put(c.name, Float.parseFloat(entry.toString()));
+                                    values.put(c.name, Float.parseFloat(entry.toString()));
                                 break;
 
                             case TableInfo.CLASS_INTEGER:
                                 if (entry instanceof Boolean) {
                                     if ((Boolean) entry) {
-                                        args.put(c.name, 1);
+                                        values.put(c.name, 1);
                                     } else {
-                                        args.put(c.name, 0);
+                                        values.put(c.name, 0);
                                     }
                                 } else if (entry instanceof Integer) {
-                                    args.put(c.name, (Integer) entry);
+                                    values.put(c.name, (Integer) entry);
                                 } else {
-                                    args.put(c.name, Integer.parseInt(entry.toString()));
+                                    values.put(c.name, Integer.parseInt(entry.toString()));
                                 }
                                 break;
 
                             case TableInfo.CLASS_TEXT:
                                 if (entry instanceof String)
-                                    args.put(c.name, ((String) entry));
+                                    values.put(c.name, ((String) entry));
                                 else
-                                    args.put(c.name, entry.toString());
+                                    values.put(c.name, entry.toString());
                                 break;
                         }
 
                     } catch (Exception e) {
                         if (entry != null)
-                            args.put(c.name, entry.toString());
+                            values.put(c.name, entry.toString());
                     }
                 }
             }
         }
-        return args;
+        return values;
     }
 
     /**
@@ -3895,18 +3893,13 @@ public class CatalogueDBAdapter {
      * @param results The Cursor the extract from
      * @param index The index, or column, to extract from
      */
-    private int getIntValue(Cursor results, @SuppressWarnings("SameParameterValue") int index) {
-        int value = 0;
+    private int getIntValue(@NonNull final Cursor results, final int index) {
         try {
-            if (results != null) {
-                results.moveToFirst();
-                value = results.getInt(index);
-            }
+            results.moveToFirst();
+            return results.getInt(index);
         } catch (CursorIndexOutOfBoundsException e) {
-            value = 0;
+            return 0;
         }
-        return value;
-
     }
 
     /**
@@ -3916,34 +3909,29 @@ public class CatalogueDBAdapter {
      * @param index The index, or column, to extract from
      */
     @Nullable
-    private String getStringValue(Cursor results, @SuppressWarnings("SameParameterValue") int index) {
-        String value = null;
+    private String getStringValue(@NonNull final Cursor results, final int index) {
         try {
-            if (results != null) {
-                results.moveToFirst();
-                value = results.getString(index);
-            }
+            results.moveToFirst();
+            return results.getString(index);
         } catch (CursorIndexOutOfBoundsException e) {
-            value = null;
+            return null;
         }
-        return value;
-
     }
 
-    public static String encodeString(String value) {
+    public static String encodeString(@NonNull final String value) {
     	return value.replace("'", "''");
     }
 
-    @Nullable
-    public static String join(@Nullable final String[] strings) {
-        if (strings == null || strings.length ==0)
-            return null;
-        StringBuilder s = new StringBuilder(strings[0]);
-        final int len = strings.length;
-        for(int i = 1; i < len; i++)
-            s.append(",").append(strings[i]);
-        return s.toString();
-    }
+//    @Nullable
+//    public static String join(@Nullable final String[] strings) {
+//        if (strings == null || strings.length ==0)
+//            return null;
+//        StringBuilder s = new StringBuilder(strings[0]);
+//        final int len = strings.length;
+//        for(int i = 1; i < len; i++)
+//            s.append(",").append(strings[i]);
+//        return s.toString();
+//    }
 
     //</editor-fold>
 

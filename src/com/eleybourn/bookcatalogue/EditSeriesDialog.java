@@ -43,7 +43,7 @@ public class EditSeriesDialog {
     EditSeriesDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
         mDb = db;
         mContext = context;
-        mSeriesAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDb.fetchAllSeriesArray());
+        mSeriesAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDb.getAllSeries());
         mOnChanged = onChanged;
     }
 

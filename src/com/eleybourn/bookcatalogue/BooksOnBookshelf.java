@@ -543,39 +543,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 this.savePosition();
                 this.setupBookList(true);
                 break;
-            //case ACTIVITY_SORT:
-            //case ACTIVITY_ADMIN:
-			/*
-			try {
-				// Use the ADDED_* fields if present.
-				if (intent != null && intent.hasExtra(EditBookFieldsFragment.ADDED_HAS_INFO)) {
-					if (sort == SORT_TITLE) {
-						justAdded = intent.getStringExtra(EditBookFieldsFragment.ADDED_TITLE);
-						int position = mDb.fetchBookPositionByTitle(justAdded, bookshelf);
-						adjustCurrentGroup(position, 1, true, false);
-					} else if (sort == SORT_AUTHOR) {
-						justAdded = intent.getStringExtra(EditBookFieldsFragment.ADDED_AUTHOR);
-						int position = mDb.getAuthorPositionByName(justAdded, bookshelf);
-						adjustCurrentGroup(position, 1, true, false);
-					} else if (sort == SORT_AUTHOR_GIVEN) {
-						justAdded = intent.getStringExtra(EditBookFieldsFragment.ADDED_AUTHOR);
-						int position = mDb.getAuthorPositionByGivenName(justAdded, bookshelf);
-						adjustCurrentGroup(position, 1, true, false);
-					} else if (sort == SORT_SERIES) {
-						justAdded = intent.getStringExtra(EditBookFieldsFragment.ADDED_SERIES);
-						int position = mDb.fetchSeriesPositionBySeries(justAdded, bookshelf);
-						adjustCurrentGroup(position, 1, true, false);
-					} else if (sort == SORT_GENRE) {
-						justAdded = intent.getStringExtra(EditBookFieldsFragment.ADDED_GENRE);
-						int position = mDb.getGenrePositionByGenre(justAdded, bookshelf);
-						adjustCurrentGroup(position, 1, true, false);
-					}
-				}
-			} catch (Exception e) {
-				Logger.logError(e);
-			}
-			*/
-            // We call bookshelf not fillData in case the bookshelves have been updated.
         }
         Tracker.exitOnActivityResult(this, requestCode, resultCode);
     }

@@ -77,7 +77,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
             mSeriesAdapter = new ArrayAdapter<>(this,
                     android.R.layout.simple_dropdown_item_1line,
-                    mDb.fetchAllSeriesArray());
+                    mDb.getAllSeries());
             ((AutoCompleteTextView) this.findViewById(R.id.series)).setAdapter(mSeriesAdapter);
 
             getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
