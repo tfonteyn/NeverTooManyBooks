@@ -113,7 +113,7 @@ public class BookshelfEditActivity extends BookCatalogueActivity {
     private void saveState() {
         String bookshelf = mBookshelfText.getText().toString().trim();
         if (mRowId == null || mRowId == 0) {
-            long id = mDb.createBookshelf(bookshelf);
+            long id = mDb.insertBookshelf(bookshelf);
             if (id > 0) {
                 mRowId = id;
             }

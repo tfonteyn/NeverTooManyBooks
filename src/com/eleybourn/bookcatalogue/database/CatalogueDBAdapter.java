@@ -171,16 +171,6 @@ public class CatalogueDBAdapter {
 	private static final String META_EMPTY_DATE_PUBLISHED = "<No Valid Published Date>";
 
 
-//	private static String SERIES_FIELDS = "s." + KEY_ID + " as " + KEY_SERIES_ID
-//		+ " CASE WHEN s." + KEY_SERIES_NAME + "='' THEN '' ELSE s." + KEY_SERIES_NAME + " || CASE WHEN s." + KEY_SERIES_NUM + "='' THEN '' ELSE ' #' || s." + KEY_SERIES_NUM + " END END AS " + KEY_SERIES_FORMATTED;
-//
-//	private static String BOOKSHELF_TABLES = DB_TB_BOOKS + " b LEFT OUTER JOIN " + DB_TB_BOOK_BOOKSHELF_WEAK + " w ON (b." + KEY_ID + "=w." + KEY_BOOK + ") LEFT OUTER JOIN " + DB_TB_BOOKSHELF + " bs ON (bs." + KEY_ID + "=w." + KEY_BOOKSHELF + ") ";
-//	private static String SERIES_TABLES = DB_TB_BOOKS
-//						+ " b LEFT OUTER JOIN " + DB_TB_BOOK_SERIES + " w "
-//						+ " ON (b." + KEY_ID + "=w." + KEY_BOOK + ") "
-//						+ " LEFT OUTER JOIN " + DB_TB_SERIES + " s ON (s." + KEY_ID + "=w." + KEY_SERIES_ID + ") ";
-
-
 	/**
 	 * Constructor - takes the context to allow the database to be opened/created
 	 *
@@ -203,83 +193,6 @@ public class CatalogueDBAdapter {
 		}
 	}
 
-
-
-    /**
-     * Examine the values and make any changes necessary before writing the data.
-     *
-     * @param bookData	Collection of field values.
-     */
-    private void preprocessOutput(final boolean isNew, @NonNull final BookData bookData) {
-
-        // Handle AUTHOR
-        {
-            long authorId;
-            // If present, get the author ID from the author name (it may have changed with a name change)
-            if (bookData.containsKey(DOM_AUTHOR_FORMATTED.name)) {
-                Author author = Author.toAuthor(bookData.getString(DOM_AUTHOR_FORMATTED.name));
-                authorId = getAuthorIdOrInsert(author);
-                bookData.putString(DOM_AUTHOR_ID.name, Long.toString(authorId));
-            } else {
-                if (bookData.containsKey(DOM_AUTHOR_FAMILY_NAME.name)) {
-                    String family = bookData.getString(DOM_AUTHOR_FAMILY_NAME.name);
-                    String given;
-                    if (bookData.containsKey(DOM_AUTHOR_GIVEN_NAMES.name)) {
-                        given = bookData.getString(DOM_AUTHOR_GIVEN_NAMES.name);
-                    } else {
-                        given = "";
-                    }
-                    authorId = getAuthorIdOrInsert(new Author(family, given));
-                    bookData.putString(DOM_AUTHOR_ID.name, Long.toString(authorId));
-                }
-            }
-        }
-
-        // Handle TITLE; but only for new books
-        {
-            if (isNew && bookData.containsKey(DOM_TITLE.name)) {
-                /* Move "The, A, An" to the end of the string */
-                String title = bookData.getString(DOM_TITLE.name);
-                StringBuilder newTitle = new StringBuilder();
-                String[] title_words = title.split(" ");
-                try {
-                    if (title_words[0].matches(mContext.getResources().getString(R.string.title_reorder))) {
-                        for (int i = 1; i < title_words.length; i++) {
-                            if (i != 1) {
-                                newTitle.append(" ");
-                            }
-                            newTitle.append(title_words[i]);
-                        }
-                        newTitle.append(", ").append(title_words[0]);
-                        bookData.putString(DOM_TITLE.name, newTitle.toString());
-                    }
-                } catch (Exception ignore) {
-                    //do nothing. Title stays the same
-                }
-            }
-        }
-
-        // Remove blank/null fields that have default values defined in the database
-        // or which should never be blank.
-        for (String name : new String[] {
-                DOM_BOOK_UUID.name,
-                DOM_ANTHOLOGY_MASK.name,
-                DOM_RATING.name,
-                DOM_READ.name,
-                DOM_SIGNED.name,
-                DOM_DATE_ADDED.name,
-                DOM_GOODREADS_LAST_SYNC_DATE.name,
-                DOM_LAST_UPDATE_DATE.name }) {
-            if (bookData.containsKey(name)) {
-                Object o = bookData.get(name);
-                // Need to allow for the possibility the stored value is not
-                // a string, in which case getString() would return a NULL.
-                if (o == null || o.toString().isEmpty()) {
-                    bookData.remove(name);
-                }
-            }
-        }
-    }
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1130,6 +1043,83 @@ public class CatalogueDBAdapter {
 
     //<editor-fold desc="Book OK">
 
+    /**
+     * Examine the values and make any changes necessary before writing the data.
+     *
+     * @param bookData	Collection of field values.
+     */
+    private void preprocessOutput(final boolean isNew, @NonNull final BookData bookData) {
+
+        // Handle AUTHOR
+        {
+            long authorId;
+            // If present, get the author ID from the author name (it may have changed with a name change)
+            if (bookData.containsKey(DOM_AUTHOR_FORMATTED.name)) {
+                Author author = Author.toAuthor(bookData.getString(DOM_AUTHOR_FORMATTED.name));
+                authorId = getAuthorIdOrInsert(author);
+                bookData.putString(DOM_AUTHOR_ID.name, Long.toString(authorId));
+            } else {
+                if (bookData.containsKey(DOM_AUTHOR_FAMILY_NAME.name)) {
+                    String family = bookData.getString(DOM_AUTHOR_FAMILY_NAME.name);
+                    String given;
+                    if (bookData.containsKey(DOM_AUTHOR_GIVEN_NAMES.name)) {
+                        given = bookData.getString(DOM_AUTHOR_GIVEN_NAMES.name);
+                    } else {
+                        given = "";
+                    }
+                    authorId = getAuthorIdOrInsert(new Author(family, given));
+                    bookData.putString(DOM_AUTHOR_ID.name, Long.toString(authorId));
+                }
+            }
+        }
+
+        // Handle TITLE; but only for new books
+        {
+            if (isNew && bookData.containsKey(DOM_TITLE.name)) {
+                /* Move "The, A, An" to the end of the string */
+                String title = bookData.getString(DOM_TITLE.name);
+                StringBuilder newTitle = new StringBuilder();
+                String[] title_words = title.split(" ");
+                try {
+                    if (title_words[0].matches(mContext.getResources().getString(R.string.title_reorder))) {
+                        for (int i = 1; i < title_words.length; i++) {
+                            if (i != 1) {
+                                newTitle.append(" ");
+                            }
+                            newTitle.append(title_words[i]);
+                        }
+                        newTitle.append(", ").append(title_words[0]);
+                        bookData.putString(DOM_TITLE.name, newTitle.toString());
+                    }
+                } catch (Exception ignore) {
+                    //do nothing. Title stays the same
+                }
+            }
+        }
+
+        // Remove blank/null fields that have default values defined in the database
+        // or which should never be blank.
+        for (String name : new String[] {
+                DOM_BOOK_UUID.name,
+                DOM_ANTHOLOGY_MASK.name,
+                DOM_RATING.name,
+                DOM_READ.name,
+                DOM_SIGNED.name,
+                DOM_DATE_ADDED.name,
+                DOM_GOODREADS_LAST_SYNC_DATE.name,
+                DOM_LAST_UPDATE_DATE.name }) {
+            if (bookData.containsKey(name)) {
+                Object o = bookData.get(name);
+                // Need to allow for the possibility the stored value is not
+                // a string, in which case getString() would return a NULL.
+                if (o == null || o.toString().isEmpty()) {
+                    bookData.remove(name);
+                }
+            }
+        }
+    }
+
+
     /** Used in {@link #getBookUuid} */
     private SynchronizedStatement mGetBookUuidQuery = null;
 
@@ -1638,19 +1628,6 @@ public class CatalogueDBAdapter {
                 " and " + TBL_BOOK_BOOKSHELF.dot(DOM_BOOK) + " = " + TBL_BOOKS + "." + DOM_ID + ")";
         mSyncedDb.execSQL(sql);
     }
-    //</editor-fold>
-
-    //<editor-fold desc="Book Relation 'create'">
-
-    /**
-     * If the passed ContentValues contains BKEY_SERIES_DETAILS, parse them
-     * and add the series.
-     *
-     * @param bookId		ID of book
-     * @param bookData		Book fields
-     */
-
-
 
     /** Statement used in {@link #insertBookSeries} */
     private SynchronizedStatement mDeleteBookSeriesStmt = null;
@@ -1751,12 +1728,12 @@ public class CatalogueDBAdapter {
      */
     private void insertBookAuthors(@NonNull final Long  bookId,
                                    @Nullable final ArrayList<Author> authors,
-                                   @SuppressWarnings("SameParameterValue") boolean dirtyBookIfNecessary) {
+                                   @SuppressWarnings("SameParameterValue") final boolean dirtyBookIfNecessary) {
         if (dirtyBookIfNecessary) {
             setBookDirty(bookId);
         }
 
-        // If we have author details, same them.
+        // If we have author details, save them.
         if (authors != null) {
             if (mDeleteBookAuthorsStmt == null) {
                 mDeleteBookAuthorsStmt = mStatements.add("mDeleteBookAuthorsStmt", "Delete from " + DB_TB_BOOK_AUTHOR + " Where " + DOM_BOOK + " = ?");
@@ -1809,11 +1786,11 @@ public class CatalogueDBAdapter {
      *
      * @param bookId                The book id
      * @param bookshelves           A separated string of bookshelf names
-     * @param dirtyBookIfNecessary  flag to set book dirty or not (for now, always false...)
+     * @param dirtyBookIfNecessary  flag to set book dirty or not
      */
     private void insertBookBookshelf( @NonNull final Long bookId,
                                      @NonNull final ArrayList<String> bookshelves,
-                                     @SuppressWarnings("SameParameterValue") boolean dirtyBookIfNecessary) {
+                                     @SuppressWarnings("SameParameterValue") final boolean dirtyBookIfNecessary) {
 
         if (mDeleteBookBookshelfStmt == null) {
             mDeleteBookBookshelfStmt = mStatements.add("mDeleteBookBookshelfStmt",
@@ -1836,7 +1813,7 @@ public class CatalogueDBAdapter {
 
             long bookshelfId = getBookshelfIdByName(name);
             if (bookshelfId == 0) {
-                bookshelfId = createBookshelf(name);
+                bookshelfId = insertBookshelf(name);
             }
             if (bookshelfId == 0) {
                 bookshelfId = 1;
@@ -1859,17 +1836,17 @@ public class CatalogueDBAdapter {
     private void globalReplacePositionedBookItem(@NonNull final String tableName,
                                                  @NonNull final String objectIdField,
                                                  @NonNull final String positionField,
-                                                 final long oldId, final long newId) {
+                                                 final long from, final long to) {
         if ( !mSyncedDb.inTransaction() ) {
             throw new RuntimeException("globalReplacePositionedBookItem must be called in a transaction");
         }
 
         // Update books but prevent duplicate index errors - update books for which the new ID is not already present
-        String sql = "Update " + tableName + " Set " + objectIdField + " = " + newId
-                + " Where " + objectIdField + " = " + oldId
-                + " and Not Exists(Select NULL From " + tableName + " ba Where "
-                + "   ba." + DOM_BOOK + " = " + tableName + "." + DOM_BOOK
-                + "   and ba." + objectIdField + " = " + newId + ")";
+        String sql = "Update " + tableName + " Set " + objectIdField + " = " + to +
+                " Where " + objectIdField + " = " + from +
+                " and Not Exists(Select NULL From " + tableName + " ba Where " +
+                "   ba." + DOM_BOOK + " = " + tableName + "." + DOM_BOOK +
+                "   and ba." + objectIdField + " = " + to + ")";
         mSyncedDb.execSQL(sql);
 
         // Finally, delete the rows that would have caused duplicates. Be cautious by using the
@@ -1878,10 +1855,10 @@ public class CatalogueDBAdapter {
         //
         // We also move remaining items up one place to ensure positions remain correct
         //
-        sql = "select * from " + tableName + " Where " + objectIdField + " = " + oldId
+        sql = "select * from " + tableName + " Where " + objectIdField + " = " + from
                 + " And Exists(Select NULL From " + tableName + " ba Where "
-                + "                 ba." + DOM_BOOK + " = " + tableName + "." + DOM_BOOK
-                + "                 and ba." + objectIdField + " = " + newId + ")";
+                + "   ba." + DOM_BOOK + " = " + tableName + "." + DOM_BOOK
+                + "   and ba." + objectIdField + " = " + to + ")";
 
         SynchronizedStatement delStmt = null;
         SynchronizedStatement replacementIdPosStmt = null;
@@ -1897,7 +1874,7 @@ public class CatalogueDBAdapter {
             delStmt = mSyncedDb.compileStatement(sql);
 
             // Statement to get the position of the already-existing 'new/replacement' object
-            sql = "Select " + positionField + " From " + tableName + " Where " + DOM_BOOK + " = ? and " + objectIdField + " = " + newId;
+            sql = "Select " + positionField + " From " + tableName + " Where " + DOM_BOOK + " = ? and " + objectIdField + " = " + to;
             replacementIdPosStmt = mSyncedDb.compileStatement(sql);
 
             // Move statement; move a single entry to a new position
@@ -1911,22 +1888,22 @@ public class CatalogueDBAdapter {
             // Loop through all instances of the old author appearing
             while (c.moveToNext()) {
                 // Get the details of the old object
-                long book = c.getLong(bookCol);
+                long bookId = c.getLong(bookCol);
                 long pos = c.getLong(posCol);
 
                 // Get the position of the new/replacement object
-                replacementIdPosStmt.bindLong(1, book);
+                replacementIdPosStmt.bindLong(1, bookId);
                 long replacementIdPos = replacementIdPosStmt.simpleQueryForLong();
 
                 // Delete the old record
-                delStmt.bindLong(1, oldId);
-                delStmt.bindLong(2, book);
+                delStmt.bindLong(1, from);
+                delStmt.bindLong(2, bookId);
                 delStmt.execute();
 
                 // If the deleted object was more prominent than the new object, move the new one up
                 if (replacementIdPos > pos) {
                     moveStmt.bindLong(1, pos);
-                    moveStmt.bindLong(2, book);
+                    moveStmt.bindLong(2, bookId);
                     moveStmt.bindLong(3, replacementIdPos);
                     moveStmt.execute();
                 }
@@ -1938,12 +1915,12 @@ public class CatalogueDBAdapter {
                 //
 
                 // Get the minimum position
-                checkMinStmt.bindLong(1, book);
+                checkMinStmt.bindLong(1, bookId);
                 long minPos = checkMinStmt.simpleQueryForLong();
                 // If it's > 1, move it to 1
                 if (minPos > 1) {
                     moveStmt.bindLong(1, 1);
-                    moveStmt.bindLong(2, book);
+                    moveStmt.bindLong(2, bookId);
                     moveStmt.bindLong(3, minPos);
                     moveStmt.execute();
                 }
@@ -1960,11 +1937,7 @@ public class CatalogueDBAdapter {
         }
     }
 
-    //</editor-fold>
-
-    //<editor-fold desc="Book Relation 'get' OK">
     /**
-     *
      * @param bookId id of book
      *
      * @return list of AnthologyTitle for this book
@@ -2045,7 +2018,7 @@ public class CatalogueDBAdapter {
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
     @NonNull
-    public Long createBookshelf(@NonNull final String name) {
+    public Long insertBookshelf(@NonNull final String name) {
         // TODO: Decide if we need to backup EMPTY bookshelves...
         ContentValues values = new ContentValues();
         values.put(DOM_BOOKSHELF_NAME.name, name);
