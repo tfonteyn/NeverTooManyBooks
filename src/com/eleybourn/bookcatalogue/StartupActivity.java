@@ -404,7 +404,7 @@ public class StartupActivity extends AppCompatActivity {
     public class RebuildFtsTask implements SimpleTask {
 
         @Override
-        public void run(@NonNull SimpleTaskContext taskContext) {
+        public void run(@NonNull final SimpleTaskContext taskContext) {
             // Get a DB to make sure the FTS rebuild flag is set appropriately
             CatalogueDBAdapter db = taskContext.getDb();
             if (BCPreferences.getBoolean(PREF_FTS_REBUILD_REQUIRED, false)) {
@@ -423,7 +423,7 @@ public class StartupActivity extends AppCompatActivity {
     public class AnalyzeDbTask implements SimpleTask {
 
         @Override
-        public void run(@NonNull SimpleTaskContext taskContext) {
+        public void run(@NonNull final SimpleTaskContext taskContext) {
 
             CatalogueDBAdapter db = taskContext.getDb();
 
