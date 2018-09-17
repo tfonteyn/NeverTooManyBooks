@@ -340,7 +340,7 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
      * @param rowId Database row _id of the loaned book
      */
     private void showLoanedInfo(Long rowId) {
-        String personLoanedTo = mDb.fetchLoanByBook(rowId);
+        String personLoanedTo = mDb.getLoanByBook(rowId);
         TextView textView = getView().findViewById(R.id.who);
         if (personLoanedTo != null) {
             textView.setVisibility(View.VISIBLE);

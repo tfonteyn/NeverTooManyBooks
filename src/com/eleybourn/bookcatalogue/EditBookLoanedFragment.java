@@ -73,7 +73,7 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
         Tracker.enterOnCreate(this);
         try {
             super.onActivityCreated(savedInstanceState);
-            String friend = mDb.fetchLoanByBook(mEditManager.getBookData().getRowId());
+            String friend = mDb.getLoanByBook(mEditManager.getBookData().getRowId());
             if (friend == null) {
                 showLoanTo();
             } else {

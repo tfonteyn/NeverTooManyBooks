@@ -831,7 +831,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				mCursor = mDb.fetchGenresByBookshelf(mBookshelf);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDb.searchGenres(search_query, mBookshelf);
+				mCursor = mDb.fetchGenres(search_query, mBookshelf);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
 			return mCursor;
@@ -1330,7 +1330,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 						}
 						case SORT_GENRE: {
 							justAdded = intent.getStringExtra(EditBookActivity.ADDED_GENRE);
-							int position = mDb.fetchGenrePositionByGenre(justAdded, mBookshelf);
+							int position = mDb.getGenrePositionByGenre(justAdded, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}

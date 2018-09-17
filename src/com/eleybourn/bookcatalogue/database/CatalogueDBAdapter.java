@@ -2017,8 +2017,7 @@ public class CatalogueDBAdapter {
      *
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
-    @NonNull
-    public Long insertBookshelf(@NonNull final String name) {
+    public long insertBookshelf(@NonNull final String name) {
         // TODO: Decide if we need to backup EMPTY bookshelves...
         ContentValues values = new ContentValues();
         values.put(DOM_BOOKSHELF_NAME.name, name);
@@ -2057,10 +2056,11 @@ public class CatalogueDBAdapter {
     }
 
 
+    /** used in {@link #getBookshelfId}*/
     private SynchronizedStatement mGetBookshelfIdStmt = null;
 
     @NonNull
-    public Long getBookshelfId(@NonNull final Bookshelf bookshelf) {
+    public long getBookshelfId(@NonNull final Bookshelf bookshelf) {
         if (mGetBookshelfIdStmt == null) {
             mGetBookshelfIdStmt = mStatements.add("mGetBookshelfIdStmt",
                     "Select " + DOM_ID + " From " + DB_TB_BOOKSHELF +
@@ -2071,7 +2071,7 @@ public class CatalogueDBAdapter {
         try {
             return mGetBookshelfIdStmt.simpleQueryForLong();
         } catch (SQLiteDoneException e) {
-            return 0L;
+            return 0;
         }
     }
 
@@ -2094,14 +2094,16 @@ public class CatalogueDBAdapter {
         return success;
     }
 
+    /** used in {@link #getBookshelfIdByName}*/
+    private SynchronizedStatement mFetchBookshelfIdByNameStmt = null;
+
     /**
      * This will return JUST the bookshelf id based on the name.
      *
      * @param name bookshelf to search for
      * @return bookshelf id, or 0 when not found
      */
-    private SynchronizedStatement mFetchBookshelfIdByNameStmt = null;
-    private Long getBookshelfIdByName(@NonNull final String name) {
+    private long getBookshelfIdByName(@NonNull final String name) {
         if (mFetchBookshelfIdByNameStmt == null) {
             mFetchBookshelfIdByNameStmt = mStatements.add("mFetchBookshelfIdByNameStmt",
                     "Select " + DOM_ID + " From " + DOM_BOOKSHELF_NAME +
@@ -2111,7 +2113,7 @@ public class CatalogueDBAdapter {
         try {
             return mFetchBookshelfIdByNameStmt.simpleQueryForLong();
         } catch (SQLiteDoneException e) {
-            return 0L;
+            return 0;
         }
     }
 
@@ -2954,7 +2956,7 @@ public class CatalogueDBAdapter {
      * @param bookshelf The bookshelf to search within. Can be the string "All Books"
      * @return The position of the book
      */
-    public int fetchGenrePositionByGenre(@NonNull final String genre, @NonNull final String bookshelf) {
+    public int getGenrePositionByGenre(@NonNull final String genre, @NonNull final String bookshelf) {
         if (genre.equals(META_EMPTY_GENRE))
             return 0;
 
@@ -2976,7 +2978,7 @@ public class CatalogueDBAdapter {
      * @return Cursor over all notes
      */
     @NonNull
-    public Cursor searchGenres(@NonNull final String searchText, @NonNull final String bookshelf) {
+    public Cursor fetchGenres(@NonNull final String searchText, @NonNull final String bookshelf) {
         String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", "", searchText, "", "");
         String sql = "SELECT DISTINCT Case When " + DOM_GENRE + " = '' Then '" + META_EMPTY_GENRE + "' else " + DOM_GENRE + " End " + COLLATION +
                 " AS " + DOM_ID + " " + baseSql;
@@ -3061,7 +3063,7 @@ public class CatalogueDBAdapter {
      * @return 			true if deleted, false otherwise
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean deleteLoan(long bookId, boolean dirtyBookIfNecessary) {
+    public boolean deleteLoan(final long bookId, final boolean dirtyBookIfNecessary) {
         boolean success = mSyncedDb.delete(DB_TB_LOAN, DOM_BOOK+ "=" + bookId, null) > 0;
         this.deleteLoansWithoutBooks();
         if (dirtyBookIfNecessary) {
@@ -3104,7 +3106,7 @@ public class CatalogueDBAdapter {
      * @return Who the book is loaned to, can be blank/null
      */
     @Nullable
-    public String fetchLoanByBook(@NonNull final Long id) {
+    public String getLoanByBook(@NonNull final Long id) {
         try (Cursor results = mSyncedDb.query(DB_TB_LOAN,
                 new String[] {DOM_BOOK.name, DOM_LOANED_TO.name},
                 DOM_BOOK + "=" + id + "",
@@ -3284,6 +3286,7 @@ public class CatalogueDBAdapter {
         return getSeriesId(s.name);
     }
 
+    /** {@link #getSeriesId} */
     private SynchronizedStatement mGetSeriesIdStmt = null;
     private long getSeriesId(@NonNull final String name) {
         if (mGetSeriesIdStmt == null) {
@@ -3362,9 +3365,9 @@ public class CatalogueDBAdapter {
         return;
     }
 
-    /** Statements for {@link #purgeSeries} */
+    /** {@link #purgeSeries} */
     private SynchronizedStatement mPurgeBookSeriesStmt = null;
-    /** Statements for {@link #purgeSeries} */
+    /** {@link #purgeSeries} */
     private SynchronizedStatement mPurgeSeriesStmt = null;
 
     /**
@@ -3402,7 +3405,7 @@ public class CatalogueDBAdapter {
         return success;
     }
 
-    /** Statements for {@link #getSeriesBookCount} */
+    /** {@link #getSeriesBookCount} */
     private SynchronizedStatement mGetSeriesBookCountQuery = null;
     /*
      * This will return the author id based on the name.

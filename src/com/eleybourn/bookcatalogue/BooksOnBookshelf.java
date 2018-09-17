@@ -567,7 +567,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 						adjustCurrentGroup(position, 1, true, false);
 					} else if (sort == SORT_GENRE) {
 						justAdded = intent.getStringExtra(EditBookFieldsFragment.ADDED_GENRE);
-						int position = mDb.fetchGenrePositionByGenre(justAdded, bookshelf);
+						int position = mDb.getGenrePositionByGenre(justAdded, bookshelf);
 						adjustCurrentGroup(position, 1, true, false);
 					}
 				}
