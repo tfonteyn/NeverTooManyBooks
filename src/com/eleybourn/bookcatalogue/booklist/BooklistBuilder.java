@@ -1993,8 +1993,9 @@ public class BooklistBuilder implements AutoCloseable {
             long rootId = Long.parseLong(info[0]);
             long isExp = Long.parseLong(info[1]);
             // If root node is not the node we are checking, and root node is not expanded, expand it.
-            if (rootId != rowId && isExp == 0)
+            if (rootId != rowId && isExp == 0) {
                 toggleExpandNode(rootId - 1);
+            }
         } catch (SQLiteDoneException ignore) {
             // query returned zero rows
         }
@@ -2068,7 +2069,15 @@ public class BooklistBuilder implements AutoCloseable {
 
         // Get the details of the passed row position.
         mGetNodeLevelStmt.bindLong(1, rowId);
-        String info[] = mGetNodeLevelStmt.simpleQueryForString().split("/");
+
+        String[] info;
+        try {
+            info = mGetNodeLevelStmt.simpleQueryForString().split("/");
+        } catch (SQLiteDoneException ignore) {
+            // query returned zero rows
+            Logger.logError(ignore, "mGetNodeLevelStmt returned zero rows? ");
+            return;
+        }
         long level = Long.parseLong(info[0]);
         int exp = (Integer.parseInt(info[1]) == 1) ? 0 : 1;
 

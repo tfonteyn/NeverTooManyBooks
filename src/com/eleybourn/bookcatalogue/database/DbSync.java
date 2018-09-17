@@ -297,7 +297,7 @@ public class DbSync {
          * @param db   Underlying database
          * @param sync Synchronizer to use
          */
-        SynchronizedDb(SQLiteDatabase db, Synchronizer sync) {
+        SynchronizedDb(@NonNull final SQLiteDatabase db, @NonNull final Synchronizer sync) {
             mDb = db;
             mSync = sync;
             if (BuildConfig.DEBUG) {
@@ -313,7 +313,7 @@ public class DbSync {
          * @param helper SQLiteOpenHelper to open underlying database
          * @param sync   Synchronizer to use
          */
-        SynchronizedDb(final SQLiteOpenHelper helper, Synchronizer sync) {
+        SynchronizedDb(@NonNull final  SQLiteOpenHelper helper, @NonNull final Synchronizer sync) {
             mSync = sync;
             mDb = openWithRetries(new DbOpener() {
                 @Override
@@ -364,7 +364,7 @@ public class DbSync {
          *
          * @return The opened database
          */
-        private SQLiteDatabase openWithRetries(DbOpener opener) {
+        private SQLiteDatabase openWithRetries(@NonNull final DbOpener opener) {
             int wait = 10; // 10ms
             //int retriesLeft = 5; // up to 320ms
             int retriesLeft = 10; // 2^10 * 10ms = 10.24sec (actually 2x that due to total wait time)
@@ -403,7 +403,7 @@ public class DbSync {
         /**
          * Locking-aware wrapper for underlying database method.
          */
-        public SynchronizedCursor rawQuery(String sql, String[] selectionArgs) {
+        public SynchronizedCursor rawQuery(@NonNull final String sql, @Nullable final String[] selectionArgs) {
             return rawQueryWithFactory(mCursorFactory, sql, selectionArgs, "");
         }
 
@@ -417,7 +417,9 @@ public class DbSync {
         /**
          * Locking-aware wrapper for underlying database method.
          */
-        SynchronizedCursor rawQueryWithFactory(SynchronizedCursorFactory factory, String sql, String[] selectionArgs,
+        SynchronizedCursor rawQueryWithFactory(@NonNull final SynchronizedCursorFactory factory,
+                                               @NonNull final String sql,
+                                               @Nullable final String[] selectionArgs,
                                                @SuppressWarnings("SameParameterValue") String editTable) {
             SyncLock l = null;
             if (mTxLock == null)
@@ -434,7 +436,7 @@ public class DbSync {
         /**
          * Locking-aware wrapper for underlying database method.
          */
-        public void execSQL(String sql) {
+        public void execSQL(@NonNull final String sql) {
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive)
                     throw new RuntimeException("Update inside shared TX");
@@ -452,8 +454,12 @@ public class DbSync {
         /**
          * Locking-aware wrapper for underlying database method.
          */
-        public Cursor query(String table, String[] columns, String selection, String[] selectionArgs,
-                            String groupBy, String having, String orderBy) {
+        public Cursor query(@NonNull final String table,
+                            @NonNull final String[] columns,
+                            @NonNull final String selection,
+                            @Nullable final String[] selectionArgs,
+                            @Nullable final String groupBy, String having,
+                            @Nullable final String orderBy) {
             SyncLock l = null;
             if (mTxLock == null)
                 l = mSync.getSharedLock();

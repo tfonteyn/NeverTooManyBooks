@@ -111,9 +111,6 @@ public class FlattenedBooklist implements AutoCloseable {
             return false;
         }
 
-        if (info == null)
-            return false;
-
         final String[] data = info.split("/");
         mPosition = Long.parseLong(data[0]);
         mBookId = Long.parseLong(data[1]);
