@@ -611,19 +611,19 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
 			if (search_query.isEmpty()) {
-				return mDb.fetchAllBooksByChar(groupCursor.getString(mGroupIdColumnIndex), mBookshelf, "");
+				return mDb.classicFetchAllBooksByChar(groupCursor.getString(mGroupIdColumnIndex), mBookshelf, "");
 			} else {
-				return mDb.searchBooksByChar(search_query, groupCursor.getString(mGroupIdColumnIndex), mBookshelf);
+				return mDb.classicFetchBooksByChar(search_query, groupCursor.getString(mGroupIdColumnIndex), mBookshelf);
 			}
 		}
 		@Override
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
 				// Return all books (for the bookshelf)
-				mCursor = mDb.fetchAllBookChars(mBookshelf);
+				mCursor = mDb.classicFetchAllBookChars(mBookshelf);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDb.searchBooksChars(search_query, mBookshelf);
+				mCursor = mDb.classicFetchBooksChars(search_query, mBookshelf);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
 			return mCursor;
@@ -645,7 +645,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(final Cursor groupCursor) {
-			return mDb.fetchAllBooksByAuthor(groupCursor.getInt(mGroupIdColumnIndex), mBookshelf, search_query, false);
+			return mDb.classicFetchAllBooksByAuthor(groupCursor.getInt(mGroupIdColumnIndex), mBookshelf, search_query, false);
 		}
 		@Override
 		public Cursor newGroupCursor() {
@@ -676,7 +676,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
-			return mDb.fetchAllBooksByAuthor(groupCursor.getInt(mGroupIdColumnIndex), mBookshelf, search_query, false);
+			return mDb.classicFetchAllBooksByAuthor(groupCursor.getInt(mGroupIdColumnIndex), mBookshelf, search_query, false);
 		}
 		@Override
 		public Cursor newGroupCursor() {
@@ -707,7 +707,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
-			return mDb.fetchAllBooksByAuthor(groupCursor.getInt(mGroupIdColumnIndex), mBookshelf, search_query, true);
+			return mDb.classicFetchAllBooksByAuthor(groupCursor.getInt(mGroupIdColumnIndex), mBookshelf, search_query, true);
 		}
 		@Override
 		public Cursor newGroupCursor() {
@@ -738,14 +738,14 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
-			return mDb.fetchAllBooksBySeries(groupCursor.getString(groupCursor.getColumnIndex(DatabaseDefinitions.DOM_SERIES_NAME.name)), mBookshelf, search_query);
+			return mDb.classicFetchAllBooksBySeries(groupCursor.getString(groupCursor.getColumnIndex(DatabaseDefinitions.DOM_SERIES_NAME.name)), mBookshelf, search_query);
 		}
 		@Override
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
 				mCursor = mDb.fetchAllSeries(mBookshelf, true);
 			} else {
-				mCursor = mDb.searchSeries(search_query, mBookshelf);
+				mCursor = mDb.fetchSeries(search_query, mBookshelf);
 			}
 			BookCatalogueClassic.this.startManagingCursor(mCursor);
 			mGroupIdColumnIndex = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
@@ -768,7 +768,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
-			return mDb.fetchAllBooksByLoan(groupCursor.getString(mGroupIdColumnIndex), search_query);
+			return mDb.classicFetchAllBooksByLoan(groupCursor.getString(mGroupIdColumnIndex), search_query);
 		}
 		@Override
 		public Cursor newGroupCursor() {
@@ -793,7 +793,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			mTo = new int[]{R.id.row_family};
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
-			return mDb.fetchAllBooksByRead(groupCursor.getString(mGroupIdColumnIndex), mBookshelf, search_query);
+			return mDb.classicFetchAllBooksByRead(groupCursor.getString(mGroupIdColumnIndex), mBookshelf, search_query);
 		}
 		@Override
 		public Cursor newGroupCursor() {
@@ -819,9 +819,9 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
 			if (search_query.isEmpty()) {
-				return mDb.fetchAllBooksByGenre(groupCursor.getString(mGroupIdColumnIndex), mBookshelf, "");
+				return mDb.classicFetchAllBooksByGenre(groupCursor.getString(mGroupIdColumnIndex), mBookshelf, "");
 			} else {
-				return mDb.searchBooksByGenre(search_query, groupCursor.getString(mGroupIdColumnIndex), mBookshelf);
+				return mDb.classicFetchBooksByGenre(search_query, groupCursor.getString(mGroupIdColumnIndex), mBookshelf);
 			}
 		}
 		@Override
@@ -854,19 +854,19 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		}
 		public SQLiteCursor getChildrenCursor(Cursor groupCursor) {
 			if (search_query.isEmpty()) {
-				return mDb.fetchAllBooksByDatePublished(groupCursor.getString(mGroupIdColumnIndex), mBookshelf, "");
+				return mDb.classicFetchAllBooksByDatePublished(groupCursor.getString(mGroupIdColumnIndex), mBookshelf, "");
 			} else {
-				return mDb.searchBooksByDatePublished(search_query, groupCursor.getString(mGroupIdColumnIndex), mBookshelf);
+				return mDb.classicFetchBooksByDatePublished(search_query, groupCursor.getString(mGroupIdColumnIndex), mBookshelf);
 			}
 		}
 		@Override
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
 				// Return all books (for the bookshelf)
-				mCursor = mDb.fetchAllDatePublished(mBookshelf);
+				mCursor = mDb.classicFetchAllDatePublished(mBookshelf);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDb.searchDatePublished(search_query, mBookshelf);
+				mCursor = mDb.classicFetchDatePublished(search_query, mBookshelf);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
 			return mCursor;

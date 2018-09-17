@@ -2004,8 +2004,261 @@ public class CatalogueDBAdapter {
         return list;
     }
 
+    /**
+     * Return a list of all books in the database
+     *
+     * @param order What order to return the books
+     * @param bookshelf Which bookshelf is it in. Can be "All Books"
+     * @return Cursor over all Books
+     */
+    public BooksCursor fetchAllBooks(@Nullable final String order,
+                                     @NonNull final String bookshelf,
+                                     @NonNull final String authorWhere,
+                                     @NonNull final String bookWhere,
+                                     @NonNull final String searchText,
+                                     @NonNull final String loaned_to,
+                                     @NonNull final String seriesName) {
+        // Get the SQL
+        String fullSql = fetchAllBooksSql( order, bookshelf, authorWhere, bookWhere, searchText, loaned_to, seriesName);
+        return fetchBooks(fullSql, new String[]{});
+    }
+
+
     //</editor-fold>
 
+    //<editor-fold desc="Classic Book">
+
+    /**
+     * Return a list of all the first characters for book titles in the database
+     *
+     * @param bookshelf Which bookshelf is it in. Can be "All Books"
+     * @return Cursor over all Books
+     */
+    @NonNull
+    public Cursor classicFetchAllBookChars(String bookshelf) {
+        String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "",
+                "", "", "", "");
+        String sql = "SELECT DISTINCT upper(substr(b." + DOM_TITLE + ", 1, 1)) AS " + DOM_ID + " " + baseSql;
+        return mSyncedDb.rawQuery(sql, new String[]{});
+    }
+
+    /**
+     * Return a list of all books in the database by author
+     *
+     * @param author The author to search for
+     * @param bookshelf Which bookshelf is it in. Can be "All Books"
+     * @return Cursor over all Books
+     */
+    public BooksCursor classicFetchAllBooksByAuthor(final int author,
+                                                    @NonNull final String bookshelf,
+                                                    @NonNull final String search_term,
+                                                    boolean firstOnly) {
+        String where = " a._id=" + author;
+        if (firstOnly) {
+            where += " AND ba." + DOM_AUTHOR_POSITION + "=1 ";
+        }
+        String order = "s." + DOM_SERIES_NAME + ", substr('0000000000' || s." + DOM_SERIES_NUM + ", -10, 10), lower(b." + DOM_TITLE + ") ASC";
+        return fetchAllBooks(order, bookshelf, where, "", search_term, "", "");
+    }
+
+    /**
+     * This will return a list of all books by a given first title character
+     *
+     * @param first_char The first title character
+     * @return Cursor over all books
+     */
+    public BooksCursor classicFetchAllBooksByChar(@NonNull final String first_char,
+                                                  @NonNull final String bookshelf,
+                                                  @NonNull final String search_term) {
+        String where = " " + makeTextTerm("substr(b." + DOM_TITLE + ",1,1)", "=", first_char);
+        return fetchAllBooks("", bookshelf, "", where, search_term, "", "");
+    }
+
+    /**
+     * Return a Cursor over the list of all books in the database by genre
+     *
+     * @param date          date published
+     * @param bookshelf     The bookshelf to search within. Can be the string "All Books"
+     * @param search_term   text to search for
+     *
+     * @return Cursor over all books
+     */
+    public BooksCursor classicFetchAllBooksByDatePublished(@Nullable String date,
+                                                           @NonNull final String bookshelf,
+                                                           @NonNull final String search_term) {
+        String where;
+        if (date == null) {
+            date = META_EMPTY_DATE_PUBLISHED;
+        }
+
+        if (date.equals(META_EMPTY_DATE_PUBLISHED)) {
+            where = "(b." + DOM_DATE_PUBLISHED + "='' OR b." +DOM_DATE_PUBLISHED + " IS NULL" +
+                    " or cast(strftime('%Y', b." + DOM_DATE_PUBLISHED + ") as int)<0" +
+                    " or cast(strftime('%Y', b." + DOM_DATE_PUBLISHED + ") as int) is null)";
+        } else {
+            where = makeTextTerm("strftime('%Y', b." + DOM_DATE_PUBLISHED + ")", "=", date);
+        }
+        return fetchAllBooks("", bookshelf, "", where, search_term, "", "");
+    }
+
+    /**
+     * Return a Cursor over the list of all books in the database by genre
+     *
+     * @param genre The genre name to search by
+     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
+     * @return Cursor over all books
+     */
+    public BooksCursor classicFetchAllBooksByGenre(@NonNull final String genre,
+                                                   @NonNull final String bookshelf,
+                                                   @NonNull final String search_term) {
+        String where;
+        if (genre.equals(META_EMPTY_GENRE)) {
+            where = "(b." + DOM_GENRE + "='' OR b." + DOM_GENRE + " IS NULL)";
+        } else {
+            where = makeTextTerm("b." + DOM_GENRE, "=", genre);
+        }
+        return fetchAllBooks("", bookshelf, "", where, search_term, "", "");
+    }
+
+    /**
+     * This will return a list of all books loaned to a given person
+     *
+     * @param loaned_to The person who had books loaned to
+     * @return Cursor over all books
+     */
+    public BooksCursor classicFetchAllBooksByLoan(@NonNull final String loaned_to,
+                                                  @NonNull final String search_term) {
+        return fetchAllBooks("", "", "", "", search_term, loaned_to, "");
+    }
+
+    /**
+     * This will return a list of all books either read or unread
+     *
+     * @param read "Read" or "Unread"
+     * @return Cursor over all books
+     */
+    public BooksCursor classicFetchAllBooksByRead(@NonNull final String read,
+                                                  @NonNull final String bookshelf,
+                                                  @NonNull final String search_term) {
+        String where = "";
+        if ("Read".equals(read)) {
+            where += " b." +DOM_READ + "=1";
+        } else {
+            where += " b." + DOM_READ + "!=1";
+        }
+        return fetchAllBooks("", bookshelf, "", where, search_term, "", "");
+    }
+
+    /**
+     * Return a Cursor over the list of all books in the database by series
+     *
+     * @param series The series name to search by
+     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
+     * @return Cursor over all books
+     */
+    public BooksCursor classicFetchAllBooksBySeries(@NonNull final String series,
+                                                    @NonNull final String bookshelf,
+                                                    @NonNull final String search_term) {
+        if (series.isEmpty() || series.equals(META_EMPTY_SERIES)) {
+            return fetchAllBooks("", bookshelf, "", "", search_term, "", META_EMPTY_SERIES);
+        } else {
+            String order = "substr('0000000000' || s." + DOM_SERIES_NUM + ", -10, 10), b." + DOM_TITLE + " " + COLLATION + " ASC";
+            return fetchAllBooks(order, bookshelf, "", "", search_term, "", series);
+        }
+    }
+
+    /**
+     * This will return a list of all date published years within the given bookshelf
+     *
+     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
+     * @return Cursor over all series
+     */
+    public Cursor classicFetchAllDatePublished(@NonNull final String bookshelf) {
+        // Null 'order' to suppress ordering
+        String baseSql = fetchAllBooksInnerSql(null, bookshelf, "", "", "", "", "");
+
+        String sql = "SELECT DISTINCT "
+                + " Case When (b." + DOM_DATE_PUBLISHED + " = ''" +
+                " or b." + DOM_DATE_PUBLISHED + " is NULL" +
+                " or cast(strftime('%Y', b." + DOM_DATE_PUBLISHED + ") as int)<0" +
+                " or cast(strftime('%Y', b." + DOM_DATE_PUBLISHED + ") as int) is null)" +
+                " Then '" + META_EMPTY_DATE_PUBLISHED + "'" +
+                " Else strftime('%Y', b." + DOM_DATE_PUBLISHED + ") End as " + DOM_ID + baseSql +
+                " ORDER BY strftime('%Y', b." + DOM_DATE_PUBLISHED + ") " + COLLATION;
+        return mSyncedDb.rawQuery(sql, new String[]{});
+    }
+
+
+    /**
+     * Returns a list of books, similar to {@link #fetchAllBooks} but restricted by a
+     * search string. The query will be applied to author, title, and series
+     *
+     * @param searchText	The search string to restrict the output by
+     * @param first_char    The character to search for
+     * @param bookshelf		The bookshelf to search within. Can be the string "All Books"
+     *
+     * @return A Cursor of book meeting the search criteria
+     */
+    @NonNull
+    public BooksCursor classicFetchBooksByChar(@NonNull final String searchText,
+                                               @NonNull final String first_char,
+                                               @NonNull final String bookshelf) {
+        return fetchAllBooks("", bookshelf, "",
+                " " + makeTextTerm("substr(b." + DOM_TITLE + ",1,1)", "=", first_char),
+                searchText, "", "");
+    }
+
+    @NonNull
+    public BooksCursor classicFetchBooksByDatePublished(@NonNull final String searchText,
+                                                        @NonNull final String date,
+                                                        @NonNull final String bookshelf) {
+        return fetchAllBooks("", bookshelf, "",
+                " strftime('%Y', b." + DOM_DATE_PUBLISHED + ")='" + date + "' " + COLLATION + " ",
+                searchText, "", "");
+    }
+
+    @NonNull
+    public BooksCursor classicFetchBooksByGenre(@NonNull final String searchText,
+                                                @NonNull final String genre,
+                                                @NonNull final String bookshelf) {
+        return fetchAllBooks("", bookshelf, "",
+                " " + DOM_GENRE.name + "='" + genre + "' " + COLLATION + " ",
+                searchText, "", "");
+    }
+
+    /**
+     * Returns a list of books title characters, similar to {@link #classicFetchAllBookChars} but
+     * restricted by a search string. The query will be applied to author, title, and series
+     *
+     * @param searchText The search string to restrict the output by
+     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
+     *
+     * @return A Cursor of book titles meeting the search criteria
+     */
+    @NonNull
+    public Cursor classicFetchBooksChars(@NonNull final String searchText, @NonNull final String bookshelf) {
+        String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", "", searchText, "", "");
+        String sql = "SELECT DISTINCT upper(substr(b." + DOM_TITLE + ", 1, 1)) " + COLLATION + " AS " + DOM_ID + " " + baseSql;
+        return mSyncedDb.rawQuery(sql, new String[]{});
+    }
+
+    /**
+     * This will return a list of all date published years within the given bookshelf where the
+     * series, title or author meet the search string
+     *
+     * @param searchText The query string to search for
+     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
+     *
+     * @return Cursor over all notes
+     */
+    @NonNull
+    public Cursor classicFetchDatePublished(@NonNull final String searchText, @NonNull final String bookshelf) {
+        String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", "", searchText, "", "");
+        String sql = "SELECT DISTINCT Case When " + DOM_DATE_PUBLISHED + " = '' Then '" + META_EMPTY_DATE_PUBLISHED + "' else strftime('%Y', b." + DOM_DATE_PUBLISHED + ") End " + COLLATION + " AS " + DOM_ID + " " + baseSql;
+        return mSyncedDb.rawQuery(sql, new String[]{});
+    }
+
+    //</editor-fold>
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     //<editor-fold desc="Bookshelf OK">
@@ -2363,27 +2616,6 @@ public class CatalogueDBAdapter {
     }
 
 
-    /**
-     * Return a list of all the first characters for book titles in the database
-     *
-     * @param bookshelf Which bookshelf is it in. Can be "All Books"
-     * @return Cursor over all Books
-     */
-    public Cursor fetchAllBookChars(String bookshelf) {
-        String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", "", "", "", "");
-        String sql = "SELECT DISTINCT upper(substr(b." + DOM_TITLE + ", 1, 1)) AS " + DOM_ID + " " + baseSql;
-
-        Cursor returnable;
-        try {
-            returnable = mSyncedDb.rawQuery(sql, new String[]{});
-        } catch (IllegalStateException e) {
-            open();
-            returnable = mSyncedDb.rawQuery(sql, new String[]{});
-            Logger.logError(e);
-        }
-        returnable.moveToFirst();
-        return returnable;
-    }
 
     /**
      * Return the SQL for a list of all books in the database matching the passed criteria. The SQL
@@ -2564,166 +2796,14 @@ public class CatalogueDBAdapter {
         return fullSql;
     }
 
-    /**
-     * Return a list of all books in the database
-     *
-     * @param order What order to return the books
-     * @param bookshelf Which bookshelf is it in. Can be "All Books"
-     * @return Cursor over all Books
-     */
-    public BooksCursor fetchAllBooks(@Nullable final String order, @NonNull final String bookshelf,
-                                     @NonNull final String authorWhere, @NonNull final String bookWhere,
-                                     @NonNull final String searchText, @NonNull final String loaned_to,
-                                     @NonNull final String seriesName) {
-        // Get the SQL
-        String fullSql = fetchAllBooksSql( order, bookshelf, authorWhere, bookWhere, searchText, loaned_to, seriesName);
 
-        // Build and return a cursor.
-        BooksCursor returnable;
-        try {
-            returnable = fetchBooks(fullSql, new String[]{});
-        } catch (IllegalStateException e) {
-            open();
-            returnable = fetchBooks(fullSql, new String[]{});
-            Logger.logError(e);
-        }
-        return returnable;
-    }
 
-    /**
-     * Return a list of all books in the database by author
-     *
-     * @param author The author to search for
-     * @param bookshelf Which bookshelf is it in. Can be "All Books"
-     * @return Cursor over all Books
-     */
-    public BooksCursor fetchAllBooksByAuthor(int author, @NonNull final String bookshelf,
-                                             @NonNull final String search_term, boolean firstOnly) {
-        String where = " a._id=" + author;
-        if (firstOnly) {
-            where += " AND ba." + DOM_AUTHOR_POSITION + "=1 ";
-        }
-        String order = "s." + DOM_SERIES_NAME + ", substr('0000000000' || s." + DOM_SERIES_NUM + ", -10, 10), lower(b." + DOM_TITLE + ") ASC";
-        return fetchAllBooks(order, bookshelf, where, "", search_term, "", "");
-    }
 
-    /**
-     * This will return a list of all books by a given first title character
-     *
-     * @param first_char The first title character
-     * @return Cursor over all books
-     */
-    public BooksCursor fetchAllBooksByChar(String first_char, @NonNull final String bookshelf,
-                                           @NonNull final String search_term) {
-        String where = " " + makeTextTerm("substr(b." + DOM_TITLE + ",1,1)", "=", first_char);
-        return fetchAllBooks("", bookshelf, "", where, search_term, "", "");
-    }
 
-    /**
-     * Return a Cursor over the list of all books in the database by genre
-     *
-     * @param date          date published
-     * @param bookshelf     The bookshelf to search within. Can be the string "All Books"
-     * @param search_term   text to search for
-     *
-     * @return Cursor over all books
-     */
-    public BooksCursor fetchAllBooksByDatePublished(@Nullable String date, @NonNull final String bookshelf,
-                                                    @NonNull final String search_term) {
-        String where;
-        if (date == null) {
-            date = META_EMPTY_DATE_PUBLISHED;
-        }
-        if (date.equals(META_EMPTY_DATE_PUBLISHED)) {
-            where = "(b." + DOM_DATE_PUBLISHED + "='' OR b." +DOM_DATE_PUBLISHED + " IS NULL" +
-                    " or cast(strftime('%Y', b." + DOM_DATE_PUBLISHED + ") as int)<0" +
-                    " or cast(strftime('%Y', b." + DOM_DATE_PUBLISHED + ") as int) is null)";
-        } else {
-            where = makeTextTerm("strftime('%Y', b." + DOM_DATE_PUBLISHED + ")", "=", date);
-        }
-        return fetchAllBooks("", bookshelf, "", where, search_term, "", "");
-    }
 
-    /**
-     * Return a Cursor over the list of all books in the database by genre
-     *
-     * @param genre The genre name to search by
-     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     * @return Cursor over all books
-     */
-    public BooksCursor fetchAllBooksByGenre(@NonNull final String genre, @NonNull final String bookshelf,
-                                            @NonNull final String search_term) {
-        String where;
-        if (genre.equals(META_EMPTY_GENRE)) {
-            where = "(b." + DOM_GENRE + "='' OR b." + DOM_GENRE + " IS NULL)";
-        } else {
-            where = makeTextTerm("b." + DOM_GENRE, "=", genre);
-        }
-        return fetchAllBooks("", bookshelf, "", where, search_term, "", "");
-    }
 
-    /**
-     * This will return a list of all books loaned to a given person
-     *
-     * @param loaned_to The person who had books loaned to
-     * @return Cursor over all books
-     */
-    public BooksCursor fetchAllBooksByLoan(@NonNull final String loaned_to, @NonNull final String search_term) {
-        return fetchAllBooks("", "", "", "", search_term, loaned_to, "");
-    }
 
-    /**
-     * This will return a list of all books either read or unread
-     *
-     * @param read "Read" or "Unread"
-     * @return Cursor over all books
-     */
-    public BooksCursor fetchAllBooksByRead(@NonNull final String read, @NonNull final String bookshelf, @NonNull final String search_term) {
-        String where = "";
-        if ("Read".equals(read)) {
-            where += " b." +DOM_READ + "=1";
-        } else {
-            where += " b." + DOM_READ + "!=1";
-        }
-        return fetchAllBooks("", bookshelf, "", where, search_term, "", "");
-    }
 
-    /**
-     * Return a Cursor over the list of all books in the database by series
-     *
-     * @param series The series name to search by
-     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     * @return Cursor over all books
-     */
-    public BooksCursor fetchAllBooksBySeries(@NonNull final String series, @NonNull final String bookshelf, @NonNull final String search_term) {
-        if (series.isEmpty() || series.equals(META_EMPTY_SERIES)) {
-            return fetchAllBooks("", bookshelf, "", "", search_term, "", META_EMPTY_SERIES);
-        } else {
-            String order = "substr('0000000000' || s." + DOM_SERIES_NUM + ", -10, 10), b." + DOM_TITLE + " " + COLLATION + " ASC";
-            return fetchAllBooks(order, bookshelf, "", "", search_term, "", series);
-        }
-    }
-
-    /**
-     * This will return a list of all date published years within the given bookshelf
-     *
-     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     * @return Cursor over all series
-     */
-    public Cursor fetchAllDatePublished(@NonNull final String bookshelf) {
-        // Null 'order' to suppress ordering
-        String baseSql = fetchAllBooksInnerSql(null, bookshelf, "", "", "", "", "");
-
-        String sql = "SELECT DISTINCT "
-                + " Case When (b." + DOM_DATE_PUBLISHED + " = ''" +
-                " or b." + DOM_DATE_PUBLISHED + " is NULL" +
-                " or cast(strftime('%Y', b." + DOM_DATE_PUBLISHED + ") as int)<0" +
-                " or cast(strftime('%Y', b." + DOM_DATE_PUBLISHED + ") as int) is null)" +
-                " Then '" + META_EMPTY_DATE_PUBLISHED + "'" +
-                " Else strftime('%Y', b." + DOM_DATE_PUBLISHED + ") End as " + DOM_ID + baseSql +
-                " ORDER BY strftime('%Y', b." + DOM_DATE_PUBLISHED + ") " + COLLATION;
-        return mSyncedDb.rawQuery(sql, new String[]{});
-    }
 
     /**
      * This will return a list of all series within the given bookshelf
@@ -3429,11 +3509,37 @@ public class CatalogueDBAdapter {
             return mGetSeriesBookCountQuery.simpleQueryForLong();
         }
     }
+
+    /**
+     * This will return a list of all series within the given bookshelf where the
+     * series, title or author meet the search string
+     *
+     * @param searchText The query string to search for
+     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
+     * @return Cursor over all notes
+     */
+    @NonNull
+    public Cursor fetchSeries(@NonNull final String searchText, @NonNull final String bookshelf) {
+        /// Need to know when to add the 'no series' series...
+        String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", "", searchText, "", "");
+
+        String sql = "Select DISTINCT Case When s." + DOM_ID + " is NULL Then -1 Else s." + DOM_ID + " End as " + DOM_ID + ","
+                + " Case When s." + DOM_SERIES_NAME + " is NULL Then '" + META_EMPTY_SERIES + "'"
+                + "               Else " + DOM_SERIES_NAME + " End AS " + DOM_SERIES_NAME
+                + " From (Select b." + DOM_ID + " as " + DOM_ID + " " + baseSql + " ) MatchingBooks"
+                + " Left Outer Join " + DB_TB_BOOK_SERIES + " bs "
+                + "     On bs." + DOM_BOOK + " = MatchingBooks." + DOM_ID
+                + " Left Outer Join " + DB_TB_SERIES + " s "
+                + "     On s." + DOM_ID + " = bs." + DOM_SERIES_ID
+                + " Order by Upper(s." + DOM_SERIES_NAME + ") " + COLLATION + " ASC ";
+
+        return mSyncedDb.rawQuery(sql, new String[]{});
+    }
     //</editor-fold>
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //<editor-fold desc="Searching">
+    //<editor-fold desc="SQL String creation">
 
     private String makeSearchTerm(@NonNull final String key, @NonNull final String text) {
         return "Upper(" + key + ") LIKE Upper('%" + text + "%') " + COLLATION;
@@ -3457,8 +3563,9 @@ public class CatalogueDBAdapter {
 
         // Just do a simple search of a bunch of fields.
         final String[] keys = new String[] {DOM_TITLE.name, DOM_ISBN.name, DOM_PUBLISHER.name, DOM_NOTES.name, DOM_LOCATION.name, DOM_DESCRIPTION.name};
-        for(String k : keys)
+        for(String k : keys) {
             result.append(makeSearchTerm(k, search_term)).append(" OR ");
+        }
 
         // And check the series too.
         result.append(" Exists(Select NULL From " + DB_TB_BOOK_SERIES + " bsw " + " Join " + DB_TB_SERIES + " s " + "     On s.").append(DOM_ID).append(" = bsw.").append(DOM_SERIES_ID).append("         And ")
@@ -3483,84 +3590,6 @@ public class CatalogueDBAdapter {
         return result.toString();
     }
 
-    /**
-     * Returns a list of books, similar to fetchAllBooks but restricted by a search string. The
-     * query will be applied to author, title, and series
-     *
-     * @param searchText	The search string to restrict the output by
-     * @param first_char    The character to search for
-     * @param bookshelf		The bookshelf to search within. Can be the string "All Books"
-     *
-     * @return A Cursor of book meeting the search criteria
-     */
-    public BooksCursor searchBooksByChar(@NonNull final String searchText, @NonNull final String first_char, @NonNull final String bookshelf) {
-        String where = " " + makeTextTerm("substr(b." + DOM_TITLE + ",1,1)", "=", first_char);
-        return fetchAllBooks("", bookshelf, "", where, searchText, "", "");
-    }
-
-    public BooksCursor searchBooksByDatePublished(@NonNull final String searchText, @NonNull final String date, @NonNull final String bookshelf) {
-        return fetchAllBooks("", bookshelf, "", " strftime('%Y', b." + DOM_DATE_PUBLISHED + ")='" + date + "' " + COLLATION + " ", searchText, "", "");
-    }
-
-    public BooksCursor searchBooksByGenre(@NonNull final String searchText, @NonNull final String genre, @NonNull final String bookshelf) {
-        return fetchAllBooks("", bookshelf, "", " " + DOM_GENRE.name + "='" + genre + "' " + COLLATION + " ", searchText, "", "");
-    }
-
-    /**
-     * Returns a list of books title characters, similar to fetchAllBookChars but restricted by a search string. The
-     * query will be applied to author, title, and series
-     *
-     * @param searchText The search string to restrict the output by
-     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     * @return A Cursor of book meeting the search criteria
-     */
-    public Cursor searchBooksChars(@NonNull final String searchText, @NonNull final String bookshelf) {
-        String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", "", searchText, "", "");
-        String sql = "SELECT DISTINCT upper(substr(b." + DOM_TITLE + ", 1, 1)) " + COLLATION + " AS " + DOM_ID + " " + baseSql;
-        return mSyncedDb.rawQuery(sql, new String[]{});
-    }
-
-    /**
-     * This will return a list of all date published years within the given bookshelf where the
-     * series, title or author meet the search string
-     *
-     * @param searchText The query string to search for
-     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     * @return Cursor over all notes
-     */
-    public Cursor searchDatePublished(@NonNull final String searchText, @NonNull final String bookshelf) {
-        String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", "", searchText, "", "");
-        String sql = "SELECT DISTINCT Case When " + DOM_DATE_PUBLISHED + " = '' Then '" + META_EMPTY_DATE_PUBLISHED + "' else strftime('%Y', b." + DOM_DATE_PUBLISHED + ") End " + COLLATION + " AS " + DOM_ID + " " + baseSql;
-        return mSyncedDb.rawQuery(sql, new String[]{});
-    }
-
-
-
-    /**
-     * This will return a list of all series within the given bookshelf where the
-     * series, title or author meet the search string
-     *
-     * @param searchText The query string to search for
-     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     * @return Cursor over all notes
-     */
-    public Cursor searchSeries(@NonNull final String searchText, @NonNull final String bookshelf) {
-        /// Need to know when to add the 'no series' series...
-        String sql;
-        String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", "", searchText, "", "");
-
-        sql = "Select DISTINCT Case When s." + DOM_ID + " is NULL Then -1 Else s." + DOM_ID + " End as " + DOM_ID + ","
-                + " Case When s." + DOM_SERIES_NAME + " is NULL Then '" + META_EMPTY_SERIES + "'"
-                + "               Else " + DOM_SERIES_NAME + " End AS " + DOM_SERIES_NAME
-                + " From (Select b." + DOM_ID + " as " + DOM_ID + " " + baseSql + " ) MatchingBooks"
-                + " Left Outer Join " + DB_TB_BOOK_SERIES + " bs "
-                + "     On bs." + DOM_BOOK + " = MatchingBooks." + DOM_ID
-                + " Left Outer Join " + DB_TB_SERIES + " s "
-                + "     On s." + DOM_ID + " = bs." + DOM_SERIES_ID
-                + " Order by Upper(s." + DOM_SERIES_NAME + ") " + COLLATION + " ASC ";
-
-        return mSyncedDb.rawQuery(sql, new String[]{});
-    }
     //</editor-fold>
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

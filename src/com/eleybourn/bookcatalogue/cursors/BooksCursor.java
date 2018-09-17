@@ -33,8 +33,7 @@ import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
  * Cursor implementation for book-related queries. The cursor wraps common
  * column lookups and reduces code clutter when accessing common columns.
  *
- * The cursor also simulates a 'selected' flag for each book based on a
- * HashMap of book IDs.
+ * The cursor also simulates a 'selected' flag for each book based on a HashMap of book IDs.
  *
  * @author Philip Warner
  */
@@ -42,37 +41,16 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
 
     /** HashMap of selected book IDs */
     private final LongSparseArray<Boolean> mSelections = new LongSparseArray<>();
-    /**
-     * Get the row ID; need a local implementation so that get/setSelected() works.
-     */
+    /** Get the row ID; need a local implementation so that get/setSelected() works. */
     private int mIdCol = -2;
-    /**
-     * Get a RowView
-     */
+    /** Get a RowView */
     private BooksRow mView;
 
-    /**
-     * Constructor
-     */
-    public BooksCursor(@NonNull final SQLiteCursorDriver driver, @NonNull final String editTable,
-                       @NonNull final SQLiteQuery query, @NonNull final Synchronizer sync) {
+    public BooksCursor(@NonNull final SQLiteCursorDriver driver,
+                       @NonNull final String editTable,
+                       @NonNull final SQLiteQuery query,
+                       @NonNull final Synchronizer sync) {
         super(driver, editTable, query, sync);
-    }
-
-    /**
-     * Fake attribute to handle multi-select ListViews. if we ever do them.
-     *
-     * @return Flag indicating if current row has been marked as 'selected'.
-     */
-    @SuppressWarnings("unused")
-    public boolean getIsSelected() {
-        Boolean b = mSelections.get(getId());
-        return (b != null ? b : false);
-    }
-
-    @SuppressWarnings("unused")
-    public void setIsSelected(final boolean selected) {
-        mSelections.put(getId(), selected);
     }
 
     public final long getId() {
@@ -81,44 +59,15 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
             if (mIdCol < 0)
                 throw new RuntimeException("ISBN column not in result set");
         }
-        return getLong(mIdCol);// mCurrentRow[mIsbnCol];
+        return getLong(mIdCol);
     }
 
     public BooksRow getRowView() {
-        if (mView == null)
+        if (mView == null) {
             mView = new BooksRow(this);
+        }
         return mView;
     }
-
-//	/**
-//	 * Snapshot cursor to use with this cursor.
-//	 *
-//	 * NOT IMPLEMENTED: Android 1.6 SQLite interface does not support getting column types.
-//	 *
-//	 * @author Philip Warner
-//	 */
-//	public static class BooksSnapshotCursor extends CursorSnapshotCursor {
-//		BooksRow mView;
-//
-//		public BooksSnapshotCursor(SQLiteCursor source) {
-//			super(source);
-//		}
-//
-//		public BooksRow getRowView() {
-//			if (mView == null)
-//				mView = new BooksRow(this);
-//			return mView;
-//		}
-//
-//		/**
-//		 * Clear the RowView and selections, if any
-//		 */
-//		@Override
-//		public void close() {
-//			super.close();
-//			mView = null;
-//		}
-//	}
 
     /**
      * Clear the RowView and selections, if any
