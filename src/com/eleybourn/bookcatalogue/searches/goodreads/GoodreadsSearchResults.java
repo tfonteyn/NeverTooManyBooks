@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -32,19 +32,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueListActivity;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.SearchBooksApiHandler;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 
 /**
  * Search goodreads for a book and display the list of results. Use background tasks to get thumbnails and update when retrieved.
- * 
+ *
  * @author Philip Warner
  */
 public class GoodreadsSearchResults extends BookCatalogueListActivity {
@@ -101,7 +101,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 
 		// Finish if no results, otherwise display them
 		if (works == null || works.size() == 0) {
-			Toast.makeText(this, getString(R.string.no_matching_book_found), Toast.LENGTH_LONG).show();			
+			Toast.makeText(this, getString(R.string.no_matching_book_found), Toast.LENGTH_LONG).show();
 			finish();
 			return;
 		}
@@ -113,32 +113,38 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 
 	/**
 	 * Class used in implementing holder pattern for search results.
-	 * 
+	 *
+     * cover made final for use as lock
+     *
 	 * @author Philip Warner
 	 */
 	private class ListHolder {
+		ListHolder(final ImageView cover) {
+			this.cover = cover;
+		}
+
 		GoodreadsWork work;
 		TextView title;
 		TextView author;
-		ImageView cover;
+		final ImageView cover;
 	}
 
 	/**
 	 * Handle user clicking on a book. This should show editions and allow the user to select a specific edition.
 	 * Waiting on approval for API access.
-	 * 
+	 *
 	 * @param v		View that was clicked.
 	 */
 	private void doItemClick(View v) {
 		ListHolder holder = (ListHolder)ViewTagger.getTag(v);
 		// TODO: Implement edition lookup - requires access to work.editions API from GR
-		Toast.makeText(this, "Not implemented: see " + holder.title + " by " + holder.author, Toast.LENGTH_LONG).show();			
+		Toast.makeText(this, "Not implemented: see " + holder.title + " by " + holder.author, Toast.LENGTH_LONG).show();
 		//Intent i = new Intent(this, GoodreadsW)
 	}
 
 	/**
 	 * ArrayAdapter that uses holder pattern to display goodreads books and allows for background image retrieval.
-	 * 
+	 *
 	 * @author Philip Warner
 	 *
 	 */
@@ -151,7 +157,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 			// Save Inflater for later use
 			mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		}
-		
+
 		@NonNull
 		public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 			ListHolder holder;
@@ -160,10 +166,10 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 				try {
 					// Get a new View and make the holder for it.
 					convertView = mInflater.inflate(R.layout.goodreads_work_item, parent, false);
-					holder = new ListHolder();
+
+					holder = new ListHolder((ImageView)convertView.findViewById(R.id.cover));
 					holder.author = convertView.findViewById(R.id.author);
 					holder.title = convertView.findViewById(R.id.title);
-					holder.cover = convertView.findViewById(R.id.cover);
 
 					// Save the holder
 					ViewTagger.setTag(convertView, holder);
@@ -193,7 +199,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 
 					// Update the views based on the work
 					holder.author.setText(holder.work.authorName);
-					holder.title.setText(holder.work.title);					
+					holder.title.setText(holder.work.title);
 				}
 			}
 
@@ -204,7 +210,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 	/**
 	 * Cleanup
 	 */
-	@Override 
+	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		if (mDb != null)

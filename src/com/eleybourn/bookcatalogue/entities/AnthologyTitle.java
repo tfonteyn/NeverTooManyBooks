@@ -102,10 +102,6 @@ public class AnthologyTitle implements Serializable ,Utils.ItemWithIdFixup {
         return mBookId;
     }
 
-    public void setBookId(final long bookId) {
-        this.mBookId = bookId;
-    }
-
     /**
      *  Support for encoding to a text file
      *

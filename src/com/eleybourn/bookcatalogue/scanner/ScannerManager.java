@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.scanner;
 
+import android.annotation.SuppressLint;
+
 import com.eleybourn.bookcatalogue.BCPreferences;
 
 import java.util.HashMap;
@@ -21,6 +23,7 @@ public class ScannerManager {
     public static final int SCANNER_ZXING = 3;
 
     /** Collection of ScannerFactory objects */
+    @SuppressLint("UseSparseArrays")
     private static final Map<Integer, ScannerFactory> myScannerFactories = new HashMap<>();
 
     /*

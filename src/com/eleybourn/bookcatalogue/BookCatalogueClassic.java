@@ -62,9 +62,9 @@ import com.eleybourn.bookcatalogue.scanner.Scanner;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
 import com.eleybourn.bookcatalogue.searches.goodreads.SendOneBookTask;
-import com.eleybourn.bookcatalogue.utils.BCQueueManager;
+import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import com.eleybourn.bookcatalogue.widgets.FastScrollExpandableListView;
@@ -154,7 +154,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			// Extract the sort type from the bundle. getInt will return 0 if there is no attribute
 			// sort (which is exactly what we want)
 			try {
-				mPrefs = getSharedPreferences(BCPreferences.APP_SHARED_PREFERENCES, MODE_PRIVATE);
+				mPrefs = BookCatalogueApp.getSharedPreferences();
 				sort = mPrefs.getInt(STATE_SORT, sort);
 				mBookshelf = mPrefs.getString(BooksOnBookshelf.PREF_BOOKSHELF, mBookshelf);
 				loadCurrentGroup();
@@ -501,7 +501,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 					throw new RuntimeException("Holder null?");
 				}
 				final BooksCursor snapshot = (BooksCursor) origCursor;
-				final BooksRowView rowView = snapshot.getRowView();
+				final BooksRow rowView = snapshot.getRowView();
 
 				if (holder.author.show)
 					holder.author.view.setText(rowView.getPrimaryAuthorName());
@@ -654,7 +654,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				mCursor = mDb.fetchAllAuthors(mBookshelf);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDb.searchAuthors(search_query, mBookshelf);
+				mCursor = mDb.fetchAuthors(search_query, mBookshelf);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
 			return mCursor;
@@ -685,7 +685,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				mCursor = mDb.fetchAllAuthors(mBookshelf, false, false);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDb.searchAuthors(search_query, mBookshelf, false, false);
+				mCursor = mDb.fetchAuthors(search_query, mBookshelf, false, false);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
 			return mCursor;
@@ -716,7 +716,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				mCursor = mDb.fetchAllAuthors(mBookshelf, true, true);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDb.searchAuthors(search_query, mBookshelf, true, true);
+				mCursor = mDb.fetchAuthors(search_query, mBookshelf, true, true);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
 			return mCursor;
@@ -828,7 +828,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
 				// Return all books (for the bookshelf)
-				mCursor = mDb.fetchAllGenres(mBookshelf);
+				mCursor = mDb.fetchGenresByBookshelf(mBookshelf);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
 				mCursor = mDb.searchGenres(search_query, mBookshelf);
@@ -1202,14 +1202,14 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				if (info.id==-1) {
 					Toast.makeText(this, R.string.cannot_edit_system, Toast.LENGTH_LONG).show();
 				} else {
-					Series s = mDb.getSeriesById(info.id);
-					EditSeriesDialog d = new EditSeriesDialog(this, mDb, new Runnable() {
+					EditSeriesDialog dialog = new EditSeriesDialog(this, mDb, new Runnable() {
 						@Override
 						public void run() {
 							mDb.purgeSeries();
 							regenGroups();
 						}});
-					d.edit(s);
+					Series series = mDb.getSeriesById(info.id);
+					dialog.edit(series);
 				}
 				break;
 			}
@@ -1311,14 +1311,14 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 						case SORT_AUTHOR: {
 							justAdded = intent.getStringExtra(EditBookActivity.ADDED_AUTHOR);
                             Author author = Author.toAuthor(justAdded);
-							int position = mDb.fetchAuthorPositionByName(author, mBookshelf);
+							int position = mDb.getAuthorPositionByName(author, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}
 						case SORT_AUTHOR_GIVEN: {
 							justAdded = intent.getStringExtra(EditBookActivity.ADDED_AUTHOR);
                             Author author = Author.toAuthor(justAdded);
-							int position = mDb.fetchAuthorPositionByGivenName(author, mBookshelf);
+							int position = mDb.getAuthorPositionByGivenName(author, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}
@@ -1354,7 +1354,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	@Override
 	public void onResume() {
 		try {
-			mPrefs = getSharedPreferences(BCPreferences.APP_SHARED_PREFERENCES, MODE_PRIVATE);
+			mPrefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
 			sort = mPrefs.getInt(STATE_SORT, sort);
 			mBookshelf = mPrefs.getString(BooksOnBookshelf.PREF_BOOKSHELF, mBookshelf);
 			loadCurrentGroup();

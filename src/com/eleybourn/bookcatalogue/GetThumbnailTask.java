@@ -28,9 +28,9 @@ import android.widget.ImageView;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
@@ -51,6 +51,7 @@ public class GetThumbnailTask implements SimpleTask {
     // Queue for background thumbnail retrieval; allow 2 threads. More is nice, but with
     // many books to process it introduces what looks like lag when scrolling: 5 tasks
     // building now-invisible views is pointless.
+    //TODO: experiment with Runtime.getRuntime().availableProcessors();
     private static final SimpleTaskQueue mQueue = new SimpleTaskQueue("thumbnails", 1);
     /**
      * Reference to the view we are using
@@ -90,7 +91,6 @@ public class GetThumbnailTask implements SimpleTask {
      */
     private GetThumbnailTask(Context context, final String hash, final ImageView v, int maxWidth, int maxHeight, boolean cacheWasChecked) {
         clearOldTaskFromView(v);
-
         mContext = context;
         mView = new WeakReference<>(v);
         mCacheWasChecked = cacheWasChecked;

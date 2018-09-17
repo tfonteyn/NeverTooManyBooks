@@ -61,10 +61,10 @@
 
     <TextView
         android:id="@id/android:empty"
-        android:layout_below="@id/add_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/notset"
-        android:textSize="16sp" />
+        android:layout_below="@id/add_title"
+        android:textSize="16sp"
+        tools:text="@string/notset" />
 
 </RelativeLayout>

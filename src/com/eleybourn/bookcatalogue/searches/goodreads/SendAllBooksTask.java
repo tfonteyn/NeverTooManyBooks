@@ -22,12 +22,12 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.Context;
 
-import com.eleybourn.bookcatalogue.utils.BCQueueManager;
+import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookEvents.GrNoIsbnEvent;
 import com.eleybourn.bookcatalogue.BookEvents.GrNoMatchEvent;
 import com.eleybourn.bookcatalogue.cursors.BooksCursor;
-import com.eleybourn.bookcatalogue.BooksRowView;
+import com.eleybourn.bookcatalogue.BooksRow;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
@@ -117,7 +117,7 @@ public class SendAllBooksTask extends GenericTask {
 
 		try {
 			books = db.getAllBooksForGoodreadsCursor(mLastId, mUpdatesOnly);
-			final BooksRowView book = books.getRowView();
+			final BooksRow book = books.getRowView();
 			mTotalBooks = books.getCount() + mCount;
 
 			while (books.moveToNext()) {

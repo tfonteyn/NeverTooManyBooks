@@ -32,8 +32,8 @@ import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.ImportTypeSelectionDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.MessageDialogFragment;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;

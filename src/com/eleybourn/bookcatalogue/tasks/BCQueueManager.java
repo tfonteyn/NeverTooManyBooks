@@ -17,14 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.utils;
+package com.eleybourn.bookcatalogue.tasks;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.AdapterView;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 
 import net.philipwarner.taskqueue.ContextDialogItem;
@@ -53,12 +52,7 @@ public class BCQueueManager extends QueueManager {
     public static final long CAT_GOODREADS_EXPORT_ALL = 4;
     public static final long CAT_GOODREADS_EXPORT_ONE = 5;
 
-    public BCQueueManager() {
-        super(BookCatalogueApp.getAppContext());
-        initializeQueue(QUEUE_MAIN);
-        initializeQueue(QUEUE_SMALL_JOBS);
-    }
-
+    private final Context mContext;
     /**
      * Create the queue we need, if they do not already exist.
      *
@@ -67,6 +61,7 @@ public class BCQueueManager extends QueueManager {
      */
     public BCQueueManager(@NonNull final Context context) {
         super(context);
+        mContext = context;
         initializeQueue(QUEUE_MAIN);
         initializeQueue(QUEUE_SMALL_JOBS);
     }
@@ -102,13 +97,13 @@ public class BCQueueManager extends QueueManager {
     @Override
     @NonNull
     public LegacyTask newLegacyTask(byte[] original) {
-        return new BCLegacyTask(original, BookCatalogueApp.getResourceString(R.string.legacy_task));
+        return new BCLegacyTask(original, mContext.getString(R.string.legacy_task));
     }
 
     @Override
     @NonNull
     public Context getApplicationContext() {
-        return BookCatalogueApp.getAppContext();
+        return mContext;
     }
 
     /**
@@ -166,12 +161,6 @@ public class BCQueueManager extends QueueManager {
                 }
             }));
 
-        }
-
-        @Override
-        @NonNull
-        public String getDescription() {
-            return BookCatalogueApp.getResourceString(R.string.unrecognized_task);
         }
 
         @Override

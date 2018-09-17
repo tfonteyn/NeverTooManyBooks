@@ -49,7 +49,7 @@ public class BlockingStack<T> {
 	// Lock held by push(). Probably not needed since we sync on mStack...
 	private final ReentrantLock mPushLock = new ReentrantLock();
 
-	BlockingStack() {
+	public BlockingStack() {
 		mStack = new Stack<>();
 	}
 

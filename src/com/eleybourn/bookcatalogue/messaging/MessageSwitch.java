@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.messaging;
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -60,10 +61,12 @@ public class MessageSwitch<T, U> {
     /** ID counter for unique sender IDs; set > 0 to allow for possible future static senders **/
     private static Long mSenderIdCounter = 1024L;
     /** List of message sources */
+    @SuppressLint("UseSparseArrays")
     private final Map<Long, MessageSender<U>> mSenders = Collections.synchronizedMap(new HashMap<Long, MessageSender<U>>());
     /** List of all messages in the message queue, both messages and replies */
     private final LinkedBlockingQueue<RoutingSlip> mMessageQueue = new LinkedBlockingQueue<>();
     /** List of message listener queues */
+    @SuppressLint("UseSparseArrays")
     private final Map<Long, MessageListeners> mListeners = Collections.synchronizedMap(new HashMap<Long, MessageListeners>());
 
     /**

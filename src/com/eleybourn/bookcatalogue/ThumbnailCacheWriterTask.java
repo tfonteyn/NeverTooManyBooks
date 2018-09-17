@@ -25,9 +25,9 @@ import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 
 /**
  * Background task to save a bitmap into the covers thumbnail database. Runs in background

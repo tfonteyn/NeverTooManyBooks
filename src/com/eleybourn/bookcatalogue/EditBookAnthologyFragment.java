@@ -197,18 +197,18 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         return (ListView) getView().findViewById(android.R.id.list);
     }
 
-    /**
-     * Scroll to the current group
-     */
-    private void gotoTitle(int id) {
-        try {
-            ListView view = this.getListView();
-            view.setSelection(id);
-        } catch (Exception e) {
-            Logger.logError(e);
-        }
-        return;
-    }
+//    /**
+//     * Scroll to the current group
+//     */
+//    private void gotoTitle(int id) {
+//        try {
+//            ListView view = this.getListView();
+//            view.setSelection(id);
+//        } catch (Exception e) {
+//            Logger.logError(e);
+//        }
+//        return;
+//    }
 
     /**
      * FIXME: android.os.NetworkOnMainThreadException, use a task...

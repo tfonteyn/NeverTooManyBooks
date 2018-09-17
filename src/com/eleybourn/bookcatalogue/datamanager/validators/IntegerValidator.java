@@ -31,9 +31,6 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
  * @author Philip Warner
  */
 public class IntegerValidator extends DefaultFieldValidator {
-    public IntegerValidator() {
-        super();
-    }
 
     public IntegerValidator(@NonNull final String defaultValue) {
         super(defaultValue);

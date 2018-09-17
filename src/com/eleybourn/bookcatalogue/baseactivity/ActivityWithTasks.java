@@ -35,10 +35,10 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.debug.Tracker.States;
-import com.eleybourn.bookcatalogue.utils.ManagedTask;
-import com.eleybourn.bookcatalogue.utils.TaskManager;
-import com.eleybourn.bookcatalogue.utils.TaskManager.TaskManagerController;
-import com.eleybourn.bookcatalogue.utils.TaskManager.TaskManagerListener;
+import com.eleybourn.bookcatalogue.tasks.ManagedTask;
+import com.eleybourn.bookcatalogue.tasks.TaskManager;
+import com.eleybourn.bookcatalogue.tasks.TaskManager.TaskManagerController;
+import com.eleybourn.bookcatalogue.tasks.TaskManager.TaskManagerListener;
 
 /**
  * TODO: Remove this!!!! Fragments makes ActivityWithTasks mostly redundant.
@@ -185,7 +185,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
 
             // Create if necessary
             if (mTaskManager == null) {
-                TaskManager tm = new TaskManager();
+                TaskManager tm = new TaskManager(this);
                 mTaskManagerId = tm.getSenderId();
                 mTaskManager = tm;
             }

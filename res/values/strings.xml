@@ -1104,7 +1104,15 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="starting">Starting</string>
     <string name="send_mail">Send mail…</string>
 
-
+    <string name="select_based_on_signed_status">Select based on \'Signed\' status</string>
+    <string name="select_signed_yes">Select signed books only</string>
+    <string name="select_signed_no">Select unsigned books only</string>
+    <string name="select_based_on_anthology_status">Select based on \'Anthology\' status</string>
+    <string name="select_anthology_yes">Select anthologies only</string>
+    <string name="select_anthology_no">Select non-anthologies only</string>
+    <string name="select_based_on_loaned_status">Select based on \'Loaned\' status</string>
+    <string name="select_loaned_yes">Select loaned books only</string>
+    <string name="select_loaned_no">Select non-loaned only</string>
     <!-- End: Added/Updated in  [Next Version]  -->
 
 </resources>

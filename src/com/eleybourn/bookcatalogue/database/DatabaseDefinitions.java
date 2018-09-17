@@ -119,6 +119,7 @@ public class DatabaseDefinitions {
     public static final DomainDefinition DOM_GOODREADS_LAST_SYNC_DATE = new DomainDefinition("last_goodreads_sync_date", TableInfo.TYPE_DATE, "default '0000-00-00'");
 
     public static final DomainDefinition DOM_ANTHOLOGY_MASK = new DomainDefinition("anthology", TableInfo.TYPE_INT, NOT_NULL, "default " + TableInfo.ColumnInfo.ANTHOLOGY_NO);
+
     public static final DomainDefinition DOM_EXPANDED = new DomainDefinition("expanded", TableInfo.TYPE_INT, "default 0");
     public static final DomainDefinition DOM_FORMAT = new DomainDefinition("format", TableInfo.TYPE_TEXT, "default ''");
     public static final DomainDefinition DOM_GENRE = new DomainDefinition("genre", TableInfo.TYPE_TEXT);

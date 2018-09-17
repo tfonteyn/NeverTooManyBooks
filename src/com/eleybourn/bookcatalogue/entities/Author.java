@@ -56,9 +56,6 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
     public String familyName;
     public String givenNames;
 
-    public Author() {
-    }
-
     /**
      * Constructor that will attempt to parse a single string into an author name.
      */
@@ -203,7 +200,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
 
     @Override
     public long fixupId(@NonNull final CatalogueDBAdapter db) {
-        this.id = db.getAuthorId(this);
+        this.id = db.getAuthorIdByName(this);
         return this.id;
     }
 

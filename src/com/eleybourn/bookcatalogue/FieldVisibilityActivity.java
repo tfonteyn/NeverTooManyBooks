@@ -30,7 +30,6 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
-import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
@@ -100,7 +99,7 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
      */
     private void setupFields() {
 
-        SharedPreferences mPrefs = getSharedPreferences(BCPreferences.APP_SHARED_PREFERENCES, MODE_PRIVATE);
+        SharedPreferences mPrefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, MODE_PRIVATE);
         //SharedPreferences.Editor ed = mPrefs.edit();
         //ed.putString(STATE_BOOKSHELF, bookshelf);
         //ed.commit();
@@ -123,7 +122,7 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
                 cb.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        SharedPreferences mPrefs = getSharedPreferences(BCPreferences.APP_SHARED_PREFERENCES, MODE_PRIVATE);
+                        SharedPreferences mPrefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, MODE_PRIVATE);
                         SharedPreferences.Editor ed = mPrefs.edit();
                         boolean field_visibility = mPrefs.getBoolean(prefs_name, true);
                         ed.putBoolean(prefs_name, !field_visibility);
@@ -148,10 +147,7 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
         final int resId;
         final boolean compulsory;
 
-        FieldInfo(final DomainDefinition domain, final int resId, final boolean compulsory) {
-            this(domain.name,resId,compulsory);
-        }
-        FieldInfo(final String name, final int resId, final boolean compulsory) {
+         FieldInfo(final String name, final int resId, final boolean compulsory) {
             this.name = name;
             this.resId = resId;
             this.compulsory = compulsory;

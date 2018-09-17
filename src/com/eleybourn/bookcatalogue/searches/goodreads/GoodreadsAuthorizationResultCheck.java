@@ -23,7 +23,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 import android.content.Context;
 import android.content.Intent;
 
-import com.eleybourn.bookcatalogue.utils.BCQueueManager;
+import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;

@@ -86,7 +86,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
      *
      * @param hash HashTable of names
      */
-    private static void getPreferredStyleNames(HashSet<String> hash) {
+    private static void getPreferredStyleNames(@NonNull final HashSet<String> hash) {
         String itemStr = BCPreferences.getString(PREF_MENU_ITEMS, null);
         if (itemStr != null && !"".equals(itemStr)) {
             ArrayList<String> list = ArrayUtils.decodeList('|', itemStr);
@@ -107,7 +107,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
      *
      * @return BooklistStyles object
      */
-    private static void getBuiltinStyles(BooklistStyles styles) {
+    private static void getBuiltinStyles(@NonNull final BooklistStyles styles) {
         // First build the stock ones
         BooklistStyle style;
 
@@ -130,7 +130,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
         styles.add(style);
         style.addGroup(ROW_KIND_AUTHOR);
         style.addGroup(ROW_KIND_SERIES);
-        style.setReadUnreadAll(BooklistStyle.FILTER_UNREAD);
+        style.setReadFilter(BooklistStyle.FILTER_NO);
 
         // Compact
         style = new BooklistStyle(R.string.compact);
@@ -248,7 +248,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
      *
      * @return BooklistStyles object
      */
-    private static void getUserStyles(CatalogueDBAdapter db, BooklistStyles styles) {
+    private static void getUserStyles(@NonNull final CatalogueDBAdapter db, @NonNull final BooklistStyles styles) {
         BooklistStyle style;
 
         try (Cursor c = db.getBooklistStyles()) {
@@ -279,7 +279,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
      *
      * @return the ordered set of preferred styles.
      */
-    private static BooklistStyles filterPreferredStyles(BooklistStyles allStyles) {
+    private static BooklistStyles filterPreferredStyles(@NonNull final BooklistStyles allStyles) {
         BooklistStyles styles = new BooklistStyles();
 
         // Get the user preference
@@ -306,7 +306,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
     /**
      * Get the preferred styles using system and user-defined styles.
      */
-    public static BooklistStyles getPreferredStyles(CatalogueDBAdapter db) {
+    public static BooklistStyles getPreferredStyles(@NonNull final CatalogueDBAdapter db) {
         BooklistStyles allStyles = new BooklistStyles();
 
         // Get all styles: user & builtin
@@ -320,7 +320,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
     /**
      * Return all styles, with the preferred styles move to front of list.
      */
-    public static BooklistStyles getAllStyles(CatalogueDBAdapter db) {
+    public static BooklistStyles getAllStyles(@NonNull final CatalogueDBAdapter db) {
         BooklistStyles allStyles = new BooklistStyles();
 
         // Get all styles and preferred styles.
@@ -342,7 +342,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
     /**
      * Save the preferred style menu list.
      */
-    public static void SaveMenuOrder(ArrayList<BooklistStyle> list) {
+    public static void SaveMenuOrder(@NonNull final ArrayList<BooklistStyle> list) {
         StringBuilder items = new StringBuilder();
         for (int i = 0; i < list.size(); i++) {
             BooklistStyle s = list.get(i);
@@ -367,14 +367,14 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
     /**
      * Utility to check if this collection contains a specific style INSTANCE.
      */
-    private boolean contains(BooklistStyle style) {
+    private boolean contains(@NonNull final BooklistStyle style) {
         return mList.contains(style);
     }
 
     /**
      * Add a style to this list
      */
-    private void add(BooklistStyle style) {
+    private void add(@NonNull final BooklistStyle style) {
         style.setPreferred(mPreferredStyleNames.contains(style.getCanonicalName()));
         mList.add(style);
     }
@@ -386,7 +386,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
      *
      * @return Named style, or null
      */
-    public BooklistStyle findCanonical(String name) {
+    public BooklistStyle findCanonical(@NonNull final String name) {
         for (BooklistStyle style : mList) {
             if (style.getCanonicalName().equalsIgnoreCase(name))
                 return style;
@@ -397,7 +397,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
     /**
      * Return the i'th style in the list
      */
-    public BooklistStyle get(int i) {
+    public BooklistStyle get(final int i) {
         return mList.get(i);
     }
 

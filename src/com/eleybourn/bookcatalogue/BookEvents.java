@@ -40,7 +40,7 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.searches.goodreads.SendOneBookTask;
-import com.eleybourn.bookcatalogue.utils.BCQueueManager;
+import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
@@ -296,10 +296,6 @@ public class BookEvents {
             super(bookId, message);
         }
 
-        GrSendBookEvent(long bookId, String message, Exception e) {
-            super(bookId, message, e);
-        }
-
         /**
          * Resubmit this book and delete this event.
          */
@@ -323,7 +319,7 @@ public class BookEvents {
             final BookEventHolder holder = ViewTagger.getTag(view, R.id.TAG_BOOK_EVENT_HOLDER);
             final CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;
             final BooksCursor booksCursor = db.getBookForGoodreadsCursor(mBookId);
-            final BooksRowView book = booksCursor.getRowView();
+            final BooksRow book = booksCursor.getRowView();
             try {
                 // Hide parts of view based on current book details.
                 if (booksCursor.moveToFirst()) {
@@ -356,7 +352,7 @@ public class BookEvents {
             final CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;
             final BooksCursor booksCursor = db.getBookForGoodreadsCursor(mBookId);
             try {
-                final BooksRowView book = booksCursor.getRowView();
+                final BooksRow book = booksCursor.getRowView();
                 if (booksCursor.moveToFirst()) {
                     if (!book.getIsbn().isEmpty()) {
                         items.add(new ContextDialogItem(ctx.getString(R.string.retry_task), new Runnable() {

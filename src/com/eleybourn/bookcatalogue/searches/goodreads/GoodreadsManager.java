@@ -29,7 +29,7 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BooksRowView;
+import com.eleybourn.bookcatalogue.BooksRow;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -675,7 +675,7 @@ public class GoodreadsManager {
      *
      * @return Disposition of book
      */
-    public ExportDisposition sendOneBook(CatalogueDBAdapter db, BooksRowView books) throws
+    public ExportDisposition sendOneBook(CatalogueDBAdapter db, BooksRow books) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, IOException, NetworkException, BookNotFoundException {
         long bookId = books.getId();

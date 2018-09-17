@@ -38,7 +38,7 @@ import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
-import com.eleybourn.bookcatalogue.utils.ManagedTask;
+import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 /**
@@ -68,7 +68,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.update_fields);
             LibraryThingManager.showLtAlertIfNecessary(this, false, "update_from_internet");
-            mPrefs = getSharedPreferences(BCPreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
+            mPrefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
             setupFields();
         } catch (Exception e) {
             Logger.logError(e);

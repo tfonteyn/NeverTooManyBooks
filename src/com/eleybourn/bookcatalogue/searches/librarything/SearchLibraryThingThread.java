@@ -4,7 +4,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.SearchThread;
-import com.eleybourn.bookcatalogue.utils.TaskManager;
+import com.eleybourn.bookcatalogue.tasks.TaskManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 

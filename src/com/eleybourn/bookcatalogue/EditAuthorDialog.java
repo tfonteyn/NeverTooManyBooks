@@ -93,14 +93,14 @@ public class EditAuthorDialog {
 		}
 
 		// Get the new author ID
-		oldAuthor.id = mDb.getAuthorId(oldAuthor);
-		newAuthor.id = mDb.getAuthorId(newAuthor);
+		oldAuthor.id = mDb.getAuthorIdByName(oldAuthor);
+		newAuthor.id = mDb.getAuthorIdByName(newAuthor);
 
 		// Case: author is the same, or is only used in this book
 		if (newAuthor.id == oldAuthor.id) {
 			// Just update with the most recent spelling and format
 			oldAuthor.copyFrom(newAuthor);
-			mDb.sendAuthor(oldAuthor);
+			mDb.updateOrInsertAuthorByName(oldAuthor);
 		} else {
 			mDb.globalReplaceAuthor(oldAuthor, newAuthor);
 			oldAuthor.copyFrom(newAuthor);

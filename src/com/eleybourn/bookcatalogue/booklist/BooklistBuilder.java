@@ -25,6 +25,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteQuery;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -41,10 +43,10 @@ import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.JoinContext;
+import com.eleybourn.bookcatalogue.database.SqlStatementManager;
+import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition.TableTypes;
-import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
-import com.eleybourn.bookcatalogue.database.SqlStatementManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
@@ -83,6 +85,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ABSOL
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_DAY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_MASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
@@ -126,6 +129,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIE
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM_FLOAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_POSITION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE_LETTER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_UPDATE_DAY;
@@ -251,8 +255,8 @@ public class BooklistBuilder implements AutoCloseable {
      * @param adapter Database Adapter to use
      * @param style   Book list style to use
      */
-    public BooklistBuilder(CatalogueDBAdapter adapter, BooklistStyle style) {
-        if (DEBUG_SWITCHES.DEBUG_BOOKLIST_BUILDER && BuildConfig.DEBUG) {
+    public BooklistBuilder(@NonNull final CatalogueDBAdapter adapter, @NonNull final BooklistStyle style) {
+        if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
             synchronized (mInstanceCount) {
                 mInstanceCount++;
                 System.out.println("Builder instances: " + mInstanceCount);
@@ -318,7 +322,7 @@ public class BooklistBuilder implements AutoCloseable {
      * @return The builder (to allow chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    public BooklistBuilder requireDomain(DomainDefinition domain, String sourceExpression, boolean isSorted) {
+    public BooklistBuilder requireDomain(@NonNull final DomainDefinition domain, @NonNull final String sourceExpression, final boolean isSorted) {
         // Save the details
         ExtraDomainDetails info = new ExtraDomainDetails();
         info.domain = domain;
@@ -374,7 +378,7 @@ public class BooklistBuilder implements AutoCloseable {
         return mUNKNOWNText;
     }
 
-    private String localDateExpression(String fieldSpec) {
+    private String localDateExpression(@NonNull final String fieldSpec) {
         // IF the field has a time part, then convert to local time. This deals with legacy 'date-only' dates.
         // The logic being that IF they had a time part then it would be UTC. Without a time part, we assume the
         // zone is local (or irrelevant).
@@ -393,7 +397,7 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @return expression
      */
-    private String yearGlob(String fieldSpec, boolean toLocal) {
+    private String yearGlob(@NonNull String fieldSpec, final boolean toLocal) {
         if (toLocal) {
             fieldSpec = localDateExpression(fieldSpec);
         }
@@ -413,7 +417,7 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @return expression
      */
-    private String monthGlob(String fieldSpec, boolean toLocal) {
+    private String monthGlob(@NonNull String fieldSpec, final boolean toLocal) {
         if (toLocal) {
             fieldSpec = localDateExpression(fieldSpec);
         }
@@ -436,7 +440,7 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @return expression
      */
-    private String dayGlob(String fieldSpec, boolean toLocal) {
+    private String dayGlob(@NonNull String fieldSpec, final boolean toLocal) {
         if (toLocal) {
             fieldSpec = localDateExpression(fieldSpec);
         }
@@ -470,7 +474,14 @@ public class BooklistBuilder implements AutoCloseable {
      * @param seriesName     Search criteria: only books in named series
      * @param searchText     Search criteria: book details must in some way contain the passed text
      */
-    public void build(int preferredState, long markId, String bookshelf, String authorWhere, String bookWhere, String loaned_to, String seriesName, String searchText) {
+    public void build(final int preferredState,
+                      final long markId,
+                      @NonNull final String bookshelf,
+                      @NonNull final String authorWhere,
+                      @NonNull final String bookWhere,
+                      @NonNull final String loaned_to,
+                      @NonNull final String seriesName,
+                      @NonNull String searchText) {
         Tracker.handleEvent(this, "build-" + getId(), Tracker.States.Enter);
         try {
             long t0 = System.currentTimeMillis();
@@ -554,8 +565,9 @@ public class BooklistBuilder implements AutoCloseable {
 
             long t0a = System.currentTimeMillis();
 
-            // Process each group in the style
             for (BooklistGroup g : mStyle) {
+            //<editor-fold desc="Process each group in the style">
+
                 //
                 //	Build each row-kind group.
                 //
@@ -784,7 +796,10 @@ public class BooklistBuilder implements AutoCloseable {
                 // Copy the current groups to this level item; this effectively accumulates 'group by' domains
                 // down each level so that the top has fewest groups and the bottom level has groups for all levels.
                 g.groupDomains = summary.cloneGroups();
+
+            //</editor-fold>
             }
+
             long t0b = System.currentTimeMillis();
 
             // Want the UUID for the book so we can get thumbs
@@ -900,81 +915,7 @@ public class BooklistBuilder implements AutoCloseable {
             // Now build the 'where' clause.
             //
             long t0e = System.currentTimeMillis();
-            StringBuilder where = new StringBuilder();
-
-            if (!bookshelf.isEmpty()) {
-                if (where.length() != 0) {
-                    where.append(" and ");
-                }
-                if (hasGroupBOOKSHELF) {
-                    where.append("Exists(Select NULL From ")
-                            .append(TBL_BOOK_BOOKSHELF)
-                            .append(" z1 join ").append(TBL_BOOKSHELF)
-                            .append(" z2 on (z2.").append(DOM_ID).append(" = z1.").append(DOM_BOOKSHELF).append(")")
-                            .append(" where z2.")
-                            .append(DOM_BOOKSHELF_NAME).append(" = '").append(CatalogueDBAdapter.encodeString(bookshelf)).append("'")
-                            .append(" and z1.").append(DOM_BOOK).append(" = ").append(TBL_BOOKS.dot(DOM_ID)).append(")");
-                } else {
-                    where.append("(").append(TBL_BOOKSHELF.dot(DOM_BOOKSHELF_NAME)).append(" = '").append(CatalogueDBAdapter.encodeString(bookshelf)).append("')");
-                }
-            }
-            if (!authorWhere.isEmpty()) {
-                if (where.length() != 0) {
-                    where.append(" and ");
-                }
-                where.append("(").append(authorWhere).append(")");
-            }
-
-            if (!bookWhere.isEmpty()) {
-                if (where.length() != 0) {
-                    where.append(" and ");
-                }
-                where.append("(").append(bookWhere).append(")");
-            }
-
-            if (!loaned_to.isEmpty()) {
-                if (where.length() != 0) {
-                    where.append(" and ");
-                }
-                where.append("Exists(Select NULL From ").append(TBL_LOAN.ref())
-                        .append(" Where ").append(TBL_LOAN.dot(DOM_LOANED_TO)).append(" = '").append(CatalogueDBAdapter.encodeString(loaned_to)).append("'")
-                        .append(" and ").append(TBL_LOAN.fkMatch(TBL_BOOKS)).append(")");
-                // .and()    .op(TBL_LOAN.dot(DOM_BOOK), "=", TBL_BOOKS.dot(DOM_ID)) + ")";
-            }
-            if (!seriesName.isEmpty()) {
-                if (where.length() != 0) {
-                    where.append(" and ");
-                }
-                where.append("(").append(TBL_SERIES.dot(DOM_SERIES_NAME)).append(" = '").append(CatalogueDBAdapter.encodeString(seriesName)).append("')");
-            }
-            if (!searchText.isEmpty()) {
-                if (where.length() != 0) {
-                    where.append(" and ");
-                }
-                where.append("(").append(TBL_BOOKS.dot(DOM_ID)).append(" in (select docid from ").append(TBL_BOOKS_FTS)
-                        .append(" where ").append(TBL_BOOKS_FTS).append(" match '").append(CatalogueDBAdapter.encodeString(CatalogueDBAdapter.cleanupFtsCriterion(searchText))).append("'))");
-            }
-
-            // Add support for book filter: READ
-            {
-                String extra = null;
-                switch (mStyle.getReadFilter()) {
-                    case BooklistStyle.FILTER_READ:
-                        extra = TBL_BOOKS.dot(DOM_READ) + " = 1\n";
-                        break;
-                    case BooklistStyle.FILTER_UNREAD:
-                        extra = TBL_BOOKS.dot(DOM_READ) + " = 0\n";
-                        break;
-                    default:
-                        break;
-                }
-                if (extra != null) {
-                    if (!(where.length() == 0)) {
-                        where.append(" and ");
-                    }
-                    where.append(" ").append(extra);
-                }
-            }
+            StringBuilder where = build_whereClause(bookshelf, authorWhere, bookWhere, loaned_to, seriesName, searchText, hasGroupBOOKSHELF);
 
             // If we got any conditions, add them to the initial insert statement
             if (where.length() != 0) {
@@ -1134,7 +1075,8 @@ public class BooklistBuilder implements AutoCloseable {
                     // triggers to build the summary rows in the correct place.
                     String tgt = makeTriggers(summary, flatTriggers);
                     mBaseBuildStmt = mStatements.add("mBaseBuildStmt",
-                            "Insert Into " + tgt + "(" + sqlCmp.destinationColumns + ") " + sqlCmp.select + "\n From\n" + sqlCmp.join + sqlCmp.where + " order by " + sortColNameList);
+                            "Insert Into " + tgt + "(" + sqlCmp.destinationColumns + ") " + sqlCmp.select +
+                                    "\n From\n" + sqlCmp.join + sqlCmp.where + " order by " + sortColNameList);
                     //System.out.println("Base Build:\n" + sql);
                     mBaseBuildStmt.execute();
                     t2 = System.currentTimeMillis();
@@ -1341,6 +1283,167 @@ public class BooklistBuilder implements AutoCloseable {
         }
     }
 
+    @NonNull
+    private StringBuilder build_whereClause(@NonNull final  String bookshelf,
+                                            final String authorWhere,
+                                            final String bookWhere,
+                                            final String loaned_to,
+                                            final String seriesName,
+                                            final String searchText,
+                                            final boolean hasGroupBOOKSHELF) {
+        StringBuilder where = new StringBuilder();
+
+        if (!bookshelf.isEmpty()) {
+            if (where.length() != 0) {
+                where.append(" and ");
+            }
+            if (hasGroupBOOKSHELF) {
+                where.append("Exists(Select NULL From ")
+                        .append(TBL_BOOK_BOOKSHELF)
+                        .append(" z1 join ").append(TBL_BOOKSHELF)
+                        .append(" z2 on (z2.").append(DOM_ID).append(" = z1.").append(DOM_BOOKSHELF).append(")")
+                        .append(" where z2.")
+                        .append(DOM_BOOKSHELF_NAME).append(" = '").append(CatalogueDBAdapter.encodeString(bookshelf)).append("'")
+                        .append(" and z1.").append(DOM_BOOK).append(" = ").append(TBL_BOOKS.dot(DOM_ID)).append(")");
+            } else {
+                where.append("(").append(TBL_BOOKSHELF.dot(DOM_BOOKSHELF_NAME)).append(" = '").append(CatalogueDBAdapter.encodeString(bookshelf)).append("')");
+            }
+        }
+        if (!authorWhere.isEmpty()) {
+            if (where.length() != 0) {
+                where.append(" and ");
+            }
+            where.append("(").append(authorWhere).append(")");
+        }
+
+        if (!bookWhere.isEmpty()) {
+            if (where.length() != 0) {
+                where.append(" and ");
+            }
+            where.append("(").append(bookWhere).append(")");
+        }
+
+        if (!loaned_to.isEmpty()) {
+            if (where.length() != 0) {
+                where.append(" and ");
+            }
+            where.append("Exists(Select NULL From ").append(TBL_LOAN.ref())
+                    .append(" Where ").append(TBL_LOAN.dot(DOM_LOANED_TO)).append(" = '").append(CatalogueDBAdapter.encodeString(loaned_to)).append("'")
+                    .append(" and ").append(TBL_LOAN.fkMatch(TBL_BOOKS)).append(")");
+            // .and()    .op(TBL_LOAN.dot(DOM_BOOK), "=", TBL_BOOKS.dot(DOM_ID)) + ")";
+        }
+        if (!seriesName.isEmpty()) {
+            if (where.length() != 0) {
+                where.append(" and ");
+            }
+            where.append("(").append(TBL_SERIES.dot(DOM_SERIES_NAME)).append(" = '").append(CatalogueDBAdapter.encodeString(seriesName)).append("')");
+        }
+        if (!searchText.isEmpty()) {
+            if (where.length() != 0) {
+                where.append(" and ");
+            }
+            where.append("(").append(TBL_BOOKS.dot(DOM_ID)).append(" in (select docid from ").append(TBL_BOOKS_FTS)
+                    .append(" where ").append(TBL_BOOKS_FTS).append(" match '").append(CatalogueDBAdapter.encodeString(CatalogueDBAdapter.cleanupFtsCriterion(searchText))).append("'))");
+        }
+
+        // Add all the possible filters.
+        where.append(build_AddFilters());
+
+        return where;
+    }
+
+    /**
+     * Add all possible/enabled Filters
+     *
+     * @return partial 'where' clause
+     */
+    @NonNull
+    private StringBuilder build_AddFilters() {
+        final StringBuilder where = new StringBuilder();
+        // Add support for book filter: READ
+        {
+            String extra = null;
+            switch (mStyle.getReadFilter()) {
+                case BooklistStyle.FILTER_YES:
+                    extra = TBL_BOOKS.dot(DOM_READ) + " = 1\n";
+                    break;
+                case BooklistStyle.FILTER_NO:
+                    extra = TBL_BOOKS.dot(DOM_READ) + " = 0\n";
+                    break;
+                default:
+                    break;
+            }
+            if (extra != null) {
+                if (where.length() != 0) {
+                    where.append(" and ");
+                }
+                where.append(" ").append(extra);
+            }
+        }
+        // Add support for book filter: SIGNED
+        {
+            String extra = null;
+            switch (mStyle.getSignedFilter()) {
+                case BooklistStyle.FILTER_YES:
+                    extra = TBL_BOOKS.dot(DOM_SIGNED) + " = 1\n";
+                    break;
+                case BooklistStyle.FILTER_NO:
+                    extra = TBL_BOOKS.dot(DOM_SIGNED) + " = 0\n";
+                    break;
+                default:
+                    break;
+            }
+            if (extra != null) {
+                if (where.length() != 0) {
+                    where.append(" and ");
+                }
+                where.append(" ").append(extra);
+            }
+        }
+        // Add support for book filter: ANTHOLOGY
+        {
+            String extra = null;
+            switch (mStyle.getAnthologyFilter()) {
+                case BooklistStyle.FILTER_YES:
+                    extra = TBL_BOOKS.dot(DOM_ANTHOLOGY_MASK) + " > 0\n";
+                    break;
+                case BooklistStyle.FILTER_NO:
+                    extra = TBL_BOOKS.dot(DOM_ANTHOLOGY_MASK) + " = 0\n";
+                    break;
+                default:
+                    break;
+            }
+            if (extra != null) {
+                if (where.length() != 0) {
+                    where.append(" and ");
+                }
+                where.append(" ").append(extra);
+            }
+        }
+        // Add support for book filter: LOANED
+        {
+            String extra = null;
+            switch (mStyle.getLoanedFilter()) {
+                case BooklistStyle.FILTER_YES:
+                    extra = TBL_BOOKS.dot(DOM_LOANED_TO) + " = 1\n";
+                    break;
+                case BooklistStyle.FILTER_NO:
+                    extra = TBL_BOOKS.dot(DOM_LOANED_TO) + " = 0\n";
+                    break;
+                default:
+                    break;
+            }
+            if (extra != null) {
+                if (where.length() != 0) {
+                    where.append(" and ");
+                }
+                where.append(" ").append(extra);
+            }
+        }
+
+        return where;
+    }
+
     /**
      * Clear the list of expanded nodes in the current view
      */
@@ -1372,7 +1475,7 @@ public class BooklistBuilder implements AutoCloseable {
      * <p>
      * This approach means to allow DESCENDING sort orders.
      */
-    private String makeTriggers(SummaryBuilder summary, boolean flatTriggers) {
+    private String makeTriggers(@NonNull final SummaryBuilder summary, final boolean flatTriggers) {
         if (flatTriggers) {
             // Flat triggers are compatible with Android 1.6+ but slower
             return makeSingleTrigger(summary);
@@ -1392,7 +1495,7 @@ public class BooklistBuilder implements AutoCloseable {
      * This approach is allows DESCENDING sort orders but is slightly slower than the old-style
      * manually generated lists.
      */
-    private String makeSingleTrigger(SummaryBuilder summary) {
+    private String makeSingleTrigger(@NonNull final SummaryBuilder summary) {
         // Name of a table to store the snapshot of the most recent/current row headings
         final String currTblName = mListTable + "_curr";
         final String viewTblName = mListTable + "_view";
@@ -1514,7 +1617,7 @@ public class BooklistBuilder implements AutoCloseable {
      * It is the preferred option in Android 2.2+, but there is a chance that some vendor implemented
      * a broken or old SQLite version.
      */
-    private void makeNestedTriggers(SummaryBuilder summary) {
+    private void makeNestedTriggers(@NonNull final SummaryBuilder summary) {
         // Name of a table to store the snapshot of the most recent/current row headings
         final String currTblName = mListTable + "_curr";
         // List of cols we sort by
@@ -1633,7 +1736,7 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Clear the list of expanded nodes in the current view
      */
-    private void deleteListNodeSetting(long rowId) {
+    private void deleteListNodeSetting(final long rowId) {
         SyncLock l = null;
 
         try {
@@ -1658,7 +1761,7 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Save the specified node state.
      */
-    private void saveListNodeSetting(long rowId) {
+    private void saveListNodeSetting(final long rowId) {
         SyncLock l = null;
         try {
             if (!mSyncedDb.inTransaction())
@@ -1705,7 +1808,7 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @return Array of row details, including absolute positions and visibility. Null if not present
      */
-    public ArrayList<BookRowInfo> getBookAbsolutePositions(long bookId) {
+    public ArrayList<BookRowInfo> getBookAbsolutePositions(final long bookId) {
         String sql = "select " + mNavTable.dot(DOM_ID) + ", " + mNavTable.dot(DOM_VISIBLE) + " From " + mListTable + " bl "
                 + mListTable.join(mNavTable) + " Where " + mListTable.dot(DOM_BOOK) + " = " + bookId;
 
@@ -1743,7 +1846,7 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Return a list cursor starting at a given offset, using a given limit.
      */
-    public BooklistCursor getOffsetCursor(int position, int size) {
+    public BooklistCursor getOffsetCursor(final int position, final int size) {
         // Get the domains
         StringBuilder domains = new StringBuilder();
         final String prefix = mListTable.getAlias() + ".";
@@ -1797,7 +1900,7 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Utility routine to perform a single count query.
      */
-    private int pseudoCount(String name, String foo) {
+    private int pseudoCount(@NonNull final String name, @NonNull final String foo) {
         long tc0 = System.currentTimeMillis();
         SynchronizedStatement fooStmt = mSyncedDb.compileStatement(foo);
         int cnt = (int) fooStmt.simpleQueryForLong();
@@ -1817,7 +1920,7 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @return Name of the display field for this level
      */
-    public DomainDefinition getDisplayDomain(int level) {
+    public DomainDefinition getDisplayDomain(final int level) {
         return mStyle.getGroupAt(level - 1).displayDomain;
     }
 
@@ -1836,7 +1939,7 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @return Actual list position.
      */
-    public int getPosition(int absolutePosition) {
+    public int getPosition(final int absolutePosition) {
         if (mGetPositionCheckVisibleStmt == null) {
             String sql = "Select visible from " + mNavTable + " Where " + DOM_ID + " = ?";
             mGetPositionCheckVisibleStmt = mStatements.add("mGetPositionCheckVisibleStmt", sql);
@@ -1871,7 +1974,7 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Find the visible root node for a given absolute position and ensure it is visible.
      */
-    public void ensureAbsolutePositionVisible(long absPos) {
+    public void ensureAbsolutePositionVisible(final long absPos) {
         // If <0 then no previous node.
         if (absPos < 0)
             return;
@@ -1931,7 +2034,7 @@ public class BooklistBuilder implements AutoCloseable {
      * For EXPAND: Mark all rows as visible/expanded
      * For COLLAPSE: Mark all non-root rows as invisible/unexpanded and mark all root nodes as visible/unexpanded.
      */
-    public void expandAll(boolean expand) {
+    public void expandAll(final boolean expand) {
         long t0 = System.currentTimeMillis();
         if (expand) {
             String sql = "Update " + mNavTable + " Set expanded = 1, visible = 1";
@@ -1954,7 +2057,7 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Toggle the expand/collapse status of the node as the specified absolute position
      */
-    public void toggleExpandNode(long absPos) {
+    public void toggleExpandNode(final long absPos) {
         // This seems to get called sometimes after the database is closed...
         // RELEASE: remove statements as members, and look them up in mStatements via static keys
 
@@ -2008,7 +2111,7 @@ public class BooklistBuilder implements AutoCloseable {
      */
     private void cleanup(final boolean isFinalize) {
         if (mStatements.size() != 0) {
-            if (DEBUG_SWITCHES.DEBUG_BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
+            if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
                 System.out.println("BooklistBuilder Finalizing with active statements (this is not an error): ");
                 for (String name : mStatements.getNames()) {
                     System.out.print(name + ", ");
@@ -2022,7 +2125,7 @@ public class BooklistBuilder implements AutoCloseable {
         }
 
         if (mNavTable != null) {
-            if (DEBUG_SWITCHES.DEBUG_BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
+            if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
                 System.out.println("BooklistBuilder Finalizing wth mNavTable (this is not an error)");
             }
             try {
@@ -2033,7 +2136,7 @@ public class BooklistBuilder implements AutoCloseable {
             }
         }
         if (mListTable != null) {
-            if (DEBUG_SWITCHES.DEBUG_BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
+            if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
                 System.out.println("BooklistBuilder Finalizing  with list table (this is not an error)");
             }
             try {
@@ -2044,7 +2147,7 @@ public class BooklistBuilder implements AutoCloseable {
             }
         }
 
-        if (DEBUG_SWITCHES.DEBUG_BOOKLIST_BUILDER && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
             if (!mReferenceDecremented) {
                 // Only de-reference once!
                 synchronized (mInstanceCount) {
@@ -2072,7 +2175,7 @@ public class BooklistBuilder implements AutoCloseable {
         final DomainDefinition domain;
         final boolean isDescending;
 
-        SortedDomainInfo(DomainDefinition domain, boolean isDescending) {
+        SortedDomainInfo(@NonNull final DomainDefinition domain, final boolean isDescending) {
             this.domain = domain;
             this.isDescending = isDescending;
         }
@@ -2103,7 +2206,7 @@ public class BooklistBuilder implements AutoCloseable {
         public final boolean visible;
         public int listPosition;
 
-        BookRowInfo(int absPos, int listPos, int vis) {
+        BookRowInfo(final int absPos, final int listPos, final int vis) {
             absolutePosition = absPos;
             listPosition = listPos;
             visible = (vis == 1);
@@ -2177,7 +2280,7 @@ public class BooklistBuilder implements AutoCloseable {
          * @param expression Source Expression
          * @param flags      Flags indicating attributes of new domain
          */
-        void addDomain(DomainDefinition domain, String expression, int flags) {
+        void addDomain(@NonNull final DomainDefinition domain, @Nullable final String expression, final int flags) {
             // Add to various collections. We use a map to improve lookups and ArrayLists
             // so we can preserve order. Order preservation makes reading the SQL easier
             // but is unimportant for code correctness.
@@ -2253,7 +2356,7 @@ public class BooklistBuilder implements AutoCloseable {
          *
          * @return SqlComponents structure
          */
-        SqlComponents buildSqlComponents(CompoundKey rootKey) {
+        SqlComponents buildSqlComponents(@NonNull final CompoundKey rootKey) {
             SqlComponents cmp = new SqlComponents();
 
             // Rebuild the data table

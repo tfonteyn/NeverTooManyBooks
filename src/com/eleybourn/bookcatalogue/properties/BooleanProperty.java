@@ -44,9 +44,13 @@ import java.util.Objects;
  */
 public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> implements BooleanValue {
 
+
      public BooleanProperty(@NonNull final String uniqueId, @NonNull final PropertyGroup group,
                             final int nameResourceId) {
-        super(uniqueId, group, nameResourceId, false, null, false);
+         // yes, default value is set (as expected) to 'false' but note the 'value'
+         // is EXPLICITLY set to 'null' ! This is needed to make ValuePropertyWithGlobalDefault#getResolvedValue
+         // work correctly, as it assumes 'null' to be a flag for globalism.
+        super(uniqueId, group, nameResourceId, false, null, null);
     }
 
     @Override

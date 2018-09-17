@@ -31,9 +31,6 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
  * @author Philip Warner
  */
 public class FloatValidator extends DefaultFieldValidator {
-    public FloatValidator() {
-        super();
-    }
 
     public FloatValidator(@NonNull final String defaultValue) {
         super(defaultValue);

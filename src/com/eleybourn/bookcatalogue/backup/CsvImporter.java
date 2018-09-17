@@ -384,7 +384,7 @@ public class CsvImporter implements Importer {
         if (anthology != 0) {
             long id = Integer.parseInt(values.getString(KEY_ID));
             // We have anthology details, delete the current details.
-            db.deleteAnthologyTitles(id, false);
+            db.deleteAnthologyTitlesByBook(id, false);
             int oldi = 0;
             String anthology_titles = values.getString(UniqueId.BKEY_ANTHOLOGY_TITLES);
             try {
@@ -398,7 +398,7 @@ public class CsvImporter implements Importer {
                         String ant_author = extracted_title.substring((j + 1)).trim();
 
                         Author author = Author.toAuthor(ant_author);
-                        db.createAnthologyTitle(id, author, ant_title, true, false);
+                        db.insertAnthologyTitle(id, author, ant_title, true, false);
                     }
                     oldi = i + 1;
                     i = anthology_titles.indexOf("|", oldi);
@@ -412,7 +412,7 @@ public class CsvImporter implements Importer {
     private void importBooks_handleLoan(@NonNull final CatalogueDBAdapter db, @NonNull final BookData values) {
         int id = Integer.parseInt(values.getString(KEY_ID));
         db.deleteLoan(id, false);
-        db.createLoan(values, false);
+        db.insertLoan(values, false);
     }
 
     private void importBooks_handleSeries(@NonNull final CatalogueDBAdapter db, @NonNull final BookData values) {

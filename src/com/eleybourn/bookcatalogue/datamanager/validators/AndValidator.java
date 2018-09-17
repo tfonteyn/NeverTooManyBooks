@@ -30,7 +30,6 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
  * @author Philip Warner
  */
 public class AndValidator extends MetaValidator implements DataValidator {
-    // Java likes this
     public static final long serialVersionUID = 1L;
 
     // Constructors

@@ -23,12 +23,11 @@ package com.eleybourn.bookcatalogue.cursors;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
 import android.support.annotation.NonNull;
+import android.util.LongSparseArray;
 
-import com.eleybourn.bookcatalogue.BooksRowView;
+import com.eleybourn.bookcatalogue.BooksRow;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
-
-import java.util.HashMap;
 
 /**
  * Cursor implementation for book-related queries. The cursor wraps common
@@ -42,7 +41,7 @@ import java.util.HashMap;
 public class BooksCursor extends TrackedCursor implements AutoCloseable {
 
     /** HashMap of selected book IDs */
-    private final HashMap<Long, Boolean> mSelections = new HashMap<>();
+    private final LongSparseArray<Boolean> mSelections = new LongSparseArray<>();
     /**
      * Get the row ID; need a local implementation so that get/setSelected() works.
      */
@@ -50,7 +49,7 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
     /**
      * Get a RowView
      */
-    private BooksRowView mView;
+    private BooksRow mView;
 
     /**
      * Constructor
@@ -67,12 +66,8 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
      */
     @SuppressWarnings("unused")
     public boolean getIsSelected() {
-        Long id = getId();
-        if (mSelections.containsKey(id)) {
-            return mSelections.get(id);
-        } else {
-            return false;
-        }
+        Boolean b = mSelections.get(getId());
+        return (b != null ? b : false);
     }
 
     @SuppressWarnings("unused")
@@ -89,9 +84,9 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
         return getLong(mIdCol);// mCurrentRow[mIsbnCol];
     }
 
-    public BooksRowView getRowView() {
+    public BooksRow getRowView() {
         if (mView == null)
-            mView = new BooksRowView(this);
+            mView = new BooksRow(this);
         return mView;
     }
 
@@ -103,15 +98,15 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
 //	 * @author Philip Warner
 //	 */
 //	public static class BooksSnapshotCursor extends CursorSnapshotCursor {
-//		BooksRowView mView;
+//		BooksRow mView;
 //
 //		public BooksSnapshotCursor(SQLiteCursor source) {
 //			super(source);
 //		}
 //
-//		public BooksRowView getRowView() {
+//		public BooksRow getRowView() {
 //			if (mView == null)
-//				mView = new BooksRowView(this);
+//				mView = new BooksRow(this);
 //			return mView;
 //		}
 //

@@ -19,12 +19,12 @@ import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
@@ -45,8 +45,6 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
      * TODO the idea is to have a new Activity: AnthologyTitle -> books containing the story
      * TODO once done, retrofit the same to Series.
      */
-    private boolean mGenerateAnthologyFieldList = true;
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Tracker.enterOnCreateView(this);
@@ -68,8 +66,7 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
          * We have to override this value to initialize book thumb with right size.
          * You have to see in book_details.xml to get dividing coefficient
          */
-        Integer[] sizes = ImageUtils.getThumbSizes(getActivity());
-        mThumbEditSize = sizes[0];
+        mThumper = ImageUtils.getThumbSizes(getActivity());
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getActivity(), R.string.hint_view_only_help, null);
@@ -104,7 +101,7 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
             populateBookDetailsFields(book);
 
             // Set maximum aspect ratio width : height = 1 : 2
-            setBookThumbnail(book.getRowId(), mThumbEditSize, mThumbEditSize * 2);
+            setBookThumbnail(book.getRowId(), mThumper.normal, mThumper.normal * 2);
 
             // Additional fields for read-only mode which are not initialized automatically
             showReadStatus(book);
@@ -139,19 +136,28 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
      */
     private void showAnthologySection(final BookData book) {
         View section = getView().findViewById(R.id.anthology_section);
+        final ArrayList<AnthologyTitle> list = book.getAnthologyTitles();
+        if (list.isEmpty()) {
+            // book is an Anthology, but the user has not added any titles (yet)
+            section.setVisibility(View.GONE);
+            return;
+        }
+
         section.setVisibility(View.VISIBLE);
+
+        AnthologyTitleListAdapter adapter = new AnthologyTitleListAdapter(getActivity(), R.layout.row_anthology, list);
+        final ListView titles = getView().findViewById(R.id.anthology_titlelist);
+        titles.setAdapter(adapter);
+
         Button btn = getView().findViewById(R.id.anthology_button);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ListView titles = getView().findViewById(R.id.anthology_titlelist);
-                titles.setVisibility(titles.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-                // only generate once
-                if (mGenerateAnthologyFieldList) {
-                    AnthologyTitleListAdapter adapter = new AnthologyTitleListAdapter(getActivity(), R.layout.row_anthology, book.getAnthologyTitles());
-                    titles.setAdapter(adapter);
+                if (titles.getVisibility() == View.VISIBLE) {
+                    titles.setVisibility(View.GONE);
+                } else {
+                    titles.setVisibility(View.VISIBLE);
                     justifyListViewHeightBasedOnChildren(titles);
-                    mGenerateAnthologyFieldList = false;
                 }
             }
         });

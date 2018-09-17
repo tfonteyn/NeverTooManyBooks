@@ -11,11 +11,11 @@ import android.view.View.OnClickListener;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.utils.BCQueueManager;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTaskAbstract;
+import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTaskAbstract;
 
 import net.philipwarner.taskqueue.QueueManager;
 
@@ -86,11 +86,11 @@ public class GoodreadsUtils {
 			public void run(@NonNull SimpleTaskQueueProgressFragment fragment, @NonNull SimpleTaskContext taskContext) {
 
 				if (BCQueueManager.getQueueManager().hasActiveTasks(BCQueueManager.CAT_GOODREADS_IMPORT_ALL)) {
-					fragment.showToast(R.string.requested_task_is_already_queued);
+					fragment.showToast(fragment.getString(R.string.requested_task_is_already_queued));
 					return;
 				}
 				if (BCQueueManager.getQueueManager().hasActiveTasks(BCQueueManager.CAT_GOODREADS_EXPORT_ALL)) {
-					fragment.showToast(R.string.export_task_is_already_queued);
+					fragment.showToast(fragment.getString(R.string.export_task_is_already_queued));
 					return;
 				}
 
@@ -104,13 +104,13 @@ public class GoodreadsUtils {
 						}});
 					return;
 				} else if (msg != 0) {
-					fragment.showToast(msg);
+					fragment.showToast(fragment.getString(msg));
 					return;
 				}
 
 				if (!fragment.isCancelled()) {
 					QueueManager.getQueueManager().enqueueTask(new ImportAllTask(isSync), BCQueueManager.QUEUE_MAIN, 0);
-					fragment.showToast(R.string.task_has_been_queued_in_background);					
+					fragment.showToast(fragment.getString(R.string.task_has_been_queued_in_background));
 				}
 			}
 		};
@@ -181,7 +181,7 @@ public class GoodreadsUtils {
 					});
 					return;
 				} else {
-					fragment.showToast(msg);
+					fragment.showToast(fragment.getString(msg));
 				}
 
 			}
@@ -257,7 +257,7 @@ public class GoodreadsUtils {
 						return;
 
 					default:
-						fragment.showToast(getState());
+						fragment.showToast(fragment.getString(getState()));
 						break;
 				}
 			}

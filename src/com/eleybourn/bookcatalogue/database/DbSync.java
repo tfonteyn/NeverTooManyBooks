@@ -332,11 +332,10 @@ public class DbSync {
          */
         @SuppressWarnings({"JavaReflectionMemberAccess", "UnusedAssignment"})
         public static void printRefCount(@Nullable final String msg, @NonNull final SQLiteDatabase db) {
-            if (DEBUG_SWITCHES.DEBUG_DB_SYNC && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
                 System.gc();
-                Field f;
                 try {
-                    f = SQLiteClosable.class.getDeclaredField("mReferenceCount");
+                    Field f = SQLiteClosable.class.getDeclaredField("mReferenceCount");
                     f.setAccessible(true);
                     int refs = (Integer) f.get(db); //IllegalAccessException
                     if (msg != null) {
@@ -701,7 +700,7 @@ public class DbSync {
             mSql = sql;
             mIsReadOnly = sql.trim().toLowerCase().startsWith("select");
             mStatement = db.getUnderlyingDatabase().compileStatement(sql);
-            if (DEBUG_SWITCHES.DEBUG_DB_SYNC && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
                 System.out.println("SynchronizedStatement(new): " + sql + "\n\n");
             }
         }
@@ -792,7 +791,7 @@ public class DbSync {
             else
                 l = mSync.getExclusiveLock();
             try {
-                if (DEBUG_SWITCHES.DEBUG_DB_SYNC && BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
                     System.out.println("SynchronizedStatement execute: " + mStatement);
                 }
                 mStatement.execute();
@@ -814,8 +813,8 @@ public class DbSync {
         }
 
         public void finalize() {
-            if (!mIsClosed && DEBUG_SWITCHES.DEBUG_DB_SYNC && BuildConfig.DEBUG) {
-                Logger.logError(new RuntimeException("DbSync.SynchronizedStatement: Finalizing non-closed statement (potential error/normal)" + (DEBUG_SWITCHES.DEBUG_DB_SYNC ? ": " + mSql : "")));
+            if (!mIsClosed && DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
+                Logger.logError(new RuntimeException("DbSync.SynchronizedStatement: Finalizing non-closed statement (potential error/normal)" + (DEBUG_SWITCHES.DB_SYNC ? ": " + mSql : "")));
             }
 
             // Try to close the underlying statement.

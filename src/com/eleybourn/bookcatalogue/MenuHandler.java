@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -41,6 +42,7 @@ public class MenuHandler {
     private static final int MENU_ITEM_ADD_BOOK_BARCODE = Menu.FIRST + 3;
     private static final int MENU_ITEM_ADD_BOOK_ISBN = Menu.FIRST + 4;
     private static final int MENU_ITEM_ADD_BOOK_NAMES = Menu.FIRST + 5;
+
     private static final int MENU_ITEM_SEARCH = Menu.FIRST + 6;
 
     // must have a higher offset then the last one listed above
@@ -49,7 +51,7 @@ public class MenuHandler {
     /**
      * Construct & init.
      */
-    public MenuHandler(Menu menu) {
+    public MenuHandler(@NonNull final Menu menu) {
         init(menu);
     }
 
@@ -59,7 +61,7 @@ public class MenuHandler {
      * Called by the constructor.
      * Allows re-using the MenuHandler
      */
-    private void init(Menu menu) {
+    private void init(@NonNull final Menu menu) {
         mSort = 0;
         menu.clear();
     }
@@ -74,7 +76,7 @@ public class MenuHandler {
      *
      * @return The new item
      */
-    public MenuItem addItem(Menu menu, int id, int stringId, int icon) {
+    public MenuItem addItem(@NonNull final Menu menu, final int id, final int stringId, final int icon) {
         MenuItem item = menu.add(0, id, mSort++, stringId);
         if (icon != 0) {
             item.setIcon(icon);
@@ -87,7 +89,7 @@ public class MenuHandler {
      *
      * @param menu Root menu
      */
-    public void addCreateBookSubMenu(Menu menu) {
+    public void addCreateBookSubMenu(@NonNull final Menu menu) {
         SubMenu addMenu = menu.addSubMenu(0, MENU_ADD_BOOK,
                 mSort++,
                 BookCatalogueApp.getResourceString(R.string.menu_insert) + "&hellip;");
@@ -118,7 +120,7 @@ public class MenuHandler {
      *
      * @return True, if handled
      */
-    public boolean onOptionsItemSelected(Activity a, MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final Activity a, @NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case MENU_ITEM_ADD_BOOK_BARCODE:
                 createBookScan(a);
@@ -142,7 +144,7 @@ public class MenuHandler {
     /**
      * Load the Search by ISBN Activity to begin scanning.
      */
-    private void createBookScan(Activity a) {
+    private void createBookScan(@NonNull final Activity a) {
         Intent i = new Intent(a, BookISBNSearchActivity.class);
         i.putExtra(BookISBNSearchActivity.BKEY_BY, BookISBNSearchActivity.BY_SCAN);
         a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_SCAN);
@@ -151,7 +153,7 @@ public class MenuHandler {
     /**
      * Load the Search by ISBN Activity
      */
-    private void createBookISBN(Activity a, String by) {
+    private void createBookISBN(@NonNull final Activity a, String by) {
         Intent i = new Intent(a, BookISBNSearchActivity.class);
         i.putExtra(BookISBNSearchActivity.BKEY_BY, by);
         a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_ISBN);
@@ -160,7 +162,7 @@ public class MenuHandler {
     /**
      * Load the EditBookActivity Activity
      */
-    private void createBook(Activity a) {
+    private void createBook(@NonNull final Activity a) {
         Intent i = new Intent(a, EditBookActivity.class);
         a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_MANUALLY);
     }
@@ -171,7 +173,7 @@ public class MenuHandler {
 //     * @param id  The id of the book to edit
 //     * @param tab Which tab to open first
 //     */
-//    public static void editBook(Activity a, long id, int tab) {
+//    public static void editBook(@NonNull final Activity a, final long id, final int tab) {
 //        Intent i = new Intent(a, EditBookActivity.class);
 //        i.putExtra(DatabaseDefinitions.KEY_ID, id);
 //        i.putExtra(EditBookActivity.TAB, tab);

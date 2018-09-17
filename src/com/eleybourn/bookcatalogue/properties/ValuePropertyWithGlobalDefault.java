@@ -54,7 +54,9 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
     ValuePropertyWithGlobalDefault(@NonNull final String uniqueId,
                                    @NonNull final PropertyGroup group,
                                    final int nameResourceId,
-                                   @Nullable final T defaultValue, @Nullable final String preferenceKey, @Nullable final T value) {
+                                   @Nullable final T defaultValue,
+                                   @Nullable final String preferenceKey,
+                                   @Nullable final T value) {
         super(uniqueId, group, nameResourceId);
         mDefaultValue = defaultValue;
         mDefaultPrefKey = preferenceKey;

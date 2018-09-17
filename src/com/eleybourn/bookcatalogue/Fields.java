@@ -143,7 +143,7 @@ public class Fields extends ArrayList<Fields.Field> {
     Fields(@NonNull final Activity a) {
         super();
         mContext = new ActivityContext(a);
-        mPrefs = a.getSharedPreferences(BCPreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
+        mPrefs = a.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
     }
 
     /**
@@ -154,7 +154,7 @@ public class Fields extends ArrayList<Fields.Field> {
     Fields(@NonNull final Fragment f) {
         super();
         mContext = new FragmentContext(f);
-        mPrefs = f.getActivity().getSharedPreferences(BCPreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
+        mPrefs = f.getActivity().getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
     }
 
     /**
@@ -688,8 +688,7 @@ public class Fields extends ArrayList<Fields.Field> {
         private boolean mFormatHtml;
         private String mRawValue;
 
-        TextViewAccessor(boolean formatHtml) {
-            mFormatHtml = formatHtml;
+         TextViewAccessor() {
         }
 
         public void set(@NonNull final Field field, @NonNull final Cursor c) {
@@ -1256,11 +1255,11 @@ public class Fields extends ArrayList<Fields.Field> {
                     );
 
                 } else if (view instanceof Button) {
-                    mAccessor = new TextViewAccessor(false);
+                    mAccessor = new TextViewAccessor();
                 } else if (view instanceof TextView) {
-                    mAccessor = new TextViewAccessor(false);
+                    mAccessor = new TextViewAccessor();
                 } else if (view instanceof ImageView) {
-                    mAccessor = new TextViewAccessor(false);
+                    mAccessor = new TextViewAccessor();
                 } else if (view instanceof RatingBar) {
                     mAccessor = new RatingBarAccessor();
                     addTouchSignalsDirty(view);

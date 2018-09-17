@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -48,8 +49,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 /**
- * Represents a specific style of book list (eg. authors/series). Individual {@link BooklistGroup} objects
- * are added to a style in order to describe the resulting list style.
+ * Represents a specific style of book list (eg. authors/series).
+ * Individual {@link BooklistGroup} objects are added to a style in order to describe
+ * the resulting list style.
  *
  * ENHANCE: Allow for style-based overrides of things currently stored in preferences
  * This should include thumbnail presence/size, book-in-each-series etc. as well as font sizes.
@@ -72,24 +74,25 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /** Extra book data to show at lowest level */
     public static final int EXTRAS_BOOKSHELVES = 1;
     /** Extra book data to show at lowest level */
-    public static final int EXTRAS_LOCATION = 2;
+    public static final int EXTRAS_LOCATION = (1 << 1);
     /** Extra book data to show at lowest level */
-    public static final int EXTRAS_PUBLISHER = 4;
+    public static final int EXTRAS_PUBLISHER = (1 << 3);
     /** Extra book data to show at lowest level */
-    public static final int EXTRAS_AUTHOR = 8;
+    public static final int EXTRAS_AUTHOR = (1 << 4);
     /** Extra book data to show at lowest level */
-    public static final int EXTRAS_THUMBNAIL = 16;
+    public static final int EXTRAS_THUMBNAIL = (1 << 5);
     /** Extra book data to show at lowest level */
-    public static final int EXTRAS_THUMBNAIL_LARGE = 32;
+    public static final int EXTRAS_THUMBNAIL_LARGE = (1 << 6);
     /** Extra book data to show at lowest level */
-    public static final int EXTRAS_FORMAT = 64;
+    public static final int EXTRAS_FORMAT = (1 << 7);
+
     /** Extra book data to show at lowest level */
     public static final int EXTRAS_ALL = EXTRAS_BOOKSHELVES | EXTRAS_LOCATION | EXTRAS_PUBLISHER
             | EXTRAS_AUTHOR | EXTRAS_THUMBNAIL | EXTRAS_THUMBNAIL_LARGE | EXTRAS_FORMAT;
 
-    public static final int FILTER_READ = 1;
-    public static final int FILTER_UNREAD = 2;
-    public static final int FILTER_READ_AND_UNREAD = 3;
+    public static final int FILTER_YES = 1;
+    public static final int FILTER_NO = 2;
+    public static final int FILTER_EITHER = 3;
 
     public static final Integer SUMMARY_HIDE = 0;
     public static final Integer SUMMARY_SHOW_COUNT = 1;
@@ -141,17 +144,36 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /** Show format for each book */
     private static final String PREF_SHOW_FORMAT = PREF_SHOW_EXTRAS_PREFIX + BooklistStyle.SFX_SHOW_FORMAT;
 
-    /** Support for 'READ' filter */
-    private static final ItemEntries<Integer> mReadFilterListItems = new ItemEntries<>();
     /** Support for 'Condensed' property */
     private static final ItemEntries<Boolean> mCondensedListItems = new ItemEntries<>();
     /** Support for 'Show List Header Info' property */
     private static final ItemEntries<Integer> mShowHeaderInfoListItems = new ItemEntries<>();
 
+    /** Support for filter */
+    private static final ItemEntries<Integer> mReadFilterListItems = new ItemEntries<>();
+    /** Support for filter */
+    private static final ItemEntries<Integer> mSignedFilterListItems = new ItemEntries<>();
+    /** Support for filter */
+    private static final ItemEntries<Integer> mAnthologyFilterListItems = new ItemEntries<>();
+    /** Support for filter */
+    private static final ItemEntries<Integer> mLoanedFilterListItems = new ItemEntries<>();
+
     static {
-        mReadFilterListItems.add(FILTER_UNREAD, R.string.select_unread_only);
-        mReadFilterListItems.add(FILTER_READ, R.string.select_read_only);
-        mReadFilterListItems.add(FILTER_READ_AND_UNREAD, R.string.all_books);
+        mReadFilterListItems.add(FILTER_NO, R.string.select_unread_only);
+        mReadFilterListItems.add(FILTER_YES, R.string.select_read_only);
+        mReadFilterListItems.add(FILTER_EITHER, R.string.all_books);
+
+        mSignedFilterListItems.add(FILTER_NO, R.string.select_signed_no);
+        mSignedFilterListItems.add(FILTER_YES, R.string.select_signed_yes);
+        mSignedFilterListItems.add(FILTER_EITHER, R.string.all_books);
+
+        mAnthologyFilterListItems.add(FILTER_NO, R.string.select_anthology_no);
+        mAnthologyFilterListItems.add(FILTER_YES, R.string.select_anthology_yes);
+        mAnthologyFilterListItems.add(FILTER_EITHER, R.string.all_books);
+
+        mLoanedFilterListItems.add(FILTER_NO, R.string.select_loaned_no);
+        mLoanedFilterListItems.add(FILTER_YES, R.string.select_loaned_yes);
+        mLoanedFilterListItems.add(FILTER_EITHER, R.string.all_books);
 
         mCondensedListItems.add(null, R.string.use_default_setting);
         mCondensedListItems.add(false, R.string.normal);
@@ -174,7 +196,6 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /** replaces mName */
     private transient StringProperty mNameProperty;
 
-    // ENHANCE: Add filters based on 'signed', 'loaned', 'anthology' and (maybe) duplicate books
     /** Row id of database row from which this object comes */
     private long mRowId = 0;
     /** Extra details to show on book rows */
@@ -191,8 +212,12 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     private transient BooleanProperty mXtraShowFormat;
     /** Extra details to show on book rows */
     private transient BooleanProperty mXtraShowAuthor;
-    /** Extra details to show on book rows */
-    private transient IntegerListProperty mXtraReadUnreadAll;
+
+    /** 'READ' filter */
+    private transient IntegerListProperty mXtraReadFilter;
+    private transient IntegerListProperty mXtraSignedFilter;
+    private transient IntegerListProperty mXtraAnthologyFilter;
+    private transient IntegerListProperty mXtraLoanedFilter;
 
     /** Show list using smaller text */
     private transient BooleanListProperty mCondensed;
@@ -218,7 +243,8 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Constructor for user-defined styles.
      */
-    BooklistStyle(String name) {
+    @SuppressWarnings("SameParameterValue")
+    BooklistStyle(@NonNull final String name) {
         initProperties();
         mNameStringId = 0;
         mGroups = new ArrayList<>();
@@ -226,9 +252,30 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     }
 
     public int getReadFilter() {
-        return mXtraReadUnreadAll.getResolvedValue();
+        return mXtraReadFilter.getResolvedValue();
+    }
+    public int getSignedFilter() {
+        return mXtraSignedFilter.getResolvedValue();
+    }
+    public int getAnthologyFilter() {
+        return mXtraAnthologyFilter.getResolvedValue();
+    }
+    public int getLoanedFilter() {
+        return mXtraLoanedFilter.getResolvedValue();
     }
 
+    public void setReadFilter(Integer v) {
+        mXtraReadFilter.set(v);
+    }
+    public void setSignedFilter(Integer v) {
+        mXtraSignedFilter.set(v);
+    }
+    public void setAnthologyFilter(Integer v) {
+        mXtraAnthologyFilter.set(v);
+    }
+    public void setLoanedFilter(Integer v) {
+        mXtraLoanedFilter.set(v);
+    }
     /**
      * Accessor for flag indicating style is among preferred styles.
      */
@@ -325,6 +372,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         mXtraShowThumbnails = new BooleanProperty("XThumbnails",
                 PropertyGroup.GRP_THUMBNAILS,R.string.show_thumbnails)
                 .setPreferenceKey(PREF_SHOW_THUMBNAILS)
+                .setDefaultValue(true)
                 .setWeight(-100);
 
         mXtraLargeThumbnails = new BooleanProperty("XLargeThumbnails",
@@ -356,14 +404,26 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
                 PropertyGroup.GRP_GENERAL, R.string.size_of_booklist_items)
                 .setPreferenceKey(PREF_CONDENSED_TEXT);
 
-        mXtraReadUnreadAll = new IntegerListProperty(mReadFilterListItems, "XReadUnreadAll",
-                PropertyGroup.GRP_EXTRA_FILTERS, R.string.select_based_on_read_status)
-                .setDefaultValue(FILTER_READ_AND_UNREAD);
-
         mShowHeaderInfo = new IntegerListProperty(mShowHeaderInfoListItems, PREF_SHOW_HEADER_INFO,
                 PropertyGroup.GRP_GENERAL, R.string.summary_details_in_header)
                 .setPreferenceKey(PREF_SHOW_HEADER_INFO)
                 .setDefaultValue(SUMMARY_SHOW_ALL);
+
+        mXtraReadFilter = new IntegerListProperty(mReadFilterListItems, "XReadUnreadAll", /* keep name for compat */
+                PropertyGroup.GRP_EXTRA_FILTERS, R.string.select_based_on_read_status)
+                .setDefaultValue(FILTER_EITHER);
+
+        mXtraSignedFilter = new IntegerListProperty(mSignedFilterListItems, "XSignedFilter",
+                PropertyGroup.GRP_EXTRA_FILTERS, R.string.select_based_on_signed_status)
+                .setDefaultValue(FILTER_EITHER);
+
+        mXtraAnthologyFilter = new IntegerListProperty(mAnthologyFilterListItems, "XAnthologyFilter",
+                PropertyGroup.GRP_EXTRA_FILTERS, R.string.select_based_on_anthology_status)
+                .setDefaultValue(FILTER_EITHER);
+
+        mXtraLoanedFilter = new IntegerListProperty(mLoanedFilterListItems, "XLoanedFilter",
+                PropertyGroup.GRP_EXTRA_FILTERS, R.string.select_based_on_loaned_status)
+                .setDefaultValue(FILTER_EITHER);
     }
 
     /**
@@ -373,15 +433,21 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         Properties props = new Properties()
                 .add(mXtraShowThumbnails)
                 .add(mXtraLargeThumbnails)
+
                 .add(mXtraShowBookshelves)
                 .add(mXtraShowLocation)
                 .add(mXtraShowPublisher)
                 .add(mXtraShowFormat)
                 .add(mXtraShowAuthor)
-                .add(mXtraReadUnreadAll)
+
                 .add(mCondensed)
                 .add(mNameProperty)
-                .add(mShowHeaderInfo);
+                .add(mShowHeaderInfo)
+
+                .add(mXtraReadFilter)
+                .add(mXtraSignedFilter)
+                .add(mXtraAnthologyFilter)
+                .add(mXtraLoanedFilter);
 
         for (BooklistGroup g : mGroups) {
             g.getStyleProperties(props);
@@ -411,6 +477,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         Properties newProps = new Properties();
 
         // Save the current groups
+        @SuppressLint("UseSparseArrays")
         HashMap<Integer, BooklistGroup> oldGroups = new HashMap<>();
         for (BooklistGroup g : this) {
             oldGroups.put(g.kind, g);
@@ -509,9 +576,10 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     }
 
     /**
-     * Custom serialization support.
+     * Custom serialization support. The signature of this method should never be changed.
+     * @see Serializable
      */
-    private void writeObject(@NonNull final ObjectOutputStream out) throws IOException {
+    private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
         out.writeObject(realSerialVersion); // always write latest
         out.writeObject(mXtraShowThumbnails.get());
@@ -520,17 +588,23 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         out.writeObject(mXtraShowLocation.get());
         out.writeObject(mXtraShowPublisher.get());
         out.writeObject(mXtraShowAuthor.get());
-        out.writeObject(mXtraReadUnreadAll.get());
+        out.writeObject(mXtraReadFilter.get());
         out.writeObject(mCondensed.get());
         out.writeObject(mNameProperty.get());
         out.writeObject(mShowHeaderInfo.get());
+        // added in 4
         out.writeObject(mXtraShowFormat.get());
+        out.writeObject(mXtraSignedFilter.get());
+        out.writeObject(mXtraAnthologyFilter.get());
+        out.writeObject(mXtraLoanedFilter.get());
+
     }
 
     /**
-     * Pseudo-constructor for custom serialization support.
+     * Custom serialization support. The signature of this method should never be changed.
+     * @see Serializable
      */
-    private void readObject(@NonNull final ObjectInputStream in) throws IOException, ClassNotFoundException {
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         initProperties();
         Object o = in.readObject();
@@ -548,7 +622,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         mXtraShowLocation.set((Boolean) in.readObject());
         mXtraShowPublisher.set((Boolean) in.readObject());
         mXtraShowAuthor.set((Boolean) in.readObject());
-        mXtraReadUnreadAll.set((Integer) in.readObject());
+        mXtraReadFilter.set((Integer) in.readObject());
         if (version > 0)
             mCondensed.set((Boolean) in.readObject());
         if (version > 1)
@@ -572,6 +646,11 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         }
         if (version > 4) {
             mXtraShowFormat.set((Boolean) in.readObject());
+
+            mXtraSignedFilter.set((Integer) in.readObject());
+            mXtraAnthologyFilter.set((Integer) in.readObject());
+            mXtraLoanedFilter.set((Integer) in.readObject());
+
         }
     }
 
@@ -583,23 +662,11 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         mCondensed.set(condensed);
     }
 
-    @SuppressWarnings("unused")
-    public boolean showThumbnails() {
-        return mXtraShowThumbnails.getResolvedValue();
-    }
-
     public void setShowThumbnails(boolean show) {
         mXtraShowThumbnails.set(show);
     }
 
-    @SuppressWarnings("unused")
-    public Integer getReadUnreadAll() {
-        return mXtraReadUnreadAll.getResolvedValue();
-    }
 
-    public void setReadUnreadAll(Integer readUnreadAll) {
-        mXtraReadUnreadAll.set(readUnreadAll);
-    }
 
     public int getShowHeaderInfo() {
         return mShowHeaderInfo.getResolvedValue();

@@ -18,11 +18,10 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.utils;
+package com.eleybourn.bookcatalogue.tasks;
 
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 
@@ -94,14 +93,14 @@ abstract public class ManagedTask extends Thread {
     abstract protected void onRun() throws InterruptedException;
 
     /**
-     * Utility routine to ask the Taskmanager to get a String from a resource ID.
+     * Utility routine to ask the TaskManager to get a String from a resource ID.
      *
      * @param id Resource ID
      *
      * @return Result
      */
     protected String getString(final int id) {
-        return BookCatalogueApp.getResourceString(id);
+        return mManager.getContext().getString(id);
     }
 
     /**

@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +52,7 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
 
 	//FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
 
-	MultiTypeListCursorAdapter(Activity activity, Cursor c, MultiTypeListHandler handler) {
+	MultiTypeListCursorAdapter(@NonNull final Activity activity, @NonNull final Cursor c, @NonNull final MultiTypeListHandler handler) {
 		super(activity, c);
 		mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		mActivity = activity;

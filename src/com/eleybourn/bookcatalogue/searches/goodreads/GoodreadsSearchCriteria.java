@@ -28,7 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.cursors.BooksCursor;
-import com.eleybourn.bookcatalogue.BooksRowView;
+import com.eleybourn.bookcatalogue.BooksRow;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
@@ -75,7 +75,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
 		if (mBookId != 0) {
 			setViewVisibility(R.id.original_details, true);
 			final BooksCursor c = mDb.fetchBookById(mBookId);
-			final BooksRowView book = c.getRowView();
+			final BooksRow book = c.getRowView();
 			try 
 			{
 				if (!c.moveToFirst()) {

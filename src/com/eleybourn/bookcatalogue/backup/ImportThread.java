@@ -5,9 +5,9 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.ManagedTask;
+import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.TaskManager;
+import com.eleybourn.bookcatalogue.tasks.TaskManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -381,7 +381,7 @@ public class ImportThread extends ManagedTask {
 //				if (values.containsKey(DatabaseDefinitions.KEY_LOANED_TO) && !values.get(DatabaseDefinitions.KEY_LOANED_TO).equals("")) {
 //					int id = Integer.parseInt(values.getString(DatabaseDefinitions.KEY_ID));
 //					mDb.deleteLoan(id);
-//					mDb.createLoan(values);
+//					mDb.insertLoan(values);
 //				}
 //
 //				if (values.containsKey(DatabaseDefinitions.KEY_ANTHOLOGY_MASK)) {
@@ -394,7 +394,7 @@ public class ImportThread extends ManagedTask {
 //					if (anthology == CatalogueDBAdapter.ANTHOLOGY_MULTIPLE_AUTHORS || anthology == CatalogueDBAdapter.ANTHOLOGY_IS_ANTHOLOGY) {
 //						int id = Integer.parseInt(values.getString(DatabaseDefinitions.KEY_ID));
 //						// We have anthology details, delete the current details.
-//						mDb.deleteAnthologyTitles(id);
+//						mDb.deleteAnthologyTitlesByBook(id);
 //						int oldi = 0;
 //						String anthology_titles = values.getString("anthology_titles");
 //						try {
@@ -406,7 +406,7 @@ public class ImportThread extends ManagedTask {
 //								if (j > -1) {
 //									String anth_title = extracted_title.substring(0, j).trim();
 //									String anth_author = extracted_title.substring((j+1)).trim();
-//									mDb.createAnthologyTitle(id, anth_author, anth_title, true);
+//									mDb.insertAnthologyTitle(id, anth_author, anth_title, true);
 //								}
 //								oldi = i + 1;
 //								i = anthology_titles.indexOf("|", oldi);

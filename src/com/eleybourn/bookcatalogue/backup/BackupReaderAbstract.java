@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue.backup;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
@@ -163,7 +162,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
      */
     private void restorePreferences(@NonNull final BackupReaderListener listener, @NonNull final ReaderEntity entity) throws IOException {
         listener.step("Preferences...", 1);
-        SharedPreferences prefs = BCPreferences.getSharedPreferences();
+        SharedPreferences prefs = BookCatalogueApp.getSharedPreferences();
         entity.getPreferences(prefs);
     }
 

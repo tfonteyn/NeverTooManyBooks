@@ -37,10 +37,10 @@ import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.OnTaskFinishListener;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.OnTaskFinishListener;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 

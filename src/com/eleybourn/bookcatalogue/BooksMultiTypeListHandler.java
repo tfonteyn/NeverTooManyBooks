@@ -56,13 +56,13 @@ import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
 import com.eleybourn.bookcatalogue.searches.goodreads.SendOneBookTask;
-import com.eleybourn.bookcatalogue.utils.BCQueueManager;
+import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import net.philipwarner.taskqueue.QueueManager;
@@ -460,7 +460,6 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 if (id == -1) {
                     Toast.makeText(context, R.string.cannot_edit_system, Toast.LENGTH_LONG).show();
                 } else {
-                    Series s = db.getSeriesById(id);
                     EditSeriesDialog d = new EditSeriesDialog(context, db, new Runnable() {
                         @Override
                         public void run() {
@@ -472,7 +471,8 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                             }
                         }
                     });
-                    d.edit(s);
+                    Series series = db.getSeriesById(id);
+                    d.edit(series);
                 }
                 break;
             }
@@ -667,19 +667,19 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
     public interface BooklistChangeListener {
         int FLAG_AUTHOR = 1;
-        int FLAG_SERIES = 2;
-        int FLAG_FORMAT = 4;
-        int FLAG_PUBLISHER = 8;
-        int FLAG_LANGUAGE = 16;
-        int FLAG_LOCATION = 32;
-        int FLAG_GENRE = 64;
+        int FLAG_SERIES = (1 << 1);
+        int FLAG_FORMAT = (1 << 2);
+        int FLAG_PUBLISHER = (1 << 3);
+        int FLAG_LANGUAGE = (1 << 4);
+        int FLAG_LOCATION = (1 << 5);
+        int FLAG_GENRE = (1 << 6);
 
         void onBooklistChange(int flags);
     }
 
     /**
-     * Background task to get 'extra' details for a book row. Doing this in a background task keeps the booklist cursor
-     * simple and small.
+     * Background task to get 'extra' details for a book row. Doing this in a
+     * background task keeps the booklist cursor simple and small.
      *
      * @author Philip Warner
      */
@@ -1290,7 +1290,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 //				if (id != 0) {
 //					addMenuItem(menu, R.id.MENU_DELETE_SERIES, R.string.menu_delete_series, android.R.drawable.ic_menu_delete);
 //					addMenuItem(menu, R.id.MENU_EDIT_SERIES, R.string.menu_edit_series, android.R.drawable.ic_menu_edit);
-//					long author = rowView.getAuthorId();
+//					long author = rowView.getAuthorIdByName();
 //					if (author != 0)
 //						addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, R.string.amazon_books_by_author_in_series, R.drawable.ic_menu_cc);
 //					addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.string.amazon_books_in_series, R.drawable.ic_menu_cc);

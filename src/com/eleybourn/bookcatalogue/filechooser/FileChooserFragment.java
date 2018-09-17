@@ -168,7 +168,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      */
     public File getSelectedFile() {
         EditText et = getView().findViewById(R.id.file_name);
-        return new File(mRootPath.getAbsolutePath() + "/" + et.getText());
+        return new File(mRootPath.getAbsolutePath() + File.separator + et.getText());
     }
 
     /**
@@ -184,8 +184,8 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 
         // Setup and display the list
         mList = list;
-        // We pass 0 as view ID since each item can provide the view id
-        DirectoryAdapter adapter = new DirectoryAdapter(getActivity(), 0, mList);
+        // We pass no view ID since each item can provide the view id
+        DirectoryAdapter adapter = new DirectoryAdapter(getActivity(), mList);
         ListView lv = getView().findViewById(android.R.id.list);
         lv.setAdapter(adapter);
     }
@@ -215,8 +215,8 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      */
     protected class DirectoryAdapter extends SimpleListAdapter<FileDetails> {
 
-        DirectoryAdapter(@NonNull final Context context, final int rowViewId, @NonNull final ArrayList<FileDetails> items) {
-            super(context, rowViewId, items);
+        DirectoryAdapter(@NonNull final Context context, @NonNull final ArrayList<FileDetails> items) {
+            super(context, 0, items);
         }
 
         @Override

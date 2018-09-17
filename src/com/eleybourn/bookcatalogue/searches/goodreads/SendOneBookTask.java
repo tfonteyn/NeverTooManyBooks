@@ -21,13 +21,14 @@
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.utils.BCQueueManager;
+import com.eleybourn.bookcatalogue.BooksRow;
+import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookEvents.GrNoIsbnEvent;
 import com.eleybourn.bookcatalogue.BookEvents.GrNoMatchEvent;
 import com.eleybourn.bookcatalogue.cursors.BooksCursor;
-import com.eleybourn.bookcatalogue.BooksRowView;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
@@ -53,7 +54,7 @@ public class SendOneBookTask extends GenericTask {
 	 * 
 	 * @param bookId		Book to send
 	 */
-	public SendOneBookTask(long bookId) {
+	public SendOneBookTask(final long bookId) {
 		super(BookCatalogueApp.getResourceString(R.string.send_book_to_goodreads, bookId));
 		mBookId = bookId;
 	}
@@ -62,7 +63,7 @@ public class SendOneBookTask extends GenericTask {
 	 * Run the task, log exceptions.
 	 */
 	@Override
-	public boolean run(QueueManager manager, Context c) {
+	public boolean run(@NonNull final QueueManager manager, @NonNull final Context c) {
 		boolean result = false;
 		try {
 			result = sendBook(manager, c);			
@@ -75,7 +76,7 @@ public class SendOneBookTask extends GenericTask {
 	/**
 	 * Perform the main task
 	 */
-	private boolean sendBook(QueueManager qmanager, Context context) throws NotAuthorizedException {
+	private boolean sendBook(@NonNull final QueueManager queueManager, @NonNull final Context context) throws NotAuthorizedException {
 		
 		// ENHANCE: Work out a way of checking if GR site is up
 		//if (!Utils.hostIsAvailable(context, "www.goodreads.com"))
@@ -101,7 +102,7 @@ public class SendOneBookTask extends GenericTask {
 
 		// Open the cursor for the book
 		final BooksCursor books = db.getBookForGoodreadsCursor(mBookId);
-		final BooksRowView book = books.getRowView();
+		final BooksRow book = books.getRowView();
 
 		try {
 			while (books.moveToNext()) {
@@ -120,7 +121,7 @@ public class SendOneBookTask extends GenericTask {
 				switch(disposition) {
 				case error:
 					this.setException(exportException);
-					qmanager.saveTask(this);
+					queueManager.saveTask(this);
 					return false;
 				case sent:
 					// Record the change
@@ -133,10 +134,10 @@ public class SendOneBookTask extends GenericTask {
 					storeEvent( new GrNoMatchEvent(books.getId()) );
 					break;
 				case networkError:
-					// Only wait 5 mins on network errors.
+					// Only wait 5 minutes on network errors.
 					if (getRetryDelay() > 300)
 						setRetryDelay(300);						
-					qmanager.saveTask(this);
+					queueManager.saveTask(this);
 					return false;
 				}
 			}

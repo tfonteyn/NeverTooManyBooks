@@ -24,7 +24,7 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.EditBookFieldsFragment;
-import com.eleybourn.bookcatalogue.BooksRowView;
+import com.eleybourn.bookcatalogue.BooksRow;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -153,7 +153,7 @@ public class CsvExporter implements Exporter {
         db.open();
 
         final BooksCursor bookCursor = db.exportBooks(since);
-        final BooksRowView rv = bookCursor.getRowView();
+        final BooksRow rv = bookCursor.getRowView();
 
         try {
             final int totalBooks = bookCursor.getCount();

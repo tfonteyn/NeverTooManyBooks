@@ -31,6 +31,7 @@ import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames;
+import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.*;
 import net.philipwarner.taskqueue.QueueManager;
 
@@ -46,8 +47,8 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.*;
 import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.UPDATED;
 
 /**
- * Import all a users 'reviews' from goodreads; a users 'reviews' consistes of all the books that 
- * they have placed on bookshelves, irrespective of whether they have rated or reviewd the book.
+ * Import all a users 'reviews' from goodreads; a users 'reviews' consists of all the books that
+ * they have placed on bookshelves, irrespective of whether they have rated or reviewed the book.
  * 
  * @author Philip Warner
  */
@@ -227,7 +228,7 @@ class ImportAllTask extends GenericTask {
 
 			if (found) {
 				// If found, update ALL related books
-				BooksRowView rv = c.getRowView();
+				BooksRow rv = c.getRowView();
 				do {
 					// Check for abort
 					if (this.isAborting())
@@ -291,7 +292,7 @@ class ImportAllTask extends GenericTask {
 	/**
 	 * Update the book using the GR data
 	 */
-	private void updateBook(CatalogueDBAdapter db, BooksRowView rv, Bundle review) {
+	private void updateBook(CatalogueDBAdapter db, BooksRow rv, Bundle review) {
 		// Get last date book was sent to GR (may be null)
 		final String lastGrSync = rv.getString(DOM_GOODREADS_LAST_SYNC_DATE.name);
 		// If the review has an 'updated' date, then see if we can compare to book
@@ -330,7 +331,7 @@ class ImportAllTask extends GenericTask {
 	 * Build a book bundle based on the goodreads 'review' data. Some data is just copied
 	 * while other data is processed (eg. dates) and other are combined (authors & series).
 	 */
-	private BookData buildBundle(CatalogueDBAdapter db, BooksRowView rv, Bundle review) {
+	private BookData buildBundle(CatalogueDBAdapter db, BooksRow rv, Bundle review) {
 		BookData book = new BookData();
 
 		addStringIfNonBlank(review, ListReviewsFieldNames.DB_TITLE, book, ListReviewsFieldNames.DB_TITLE);

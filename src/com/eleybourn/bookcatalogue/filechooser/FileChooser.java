@@ -34,7 +34,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.PathChangedListener;
 import com.eleybourn.bookcatalogue.filechooser.FileLister.FileListerListener;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
 
 import java.io.File;
 import java.util.ArrayList;

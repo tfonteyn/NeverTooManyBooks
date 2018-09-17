@@ -31,14 +31,7 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
  * @author Philip Warner
  */
 public class OrValidator extends MetaValidator implements DataValidator {
-
-    // Java likes this
     public static final long serialVersionUID = 1L;
-
-    // Constructors
-    public OrValidator(@NonNull final DataValidator v1) {
-        super(v1);
-    }
 
     public OrValidator(@NonNull final DataValidator v1, @NonNull final DataValidator v2) {
         super(v1, v2);

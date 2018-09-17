@@ -26,8 +26,8 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.Series.SeriesDetails;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
-import com.eleybourn.bookcatalogue.utils.ManagedTask;
-import com.eleybourn.bookcatalogue.utils.TaskManager;
+import com.eleybourn.bookcatalogue.tasks.ManagedTask;
+import com.eleybourn.bookcatalogue.tasks.TaskManager;
 
 import java.util.ArrayList;
 

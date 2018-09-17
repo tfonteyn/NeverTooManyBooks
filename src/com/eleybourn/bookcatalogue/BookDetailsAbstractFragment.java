@@ -89,6 +89,11 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     private static final String BKEY_DATA = "data";
     private static final String BOOKSHELF_TEXT = "bookshelf_text";
     private static final String THUMBNAIL = "thumbnail";
+
+    protected ImageUtils.ThumbSize mThumper;
+
+    private CoverBrowser mCoverBrowser = null;
+
     /**
      * Counter used to prevent images being reused accidentally
      */
@@ -129,15 +134,8 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         }
     };
 
-    /**
-     * Minimum of MAX_EDIT_THUMBNAIL_SIZE and 1/3rd of largest screen dimension
-     */
-    protected Integer mThumbEditSize;
-    /**
-     * Zoom size is minimum of MAX_ZOOM_THUMBNAIL_SIZE and largest screen dimension.
-     */
-    private Integer mThumbZoomSize;
-    private CoverBrowser mCoverBrowser = null;
+
+
     /**
      * Handler to process a cover selected from the CoverBrowser.
      */
@@ -271,9 +269,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         super.onActivityCreated(savedInstanceState);
 
         // See how big the display is and use that to set bitmap sizes
-        Integer[] thumbSizes = ImageUtils.getThumbSizes(getActivity());
-        mThumbEditSize = thumbSizes[0];
-        mThumbZoomSize = thumbSizes[1];
+        mThumper = ImageUtils.getThumbSizes(getActivity());
 
         initFields();
 
@@ -327,7 +323,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             switch (item.getItemId()) {
                 case CONTEXT_ID_DELETE:
                     deleteThumbnail();
-                    ImageUtils.fetchFileIntoImageView(iv, thumbFile, mThumbEditSize, mThumbEditSize, true);
+                    ImageUtils.fetchFileIntoImageView(iv, thumbFile, mThumper.normal, mThumper.normal, true);
                     return true;
                 case CONTEXT_ID_SUBMENU_ROTATE_THUMB:
                     // Just a submenu; skip, but display a hint if user is rotating a camera image
@@ -338,15 +334,15 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                     return true;
                 case CONTEXT_ID_ROTATE_THUMB_CW:
                     rotateThumbnail(90);
-                    ImageUtils.fetchFileIntoImageView(iv, thumbFile, mThumbEditSize, mThumbEditSize, true);
+                    ImageUtils.fetchFileIntoImageView(iv, thumbFile, mThumper.normal, mThumper.normal, true);
                     return true;
                 case CONTEXT_ID_ROTATE_THUMB_CCW:
                     rotateThumbnail(-90);
-                    ImageUtils.fetchFileIntoImageView(iv, thumbFile, mThumbEditSize, mThumbEditSize, true);
+                    ImageUtils.fetchFileIntoImageView(iv, thumbFile, mThumper.normal, mThumper.normal, true);
                     return true;
                 case CONTEXT_ID_ROTATE_THUMB_180:
                     rotateThumbnail(180);
-                    ImageUtils.fetchFileIntoImageView(iv, thumbFile, mThumbEditSize, mThumbEditSize, true);
+                    ImageUtils.fetchFileIntoImageView(iv, thumbFile, mThumper.normal, mThumper.normal, true);
                     return true;
                 case CODE_ADD_PHOTO:
                     // Increment the temp counter and cleanup the temp directory
@@ -580,7 +576,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             try {
                 File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
 
-                Bitmap origBm = ImageUtils.fetchFileIntoImageView(null, thumbFile, mThumbZoomSize * 2, mThumbZoomSize * 2, true);
+                Bitmap origBm = ImageUtils.fetchFileIntoImageView(null, thumbFile, mThumper.zoomed * 2, mThumper.zoomed * 2, true);
                 if (origBm == null)
                     return;
 
@@ -688,7 +684,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         try {
 
             populateBookDetailsFields(book);
-            setBookThumbnail(book.getRowId(), mThumbEditSize, mThumbEditSize);
+            setBookThumbnail(book.getRowId(), mThumper.normal, mThumper.normal);
 
         } catch (Exception e) {
             Logger.logError(e);
@@ -756,7 +752,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
 
     protected void setCoverImage() {
         ImageView iv = getView().findViewById(R.id.row_img);
-        ImageUtils.fetchFileIntoImageView(iv, getCoverFile(mEditManager.getBookData().getRowId()), mThumbEditSize, mThumbEditSize, true);
+        ImageUtils.fetchFileIntoImageView(iv, getCoverFile(mEditManager.getBookData().getRowId()), mThumper.normal, mThumper.normal, true);
         // Make sure the cached thumbnails (if present) are deleted
         invalidateCachedThumbnail();
     }

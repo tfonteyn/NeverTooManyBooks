@@ -47,9 +47,9 @@ import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager.ImageSizes;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import com.eleybourn.bookcatalogue.widgets.PagerLayout;
 

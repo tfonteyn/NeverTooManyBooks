@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -37,6 +38,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.tasks.Terminator;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -129,9 +131,10 @@ public class Utils {
      *
      * @return InputStream
      */
+    private static final Object urlLock = new Object();
     public static InputStream getInputStream(URL url) throws UnknownHostException {
 
-        synchronized (url) {
+        synchronized (urlLock) {
 
             int retries = 3;
             while (true) {
@@ -278,7 +281,7 @@ public class Utils {
      */
     public static <T extends ItemWithIdFixup> boolean pruneList(CatalogueDBAdapter db, ArrayList<T> list) {
         Map<String, Boolean> names = new HashMap<>();
-        Map<Long, Boolean> ids = new HashMap<>();
+        @SuppressLint("UseSparseArrays") Map<Long, Boolean> ids = new HashMap<>();
 
         // We have to go forwards through the list because 'first item' is important,
         // but we also can't delete things as we traverse if we are going forward. So

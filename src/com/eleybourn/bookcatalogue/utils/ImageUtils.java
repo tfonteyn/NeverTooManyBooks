@@ -105,7 +105,7 @@ public class ImageUtils {
         // Get the nearest *bigger* power of 2.
         final int samplePow2 = (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
-        if (DEBUG_SWITCHES.DEBUG_IMAGEUTILS && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.IMAGEUTILS && BuildConfig.DEBUG) {
             System.out.println("fetchFileIntoImageView:\n" +
                     " filename = " + fileSpec + "\n" +
                     "  exact       = " + exact + "\n" +
@@ -154,7 +154,7 @@ public class ImageUtils {
             return null;
         }
 
-        if (DEBUG_SWITCHES.DEBUG_IMAGEUTILS && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.IMAGEUTILS && BuildConfig.DEBUG) {
             System.out.println("\n" +
                     "bm.width = " + bm.getWidth() + "\n" +
                     "bm.height = " + bm.getHeight() + "\n"
@@ -392,8 +392,7 @@ public class ImageUtils {
      */
     public static void showZoomedThumb(@NonNull final Activity activity, @Nullable final File thumbFile) {
 
-        final Integer[] sizes = getThumbSizes(activity);
-        final Integer thumbZoomSize = sizes[0];
+        final ThumbSize thumper = getThumbSizes(activity);
 
         // Check if we have a file and/or it is valid
         if (thumbFile == null || !thumbFile.exists()) {
@@ -411,7 +410,7 @@ public class ImageUtils {
                 dialog.setContentView(R.layout.dialog_zoom_thumb);
 
                 final ImageView cover = new ImageView(activity);
-                fetchFileIntoImageView(cover, thumbFile, thumbZoomSize, thumbZoomSize, true);
+                fetchFileIntoImageView(cover, thumbFile, thumper.zoomed, thumper.zoomed, true);
                 cover.setAdjustViewBounds(true);
                 cover.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -427,17 +426,25 @@ public class ImageUtils {
         }
     }
     /**
-     * @return an array with two elements:
-     *              0: EditThumbnailSize
-     *              1: ZoomThumbnailSize
+     * NEWKIND: if we ever need more sizes, add a field here and set it in {@link #getThumbSizes}
+     */
+    public static class ThumbSize {
+        public int normal;
+        public int zoomed;
+    }
+
+    /**
+     * normal:  Minimum of MAX_EDIT_THUMBNAIL_SIZE and 1/3rd of largest screen dimension
+     * zoomed:  Minimum of MAX_ZOOM_THUMBNAIL_SIZE and largest screen dimension.
      */
     @NonNull
-    public static Integer[] getThumbSizes(@NonNull final Activity activity) {
+    public static ThumbSize getThumbSizes(@NonNull final Activity activity) {
         final DisplayMetrics metrics = getDisplayMetrics(activity);
-        final Integer[] sizes = new Integer[2];
-        sizes[0] = Math.min(MAX_EDIT_THUMBNAIL_SIZE, Math.max(metrics.widthPixels, metrics.heightPixels) / 3);
-        sizes[1] = Math.min(MAX_ZOOM_THUMBNAIL_SIZE, Math.max(metrics.widthPixels, metrics.heightPixels));
-        return sizes;
+
+        ThumbSize tump = new ThumbSize();
+        tump.normal = Math.min(MAX_EDIT_THUMBNAIL_SIZE, Math.max(metrics.widthPixels, metrics.heightPixels) / 3);
+        tump.zoomed = Math.min(MAX_ZOOM_THUMBNAIL_SIZE, Math.max(metrics.widthPixels, metrics.heightPixels));
+        return tump;
     }
 
     @NonNull

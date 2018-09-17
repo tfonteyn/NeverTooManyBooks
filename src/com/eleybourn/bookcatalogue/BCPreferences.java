@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue;
 
-import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
 
@@ -17,9 +16,6 @@ import java.util.Map;
  * @author Philip Warner
  */
 public class BCPreferences {
-
-    /** the name used for calls to Context.getSharedPreferences(name, ...) */
-    public static final String APP_SHARED_PREFERENCES = "bookCatalogue";
 
     /** Name to use for global preferences; non-global should be moved to appropriate Activity code */
 
@@ -44,18 +40,8 @@ public class BCPreferences {
     public static final String PREF_APP_THEME = TAG + ".Theme";
     /** Force list construction to compatible mode (compatible with Android 1.6) */
     public static final String PREF_BOOKLIST_GENERATION_MODE = TAG + ".BooklistGenerationMode";
-    /** Static preference object so that we can respond to events relating to changes */
-    private static SharedPreferences mPrefs = null;
 
     private BCPreferences() {
-    }
-
-    /** Get (or create) the static shared preferences */
-    public static SharedPreferences getSharedPreferences() {
-        if (mPrefs == null) {
-            mPrefs = BookCatalogueApp.getAppContext().getSharedPreferences(APP_SHARED_PREFERENCES, BookCatalogueApp.MODE_PRIVATE);
-        }
-        return mPrefs;
     }
 
     /**********************************************************************
@@ -123,7 +109,7 @@ public class BCPreferences {
     public static boolean getBoolean(@NonNull final String name, final boolean defaultValue) {
         boolean result;
         try {
-            result = mPrefs.getBoolean(name, defaultValue);
+            result = BookCatalogueApp.getSharedPreferences().getBoolean(name, defaultValue);
         } catch (Exception e) {
             result = defaultValue;
         }
@@ -144,7 +130,7 @@ public class BCPreferences {
     public static String getString(@NonNull final String name, final String defaultValue) {
         String result;
         try {
-            result = mPrefs.getString(name, defaultValue);
+            result = BookCatalogueApp.getSharedPreferences().getString(name, defaultValue);
         } catch (Exception e) {
             result = defaultValue;
         }
@@ -165,7 +151,7 @@ public class BCPreferences {
     public static int getInt(@NonNull final String name, int defaultValue) {
         int result;
         try {
-            result = mPrefs.getInt(name, defaultValue);
+            result = BookCatalogueApp.getSharedPreferences().getInt(name, defaultValue);
         } catch (Exception e) {
             result = defaultValue;
         }
@@ -184,7 +170,7 @@ public class BCPreferences {
 
     /** Get a standard preferences editor for mass updates */
     public static Editor edit() {
-        return mPrefs.edit();
+        return BookCatalogueApp.getSharedPreferences().edit();
     }
 
 
@@ -195,7 +181,7 @@ public class BCPreferences {
     public static void dumpPreferences() {
         if (BuildConfig.DEBUG) {
             StringBuilder sb = new StringBuilder("\n\nSharedPreferences: ");
-            Map<String, ?> map = getSharedPreferences().getAll();
+            Map<String, ?> map = BookCatalogueApp.getSharedPreferences().getAll();
             ArrayList<String> keyList = new ArrayList<>(map.keySet());
             String[] keys = keyList.toArray(new String[]{});
             Arrays.sort(keys);

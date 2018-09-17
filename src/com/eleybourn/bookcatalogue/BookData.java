@@ -206,24 +206,24 @@ public class BookData extends DataManager {
         return newText;
     }
 
-    /**
-     * Special Accessor.
-     *
-     * Build a formatted string for series list.
-     */
-    public String getSeriesTextShort() {
-        String newText;
-        ArrayList<Series> list = getSeries();
-        if (list.size() == 0) {
-            newText = null;
-        } else {
-            newText = list.get(0).getDisplayName();
-            if (list.size() > 1) {
-                newText += " " + BookCatalogueApp.getResourceString(R.string.and_others);
-            }
-        }
-        return newText;
-    }
+//    /**
+//     * Special Accessor.
+//     *
+//     * Build a formatted string for series list.
+//     */
+//    public String getSeriesTextShort() {
+//        String newText;
+//        ArrayList<Series> list = getSeries();
+//        if (list.size() == 0) {
+//            newText = null;
+//        } else {
+//            newText = list.get(0).getDisplayName();
+//            if (list.size() > 1) {
+//                newText += " " + BookCatalogueApp.getResourceString(R.string.and_others);
+//            }
+//        }
+//        return newText;
+//    }
 
     /**
      * Utility routine to get an anthology title list from a data manager

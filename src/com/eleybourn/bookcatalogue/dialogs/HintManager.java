@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.dialogs;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.text.method.LinkMovementMethod;
@@ -54,6 +55,7 @@ public class HintManager {
     /** Preferences prefix for hints */
     private final static String PREF_HINT = TAG + ".Hint.";
     /** All hints managed by this class */
+    @SuppressLint("UseSparseArrays")
     private static final Map<Integer, Hint> mHints = new HashMap<>();
     static {
         mHints.put(R.string.hint_booklist_styles_editor, new Hint("BOOKLIST_STYLES_EDITOR"));

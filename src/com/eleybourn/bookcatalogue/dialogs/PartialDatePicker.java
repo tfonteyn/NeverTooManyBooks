@@ -93,7 +93,7 @@ public class PartialDatePicker extends AlertDialog {
      *
      * @param context Calling context
      */
-    protected PartialDatePicker(Context context) {
+    PartialDatePicker(Context context) {
         this(context, null, null, null);
     }
 
@@ -105,6 +105,7 @@ public class PartialDatePicker extends AlertDialog {
      * @param month   Starting month
      * @param day     Starting day
      */
+    @SuppressWarnings("SameParameterValue")
     private PartialDatePicker(Context context, Integer year, Integer month, Integer day) {
         super(context);
 

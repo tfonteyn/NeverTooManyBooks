@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTask;
 
 import java.io.File;
 import java.io.FileFilter;

@@ -30,10 +30,10 @@ import com.eleybourn.bookcatalogue.backup.BackupWriter.BackupWriterListener;
 import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTaskAbstract;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTaskAbstract;
 
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -3,7 +3,7 @@ package com.eleybourn.bookcatalogue.searches.googlebooks;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.SearchThread;
-import com.eleybourn.bookcatalogue.utils.TaskManager;
+import com.eleybourn.bookcatalogue.tasks.TaskManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 public class SearchGoogleBooksThread extends SearchThread {

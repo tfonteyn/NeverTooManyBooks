@@ -52,8 +52,12 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
     private final ItemEntries<T> mList;
 
     ListProperty(@NonNull final ItemEntries<T> list,
-                 @NonNull final String uniqueId, @NonNull final PropertyGroup group,
-                 final int nameResourceId, @Nullable final T defaultValue, @Nullable final String defaultPref, @Nullable final T value) {
+                 @NonNull final String uniqueId,
+                 @NonNull final PropertyGroup group,
+                 final int nameResourceId,
+                 @Nullable final T defaultValue,
+                 @SuppressWarnings("SameParameterValue") @Nullable final String defaultPref,
+                 @Nullable final T value) {
         super(uniqueId, group, nameResourceId, defaultValue, defaultPref, value);
         mList = list;
     }

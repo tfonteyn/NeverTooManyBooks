@@ -20,35 +20,37 @@
 
 package com.eleybourn.bookcatalogue.searches;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 import com.eleybourn.bookcatalogue.searches.amazon.SearchAmazonThread;
 import com.eleybourn.bookcatalogue.searches.goodreads.SearchGoodreadsThread;
 import com.eleybourn.bookcatalogue.searches.googlebooks.SearchGoogleBooksThread;
 import com.eleybourn.bookcatalogue.searches.librarything.SearchLibraryThingThread;
+import com.eleybourn.bookcatalogue.tasks.ManagedTask;
+import com.eleybourn.bookcatalogue.tasks.TaskManager;
+import com.eleybourn.bookcatalogue.tasks.TaskManager.TaskManagerListener;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
-import com.eleybourn.bookcatalogue.utils.ManagedTask;
-import com.eleybourn.bookcatalogue.utils.TaskManager;
-import com.eleybourn.bookcatalogue.utils.TaskManager.TaskManagerListener;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+
+import static com.eleybourn.bookcatalogue.BookCatalogueApp.APP_SHARED_PREFERENCES;
 
 /**
  * Class to co-ordinate multiple SearchThread objects using an existing TaskManager.
@@ -73,13 +75,13 @@ public class SearchManager implements TaskManagerListener {
     public static final int SEARCH_ALL = SEARCH_GOOGLE | SEARCH_AMAZON | SEARCH_LIBRARY_THING | SEARCH_GOODREADS;
 
     private static final String TAG = "SearchManager";
-    private static final ArrayList<SearchSite> mSearchOrderDefaults;
+    private static final ArrayList<SearchSite> mSearchOrderDefaults = new ArrayList<>();;
     // TODO: not user configurable for now, but plumbing installed
-    private static final ArrayList<SearchSite> mReliabilityOrder;
+    private static final ArrayList<SearchSite> mReliabilityOrder = new ArrayList<>(mSearchOrderDefaults);;
     private static final TaskSwitch mMessageSwitch = new TaskSwitch();
     private static ArrayList<SearchSite> mSearchOrder;
 
-    static {
+    private void initSearchSites() {
         /*
          * default search order
          *
@@ -87,16 +89,14 @@ public class SearchManager implements TaskManagerListener {
          *
          *  {SEARCH_GOODREADS, SEARCH_AMAZON, SEARCH_GOOGLE, SEARCH_LIBRARY_THING}
          */
-        mSearchOrderDefaults = new ArrayList<>();
         mSearchOrderDefaults.add(new SearchSite(0, 1, SEARCH_AMAZON, "Amazon", true));
         mSearchOrderDefaults.add(new SearchSite(1, 0, SEARCH_GOODREADS, "GoodReads", true));
         mSearchOrderDefaults.add(new SearchSite(2, 2, SEARCH_GOOGLE, "Google", true));
         mSearchOrderDefaults.add(new SearchSite(3, 3, SEARCH_LIBRARY_THING, "LibraryThing", true));
 
         mSearchOrder = new ArrayList<>(mSearchOrderDefaults);
-        mReliabilityOrder = new ArrayList<>(mSearchOrderDefaults);
 
-        SharedPreferences p = BCPreferences.getSharedPreferences();
+        SharedPreferences p = mTaskManager.getContext().getSharedPreferences(APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
         for (SearchSite site : mSearchOrderDefaults) {
             site.enabled = p.getBoolean(TAG + "." + site.name + ".enabled", site.enabled);
             site.order = p.getInt(TAG + "." + site.name + ".order", site.order);
@@ -159,6 +159,7 @@ public class SearchManager implements TaskManagerListener {
      */
     public SearchManager(@NonNull final TaskManager taskManager, SearchListener taskHandler) {
         mTaskManager = taskManager;
+        initSearchSites();
         getMessageSwitch().addListener(getSenderId(), taskHandler, false);
     }
 
@@ -173,7 +174,7 @@ public class SearchManager implements TaskManagerListener {
 //	}
 
     private static void saveSearchSites() {
-        SharedPreferences.Editor e = BCPreferences.getSharedPreferences().edit();
+        SharedPreferences.Editor e = BookCatalogueApp.getSharedPreferences().edit();
         for (SearchSite site : mSearchOrder) {
             e.putBoolean(TAG + "." + site.name + ".enabled", site.enabled);
             e.putInt(TAG + "." + site.name + ".order", site.order);
@@ -730,6 +731,7 @@ public class SearchManager implements TaskManagerListener {
         int order;
         int reliability;
 
+        @SuppressWarnings("SameParameterValue")
         SearchSite(final int order, final int reliability, final int bit, final String name, final boolean enabled) {
             this.id = bit;
             this.order = order;

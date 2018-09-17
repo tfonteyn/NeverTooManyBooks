@@ -434,7 +434,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     };
 
 
-    ShowBookApiHandler(GoodreadsManager manager, boolean signRequest) {
+    ShowBookApiHandler(GoodreadsManager manager, @SuppressWarnings("SameParameterValue") boolean signRequest) {
         super(manager);
         mSignRequest = signRequest;
         // Build the XML filters needed to get the data we're interested in.

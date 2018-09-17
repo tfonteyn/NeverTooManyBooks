@@ -29,6 +29,8 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
+import com.eleybourn.bookcatalogue.tasks.ManagedTask;
+import com.eleybourn.bookcatalogue.tasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.*;
 
 import java.io.File;

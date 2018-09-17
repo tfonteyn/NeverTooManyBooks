@@ -35,8 +35,8 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.BCQueueManager;
-import com.eleybourn.bookcatalogue.utils.Terminator;
+import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
+import com.eleybourn.bookcatalogue.tasks.Terminator;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -84,12 +84,16 @@ import java.util.Locale;
 )
 
 public class BookCatalogueApp extends Application {
+    /** the name used for calls to Context.getSharedPreferences(name, ...) */
+    public static final String APP_SHARED_PREFERENCES = "bookCatalogue";
+
     /**
      * NEWKIND: add new supported themes here and in R.array.supported_themes,
      * the string-array order must match the APP_THEMES order
      * The preferences choice will be build according to the string-array list/order.
      */
     public static final int DEFAULT_THEME = 0;
+
     private static final int[] APP_THEMES = {
             R.style.AppThemeDark,
             R.style.AppThemeLight
@@ -129,7 +133,7 @@ public class BookCatalogueApp extends Application {
      */
     private static final HashSet<WeakReference<OnLocaleChangedListener>> mOnLocaleChangedListeners = new HashSet<>();
     /**
-     * don't store the app context, use the instance instead
+     * Never store a context in a static, use the instance instead
      */
     private static BookCatalogueApp mInstance;
 
@@ -137,6 +141,7 @@ public class BookCatalogueApp extends Application {
      * Used to sent notifications regarding tasks
      */
     private static NotificationManager mNotifier;
+
     private static BCQueueManager mQueueManager = null;
     /**
      * The locale used at startup; so that we can revert to system locale if we want to
@@ -495,6 +500,11 @@ public class BookCatalogueApp extends Application {
         return mInitialLocale;
     }
 
+    /** no point in storing a local reference, the thing itself is a singleton */
+    public static SharedPreferences getSharedPreferences() {
+        return mInstance.getApplicationContext().getSharedPreferences(APP_SHARED_PREFERENCES, MODE_PRIVATE);
+    }
+
     /**
      * Most real initialization should go here, since before this point, the App is still
      * 'Under Construction'.
@@ -541,7 +551,7 @@ public class BookCatalogueApp extends Application {
         super.onCreate();
 
         // Watch the preferences and handle changes as necessary
-        SharedPreferences p = BCPreferences.getSharedPreferences();
+        SharedPreferences p = getSharedPreferences();
         p.registerOnSharedPreferenceChangeListener(mPrefsListener);
     }
 

@@ -36,9 +36,9 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueueProgressFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTask;
 
 /**
  * Activity to allow the user to authorize the application to access their goodreads account and
@@ -129,7 +129,7 @@ public class GoodreadsRegister extends BookCatalogueActivity {
 			@Override
 			public void onFinish(@NonNull SimpleTaskQueueProgressFragment fragment, Exception exception) {
 				if (mMessage != 0)
-					fragment.showToast(mMessage);
+					fragment.showToast(fragment.getString(mMessage));
 			}
 
 		};

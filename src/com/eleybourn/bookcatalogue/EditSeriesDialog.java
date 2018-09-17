@@ -1,7 +1,7 @@
 /*
  * @copyright 2011 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -34,85 +35,85 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Series;
 
 public class EditSeriesDialog {
-	private final Context mContext;
-	private final ArrayAdapter<String> mSeriesAdapter;
-	private final CatalogueDBAdapter mDb;
-	private final Runnable mOnChanged;
+    private final Context mContext;
+    private final ArrayAdapter<String> mSeriesAdapter;
+    private final CatalogueDBAdapter mDb;
+    private final Runnable mOnChanged;
 
-	EditSeriesDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
-		mDb = db;
-		mContext = context;
-		mSeriesAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDb.fetchAllSeriesArray());
-		mOnChanged = onChanged;
-	}
+    EditSeriesDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
+        mDb = db;
+        mContext = context;
+        mSeriesAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDb.fetchAllSeriesArray());
+        mOnChanged = onChanged;
+    }
 
-	public void edit(final Series series) {
-		final Dialog dialog = new StandardDialogs.BasicDialog(mContext);
-		dialog.setContentView(R.layout.dialog_edit_series);
-		dialog.setTitle(R.string.edit_series);
+    public void edit(@NonNull final Series series) {
+        final Dialog dialog = new StandardDialogs.BasicDialog(mContext);
+        dialog.setContentView(R.layout.dialog_edit_series);
+        dialog.setTitle(R.string.edit_series);
 
-		AutoCompleteTextView seriesView = dialog.findViewById(R.id.series);
-		try {
-			seriesView.setText(series.name);
-		} catch (NullPointerException e) {
-			Logger.logError(e);
-		}
-		seriesView.setAdapter(mSeriesAdapter);
+        AutoCompleteTextView seriesView = dialog.findViewById(R.id.series);
+        try {
+            seriesView.setText(series.name);
+        } catch (NullPointerException e) {
+            Logger.logError(e);
+        }
+        seriesView.setAdapter(mSeriesAdapter);
 
-		Button saveButton = dialog.findViewById(R.id.confirm);
-		saveButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				AutoCompleteTextView seriesView = dialog.findViewById(R.id.series);
-				String newName = seriesView.getText().toString().trim();
-				if (newName.isEmpty()) {
-					Toast.makeText(mContext, R.string.series_is_blank, Toast.LENGTH_LONG).show();
-					return;
-				}
-				Series newSeries = new Series(newName, "");
-				confirmEditSeries(series, newSeries);
-				dialog.dismiss();
-			}
-		});
-		Button cancelButton = dialog.findViewById(R.id.cancel);
-		cancelButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dialog.dismiss();
-			}
-		});
-		
-		dialog.show();		
-	}
+        Button saveButton = dialog.findViewById(R.id.confirm);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AutoCompleteTextView seriesView = dialog.findViewById(R.id.series);
+                String newName = seriesView.getText().toString().trim();
+                if (newName.isEmpty()) {
+                    Toast.makeText(mContext, R.string.series_is_blank, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                Series newSeries = new Series(newName, "");
+                confirmEditSeries(series, newSeries);
+                dialog.dismiss();
+            }
+        });
+        Button cancelButton = dialog.findViewById(R.id.cancel);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
 
-	private void confirmEditSeries(final Series oldSeries, final Series newSeries) {
-		// First, deal with a some special cases...
+        dialog.show();
+    }
 
-		// Case: Unchanged.
-		try {
-			if (newSeries.name.compareTo(oldSeries.name) == 0) {
-				// No change to anything; nothing to do
-				return;
-			}
-		} catch (NullPointerException e) {
-			Logger.logError(e);
-		}
+    private void confirmEditSeries(@NonNull final Series oldSeries, @NonNull final Series newSeries) {
+        // First, deal with a some special cases...
 
-		// Get the new IDs
-		oldSeries.id = mDb.getSeriesId(oldSeries);
-		newSeries.id = mDb.getSeriesId(newSeries);
+        // Case: Unchanged.
+        try {
+            if (newSeries.name.compareTo(oldSeries.name) == 0) {
+                // No change to anything; nothing to do
+                return;
+            }
+        } catch (NullPointerException e) {
+            Logger.logError(e);
+        }
 
-		// Case: series is the same (but different case)
-		if (newSeries.id == oldSeries.id) {
-			// Just update with the most recent spelling and format
-			oldSeries.copyFrom(newSeries);
-			mDb.sendSeries(oldSeries);
-			mOnChanged.run();
-			return;
-		}
+        // Get the new IDs
+        oldSeries.id = mDb.getSeriesId(oldSeries);
+        newSeries.id = mDb.getSeriesId(newSeries);
 
-		mDb.globalReplaceSeries(oldSeries, newSeries);
-		oldSeries.copyFrom(newSeries);
-		mOnChanged.run();
-	}
+        // Case: series is the same (but different case)
+        if (newSeries.id == oldSeries.id) {
+            // Just update with the most recent spelling and format
+            oldSeries.copyFrom(newSeries);
+            mDb.sendSeries(oldSeries);
+            mOnChanged.run();
+            return;
+        }
+
+        mDb.globalReplaceSeries(oldSeries, newSeries);
+        oldSeries.copyFrom(newSeries);
+        mOnChanged.run();
+    }
 }

@@ -20,24 +20,24 @@ public final class DEBUG_SWITCHES {
     /** enable timers for performance measurements */
     public static final boolean TIMERS = false;
 
-    public static final boolean DEBUG_DB_ADAPTER = false;
+    public static final boolean DB_ADAPTER = false;
 
-    public static final boolean DEBUG_DB_SYNC = false;
+    public static final boolean DB_SYNC = false;
 
-    public static final boolean DEBUG_TRACKED_CURSER = false;
+    public static final boolean TRACKED_CURSER = false;
 
-    public static final boolean DEBUG_LIBRARYTHING = false;
+    public static final boolean LIBRARYTHING = false;
 
-    public static final boolean DEBUG_BOOKLIST_BUILDER = true;
+    public static final boolean BOOKLIST_BUILDER = true;
 
-    public static final boolean DEBUG_BOOKSONBOOKSHELF = true;
+    public static final boolean BOOKSONBOOKSHELF = true;
 
-    public static final boolean DEBUG_IMAGEUTILS = false;
+    public static final boolean IMAGEUTILS = false;
 
-    public static final boolean DEBUG_SQPFragment = false;
+    public static final boolean SQPFragment = false;
 
-    public static final boolean DEBUG_STORAGEUTILS = false;
+    public static final boolean STORAGEUTILS = false;
 
-    public static final boolean DEBUG_TASK_MANAGER = false;
+    public static final boolean TASKMANAGER = false;
 
 }

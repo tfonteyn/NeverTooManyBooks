@@ -23,8 +23,8 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTask;
-import com.eleybourn.bookcatalogue.utils.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 
 /**
  * Background task to load an image for a GoodreadsWork from a URL. Does not store it locally; 

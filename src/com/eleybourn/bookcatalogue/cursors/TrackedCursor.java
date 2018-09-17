@@ -36,13 +36,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * DEBUG_TRACKED_CURSER CLASS to help com.eleybourn.bookcatalogue.debug cursor leakage.
+ * TRACKED_CURSER CLASS to help com.eleybourn.bookcatalogue.debug cursor leakage.
  *
  * By using TrackedCursorFactory it is possible to use this class to analyze when and
  * where cursors are being allocated, and whether they are being de-allocated in a timely
  * fashion.
  *
- * Most code is removed by (DEBUG_TRACKED_CURSER && BuildConfig.DEBUG_TRACKED_CURSER) for production.
+ * Most code is removed by (TRACKED_CURSER && BuildConfig.TRACKED_CURSER) for production.
  *
  * @author Philip Warner
  */
@@ -73,7 +73,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
                          @NonNull final SQLiteQuery query, @NonNull final Synchronizer sync) {
         super(driver, editTable, query, sync);
 
-        if (DEBUG_SWITCHES.DEBUG_TRACKED_CURSER && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
             synchronized (mInstanceCount) {
                 mInstanceCount++;
                 System.out.println("Cursor instances: " + mInstanceCount);
@@ -101,7 +101,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
      */
     @SuppressWarnings("unused")
     public static long getCursorCountApproximate() {
-        if (DEBUG_SWITCHES.DEBUG_TRACKED_CURSER && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
             synchronized (mCursors) {
                 return mCursors.size();
             }
@@ -121,7 +121,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
     public static long getCursorCount() {
         long count = 0;
 
-        if (DEBUG_SWITCHES.DEBUG_TRACKED_CURSER && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
             ArrayList<WeakReference<TrackedCursor>> list = new ArrayList<>();
             synchronized (mCursors) {
                 for (WeakReference<TrackedCursor> r : mCursors) {
@@ -144,7 +144,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
      * DEBUG Dump all open cursors to System.out.
      */
     public static void dumpCursors() {
-        if (DEBUG_SWITCHES.DEBUG_TRACKED_CURSER && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
             for (TrackedCursor c : getCursors()) {
                 System.out.println("Cursor " + c.getCursorId());
                 for (StackTraceElement s : c.getStackTrace()) {
@@ -161,7 +161,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
      */
     @SuppressWarnings("UnusedAssignment")
     private static ArrayList<TrackedCursor> getCursors() {
-        if (DEBUG_SWITCHES.DEBUG_TRACKED_CURSER && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
             ArrayList<TrackedCursor> list = new ArrayList<>();
             synchronized (mCursors) {
                 for (WeakReference<TrackedCursor> r : mCursors) {
@@ -182,7 +182,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
     @Override
     public void close() {
         super.close();
-        if (DEBUG_SWITCHES.DEBUG_TRACKED_CURSER && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
             if (!mIsClosedFlg) {
                 synchronized (mInstanceCount) {
                     mInstanceCount--;
@@ -207,7 +207,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
      */
     @Override
     public void finalize() {
-        if (DEBUG_SWITCHES.DEBUG_TRACKED_CURSER && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
             if (mWeakRef != null) {
                 // This is a cursor that is being deleted before it is closed.
                 // Setting a break here is sometimes useful.

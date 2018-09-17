@@ -96,7 +96,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                 }
             });
 
-            mFields.setListener(R.id.description_edit_button, new View.OnClickListener() {
+            getView().findViewById(R.id.description_edit_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
                     Object o = mFields.getField(R.id.description).getValue();
@@ -105,6 +105,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                             .show(getFragmentManager(), null);
                 }
             });
+
             mFields.setListener(R.id.date_published, new View.OnClickListener() {
                 public void onClick(View view) {
                     PartialDatePickerFragment.newInstance()

@@ -4,9 +4,9 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.ManagedTask;
+import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.TaskManager;
+import com.eleybourn.bookcatalogue.tasks.TaskManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -171,7 +171,7 @@ public class ExportThread extends ManagedTask {
 //		StringBuilder row = new StringBuilder();
 //		
 //		BooksCursor books = mDb.exportBooks();
-//		BooksRowView rv = books.getRowView();
+//		BooksRow rv = books.getRowView();
 //
 //		try {
 //			final int totalBooks = books.getCount();

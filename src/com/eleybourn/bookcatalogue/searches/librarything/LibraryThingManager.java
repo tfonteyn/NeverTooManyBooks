@@ -24,7 +24,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -529,7 +529,7 @@ public class LibraryThingManager {
      **/
     public String getCoverImage(String isbn, Bundle bookData, ImageSizes size) {
         String url = getCoverImageUrl(isbn, size);
-        if (DEBUG_SWITCHES.DEBUG_LIBRARYTHING && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.LIBRARYTHING && BuildConfig.DEBUG) {
             System.out.println("LTM: " + url + " " + isbn + " " + size);
         }
 
@@ -549,7 +549,7 @@ public class LibraryThingManager {
     }
 
     private String getDevKey() {
-        SharedPreferences prefs = mAppContext.getSharedPreferences(BCPreferences.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
+        SharedPreferences prefs = mAppContext.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
         String key = prefs.getString(LT_DEVKEY_PREF_NAME, "");
         return key.replaceAll("[\\r\\t\\n\\s]*", "");
     }

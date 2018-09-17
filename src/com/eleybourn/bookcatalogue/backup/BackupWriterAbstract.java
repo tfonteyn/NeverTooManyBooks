@@ -24,7 +24,6 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -319,7 +318,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
      * Get the preferences and save them
      */
     private void writePreferences(@NonNull final BackupWriterListener listener) throws IOException {
-        SharedPreferences prefs = BCPreferences.getSharedPreferences();
+        SharedPreferences prefs = BookCatalogueApp.getSharedPreferences();
         putPreferences(prefs);
         listener.step(null, 1);
     }

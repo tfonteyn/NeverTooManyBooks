@@ -49,7 +49,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegister;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.searches.librarything.AdministrationLibraryThing;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.utils.ManagedTask;
+import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;

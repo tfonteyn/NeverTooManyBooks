@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.*;
@@ -94,7 +93,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         if (!authorName.isEmpty()) {
             // Get an author and try to find in DB.
             Author author = new Author(authorField.getText().toString());
-            author.id = mDb.getAuthorId(author);
+            author.id = mDb.getAuthorIdByName(author);
             for (Author s : mList) {
                 if (s.equals(author)) {
                     Toast.makeText(this, getResources().getString(R.string.author_already_in_list), Toast.LENGTH_LONG).show();
@@ -162,8 +161,8 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         }
 
         // Get the new author ID
-        oldAuthor.id = mDb.getAuthorId(oldAuthor);
-        newAuthor.id = mDb.getAuthorId(newAuthor);
+        oldAuthor.id = mDb.getAuthorIdByName(oldAuthor);
+        newAuthor.id = mDb.getAuthorIdByName(newAuthor);
 
         // See if the old author is used in any other books.
         long nRefs = mDb.getAuthorBookCount(oldAuthor) + mDb.getAuthorAnthologyCount(oldAuthor);
@@ -174,7 +173,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
             // Just update with the most recent spelling and format
             oldAuthor.copyFrom(newAuthor);
             Utils.pruneList(mDb, mList);
-            mDb.sendAuthor(oldAuthor);
+            mDb.updateOrInsertAuthorByName(oldAuthor);
             mAdapter.notifyDataSetChanged();
             return;
         }
