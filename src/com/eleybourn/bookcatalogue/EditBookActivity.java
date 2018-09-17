@@ -362,7 +362,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
         if (extras != null) {
             String list = extras.getString(BKEY_FLATTENED_BOOKLIST);
             if (list != null && !list.isEmpty()) {
-                mList = new FlattenedBooklist(mDb.getDb(), list);
+                mList = new FlattenedBooklist(mDb.getDbIfYouAreSureWhatYouAreDoing(), list);
                 // Check to see it really exists. The underlying table disappeared once in testing
                 // which is hard to explain; it theoretically should only happen if the app closes
                 // the database or if the activity pauses with 'isFinishing()' returning true.

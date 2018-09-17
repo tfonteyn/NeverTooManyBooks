@@ -651,10 +651,10 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
 				// Return all books for the given bookshelf
-				mCursor = mDb.fetchAllAuthors(mBookshelf);
+				mCursor = mDb.classicFetchAllAuthors(mBookshelf);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDb.fetchAuthors(search_query, mBookshelf);
+				mCursor = mDb.classicFetchAuthors(search_query, mBookshelf);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
 			return mCursor;
@@ -682,10 +682,10 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
 				// Return all books for the given bookshelf
-				mCursor = mDb.fetchAllAuthors(mBookshelf, false, false);
+				mCursor = mDb.classicFetchAllAuthors(mBookshelf, false, false);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDb.fetchAuthors(search_query, mBookshelf, false, false);
+				mCursor = mDb.classicFetchAuthors(search_query, mBookshelf, false, false);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
 			return mCursor;
@@ -713,10 +713,10 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
 				// Return all books for the given bookshelf
-				mCursor = mDb.fetchAllAuthors(mBookshelf, true, true);
+				mCursor = mDb.classicFetchAllAuthors(mBookshelf, true, true);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDb.fetchAuthors(search_query, mBookshelf, true, true);
+				mCursor = mDb.classicFetchAuthors(search_query, mBookshelf, true, true);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
 			return mCursor;
@@ -745,7 +745,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			if (search_query.isEmpty()) {
 				mCursor = mDb.classicFetchAllSeries(mBookshelf);
 			} else {
-				mCursor = mDb.fetchSeries(search_query, mBookshelf);
+				mCursor = mDb.classicFetchSeries(search_query, mBookshelf);
 			}
 			BookCatalogueClassic.this.startManagingCursor(mCursor);
 			mGroupIdColumnIndex = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
@@ -772,7 +772,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		}
 		@Override
 		public Cursor newGroupCursor() {
-			mCursor = mDb.fetchAllLoans();
+			mCursor = mDb.classicFetchAllLoans();
 			mGroupIdColumnIndex = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
 			return mCursor;
 		}
@@ -885,7 +885,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		// so we're not interested in the Cursor returned, only in the fact that
 		// the db does the work ?? AND that we don't leak the Cursor
 		//FIXME: is there any real reason to run a SELECT and then discard it ??
-		try (Cursor c = mDb.fetchAllAuthors(mBookshelf)){
+		try (Cursor c = mDb.classicFetchAllAuthors(mBookshelf)){
 		} catch (NullPointerException e) {
 			//reset
 			mDb = new CatalogueDBAdapter(this);
@@ -1311,14 +1311,14 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 						case SORT_AUTHOR: {
 							justAdded = intent.getStringExtra(EditBookActivity.ADDED_AUTHOR);
                             Author author = Author.toAuthor(justAdded);
-							int position = mDb.getAuthorPositionByName(author, mBookshelf);
+							int position = mDb.classicGetAuthorPositionByName(author, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}
 						case SORT_AUTHOR_GIVEN: {
 							justAdded = intent.getStringExtra(EditBookActivity.ADDED_AUTHOR);
                             Author author = Author.toAuthor(justAdded);
-							int position = mDb.getAuthorPositionByGivenName(author, mBookshelf);
+							int position = mDb.classicGetAuthorPositionByGivenName(author, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}

@@ -268,7 +268,7 @@ public class BooklistBuilder implements AutoCloseable {
             mBooklistBuilderId = ++mBooklistBuilderIdCounter;
         }
         // Get the database and create a statements collection
-        mSyncedDb = adapter.getDb();
+        mSyncedDb = adapter.getDbIfYouAreSureWhatYouAreDoing();
         mStatements = new SqlStatementManager(mSyncedDb);
         // Save the requested style
         mStyle = style;

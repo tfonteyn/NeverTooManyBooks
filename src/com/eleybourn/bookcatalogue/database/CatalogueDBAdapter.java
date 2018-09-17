@@ -164,12 +164,22 @@ import static com.eleybourn.bookcatalogue.database.DatabaseHelper.COLLATION;
  */
 public class CatalogueDBAdapter {
 
+    // stop myself from doing a Studio 'reformat code' ...
+    //@formatter:off
+
+    private static final String META_EMPTY_SERIES = "<Empty Series>";
+    private static final String META_EMPTY_GENRE = "<Empty Genre>";
+    private static final String META_EMPTY_DATE_PUBLISHED = "<No Valid Published Date>";
+
+    /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync */
+    private static final Synchronizer mSynchronizer = new Synchronizer();
+
+    private static DatabaseHelper mDbHelper;
+    private static SynchronizedDb mSyncedDb;
+
+    private final Context mContext;
+
     private TableInfo mBooksInfo = null;
-
-	private static final String META_EMPTY_SERIES = "<Empty Series>";
-	private static final String META_EMPTY_GENRE = "<Empty Genre>";
-	private static final String META_EMPTY_DATE_PUBLISHED = "<No Valid Published Date>";
-
 
 	/**
 	 * Constructor - takes the context to allow the database to be opened/created
@@ -192,6 +202,60 @@ public class CatalogueDBAdapter {
 			}
 		}
 	}
+
+    /** Static Factory object to create the custom cursor */
+    private static final CursorFactory mTrackedCursorFactory = new CursorFactory() {
+        @Override
+        @NonNull
+        public Cursor newCursor(
+                @NonNull final SQLiteDatabase db,
+                @NonNull final SQLiteCursorDriver masterQuery,
+                @NonNull final String editTable,
+                @NonNull final SQLiteQuery query)
+        {
+            return new TrackedCursor(masterQuery, editTable, query, mSynchronizer);
+        }
+    };
+
+    public void analyzeDb() {
+        try {
+            mSyncedDb.execSQL("analyze");
+        } catch (Exception e) {
+            Logger.logError(e, "Analyze failed");
+        }
+    }
+
+    /**
+     * Get the local database.
+     * DO NOT CALL THIS UNLESS YOU REALLY NEED TO. DATABASE ACCESS SHOULD GO THROUGH THIS CLASS.
+     *
+     * @return	Database connection
+     */
+    @NonNull
+    public SynchronizedDb getDbIfYouAreSureWhatYouAreDoing() {
+        if (mSyncedDb == null || !mSyncedDb.isOpen()) {
+            this.open();
+        }
+        return mSyncedDb;
+    }
+
+    /**
+     * Get the synchronizer object for this database in case there is some other activity
+     * that needs to be synced.
+     *
+     * Note: Cursor requery() is the only thing found so far.
+     */
+    @NonNull
+    public static Synchronizer getSynchronizer() {
+        return mSynchronizer;
+    }
+
+    /**
+     * Return a boolean indicating this instance was a new installation
+     */
+    public boolean isNewInstall() {
+        return mDbHelper.isNewInstall();
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -711,67 +775,12 @@ public class CatalogueDBAdapter {
     @NonNull
     public ArrayList<String> getAllAuthors() {
         ArrayList<String> list = new ArrayList<>();
-        try(Cursor cursor = fetchAllAuthors())  {
+        try(Cursor cursor = classicFetchAllAuthors())  {
             while (cursor.moveToNext()) {
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(DOM_AUTHOR_FORMATTED.name));
                 list.add(name);
             }
             return list;
-        }
-    }
-
-    /**
-     * Return the position of an author in a list of all authors (within a bookshelf)
-     *
-     * @param author    The author to search for
-     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     *
-     * @return The position of the author
-     */
-    public int getAuthorPositionByGivenName(@NonNull final Author author, @NonNull final String bookshelf) {
-
-        String where = null;
-        if (!bookshelf.isEmpty()) {
-            where = authorOnBookshelfSql(bookshelf, "a." + DOM_ID, false);
-        }
-        if (where != null && !where.isEmpty())
-            where = " and " + where;
-
-        String sql = "SELECT count(*) as count FROM " + DB_TB_AUTHORS + " a" +
-                " WHERE ( " + makeTextTerm("a." + DOM_AUTHOR_GIVEN_NAMES, "<", author.familyName) +
-                " OR ( " + makeTextTerm("a." + DOM_AUTHOR_GIVEN_NAMES, "=", author.familyName) +
-                "     AND " + makeTextTerm("a." + DOM_AUTHOR_FAMILY_NAME, "<", author.givenNames) + "))" +
-                " " + where +
-                " ORDER BY Upper(a." + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + ", Upper(a." + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION;
-        try (Cursor results = mSyncedDb.rawQuery(sql, null)) {
-            return getIntValue(results, 0);
-        }
-    }
-
-    /**
-     * Return the position of an author in a list of all authors (within a bookshelf)
-     *
-     * @param author    The author to search for
-     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     * @return The position of the author
-     */
-    public int getAuthorPositionByName(@NonNull final Author author, @NonNull final String bookshelf) {
-
-        String where = "";
-        if (!bookshelf.isEmpty()) {
-            where += authorOnBookshelfSql(bookshelf, "a." + DOM_ID, false);
-        }
-        if (!where.isEmpty())
-            where = " and " + where;
-
-        String sql = "SELECT count(*) as count FROM " + DB_TB_AUTHORS + " a" +
-                " WHERE ( " + makeTextTerm("a." + DOM_AUTHOR_FAMILY_NAME, "<", author.familyName) +
-                " OR ( " + makeTextTerm("a." + DOM_AUTHOR_FAMILY_NAME, "=", author.familyName) +
-                "     AND " + makeTextTerm("a." + DOM_AUTHOR_GIVEN_NAMES, "<", author.givenNames) + "))" +
-                " " + where +
-                " ORDER BY Upper(a." + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + ", Upper(a." + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION;
-        try (Cursor results = mSyncedDb.rawQuery(sql, null)) {
-            return getIntValue(results, 0);
         }
     }
 
@@ -820,82 +829,6 @@ public class CatalogueDBAdapter {
     }
 
     /**
-     * Return a Cursor over the list of all books in the database
-     *
-     * @return Cursor over all notes
-     */
-    @NonNull
-    private Cursor fetchAllAuthors() {
-        return fetchAllAuthors(true, false);
-    }
-
-    /**
-     * Return a Cursor over the list of all books in the database
-     *
-     * @param sortByFamily		flag
-     * @param firstOnly			flag
-     * @return Cursor over all notes
-     */
-    @NonNull
-    private Cursor fetchAllAuthors(final boolean sortByFamily, final boolean firstOnly) {
-        String order;
-        if (sortByFamily) {
-            order = " ORDER BY Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION;
-        } else {
-            order = " ORDER BY Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION;
-        }
-
-        String sql = "SELECT DISTINCT " + getAuthorFields("a", DOM_ID.name) +
-                " FROM " + DB_TB_AUTHORS + " a, " + DB_TB_BOOK_AUTHOR + " ab " +
-                " WHERE a." + DOM_ID + "=ab." + DOM_AUTHOR_ID + " ";
-        if (firstOnly) {
-            sql += " AND ab." + DOM_AUTHOR_POSITION + "=1 ";
-        }
-
-        return mSyncedDb.rawQuery(sql + order, new String[]{});
-    }
-
-    /**
-     * Return a Cursor over the list of all authors in the database
-     *
-     * @param bookshelf Which bookshelf is it in. Can be "All Books"
-     *
-     * @return Cursor over all notes
-     */
-    @NonNull
-    public Cursor fetchAllAuthors(String bookshelf) {
-        return fetchAllAuthors(bookshelf, true, false);
-    }
-
-    /**
-     * Return a Cursor over the list of all authors in the database
-     *
-     * @param bookshelf Which bookshelf is it in. Can be "All Books"
-     *
-     * @return Cursor over all notes
-     */
-    @NonNull
-    public Cursor fetchAllAuthors(@Nullable final String bookshelf, final boolean sortByFamily, final boolean firstOnly) {
-        if (bookshelf == null || bookshelf.isEmpty()) {
-            return fetchAllAuthors(sortByFamily, firstOnly);
-        }
-
-        String order;
-        if (sortByFamily) {
-            order = " ORDER BY Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION;
-        } else {
-            order = " ORDER BY Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION;
-        }
-
-        String sql = "SELECT " + getAuthorFields("a", DOM_ID.name)
-                + " FROM " + DB_TB_AUTHORS + " a "
-                + " WHERE " + authorOnBookshelfSql(bookshelf, "a." + DOM_ID, firstOnly)
-                + order;
-
-        return mSyncedDb.rawQuery(sql, new String[]{});
-    }
-
-    /**
      * Return a Cursor over the list of all authors  in the database for the given book
      *
      * @param bookId the rowId of the book
@@ -915,58 +848,6 @@ public class CatalogueDBAdapter {
                 " ORDER BY ba." + DOM_AUTHOR_POSITION + " Asc, Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + " ASC," +
                 " Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + " ASC";
 
-        return mSyncedDb.rawQuery(sql, new String[]{});
-    }
-
-    /**
-     * Return a Cursor over the author in the database which meet the provided search criteria
-     *
-     * @param searchText The search query
-     * @param bookshelf The bookshelf to search within
-     * @return Cursor over all authors
-     */
-    @NonNull
-    public Cursor fetchAuthors(@NonNull final String searchText, @NonNull final String bookshelf) {
-        return fetchAuthors(searchText, bookshelf, true, false);
-    }
-
-    /**
-     * Return a Cursor over the author in the database which meet the provided search criteria
-     *
-     * @param searchText The search query
-     * @param bookshelf The bookshelf to search within
-     * @return Cursor over all authors
-     */
-    @NonNull
-    public Cursor fetchAuthors(@NonNull String searchText, @NonNull final String bookshelf,
-                               final boolean sortByFamily, final boolean firstOnly) {
-        String where = "";
-        String baWhere = "";
-        searchText = encodeString(searchText);
-        if (!bookshelf.isEmpty()) {
-            where += " AND " + this.authorOnBookshelfSql(bookshelf, "a." + DOM_ID, false);
-        }
-        if (firstOnly) {
-            baWhere += " AND ba." + DOM_AUTHOR_POSITION + "=1 ";
-        }
-        //if (where != null && where.trim().length() > 0)
-        //	where = " and " + where;
-
-        final String order;
-        if (sortByFamily) {
-            order = " ORDER BY Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION;
-        } else {
-            order = " ORDER BY Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION;
-        }
-
-        String sql = "SELECT " + getAuthorFields("a", DOM_ID.name) +
-                " FROM " + DB_TB_AUTHORS + " a" + " " +
-                "WHERE (" + authorSearchPredicate(searchText) +  " OR " +
-                "a." + DOM_ID + " IN (SELECT ba." + DOM_AUTHOR_ID +
-                " FROM " + DB_TB_BOOKS + " b Join " + DB_TB_BOOK_AUTHOR + " ba " +
-                " On ba." + DOM_BOOK + " = b." + DOM_ID + " " + baWhere +
-                "WHERE (" + bookSearchPredicate(searchText)  + ") ) )" +
-                where + order;
         return mSyncedDb.rawQuery(sql, new String[]{});
     }
 
@@ -1035,6 +916,195 @@ public class CatalogueDBAdapter {
         }
 
     }
+    //</editor-fold>
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Classic Author">
+
+    /**
+     * Return the position of an author in a list of all authors (within a bookshelf)
+     *
+     * @param author    The author to search for
+     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
+     *
+     * @return The position of the author
+     */
+    public int classicGetAuthorPositionByGivenName(@NonNull final Author author, @NonNull final String bookshelf) {
+
+        String where = null;
+        if (!bookshelf.isEmpty()) {
+            where = authorOnBookshelfSql(bookshelf, "a." + DOM_ID, false);
+        }
+        if (where != null && !where.isEmpty())
+            where = " and " + where;
+
+        String sql = "SELECT count(*) as count FROM " + DB_TB_AUTHORS + " a" +
+                " WHERE ( " + makeTextTerm("a." + DOM_AUTHOR_GIVEN_NAMES, "<", author.familyName) +
+                " OR ( " + makeTextTerm("a." + DOM_AUTHOR_GIVEN_NAMES, "=", author.familyName) +
+                "     AND " + makeTextTerm("a." + DOM_AUTHOR_FAMILY_NAME, "<", author.givenNames) + "))" +
+                " " + where +
+                " ORDER BY Upper(a." + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + ", Upper(a." + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION;
+        try (Cursor results = mSyncedDb.rawQuery(sql, null)) {
+            return getIntValue(results, 0);
+        }
+    }
+
+    /**
+     * Return the position of an author in a list of all authors (within a bookshelf)
+     *
+     * @param author    The author to search for
+     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
+     * @return The position of the author
+     */
+    public int classicGetAuthorPositionByName(@NonNull final Author author, @NonNull final String bookshelf) {
+
+        String where = "";
+        if (!bookshelf.isEmpty()) {
+            where += authorOnBookshelfSql(bookshelf, "a." + DOM_ID, false);
+        }
+        if (!where.isEmpty())
+            where = " and " + where;
+
+        String sql = "SELECT count(*) as count FROM " + DB_TB_AUTHORS + " a" +
+                " WHERE ( " + makeTextTerm("a." + DOM_AUTHOR_FAMILY_NAME, "<", author.familyName) +
+                " OR ( " + makeTextTerm("a." + DOM_AUTHOR_FAMILY_NAME, "=", author.familyName) +
+                "     AND " + makeTextTerm("a." + DOM_AUTHOR_GIVEN_NAMES, "<", author.givenNames) + "))" +
+                " " + where +
+                " ORDER BY Upper(a." + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + ", Upper(a." + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION;
+        try (Cursor results = mSyncedDb.rawQuery(sql, null)) {
+            return getIntValue(results, 0);
+        }
+    }
+
+    /**
+     * Return a Cursor over the list of all books in the database
+     *
+     * @return Cursor over all notes
+     */
+    @NonNull
+    private Cursor classicFetchAllAuthors() {
+        return classicFetchAllAuthors(true, false);
+    }
+
+    /**
+     * Return a Cursor over the list of all books in the database
+     *
+     * @param sortByFamily		flag
+     * @param firstOnly			flag
+     * @return Cursor over all notes
+     */
+    @NonNull
+    private Cursor classicFetchAllAuthors(final boolean sortByFamily, final boolean firstOnly) {
+        String order;
+        if (sortByFamily) {
+            order = " ORDER BY Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION;
+        } else {
+            order = " ORDER BY Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION;
+        }
+
+        String sql = "SELECT DISTINCT " + getAuthorFields("a", DOM_ID.name) +
+                " FROM " + DB_TB_AUTHORS + " a, " + DB_TB_BOOK_AUTHOR + " ab " +
+                " WHERE a." + DOM_ID + "=ab." + DOM_AUTHOR_ID + " ";
+        if (firstOnly) {
+            sql += " AND ab." + DOM_AUTHOR_POSITION + "=1 ";
+        }
+
+        return mSyncedDb.rawQuery(sql + order, new String[]{});
+    }
+
+    /**
+     * Return a Cursor over the list of all authors in the database
+     *
+     * @param bookshelf Which bookshelf is it in. Can be "All Books"
+     *
+     * @return Cursor over all notes
+     */
+    @NonNull
+    public Cursor classicFetchAllAuthors(String bookshelf) {
+        return classicFetchAllAuthors(bookshelf, true, false);
+    }
+
+    /**
+     * Return a Cursor over the list of all authors in the database
+     *
+     * @param bookshelf Which bookshelf is it in. Can be "All Books"
+     *
+     * @return Cursor over all notes
+     */
+    @NonNull
+    public Cursor classicFetchAllAuthors(@Nullable final String bookshelf, final boolean sortByFamily, final boolean firstOnly) {
+        if (bookshelf == null || bookshelf.isEmpty()) {
+            return classicFetchAllAuthors(sortByFamily, firstOnly);
+        }
+
+        String order;
+        if (sortByFamily) {
+            order = " ORDER BY Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION;
+        } else {
+            order = " ORDER BY Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION;
+        }
+
+        String sql = "SELECT " + getAuthorFields("a", DOM_ID.name)
+                + " FROM " + DB_TB_AUTHORS + " a "
+                + " WHERE " + authorOnBookshelfSql(bookshelf, "a." + DOM_ID, firstOnly)
+                + order;
+
+        return mSyncedDb.rawQuery(sql, new String[]{});
+    }
+
+    /**
+     * Return a Cursor over the author in the database which meet the provided search criteria
+     *
+     * @param searchText The search query
+     * @param bookshelf The bookshelf to search within
+     * @return Cursor over all authors
+     */
+    @NonNull
+    public Cursor classicFetchAuthors(@NonNull final String searchText, @NonNull final String bookshelf) {
+        return classicFetchAuthors(searchText, bookshelf, true, false);
+    }
+
+    /**
+     * Return a Cursor over the author in the database which meet the provided search criteria
+     *
+     * @param searchText The search query
+     * @param bookshelf The bookshelf to search within
+     * @return Cursor over all authors
+     */
+    @NonNull
+    public Cursor classicFetchAuthors(@NonNull String searchText, @NonNull final String bookshelf,
+                                      final boolean sortByFamily, final boolean firstOnly) {
+        String where = "";
+        String baWhere = "";
+        searchText = encodeString(searchText);
+        if (!bookshelf.isEmpty()) {
+            where += " AND " + this.authorOnBookshelfSql(bookshelf, "a." + DOM_ID, false);
+        }
+        if (firstOnly) {
+            baWhere += " AND ba." + DOM_AUTHOR_POSITION + "=1 ";
+        }
+        //if (where != null && where.trim().length() > 0)
+        //	where = " and " + where;
+
+        final String order;
+        if (sortByFamily) {
+            order = " ORDER BY Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION;
+        } else {
+            order = " ORDER BY Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION;
+        }
+
+        String sql = "SELECT " + getAuthorFields("a", DOM_ID.name) +
+                " FROM " + DB_TB_AUTHORS + " a" + " " +
+                "WHERE (" + authorSearchPredicate(searchText) +  " OR " +
+                "a." + DOM_ID + " IN (SELECT ba." + DOM_AUTHOR_ID +
+                " FROM " + DB_TB_BOOKS + " b Join " + DB_TB_BOOK_AUTHOR + " ba " +
+                " On ba." + DOM_BOOK + " = b." + DOM_ID + " " + baWhere +
+                "WHERE (" + bookSearchPredicate(searchText)  + ") ) )" +
+                where + order;
+        return mSyncedDb.rawQuery(sql, new String[]{});
+    }
+
     //</editor-fold>
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2021,6 +2091,50 @@ public class CatalogueDBAdapter {
         return fetchBooks(fullSql, new String[]{});
     }
 
+    /**
+     * Return a book (Cursor) that matches the given rowId
+     *
+     * @param rowId id of book to retrieve
+     * @return Cursor positioned to matching book, if found
+     * @throws SQLException if note could not be found/retrieved
+     */
+    public BooksCursor fetchBookById(@NonNull final Long rowId) throws SQLException {
+        String where = "b." + DOM_ID + "=" + rowId;
+        return fetchAllBooks("", "", "", where, "", "", "");
+    }
+
+
+    /**
+     * Return a book (Cursor) that matches the given ISBN.
+     * Note: MAYBE RETURN MORE THAN ONE BOOK
+     *
+     * @param isbns ISBN of book(s) to retrieve
+     * @return Cursor positioned to matching book, if found
+     * @throws SQLException if note could not be found/retrieved
+     */
+    public BooksCursor fetchBooksByIsbns(@NonNull final ArrayList<String> isbns) throws SQLException {
+        if (isbns.size() == 0)
+            throw new RuntimeException("No ISBNs specified in lookup");
+
+        StringBuilder where = new StringBuilder(TBL_BOOKS.dot(DOM_ISBN));
+        if (isbns.size() == 1) {
+            where.append(" = '").append(encodeString(isbns.get(0))).append("'");
+        } else {
+            where.append(" in (");
+            boolean first = true;
+            for(String isbn: isbns) {
+                if (first) {
+                    first = false;
+                }
+                else {
+                    where.append(",");
+                }
+                where.append("'").append(encodeString(isbn)).append("'");
+            }
+            where.append(")");
+        }
+        return fetchAllBooks("", "", "", where.toString(), "", "", "");
+    }
 
     //</editor-fold>
 
@@ -2360,7 +2474,24 @@ public class CatalogueDBAdapter {
         }
     }
 
+    /**
+     * Return the position of a book in a list of all books (within a bookshelf)
+     *
+     * @param title The book title to search for
+     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
+     * @return The position of the book
+     */
+    public int classicFetchBookPositionByTitle(@NonNull final String title, @NonNull final String bookshelf) {
+        String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", makeTextTerm("Substr(b." + DOM_TITLE + ",1,1)", "<", title.substring(0,1)), "", "", "");
+        String sql = "SELECT Count(Distinct Upper(Substr(" + DOM_TITLE + ",1,1))" + COLLATION + ") as count " + baseSql;
+
+        try (Cursor results = mSyncedDb.rawQuery(sql, null)) {
+            return getIntValue(results, 0);
+        }
+    }
+
     //</editor-fold>
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     //<editor-fold desc="Bookshelf">
@@ -2589,7 +2720,7 @@ public class CatalogueDBAdapter {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //<editor-fold desc="Fetchers">
+    //<editor-fold desc="SearchSuggestionProvider">
 
     /**
      *
@@ -2626,117 +2757,7 @@ public class CatalogueDBAdapter {
         return mSyncedDb.rawQuery(sql, null);
     }
 
-    /**
-     * Return the position of a book in a list of all books (within a bookshelf)
-     *
-     * @param title The book title to search for
-     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     * @return The position of the book
-     */
-    public int classicFetchBookPositionByTitle(@NonNull final String title, @NonNull final String bookshelf) {
-        String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", makeTextTerm("Substr(b." + DOM_TITLE + ",1,1)", "<", title.substring(0,1)), "", "", "");
-        String sql = "SELECT Count(Distinct Upper(Substr(" + DOM_TITLE + ",1,1))" + COLLATION + ") as count " + baseSql;
 
-        try (Cursor results = mSyncedDb.rawQuery(sql, null)) {
-            return getIntValue(results, 0);
-        }
-    }
-
-    /**
-     * Return a Cursor over the list of all authors  in the database for the given book
-     *
-     * @param rowId the rowId of the book
-     * @return Cursor over all authors
-     */
-    private Cursor fetchAllSeriesByBook(long rowId) {
-        String sql = "SELECT DISTINCT s." + DOM_ID + " as " + DOM_ID
-                + ", s." + DOM_SERIES_NAME + " as " + DOM_SERIES_NAME
-                + ", bs." + DOM_SERIES_NUM + " as " + DOM_SERIES_NUM
-                + ", bs." + DOM_SERIES_POSITION + " as " + DOM_SERIES_POSITION
-                + ", " + DOM_SERIES_NAME + "||' ('||" + DOM_SERIES_NUM + "||')' as " + DOM_SERIES_FORMATTED
-                + " FROM " + DB_TB_BOOK_SERIES + " bs Join " + DB_TB_SERIES + " s "
-                + "       On s." + DOM_ID + " = bs." + DOM_SERIES_ID
-                + " WHERE bs." + DOM_BOOK + "=" + rowId + " "
-                + " ORDER BY bs." + DOM_SERIES_POSITION + ", Upper(s." + DOM_SERIES_NAME + ") " + COLLATION + " ASC";
-        return mSyncedDb.rawQuery(sql, new String[]{});
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * Return a book (Cursor) that matches the given rowId
-     *
-     * @param rowId id of book to retrieve
-     * @return Cursor positioned to matching book, if found
-     * @throws SQLException if note could not be found/retrieved
-     */
-    public BooksCursor fetchBookById(@NonNull final Long rowId) throws SQLException {
-        String where = "b." + DOM_ID + "=" + rowId;
-        return fetchAllBooks("", "", "", where, "", "", "");
-    }
-
-    /**
-     * Return a book (Cursor) that matches the given goodreads book Id.
-     * Note: MAYE RETURN MORE THAN ONE BOOK
-     *
-     * @param grId Goodreads id of book(s) to retrieve
-     *
-     * @return Cursor positioned to matching book, if found
-     *
-     * @throws SQLException if note could not be found/retrieved
-     */
-    public BooksCursor fetchBooksByGoodreadsBookId(long grId) throws SQLException {
-        String where = TBL_BOOKS.dot(DOM_GOODREADS_BOOK_ID) + "=" + grId;
-        return fetchAllBooks("", "", "", where, "", "", "");
-    }
-
-    /**
-     * Return a book (Cursor) that matches the given ISBN.
-     * Note: MAYBE RETURN MORE THAN ONE BOOK
-     *
-     * @param isbns ISBN of book(s) to retrieve
-     * @return Cursor positioned to matching book, if found
-     * @throws SQLException if note could not be found/retrieved
-     */
-    public BooksCursor fetchBooksByIsbns(@NonNull final ArrayList<String> isbns) throws SQLException {
-        if (isbns.size() == 0)
-            throw new RuntimeException("No ISBNs specified in lookup");
-
-        StringBuilder where = new StringBuilder(TBL_BOOKS.dot(DOM_ISBN));
-        if (isbns.size() == 1) {
-            where.append(" = '").append(encodeString(isbns.get(0))).append("'");
-        } else {
-            where.append(" in (");
-            boolean first = true;
-            for(String isbn: isbns) {
-                if (first) {
-                    first = false;
-                }
-                else {
-                    where.append(",");
-                }
-                where.append("'").append(encodeString(isbn)).append("'");
-            }
-            where.append(")");
-        }
-        return fetchAllBooks("", "", "", where.toString(), "", "", "");
-    }
     //</editor-fold>
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2977,19 +2998,6 @@ public class CatalogueDBAdapter {
     }
 
     /**
-     * This will return a list of all loans
-     *
-     * @return Cursor over all loans
-     */
-    @NonNull
-    public Cursor fetchAllLoans() {
-        String sql = "SELECT DISTINCT l." + DOM_LOANED_TO + " as " + DOM_ID +
-                " FROM " + DB_TB_LOAN + " l " +
-                " ORDER BY Upper(l." + DOM_LOANED_TO + ") " + COLLATION;
-        return mSyncedDb.rawQuery(sql, new String[]{});
-    }
-
-    /**
      * This will return the borrower for a given book, if any
      *
      * @param id book to search for
@@ -3004,6 +3012,24 @@ public class CatalogueDBAdapter {
 
             return getStringValue(results, 1);
         }
+    }
+
+    //</editor-fold>
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Classic Loan">
+    /**
+     * This will return a list of all loans
+     *
+     * @return Cursor over all loans
+     */
+    @NonNull
+    public Cursor classicFetchAllLoans() {
+        String sql = "SELECT DISTINCT l." + DOM_LOANED_TO + " as " + DOM_ID +
+                " FROM " + DB_TB_LOAN + " l " +
+                " ORDER BY Upper(l." + DOM_LOANED_TO + ") " + COLLATION;
+        return mSyncedDb.rawQuery(sql, new String[]{});
     }
 
     //</editor-fold>
@@ -3330,6 +3356,33 @@ public class CatalogueDBAdapter {
         return getColumnAsList(sql, DOM_SERIES_NAME.name);
     }
 
+
+    /**
+     * Return a Cursor over the list of all authors  in the database for the given book
+     *
+     * @param rowId the rowId of the book
+     * @return Cursor over all authors
+     */
+    private Cursor fetchAllSeriesByBook(long rowId) {
+        String sql = "SELECT DISTINCT s." + DOM_ID + " as " + DOM_ID
+                + ", s." + DOM_SERIES_NAME + " as " + DOM_SERIES_NAME
+                + ", bs." + DOM_SERIES_NUM + " as " + DOM_SERIES_NUM
+                + ", bs." + DOM_SERIES_POSITION + " as " + DOM_SERIES_POSITION
+                + ", " + DOM_SERIES_NAME + "||' ('||" + DOM_SERIES_NUM + "||')' as " + DOM_SERIES_FORMATTED
+                + " FROM " + DB_TB_BOOK_SERIES + " bs Join " + DB_TB_SERIES + " s "
+                + "       On s." + DOM_ID + " = bs." + DOM_SERIES_ID
+                + " WHERE bs." + DOM_BOOK + "=" + rowId + " "
+                + " ORDER BY bs." + DOM_SERIES_POSITION + ", Upper(s." + DOM_SERIES_NAME + ") " + COLLATION + " ASC";
+        return mSyncedDb.rawQuery(sql, new String[]{});
+    }
+
+
+    //</editor-fold>
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Classic Series">
+
     /**
      * This will return a list of all series within the given bookshelf where the
      * series, title or author meet the search string
@@ -3339,7 +3392,7 @@ public class CatalogueDBAdapter {
      * @return Cursor over all notes
      */
     @NonNull
-    public Cursor fetchSeries(@NonNull final String searchText, @NonNull final String bookshelf) {
+    public Cursor classicFetchSeries(@NonNull final String searchText, @NonNull final String bookshelf) {
         /// Need to know when to add the 'no series' series...
         String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", "", searchText, "", "");
 
@@ -3355,6 +3408,8 @@ public class CatalogueDBAdapter {
 
         return mSyncedDb.rawQuery(sql, new String[]{});
     }
+
+
     //</editor-fold>
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3784,6 +3839,21 @@ public class CatalogueDBAdapter {
     //<editor-fold desc="Goodreads support">
 
     /**
+     * Return a book (Cursor) that matches the given goodreads book Id.
+     * Note: MAYE RETURN MORE THAN ONE BOOK
+     *
+     * @param grId Goodreads id of book(s) to retrieve
+     *
+     * @return Cursor positioned to matching book, if found
+     *
+     * @throws SQLException if note could not be found/retrieved
+     */
+    public BooksCursor fetchBooksByGoodreadsBookId(long grId) throws SQLException {
+        String where = TBL_BOOKS.dot(DOM_GOODREADS_BOOK_ID) + "=" + grId;
+        return fetchAllBooks("", "", "", where, "", "", "");
+    }
+
+    /**
      * Query to get all book IDs and ISBN for sending to goodreads.
      */
     @NonNull
@@ -3871,6 +3941,75 @@ public class CatalogueDBAdapter {
 //		mGetGoodreadsSyncDateStmt.bindLong(1, bookId);
 //		return mGetGoodreadsSyncDateStmt.simpleQueryForString();
 //	}
+    //</editor-fold>
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Database house keeping">
+
+    /** Flag indicating {@link #close()} has been called */
+    private boolean mCloseWasCalled = false;
+
+    private SqlStatementManager mStatements;
+
+    /**
+     * Open the books database. If it cannot be opened, try to create a new instance of the
+     * database. If it cannot be created, throw an exception to signal the failure
+     *
+     * @throws SQLException if the database could be neither opened or created
+     */
+    public void open() throws SQLException {
+
+        if (mSyncedDb == null) {
+            // Get the DB wrapper
+            mSyncedDb = new SynchronizedDb(mDbHelper, mSynchronizer);
+            // Turn on foreign key support so that CASCADE works.
+            mSyncedDb.execSQL("PRAGMA foreign_keys = ON");
+            // Turn on recursive triggers; not strictly necessary
+            mSyncedDb.execSQL("PRAGMA recursive_triggers = ON");
+        }
+        //mSyncedDb.execSQL("PRAGMA temp_store = FILE");
+        mStatements = new SqlStatementManager(mSyncedDb);
+    }
+
+
+    /**
+     * Generic function to close the database
+     */
+    public void close() {
+
+        if (!mCloseWasCalled) {
+            mCloseWasCalled = true;
+
+            if (mStatements != null) {
+                mStatements.close();
+            }
+
+            if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
+                synchronized(mInstanceCount) {
+                    mInstanceCount--;
+                    System.out.println("CatDBA instances: " + mInstanceCount);
+                    //removeInstance(this);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void finalize() {
+        close();
+    }
+
+    public SyncLock startTransaction(boolean isUpdate) {
+        return mSyncedDb.beginTransaction(isUpdate);
+    }
+    public void endTransaction(SyncLock lock) {
+        mSyncedDb.endTransaction(lock);
+    }
+    public void setTransactionSuccessful() {
+        mSyncedDb.setTransactionSuccessful();
+    }
+
     //</editor-fold>
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4293,7 +4432,49 @@ public class CatalogueDBAdapter {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //<editor-fold desc="Cleanup routines OK">
+    //<editor-fold desc="Backup & Export" >
+    /**
+     * Backup database file using default file name
+     */
+    public void backupDbFile() {
+        backupDbFile("DbExport.db");
+    }
+
+    /**
+     * Backup database file to the specified filename
+     */
+    public void backupDbFile(@NonNull final String suffix) {
+        StorageUtils.backupDbFile(mSyncedDb.getUnderlyingDatabase(), suffix);
+    }
+
+    /**
+     * A complete export of all tables (flattened) in the database
+     *
+     * @return BooksCursor over all books, authors, etc
+     */
+    @NonNull
+    public BooksCursor exportBooks(@Nullable final Date sinceDate) {
+        String sinceClause;
+        if (sinceDate == null) {
+            sinceClause = "";
+        } else {
+            sinceClause = " Where b." + DOM_LAST_UPDATE_DATE + " > '" + DateUtils.toSqlDateTime(sinceDate) + "' ";
+        }
+
+        String sql = "SELECT DISTINCT " +
+                getBookFields("b", DOM_ID.name) + ", " +
+                "l." +DOM_LOANED_TO + " as " + DOM_LOANED_TO + " " +
+                " FROM " + DB_TB_BOOKS + " b" +
+                " LEFT OUTER JOIN " + DB_TB_LOAN +" l ON (l." + DOM_BOOK + "=b." + DOM_ID + ") " +
+                sinceClause +
+                " ORDER BY b._id";
+        return fetchBooks(sql, new String[]{});
+    }
+    //</editor-fold>
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Cleanup routines v4">
     /**
      * Data cleanup routine called on upgrade to v4.0.3 to cleanup data integrity issues cased
      * by earlier merge code that could have left the first author or series for a book having
@@ -4350,210 +4531,43 @@ public class CatalogueDBAdapter {
     }
     //</editor-fold>
 
-    //<editor-fold desc="Database open/close/transactions...">
-
-    /** Flag indicating close() has been called */
-    private boolean mCloseWasCalled = false;
-
-    /**
-     * Open the books database. If it cannot be opened, try to create a new
-     * instance of the database. If it cannot be created, throw an exception to
-     * signal the failure
-     *
-     * @return this (self reference, allowing this to be chained in an initialisation call)
-     * @throws SQLException if the database could be neither opened or created
-     */
-    public void open() throws SQLException {
-
-        if (mSyncedDb == null) {
-            // Get the DB wrapper
-            mSyncedDb = new SynchronizedDb(mDbHelper, mSynchronizer);
-            // Turn on foreign key support so that CASCADE works.
-            mSyncedDb.execSQL("PRAGMA foreign_keys = ON");
-            // Turn on recursive triggers; not strictly necessary
-            mSyncedDb.execSQL("PRAGMA recursive_triggers = ON");
-        }
-        //mSyncedDb.execSQL("PRAGMA temp_store = FILE");
-        mStatements = new SqlStatementManager(mSyncedDb);
-
-    }
-
-    public SyncLock startTransaction(boolean isUpdate) {
-        return mSyncedDb.beginTransaction(isUpdate);
-    }
-    public void endTransaction(SyncLock lock) {
-        mSyncedDb.endTransaction(lock);
-    }
-    public void setTransactionSuccessful() {
-        mSyncedDb.setTransactionSuccessful();
-    }
-
-    /**
-     * Generic function to close the database
-     */
-    public void close() {
-
-        if (!mCloseWasCalled) {
-            mCloseWasCalled = true;
-
-            if (mStatements != null) {
-                mStatements.close();
-            }
-
-            if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
-                synchronized(mInstanceCount) {
-                    mInstanceCount--;
-                    System.out.println("CatDBA instances: " + mInstanceCount);
-                    //removeInstance(this);
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void finalize() {
-        close();
-    }
-
-    public void analyzeDb() {
-        try {
-            mSyncedDb.execSQL("analyze");
-        } catch (Exception e) {
-            Logger.logError(e, "Analyze failed");
-        }
-    }
-    //</editor-fold>
-
-    //<editor-fold desc="Class Internals">
-
-
-
-    private final Context mContext;
-    private SqlStatementManager mStatements;
-
-    /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync */
-    private static final Synchronizer mSynchronizer = new Synchronizer();
-
-    private static DatabaseHelper mDbHelper;
-    private static SynchronizedDb mSyncedDb;
-
-    /** Static Factory object to create the custom cursor */
-    private static final CursorFactory mTrackedCursorFactory = new CursorFactory() {
-        @Override
-        public Cursor newCursor(
-                SQLiteDatabase db,
-                SQLiteCursorDriver masterQuery,
-                String editTable,
-                SQLiteQuery query)
-        {
-            return new TrackedCursor(masterQuery, editTable, query, mSynchronizer);
-        }
-    };
-	/**
-	 * Get the local database.
-	 * DO NOT CALL THIS UNLESS YOU REALLY NEED TO. DATABASE ACCESS SHOULD GO THROUGH THIS CLASS.
-	 *
-	 * @return	Database connection
-	 */
-	public SynchronizedDb getDb() {
-		if (mSyncedDb == null || !mSyncedDb.isOpen())
-			this.open();
-		return mSyncedDb;
-	}
-
-	/**
-	 * Get the synchronizer object for this database in case there is some other activity that needs to
-	 * be synced.
-	 *
-	 * Note: Cursor requery() is the only thing found so far.
-	 */
-	public static Synchronizer getSynchronizer() {
-		return mSynchronizer;
-	}
-
-	/**
-	 * Return a boolean indicating this instance was a new installation
-	 */
-	public boolean isNewInstall() {
-		return mDbHelper.isNewInstall();
-	}
-    //</editor-fold>
-
-    //<editor-fold desc="Backup & Export" >
-    /**
-     * Backup database file using default file name
-     */
-    public void backupDbFile() {
-        backupDbFile("DbExport.db");
-    }
-
-    /**
-     * Backup database file to the specified filename
-     */
-    public void backupDbFile(String suffix) {
-        try {
-            StorageUtils.backupDbFile(mSyncedDb.getUnderlyingDatabase(), suffix);
-        } catch (Exception e) {
-            Logger.logError(e);
-        }
-    }
-
-    /**
-     * A complete export of all tables (flattened) in the database
-     *
-     * @return BooksCursor over all books, authors, etc
-     */
-    public BooksCursor exportBooks(Date sinceDate) {
-        String sinceClause;
-        if (sinceDate == null) {
-            sinceClause = "";
-        } else {
-            sinceClause = " Where b." + DOM_LAST_UPDATE_DATE + " > '" + DateUtils.toSqlDateTime(sinceDate) + "' ";
-        }
-
-        String sql = "SELECT DISTINCT " +
-                getBookFields("b", DOM_ID.name) + ", " +
-                "l." +DOM_LOANED_TO + " as " + DOM_LOANED_TO + " " +
-                " FROM " + DB_TB_BOOKS + " b" +
-                " LEFT OUTER JOIN " + DB_TB_LOAN +" l ON (l." + DOM_BOOK + "=b." + DOM_ID + ") " +
-                sinceClause +
-                " ORDER BY b._id";
-        return fetchBooks(sql, new String[]{});
-    }
-    //</editor-fold>
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     //<editor-fold desc="Debug internals">
 
+    private static final ArrayList<InstanceRef> mInstances = new ArrayList<>();
+
     /** Debug counter */
     private static Integer mInstanceCount = 0;
+
     private static class InstanceRef extends WeakReference<CatalogueDBAdapter> {
         private final Exception mCreationException;
-        InstanceRef(CatalogueDBAdapter r) {
-            super(r);
+
+        InstanceRef(@NonNull final CatalogueDBAdapter db) {
+            super(db);
             mCreationException = new RuntimeException();
         }
+        @NonNull
         Exception getCreationException() {
             return mCreationException;
         }
     }
-    private static final ArrayList<InstanceRef> mInstances = new ArrayList<>();
-
 
     /**
-     * DB_ADAPTER only
+     * DEBUG only
      */
     @SuppressWarnings("unused")
-    private static void addInstance(CatalogueDBAdapter db) {
+    private static void addInstance(@NonNull final CatalogueDBAdapter db) {
         if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
             mInstances.add(new InstanceRef(db));
         }
     }
 
     /**
-     * DB_ADAPTER only
+     * DEBUG only
      */
     @SuppressWarnings("unused")
-    private static void removeInstance(CatalogueDBAdapter db) {
+    private static void removeInstance(@NonNull final CatalogueDBAdapter db) {
         if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
             ArrayList<InstanceRef> toDelete = new ArrayList<>();
             for (InstanceRef ref : mInstances) {
@@ -4574,6 +4588,19 @@ public class CatalogueDBAdapter {
         }
     }
 
+    /**
+     * DEBUG ONLY; used when tracking a bug in android 2.1, but kept because
+     * there are still non-fatal anomalies.
+     */
+    @SuppressWarnings("unused")
+    public static void printReferenceCount(@Nullable final String msg) {
+        if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
+            if (mSyncedDb != null) {
+                SynchronizedDb.printRefCount(msg, mSyncedDb.getUnderlyingDatabase());
+            }
+        }
+    }
+
     @SuppressWarnings("unused")
     public static void dumpInstances() {
         if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
@@ -4589,18 +4616,6 @@ public class CatalogueDBAdapter {
         }
     }
 
-    /**
-	 * DB_ADAPTER ONLY; used when tracking a bug in android 2.1, but kept because
-	 * there are still non-fatal anomalies.
-	 */
-	@SuppressWarnings("unused")
-    public static void printReferenceCount(@Nullable final String msg) {
-		if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
-			if (mSyncedDb != null) {
-                SynchronizedDb.printRefCount(msg, mSyncedDb.getUnderlyingDatabase());
-            }
-		}
-    }
     //</editor-fold>
 }
 
