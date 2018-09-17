@@ -1,5 +1,5 @@
 /*
- * @copyright 2010 Evan Leybourn
+* @copyright 2010 Evan Leybourn
  * @license GNU General Public License
  *
  * This file is part of Book Catalogue.
@@ -140,15 +140,16 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIE
 import static com.eleybourn.bookcatalogue.database.DatabaseHelper.COLLATION;
 
 /**
+ *
  * TODO:
  * - sql statements
- * - function name 'create' -> insert
- * - quotes use around 'id'
- * - table aliases
- * - bind variables versus string concat
- * - private String getStringValue(Cursor results, @SuppressWarnings("SameParameterValue") int index) {
- * -> isnt there a SQLite function for this ?
- * - general sql versus dedicated delete call ?
+ *      - function name 'create' -> insert
+ *      - quotes use around 'id'
+ *      - table aliases
+ *      - bind variables versus string concat
+ *      - private String getStringValue(Cursor results, @SuppressWarnings("SameParameterValue") int index) {
+ *        -> isnt there a SQLite function for this ?
+ *      - general sql versus dedicated delete call ?
  *
  * Book Catalogue database access helper class. Defines the basic CRUD operations
  * for the catalogue (based on the Notepad tutorial), and gives the
@@ -158,37 +159,33 @@ import static com.eleybourn.bookcatalogue.database.DatabaseHelper.COLLATION;
  * This change separated messages from DB changes (most releases do not involve DB upgrades).
  *
  * ENHANCE: Use date_added to add 'Recent Acquisitions' virtual shelf; need to resolve how this may relate to date_purchased and 'I own this book'...
+ *
  */
 public class CatalogueDBAdapter {
 
-    /** Flag indicating the UPDATE_DATE field from the bundle should be truested. If this flag is not set, the UPDATE_DATE will be set based on the current time */
-    public static final int BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT = 1;
-    /** Flag indicating to skip doing the 'purge' step; mainly used in batch operations. */
-    public static final int BOOK_UPDATE_SKIP_PURGE_REFERENCES = 2;
-    private static final String META_EMPTY_SERIES = "<Empty Series>";
-    private static final String META_EMPTY_GENRE = "<Empty Genre>";
+    private TableInfo mBooksInfo = null;
+
+	private static final String META_EMPTY_SERIES = "<Empty Series>";
+	private static final String META_EMPTY_GENRE = "<Empty Genre>";
+	private static final String META_EMPTY_DATE_PUBLISHED = "<No Valid Published Date>";
 
 
 //	private static String SERIES_FIELDS = "s." + KEY_ID + " as " + KEY_SERIES_ID
 //		+ " CASE WHEN s." + KEY_SERIES_NAME + "='' THEN '' ELSE s." + KEY_SERIES_NAME + " || CASE WHEN s." + KEY_SERIES_NUM + "='' THEN '' ELSE ' #' || s." + KEY_SERIES_NUM + " END END AS " + KEY_SERIES_FORMATTED;
 //
 //	private static String BOOKSHELF_TABLES = DB_TB_BOOKS + " b LEFT OUTER JOIN " + DB_TB_BOOK_BOOKSHELF_WEAK + " w ON (b." + KEY_ID + "=w." + KEY_BOOK + ") LEFT OUTER JOIN " + DB_TB_BOOKSHELF + " bs ON (bs." + KEY_ID + "=w." + KEY_BOOKSHELF + ") ";
-//	private static String SERIES_TABLES = DB_TB_BOOKS 
+//	private static String SERIES_TABLES = DB_TB_BOOKS
 //						+ " b LEFT OUTER JOIN " + DB_TB_BOOK_SERIES + " w "
 //						+ " ON (b." + KEY_ID + "=w." + KEY_BOOK + ") "
 //						+ " LEFT OUTER JOIN " + DB_TB_SERIES + " s ON (s." + KEY_ID + "=w." + KEY_SERIES_ID + ") ";
-    private static final String META_EMPTY_DATE_PUBLISHED = "<No Valid Published Date>";
-    /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync */
-    private static final Synchronizer mSynchronizer = new Synchronizer();
-    private SqlStatementManager mStatements;
 
 
-    /**
-     * Constructor - takes the context to allow the database to be opened/created
-     *
-     * @param ctx the Context within which to work
-     */
-    public CatalogueDBAdapter(@NonNull final Context ctx) {
+	/**
+	 * Constructor - takes the context to allow the database to be opened/created
+	 *
+	 * @param ctx the Context within which to work
+	 */
+	public CatalogueDBAdapter(@NonNull final Context ctx) {
         mContext = ctx;
 
         if (mDbHelper == null) {
@@ -196,376 +193,21 @@ public class CatalogueDBAdapter {
         }
 
 
-        if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
-            synchronized (mInstanceCount) {
-                mInstanceCount++;
-                System.out.println("CatDBA instances: " + mInstanceCount);
-                //addInstance(this);
-            }
-        }
-    }
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+		if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
+			synchronized(mInstanceCount) {
+				mInstanceCount++;
+				System.out.println("CatDBA instances: " + mInstanceCount);
+				//addInstance(this);
+			}
+		}
+	}
 
-    //<editor-fold desc="Anthology OK">
-    /** Static Factory object to create the custom cursor */
-    private static final CursorFactory mBooksFactory = new CursorFactory() {
-        @Override
-        public Cursor newCursor(
-                SQLiteDatabase db,
-                SQLiteCursorDriver masterQuery,
-                String editTable,
-                SQLiteQuery query) {
-            return new BooksCursor(masterQuery, editTable, query, mSynchronizer);
-        }
-    };
-    /** Static Factory object to create the custom cursor */
-    private static final CursorFactory mTrackedCursorFactory = new CursorFactory() {
-        @Override
-        public Cursor newCursor(
-                SQLiteDatabase db,
-                SQLiteCursorDriver masterQuery,
-                String editTable,
-                SQLiteQuery query) {
-            return new TrackedCursor(masterQuery, editTable, query, mSynchronizer);
-        }
-    };
-    private static final ArrayList<InstanceRef> mInstances = new ArrayList<>();
-    private static DatabaseHelper mDbHelper;
-    private static SynchronizedDb mSyncedDb;
-    /** Debug counter */
-    private static Integer mInstanceCount = 0;
-    private final Context mContext;
-    private TableInfo mBooksInfo = null;
-    /** Statements used by {@link #getAnthologyTitleId } */
-    private SynchronizedStatement mGetAnthologyTitleIdStmt = null;
-    /** Statements used by {@link #getAuthorIdByName } */
-    private SynchronizedStatement mGetAuthorIdStmt = null;
-    /** Statements for {@link #purgeAuthors} */
-    private SynchronizedStatement mPurgeBookAuthorsStmt = null;
-    /** Statements for {@link #purgeAuthors} */
-    private SynchronizedStatement mPurgeAuthorsStmt = null;
-    /** used in {@link #getAuthorBookCount} */
-    private SynchronizedStatement mGetAuthorBookCountQuery = null;
 
-    //</editor-fold>
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //<editor-fold desc="Author OK">
-    /** used in {@link #getAuthorAnthologyCount} */
-    private SynchronizedStatement mGetAuthorAnthologyCountQuery = null;
-    private SynchronizedStatement mGetBookUuidQuery = null;
-    /**
-     * Check that a book with the passed UUID exists and return the ID of the book, or zero
-     *
-     * @param rowId        UUID of book
-     * @return Boolean indicating it exists
-     */
-    private SynchronizedStatement mGetBookIdFromUuidStmt = null;
-    private SynchronizedStatement mGetBookUpdateDateQuery = null;
-    private SynchronizedStatement mGetBookTitleQuery = null;
-    private SynchronizedStatement mGetIdFromIsbn1Stmt = null;
-    private SynchronizedStatement mGetIdFromIsbn2Stmt = null;
-    private SynchronizedStatement mCheckBookExistsStmt = null;
-    /** Statement used in {@link #insertBookSeries} */
-    private SynchronizedStatement mDeleteBookSeriesStmt = null;
-    /** Statement used in {@link #insertBookSeries} */
-    private SynchronizedStatement mAddBookSeriesStmt = null;
-    /** Statements used by {@link #insertBookAuthors} */
-    private SynchronizedStatement mDeleteBookAuthorsStmt = null;
-    /** Statements used by {@link #insertBookAuthors} */
-    private SynchronizedStatement mAddBookAuthorsStmt = null;
-    /** Statements used by {@link #insertBookBookshelf} */
-    private SynchronizedStatement mDeleteBookBookshelfStmt = null;
-    /** Statements used by {@link #insertBookBookshelf} */
-    private SynchronizedStatement mInsertBookBookshelfStmt = null;
-    private SynchronizedStatement mGetBookshelfNameStmt = null;
-    private SynchronizedStatement mGetBookshelfIdStmt = null;
-    /**
-     * This will return JUST the bookshelf id based on the name.
-     *
-     * @param name bookshelf to search for
-     * @return bookshelf id, or 0 when not found
-     */
-    private SynchronizedStatement mFetchBookshelfIdByNameStmt = null;
-    /**
-     * Create a new booklist style
-     *
-     * @return the id of the new BooklistStyle, or -1 if failure
-     */
-    private SynchronizedStatement mInsertBooklistStyleStmt = null;
-    /**
-     * Update an existing booklist style
-     */
-    private SynchronizedStatement mUpdateBooklistStyleStmt = null;
-    /**
-     * Delete an existing booklist style
-     */
-    private SynchronizedStatement mDeleteBooklistStyleStmt = null;
-    private SynchronizedStatement mGetSeriesIdStmt = null;
-    /** Statements for {@link #purgeSeries} */
-    private SynchronizedStatement mPurgeBookSeriesStmt = null;
-    /** Statements for {@link #purgeSeries} */
-    private SynchronizedStatement mPurgeSeriesStmt = null;
-    /** Statements for {@link #getSeriesBookCount} */
-    private SynchronizedStatement mGetSeriesBookCountQuery = null;
-    /** Support statement for setGoodreadsBookId() */
-    private SynchronizedStatement mSetGoodreadsBookIdStmt = null;
-    /** Support statement for setGoodreadsSyncDate() */
-    private SynchronizedStatement mSetGoodreadsSyncDateStmt = null;
-    /**
-     * Insert a book into the FTS. Assumes book does not already exist in FTS.
-     *
-     * @param bookId
-     */
-    private SynchronizedStatement mInsertFtsStmt = null;
-    /**
-     * Update an existing FTS record.
-     *
-     * @param bookId
-     */
-    private SynchronizedStatement mUpdateFtsStmt = null;
-    /**
-     * Delete an existing FTS record
-     *
-     * @param bookId
-     */
-    private SynchronizedStatement mDeleteFtsStmt = null;
-    /** Flag indicating close() has been called */
-    private boolean mCloseWasCalled = false;
-    //</editor-fold>
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //<editor-fold desc="Book">
-
-    /**
-     * @param tableAlias alias to apply to the table
-     * @param idAlias    alias to apply to the ID column
-     *
-     * @return a string with all the fields concatenated, suitable for a select
-     */
-    @NonNull
-    private static String getAuthorFields(@SuppressWarnings("SameParameterValue") @NonNull final String tableAlias, @Nullable final String idAlias) {
-        String sql;
-        if (idAlias != null && !idAlias.isEmpty()) {
-            sql = " " + tableAlias + "." + DOM_ID + " as " + idAlias + ", ";
-        } else {
-            sql = " ";
-        }
-
-        return sql + tableAlias + "." + DOM_AUTHOR_FAMILY_NAME + " as " + DOM_AUTHOR_FAMILY_NAME + "," +
-                " " + tableAlias + "." + DOM_AUTHOR_GIVEN_NAMES + " as " + DOM_AUTHOR_GIVEN_NAMES + "," +
-                "  Case When " + tableAlias + "." + DOM_AUTHOR_GIVEN_NAMES + " = '' Then " + DOM_AUTHOR_FAMILY_NAME +
-                "        Else " + tableAlias + "." + DOM_AUTHOR_FAMILY_NAME + " || ', ' || " +
-                "             " + tableAlias + "." + DOM_AUTHOR_GIVEN_NAMES + " End as " + DOM_AUTHOR_FORMATTED +
-                ",  Case When " + tableAlias + "." + DOM_AUTHOR_GIVEN_NAMES + " = '' Then " + DOM_AUTHOR_FAMILY_NAME +
-                "        Else " + tableAlias + "." + DOM_AUTHOR_GIVEN_NAMES + " || ' ' || " +
-                tableAlias + "." + DOM_AUTHOR_FAMILY_NAME + " End as " + DOM_AUTHOR_FORMATTED_GIVEN_FIRST + " ";
-    }
-
-    private static String getBookFields(@SuppressWarnings("SameParameterValue") String alias, String idName) {
-        String sql;
-        if (idName != null && !idName.isEmpty()) {
-            sql = alias + "." + DOM_ID + " as " + idName + ", ";
-        } else {
-            sql = "";
-        }
-        return sql + alias + "." + DOM_TITLE + " as " + DOM_TITLE + ", " +
-                // Find FIRST series ID.
-                "(Select " + DOM_SERIES_ID + " From " + DB_TB_BOOK_SERIES + " bs " +
-                " where bs." + DOM_BOOK + " = " + alias + "." + DOM_ID + " Order by " + DOM_SERIES_POSITION + " asc  Limit 1) as " + DOM_SERIES_ID + ", " +
-                // Find FIRST series NUM.
-                "(Select " + DOM_SERIES_NUM + " From " + DB_TB_BOOK_SERIES + " bs " +
-                " where bs." + DOM_BOOK + " = " + alias + "." + DOM_ID + " Order by " + DOM_SERIES_POSITION + " asc  Limit 1) as " + DOM_SERIES_NUM + ", " +
-                // Get the total series count
-                "(Select Count(*) from " + DB_TB_BOOK_SERIES + " bs Where bs." + DOM_BOOK + " = " + alias + "." + DOM_ID + ") as _num_series," +
-                // Find the first AUTHOR ID
-                "(Select " + DOM_AUTHOR_ID + " From " + DB_TB_BOOK_AUTHOR + " ba " +
-                "   where ba." + DOM_BOOK + " = " + alias + "." + DOM_ID +
-                "   order by " + DOM_AUTHOR_POSITION + ", ba." + DOM_AUTHOR_ID + " Limit 1) as " + DOM_AUTHOR_ID + ", " +
-                // Get the total author count
-                "(Select Count(*) from " + DB_TB_BOOK_AUTHOR + " ba Where ba." + DOM_BOOK + " = " + alias + "." + DOM_ID + ") as _num_authors," +
-
-                alias + "." + DOM_ISBN + " as " + DOM_ISBN + ", " +
-                alias + "." + DOM_PUBLISHER + " as " + DOM_PUBLISHER + ", " +
-                alias + "." + DOM_DATE_PUBLISHED + " as " + DOM_DATE_PUBLISHED + ", " +
-                alias + "." + DOM_RATING + " as " + DOM_RATING + ", " +
-                alias + "." + DOM_READ + " as " + DOM_READ + ", " +
-                alias + "." + DOM_PAGES + " as " + DOM_PAGES + ", " +
-                alias + "." + DOM_NOTES + " as " + DOM_NOTES + ", " +
-                alias + "." + DOM_LIST_PRICE + " as " + DOM_LIST_PRICE + ", " +
-                alias + "." + DOM_ANTHOLOGY_MASK + " as " + DOM_ANTHOLOGY_MASK + ", " +
-                alias + "." + DOM_LOCATION + " as " + DOM_LOCATION + ", " +
-                alias + "." + DOM_READ_START + " as " + DOM_READ_START + ", " +
-                alias + "." + DOM_READ_END + " as " + DOM_READ_END + ", " +
-                alias + "." + DOM_FORMAT + " as " + DOM_FORMAT + ", " +
-                alias + "." + DOM_SIGNED + " as " + DOM_SIGNED + ", " +
-                alias + "." + DOM_DESCRIPTION + " as " + DOM_DESCRIPTION + ", " +
-                alias + "." + DOM_GENRE + " as " + DOM_GENRE + ", " +
-                alias + "." + DOM_LANGUAGE + " as " + DOM_LANGUAGE + ", " +
-                alias + "." + DOM_DATE_ADDED + " as " + DOM_DATE_ADDED + ", " +
-                alias + "." + DOM_GOODREADS_BOOK_ID + " as " + DOM_GOODREADS_BOOK_ID + ", " +
-                alias + "." + DOM_GOODREADS_LAST_SYNC_DATE + " as " + DOM_GOODREADS_LAST_SYNC_DATE + ", " +
-                alias + "." + DOM_LAST_UPDATE_DATE + " as " + DOM_LAST_UPDATE_DATE + ", " +
-                alias + "." + DOM_BOOK_UUID + " as " + DOM_BOOK_UUID;
-    }
-
-    public static String encodeString(String value) {
-        return value.replace("'", "''");
-    }
-
-    @Nullable
-    public static String join(@Nullable final String[] strings) {
-        if (strings == null || strings.length == 0)
-            return null;
-        StringBuilder s = new StringBuilder(strings[0]);
-        final int len = strings.length;
-        for (int i = 1; i < len; i++)
-            s.append(",").append(strings[i]);
-        return s.toString();
-    }
-
-    /**
-     * Cleanup a search string to remove all quotes etc.
-     *
-     * Remove punctuation from the search string to TRY to match the tokenizer. The only punctuation we
-     * allow is a hyphen preceded by a space. Everything else is translated to a space.
-     *
-     * TODO: Consider making '*' to the end of all words a preference item.
-     *
-     * @param search Search criteria to clean
-     *
-     * @return Clean string
-     */
-    public static String cleanupFtsCriterion(@NonNull final String search) {
-        //return s.replace("'", " ").replace("\"", " ").trim();
-
-        if (search.isEmpty())
-            return search;
-
-        // Output bufgfer
-        final StringBuilder out = new StringBuilder();
-        // Array (convenience)
-        final char[] chars = search.toCharArray();
-        // Cached length
-        final int len = chars.length;
-        // Initial position
-        int pos = 0;
-        // Dummy 'previous' character
-        char prev = ' ';
-
-        // Loop over array
-        while (pos < len) {
-            char curr = chars[pos];
-            // If current is letter or ...use it.
-            if (Character.isLetterOrDigit(curr)) {
-                out.append(curr);
-            } else if (curr == '-' && Character.isWhitespace(prev)) {
-                // Allow negation if preceded by space
-                out.append(curr);
-            } else {
-                // Everything else is whitespace
-                curr = ' ';
-                if (!Character.isWhitespace(prev)) {
-                    // If prev character was non-ws, and not negation, make wildcard
-                    if (prev != '-') {
-                        // Make every token a wildcard
-                        // TODO: Make this a preference
-                        out.append('*');
-                    }
-                    // Append a whitespace only when last char was not a whitespace
-                    out.append(' ');
-                }
-            }
-            prev = curr;
-            pos++;
-        }
-        if (!Character.isWhitespace(prev) && (prev != '-')) {
-            // Make every token a wildcard
-            // TODO: Make this a preference
-            out.append('*');
-        }
-        return out.toString();
-    }
-
-    /**
-     * Get the synchronizer object for this database in case there is some other activity that needs to
-     * be synced.
-     *
-     * Note: Cursor requery() is the only thing found so far.
-     */
-    public static Synchronizer getSynchronizer() {
-        return mSynchronizer;
-    }
-
-    /**
-     * DB_ADAPTER only
-     */
-    @SuppressWarnings("unused")
-    private static void addInstance(CatalogueDBAdapter db) {
-        if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
-            mInstances.add(new InstanceRef(db));
-        }
-    }
-
-    /**
-     * DB_ADAPTER only
-     */
-    @SuppressWarnings("unused")
-    private static void removeInstance(CatalogueDBAdapter db) {
-        if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
-            ArrayList<InstanceRef> toDelete = new ArrayList<>();
-            for (InstanceRef ref : mInstances) {
-                CatalogueDBAdapter refDb = ref.get();
-                if (refDb == null) {
-                    System.out.println("<-- **** Missing ref (not closed?) **** vvvvvvv");
-                    Logger.logError(ref.getCreationException());
-                    System.out.println("--> **** Missing ref (not closed?) **** ^^^^^^^");
-                } else {
-                    if (refDb == db) {
-                        toDelete.add(ref);
-                    }
-                }
-            }
-            for (InstanceRef ref : toDelete) {
-                mInstances.remove(ref);
-            }
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public static void dumpInstances() {
-        if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
-            for (InstanceRef ref : mInstances) {
-                if (ref.get() == null) {
-                    System.out.println("<-- **** Missing ref (not closed?) **** vvvvvvv");
-                    Logger.logError(ref.getCreationException());
-                    System.out.println("--> **** Missing ref (not closed?) **** ^^^^^^^");
-                } else {
-                    Logger.logError(ref.getCreationException());
-                }
-            }
-        }
-    }
-
-    /**
-     * DB_ADAPTER ONLY; used when tracking a bug in android 2.1, but kept because
-     * there are still non-fatal anomalies.
-     */
-    @SuppressWarnings("unused")
-    public static void printReferenceCount(@Nullable final String msg) {
-        if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
-            if (mSyncedDb != null) {
-                SynchronizedDb.printRefCount(msg, mSyncedDb.getUnderlyingDatabase());
-            }
-        }
-    }
 
     /**
      * Examine the values and make any changes necessary before writing the data.
      *
-     * @param values Collection of field values.
+     * @param values	Collection of field values.
      */
     private void preprocessOutput(final boolean isNew, @NonNull final BookData values) {
         Long authorId;
@@ -618,7 +260,7 @@ public class CatalogueDBAdapter {
 
         // Remove blank/null fields that have default values defined in the database
         // or which should never be blank.
-        for (String name : new String[]{
+        for (String name : new String[] {
                 DOM_BOOK_UUID.name,
                 DOM_ANTHOLOGY_MASK.name,
                 DOM_RATING.name,
@@ -626,7 +268,7 @@ public class CatalogueDBAdapter {
                 DOM_SIGNED.name,
                 DOM_DATE_ADDED.name,
                 DOM_GOODREADS_LAST_SYNC_DATE.name,
-                DOM_LAST_UPDATE_DATE.name}) {
+                DOM_LAST_UPDATE_DATE.name }) {
             if (values.containsKey(name)) {
                 Object o = values.get(name);
                 // Need to allow for the possibility the stored value is not
@@ -638,15 +280,20 @@ public class CatalogueDBAdapter {
         }
     }
 
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Anthology OK">
+
     /**
      * Create an anthology title for a book.
      *
-     * @param bookId      id of book
-     * @param author      author
-     * @param title       title of anthology title
-     * @param returnDupId If title already exists then if true, will return existing ID, if false, will thrown an error
+     * @param bookId		id of book
+     * @param author		author
+     * @param title			title of anthology title
+     * @param returnDupId	If title already exists then if true, will return existing ID, if false, will thrown an error
      *
-     * @return ID of anthology title record, or -1 if title was empty
+     * @return				ID of anthology title record, or -1 if title was empty
      */
     @SuppressWarnings("UnusedReturnValue")
     public long insertAnthologyTitle(@NonNull final Long bookId,
@@ -665,12 +312,12 @@ public class CatalogueDBAdapter {
     /**
      * Create an anthology title for a book.
      *
-     * @param bookId      id of book
-     * @param authorId    id of author
-     * @param title       title of anthology title
-     * @param returnDupId If title already exists then if true, will return existing ID, if false, will thrown an error
+     * @param bookId		id of book
+     * @param authorId		id of author
+     * @param title			title of anthology title
+     * @param returnDupId	If title already exists then if true, will return existing ID, if false, will thrown an error
      *
-     * @return ID of anthology title record, or -1 if title was empty
+     * @return				ID of anthology title record, or -1 if title was empty
      */
     @SuppressWarnings("WeakerAccess")
     public long insertAnthologyTitle(@NonNull final Long bookId,
@@ -707,7 +354,6 @@ public class CatalogueDBAdapter {
      * Delete ALL the anthology records for a given book, if any
      *
      * @param id id of the book
-     *
      * @return true if deleted, false otherwise
      */
     @SuppressWarnings("UnusedReturnValue")
@@ -725,7 +371,6 @@ public class CatalogueDBAdapter {
      * Delete the anthology record with the given rowId (not to be confused with the book rowId
      *
      * @param id id of the anthology to delete
-     *
      * @return true if deleted, false otherwise
      */
     public boolean deleteAnthologyTitle(@NonNull final Long id,
@@ -755,21 +400,24 @@ public class CatalogueDBAdapter {
         return success;
     }
 
+    /** Statements used by {@link #getAnthologyTitleId } */
+    private SynchronizedStatement mGetAnthologyTitleIdStmt = null;
+
     /**
      * Return the AnthologyTitle ID for a given book/author/title
      *
-     * @param bookId   id of book
-     * @param authorId id of author
-     * @param title    title
+     * @param bookId		id of book
+     * @param authorId		id of author
+     * @param title			title
      *
-     * @return ID, or -1 if it does not exist
+     * @return				ID, or -1 if it does not exist
      */
     private long getAnthologyTitleId(@NonNull final Long bookId,
                                      @NonNull final Long authorId,
                                      @NonNull final String title) {
         if (mGetAnthologyTitleIdStmt == null) {
             // Build the FTS update statement base. The parameter order MUST match the order expected in ftsSendBooks().
-            String sql = "Select Coalesce( Min(" + DOM_ID + "),-1) from " + DB_TB_ANTHOLOGY +
+            String sql = "Select Coalesce( Min(" + DOM_ID + "),-1) from " + DB_TB_ANTHOLOGY	+
                     " Where " + DOM_BOOK + " = ?" +
                     " and " + DOM_AUTHOR_ID + " = ?" +
                     " and " + DOM_TITLE + " = ? " +
@@ -786,7 +434,6 @@ public class CatalogueDBAdapter {
      * Return the largest anthology position (usually used for adding new titles)
      *
      * @param id id of book to retrieve
-     *
      * @return An integer of the highest position. 0 if it is not an anthology
      */
     private int getAnthologyPositionByBook(@NonNull final Long id) {
@@ -798,107 +445,113 @@ public class CatalogueDBAdapter {
     }
 
     /**
-     * Update the anthology title in the database
-     *
-     * @param id     The rowId of the anthology title
-     * @param bookId The id of the book
-     * @param author The author
-     * @param title  The title of the anthology story
-     *
-     * @return true/false on success
-     */
-    public boolean updateAnthologyTitle(@NonNull final Long id,
+	 * Update the anthology title in the database
+	 *
+	 * @param id The rowId of the anthology title
+	 * @param bookId The id of the book
+	 * @param author The author
+	 * @param title The title of the anthology story
+	 * @return true/false on success
+	 */
+	public boolean updateAnthologyTitle(@NonNull final Long id,
                                         @NonNull final Long bookId,
                                         @NonNull final Author author,
                                         @NonNull final String title,
                                         final boolean dirtyBookIfNecessary) {
 
-        final long authorId = getAuthorIdOrInsert(author);
+		final long authorId = getAuthorIdOrInsert(author);
 
         final long existingId = getAnthologyTitleId(bookId, authorId, title);
-        if (existingId >= 0 && existingId != id) {
+		if (existingId >= 0 && existingId != id) {
             throw new AnthologyTitleExistsException();
         }
 
         final ContentValues values = new ContentValues();
-        values.put(DOM_BOOK.name, bookId);
-        values.put(DOM_AUTHOR_ID.name, authorId);
-        values.put(DOM_TITLE.name, title);
-        boolean success = mSyncedDb.update(DB_TB_ANTHOLOGY, values, DOM_ID + "=" + id, null) > 0;
-        purgeAuthors();
+		values.put(DOM_BOOK.name, bookId);
+		values.put(DOM_AUTHOR_ID.name, authorId);
+		values.put(DOM_TITLE.name, title);
+		boolean success = mSyncedDb.update(DB_TB_ANTHOLOGY, values, DOM_ID + "=" + id, null) > 0;
+		purgeAuthors();
 
-        if (dirtyBookIfNecessary) {
+		if (dirtyBookIfNecessary) {
             setBookDirty(bookId);
         }
 
-        return success;
-    }
+		return success;
+	}
 
     /**
      * Return the AnthologyTitle ID
      *
-     * @return ID, or -1 if it does not exist
+     * @return	ID, or -1 if it does not exist
      */
     public long getAnthologyTitleId(@NonNull final AnthologyTitle a) {
         return getAnthologyTitleId(a.getBookId(), a.getAuthor().getId(), a.getTitle());
     }
 
     /**
-     * Move the given title up/down one position
+	 * Move the given title up/down one position
+	 *
+	 * @param id The rowId of the title
+	 * @param up true if going up, false if going down
      *
-     * @param id The rowId of the title
-     * @param up true if going up, false if going down
-     *
-     * @return new position
-     */
-    public int updateAnthologyTitlePosition(@NonNull final Long id,
+	 * @return new position
+	 */
+	public int updateAnthologyTitlePosition(@NonNull final Long id,
                                             final boolean up,
                                             final boolean dirtyBookIfNecessary) {
         int book;
         int position;
-        try (Cursor title = fetchAnthologyTitleById(id)) {
+		try (Cursor title = fetchAnthologyTitleById(id)) {
             title.moveToFirst();
             book = title.getInt(title.getColumnIndexOrThrow(DOM_BOOK.name));
             position = title.getInt(title.getColumnIndexOrThrow(DOM_POSITION.name));
         }
 
-        int max_position = getAnthologyPositionByBook(id);
+		int max_position = getAnthologyPositionByBook(id);
 
-        if ((position == 1 && up) || (position == max_position && !up)) {
-            return 0;
-        }
+		if ((position == 1 && up) || (position == max_position && !up)) {
+			return 0;
+		}
 
-        String dir;
-        String opp_dir;
-        if (up) {
-            dir = "-1";
-            opp_dir = "+1";
-        } else {
-            dir = "+1";
-            opp_dir = "-1";
-        }
+		String dir;
+		String opp_dir;
+		if (up) {
+			dir = "-1";
+			opp_dir = "+1";
+		} else {
+			dir = "+1";
+			opp_dir = "-1";
+		}
         String sql = "UPDATE " + DB_TB_ANTHOLOGY +
                 " SET " + DOM_POSITION + "=" + DOM_POSITION + opp_dir +
                 " WHERE " + DOM_BOOK + "='" + book + "' AND " + DOM_POSITION + "=" + position + dir;
-        mSyncedDb.execSQL(sql);
+		mSyncedDb.execSQL(sql);
 
-        sql = "UPDATE " + DB_TB_ANTHOLOGY +
+		sql = "UPDATE " + DB_TB_ANTHOLOGY +
                 " SET " + DOM_POSITION + "=" + DOM_POSITION + dir +
-                " WHERE " + DOM_BOOK + "='" + book + "' AND " + DOM_ID + "=" + id;
-        mSyncedDb.execSQL(sql);
+		        " WHERE " + DOM_BOOK + "='" + book + "' AND " + DOM_ID + "=" + id;
+		mSyncedDb.execSQL(sql);
 
-        if (dirtyBookIfNecessary) {
+		if (dirtyBookIfNecessary) {
             setBookDirty(book);
         }
 
-        return position;
+		return position;
+	}
+
+    public class AnthologyTitleExistsException extends RuntimeException {
+        private static final long serialVersionUID = -9052087086134217566L;
+
+        AnthologyTitleExistsException() {
+            super("Anthology title already exists");
+        }
     }
 
     /**
      * Return all the anthology titles and authors recorded for book
      *
      * @param id id of book to retrieve
-     *
      * @return Cursor containing all records, if any
      */
     @NonNull
@@ -921,14 +574,13 @@ public class CatalogueDBAdapter {
      * Return a specific anthology titles and authors recorded for book
      *
      * @param id id of anthology to retrieve
-     *
      * @return Cursor containing all records, if any
      */
     @NonNull
     private Cursor fetchAnthologyTitleById(@NonNull final Long id) {
         String sql = "SELECT an." + DOM_ID + " as " + DOM_ID + "," +
                 " an." + DOM_TITLE + " as " + DOM_TITLE + "," +
-                " an." + DOM_POSITION + " as " + DOM_POSITION + "," +
+                " an." + DOM_POSITION + " as " + DOM_POSITION  + "," +
                 " au." + DOM_AUTHOR_FAMILY_NAME + " || ', ' || au." + DOM_AUTHOR_GIVEN_NAMES + " as " + DOM_AUTHOR_NAME + "," +
                 " an." + DOM_BOOK + " as " + DOM_BOOK + "," +
                 " an." + DOM_AUTHOR_ID + " as " + DOM_AUTHOR_ID + "," +
@@ -936,6 +588,12 @@ public class CatalogueDBAdapter {
                 " WHERE an." + DOM_AUTHOR_ID + "=au." + DOM_ID + " AND an." + DOM_ID + "='" + id + "'";
         return mSyncedDb.rawQuery(sql, new String[]{});
     }
+
+    //</editor-fold>
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Author OK">
 
     /**
      * Create a new author in the database
@@ -949,12 +607,8 @@ public class CatalogueDBAdapter {
         return mSyncedDb.insert(DB_TB_AUTHORS, null, values);
     }
 
-    //</editor-fold>
-
-    //<editor-fold desc="Dirty Books OK">
-
     /**
-     * @return the number of rows affected
+     *@return the number of rows affected
      */
     private int updateAuthor(@NonNull final Author author) {
         ContentValues v = new ContentValues();
@@ -1004,6 +658,9 @@ public class CatalogueDBAdapter {
         }
     }
 
+    /** Statements used by {@link #getAuthorIdByName } */
+    private SynchronizedStatement mGetAuthorIdStmt = null;
+
     /**
      * @return author id, or 0 when not found
      */
@@ -1023,14 +680,36 @@ public class CatalogueDBAdapter {
             return 0;
         }
     }
-    //</editor-fold>
-
-    //<editor-fold desc="Book Relation 'create'">
 
     private long getAuthorIdOrInsert(@NonNull final Author author) {
         long id = getAuthorIdByName(author);
         return id == 0 ? insertAuthor(author) : id;
     }
+
+    /**
+     * @param tableAlias    alias to apply to the table
+     * @param idAlias       alias to apply to the ID column
+     *
+     * @return a string with all the fields concatenated, suitable for a select
+     */
+    private static String getAuthorFields(@SuppressWarnings("SameParameterValue") @NonNull final String tableAlias, @Nullable final String idAlias) {
+        String sql;
+        if (idAlias != null && !idAlias.isEmpty()) {
+            sql = " " + tableAlias + "." + DOM_ID + " as " + idAlias + ", ";
+        } else {
+            sql = " ";
+        }
+
+        return sql + tableAlias + "." + DOM_AUTHOR_FAMILY_NAME + " as " + DOM_AUTHOR_FAMILY_NAME + "," +
+                " " + tableAlias + "." + DOM_AUTHOR_GIVEN_NAMES + " as " + DOM_AUTHOR_GIVEN_NAMES + "," +
+                "  Case When " + tableAlias + "." + DOM_AUTHOR_GIVEN_NAMES + " = '' Then " + DOM_AUTHOR_FAMILY_NAME +
+                "        Else " + tableAlias + "." + DOM_AUTHOR_FAMILY_NAME + " || ', ' || " +
+                "             " + tableAlias + "." + DOM_AUTHOR_GIVEN_NAMES + " End as " + DOM_AUTHOR_FORMATTED +
+                ",  Case When " + tableAlias + "." + DOM_AUTHOR_GIVEN_NAMES + " = '' Then " + DOM_AUTHOR_FAMILY_NAME +
+                "        Else " + tableAlias + "." + DOM_AUTHOR_GIVEN_NAMES + " || ' ' || " +
+                tableAlias + "." + DOM_AUTHOR_FAMILY_NAME + " End as " + DOM_AUTHOR_FORMATTED_GIVEN_FIRST + " ";
+    }
+
 
     /**
      * Refresh the passed author from the database, if present. Used to ensure that
@@ -1120,7 +799,7 @@ public class CatalogueDBAdapter {
     @NonNull
     public ArrayList<String> getAllAuthors() {
         ArrayList<String> list = new ArrayList<>();
-        try (Cursor cursor = fetchAllAuthors()) {
+        try(Cursor cursor = fetchAllAuthors())  {
             while (cursor.moveToNext()) {
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(DOM_AUTHOR_FORMATTED.name));
                 list.add(name);
@@ -1162,7 +841,6 @@ public class CatalogueDBAdapter {
      *
      * @param author    The author to search for
      * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     *
      * @return The position of the author
      */
     public int getAuthorPositionByName(@NonNull final Author author, @NonNull final String bookshelf) {
@@ -1185,6 +863,10 @@ public class CatalogueDBAdapter {
         }
     }
 
+    /** Statements for {@link #purgeAuthors} */
+    private SynchronizedStatement mPurgeBookAuthorsStmt = null;
+    /** Statements for {@link #purgeAuthors} */
+    private SynchronizedStatement mPurgeAuthorsStmt = null;
     /**
      * Delete the author with the given rowId
      *
@@ -1211,8 +893,8 @@ public class CatalogueDBAdapter {
         if (mPurgeAuthorsStmt == null) {
             mPurgeAuthorsStmt = mStatements.add("mPurgeAuthorsStmt",
                     "Delete from " + DB_TB_AUTHORS + " Where " +
-                            DOM_ID + " Not In (SELECT DISTINCT " + DOM_AUTHOR_ID + " FROM " + DB_TB_BOOK_AUTHOR + ")" +
-                            " And " + DOM_ID + " Not In (SELECT DISTINCT " + DOM_AUTHOR_ID + " FROM " + DB_TB_ANTHOLOGY + ")");
+                    DOM_ID + " Not In (SELECT DISTINCT " + DOM_AUTHOR_ID + " FROM " + DB_TB_BOOK_AUTHOR + ")" +
+                    " And " + DOM_ID + " Not In (SELECT DISTINCT " + DOM_AUTHOR_ID + " FROM " + DB_TB_ANTHOLOGY + ")");
         }
 
         try {
@@ -1238,9 +920,8 @@ public class CatalogueDBAdapter {
     /**
      * Return a Cursor over the list of all books in the database
      *
-     * @param sortByFamily flag
-     * @param firstOnly    flag
-     *
+     * @param sortByFamily		flag
+     * @param firstOnly			flag
      * @return Cursor over all notes
      */
     @NonNull
@@ -1274,10 +955,6 @@ public class CatalogueDBAdapter {
         return fetchAllAuthors(bookshelf, true, false);
     }
 
-    //</editor-fold>
-
-    //<editor-fold desc="Book Relation 'get' OK">
-
     /**
      * Return a Cursor over the list of all authors in the database
      *
@@ -1310,7 +987,6 @@ public class CatalogueDBAdapter {
      * Return a Cursor over the list of all authors  in the database for the given book
      *
      * @param bookId the rowId of the book
-     *
      * @return Cursor over all authors
      */
     @NonNull
@@ -1334,8 +1010,7 @@ public class CatalogueDBAdapter {
      * Return a Cursor over the author in the database which meet the provided search criteria
      *
      * @param searchText The search query
-     * @param bookshelf  The bookshelf to search within
-     *
+     * @param bookshelf The bookshelf to search within
      * @return Cursor over all authors
      */
     @NonNull
@@ -1343,18 +1018,11 @@ public class CatalogueDBAdapter {
         return fetchAuthors(searchText, bookshelf, true, false);
     }
 
-    //</editor-fold>
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //<editor-fold desc="Bookshelf OK">
-
     /**
      * Return a Cursor over the author in the database which meet the provided search criteria
      *
      * @param searchText The search query
-     * @param bookshelf  The bookshelf to search within
-     *
+     * @param bookshelf The bookshelf to search within
      * @return Cursor over all authors
      */
     @NonNull
@@ -1381,11 +1049,11 @@ public class CatalogueDBAdapter {
 
         String sql = "SELECT " + getAuthorFields("a", DOM_ID.name) +
                 " FROM " + DB_TB_AUTHORS + " a" + " " +
-                "WHERE (" + authorSearchPredicate(searchText) + " OR " +
+                "WHERE (" + authorSearchPredicate(searchText) +  " OR " +
                 "a." + DOM_ID + " IN (SELECT ba." + DOM_AUTHOR_ID +
                 " FROM " + DB_TB_BOOKS + " b Join " + DB_TB_BOOK_AUTHOR + " ba " +
                 " On ba." + DOM_BOOK + " = b." + DOM_ID + " " + baWhere +
-                "WHERE (" + bookSearchPredicate(searchText) + ") ) )" +
+                "WHERE (" + bookSearchPredicate(searchText)  + ") ) )" +
                 where + order;
         return mSyncedDb.rawQuery(sql, new String[]{});
     }
@@ -1412,6 +1080,8 @@ public class CatalogueDBAdapter {
         return alias + DOM_AUTHOR_FAMILY_NAME + "||', '||" + DOM_AUTHOR_GIVEN_NAMES;
     }
 
+    /** used in {@link #getAuthorBookCount} */
+    private SynchronizedStatement mGetAuthorBookCountQuery = null;
     public long getAuthorBookCount(@NonNull final Author author) {
         if (author.id == 0) {
             author.id = getAuthorIdByName(author);
@@ -1426,12 +1096,14 @@ public class CatalogueDBAdapter {
             mGetAuthorBookCountQuery = mStatements.add("mGetAuthorBookCountQuery", sql);
         }
         // Be cautious
-        synchronized (mGetAuthorBookCountQuery) {
+        synchronized(mGetAuthorBookCountQuery) {
             mGetAuthorBookCountQuery.bindLong(1, author.id);
             return mGetAuthorBookCountQuery.simpleQueryForLong();
         }
     }
 
+    /** used in {@link #getAuthorAnthologyCount} */
+    private SynchronizedStatement mGetAuthorAnthologyCountQuery = null;
     public long getAuthorAnthologyCount(@NonNull final Author a) {
         if (a.id == 0) {
             a.id = getAuthorIdByName(a);
@@ -1445,13 +1117,19 @@ public class CatalogueDBAdapter {
             mGetAuthorAnthologyCountQuery = mStatements.add("mGetAuthorAnthologyCountQuery", sql);
         }
         // Be cautious
-        synchronized (mGetAuthorAnthologyCountQuery) {
+        synchronized(mGetAuthorAnthologyCountQuery) {
             mGetAuthorAnthologyCountQuery.bindLong(1, a.id);
             return mGetAuthorAnthologyCountQuery.simpleQueryForLong();
         }
 
     }
+    //</editor-fold>
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Book">
+
+    private SynchronizedStatement mGetBookUuidQuery = null;
     /**
      * Utility routine to return the book title based on the id.
      */
@@ -1461,12 +1139,20 @@ public class CatalogueDBAdapter {
             mGetBookUuidQuery = mStatements.add("mGetBookUuidQuery", sql);
         }
         // Be cautious; other threads may call this and set parameters.
-        synchronized (mGetBookUuidQuery) {
+        synchronized(mGetBookUuidQuery) {
             mGetBookUuidQuery.bindLong(1, id);
             return mGetBookUuidQuery.simpleQueryForString();
         }
     }
 
+    /**
+     * Check that a book with the passed UUID exists and return the ID of the book, or zero
+     *
+     * @param rowId		UUID of book
+     *
+     * @return			Boolean indicating it exists
+     */
+    private SynchronizedStatement mGetBookIdFromUuidStmt = null;
     public long getBookIdFromUuid(String uuid) {
         if (mGetBookIdFromUuidStmt == null) {
             mGetBookIdFromUuidStmt = mStatements.add("mGetBookIdFromUuidStmt", "Select " + DOM_ID + " From " + DB_TB_BOOKS + " Where " + DOM_BOOK_UUID + " = ?");
@@ -1479,6 +1165,7 @@ public class CatalogueDBAdapter {
         }
     }
 
+    private SynchronizedStatement mGetBookUpdateDateQuery = null;
     /**
      * Utility routine to return the book title based on the id.
      */
@@ -1488,12 +1175,13 @@ public class CatalogueDBAdapter {
             mGetBookUpdateDateQuery = mStatements.add("mGetBookUpdateDateQuery", sql);
         }
         // Be cautious; other threads may call this and set parameters.
-        synchronized (mGetBookUpdateDateQuery) {
+        synchronized(mGetBookUpdateDateQuery) {
             mGetBookUpdateDateQuery.bindLong(1, bookId);
             return mGetBookUpdateDateQuery.simpleQueryForString();
         }
     }
 
+    private SynchronizedStatement mGetBookTitleQuery = null;
     /**
      * Utility routine to return the book title based on the id.
      */
@@ -1503,17 +1191,64 @@ public class CatalogueDBAdapter {
             mGetBookTitleQuery = mStatements.add("mGetBookTitleQuery", sql);
         }
         // Be cautious; other threads may call this and set parameters.
-        synchronized (mGetBookTitleQuery) {
+        synchronized(mGetBookTitleQuery) {
             mGetBookTitleQuery.bindLong(1, id);
             return mGetBookTitleQuery.simpleQueryForString();
         }
+    }
+
+    private static String getBookFields(@SuppressWarnings("SameParameterValue") String alias, String idName) {
+        String sql;
+        if (idName != null && !idName.isEmpty()) {
+            sql = alias + "." + DOM_ID + " as " + idName + ", ";
+        } else {
+            sql = "";
+        }
+        return sql + alias + "." + DOM_TITLE + " as " + DOM_TITLE + ", " +
+
+                // Find FIRST series ID.
+                "(Select " + DOM_SERIES_ID + " From " + DB_TB_BOOK_SERIES + " bs " +
+                " where bs." + DOM_BOOK + " = " + alias + "." + DOM_ID + " Order by " + DOM_SERIES_POSITION + " asc  Limit 1) as " + DOM_SERIES_ID + ", " +
+                // Find FIRST series NUM.
+                "(Select " + DOM_SERIES_NUM + " From " + DB_TB_BOOK_SERIES + " bs " +
+                " where bs." + DOM_BOOK + " = " + alias + "." + DOM_ID + " Order by " + DOM_SERIES_POSITION + " asc  Limit 1) as " + DOM_SERIES_NUM + ", " +
+                // Get the total series count
+                "(Select Count(*) from " + DB_TB_BOOK_SERIES + " bs Where bs." + DOM_BOOK + " = " + alias + "." + DOM_ID + ") as _num_series," +
+                // Find the first AUTHOR ID
+                "(Select " + DOM_AUTHOR_ID + " From " + DB_TB_BOOK_AUTHOR + " ba " +
+                "   where ba." + DOM_BOOK + " = " + alias + "." + DOM_ID +
+                "   order by " + DOM_AUTHOR_POSITION + ", ba." + DOM_AUTHOR_ID + " Limit 1) as " + DOM_AUTHOR_ID + ", " +
+                // Get the total author count
+                "(Select Count(*) from " + DB_TB_BOOK_AUTHOR + " ba Where ba." + DOM_BOOK + " = " + alias + "." + DOM_ID + ") as _num_authors," +
+
+                alias + "." + DOM_ISBN + " as " + DOM_ISBN + ", " +
+                alias + "." + DOM_PUBLISHER + " as " + DOM_PUBLISHER + ", " +
+                alias + "." + DOM_DATE_PUBLISHED + " as " + DOM_DATE_PUBLISHED + ", " +
+                alias + "." + DOM_RATING + " as " + DOM_RATING + ", " +
+                alias + "." + DOM_READ + " as " + DOM_READ + ", " +
+                alias + "." + DOM_PAGES + " as " + DOM_PAGES + ", " +
+                alias + "." + DOM_NOTES + " as " + DOM_NOTES + ", " +
+                alias + "." + DOM_LIST_PRICE + " as " + DOM_LIST_PRICE + ", " +
+                alias + "." + DOM_ANTHOLOGY_MASK + " as " + DOM_ANTHOLOGY_MASK + ", " +
+                alias + "." + DOM_LOCATION + " as " + DOM_LOCATION + ", " +
+                alias + "." + DOM_READ_START + " as " + DOM_READ_START + ", " +
+                alias + "." + DOM_READ_END + " as " + DOM_READ_END + ", " +
+                alias + "." + DOM_FORMAT + " as " + DOM_FORMAT + ", " +
+                alias + "." + DOM_SIGNED + " as " + DOM_SIGNED + ", " +
+                alias + "." + DOM_DESCRIPTION + " as " + DOM_DESCRIPTION + ", " +
+                alias + "." + DOM_GENRE  + " as " + DOM_GENRE + ", " +
+                alias + "." + DOM_LANGUAGE  + " as " + DOM_LANGUAGE + ", " +
+                alias + "." + DOM_DATE_ADDED + " as " + DOM_DATE_ADDED + ", " +
+                alias + "." + DOM_GOODREADS_BOOK_ID  + " as " + DOM_GOODREADS_BOOK_ID + ", " +
+                alias + "." + DOM_GOODREADS_LAST_SYNC_DATE + " as " + DOM_GOODREADS_LAST_SYNC_DATE + ", " +
+                alias + "." + DOM_LAST_UPDATE_DATE  + " as " + DOM_LAST_UPDATE_DATE + ", " +
+                alias + "." + DOM_BOOK_UUID  + " as " + DOM_BOOK_UUID;
     }
 
     /**
      * Delete the book with the given rowId
      *
      * @param rowId id of book to delete
-     *
      * @return true if deleted, false otherwise
      */
     @SuppressWarnings("UnusedReturnValue")
@@ -1549,21 +1284,20 @@ public class CatalogueDBAdapter {
         }
 
         if (uuid != null && !uuid.isEmpty()) {
-            try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(mContext)) {
+            try(CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(mContext)) {
                 coversDbHelper.eraseCachedBookCover(uuid);
             }
         }
 
         return success;
     }
-
     /**
      * Create a new book using the details provided. If the book is
      * successfully created return the new rowId for that book, otherwise return
      * a -1 to indicate failure.
      *
-     * @param values A ContentValues collection with the columns to be updated. May contain extrat data.
-     * @param flags  See BOOK_UPDATE_* flag definitions
+     * @param values 	A ContentValues collection with the columns to be updated. May contain extrat data.
+     * @param flags  	See BOOK_UPDATE_* flag definitions
      *
      * @return rowId or -1 if failed
      */
@@ -1576,9 +1310,9 @@ public class CatalogueDBAdapter {
      * successfully created return the new rowId for that book, otherwise return
      * a -1 to indicate failure.
      *
-     * @param id     The ID of the book to insert (this will overwrite the normal autoIncrement)
-     * @param values A ContentValues collection with the columns to be updated. May contain extrat data.
-     * @param flags  See BOOK_UPDATE_* flag definitions
+     * @param id 		The ID of the book to insert (this will overwrite the normal autoIncrement)
+     * @param values 	A ContentValues collection with the columns to be updated. May contain extrat data.
+     * @param flags  	See BOOK_UPDATE_* flag definitions
      *
      * @return rowId or -1 if failed
      */
@@ -1645,18 +1379,16 @@ public class CatalogueDBAdapter {
             throw new RuntimeException("Error creating book from " + values.getDataAsString() + ": " + e.getMessage(), e);
         }
     }
-
-    //</editor-fold>
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //<editor-fold desc="BooklistStyle OK">
+    /** Flag indicating the UPDATE_DATE field from the bundle should be truested. If this flag is not set, the UPDATE_DATE will be set based on the current time */
+    public static final int BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT = 1;
+    /** Flag indicating to skip doing the 'purge' step; mainly used in batch operations. */
+    public static final int BOOK_UPDATE_SKIP_PURGE_REFERENCES = 2;
 
     /**
      * Update the book using the details provided. The book to be updated is
      * specified using the rowId, and it is altered to use values passed in
      *
-     * @param rowId  The id of the book in the database
+     * @param rowId The id of the book in the database
      * @param values A ContentValues collection with the columns to be updated. May contain extra data.
      * @param flags  See BOOK_UPDATE_* flag definitions
      *
@@ -1706,7 +1438,7 @@ public class CatalogueDBAdapter {
             }
 
             // Only really skip the purge if a batch update of multiple books is being done.
-            if ((flags & BOOK_UPDATE_SKIP_PURGE_REFERENCES) == 0) {
+            if ( (flags & BOOK_UPDATE_SKIP_PURGE_REFERENCES) == 0) {
                 // Delete any unused authors
                 purgeAuthors();
                 // Delete any unused series
@@ -1733,7 +1465,7 @@ public class CatalogueDBAdapter {
     @SuppressWarnings("WeakerAccess")
     public int countBooks() {
         int result = 0;
-        try (Cursor count = mSyncedDb.rawQuery("SELECT count(*) as count FROM " + DB_TB_BOOKS + " b ", new String[]{})) {
+        try (Cursor count = mSyncedDb.rawQuery("SELECT count(*) as count FROM " + DB_TB_BOOKS + " b ", new String[]{})){
             count.moveToNext();
             result = count.getInt(0);
         } catch (IllegalStateException e) {
@@ -1745,9 +1477,8 @@ public class CatalogueDBAdapter {
     /**
      * Return the number of books
      *
-     * @param bookshelf the bookshelf to search within
-     *
-     * @return The number of books
+     * @param bookshelf     the bookshelf to search within
+     * @return              The number of books
      */
     public int countBooks(@NonNull final String bookshelf) {
         int result = 0;
@@ -1785,10 +1516,13 @@ public class CatalogueDBAdapter {
         return mSyncedDb.rawQuery(sql);
     }
 
+    private SynchronizedStatement mGetIdFromIsbn1Stmt = null;
+    private SynchronizedStatement mGetIdFromIsbn2Stmt = null;
     /**
+     *
      * @param isbn The isbn to search by
      *
-     * @return book id
+     * @return  book id
      */
     public long getIdFromIsbn(@NonNull String isbn, final boolean checkAltIsbn) {
         SynchronizedStatement stmt;
@@ -1813,25 +1547,22 @@ public class CatalogueDBAdapter {
     }
 
     /**
-     * @param isbn The isbn to search by
      *
+     * @param isbn The isbn to search by
      * @return boolean indicating ISBN already in DB
      */
     public boolean checkIsbnExists(String isbn, boolean checkAltIsbn) {
         return getIdFromIsbn(isbn, checkAltIsbn) > 0;
     }
-    //</editor-fold>
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //<editor-fold desc="Fetchers">
+    private SynchronizedStatement mCheckBookExistsStmt = null;
 
     /**
      * Check that a book with the passed ID exists
      *
-     * @param rowId id of book
+     * @param rowId		id of book
      *
-     * @return Boolean indicating it exists
+     * @return			Boolean indicating it exists
      */
     public boolean checkBookExists(long rowId) {
         if (mCheckBookExistsStmt == null) {
@@ -1847,6 +1578,9 @@ public class CatalogueDBAdapter {
         }
     }
 
+    //</editor-fold>
+
+    //<editor-fold desc="Dirty Books OK">
     /**
      * Set a book as in need of backup if any ancillary data has changed.
      */
@@ -1893,6 +1627,24 @@ public class CatalogueDBAdapter {
                 " and " + TBL_BOOK_BOOKSHELF.dot(DOM_BOOK) + " = " + TBL_BOOKS + "." + DOM_ID + ")";
         mSyncedDb.execSQL(sql);
     }
+    //</editor-fold>
+
+    //<editor-fold desc="Book Relation 'create'">
+
+    /**
+     * If the passed ContentValues contains BKEY_SERIES_DETAILS, parse them
+     * and add the series.
+     *
+     * @param bookId		ID of book
+     * @param bookData		Book fields
+     */
+
+
+
+    /** Statement used in {@link #insertBookSeries} */
+    private SynchronizedStatement mDeleteBookSeriesStmt = null;
+    /** Statement used in {@link #insertBookSeries} */
+    private SynchronizedStatement mAddBookSeriesStmt = null;
 
     private void insertBookSeries(long bookId,
                                   @Nullable final ArrayList<Series> series,
@@ -1958,6 +1710,7 @@ public class CatalogueDBAdapter {
         }
     }
 
+
     private void insertBookAnthologyTitles(@NonNull final Long bookId,
                                            @NonNull final ArrayList<AnthologyTitle> list,
                                            @SuppressWarnings("SameParameterValue") boolean dirtyBookIfNecessary) {
@@ -1973,14 +1726,19 @@ public class CatalogueDBAdapter {
         }
     }
 
+    /** Statements used by {@link #insertBookAuthors} */
+    private SynchronizedStatement mDeleteBookAuthorsStmt = null;
+    /** Statements used by {@link #insertBookAuthors} */
+    private SynchronizedStatement mAddBookAuthorsStmt = null;
+
     /**
      * If the passed ContentValues contains KEY_AUTHOR_LIST, parse them
      * and add the authors.
      *
-     * @param bookId               ID of book
-     * @param dirtyBookIfNecessary flag to set book dirty or not (for now, always false...)
+     * @param bookId		            ID of book
+     * @param dirtyBookIfNecessary      flag to set book dirty or not (for now, always false...)
      */
-    private void insertBookAuthors(@NonNull final Long bookId,
+    private void insertBookAuthors(@NonNull final Long  bookId,
                                    @Nullable final ArrayList<Author> authors,
                                    @SuppressWarnings("SameParameterValue") boolean dirtyBookIfNecessary) {
         if (dirtyBookIfNecessary) {
@@ -2030,14 +1788,19 @@ public class CatalogueDBAdapter {
         }
     }
 
+    /** Statements used by {@link #insertBookBookshelf} */
+    private SynchronizedStatement mDeleteBookBookshelfStmt = null;
+    /** Statements used by {@link #insertBookBookshelf} */
+    private SynchronizedStatement mInsertBookBookshelfStmt = null;
+
     /**
      * Create each book/bookshelf combo in the weak entity
      *
-     * @param bookId               The book id
-     * @param bookshelves          A separated string of bookshelf names
-     * @param dirtyBookIfNecessary flag to set book dirty or not (for now, always false...)
+     * @param bookId                The book id
+     * @param bookshelves           A separated string of bookshelf names
+     * @param dirtyBookIfNecessary  flag to set book dirty or not (for now, always false...)
      */
-    private void insertBookBookshelf(@NonNull final Long bookId,
+    private void insertBookBookshelf( @NonNull final Long bookId,
                                      @NonNull final ArrayList<String> bookshelves,
                                      @SuppressWarnings("SameParameterValue") boolean dirtyBookIfNecessary) {
 
@@ -2086,36 +1849,37 @@ public class CatalogueDBAdapter {
                                                  @NonNull final String objectIdField,
                                                  @NonNull final String positionField,
                                                  final long oldId, final long newId) {
-        if (!mSyncedDb.inTransaction()) {
+        if ( !mSyncedDb.inTransaction() ) {
             throw new RuntimeException("globalReplacePositionedBookItem must be called in a transaction");
         }
 
         // Update books but prevent duplicate index errors - update books for which the new ID is not already present
-        String sql = "Update " + tableName + " Set " + objectIdField + " = " + newId +
-                " Where " + objectIdField + " = " + oldId +
-                " and Not Exists(Select NULL From " + tableName + " ba Where " +
-                "   ba." + DOM_BOOK + " = " + tableName + "." + DOM_BOOK +
-                "   and ba." + objectIdField + " = " + newId + ")";
+        String sql = "Update " + tableName + " Set " + objectIdField + " = " + newId
+                + " Where " + objectIdField + " = " + oldId
+                + " and Not Exists(Select NULL From " + tableName + " ba Where "
+                + "   ba." + DOM_BOOK + " = " + tableName + "." + DOM_BOOK
+                + "   and ba." + objectIdField + " = " + newId + ")";
         mSyncedDb.execSQL(sql);
 
-        /* Finally, delete the rows that would have caused duplicates. Be cautious by using the
-           EXISTS statement again; it's not necessary, but we do it to reduce the risk of data
-           loss if one of the prior statements failed silently.
-           We also move remaining items up one place to ensure positions remain correct
-        */
-        sql = "select * from " + tableName + " Where " + objectIdField + " = " + oldId+
-                " And Exists(Select NULL From " + tableName + " ba Where "+
-                "   ba." + DOM_BOOK + " = " + tableName + "." + DOM_BOOK+
-                "   and ba." + objectIdField + " = " + newId + ")";
+        // Finally, delete the rows that would have caused duplicates. Be cautious by using the
+        // EXISTS statement again; it's not necessary, but we do it to reduce the risk of data
+        // loss if one of the prior statements failed silently.
+        //
+        // We also move remaining items up one place to ensure positions remain correct
+        //
+        sql = "select * from " + tableName + " Where " + objectIdField + " = " + oldId
+                + " And Exists(Select NULL From " + tableName + " ba Where "
+                + "                 ba." + DOM_BOOK + " = " + tableName + "." + DOM_BOOK
+                + "                 and ba." + objectIdField + " = " + newId + ")";
 
         SynchronizedStatement delStmt = null;
         SynchronizedStatement replacementIdPosStmt = null;
         SynchronizedStatement checkMinStmt = null;
         SynchronizedStatement moveStmt = null;
-        try (Cursor cursor = mSyncedDb.rawQuery(sql)) {
+        try (Cursor c = mSyncedDb.rawQuery(sql)) {
             // Get the column indexes we need
-            final int bookCol = cursor.getColumnIndexOrThrow(DOM_BOOK.name);
-            final int posCol = cursor.getColumnIndexOrThrow(positionField);
+            final int bookCol = c.getColumnIndexOrThrow(DOM_BOOK.name);
+            final int posCol = c.getColumnIndexOrThrow(positionField);
 
             // Statement to delete a specific object record
             sql = "Delete from " + tableName + " Where " + objectIdField + " = ? and " + DOM_BOOK + " = ?";
@@ -2134,10 +1898,10 @@ public class CatalogueDBAdapter {
             checkMinStmt = mSyncedDb.compileStatement(sql);
 
             // Loop through all instances of the old author appearing
-            while (cursor.moveToNext()) {
+            while (c.moveToNext()) {
                 // Get the details of the old object
-                long book = cursor.getLong(bookCol);
-                long pos = cursor.getLong(posCol);
+                long book = c.getLong(bookCol);
+                long pos = c.getLong(posCol);
 
                 // Get the position of the new/replacement object
                 replacementIdPosStmt.bindLong(1, book);
@@ -2185,7 +1949,11 @@ public class CatalogueDBAdapter {
         }
     }
 
+    //</editor-fold>
+
+    //<editor-fold desc="Book Relation 'get' OK">
     /**
+     *
      * @param bookId id of book
      *
      * @return list of AnthologyTitle for this book
@@ -2252,6 +2020,12 @@ public class CatalogueDBAdapter {
         return list;
     }
 
+    //</editor-fold>
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Bookshelf OK">
+
     /**
      * This function will create a new bookshelf in the database
      *
@@ -2267,11 +2041,11 @@ public class CatalogueDBAdapter {
         return mSyncedDb.insert(DB_TB_BOOKSHELF, null, values);
     }
 
+    private SynchronizedStatement mGetBookshelfNameStmt = null;
     /**
      * Return a Cursor positioned at the bookshelf that matches the given rowId
      *
      * @param id of bookshelf to retrieve
-     *
      * @return Name of bookshelf, if found, or throws SQLiteDoneException
      */
     @NonNull
@@ -2295,8 +2069,11 @@ public class CatalogueDBAdapter {
     public boolean deleteBookshelf(@NonNull final Long id) {
         setBooksDirtyByBookshelf(id);
         return mSyncedDb.delete(DB_TB_BOOK_BOOKSHELF_WEAK, DOM_BOOKSHELF_NAME + "=" + id, null) > 0
-                && mSyncedDb.delete(DB_TB_BOOKSHELF, DOM_ID + "=" + id, null) > 0;
+                        && mSyncedDb.delete(DB_TB_BOOKSHELF, DOM_ID + "=" + id, null) > 0;
     }
+
+
+    private SynchronizedStatement mGetBookshelfIdStmt = null;
 
     @NonNull
     public Long getBookshelfId(@NonNull final Bookshelf bookshelf) {
@@ -2317,9 +2094,8 @@ public class CatalogueDBAdapter {
     /**
      * Update the bookshelf name
      *
-     * @param id   id of bookshelf to update
+     * @param id id of bookshelf to update
      * @param name value to set bookshelf name to
-     *
      * @return true if successfully updated, false otherwise
      */
     @SuppressWarnings("UnusedReturnValue")
@@ -2334,11 +2110,18 @@ public class CatalogueDBAdapter {
         return success;
     }
 
+    /**
+     * This will return JUST the bookshelf id based on the name.
+     *
+     * @param name bookshelf to search for
+     * @return bookshelf id, or 0 when not found
+     */
+    private SynchronizedStatement mFetchBookshelfIdByNameStmt = null;
     private Long getBookshelfIdByName(@NonNull final String name) {
         if (mFetchBookshelfIdByNameStmt == null) {
             mFetchBookshelfIdByNameStmt = mStatements.add("mFetchBookshelfIdByNameStmt",
                     "Select " + DOM_ID + " From " + DOM_BOOKSHELF_NAME +
-                            " Where Upper(" + DOM_BOOKSHELF_NAME + ") = Upper(?)" + COLLATION);
+                    " Where Upper(" + DOM_BOOKSHELF_NAME + ") = Upper(?)" + COLLATION);
         }
         mFetchBookshelfIdByNameStmt.bindString(1, name);
         try {
@@ -2359,7 +2142,7 @@ public class CatalogueDBAdapter {
                 " bs." + DOM_BOOKSHELF_NAME + " as " + DOM_BOOKSHELF_NAME + "," +
                 " 0 as " + DOM_BOOK +
                 " FROM " + DB_TB_BOOKSHELF + " bs" +
-                " ORDER BY Upper(bs." + DOM_BOOKSHELF_NAME + ") " + COLLATION;
+                " ORDER BY Upper(bs." + DOM_BOOKSHELF_NAME + ") " + COLLATION ;
         return mSyncedDb.rawQuery(sql, new String[]{});
     }
 
@@ -2367,7 +2150,6 @@ public class CatalogueDBAdapter {
      * Return a Cursor over the list of all bookshelves in the database
      *
      * @param bookId the book, which in turn adds a new field on each row as to the active state of that bookshelf for the book
-     *
      * @return Cursor over all bookshelves
      */
     @NonNull
@@ -2391,7 +2173,6 @@ public class CatalogueDBAdapter {
      * Return a Cursor over the list of all bookshelves in the database for the given book
      *
      * @param bookId the book
-     *
      * @return Cursor over all bookshelves
      */
     @NonNull
@@ -2405,17 +2186,28 @@ public class CatalogueDBAdapter {
         return mSyncedDb.rawQuery(sql, new String[]{});
     }
 
+    //</editor-fold>
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="BooklistStyle OK">
     /**
      * @return a list of all defined styles in the database
      */
     @NonNull
     public Cursor getBooklistStyles() {
         final String sql = "Select " + TBL_BOOK_LIST_STYLES.ref(DOM_ID, DOM_STYLE) +
-                " From " + TBL_BOOK_LIST_STYLES.ref();
+                " From " +  TBL_BOOK_LIST_STYLES.ref();
         // + " Order By " + TBL_BOOK_LIST_STYLES.ref(DOM_POSITION, DOM_ID);
         return mSyncedDb.rawQuery(sql);
     }
 
+    /**
+     * Create a new booklist style
+     *
+     * @return the id of the new BooklistStyle, or -1 if failure
+     */
+    private SynchronizedStatement mInsertBooklistStyleStmt = null;
     public long insertBooklistStyle(@NonNull final BooklistStyle style) {
         if (mInsertBooklistStyleStmt == null) {
             mInsertBooklistStyleStmt = mStatements.add("mInsertBooklistStyleStmt",
@@ -2426,6 +2218,10 @@ public class CatalogueDBAdapter {
         return mInsertBooklistStyleStmt.executeInsert();
     }
 
+    /**
+     * Update an existing booklist style
+     */
+    private SynchronizedStatement mUpdateBooklistStyleStmt = null;
     public void updateBooklistStyle(@NonNull final BooklistStyle style) {
         if (mUpdateBooklistStyleStmt == null) {
             mUpdateBooklistStyleStmt = mStatements.add("mUpdateBooklistStyleStmt",
@@ -2437,23 +2233,27 @@ public class CatalogueDBAdapter {
         mUpdateBooklistStyleStmt.execute();
     }
 
+    /**
+     * Delete an existing booklist style
+     */
+    private SynchronizedStatement mDeleteBooklistStyleStmt = null;
     public void deleteBooklistStyle(@NonNull final Long id) {
         if (mDeleteBooklistStyleStmt == null) {
             mDeleteBooklistStyleStmt = mStatements.add("mDeleteBooklistStyleStmt",
-                    "Delete from " + TBL_BOOK_LIST_STYLES + " Where " + DOM_ID + " = ?");
+                    "Delete from " + TBL_BOOK_LIST_STYLES + " Where " +  DOM_ID + " = ?");
         }
-        mDeleteBooklistStyleStmt.bindLong(1, id);
+        mDeleteBooklistStyleStmt.bindLong( 1, id );
         mDeleteBooklistStyleStmt.execute();
     }
     //</editor-fold>
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //<editor-fold desc="Format OK">
+    //<editor-fold desc="Fetchers">
 
     /**
-     * @param query The query string
      *
+     * @param query The query string
      * @return Cursor of search suggestions
      */
     @NonNull
@@ -2462,25 +2262,25 @@ public class CatalogueDBAdapter {
                 + ", b." + DOM_TITLE + " as " + SearchManager.SUGGEST_COLUMN_TEXT_1
                 + ", b." + DOM_TITLE + " as " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
                 " FROM " + DB_TB_BOOKS + " b" +
-                " WHERE b." + DOM_TITLE + " LIKE '" + query + "%'" +
+                " WHERE b." + DOM_TITLE + " LIKE '"+query+"%'" +
                 " UNION " +
                 " SELECT \"AF\" || a." + DOM_ID + " as " + BaseColumns._ID
                 + ", a." + DOM_AUTHOR_FAMILY_NAME + " as " + SearchManager.SUGGEST_COLUMN_TEXT_1
                 + ", a." + DOM_AUTHOR_FAMILY_NAME + " as " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
                 " FROM " + DB_TB_AUTHORS + " a" +
-                " WHERE a." + DOM_AUTHOR_FAMILY_NAME + " LIKE '" + query + "%'" +
+                " WHERE a." + DOM_AUTHOR_FAMILY_NAME + " LIKE '"+query+"%'" +
                 " UNION " +
                 " SELECT \"AG\" || a." + DOM_ID + " as " + BaseColumns._ID
                 + ", a." + DOM_AUTHOR_GIVEN_NAMES + " as " + SearchManager.SUGGEST_COLUMN_TEXT_1
                 + ", a." + DOM_AUTHOR_GIVEN_NAMES + " as " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
                 " FROM " + DB_TB_AUTHORS + " a" +
-                " WHERE a." + DOM_AUTHOR_GIVEN_NAMES + " LIKE '" + query + "%'" +
+                " WHERE a." + DOM_AUTHOR_GIVEN_NAMES + " LIKE '"+query+"%'" +
                 " UNION " +
                 " SELECT \"BK\" || b." + DOM_ID + " as " + BaseColumns._ID
                 + ", b." + DOM_ISBN + " as " + SearchManager.SUGGEST_COLUMN_TEXT_1
                 + ", b." + DOM_ISBN + " as " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
                 " FROM " + DB_TB_BOOKS + " b" +
-                " WHERE b." + DOM_ISBN + " LIKE '" + query + "%'" +
+                " WHERE b." + DOM_ISBN + " LIKE '"+query+"%'" +
                 " ) as zzz " +
                 " ORDER BY Upper(" + SearchManager.SUGGEST_COLUMN_TEXT_1 + ") " + COLLATION;
         return mSyncedDb.rawQuery(sql, null);
@@ -2490,8 +2290,7 @@ public class CatalogueDBAdapter {
      * Return the position of a book in a list of all books (within a bookshelf)
      *
      * @param seriesName The book title to search for
-     * @param bookshelf  The bookshelf to search within. Can be the string "All Books"
-     *
+     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
      * @return The position of the book
      */
     public int fetchSeriesPositionBySeries(@NonNull String seriesName, @NonNull final String bookshelf) {
@@ -2508,7 +2307,7 @@ public class CatalogueDBAdapter {
         // seems to make ordering fail.
         String sql = "Select Count(Distinct " + DOM_SERIES_NAME + ") as count"
                 + " From ( " + seriesSql
-                + "       UNION Select -1 as " + DOM_ID + ", '' as " + DOM_SERIES_NAME
+                + "       UNION Select -1 as " + DOM_ID + ", '' as " +  DOM_SERIES_NAME
                 + "       ) s "
                 + " WHERE " + makeTextTerm("s." + DOM_SERIES_NAME, "<", seriesName)
                 + " Order by s." + DOM_SERIES_NAME + COLLATION + " asc ";
@@ -2518,36 +2317,29 @@ public class CatalogueDBAdapter {
         }
     }
 
-    //</editor-fold>
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //<editor-fold desc="Genre OK">
-
     /**
-     * @param family Family name of author
-     * @param given  Given name of author
-     * @param title  Title of book
      *
+     * @param family Family name of author
+     * @param given Given name of author
+     * @param title Title of book
      * @return Cursor of the book
      */
     public BooksCursor fetchByAuthorAndTitle(@NonNull final String family, @NonNull final String given, @NonNull final String title) {
         String authorWhere = makeTextTerm("a." + DOM_AUTHOR_FAMILY_NAME, "=", family)
                 + " AND " + makeTextTerm("a." + DOM_AUTHOR_GIVEN_NAMES, "=", given);
         String bookWhere = makeTextTerm("b." + DOM_TITLE, "=", title);
-        return fetchAllBooks("", "", authorWhere, bookWhere, "", "", "");
+        return fetchAllBooks("", "", authorWhere, bookWhere, "", "", "" );
     }
 
     /**
      * Return the position of a book in a list of all books (within a bookshelf)
      *
-     * @param title     The book title to search for
+     * @param title The book title to search for
      * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     *
      * @return The position of the book
      */
     public int fetchBookPositionByTitle(@NonNull final String title, @NonNull final String bookshelf) {
-        String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", makeTextTerm("Substr(b." + DOM_TITLE + ",1,1)", "<", title.substring(0, 1)), "", "", "");
+        String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", makeTextTerm("Substr(b." + DOM_TITLE + ",1,1)", "<", title.substring(0,1)), "", "", "");
         String sql = "SELECT Count(Distinct Upper(Substr(" + DOM_TITLE + ",1,1))" + COLLATION + ") as count " + baseSql;
 
         try (Cursor results = mSyncedDb.rawQuery(sql, null)) {
@@ -2559,7 +2351,6 @@ public class CatalogueDBAdapter {
      * Return a Cursor over the list of all authors  in the database for the given book
      *
      * @param rowId the rowId of the book
-     *
      * @return Cursor over all authors
      */
     private Cursor fetchAllSeriesByBook(long rowId) {
@@ -2585,11 +2376,11 @@ public class CatalogueDBAdapter {
         return fetchArray(sql, DOM_SERIES_NAME.name);
     }
 
+
     /**
      * Return a list of all the first characters for book titles in the database
      *
      * @param bookshelf Which bookshelf is it in. Can be "All Books"
-     *
      * @return Cursor over all Books
      */
     public Cursor fetchAllBookChars(String bookshelf) {
@@ -2608,12 +2399,6 @@ public class CatalogueDBAdapter {
         return returnable;
     }
 
-    //</editor-fold>
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //<editor-fold desc="Language OK">
-
     /**
      * Return the SQL for a list of all books in the database matching the passed criteria. The SQL
      * returned can only be assumed to have the books table with alias 'b' and starts at the 'FROM'
@@ -2621,13 +2406,13 @@ public class CatalogueDBAdapter {
      *
      * A possible addition would be to specify the conditions under which other data may be present.
      *
-     * @param order       What order to return the books
-     * @param bookshelf   Which bookshelf is it in. Can be "All Books"
-     * @param authorWhere Extra SQL pertaining to author predicate to be applied
-     * @param bookWhere   Extra SQL pertaining to book predicate to be applied
-     * @param searchText  Raw text string to search for
-     * @param loaned_to   Name of person to whom book was loaned
-     * @param seriesName  Name of series to match
+     * @param order What order to return the books
+     * @param bookshelf Which bookshelf is it in. Can be "All Books"
+     * @param authorWhere 	Extra SQL pertaining to author predicate to be applied
+     * @param bookWhere 	Extra SQL pertaining to book predicate to be applied
+     * @param searchText	Raw text string to search for
+     * @param loaned_to		Name of person to whom book was loaned
+     * @param seriesName	Name of series to match
      *
      * @return SQL text for basic lookup
      *
@@ -2719,15 +2504,15 @@ public class CatalogueDBAdapter {
     /**
      * Return the SQL for a list of all books in the database
      *
-     * @param order       What order to return the books; comman separated list of column names
-     * @param bookshelf   Which bookshelf is it in. Can be "All Books"
-     * @param authorWhere clause to add to author search criteria
-     * @param bookWhere   clause to add to books search criteria
-     * @param searchText  text to search for
-     * @param loaned_to   name of person to whom book is loaned
-     * @param seriesName  name of series to look for
+     * @param order 		What order to return the books; comman separated list of column names
+     * @param bookshelf 	Which bookshelf is it in. Can be "All Books"
+     * @param authorWhere	clause to add to author search criteria
+     * @param bookWhere		clause to add to books search criteria
+     * @param searchText	text to search for
+     * @param loaned_to		name of person to whom book is loaned
+     * @param seriesName	name of series to look for
      *
-     * @return A full piece of SQL to perform the search
+     * @return				A full piece of SQL to perform the search
      */
     private String fetchAllBooksSql(@Nullable final String order, @NonNull final String bookshelf,
                                     @NonNull final String authorWhere, @NonNull final String bookWhere,
@@ -2763,7 +2548,7 @@ public class CatalogueDBAdapter {
             fullSql += " Left Outer Join (Select "
                     + DOM_SERIES_ID + ", "
                     + DOM_SERIES_NAME + ", "
-                    + DOM_SERIES_NUM + ", "
+                    + DOM_SERIES_NUM  + ", "
                     + "bs." + DOM_BOOK + " as " + DOM_BOOK + ", "
                     + " Case When " + DOM_SERIES_NUM + " = '' Then " + DOM_SERIES_NAME
                     + " Else " + DOM_SERIES_NAME + "||' #'||" + DOM_SERIES_NUM + " End as " + DOM_SERIES_FORMATTED
@@ -2777,7 +2562,7 @@ public class CatalogueDBAdapter {
             fullSql += " Left Outer Join (Select "
                     + DOM_SERIES_ID + ", "
                     + DOM_SERIES_NAME + ", "
-                    + DOM_SERIES_NUM + ", "
+                    + DOM_SERIES_NUM  + ", "
                     + "bs." + DOM_BOOK + " as " + DOM_BOOK + ", "
                     + " Case When " + DOM_SERIES_NUM + " = '' Then " + DOM_SERIES_NAME
                     + " Else " + DOM_SERIES_NAME + "||' #'||" + DOM_SERIES_NUM + " End as " + DOM_SERIES_FORMATTED
@@ -2793,18 +2578,11 @@ public class CatalogueDBAdapter {
         return fullSql;
     }
 
-    //</editor-fold>
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //<editor-fold desc="Loans OK">
-
     /**
      * Return a list of all books in the database
      *
-     * @param order     What order to return the books
+     * @param order What order to return the books
      * @param bookshelf Which bookshelf is it in. Can be "All Books"
-     *
      * @return Cursor over all Books
      */
     public BooksCursor fetchAllBooks(@Nullable final String order, @NonNull final String bookshelf,
@@ -2812,7 +2590,7 @@ public class CatalogueDBAdapter {
                                      @NonNull final String searchText, @NonNull final String loaned_to,
                                      @NonNull final String seriesName) {
         // Get the SQL
-        String fullSql = fetchAllBooksSql(order, bookshelf, authorWhere, bookWhere, searchText, loaned_to, seriesName);
+        String fullSql = fetchAllBooksSql( order, bookshelf, authorWhere, bookWhere, searchText, loaned_to, seriesName);
 
         // Build and return a cursor.
         BooksCursor returnable;
@@ -2829,9 +2607,8 @@ public class CatalogueDBAdapter {
     /**
      * Return a list of all books in the database by author
      *
-     * @param author    The author to search for
+     * @param author The author to search for
      * @param bookshelf Which bookshelf is it in. Can be "All Books"
-     *
      * @return Cursor over all Books
      */
     public BooksCursor fetchAllBooksByAuthor(int author, @NonNull final String bookshelf,
@@ -2848,7 +2625,6 @@ public class CatalogueDBAdapter {
      * This will return a list of all books by a given first title character
      *
      * @param first_char The first title character
-     *
      * @return Cursor over all books
      */
     public BooksCursor fetchAllBooksByChar(String first_char, @NonNull final String bookshelf,
@@ -2860,9 +2636,9 @@ public class CatalogueDBAdapter {
     /**
      * Return a Cursor over the list of all books in the database by genre
      *
-     * @param date        date published
-     * @param bookshelf   The bookshelf to search within. Can be the string "All Books"
-     * @param search_term text to search for
+     * @param date          date published
+     * @param bookshelf     The bookshelf to search within. Can be the string "All Books"
+     * @param search_term   text to search for
      *
      * @return Cursor over all books
      */
@@ -2873,7 +2649,7 @@ public class CatalogueDBAdapter {
             date = META_EMPTY_DATE_PUBLISHED;
         }
         if (date.equals(META_EMPTY_DATE_PUBLISHED)) {
-            where = "(b." + DOM_DATE_PUBLISHED + "='' OR b." + DOM_DATE_PUBLISHED + " IS NULL" +
+            where = "(b." + DOM_DATE_PUBLISHED + "='' OR b." +DOM_DATE_PUBLISHED + " IS NULL" +
                     " or cast(strftime('%Y', b." + DOM_DATE_PUBLISHED + ") as int)<0" +
                     " or cast(strftime('%Y', b." + DOM_DATE_PUBLISHED + ") as int) is null)";
         } else {
@@ -2885,9 +2661,8 @@ public class CatalogueDBAdapter {
     /**
      * Return a Cursor over the list of all books in the database by genre
      *
-     * @param genre     The genre name to search by
+     * @param genre The genre name to search by
      * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     *
      * @return Cursor over all books
      */
     public BooksCursor fetchAllBooksByGenre(@NonNull final String genre, @NonNull final String bookshelf,
@@ -2901,17 +2676,10 @@ public class CatalogueDBAdapter {
         return fetchAllBooks("", bookshelf, "", where, search_term, "", "");
     }
 
-    //</editor-fold>
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //<editor-fold desc="Location OK">
-
     /**
      * This will return a list of all books loaned to a given person
      *
      * @param loaned_to The person who had books loaned to
-     *
      * @return Cursor over all books
      */
     public BooksCursor fetchAllBooksByLoan(@NonNull final String loaned_to, @NonNull final String search_term) {
@@ -2922,30 +2690,23 @@ public class CatalogueDBAdapter {
      * This will return a list of all books either read or unread
      *
      * @param read "Read" or "Unread"
-     *
      * @return Cursor over all books
      */
     public BooksCursor fetchAllBooksByRead(@NonNull final String read, @NonNull final String bookshelf, @NonNull final String search_term) {
         String where = "";
         if ("Read".equals(read)) {
-            where += " b." + DOM_READ + "=1";
+            where += " b." +DOM_READ + "=1";
         } else {
             where += " b." + DOM_READ + "!=1";
         }
         return fetchAllBooks("", bookshelf, "", where, search_term, "", "");
     }
-    //</editor-fold>
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //<editor-fold desc="Publisher OK">
 
     /**
      * Return a Cursor over the list of all books in the database by series
      *
-     * @param series    The series name to search by
+     * @param series The series name to search by
      * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     *
      * @return Cursor over all books
      */
     public BooksCursor fetchAllBooksBySeries(@NonNull final String series, @NonNull final String bookshelf, @NonNull final String search_term) {
@@ -2961,7 +2722,6 @@ public class CatalogueDBAdapter {
      * This will return a list of all date published years within the given bookshelf
      *
      * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     *
      * @return Cursor over all series
      */
     public Cursor fetchAllDatePublished(@NonNull final String bookshelf) {
@@ -2979,17 +2739,10 @@ public class CatalogueDBAdapter {
         return mSyncedDb.rawQuery(sql, new String[]{});
     }
 
-    //</editor-fold>
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //<editor-fold desc="Series OK">
-
     /**
      * This will return a list of all series within the given bookshelf
      *
      * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     *
      * @return Cursor over all series
      */
     public Cursor fetchAllSeries(@NonNull final String bookshelf) {
@@ -3009,17 +2762,14 @@ public class CatalogueDBAdapter {
                 + "    on bs." + DOM_ID + " = bbw." + DOM_BOOKSHELF_NAME
                 + " where " + makeTextTerm("bs." + DOM_BOOKSHELF_NAME, "=", bookshelf);
     }
-
     private String sqlAllSeries() {
-        return "select distinct s." + DOM_ID + " as " + DOM_ID + ", s." + DOM_SERIES_NAME + " as " + DOM_SERIES_NAME //+ ", s." + KEY_SERIES_NAME + " as series_sort "
+        return "select distinct s." + DOM_ID + " as " + DOM_ID + ", s."+ DOM_SERIES_NAME + " as " + DOM_SERIES_NAME //+ ", s." + KEY_SERIES_NAME + " as series_sort "
                 + " From " + DB_TB_SERIES + " s ";
     }
-
     /**
      * This will return a list of all series within the given bookshelf
      *
      * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     *
      * @return Cursor over all series
      */
     public Cursor fetchAllSeries(@NonNull final String bookshelf, boolean include_blank) {
@@ -3051,13 +2801,13 @@ public class CatalogueDBAdapter {
         return mSyncedDb.rawQuery(sql, new String[]{});
     }
 
+
+
     /**
      * Return a book (Cursor) that matches the given rowId
      *
      * @param rowId id of book to retrieve
-     *
      * @return Cursor positioned to matching book, if found
-     *
      * @throws SQLException if note could not be found/retrieved
      */
     public BooksCursor fetchBookById(@NonNull final Long rowId) throws SQLException {
@@ -3085,9 +2835,7 @@ public class CatalogueDBAdapter {
      * Note: MAYBE RETURN MORE THAN ONE BOOK
      *
      * @param isbns ISBN of book(s) to retrieve
-     *
      * @return Cursor positioned to matching book, if found
-     *
      * @throws SQLException if note could not be found/retrieved
      */
     public BooksCursor fetchBooksByIsbns(@NonNull final ArrayList<String> isbns) throws SQLException {
@@ -3100,10 +2848,11 @@ public class CatalogueDBAdapter {
         } else {
             where.append(" in (");
             boolean first = true;
-            for (String isbn : isbns) {
+            for(String isbn: isbns) {
                 if (first) {
                     first = false;
-                } else {
+                }
+                else {
                     where.append(",");
                 }
                 where.append("'").append(encodeString(isbn)).append("'");
@@ -3112,25 +2861,29 @@ public class CatalogueDBAdapter {
         }
         return fetchAllBooks("", "", "", where.toString(), "", "", "");
     }
+    //</editor-fold>
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Format OK">
     /**
-     * Returns a unique list of all formats in the database; uses the pre-defined ones if none.
-     *
-     * @return The list
-     */
+	 * Returns a unique list of all formats in the database; uses the pre-defined ones if none.
+	 *
+	 * @return The list
+	 */
     @NonNull
-    public ArrayList<String> getFormats() {
-        String sql = "Select distinct " + DOM_FORMAT + " from " + DB_TB_BOOKS
-                + " Order by lower(" + DOM_FORMAT + ") " + COLLATION;
+	public ArrayList<String> getFormats() {
+		String sql = "Select distinct " + DOM_FORMAT + " from " + DB_TB_BOOKS
+				+ " Order by lower(" + DOM_FORMAT + ") " + COLLATION;
 
-        try (Cursor c = mSyncedDb.rawQuery(sql)) {
-            ArrayList<String> list = singleColumnCursorToArrayList(c);
-            if (list.size() == 0) {
-                Collections.addAll(list, BookCatalogueApp.getResourceStringArray(R.array.predefined_formats));
-            }
-            return list;
-        }
-    }
+		try (Cursor c = mSyncedDb.rawQuery(sql)) {
+			ArrayList<String> list = singleColumnCursorToArrayList(c);
+			if (list.size() == 0) {
+				Collections.addAll(list, BookCatalogueApp.getResourceStringArray(R.array.predefined_formats));
+			}
+			return list;
+		}
+	}
 
     public void globalReplaceFormat(@NonNull final String from, @NonNull final String to) {
         if (Objects.equals(from, to))
@@ -3150,6 +2903,11 @@ public class CatalogueDBAdapter {
         }
     }
 
+    //</editor-fold>
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Genre OK">
     /**
      * Returns a unique list of all locations in the database; uses the pre-defined ones if none.
      *
@@ -3168,7 +2926,6 @@ public class CatalogueDBAdapter {
             return list;
         }
     }
-
     public void globalReplaceGenre(@NonNull final String from, @NonNull final String to) {
         if (Objects.equals(from, to))
             return;
@@ -3192,7 +2949,6 @@ public class CatalogueDBAdapter {
      * This will return a list of all genres within the given bookshelf
      *
      * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     *
      * @return Cursor over all series
      */
     @NonNull
@@ -3210,9 +2966,8 @@ public class CatalogueDBAdapter {
     /**
      * Return the position of a book in a list of all books (within a bookshelf)
      *
-     * @param genre     The book genre to search for
+     * @param genre The book genre to search for
      * @param bookshelf The bookshelf to search within. Can be the string "All Books"
-     *
      * @return The position of the book
      */
     public int fetchGenrePositionByGenre(@NonNull final String genre, @NonNull final String bookshelf) {
@@ -3224,7 +2979,7 @@ public class CatalogueDBAdapter {
 
         String sql = "SELECT Count(DISTINCT Upper(" + DOM_GENRE + "))" + baseSql;
         try (Cursor results = mSyncedDb.rawQuery(sql, null)) {
-            return getIntValue(results, 0);
+            return  getIntValue(results, 0);
         }
     }
 
@@ -3233,8 +2988,7 @@ public class CatalogueDBAdapter {
      * series, title or author meet the search string
      *
      * @param searchText The query string to search for
-     * @param bookshelf  The bookshelf to search within. Can be the string "All Books"
-     *
+     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
      * @return Cursor over all notes
      */
     @NonNull
@@ -3244,30 +2998,30 @@ public class CatalogueDBAdapter {
                 " AS " + DOM_ID + " " + baseSql;
         return mSyncedDb.rawQuery(sql, new String[]{});
     }
+
     //</editor-fold>
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //<editor-fold desc="Searching">
-
+    //<editor-fold desc="Language OK">
     /**
-     * Returns a unique list of all languages in the database; uses the pre-defined ones if none.
-     *
-     * @return The list
-     */
+	 * Returns a unique list of all languages in the database; uses the pre-defined ones if none.
+	 *
+	 * @return The list
+	 */
     @NonNull
-    public ArrayList<String> getLanguages() {
-        String sql = "Select distinct " + DOM_LANGUAGE + " from " + DB_TB_BOOKS
-                + " Order by lower(" + DOM_LANGUAGE + ") " + COLLATION;
+	public ArrayList<String> getLanguages() {
+		String sql = "Select distinct " + DOM_LANGUAGE + " from " + DB_TB_BOOKS
+				+ " Order by lower(" + DOM_LANGUAGE + ") " + COLLATION;
 
-        try (Cursor c = mSyncedDb.rawQuery(sql)) {
-            ArrayList<String> list = singleColumnCursorToArrayList(c);
-            if (list.size() == 0) {
-                Collections.addAll(list, BookCatalogueApp.getResourceStringArray(R.array.predefined_languages));
-            }
-            return list;
-        }
-    }
+		try (Cursor c = mSyncedDb.rawQuery(sql)) {
+			ArrayList<String> list = singleColumnCursorToArrayList(c);
+			if (list.size() == 0) {
+				Collections.addAll(list, BookCatalogueApp.getResourceStringArray(R.array.predefined_languages));
+			}
+			return list;
+		}
+	}
 
     public void globalReplaceLanguage(@NonNull final String from, @NonNull final String to) {
         if (Objects.equals(from, to))
@@ -3287,11 +3041,17 @@ public class CatalogueDBAdapter {
         }
     }
 
+    //</editor-fold>
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Loans OK">
+
     /**
      * This function will create a new loan in the database
      *
-     * @param book                 the book
-     * @param dirtyBookIfNecessary flag to set book dirty or not (for now, always false...)
+     * @param book the book
+     * @param dirtyBookIfNecessary    flag to set book dirty or not (for now, always false...)
      *
      * @return the ID of the loan
      */
@@ -3312,13 +3072,13 @@ public class CatalogueDBAdapter {
     /**
      * Delete the loan with the given rowId
      *
-     * @param bookId id of book whose loan is to be deleted
+     * @param bookId 	id of book whose loan is to be deleted
      *
-     * @return true if deleted, false otherwise
+     * @return 			true if deleted, false otherwise
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean deleteLoan(long bookId, boolean dirtyBookIfNecessary) {
-        boolean success = mSyncedDb.delete(DB_TB_LOAN, DOM_BOOK + "=" + bookId, null) > 0;
+        boolean success = mSyncedDb.delete(DB_TB_LOAN, DOM_BOOK+ "=" + bookId, null) > 0;
         this.deleteLoansWithoutBooks();
         if (dirtyBookIfNecessary) {
             setBookDirty(bookId);
@@ -3334,10 +3094,10 @@ public class CatalogueDBAdapter {
     @SuppressWarnings({"UnusedReturnValue"})
     private boolean deleteLoansWithoutBooks() {
         return mSyncedDb.delete(DB_TB_LOAN,
-                "(" + DOM_BOOK + "=''" +
-                        " OR " + DOM_BOOK + "=null" +
-                        " OR " + DOM_LOANED_TO + "=''" +
-                        " OR " + DOM_LOANED_TO + "=null) ", null) > 0;
+                "("+ DOM_BOOK+ "=''" +
+                " OR " + DOM_BOOK+ "=null" +
+                " OR " + DOM_LOANED_TO + "=''" +
+                " OR " + DOM_LOANED_TO + "=null) ", null) > 0;
     }
 
     /**
@@ -3357,13 +3117,12 @@ public class CatalogueDBAdapter {
      * This will return the borrower for a given book, if any
      *
      * @param id book to search for
-     *
      * @return Who the book is loaned to, can be blank/null
      */
     @Nullable
     public String fetchLoanByBook(@NonNull final Long id) {
         try (Cursor results = mSyncedDb.query(DB_TB_LOAN,
-                new String[]{DOM_BOOK.name, DOM_LOANED_TO.name},
+                new String[] {DOM_BOOK.name, DOM_LOANED_TO.name},
                 DOM_BOOK + "=" + id + "",
                 null, null, null, null)) {
 
@@ -3371,6 +3130,11 @@ public class CatalogueDBAdapter {
         }
     }
 
+    //</editor-fold>
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Location OK">
     /**
      * Returns a unique list of all locations in the database; uses the pre-defined ones if none.
      *
@@ -3409,7 +3173,11 @@ public class CatalogueDBAdapter {
             mSyncedDb.endTransaction(l);
         }
     }
+    //</editor-fold>
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Publisher OK">
     /**
      * Returns a unique list of all publishers in the database
      *
@@ -3442,16 +3210,17 @@ public class CatalogueDBAdapter {
             mSyncedDb.endTransaction(l);
         }
     }
+
     //</editor-fold>
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //<editor-fold desc="Goodreads support">
+    //<editor-fold desc="Series OK">
 
     /**
      * Create a new series in the database
      *
-     * @param name A string containing the series name
+     * @param name 	A string containing the series name
      *
      * @return the ID of the new series
      */
@@ -3464,9 +3233,8 @@ public class CatalogueDBAdapter {
     /**
      * Delete the passed series
      *
-     * @param series series to delete
-     *
-     * @return true    if deleted, false otherwise
+     * @param series 	series to delete
+     * @return true 	if deleted, false otherwise
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean deleteSeries(@NonNull final Series series) {
@@ -3488,6 +3256,7 @@ public class CatalogueDBAdapter {
         return success;
     }
 
+
     /*
      * This will return the series based on the ID.
      * FIXME: this could return a Series with a non-zero id, which does NOT exist in the database !
@@ -3503,6 +3272,7 @@ public class CatalogueDBAdapter {
             return new Series(id, c.getString(0), "");
         }
     }
+
 
     /**
      * Add or update the passed series, depending whether s.id == 0.
@@ -3525,15 +3295,17 @@ public class CatalogueDBAdapter {
         }
     }
 
+
     public long getSeriesId(@NonNull final Series s) {
         return getSeriesId(s.name);
     }
 
+    private SynchronizedStatement mGetSeriesIdStmt = null;
     private long getSeriesId(@NonNull final String name) {
         if (mGetSeriesIdStmt == null) {
             mGetSeriesIdStmt = mStatements.add("mGetSeriesIdStmt",
                     "Select " + DOM_ID + " From " + DB_TB_SERIES +
-                            " Where Upper(" + DOM_SERIES_NAME + ") = Upper(?)" + COLLATION);
+                        " Where Upper(" + DOM_SERIES_NAME + ") = Upper(?)" + COLLATION);
         }
         mGetSeriesIdStmt.bindString(1, name);
         try {
@@ -3559,7 +3331,8 @@ public class CatalogueDBAdapter {
             } else {
                 insertOrUpdateSeries(newSeries);
             }
-        } else
+        }
+        else
             sendSeries(newSeries);
 
         // Do some basic sanity checks
@@ -3586,7 +3359,7 @@ public class CatalogueDBAdapter {
                     "   and bs." + DOM_SERIES_ID + " = " + newSeries.id + ")";
             mSyncedDb.execSQL(sql);
 
-            globalReplacePositionedBookItem(DB_TB_BOOK_SERIES, DOM_SERIES_ID.name, DOM_SERIES_POSITION.name, oldSeries.id, newSeries.id);
+            globalReplacePositionedBookItem(DB_TB_BOOK_SERIES,DOM_SERIES_ID.name, DOM_SERIES_POSITION.name, oldSeries.id, newSeries.id);
 
             mSyncedDb.setTransactionSuccessful();
         } finally {
@@ -3605,26 +3378,10 @@ public class CatalogueDBAdapter {
         return;
     }
 
-//	/** Support statement for getGoodreadsSyncDate() */
-//	private SynchronizedStatement mGetGoodreadsSyncDateStmt = null;
-//	/** 
-//	 * Set the goodreads sync date to the current time
-//	 * 
-//	 * @param bookId
-//	 */
-//	public String getGoodreadsSyncDate(long bookId) {
-//		if (mGetGoodreadsSyncDateStmt == null) {
-//			String sql = "Select " + DOM_GOODREADS_LAST_SYNC_DATE + " From " + DB_TB_BOOKS + " Where " + KEY_ID + " = ?";
-//			mGetGoodreadsSyncDateStmt = mStatements.add("mGetGoodreadsSyncDateStmt", sql);			
-//		}
-//		mGetGoodreadsSyncDateStmt.bindLong(1, bookId);
-//		return mGetGoodreadsSyncDateStmt.simpleQueryForString();			
-//	}
-    //</editor-fold>
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //<editor-fold desc="Cleanup routines">
+    /** Statements for {@link #purgeSeries} */
+    private SynchronizedStatement mPurgeBookSeriesStmt = null;
+    /** Statements for {@link #purgeSeries} */
+    private SynchronizedStatement mPurgeSeriesStmt = null;
 
     /**
      * Delete the series with no related books
@@ -3634,7 +3391,7 @@ public class CatalogueDBAdapter {
     @SuppressWarnings("UnusedReturnValue")
     public boolean purgeSeries() {
         if (mPurgeBookSeriesStmt == null) {
-            mPurgeBookSeriesStmt = mStatements.add("mPurgeBookSeriesStmt", "Delete From " + DB_TB_BOOK_SERIES + " Where "
+            mPurgeBookSeriesStmt = mStatements.add("mPurgeBookSeriesStmt", "Delete From "+ DB_TB_BOOK_SERIES + " Where "
                     + DOM_BOOK + " NOT IN (SELECT DISTINCT " + DOM_ID + " FROM " + DB_TB_BOOKS + ")");
         }
         boolean success;
@@ -3661,6 +3418,8 @@ public class CatalogueDBAdapter {
         return success;
     }
 
+    /** Statements for {@link #getSeriesBookCount} */
+    private SynchronizedStatement mGetSeriesBookCountQuery = null;
     /*
      * This will return the author id based on the name.
      * The name can be in either "family, given" or "given family" format.
@@ -3678,7 +3437,7 @@ public class CatalogueDBAdapter {
                     "Select Count(" + DOM_BOOK + ") From " + DB_TB_BOOK_SERIES + " Where " + DOM_SERIES_ID + "=?");
         }
         // Be cautious
-        synchronized (mGetSeriesBookCountQuery) {
+        synchronized(mGetSeriesBookCountQuery) {
             mGetSeriesBookCountQuery.bindLong(1, s.id);
             return mGetSeriesBookCountQuery.simpleQueryForLong();
         }
@@ -3687,7 +3446,7 @@ public class CatalogueDBAdapter {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //<editor-fold desc="Helpers">
+    //<editor-fold desc="Searching">
 
     private String makeSearchTerm(@NonNull final String key, @NonNull final String text) {
         return "Upper(" + key + ") LIKE Upper('%" + text + "%') " + COLLATION;
@@ -3710,8 +3469,8 @@ public class CatalogueDBAdapter {
         StringBuilder result = new StringBuilder("(");
 
         // Just do a simple search of a bunch of fields.
-        final String[] keys = new String[]{DOM_TITLE.name, DOM_ISBN.name, DOM_PUBLISHER.name, DOM_NOTES.name, DOM_LOCATION.name, DOM_DESCRIPTION.name};
-        for (String k : keys)
+        final String[] keys = new String[] {DOM_TITLE.name, DOM_ISBN.name, DOM_PUBLISHER.name, DOM_NOTES.name, DOM_LOCATION.name, DOM_DESCRIPTION.name};
+        for(String k : keys)
             result.append(makeSearchTerm(k, search_term)).append(" OR ");
 
         // And check the series too.
@@ -3732,7 +3491,7 @@ public class CatalogueDBAdapter {
                 .append(makeSearchTerm("bsau." + DOM_AUTHOR_GIVEN_NAMES, search_term))
                 .append(")) ");
 
-        result.append(")");
+        result.append( ")") ;
 
         return result.toString();
     }
@@ -3741,9 +3500,9 @@ public class CatalogueDBAdapter {
      * Returns a list of books, similar to fetchAllBooks but restricted by a search string. The
      * query will be applied to author, title, and series
      *
-     * @param searchText The search string to restrict the output by
-     * @param first_char The character to search for
-     * @param bookshelf  The bookshelf to search within. Can be the string "All Books"
+     * @param searchText	The search string to restrict the output by
+     * @param first_char    The character to search for
+     * @param bookshelf		The bookshelf to search within. Can be the string "All Books"
      *
      * @return A Cursor of book meeting the search criteria
      */
@@ -3756,12 +3515,6 @@ public class CatalogueDBAdapter {
         return fetchAllBooks("", bookshelf, "", " strftime('%Y', b." + DOM_DATE_PUBLISHED + ")='" + date + "' " + COLLATION + " ", searchText, "", "");
     }
 
-    //</editor-fold>
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //<editor-fold desc="FTS Support">
-
     public BooksCursor searchBooksByGenre(@NonNull final String searchText, @NonNull final String genre, @NonNull final String bookshelf) {
         return fetchAllBooks("", bookshelf, "", " " + DOM_GENRE.name + "='" + genre + "' " + COLLATION + " ", searchText, "", "");
     }
@@ -3771,8 +3524,7 @@ public class CatalogueDBAdapter {
      * query will be applied to author, title, and series
      *
      * @param searchText The search string to restrict the output by
-     * @param bookshelf  The bookshelf to search within. Can be the string "All Books"
-     *
+     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
      * @return A Cursor of book meeting the search criteria
      */
     public Cursor searchBooksChars(@NonNull final String searchText, @NonNull final String bookshelf) {
@@ -3786,8 +3538,7 @@ public class CatalogueDBAdapter {
      * series, title or author meet the search string
      *
      * @param searchText The query string to search for
-     * @param bookshelf  The bookshelf to search within. Can be the string "All Books"
-     *
+     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
      * @return Cursor over all notes
      */
     public Cursor searchDatePublished(@NonNull final String searchText, @NonNull final String bookshelf) {
@@ -3796,13 +3547,14 @@ public class CatalogueDBAdapter {
         return mSyncedDb.rawQuery(sql, new String[]{});
     }
 
+
+
     /**
      * This will return a list of all series within the given bookshelf where the
      * series, title or author meet the search string
      *
      * @param searchText The query string to search for
-     * @param bookshelf  The bookshelf to search within. Can be the string "All Books"
-     *
+     * @param bookshelf The bookshelf to search within. Can be the string "All Books"
      * @return Cursor over all notes
      */
     public Cursor searchSeries(@NonNull final String searchText, @NonNull final String bookshelf) {
@@ -3822,150 +3574,192 @@ public class CatalogueDBAdapter {
 
         return mSyncedDb.rawQuery(sql, new String[]{});
     }
+    //</editor-fold>
 
-    /**
-     * Static method to get a BooksCursor Cursor. The passed sql should at least return
-     * some of the fields from the books table! If a method call is made to retrieve
-     * a column that does not exists, an exception will be thrown.
-     *
-     * @return A new TaskExceptionsCursor
-     */
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Goodreads support">
+
+	/** Static Factory object to create the custom cursor */
+	private static final CursorFactory mBooksFactory = new CursorFactory() {
+			@Override
+			public Cursor newCursor(
+					SQLiteDatabase db,
+					SQLiteCursorDriver masterQuery,
+					String editTable,
+					SQLiteQuery query)
+			{
+				return new BooksCursor(masterQuery, editTable, query, mSynchronizer);
+			}
+	};
+
+	/**
+	 * Static method to get a BooksCursor Cursor. The passed sql should at least return
+	 * some of the fields from the books table! If a method call is made to retrieve
+	 * a column that does not exists, an exception will be thrown.
+	 *
+	 * @return			A new TaskExceptionsCursor
+	 */
     private BooksCursor fetchBooks(@NonNull final String sql, @NonNull final String[] selectionArgs) {
-        return (BooksCursor) mSyncedDb.rawQueryWithFactory(mBooksFactory, sql, selectionArgs, "");
-    }
+		return (BooksCursor) mSyncedDb.rawQueryWithFactory(mBooksFactory, sql, selectionArgs, "");
+	}
 
-    /**
-     * Query to get all book IDs and ISBN for sending to goodreads.
-     */
-    public BooksCursor getAllBooksForGoodreadsCursor(long startId, boolean updatesOnly) {
-        String sql = "Select " + DOM_ISBN + ", " + DOM_ID + ", " + DOM_GOODREADS_BOOK_ID +
-                ", " + DOM_NOTES + ", " + DOM_READ + ", " + DOM_READ_END + ", " + DOM_RATING +
-                " from " + DB_TB_BOOKS + " Where " + DOM_ID + " > " + startId;
-        if (updatesOnly) {
-            sql += " and " + DOM_LAST_UPDATE_DATE + " > " + DOM_GOODREADS_LAST_SYNC_DATE;
-        }
-        sql += " Order by " + DOM_ID;
+	/**
+	 * Query to get all book IDs and ISBN for sending to goodreads.
+	 */
+	public BooksCursor getAllBooksForGoodreadsCursor(long startId, boolean updatesOnly) {
+		String sql = "Select " + DOM_ISBN + ", " + DOM_ID + ", " + DOM_GOODREADS_BOOK_ID +
+				", " + DOM_NOTES + ", " + DOM_READ + ", " + DOM_READ_END + ", " + DOM_RATING +
+				" from " + DB_TB_BOOKS + " Where " + DOM_ID + " > " + startId;
+		if (updatesOnly) {
+			sql += " and " + DOM_LAST_UPDATE_DATE + " > " + DOM_GOODREADS_LAST_SYNC_DATE;
+		}
+		sql += " Order by " + DOM_ID;
 
-        return fetchBooks(sql, new String[]{});
-    }
+		return fetchBooks(sql, new String[]{});
+	}
 
-    /**
-     * Query to get a specific book ISBN from the ID for sending to goodreads.
-     */
-    public BooksCursor getBookForGoodreadsCursor(long bookId) {
-        String sql = "Select " + DOM_ID + ", " + DOM_ISBN + ", " + DOM_GOODREADS_BOOK_ID +
-                ", " + DOM_NOTES + ", " + DOM_READ + ", " + DOM_READ_END + ", " + DOM_RATING +
-                " from " + DB_TB_BOOKS + " Where " + DOM_ID + " = " + bookId + " Order by " + DOM_ID;
-        return fetchBooks(sql, new String[]{});
-    }
+	/**
+	 * Query to get a specific book ISBN from the ID for sending to goodreads.
+	 */
+	public BooksCursor getBookForGoodreadsCursor(long bookId) {
+		String sql = "Select " + DOM_ID + ", " + DOM_ISBN + ", " + DOM_GOODREADS_BOOK_ID +
+				", " + DOM_NOTES + ", " + DOM_READ + ", " + DOM_READ_END + ", " + DOM_RATING +
+				" from " + DB_TB_BOOKS + " Where " + DOM_ID + " = " + bookId + " Order by " + DOM_ID;
+		return fetchBooks(sql, new String[]{});
+	}
 
-    /**
-     * Query to get a all bookshelves for a book, for sending to goodreads.
-     */
-    public Cursor getAllBookBookshelvesForGoodreadsCursor(long book) {
-        String sql = "Select s." + DOM_BOOKSHELF_NAME + " from " + DB_TB_BOOKSHELF + " s"
-                + " Join " + DB_TB_BOOK_BOOKSHELF_WEAK + " bbs On bbs." + DOM_BOOKSHELF_NAME + " = s." + DOM_ID
-                + " and bbs." + DOM_BOOK + " = " + book + " Order by s." + DOM_BOOKSHELF_NAME;
-        return mSyncedDb.rawQuery(sql, new String[]{});
-    }
+	/**
+	 * Query to get a all bookshelves for a book, for sending to goodreads.
+	 */
+	public Cursor getAllBookBookshelvesForGoodreadsCursor(long book) {
+		String sql = "Select s." + DOM_BOOKSHELF_NAME + " from " + DB_TB_BOOKSHELF + " s"
+				 + " Join " + DB_TB_BOOK_BOOKSHELF_WEAK + " bbs On bbs." + DOM_BOOKSHELF_NAME + " = s." + DOM_ID
+				 + " and bbs." + DOM_BOOK + " = " + book + " Order by s." + DOM_BOOKSHELF_NAME;
+		return mSyncedDb.rawQuery(sql, new String[]{});
+	}
 
-    /**
-     * Set the goodreads book id for this passed book. This is used by other goodreads-related
-     * functions.
-     *
-     * @param bookId          Book to update
-     * @param goodreadsBookId GR book id
-     */
-    public void setGoodreadsBookId(long bookId, long goodreadsBookId) {
-        if (mSetGoodreadsBookIdStmt == null) {
-            String sql = "Update " + TBL_BOOKS + " Set " + DOM_GOODREADS_BOOK_ID + " = ? Where " + DOM_ID + " = ?";
-            mSetGoodreadsBookIdStmt = mStatements.add("mSetGoodreadsBookIdStmt", sql);
-        }
-        mSetGoodreadsBookIdStmt.bindLong(1, goodreadsBookId);
-        mSetGoodreadsBookIdStmt.bindLong(2, bookId);
-        mSetGoodreadsBookIdStmt.execute();
-    }
+	/** Support statement for setGoodreadsBookId() */
+	private SynchronizedStatement mSetGoodreadsBookIdStmt = null;
+	/**
+	 * Set the goodreads book id for this passed book. This is used by other goodreads-related
+	 * functions.
+	 *
+	 * @param bookId			Book to update
+	 * @param goodreadsBookId	GR book id
+	 */
+	public void setGoodreadsBookId(long bookId, long goodreadsBookId) {
+		if (mSetGoodreadsBookIdStmt == null ) {
+			String sql = "Update " + TBL_BOOKS + " Set " + DOM_GOODREADS_BOOK_ID + " = ? Where " + DOM_ID + " = ?";
+			mSetGoodreadsBookIdStmt = mStatements.add("mSetGoodreadsBookIdStmt", sql);
+		}
+		mSetGoodreadsBookIdStmt.bindLong(1, goodreadsBookId);
+		mSetGoodreadsBookIdStmt.bindLong(2, bookId);
+		mSetGoodreadsBookIdStmt.execute();
+	}
 
-    /**
-     * Set the goodreads sync date to the current time
-     */
-    public void setGoodreadsSyncDate(long bookId) {
-        if (mSetGoodreadsSyncDateStmt == null) {
-            String sql = "Update " + DB_TB_BOOKS + " Set " + DOM_GOODREADS_LAST_SYNC_DATE + " = current_timestamp Where " + DOM_ID + " = ?";
-            mSetGoodreadsSyncDateStmt = mStatements.add("mSetGoodreadsSyncDateStmt", sql);
-        }
-        mSetGoodreadsSyncDateStmt.bindLong(1, bookId);
-        mSetGoodreadsSyncDateStmt.execute();
-    }
+	/** Support statement for setGoodreadsSyncDate() */
+	private SynchronizedStatement mSetGoodreadsSyncDateStmt = null;
 
+	/**
+	 * Set the goodreads sync date to the current time
+	 */
+	public void setGoodreadsSyncDate(long bookId) {
+		if (mSetGoodreadsSyncDateStmt == null) {
+			String sql = "Update " + DB_TB_BOOKS + " Set " + DOM_GOODREADS_LAST_SYNC_DATE + " = current_timestamp Where " + DOM_ID + " = ?";
+			mSetGoodreadsSyncDateStmt = mStatements.add("mSetGoodreadsSyncDateStmt", sql);
+		}
+		mSetGoodreadsSyncDateStmt.bindLong(1, bookId);
+		mSetGoodreadsSyncDateStmt.execute();
+	}
+
+//	/** Support statement for getGoodreadsSyncDate() */
+//	private SynchronizedStatement mGetGoodreadsSyncDateStmt = null;
+//	/** 
+//	 * Set the goodreads sync date to the current time
+//	 * 
+//	 * @param bookId
+//	 */
+//	public String getGoodreadsSyncDate(long bookId) {
+//		if (mGetGoodreadsSyncDateStmt == null) {
+//			String sql = "Select " + DOM_GOODREADS_LAST_SYNC_DATE + " From " + DB_TB_BOOKS + " Where " + KEY_ID + " = ?";
+//			mGetGoodreadsSyncDateStmt = mStatements.add("mGetGoodreadsSyncDateStmt", sql);			
+//		}
+//		mGetGoodreadsSyncDateStmt.bindLong(1, bookId);
+//		return mGetGoodreadsSyncDateStmt.simpleQueryForString();			
+//	}
+    //</editor-fold>
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Cleanup routines">
     /**
      * Data cleanup routine called on upgrade to v4.0.3 to cleanup data integrity issues cased
      * by earlier merge code that could have left the first author or series for a book having
      * a position number > 1.
      */
     public void fixupAuthorsAndSeries() {
-        SyncLock l = mSyncedDb.beginTransaction(true);
-        try {
-            fixupPositionedBookItems(DB_TB_BOOK_AUTHOR, DOM_AUTHOR_ID.name, DOM_AUTHOR_POSITION.name);
-            fixupPositionedBookItems(DB_TB_BOOK_SERIES, DOM_SERIES_ID.name, DOM_SERIES_POSITION.name);
-            mSyncedDb.setTransactionSuccessful();
-        } finally {
-            mSyncedDb.endTransaction(l);
-        }
+		SyncLock l = mSyncedDb.beginTransaction(true);
+		try {
+			fixupPositionedBookItems(DB_TB_BOOK_AUTHOR, DOM_AUTHOR_ID.name, DOM_AUTHOR_POSITION.name);
+			fixupPositionedBookItems(DB_TB_BOOK_SERIES, DOM_SERIES_ID.name, DOM_SERIES_POSITION.name);
+			mSyncedDb.setTransactionSuccessful();
+		} finally {
+			mSyncedDb.endTransaction(l);
+		}
 
     }
-
-    //</editor-fold>
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //<editor-fold desc="Database open/close/transactions...">
 
     /**
      * Data cleaning routine for upgrade to version 4.0.3 to cleanup any books that have no primary author/series.
      */
     private void fixupPositionedBookItems(@NonNull final String tableName,
-                                          @SuppressWarnings("unused") @NonNull final String objectIdField,
+										  @SuppressWarnings("unused") @NonNull final String objectIdField,
                                           @NonNull final String positionField) {
-        String sql = "select b." + DOM_ID + " as " + DOM_ID + ", min(o." + positionField + ") as pos" +
-                " from " + TBL_BOOKS + " b join " + tableName + " o On o." + DOM_BOOK + " = b." + DOM_ID +
-                " Group by b." + DOM_ID;
-        SynchronizedStatement moveStmt = null;
-        try (Cursor c = mSyncedDb.rawQuery(sql)) {
-            // Get the column indexes we need
-            final int bookCol = c.getColumnIndexOrThrow(DOM_ID.name);
-            final int posCol = c.getColumnIndexOrThrow("pos");
-            // Loop through all instances of the old author appearing
-            while (c.moveToNext()) {
-                // Get the details
-                long pos = c.getLong(posCol);
-                if (pos > 1) {
-                    if (moveStmt == null) {
-                        // Statement to move records up by a given offset
-                        sql = "Update " + tableName + " Set " + positionField + " = 1 Where " + DOM_BOOK + " = ? and " + positionField + " = ?";
-                        moveStmt = mSyncedDb.compileStatement(sql);
-                    }
+		String sql = "select b." + DOM_ID + " as " + DOM_ID + ", min(o." + positionField + ") as pos" +
+				" from " + TBL_BOOKS + " b join " + tableName + " o On o." + DOM_BOOK + " = b." + DOM_ID +
+				" Group by b." + DOM_ID;
+		SynchronizedStatement moveStmt = null;
+		try (Cursor c = mSyncedDb.rawQuery(sql)) {
+			// Get the column indexes we need
+			final int bookCol = c.getColumnIndexOrThrow(DOM_ID.name);
+			final int posCol = c.getColumnIndexOrThrow("pos");
+			// Loop through all instances of the old author appearing
+			while (c.moveToNext()) {
+				// Get the details
+				long pos = c.getLong(posCol);
+				if (pos > 1) {
+					if (moveStmt == null) {
+						// Statement to move records up by a given offset
+						sql = "Update " + tableName + " Set " + positionField + " = 1 Where " + DOM_BOOK + " = ? and " + positionField + " = ?";
+						moveStmt = mSyncedDb.compileStatement(sql);
+					}
 
-                    long book = c.getLong(bookCol);
-                    // Move subsequent records up by one
-                    moveStmt.bindLong(1, book);
-                    moveStmt.bindLong(2, pos);
-                    moveStmt.execute();
-                }
-            }
-        } finally {
-            if (moveStmt != null)
-                moveStmt.close();
-        }
+					long book = c.getLong(bookCol);
+					// Move subsequent records up by one
+					moveStmt.bindLong(1, book);
+					moveStmt.bindLong(2, pos);
+					moveStmt.execute();
+				}
+			}
+		} finally {
+			if (moveStmt != null)
+				moveStmt.close();
+		}
     }
+    //</editor-fold>
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Helpers">
 
     /**
      * Utility routine to fill an array with the specified column from the passed SQL.
      *
-     * @param sql        SQL to execute
-     * @param columnName Column to fetch
+     * @param sql			SQL to execute
+     * @param columnName	Column to fetch
      *
-     * @return List of values
+     * @return				List of values
      */
     @NonNull
     private ArrayList<String> fetchArray(@NonNull final String sql, @NonNull final String columnName) {
@@ -3983,9 +3777,8 @@ public class CatalogueDBAdapter {
     /**
      * Takes the ResultSet from a Cursor, and fetches column 0 as a String into an ArrayList
      *
-     * @param c cursor
-     *
-     * @return the ArrayList
+     * @param c     cursor
+     * @return      the ArrayList
      */
     @NonNull
     private ArrayList<String> singleColumnCursorToArrayList(@NonNull final Cursor c) {
@@ -4016,8 +3809,8 @@ public class CatalogueDBAdapter {
      * - Exclude the primary key from the list of columns.
      * - data will be transformed based on the intended type of the underlying column based on column definition.
      *
-     * @param source Source column data
-     * @param dest   Destination table definition
+     * @param source	Source column data
+     * @param dest		Destination table definition
      *
      * @return New, filtered, collection
      */
@@ -4084,7 +3877,7 @@ public class CatalogueDBAdapter {
      * A helper function to get a single int value (from the first row) from a cursor
      *
      * @param results The Cursor the extract from
-     * @param index   The index, or column, to extract from
+     * @param index The index, or column, to extract from
      */
     private int getIntValue(Cursor results, @SuppressWarnings("SameParameterValue") int index) {
         int value = 0;
@@ -4104,7 +3897,7 @@ public class CatalogueDBAdapter {
      * A helper function to get a single string value (from the first row) from a cursor
      *
      * @param results The Cursor the extract from
-     * @param index   The index, or column, to extract from
+     * @param index The index, or column, to extract from
      */
     @Nullable
     private String getStringValue(Cursor results, @SuppressWarnings("SameParameterValue") int index) {
@@ -4121,279 +3914,304 @@ public class CatalogueDBAdapter {
 
     }
 
-    /**
-     * Send the book details from the cursor to the passed fts query.
-     *
-     * NOTE: This assumes a specific order for query parameters.
-     *
-     * @param books Cursor of books to update
-     * @param stmt  Statement to execute
-     */
-    private void ftsSendBooks(@NonNull final BooksCursor books, @NonNull final SynchronizedStatement stmt) {
-
-        final BooksRow book = books.getRowView();
-        // Build the SQL to get author details for a book.
-        // ... all authors
-        final String authorBaseSql = "Select " + TBL_AUTHORS.dot("*") + " from " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS) +
-                " Where " + TBL_BOOK_AUTHOR.dot(DOM_BOOK) + " = ";
-        // ... all series
-        final String seriesBaseSql = "Select " + TBL_SERIES.dot(DOM_SERIES_NAME) + " || ' ' || Coalesce(" + TBL_BOOK_SERIES.dot(DOM_SERIES_NUM) + ",'') as seriesInfo from " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES) +
-                " Where " + TBL_BOOK_SERIES.dot(DOM_BOOK) + " = ";
-        // ... all anthology titles
-        final String anthologyBaseSql = "Select " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " || ' ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " as anthologyAuthorInfo, " + DOM_TITLE + " as anthologyTitleInfo "
-                + " from " + TBL_ANTHOLOGY.ref() + TBL_ANTHOLOGY.join(TBL_AUTHORS) +
-                " Where " + TBL_ANTHOLOGY.dot(DOM_BOOK) + " = ";
-
-        // Accumulator for author names for each book
-        StringBuilder authorText = new StringBuilder();
-        // Accumulator for series names for each book
-        StringBuilder seriesText = new StringBuilder();
-        // Accumulator for title names for each anthology
-        StringBuilder titleText = new StringBuilder();
-        // Indexes of author name fields.
-        int colGivenNames = -1;
-        int colFamilyName = -1;
-        int colSeriesInfo = -1;
-        int colAnthologyAuthorInfo = -1;
-        int colAnthologyTitleInfo = -1;
-
-        // Process each book
-        while (books.moveToNext()) {
-            // Reset authors/series/title
-            authorText.setLength(0);
-            seriesText.setLength(0);
-            titleText.setLength(0);
-            // Get list of authors
-            try (Cursor c = mSyncedDb.rawQuery(authorBaseSql + book.getId())) {
-                // Get column indexes, if not already got
-                if (colGivenNames < 0)
-                    colGivenNames = c.getColumnIndex(DOM_AUTHOR_GIVEN_NAMES.name);
-                if (colFamilyName < 0)
-                    colFamilyName = c.getColumnIndex(DOM_AUTHOR_FAMILY_NAME.name);
-                // Append each author
-                while (c.moveToNext()) {
-                    authorText.append(c.getString(colGivenNames));
-                    authorText.append(" ");
-                    authorText.append(c.getString(colFamilyName));
-                    authorText.append(";");
-                }
-            }
-
-            // Get list of series
-            try (Cursor c = mSyncedDb.rawQuery(seriesBaseSql + book.getId())) {
-                // Get column indexes, if not already got
-                if (colSeriesInfo < 0)
-                    colSeriesInfo = c.getColumnIndex("seriesInfo");
-                // Append each series
-                while (c.moveToNext()) {
-                    seriesText.append(c.getString(colSeriesInfo));
-                    seriesText.append(";");
-                }
-            }
-
-            // Get list of anthology data (author and title)
-            try (Cursor c = mSyncedDb.rawQuery(anthologyBaseSql + book.getId())) {
-                // Get column indexes, if not already got
-                if (colAnthologyAuthorInfo < 0)
-                    colAnthologyAuthorInfo = c.getColumnIndex("anthologyAuthorInfo");
-                if (colAnthologyTitleInfo < 0)
-                    colAnthologyTitleInfo = c.getColumnIndex("anthologyTitleInfo");
-                // Append each series
-                while (c.moveToNext()) {
-                    authorText.append(c.getString(colAnthologyAuthorInfo));
-                    authorText.append(";");
-                    titleText.append(c.getString(colAnthologyTitleInfo));
-                    titleText.append(";");
-                }
-            }
-
-            // Set the parameters and call
-            bindStringOrNull(stmt, 1, authorText.toString());
-            // Titles should only contain title, not SERIES
-            bindStringOrNull(stmt, 2, book.getTitle() + "; " + titleText);
-            // We could add a 'series' column, or just add it as part of the description
-            bindStringOrNull(stmt, 3, book.getDescription() + seriesText);
-            bindStringOrNull(stmt, 4, book.getNotes());
-            bindStringOrNull(stmt, 5, book.getPublisher());
-            bindStringOrNull(stmt, 6, book.getGenre());
-            bindStringOrNull(stmt, 7, book.getLocation());
-            bindStringOrNull(stmt, 8, book.getIsbn());
-            stmt.bindLong(9, book.getId());
-
-            stmt.execute();
-        }
+    public static String encodeString(String value) {
+    	return value.replace("'", "''");
     }
 
-    private void insertFts(long bookId) {
-        long t0 = System.currentTimeMillis();
-
-        if (mInsertFtsStmt == null) {
-            // Build the FTS insert statement base. The parameter order MUST match the order expected in ftsSendBooks().
-            String sql = TBL_BOOKS_FTS.getInsert(DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION, DOM_NOTES,
-                    DOM_PUBLISHER, DOM_GENRE, DOM_LOCATION, DOM_ISBN, DOM_DOCID)
-                    + " Values (?,?,?,?,?,?,?,?,?)";
-            mInsertFtsStmt = mStatements.add("mInsertFtsStmt", sql);
-        }
-
-        BooksCursor books = null;
-
-        // Start an update TX
-        SyncLock l = null;
-        if (!mSyncedDb.inTransaction())
-            l = mSyncedDb.beginTransaction(true);
-        try {
-            // Compile statement and get books cursor
-            books = fetchBooks("select * from " + TBL_BOOKS + " where " + DOM_ID + " = " + bookId, new String[]{});
-            // Send the book
-            ftsSendBooks(books, mInsertFtsStmt);
-            if (l != null)
-                mSyncedDb.setTransactionSuccessful();
-        } finally {
-            // Cleanup
-            if (books != null)
-                try {
-                    books.close();
-                } catch (Exception ignored) {
-                }
-            if (l != null)
-                mSyncedDb.endTransaction(l);
-            if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                long t1 = System.currentTimeMillis();
-                System.out.println("Inserted FTS in " + (t1 - t0) + "ms");
-            }
-        }
+    @Nullable
+    public static String join(@Nullable final String[] strings) {
+        if (strings == null || strings.length ==0)
+            return null;
+        StringBuilder s = new StringBuilder(strings[0]);
+        final int len = strings.length;
+        for(int i = 1; i < len; i++)
+            s.append(",").append(strings[i]);
+        return s.toString();
     }
+
     //</editor-fold>
 
-    //<editor-fold desc="Class Internals">
+	////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private void updateFts(long bookId) {
-        long t0 = System.currentTimeMillis();
+    //<editor-fold desc="FTS Support">
+    /**
+	 * Send the book details from the cursor to the passed fts query.
+	 *
+	 * NOTE: This assumes a specific order for query parameters.
+	 *
+	 * @param books		Cursor of books to update
+	 * @param stmt		Statement to execute
+	 *
+	 */
+    private void ftsSendBooks(@NonNull final BooksCursor books, @NonNull final SynchronizedStatement stmt) {
 
-        if (mUpdateFtsStmt == null) {
-            // Build the FTS update statement base. The parameter order MUST match the order expected in ftsSendBooks().
-            String sql = TBL_BOOKS_FTS.getUpdate(DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION, DOM_NOTES,
-                    DOM_PUBLISHER, DOM_GENRE, DOM_LOCATION, DOM_ISBN)
-                    + " Where " + DOM_DOCID + " = ?";
-            mUpdateFtsStmt = mStatements.add("mUpdateFtsStmt", sql);
-        }
-        BooksCursor books = null;
+		final BooksRow book = books.getRowView();
+		// Build the SQL to get author details for a book.
+		// ... all authors
+		final String authorBaseSql = "Select " + TBL_AUTHORS.dot("*") + " from " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS) +
+				" Where " + TBL_BOOK_AUTHOR.dot(DOM_BOOK) + " = ";
+		// ... all series
+		final String seriesBaseSql = "Select " + TBL_SERIES.dot(DOM_SERIES_NAME) + " || ' ' || Coalesce(" + TBL_BOOK_SERIES.dot(DOM_SERIES_NUM) + ",'') as seriesInfo from " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES) +
+				" Where " + TBL_BOOK_SERIES.dot(DOM_BOOK) + " = ";
+		// ... all anthology titles
+		final String anthologyBaseSql = "Select " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " || ' ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " as anthologyAuthorInfo, " + DOM_TITLE + " as anthologyTitleInfo "
+				+ " from " + TBL_ANTHOLOGY.ref() + TBL_ANTHOLOGY.join(TBL_AUTHORS) +
+				" Where " + TBL_ANTHOLOGY.dot(DOM_BOOK) + " = ";
 
-        SyncLock l = null;
-        if (!mSyncedDb.inTransaction())
-            l = mSyncedDb.beginTransaction(true);
-        try {
-            // Compile statement and get cursor
-            books = fetchBooks("select * from " + TBL_BOOKS + " where " + DOM_ID + " = " + bookId, new String[]{});
-            ftsSendBooks(books, mUpdateFtsStmt);
+		// Accumulator for author names for each book
+		StringBuilder authorText = new StringBuilder();
+		// Accumulator for series names for each book
+		StringBuilder seriesText = new StringBuilder();
+		// Accumulator for title names for each anthology
+		StringBuilder titleText = new StringBuilder();
+		// Indexes of author name fields.
+		int colGivenNames = -1;
+		int colFamilyName = -1;
+		int colSeriesInfo = -1;
+		int colAnthologyAuthorInfo = -1;
+		int colAnthologyTitleInfo = -1;
+
+		// Process each book
+		while (books.moveToNext()) {
+			// Reset authors/series/title
+			authorText.setLength(0);
+			seriesText.setLength(0);
+			titleText.setLength(0);
+			// Get list of authors
+			try (Cursor c = mSyncedDb.rawQuery(authorBaseSql + book.getId())) {
+				// Get column indexes, if not already got
+				if (colGivenNames < 0)
+					colGivenNames = c.getColumnIndex(DOM_AUTHOR_GIVEN_NAMES.name);
+				if (colFamilyName < 0)
+					colFamilyName = c.getColumnIndex(DOM_AUTHOR_FAMILY_NAME.name);
+				// Append each author
+				while (c.moveToNext()) {
+					authorText.append(c.getString(colGivenNames));
+					authorText.append(" ");
+					authorText.append(c.getString(colFamilyName));
+					authorText.append(";");
+				}
+			}
+
+			// Get list of series
+			try (Cursor c = mSyncedDb.rawQuery(seriesBaseSql + book.getId())) {
+				// Get column indexes, if not already got
+				if (colSeriesInfo < 0)
+					colSeriesInfo = c.getColumnIndex("seriesInfo");
+				// Append each series
+				while (c.moveToNext()) {
+					seriesText.append(c.getString(colSeriesInfo));
+					seriesText.append(";");
+				}
+			}
+
+			// Get list of anthology data (author and title)
+			try (Cursor c = mSyncedDb.rawQuery(anthologyBaseSql + book.getId())) {
+				// Get column indexes, if not already got
+				if (colAnthologyAuthorInfo < 0)
+					colAnthologyAuthorInfo = c.getColumnIndex("anthologyAuthorInfo");
+				if (colAnthologyTitleInfo < 0)
+					colAnthologyTitleInfo = c.getColumnIndex("anthologyTitleInfo");
+				// Append each series
+				while (c.moveToNext()) {
+					authorText.append(c.getString(colAnthologyAuthorInfo));
+					authorText.append(";");
+					titleText.append(c.getString(colAnthologyTitleInfo));
+					titleText.append(";");
+				}
+			}
+
+			// Set the parameters and call
+			bindStringOrNull(stmt, 1, authorText.toString());
+			// Titles should only contain title, not SERIES
+			bindStringOrNull(stmt, 2, book.getTitle() + "; " + titleText);
+			// We could add a 'series' column, or just add it as part of the description
+			bindStringOrNull(stmt, 3, book.getDescription() + seriesText);
+			bindStringOrNull(stmt, 4, book.getNotes());
+			bindStringOrNull(stmt, 5, book.getPublisher());
+			bindStringOrNull(stmt, 6, book.getGenre());
+			bindStringOrNull(stmt, 7, book.getLocation());
+			bindStringOrNull(stmt, 8, book.getIsbn());
+			stmt.bindLong(9, book.getId());
+
+			stmt.execute();
+		}
+	}
+
+	/**
+	 * Insert a book into the FTS. Assumes book does not already exist in FTS.
+	 *
+	 * @param bookId
+	 */
+	private SynchronizedStatement mInsertFtsStmt = null;
+	private void insertFts(long bookId) {
+		long t0 = System.currentTimeMillis();
+
+		if (mInsertFtsStmt == null) {
+			// Build the FTS insert statement base. The parameter order MUST match the order expected in ftsSendBooks().
+			String sql = TBL_BOOKS_FTS.getInsert(DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION, DOM_NOTES,
+												DOM_PUBLISHER, DOM_GENRE, DOM_LOCATION, DOM_ISBN, DOM_DOCID)
+												+ " Values (?,?,?,?,?,?,?,?,?)";
+			mInsertFtsStmt = mStatements.add("mInsertFtsStmt", sql);
+		}
+
+		BooksCursor books = null;
+
+		// Start an update TX
+		SyncLock l = null;
+		if (!mSyncedDb.inTransaction())
+			l = mSyncedDb.beginTransaction(true);
+		try {
+			// Compile statement and get books cursor
+			books = fetchBooks("select * from " + TBL_BOOKS + " where " + DOM_ID + " = " + bookId, new String[]{});
+			// Send the book
+			ftsSendBooks(books, mInsertFtsStmt);
+			if (l != null)
+				mSyncedDb.setTransactionSuccessful();
+		} finally {
+			// Cleanup
+			if (books != null)
+				try { books.close(); } catch (Exception ignored) {}
             if (l != null)
-                mSyncedDb.setTransactionSuccessful();
-        } finally {
-            // Cleanup
-            if (books != null)
-                try {
-                    books.close();
-                } catch (Exception ignored) {
-                }
+				mSyncedDb.endTransaction(l);
+			if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                long t1 = System.currentTimeMillis();
+                System.out.println("Inserted FTS in " + (t1-t0) + "ms");
+            }
+		}
+	}
+
+	/**
+	 * Update an existing FTS record.
+	 *
+	 * @param bookId
+	 */
+	private SynchronizedStatement mUpdateFtsStmt = null;
+	private void updateFts(long bookId) {
+		long t0 = System.currentTimeMillis();
+
+		if (mUpdateFtsStmt == null) {
+			// Build the FTS update statement base. The parameter order MUST match the order expected in ftsSendBooks().
+			String sql = TBL_BOOKS_FTS.getUpdate(DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION, DOM_NOTES,
+												DOM_PUBLISHER, DOM_GENRE, DOM_LOCATION, DOM_ISBN)
+												+ " Where " + DOM_DOCID + " = ?";
+			mUpdateFtsStmt = mStatements.add("mUpdateFtsStmt", sql);
+		}
+		BooksCursor books = null;
+
+		SyncLock l = null;
+		if (!mSyncedDb.inTransaction())
+			l = mSyncedDb.beginTransaction(true);
+		try {
+			// Compile statement and get cursor
+			books = fetchBooks("select * from " + TBL_BOOKS + " where " + DOM_ID + " = " + bookId, new String[]{});
+			ftsSendBooks(books, mUpdateFtsStmt);
+			if (l != null)
+				mSyncedDb.setTransactionSuccessful();
+		} finally {
+			// Cleanup
+			if (books != null)
+				try { books.close(); } catch (Exception ignored) {}
             if (l != null)
-                mSyncedDb.endTransaction(l);
+				mSyncedDb.endTransaction(l);
             if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
                 long t1 = System.currentTimeMillis();
-                System.out.println("Updated FTS in " + (t1 - t0) + "ms");
+                System.out.println("Updated FTS in " + (t1-t0) + "ms");
             }
-        }
-    }
+		}
+	}
 
-    private void deleteFts(long bookId) {
-        long t0 = System.currentTimeMillis();
-        if (mDeleteFtsStmt == null) {
-            String sql = "Delete from " + TBL_BOOKS_FTS + " Where " + DOM_DOCID + " = ?";
-            mDeleteFtsStmt = mStatements.add("mDeleteFtsStmt", sql);
-        }
-        mDeleteFtsStmt.bindLong(1, bookId);
-        mDeleteFtsStmt.execute();
-        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+	/**
+	 * Delete an existing FTS record
+	 *
+	 * @param bookId
+	 */
+	private SynchronizedStatement mDeleteFtsStmt = null;
+	private void deleteFts(long bookId) {
+		long t0 = System.currentTimeMillis();
+		if (mDeleteFtsStmt == null) {
+			String sql = "Delete from " + TBL_BOOKS_FTS + " Where " + DOM_DOCID + " = ?";
+			mDeleteFtsStmt = mStatements.add("mDeleteFtsStmt", sql);
+		}
+		mDeleteFtsStmt.bindLong(1, bookId);
+		mDeleteFtsStmt.execute();
+		if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
             long t1 = System.currentTimeMillis();
-            System.out.println("Deleted from FTS in " + (t1 - t0) + "ms");
+            System.out.println("Deleted from FTS in " + (t1-t0) + "ms");
         }
-    }
+	}
 
-    /**
-     * Rebuild the entire FTS database. This can take several seconds with many books or a slow phone.
-     */
-    public void rebuildFts() {
-        long t0;
-        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            t0 = System.currentTimeMillis();
-        }
-        boolean gotError = false;
+	/**
+	 * Rebuild the entire FTS database. This can take several seconds with many books or a slow phone.
+	 *
+	 */
+	public void rebuildFts() {
+		long t0;
+		if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+			t0 = System.currentTimeMillis();
+		}
+		boolean gotError = false;
 
-        // Make a copy of the FTS table definition for our temp table.
-        TableDefinition ftsTemp = TBL_BOOKS_FTS.clone();
-        // Give it a new name
-        ftsTemp.setName(ftsTemp.getName() + "_temp");
+		// Make a copy of the FTS table definition for our temp table.
+		TableDefinition ftsTemp = TBL_BOOKS_FTS.clone();
+		// Give it a new name
+		ftsTemp.setName(ftsTemp.getName() + "_temp");
 
-        SynchronizedStatement insert = null;
-        BooksCursor c = null;
+		SynchronizedStatement insert = null;
+		BooksCursor c = null;
 
-        SyncLock l = null;
-        if (!mSyncedDb.inTransaction())
-            l = mSyncedDb.beginTransaction(true);
-        try {
-            // Drop and recreate our temp copy
-            ftsTemp.drop(mSyncedDb);
-            ftsTemp.create(mSyncedDb, false);
+		SyncLock l = null;
+		if (!mSyncedDb.inTransaction())
+			l = mSyncedDb.beginTransaction(true);
+		try {
+			// Drop and recreate our temp copy
+			ftsTemp.drop(mSyncedDb);
+			ftsTemp.create(mSyncedDb, false);
 
-            // Build the FTS update statement base. The parameter order MUST match the order expected in ftsSendBooks().
-            final String sql = ftsTemp.getInsert(DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION, DOM_NOTES, DOM_PUBLISHER, DOM_GENRE, DOM_LOCATION, DOM_ISBN, DOM_DOCID)
-                    + " values (?,?,?,?,?,?,?,?,?)";
+			// Build the FTS update statement base. The parameter order MUST match the order expected in ftsSendBooks().
+			final String sql = ftsTemp.getInsert(DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION, DOM_NOTES, DOM_PUBLISHER, DOM_GENRE, DOM_LOCATION, DOM_ISBN, DOM_DOCID)
+							+ " values (?,?,?,?,?,?,?,?,?)";
 
-            // Compile an INSERT statement
-            insert = mSyncedDb.compileStatement(sql);
+			// Compile an INSERT statement
+			insert = mSyncedDb.compileStatement(sql);
 
-            // Get ALL books in the DB
-            c = fetchBooks("select * from " + TBL_BOOKS, new String[]{});
-            // Send each book
-            ftsSendBooks(c, insert);
-            // Drop old table, ready for rename
-            TBL_BOOKS_FTS.drop(mSyncedDb);
-            // Done
-            if (l != null)
-                mSyncedDb.setTransactionSuccessful();
-        } catch (Exception e) {
-            Logger.logError(e);
-            gotError = true;
-        } finally {
-            // Cleanup
-            if (c != null)
-                try {
-                    c.close();
-                } catch (Exception ignored) {
-                }
+			// Get ALL books in the DB
+			c = fetchBooks("select * from " + TBL_BOOKS, new String[]{});
+			// Send each book
+			ftsSendBooks(c, insert);
+			// Drop old table, ready for rename
+			TBL_BOOKS_FTS.drop(mSyncedDb);
+			// Done
+			if (l != null)
+				mSyncedDb.setTransactionSuccessful();
+		} catch (Exception e) {
+			Logger.logError(e);
+			gotError = true;
+		} finally {
+			// Cleanup
+			if (c != null)
+				try { c.close(); } catch (Exception ignored) {}
             if (insert != null)
-                try {
-                    insert.close();
-                } catch (Exception ignored) {
-                }
+				try { insert.close(); } catch (Exception ignored) {}
             if (l != null)
-                mSyncedDb.endTransaction(l);
+				mSyncedDb.endTransaction(l);
 
-            // According to this:
-            //
-            //    http://old.nabble.com/Bug-in-FTS3-when-trying-to-rename-table-within-a-transaction-td29474500.html
-            //
-            // FTS tables should only be renamed outside of transactions. Which is a pain.
-            //
-            // Delete old table and rename the new table
-            //
-            if (!gotError)
-                mSyncedDb.execSQL("Alter Table " + ftsTemp + " rename to " + TBL_BOOKS_FTS);
-        }
+			// According to this:
+			//
+			//    http://old.nabble.com/Bug-in-FTS3-when-trying-to-rename-table-within-a-transaction-td29474500.html
+			//
+			// FTS tables should only be renamed outside of transactions. Which is a pain.
+			//
+			// Delete old table and rename the new table
+			//
+			if (!gotError)
+				mSyncedDb.execSQL("Alter Table " + ftsTemp + " rename to " + TBL_BOOKS_FTS);
+		}
 
-        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            System.out.println("books reindexed in " + (System.currentTimeMillis() - t0) + "ms");
-        }
-    }
+		if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+			System.out.println("books reindexed in " + (System.currentTimeMillis() - t0) + "ms");
+		}
+	}
 
     /**
      * Utility function to bind a string or NULL value to a parameter since binding a NULL
@@ -4414,15 +4232,76 @@ public class CatalogueDBAdapter {
     }
 
     /**
+     * Cleanup a search string to remove all quotes etc.
+     *
+     * Remove punctuation from the search string to TRY to match the tokenizer. The only punctuation we
+     * allow is a hyphen preceded by a space. Everything else is translated to a space.
+     *
+     * TODO: Consider making '*' to the end of all words a preference item.
+     *
+     * @param search	Search criteria to clean
+     * @return			Clean string
+     */
+    public static String cleanupFtsCriterion(@NonNull final String search) {
+        //return s.replace("'", " ").replace("\"", " ").trim();
+
+        if (search.isEmpty())
+            return search;
+
+        // Output bufgfer
+        final StringBuilder out = new StringBuilder();
+        // Array (convenience)
+        final char[] chars = search.toCharArray();
+        // Cached length
+        final int len = chars.length;
+        // Initial position
+        int pos = 0;
+        // Dummy 'previous' character
+        char prev = ' ';
+
+        // Loop over array
+        while(pos < len) {
+            char curr = chars[pos];
+            // If current is letter or ...use it.
+            if (Character.isLetterOrDigit(curr)) {
+                out.append(curr);
+            } else if (curr == '-' && Character.isWhitespace(prev)) {
+                // Allow negation if preceded by space
+                out.append(curr);
+            } else {
+                // Everything else is whitespace
+                curr = ' ';
+                if (!Character.isWhitespace(prev)) {
+                    // If prev character was non-ws, and not negation, make wildcard
+                    if (prev != '-') {
+                        // Make every token a wildcard
+                        // TODO: Make this a preference
+                        out.append('*');
+                    }
+                    // Append a whitespace only when last char was not a whitespace
+                    out.append(' ');
+                }
+            }
+            prev = curr;
+            pos++;
+        }
+        if (!Character.isWhitespace(prev) && (prev != '-')) {
+            // Make every token a wildcard
+            // TODO: Make this a preference
+            out.append('*');
+        }
+        return out.toString();
+    }
+
+    /**
      * Search the FTS table and return a cursor.
      *
      * ENHANCE: Integrate with existing search code, if we keep it.
      *
-     * @param author   Author-related keywords to find
-     * @param title    Title-related keywords to find
-     * @param anywhere Keywords to find anywhere in book
-     *
-     * @return a cursor
+     * @param author		Author-related keywords to find
+     * @param title			Title-related keywords to find
+     * @param anywhere		Keywords to find anywhere in book
+     * @return				a cursor
      */
     @Nullable
     public Cursor searchFts(String author, String title, String anywhere) {
@@ -4430,16 +4309,16 @@ public class CatalogueDBAdapter {
         title = cleanupFtsCriterion(title);
         anywhere = cleanupFtsCriterion(anywhere);
 
-        if ((author.length() + title.length() + anywhere.length()) == 0)
+        if ( (author.length() + title.length() + anywhere.length()) == 0)
             return null;
 
         StringBuilder sql = new StringBuilder("select " + DOM_DOCID + " from " + TBL_BOOKS_FTS +
                 " where " + TBL_BOOKS_FTS + " match '" + anywhere);
-        for (String w : author.split(" ")) {
+        for(String w : author.split(" ")) {
             if (!w.isEmpty())
                 sql.append(" ").append(DOM_AUTHOR_NAME).append(":").append(w);
         }
-        for (String w : title.split(" ")) {
+        for(String w : title.split(" ")) {
             if (!w.isEmpty())
                 sql.append(" ").append(DOM_TITLE).append(":").append(w);
         }
@@ -4448,13 +4327,21 @@ public class CatalogueDBAdapter {
         return mSyncedDb.rawQuery(sql.toString(), new String[]{});
     }
 
+    //</editor-fold>
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Database open/close/transactions...">
+
+    /** Flag indicating close() has been called */
+    private boolean mCloseWasCalled = false;
+
     /**
      * Open the books database. If it cannot be opened, try to create a new
      * instance of the database. If it cannot be created, throw an exception to
      * signal the failure
      *
      * @return this (self reference, allowing this to be chained in an initialisation call)
-     *
      * @throws SQLException if the database could be neither opened or created
      */
     public void open() throws SQLException {
@@ -4475,17 +4362,12 @@ public class CatalogueDBAdapter {
     public SyncLock startTransaction(boolean isUpdate) {
         return mSyncedDb.beginTransaction(isUpdate);
     }
-
     public void endTransaction(SyncLock lock) {
         mSyncedDb.endTransaction(lock);
     }
-
     public void setTransactionSuccessful() {
         mSyncedDb.setTransactionSuccessful();
     }
-    //</editor-fold>
-
-    //<editor-fold desc="Backup & Export" >
 
     /**
      * Generic function to close the database
@@ -4500,7 +4382,7 @@ public class CatalogueDBAdapter {
             }
 
             if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
-                synchronized (mInstanceCount) {
+                synchronized(mInstanceCount) {
                     mInstanceCount--;
                     System.out.println("CatDBA instances: " + mInstanceCount);
                     //removeInstance(this);
@@ -4523,27 +4405,60 @@ public class CatalogueDBAdapter {
     }
     //</editor-fold>
 
-    //<editor-fold desc="Debug internals">
+    //<editor-fold desc="Class Internals">
 
-    /**
-     * Get the local database.
-     * DO NOT CALL THIS UNLESS YOU REALLY NEED TO. DATABASE ACCESS SHOULD GO THROUGH THIS CLASS.
-     *
-     * @return Database connection
-     */
-    public SynchronizedDb getDb() {
-        if (mSyncedDb == null || !mSyncedDb.isOpen())
-            this.open();
-        return mSyncedDb;
-    }
+    private final Context mContext;
+    private SqlStatementManager mStatements;
 
-    /**
-     * Return a boolean indicating this instance was a new installation
-     */
-    public boolean isNewInstall() {
-        return mDbHelper.isNewInstall();
-    }
+    /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync */
+    private static final Synchronizer mSynchronizer = new Synchronizer();
 
+    private static DatabaseHelper mDbHelper;
+    private static SynchronizedDb mSyncedDb;
+
+    /** Static Factory object to create the custom cursor */
+    private static final CursorFactory mTrackedCursorFactory = new CursorFactory() {
+        @Override
+        public Cursor newCursor(
+                SQLiteDatabase db,
+                SQLiteCursorDriver masterQuery,
+                String editTable,
+                SQLiteQuery query)
+        {
+            return new TrackedCursor(masterQuery, editTable, query, mSynchronizer);
+        }
+    };
+	/**
+	 * Get the local database.
+	 * DO NOT CALL THIS UNLESS YOU REALLY NEED TO. DATABASE ACCESS SHOULD GO THROUGH THIS CLASS.
+	 *
+	 * @return	Database connection
+	 */
+	public SynchronizedDb getDb() {
+		if (mSyncedDb == null || !mSyncedDb.isOpen())
+			this.open();
+		return mSyncedDb;
+	}
+
+	/**
+	 * Get the synchronizer object for this database in case there is some other activity that needs to
+	 * be synced.
+	 *
+	 * Note: Cursor requery() is the only thing found so far.
+	 */
+	public static Synchronizer getSynchronizer() {
+		return mSynchronizer;
+	}
+
+	/**
+	 * Return a boolean indicating this instance was a new installation
+	 */
+	public boolean isNewInstall() {
+		return mDbHelper.isNewInstall();
+	}
+    //</editor-fold>
+
+    //<editor-fold desc="Backup & Export" >
     /**
      * Backup database file using default file name
      */
@@ -4577,33 +4492,93 @@ public class CatalogueDBAdapter {
 
         String sql = "SELECT DISTINCT " +
                 getBookFields("b", DOM_ID.name) + ", " +
-                "l." + DOM_LOANED_TO + " as " + DOM_LOANED_TO + " " +
+                "l." +DOM_LOANED_TO + " as " + DOM_LOANED_TO + " " +
                 " FROM " + DB_TB_BOOKS + " b" +
-                " LEFT OUTER JOIN " + DB_TB_LOAN + " l ON (l." + DOM_BOOK + "=b." + DOM_ID + ") " +
+                " LEFT OUTER JOIN " + DB_TB_LOAN +" l ON (l." + DOM_BOOK + "=b." + DOM_ID + ") " +
                 sinceClause +
                 " ORDER BY b._id";
         return fetchBooks(sql, new String[]{});
     }
+    //</editor-fold>
 
+    //<editor-fold desc="Debug internals">
+
+    /** Debug counter */
+    private static Integer mInstanceCount = 0;
     private static class InstanceRef extends WeakReference<CatalogueDBAdapter> {
         private final Exception mCreationException;
-
         InstanceRef(CatalogueDBAdapter r) {
             super(r);
             mCreationException = new RuntimeException();
         }
-
         Exception getCreationException() {
             return mCreationException;
         }
     }
+    private static final ArrayList<InstanceRef> mInstances = new ArrayList<>();
 
-    public class AnthologyTitleExistsException extends RuntimeException {
-        private static final long serialVersionUID = -9052087086134217566L;
 
-        AnthologyTitleExistsException() {
-            super("Anthology title already exists");
+    /**
+     * DB_ADAPTER only
+     */
+    @SuppressWarnings("unused")
+    private static void addInstance(CatalogueDBAdapter db) {
+        if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
+            mInstances.add(new InstanceRef(db));
         }
+    }
+
+    /**
+     * DB_ADAPTER only
+     */
+    @SuppressWarnings("unused")
+    private static void removeInstance(CatalogueDBAdapter db) {
+        if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
+            ArrayList<InstanceRef> toDelete = new ArrayList<>();
+            for (InstanceRef ref : mInstances) {
+                CatalogueDBAdapter refDb = ref.get();
+                if (refDb == null) {
+                    System.out.println("<-- **** Missing ref (not closed?) **** vvvvvvv");
+                    Logger.logError(ref.getCreationException());
+                    System.out.println("--> **** Missing ref (not closed?) **** ^^^^^^^");
+                } else {
+                    if (refDb == db) {
+                        toDelete.add(ref);
+                    }
+                }
+            }
+            for (InstanceRef ref : toDelete) {
+                mInstances.remove(ref);
+            }
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static void dumpInstances() {
+        if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
+            for (InstanceRef ref : mInstances) {
+                if (ref.get() == null) {
+                    System.out.println("<-- **** Missing ref (not closed?) **** vvvvvvv");
+                    Logger.logError(ref.getCreationException());
+                    System.out.println("--> **** Missing ref (not closed?) **** ^^^^^^^");
+                } else {
+                    Logger.logError(ref.getCreationException());
+                }
+            }
+        }
+    }
+
+    /**
+	 * DB_ADAPTER ONLY; used when tracking a bug in android 2.1, but kept because
+	 * there are still non-fatal anomalies.
+	 */
+	@SuppressWarnings("unused")
+    public static void printReferenceCount(@Nullable final String msg) {
+		if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
+			if (mSyncedDb != null) {
+                SynchronizedDb.printRefCount(msg, mSyncedDb.getUnderlyingDatabase());
+            }
+		}
     }
     //</editor-fold>
 }
