@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle.CompoundKey;
@@ -138,6 +140,7 @@ public class BooklistGroup implements Serializable {
     /**
      * Return a list of BooklistGroups, one for each defined row kind
      */
+    @NonNull
     public static ArrayList<BooklistGroup> getAllGroups() {
         ArrayList<BooklistGroup> list = new ArrayList<>();
 
@@ -154,7 +157,8 @@ public class BooklistGroup implements Serializable {
      *
      * @param kind Kind of group to create
      */
-    public static BooklistGroup newGroup(int kind) {
+    @NonNull
+    public static BooklistGroup newGroup(final int kind) {
         switch (kind) {
             case ROW_KIND_AUTHOR:
                 return new BooklistGroup.BooklistAuthorGroup();
@@ -166,7 +170,7 @@ public class BooklistGroup implements Serializable {
     }
 
     /** Setter for compound key */
-    public void setKeyComponents(String prefix, DomainDefinition... domains) {
+    public void setKeyComponents(@NonNull final String prefix, DomainDefinition... domains) {
         mCompoundKey = new CompoundKey(prefix, domains);
     }
 
@@ -179,7 +183,7 @@ public class BooklistGroup implements Serializable {
         return mRowKindNames.get(kind);
     }
 
-    public void getStyleProperties(Properties list) {
+    public void getStyleProperties(@NonNull final Properties list) {
     }
 
     /**
@@ -342,7 +346,7 @@ public class BooklistGroup implements Serializable {
         }
 
         @Override
-        public void getStyleProperties(Properties list) {
+        public void getStyleProperties(@NonNull Properties list) {
             super.getStyleProperties(list);
             list.add(mAllSeries);
         }
@@ -433,7 +437,7 @@ public class BooklistGroup implements Serializable {
          * Get the Property objects that this group will contribute to a Style.
          */
         @Override
-        public void getStyleProperties(Properties list) {
+        public void getStyleProperties(@NonNull Properties list) {
             super.getStyleProperties(list);
 
             list.add(mAllAuthors);

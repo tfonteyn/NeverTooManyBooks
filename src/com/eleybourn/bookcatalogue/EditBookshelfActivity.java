@@ -31,8 +31,10 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Activity where we can edit a Bookshelf (its name)
+ *
+ * TODO: overkill... make this a dialog
  */
-public class BookshelfEditActivity extends BookCatalogueActivity {
+public class EditBookshelfActivity extends BookCatalogueActivity {
 
     private CatalogueDBAdapter mDb;
 

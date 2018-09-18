@@ -41,7 +41,7 @@ import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 
 import java.util.ArrayList;
 
-import static com.eleybourn.bookcatalogue.BookDetailsAbstractFragment.BOOKSHELF_SEPARATOR;
+import static com.eleybourn.bookcatalogue.entities.Bookshelf.SEPARATOR;
 
 /**
  * Fragment wrapper for the Bookshelf list
@@ -155,13 +155,13 @@ public class BookshelfDialogFragment extends DialogFragment {
 
             // Loop through all bookshelves and build the checkbox list
             if (bookshelves_for_book.moveToFirst()) {
-                final String shelves = BOOKSHELF_SEPARATOR + mCurrList + BOOKSHELF_SEPARATOR;
+                final String shelves = SEPARATOR + mCurrList + SEPARATOR;
                 do {
                     final CheckBox cb = new CheckBox(getActivity());
                     boolean checked = false;
                     String db_bookshelf = bookshelves_for_book.getString(bookshelves_for_book.getColumnIndex(DatabaseDefinitions.DOM_BOOKSHELF_ID.name)).trim();
-                    String db_encoded_bookshelf = ArrayUtils.encodeListItem(BOOKSHELF_SEPARATOR, db_bookshelf);
-                    if (shelves.contains(BOOKSHELF_SEPARATOR + db_encoded_bookshelf + BOOKSHELF_SEPARATOR)) {
+                    String db_encoded_bookshelf = ArrayUtils.encodeListItem(SEPARATOR, db_bookshelf);
+                    if (shelves.contains(SEPARATOR + db_encoded_bookshelf + SEPARATOR)) {
                         checked = true;
                     }
                     cb.setChecked(checked);
@@ -173,7 +173,7 @@ public class BookshelfDialogFragment extends DialogFragment {
                         public void onClick(View v) {
                             String hint = cb.getHint() + "";
                             String name = hint.trim();
-                            String encoded_name = ArrayUtils.encodeListItem(BOOKSHELF_SEPARATOR, name);
+                            String encoded_name = ArrayUtils.encodeListItem(SEPARATOR, name);
                             // If box is checked, then we just append to list
                             if (cb.isChecked()) {
                                 if (mCurrText == null || mCurrText.isEmpty()) {
@@ -181,11 +181,11 @@ public class BookshelfDialogFragment extends DialogFragment {
                                     mCurrList = encoded_name;
                                 } else {
                                     mCurrText += ", " + name;
-                                    mCurrList += BOOKSHELF_SEPARATOR + encoded_name;
+                                    mCurrList += SEPARATOR + encoded_name;
                                 }
                             } else {
                                 // Get the underlying list
-                                ArrayList<String> shelves = ArrayUtils.decodeList(BOOKSHELF_SEPARATOR, mCurrList);
+                                ArrayList<String> shelves = ArrayUtils.decodeList(SEPARATOR, mCurrList);
                                 // Start a new list
                                 StringBuilder newList = new StringBuilder();
                                 StringBuilder newText = new StringBuilder();
@@ -195,13 +195,13 @@ public class BookshelfDialogFragment extends DialogFragment {
                                         // If item in underlying list does not match...
                                         if (!s.equalsIgnoreCase(name)) {
                                             // Convert item
-                                            String item = ArrayUtils.encodeListItem(BOOKSHELF_SEPARATOR, s);
+                                            String item = ArrayUtils.encodeListItem(SEPARATOR, s);
                                             // Append to list (or set to only element if list empty)
                                             if (newList.length() == 0) {
-                                                newList.append(ArrayUtils.encodeListItem(BOOKSHELF_SEPARATOR, s));
+                                                newList.append(ArrayUtils.encodeListItem(SEPARATOR, s));
                                                 newText.append(s);
                                             } else {
-                                                newList.append(BOOKSHELF_SEPARATOR).append(item);
+                                                newList.append(SEPARATOR).append(item);
                                                 newText.append(", ").append(s);
                                             }
                                         }

@@ -23,6 +23,7 @@ import android.database.sqlite.SQLiteDoneException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookData;
@@ -379,11 +380,11 @@ public class CsvImporter implements Importer {
             int oldi = 0;
             String anthology_titles = bookData.getString(UniqueId.BKEY_ANTHOLOGY_TITLES);
             try {
-                int i = anthology_titles.indexOf("|", oldi);
+                int i = anthology_titles.indexOf(ArrayUtils.MULTI_STRING_SEPARATOR, oldi);
                 while (i > -1) {
                     String extracted_title = anthology_titles.substring(oldi, i).trim();
 
-                    int j = extracted_title.indexOf("*");
+                    int j = extracted_title.indexOf(AnthologyTitle.TITLE_AUTHOR_DELIM);
                     if (j > -1) {
                         String ant_title = extracted_title.substring(0, j).trim();
                         String ant_author = extracted_title.substring((j + 1)).trim();
@@ -392,7 +393,7 @@ public class CsvImporter implements Importer {
                         db.insertAnthologyTitle(id, author, ant_title, true, false);
                     }
                     oldi = i + 1;
-                    i = anthology_titles.indexOf("|", oldi);
+                    i = anthology_titles.indexOf(ArrayUtils.MULTI_STRING_SEPARATOR, oldi);
                 }
             } catch (NullPointerException ignore) {
                 //do nothing. There are no anthology titles

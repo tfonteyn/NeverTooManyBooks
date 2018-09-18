@@ -478,9 +478,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
             case R.id.MENU_SERIES_DELETE: {
                 long id = rowView.getSeriesId();
-                Series s = db.getSeriesById(id);
-                if (s != null) {
-                    StandardDialogs.deleteSeriesAlert(context, db, s, new Runnable() {
+                Series series = db.getSeriesById(id);
+                if (series != null) {
+                    StandardDialogs.deleteSeriesAlert(context, db, series, new Runnable() {
                         @Override
                         public void run() {
                             // Let the Activity know

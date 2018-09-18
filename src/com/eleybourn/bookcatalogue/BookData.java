@@ -32,6 +32,7 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
@@ -120,7 +121,7 @@ public class BookData extends DataManager {
     @NonNull
     public String getBookshelfText() {
         final String list = getBookshelfList();
-        final ArrayList<String> items = ArrayUtils.decodeList(BookDetailsAbstractFragment.BOOKSHELF_SEPARATOR, list);
+        final ArrayList<String> items = ArrayUtils.decodeList(Bookshelf.SEPARATOR, list);
         if (items.size() == 0)
             return "";
 
@@ -328,11 +329,11 @@ public class BookData extends DataManager {
             StringBuilder bookshelves_list = new StringBuilder();
             while (bookshelves.moveToNext()) {
                 String name = bookshelves.getString(bookshelves.getColumnIndex(UniqueId.KEY_BOOKSHELF_NAME));
-                String encoded_name = ArrayUtils.encodeListItem(BookDetailsAbstractFragment.BOOKSHELF_SEPARATOR, name);
+                String encoded_name = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, name);
                 if (bookshelves_list.length() == 0) {
                     bookshelves_list.append(encoded_name);
                 } else {
-                    bookshelves_list.append(BookDetailsAbstractFragment.BOOKSHELF_SEPARATOR).append(encoded_name);
+                    bookshelves_list.append(Bookshelf.SEPARATOR).append(encoded_name);
                 }
             }
             return bookshelves_list.toString();

@@ -1113,6 +1113,7 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="select_based_on_loaned_status">Select based on \'Loaned\' status</string>
     <string name="select_loaned_yes">Select loaned books only</string>
     <string name="select_loaned_no">Select non-loaned only</string>
+    <string name="initial_bookshelf">Default</string>
     <!-- End: Added/Updated in  [Next Version]  -->
 
 </resources>

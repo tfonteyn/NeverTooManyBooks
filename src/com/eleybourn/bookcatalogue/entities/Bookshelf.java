@@ -12,6 +12,9 @@ import java.io.Serializable;
 public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
     private static final long serialVersionUID = 1L;
 
+    // how to concat bookshelf names
+    public static final Character SEPARATOR = ',';
+
     /**
      * Support for creation via Parcelable.
      * This is primarily useful for passing ArrayList<Bookshelf> in Bundles to activities.

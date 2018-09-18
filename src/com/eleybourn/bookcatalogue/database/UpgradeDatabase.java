@@ -40,7 +40,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANE
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_POSITION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
@@ -544,7 +544,7 @@ class UpgradeDatabase {
                         DOM_BOOK_LIST_PRICE + ", " + DOM_ANTHOLOGY_MASK + ", " + DOM_BOOK_LOCATION + ", " + DOM_BOOK_READ_START + ", " + DOM_BOOK_READ_END + ", " + OLD_KEY_AUDIOBOOK + ", " +
                         DOM_BOOK_SIGNED + " FROM " + DB_TB_BOOKS);
                 db.execSQL("CREATE TABLE tmp2 AS SELECT _id, " + DOM_BOOK_ID + ", " + DOM_LOANED_TO + " FROM " + DB_TB_LOAN );
-                db.execSQL("CREATE TABLE tmp3 AS SELECT _id, " + DOM_BOOK_ID + ", " + OLD_KEY_AUTHOR + ", " + DOM_TITLE + ", " + DOM_POSITION + " FROM " + DB_TB_ANTHOLOGY);
+                db.execSQL("CREATE TABLE tmp3 AS SELECT _id, " + DOM_BOOK_ID + ", " + OLD_KEY_AUTHOR + ", " + DOM_TITLE + ", " + DOM_ANTHOLOGY_POSITION + " FROM " + DB_TB_ANTHOLOGY);
 
                 db.execSQL("DROP TABLE " + DB_TB_ANTHOLOGY);
                 db.execSQL("DROP TABLE " + DB_TB_LOAN);
@@ -610,7 +610,7 @@ class UpgradeDatabase {
                     "CASE WHEN " + OLD_KEY_AUDIOBOOK + "='t' THEN 'Audiobook' ELSE 'Paperback' END AS " + OLD_KEY_AUDIOBOOK + ", " +
                     DOM_BOOK_SIGNED + " FROM " + DB_TB_BOOKS);
             db.execSQL("CREATE TABLE tmp2 AS SELECT _id, " + DOM_BOOK_ID + ", " + DOM_LOANED_TO + " FROM " + DB_TB_LOAN );
-            db.execSQL("CREATE TABLE tmp3 AS SELECT _id, " + DOM_BOOK_ID + ", " + OLD_KEY_AUTHOR + ", " + DOM_TITLE + ", " + DOM_POSITION + " FROM " + DB_TB_ANTHOLOGY);
+            db.execSQL("CREATE TABLE tmp3 AS SELECT _id, " + DOM_BOOK_ID + ", " + OLD_KEY_AUTHOR + ", " + DOM_TITLE + ", " + DOM_ANTHOLOGY_POSITION + " FROM " + DB_TB_ANTHOLOGY);
             db.execSQL("CREATE TABLE tmp4 AS SELECT " + DOM_BOOK_ID + ", " + DOM_BOOKSHELF_ID + " FROM " + DB_TB_BOOK_BOOKSHELF_WEAK);
 
             db.execSQL("DROP TABLE " + DB_TB_ANTHOLOGY);

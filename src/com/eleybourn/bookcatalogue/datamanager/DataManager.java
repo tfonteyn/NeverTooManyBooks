@@ -482,7 +482,7 @@ public class DataManager {
 			putString(key, s);
 		} else {
 			String curr = getString(key);
-			putString(key, curr + "|" + s);
+			putString(key, curr + ArrayUtils.MULTI_STRING_SEPARATOR + s);
 		}
 	}
 }

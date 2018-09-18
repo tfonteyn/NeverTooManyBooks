@@ -565,7 +565,7 @@ public class BooklistBuilder implements AutoCloseable {
 
             long t0a = System.currentTimeMillis();
 
-            for (BooklistGroup g : mStyle) {
+            for (BooklistGroup booklistGroup : mStyle) {
             //<editor-fold desc="Process each group in the style">
 
                 //
@@ -576,14 +576,14 @@ public class BooklistBuilder implements AutoCloseable {
                 //					that will be displayed and that level in the UI.
                 //  ****************************************************************************************
                 //
-                switch (g.kind) {
+                switch (booklistGroup.kind) {
 
                     // NEWKIND: Add new kinds to this list
 
                     case ROW_KIND_SERIES:
-                        g.displayDomain = DOM_SERIES_NAME;
+                        booklistGroup.displayDomain = DOM_SERIES_NAME;
                         // Save this for later use
-                        seriesGroup = (BooklistSeriesGroup) g;
+                        seriesGroup = (BooklistSeriesGroup) booklistGroup;
                         // Group and sort by name
                         summary.addDomain(DOM_SERIES_NAME, TBL_SERIES.dot(DOM_SERIES_NAME), SummaryBuilder.FLAG_GROUPED + SummaryBuilder.FLAG_SORTED);
                         // Group by ID (we want the ID available and there is a *chance* two series will have the same name...with bad data */
@@ -593,13 +593,13 @@ public class BooklistBuilder implements AutoCloseable {
                         // We want a counter of how many books use the series as a primary series, so we can skip some series
                         summary.addDomain(DOM_PRIMARY_SERIES_COUNT, "case when Coalesce(" + TBL_BOOK_SERIES.dot(DOM_SERIES_POSITION) + ",1) == 1 then 1 else 0 end", SummaryBuilder.FLAG_NONE);
                         // This group can be given a name of the form 's/<n>' where <n> is the series id, eg. 's/18'.
-                        g.setKeyComponents("s", DOM_SERIES_ID);
+                        booklistGroup.setKeyComponents("s", DOM_SERIES_ID);
                         break;
 
                     case ROW_KIND_AUTHOR:
-                        g.displayDomain = DOM_AUTHOR_FORMATTED;
+                        booklistGroup.displayDomain = DOM_AUTHOR_FORMATTED;
                         // Save this for later use
-                        authorGroup = (BooklistAuthorGroup) g;
+                        authorGroup = (BooklistAuthorGroup) booklistGroup;
                         // Always group & sort by 'Last, Given' expression
                         summary.addDomain(DOM_AUTHOR_SORT, AUTHOR_FORMATTED_LAST_FIRST_EXPRESSION, SummaryBuilder.FLAG_GROUPED + SummaryBuilder.FLAG_SORTED);
                         // Add the 'formatted' field of the requested type
@@ -611,191 +611,191 @@ public class BooklistBuilder implements AutoCloseable {
                         summary.addDomain(DOM_AUTHOR_ID, TBL_BOOK_AUTHOR.dot(DOM_AUTHOR_ID), SummaryBuilder.FLAG_GROUPED);
 
                         // This group can be given a name of the form 'a/<n>' where <n> is the author id, eg. 's/18'.
-                        g.setKeyComponents("a", DOM_AUTHOR_ID);
+                        booklistGroup.setKeyComponents("a", DOM_AUTHOR_ID);
 
                         break;
 
                     case ROW_KIND_GENRE:
-                        g.displayDomain = DOM_BOOK_GENRE;
+                        booklistGroup.displayDomain = DOM_BOOK_GENRE;
                         summary.addDomain(DOM_BOOK_GENRE, TBL_BOOKS.dot(DOM_BOOK_GENRE), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                        g.setKeyComponents("g", DOM_BOOK_GENRE);
+                        booklistGroup.setKeyComponents("g", DOM_BOOK_GENRE);
                         break;
 
                     case ROW_KIND_LANGUAGE:
                         // The domain used to display the data on the screen (not always the underlying domain)
-                        g.displayDomain = DOM_BOOK_LANGUAGE;
+                        booklistGroup.displayDomain = DOM_BOOK_LANGUAGE;
                         // Define how the new field is retrieved and sorted/grouped
                         summary.addDomain(DOM_BOOK_LANGUAGE, TBL_BOOKS.dot(DOM_BOOK_LANGUAGE), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                         // Unique name for this field and the source data field
-                        g.setKeyComponents("lang", DOM_BOOK_LANGUAGE);
+                        booklistGroup.setKeyComponents("lang", DOM_BOOK_LANGUAGE);
                         break;
 
                     case ROW_KIND_LOCATION:
-                        g.displayDomain = DOM_BOOK_LOCATION;
+                        booklistGroup.displayDomain = DOM_BOOK_LOCATION;
                         summary.addDomain(DOM_BOOK_LOCATION, "Coalesce(" + TBL_BOOKS.dot(DOM_BOOK_LOCATION) + ", '')", SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                        g.setKeyComponents("loc", DOM_BOOK_LOCATION);
+                        booklistGroup.setKeyComponents("loc", DOM_BOOK_LOCATION);
                         break;
 
                     case ROW_KIND_BOOKSHELF:
-                        g.displayDomain = DOM_BOOKSHELF_NAME;
+                        booklistGroup.displayDomain = DOM_BOOKSHELF_NAME;
                         summary.addDomain(DOM_BOOKSHELF_NAME, "Coalesce(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF_NAME) + ", '')", SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                        g.setKeyComponents("shelf", DOM_BOOKSHELF_NAME);
+                        booklistGroup.setKeyComponents("shelf", DOM_BOOKSHELF_NAME);
                         hasGroupBOOKSHELF = true;
                         break;
 
                     case ROW_KIND_PUBLISHER:
-                        g.displayDomain = DOM_PUBLISHER;
+                        booklistGroup.displayDomain = DOM_PUBLISHER;
                         summary.addDomain(DOM_PUBLISHER, TBL_BOOKS.dot(DOM_PUBLISHER), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                        g.setKeyComponents("p", DOM_PUBLISHER);
+                        booklistGroup.setKeyComponents("p", DOM_PUBLISHER);
                         break;
 
                     case ROW_KIND_RATING:
-                        g.displayDomain = DOM_BOOK_RATING;
+                        booklistGroup.displayDomain = DOM_BOOK_RATING;
                         summary.addDomain(DOM_BOOK_RATING, "Cast(" + TBL_BOOKS.dot(DOM_BOOK_RATING) + " as Integer)", SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                        g.setKeyComponents("rat", DOM_BOOK_RATING);
+                        booklistGroup.setKeyComponents("rat", DOM_BOOK_RATING);
                         break;
 
                     case ROW_KIND_FORMAT:
-                        g.displayDomain = DOM_BOOK_FORMAT;
+                        booklistGroup.displayDomain = DOM_BOOK_FORMAT;
                         summary.addDomain(DOM_BOOK_FORMAT, "Coalesce(" + TBL_BOOKS.dot(DOM_BOOK_FORMAT) + ", '')", SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                        g.setKeyComponents("fmt", DOM_BOOK_FORMAT);
+                        booklistGroup.setKeyComponents("fmt", DOM_BOOK_FORMAT);
                         break;
 
                     case ROW_KIND_READ_AND_UNREAD:
-                        g.displayDomain = DOM_READ_STATUS;
+                        booklistGroup.displayDomain = DOM_READ_STATUS;
                         String unreadExpr = "Case When " + TBL_BOOKS.dot(DOM_BOOK_READ) + " = 1\n" +
                                 "	Then '" + BookCatalogueApp.getResourceString(R.string.booklist_read) + "'\n" +
                                 " Else '" + BookCatalogueApp.getResourceString(R.string.booklist_unread) + "' end";
                         summary.addDomain(DOM_READ_STATUS, unreadExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                         // We want the READ flag at the lowest level only. Some bad data means that it may be 0 or 'f', so we don't group by it.
                         summary.addDomain(DOM_BOOK_READ, TBL_BOOKS.dot(DOM_BOOK_READ), SummaryBuilder.FLAG_NONE);
-                        g.setKeyComponents("r", DOM_READ_STATUS);
+                        booklistGroup.setKeyComponents("r", DOM_READ_STATUS);
                         break;
 
                     case ROW_KIND_LOANED:
                         // Saved for later to indicate group was present
                         hasGroupLOANED = true;
-                        g.displayDomain = DOM_LOANED_TO;
+                        booklistGroup.displayDomain = DOM_LOANED_TO;
                         summary.addDomain(DOM_LOANED_TO_SORT, "Case When " + TBL_LOAN.dot(DOM_LOANED_TO) + " is null then 1 else 0 end", SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                         summary.addDomain(DOM_LOANED_TO, "Case When " + TBL_LOAN.dot(DOM_LOANED_TO) + " is null then '" + BookCatalogueApp.getResourceString(R.string.available) + "'" +
                                         " else '" + BookCatalogueApp.getResourceString(R.string.loaned_to_2) + "' || " + TBL_LOAN.dot(DOM_LOANED_TO) + " end",
                                 SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                        g.setKeyComponents("l", DOM_LOANED_TO);
+                        booklistGroup.setKeyComponents("l", DOM_LOANED_TO);
                         break;
 
                     case ROW_KIND_TITLE_LETTER:
-                        g.displayDomain = DOM_TITLE_LETTER;
+                        booklistGroup.displayDomain = DOM_TITLE_LETTER;
                         String titleLetterExpr = "substr(" + TBL_BOOKS.dot(DOM_TITLE) + ",1,1)";
                         summary.addDomain(DOM_TITLE_LETTER, titleLetterExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                        g.setKeyComponents("t", DOM_TITLE_LETTER);
+                        booklistGroup.setKeyComponents("t", DOM_TITLE_LETTER);
                         break;
 
                     case ROW_KIND_YEAR_PUBLISHED:
-                        g.displayDomain = DOM_PUBLICATION_YEAR;
+                        booklistGroup.displayDomain = DOM_PUBLICATION_YEAR;
                         // Use our standard glob expression
                         String yearPubExpr = yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false);
                         summary.addDomain(DOM_PUBLICATION_YEAR, yearPubExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                        g.setKeyComponents("yrp", DOM_PUBLICATION_YEAR);
+                        booklistGroup.setKeyComponents("yrp", DOM_PUBLICATION_YEAR);
                         break;
 
                     case ROW_KIND_MONTH_PUBLISHED:
-                        g.displayDomain = DOM_PUBLICATION_MONTH;
+                        booklistGroup.displayDomain = DOM_PUBLICATION_MONTH;
                         // Use our standard glob expression
                         String monthPubExpr = monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false);
                         summary.addDomain(DOM_PUBLICATION_MONTH, monthPubExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                        g.setKeyComponents("mnp", DOM_PUBLICATION_MONTH);
+                        booklistGroup.setKeyComponents("mnp", DOM_PUBLICATION_MONTH);
                         break;
 
                     case ROW_KIND_YEAR_ADDED:
-                        g.displayDomain = DOM_ADDED_YEAR;
+                        booklistGroup.displayDomain = DOM_ADDED_YEAR;
                         // Use our standard glob expression
                         String yearAddedExpr = yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true);
                         // TODO: Handle 'DESCENDING'. Requires the navigator construction to use max/min for non-grouped domains that appear in sublevels based on desc/asc.
                         // We don't use DESCENDING sort yet because the 'header' ends up below the detail rows in the flattened table.
                         summary.addDomain(DOM_ADDED_YEAR, yearAddedExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                        g.setKeyComponents("yra", DOM_ADDED_YEAR);
+                        booklistGroup.setKeyComponents("yra", DOM_ADDED_YEAR);
                         break;
 
                     case ROW_KIND_MONTH_ADDED:
-                        g.displayDomain = DOM_ADDED_MONTH;
+                        booklistGroup.displayDomain = DOM_ADDED_MONTH;
                         // Use our standard glob expression
                         String monthAddedExpr = monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true);
                         // We don't use DESCENDING sort yet because the 'header' ends up below the detail rows in the flattened table.
                         summary.addDomain(DOM_ADDED_MONTH, monthAddedExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                        g.setKeyComponents("mna", DOM_ADDED_MONTH);
+                        booklistGroup.setKeyComponents("mna", DOM_ADDED_MONTH);
                         break;
 
                     case ROW_KIND_DAY_ADDED:
-                        g.displayDomain = DOM_ADDED_DAY;
+                        booklistGroup.displayDomain = DOM_ADDED_DAY;
                         // Use our standard glob expression
                         String dayAddedExpr = dayGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true);
                         // We don't use DESCENDING sort yet because the 'header' ends up below the detail rows in the flattened table.
                         summary.addDomain(DOM_ADDED_DAY, dayAddedExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                        g.setKeyComponents("dya", DOM_ADDED_DAY);
+                        booklistGroup.setKeyComponents("dya", DOM_ADDED_DAY);
                         break;
 
 
                     case ROW_KIND_UPDATE_YEAR:
-                        g.displayDomain = DOM_UPDATE_YEAR;
+                        booklistGroup.displayDomain = DOM_UPDATE_YEAR;
                         // Use our standard glob expression
                         String yearUpdatedExpr = yearGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true);
                         // TODO: Handle 'DESCENDING'. Requires the navigator construction to use max/min for non-grouped domains that appear in sublevels based on desc/asc.
                         // We don't use DESCENDING sort yet because the 'header' ends up below the detail rows in the flattened table.
                         summary.addDomain(DOM_UPDATE_YEAR, yearUpdatedExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                        g.setKeyComponents("yru", DOM_UPDATE_YEAR);
+                        booklistGroup.setKeyComponents("yru", DOM_UPDATE_YEAR);
                         summary.addDomain(DOM_LAST_UPDATE_DATE, null, SummaryBuilder.FLAG_SORTED | sortDescendingMask);
                         break;
 
                     case ROW_KIND_UPDATE_MONTH:
-                        g.displayDomain = DOM_UPDATE_MONTH;
+                        booklistGroup.displayDomain = DOM_UPDATE_MONTH;
                         // Use our standard glob expression
                         String monthUpdatedExpr = monthGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true);
                         // We don't use DESCENDING sort yet because the 'header' ends up below the detail rows in the flattened table.
                         summary.addDomain(DOM_UPDATE_MONTH, monthUpdatedExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                        g.setKeyComponents("mnu", DOM_UPDATE_MONTH);
+                        booklistGroup.setKeyComponents("mnu", DOM_UPDATE_MONTH);
                         summary.addDomain(DOM_LAST_UPDATE_DATE, null, SummaryBuilder.FLAG_SORTED | sortDescendingMask);
                         break;
 
                     case ROW_KIND_UPDATE_DAY:
-                        g.displayDomain = DOM_UPDATE_DAY;
+                        booklistGroup.displayDomain = DOM_UPDATE_DAY;
                         // Use our standard glob expression
                         String dayUpdatedExpr = dayGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true);
                         // We don't use DESCENDING sort yet because the 'header' ends up below the detail rows in the flattened table.
                         summary.addDomain(DOM_UPDATE_DAY, dayUpdatedExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                        g.setKeyComponents("dyu", DOM_UPDATE_DAY);
+                        booklistGroup.setKeyComponents("dyu", DOM_UPDATE_DAY);
                         summary.addDomain(DOM_LAST_UPDATE_DATE, null, SummaryBuilder.FLAG_SORTED | sortDescendingMask);
                         break;
 
 
                     case ROW_KIND_YEAR_READ:
-                        g.displayDomain = DOM_READ_YEAR;
+                        booklistGroup.displayDomain = DOM_READ_YEAR;
                         // TODO: Handle 'DESCENDING'. Requires the navigator construction to use max/min for non-grouped domains that appear in sublevels based on desc/asc.
                         // We don't use DESCENDING sort yet because the 'header' ends up below the detail rows in the flattened table.
                         summary.addDomain(DOM_READ_YEAR, yearGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | SummaryBuilder.FLAG_SORT_DESCENDING);
-                        g.setKeyComponents("yrr", DOM_READ_YEAR);
+                        booklistGroup.setKeyComponents("yrr", DOM_READ_YEAR);
                         break;
 
                     case ROW_KIND_MONTH_READ:
-                        g.displayDomain = DOM_READ_MONTH;
+                        booklistGroup.displayDomain = DOM_READ_MONTH;
                         // We don't use DESCENDING sort yet because the 'header' ends up below the detail rows in the flattened table.
                         summary.addDomain(DOM_READ_MONTH, monthGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | SummaryBuilder.FLAG_SORT_DESCENDING);
-                        g.setKeyComponents("mnr", DOM_READ_MONTH);
+                        booklistGroup.setKeyComponents("mnr", DOM_READ_MONTH);
                         break;
 
                     case ROW_KIND_DAY_READ:
-                        g.displayDomain = DOM_READ_DAY;
+                        booklistGroup.displayDomain = DOM_READ_DAY;
                         // We don't use DESCENDING sort yet because the 'header' ends up below the detail rows in the flattened table.
                         summary.addDomain(DOM_READ_DAY, dayGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | SummaryBuilder.FLAG_SORT_DESCENDING);
-                        g.setKeyComponents("dyr", DOM_READ_DAY);
+                        booklistGroup.setKeyComponents("dyr", DOM_READ_DAY);
                         break;
 
                     default:
-                        throw new RuntimeException("Unsupported group type " + g.kind);
+                        throw new RuntimeException("Unsupported group type " + booklistGroup.kind);
 
                 }
                 // Copy the current groups to this level item; this effectively accumulates 'group by' domains
                 // down each level so that the top has fewest groups and the bottom level has groups for all levels.
-                g.groupDomains = summary.cloneGroups();
+                booklistGroup.groupDomains = summary.cloneGroups();
 
             //</editor-fold>
             }

@@ -33,26 +33,43 @@ import java.util.ArrayList;
  *
  * The table has a limitation right now... an AnthologyTitle can only exist in ONE book
  * -> TODO split "anthology" table into "anthology" table without book id, and a new table "anthology_book" linking
+ * latter one must then have:
+ * - id
+ * - book_id
+ * - anthology_id
+ * - anthology_position_in_book
  *
  * @author pjw
  */
-public class AnthologyTitle implements Serializable ,Utils.ItemWithIdFixup {
-    private static final long serialVersionUID = -8715364898312204329L;
-    //TODO: the * was taken from how {@link CsvExporter} and {@link CsvImporter} do the Anthology titles
-    private static final char TITLE_AUTHOR_DELIM = '*';
+public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
+    //TODO: see if this matters
+    //private static final long serialVersionUID = -8715364898312204329L;
+    private static final long serialVersionUID = 2L;
+
+    /**
+     * import/export etc...
+     *
+     * "anthology title * author "
+     */
+    public static final char TITLE_AUTHOR_DELIM = '*';
 
     public long id;
-    private long mBookId;
     private Author mAuthor;
     private String mTitle;
+
+    private long mBookId;
+    private long mPosition;     // order in the book, [1..x]
 
     /**
      * Constructor that will attempt to parse a single string into an AnthologyTitle name.
      */
-    public AnthologyTitle(String name) {
+    public AnthologyTitle(@NonNull final String name) {
         id = 0;
         mBookId = 0;
-        fromString(name);
+        mPosition = 0;
+        ArrayList<String> data = ArrayUtils.decodeList(TITLE_AUTHOR_DELIM, name);
+        mTitle = data.get(0);
+        mAuthor = new Author(data.get(1));
     }
 
     /**
@@ -61,10 +78,10 @@ public class AnthologyTitle implements Serializable ,Utils.ItemWithIdFixup {
      * @param author Author of title
      * @param title  Title
      */
-    @SuppressWarnings("WeakerAccess")
     public AnthologyTitle(final long bookId, @NonNull final Author author, @NonNull final String title) {
-        this(0, bookId, author, title);
+        this(0, bookId, author, title, 0);
     }
+
 
     /**
      * Constructor
@@ -73,11 +90,12 @@ public class AnthologyTitle implements Serializable ,Utils.ItemWithIdFixup {
      * @param title  Title
      */
     @SuppressWarnings("WeakerAccess")
-    public AnthologyTitle(final long id, final long bookId, @NonNull final Author author, @NonNull final String title) {
+    public AnthologyTitle(final long id, final long bookId, @NonNull final Author author, @NonNull final String title, final int position) {
         this.id = id;
         this.mBookId = bookId;
         mAuthor = author;
         mTitle = title.trim();
+        mPosition = position;
     }
 
     @NonNull
@@ -94,7 +112,7 @@ public class AnthologyTitle implements Serializable ,Utils.ItemWithIdFixup {
         return mAuthor;
     }
 
-    public void setAuthor( @NonNull final Author author) {
+    public void setAuthor(@NonNull final Author author) {
         mAuthor = author;
     }
 
@@ -102,31 +120,25 @@ public class AnthologyTitle implements Serializable ,Utils.ItemWithIdFixup {
         return mBookId;
     }
 
+    public void setBookId(final long mBookId) {
+        this.mBookId = mBookId;
+    }
+
+    public long getPosition() {
+        return mPosition;
+    }
+
+    public void setPosition(final long mPosition) {
+        this.mPosition = mPosition;
+    }
+
     /**
-     *  Support for encoding to a text file
+     * Support for encoding to a text file
      */
     @Override
     @NonNull
     public String toString() {
-        return ArrayUtils.encodeListItem(',', mTitle) + " * " + mAuthor;
-    }
-
-    private void fromString(@NonNull final String s) {
-        ArrayList<String> data = ArrayUtils.decodeList(TITLE_AUTHOR_DELIM, s);
-        mTitle = data.get(0);
-        mAuthor = new Author(data.get(1));
-    }
-
-    /**
-     * Replace local details from another author
-     *
-     * @param source AnthologyTitle to copy
-     */
-    @SuppressWarnings("unused")
-    void copyFrom(@NonNull final AnthologyTitle source) {
-        mAuthor = source.getAuthor();
-        mTitle = source.getTitle();
-        id = source.id;
+        return ArrayUtils.encodeListItem(',', mTitle) + " " + TITLE_AUTHOR_DELIM + " " + mAuthor;
     }
 
     @Override

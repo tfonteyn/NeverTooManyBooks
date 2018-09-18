@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -44,7 +45,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANE
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_POSITION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
@@ -99,7 +100,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     ")";
     static final String DATABASE_CREATE_BOOKSHELF_DATA =
             "INSERT INTO " + DB_TB_BOOKSHELF +
-                    " (" + DOM_BOOKSHELF_ID + ") VALUES ('Default')";
+                    " (" + DOM_BOOKSHELF_ID + ") VALUES ('" + BookCatalogueApp.getResourceString(R.string.initial_bookshelf) + "')";
     static final String DATABASE_CREATE_LOAN =
             "create table " + DB_TB_LOAN +
                     " (_id integer primary key autoincrement, " +
@@ -112,7 +113,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
                     DOM_AUTHOR_ID + " integer not null REFERENCES " + DB_TB_AUTHORS + ", " +
                     DOM_TITLE + " text not null, " +
-                    DOM_POSITION + " int" +
+                    DOM_ANTHOLOGY_POSITION + " int" +
                     ")";
     static final String DATABASE_CREATE_BOOK_BOOKSHELF_WEAK =
             "create table " + DB_TB_BOOK_BOOKSHELF_WEAK + "(" +
@@ -182,7 +183,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //		KEY_ISBN + " text, " +
     //		KEY_PUBLISHER + " text, " +
     //		KEY_BOOK_DATE_PUBLISHED + " date, " +
-    //		KEY_RATING + " float not null default 0, " +
+    //		KEY_BOOK_RATING + " float not null default 0, " +
     //		KEY_BOOK_READ + " boolean not null default 0, " +
     //		/* KEY_SERIES + " text, " + */
     //		KEY_BOOK_PAGES + " int, " +
@@ -210,7 +211,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //		KEY_ISBN + " text, " +
     //		KEY_PUBLISHER + " text, " +
     //		KEY_BOOK_DATE_PUBLISHED + " date, " +
-    //		KEY_RATING + " float not null default 0, " +
+    //		KEY_BOOK_RATING + " float not null default 0, " +
     //		KEY_BOOK_READ + " boolean not null default 0, " +
     //		/* KEY_SERIES + " text, " + */
     //		KEY_BOOK_PAGES + " int, " +

@@ -7,31 +7,31 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_NAME;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ISBN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIST_PRICE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_END;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_START;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ISBN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
 /**
@@ -107,10 +107,11 @@ public class UniqueId {
     public static final String KEY_BOOK_DATE_PUBLISHED = DOM_BOOK_DATE_PUBLISHED.name;
     public static final String KEY_BOOK_FORMAT = DOM_BOOK_FORMAT.name;
     public static final String KEY_BOOK_GENRE = DOM_BOOK_GENRE.name;
-    public static final String KEY_BOOK_LIST_PRICE = DOM_BOOK_LIST_PRICE.name;
     public static final String KEY_BOOK_LANGUAGE = DOM_BOOK_LANGUAGE.name;
+    public static final String KEY_BOOK_LIST_PRICE = DOM_BOOK_LIST_PRICE.name;
     public static final String KEY_BOOK_LOCATION = DOM_BOOK_LOCATION.name;
     public static final String KEY_BOOK_PAGES = DOM_BOOK_PAGES.name;
+    public static final String KEY_BOOK_RATING = DOM_BOOK_RATING.name;
     public static final String KEY_BOOK_READ = DOM_BOOK_READ.name;
     public static final String KEY_BOOK_READ_END = DOM_BOOK_READ_END.name;
     public static final String KEY_BOOK_READ_START = DOM_BOOK_READ_START.name;
@@ -125,7 +126,6 @@ public class UniqueId {
     public static final String KEY_LOANED_TO = DOM_LOANED_TO.name;
     public static final String KEY_PUBLISHER = DOM_PUBLISHER.name;
     public static final String KEY_DESCRIPTION = DOM_DESCRIPTION.name;
-    public static final String KEY_RATING = DOM_BOOK_RATING.name;
 
 
     public static final String KEY_ISBN = DOM_ISBN.name;

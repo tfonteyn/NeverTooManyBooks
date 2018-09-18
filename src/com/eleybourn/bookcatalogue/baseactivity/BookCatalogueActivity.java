@@ -55,7 +55,10 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
          see https://developer.android.com/training/implementing-navigation/nav-drawer
          */
         setDrawerLayout((DrawerLayout)findViewById(R.id.drawer_layout));
-        setNavigationView((NavigationView)findViewById(R.id.nav_view));
+
+        final NavigationView navView = findViewById(R.id.nav_view);
+        setNavigationView(navView);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             toolbar.setBackgroundColor(getResources().getColor(R.color.toolbar_background));

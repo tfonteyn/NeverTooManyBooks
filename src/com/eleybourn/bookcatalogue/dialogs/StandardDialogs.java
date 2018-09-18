@@ -162,7 +162,7 @@ public class StandardDialogs {
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        db.deleteSeries(series);
+                        db.deleteSeries(series.id);
                         dialog.dismiss();
                         onDeleted.run();
                     }

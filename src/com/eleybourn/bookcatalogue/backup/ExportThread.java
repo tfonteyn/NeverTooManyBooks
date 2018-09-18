@@ -227,7 +227,7 @@ public class ExportThread extends ManagedTask {
 //									do { 
 //										String anth_title = titles.getString(titles.getColumnIndexOrThrow(DatabaseDefinitions.KEY_TITLE));
 //										String anth_author = titles.getString(titles.getColumnIndexOrThrow(DatabaseDefinitions.KEY_AUTHOR_NAME));
-//										anthology_titles += anth_title + " * " + anth_author + "|";
+//										anthology_titles += anth_title + " " + AnthologyTitle.TITLE_AUTHOR_DELIM +" " + anth_author + ArrayUtils.MULTI_STRING_SEPARATOR;
 //									} while (titles.moveToNext()); 
 //								}
 //							} finally {
@@ -242,7 +242,7 @@ public class ExportThread extends ManagedTask {
 //						String bookshelves_name_text = "";
 //						while (bookshelves.moveToNext()) {
 //							bookshelves_id_text += bookshelves.getString(bookshelves.getColumnIndex(DatabaseDefinitions.KEY_ID)) + BookEditFields.BOOKSHELF_SEPERATOR;
-//							bookshelves_name_text += Utils.encodeListItem(bookshelves.getString(bookshelves.getColumnIndex(DatabaseDefinitions.KEY_BOOKSHELF)),EditBookFieldsFragment.BOOKSHELF_SEPARATOR) + EditBookFieldsFragment.BOOKSHELF_SEPARATOR;
+//							bookshelves_name_text += Utils.encodeListItem(bookshelves.getString(bookshelves.getColumnIndex(DatabaseDefinitions.KEY_BOOKSHELF)),EditBookFieldsFragment.MULTI_STRING_SEPARATOR) + EditBookFieldsFragment.MULTI_STRING_SEPARATOR;
 //						}
 //						bookshelves.close();
 //

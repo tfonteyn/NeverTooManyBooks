@@ -347,9 +347,10 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
         for (int i = 0; i < list.size(); i++) {
             BooklistStyle s = list.get(i);
             if (s.isPreferred()) {
-                if (items.length() > 0)
-                    items.append("|");
-                items.append(ArrayUtils.encodeListItem('|', s.getCanonicalName()));
+                if (items.length() > 0) {
+                    items.append(ArrayUtils.MULTI_STRING_SEPARATOR);
+                }
+                items.append(ArrayUtils.encodeListItem(ArrayUtils.MULTI_STRING_SEPARATOR, s.getCanonicalName()));
             }
         }
         Editor e = BCPreferences.edit();

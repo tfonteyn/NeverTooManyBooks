@@ -34,6 +34,8 @@ import java.util.Iterator;
 
 public class ArrayUtils<T> {
 
+    public static final char MULTI_STRING_SEPARATOR = '|';
+
     private static ArrayUtils<Author> mAuthorUtils = null;
     private static ArrayUtils<Series> mSeriesUtils = null;
     private static ArrayUtils<AnthologyTitle> mAnthologyUtils = null;
@@ -151,9 +153,14 @@ public class ArrayUtils<T> {
      * @return List
      */
     @SuppressWarnings("unchecked")
-    @Nullable
+    @NonNull
     public static ArrayList<Author> getAuthorFromIntentExtras(@NonNull final Intent i) {
-        return (ArrayList<Author>) i.getSerializableExtra(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> list = (ArrayList<Author>) i.getSerializableExtra(UniqueId.BKEY_AUTHOR_ARRAY);
+        if (list != null) {
+            return list;
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -164,9 +171,14 @@ public class ArrayUtils<T> {
      * @return List
      */
     @SuppressWarnings("unchecked")
-    @Nullable
+    @NonNull
     public static ArrayList<Series> getSeriesFromIntentExtras(@NonNull final Intent i) {
-        return (ArrayList<Series>) i.getSerializableExtra(UniqueId.BKEY_SERIES_ARRAY);
+        ArrayList<Series> list = (ArrayList<Series>) i.getSerializableExtra(UniqueId.BKEY_SERIES_ARRAY);
+        if (list != null) {
+            return list;
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -177,9 +189,14 @@ public class ArrayUtils<T> {
      * @return List
      */
     @SuppressWarnings("unchecked")
-    @Nullable
+    @NonNull
     public static ArrayList<AnthologyTitle> getAnthologyTitleFromIntentExtras(@NonNull final Intent i) {
-        return (ArrayList<AnthologyTitle>) i.getSerializableExtra(UniqueId.BKEY_ANTHOLOGY_TITLE_ARRAY);
+        ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) i.getSerializableExtra(UniqueId.BKEY_ANTHOLOGY_TITLE_ARRAY);
+        if (list != null) {
+            return list;
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -205,7 +222,7 @@ public class ArrayUtils<T> {
      * @return Array of strings resulting from list
      */
     @NonNull
-    public static ArrayList<String> decodeList(char delim, @NonNull final String s) {
+    public static ArrayList<String> decodeList(final char delim, @NonNull final String s) {
         StringBuilder ns = new StringBuilder();
         ArrayList<String> list = new ArrayList<>();
         boolean inEsc = false;
@@ -253,6 +270,15 @@ public class ArrayUtils<T> {
     }
 
     /**
+     *
+     * @see #encodeListItem(char, String)
+     * */
+    @NonNull
+    public static String encodeListItem(@NonNull final String s) {
+        return encodeListItem(MULTI_STRING_SEPARATOR, s);
+    }
+
+    /**
      * Convert a string by 'escaping' all instances of: '|', '\', \r, \n. The
      * escape char is '\'.
      *
@@ -264,7 +290,7 @@ public class ArrayUtils<T> {
      * @return Converted string
      */
     @NonNull
-    public static String encodeListItem(char delim, @NonNull final String s) {
+    public static String encodeListItem(final char delim, @NonNull final String s) {
         StringBuilder ns = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
@@ -300,8 +326,8 @@ public class ArrayUtils<T> {
 
         for (T i : a) {
             if (details.length() > 0)
-                details.append("|");
-            details.append(encodeListItem('|', i.toString()));
+                details.append(MULTI_STRING_SEPARATOR);
+            details.append(encodeListItem(MULTI_STRING_SEPARATOR, i.toString()));
         }
         return details.toString();
     }
@@ -319,7 +345,7 @@ public class ArrayUtils<T> {
             values.putString(key, s);
         } else {
             String curr = values.getString(key);
-            values.putString(key, curr + "|" + s);
+            values.putString(key, curr + MULTI_STRING_SEPARATOR + s);
         }
     }
 

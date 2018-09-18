@@ -50,8 +50,6 @@ import java.util.Objects;
  */
 public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragment {
 
-    public static final Character BOOKSHELF_SEPARATOR = ',';
-
     private static final int CONTEXT_ID_DELETE = 1;
     private static final int CONTEXT_SUBMENU_REPLACE_THUMB = 2;
     private static final int CONTEXT_ID_SUBMENU_ROTATE_THUMB = 3;

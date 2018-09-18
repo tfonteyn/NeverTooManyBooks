@@ -398,18 +398,18 @@ public class ImportThread extends ManagedTask {
 //						int oldi = 0;
 //						String anthology_titles = values.getString("anthology_titles");
 //						try {
-//							int i = anthology_titles.indexOf("|", oldi);
+//							int i = anthology_titles.indexOf(ArrayUtils.MULTI_STRING_SEPARATOR, oldi);
 //							while (i > -1) {
 //								String extracted_title = anthology_titles.substring(oldi, i).trim();
 //								
-//								int j = extracted_title.indexOf("*");
+//								int j = extracted_title.indexOf(AnthologyTitle.TITLE_AUTHOR_DELIM);
 //								if (j > -1) {
 //									String anth_title = extracted_title.substring(0, j).trim();
 //									String anth_author = extracted_title.substring((j+1)).trim();
 //									mDb.insertAnthologyTitle(id, anth_author, anth_title, true);
 //								}
 //								oldi = i + 1;
-//								i = anthology_titles.indexOf("|", oldi);
+//								i = anthology_titles.indexOf(ArrayUtils.MULTI_STRING_SEPARATOR, oldi);
 //							}
 //						} catch (NullPointerException e) {
 //							//do nothing. There are no anthology titles
@@ -620,7 +620,7 @@ public class ImportThread extends ManagedTask {
 //	
 //	private final static char QUOTE_CHAR = '"';
 //	private final static char ESCAPE_CHAR = '\\';
-//	private final static char SEPARATOR = ',';
+//	private final static char MULTI_STRING_SEPARATOR = ',';
 //	private char unescape(char c) {
 //		switch(c) {
 //		case 'r':
@@ -713,7 +713,7 @@ public class ImportThread extends ManagedTask {
 //							else
 //								bld.append(c);						
 //							break;
-//						case SEPARATOR:
+//						case MULTI_STRING_SEPARATOR:
 //							// Add this field and reset it.
 //							fields.add(bld.toString());
 //							bld = new StringBuilder();

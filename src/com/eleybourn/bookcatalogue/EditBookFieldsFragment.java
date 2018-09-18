@@ -51,6 +51,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickLi
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEditorListener;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -232,18 +233,14 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
             Bundle extras = getActivity().getIntent().getExtras();
             if (extras != null) {
                 // From the ISBN Search (add)
-                if (extras.containsKey(UniqueId.KEY_BOOK_ID)) {
-                    throw new RuntimeException("[book] array passed in Intent");
-                } else {
-                    Bundle values = extras.getParcelable(UniqueId.BKEY_BOOK_DATA);
-                    if (values != null) {
-                        for (Field f : mFields) {
-                            if (!f.column.isEmpty() && values.containsKey(f.column)) {
-                                try {
-                                    f.setValue(values.getString(f.column));
-                                } catch (Exception ignore) {
-                                    Logger.logError(ignore, "Populate field " + f.column + " failed: " + ignore.getMessage());
-                                }
+                Bundle values = extras.getParcelable(UniqueId.BKEY_BOOK_DATA);
+                if (values != null) {
+                    for (Field f : mFields) {
+                        if (!f.column.isEmpty() && values.containsKey(f.column)) {
+                            try {
+                                f.setValue(values.getString(f.column));
+                            } catch (Exception ignore) {
+                                Logger.logError(ignore, "Populate field " + f.column + " failed: " + ignore.getMessage());
                             }
                         }
                     }
@@ -278,7 +275,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
             if (currShelf.isEmpty()) {
                 currShelf = mDb.getBookshelfName(1);
             }
-            String encoded_shelf = ArrayUtils.encodeListItem(BOOKSHELF_SEPARATOR, currShelf);
+            String encoded_shelf = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, currShelf);
             Field fe = mFields.getField(R.id.bookshelf);
             fe.setValue(currShelf);
             bookData.setBookshelfList(encoded_shelf);

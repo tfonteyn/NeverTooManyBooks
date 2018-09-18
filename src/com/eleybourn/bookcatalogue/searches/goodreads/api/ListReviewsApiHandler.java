@@ -25,7 +25,7 @@ import android.os.Bundle;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -119,18 +119,18 @@ public class ListReviewsApiHandler extends ApiHandler {
 		public static final String AUTHORS = "__authors";
 		public static final String SHELF = "__shelf";
 		public static final String SHELVES = "__shelves";
-		public static final String DB_PAGES = UniqueId.KEY_BOOK_PAGES; //TOMF
-		public static final String DB_ISBN = UniqueId.KEY_ISBN;
-		public static final String DB_TITLE = UniqueId.KEY_TITLE;
-		public static final String DB_NOTES = UniqueId.KEY_NOTES;
-		public static final String DB_FORMAT = UniqueId.KEY_BOOK_FORMAT;
-		public static final String DB_PUBLISHER = UniqueId.KEY_PUBLISHER;
-		public static final String DB_DESCRIPTION = UniqueId.KEY_DESCRIPTION;
-		public static final String DB_AUTHOR_ID = UniqueId.KEY_AUTHOR_ID;
-		public static final String DB_AUTHOR_NAME = UniqueId.KEY_AUTHOR_NAME;
-		public static final String DB_RATING = UniqueId.KEY_RATING;
-		public static final String DB_READ_START = UniqueId.KEY_BOOK_READ_START;
-		public static final String DB_READ_END = UniqueId.KEY_BOOK_READ_END;
+		public static final String DB_PAGES = DatabaseDefinitions.DOM_BOOK_PAGES.name;
+		public static final String DB_ISBN = DatabaseDefinitions.DOM_ISBN.name;
+		public static final String DB_TITLE = DatabaseDefinitions.DOM_TITLE.name;
+		public static final String DB_NOTES = DatabaseDefinitions.DOM_NOTES.name;
+		public static final String DB_FORMAT = DatabaseDefinitions.DOM_BOOK_FORMAT.name;
+		public static final String DB_PUBLISHER = DatabaseDefinitions.DOM_PUBLISHER.name;
+		public static final String DB_DESCRIPTION = DatabaseDefinitions.DOM_DESCRIPTION.name;
+		public static final String DB_AUTHOR_ID = DatabaseDefinitions.DOM_AUTHOR_ID.name;
+		public static final String DB_AUTHOR_NAME = DatabaseDefinitions.DOM_AUTHOR_NAME.name;
+		public static final String DB_RATING = DatabaseDefinitions.DOM_BOOK_RATING.name;
+		public static final String DB_READ_START = DatabaseDefinitions.DOM_BOOK_READ_START.name;
+		public static final String DB_READ_END = DatabaseDefinitions.DOM_BOOK_READ_END.name;
 	}
 
 	private SimpleXmlFilter mFilters;

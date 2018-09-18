@@ -256,7 +256,7 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
      */
     private void addFields() {
         // From 'My comments' tab
-        mFields.add(R.id.rating, UniqueId.KEY_RATING, null);
+        mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING, null);
         mFields.add(R.id.notes, UniqueId.KEY_NOTES, null)
                 .setShowHtml(true);
         mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START, null, new Fields.DateFieldFormatter());

@@ -1210,17 +1210,24 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 							regenGroups();
 						}});
 					Series series = mDb.getSeriesById(info.id);
+					if (series == null) {
+						series = new Series("???");
+					}
 					dialog.edit(series);
 				}
 				break;
 			}
 		case DELETE_SERIES_ID:
 			{
-				StandardDialogs.deleteSeriesAlert(this, mDb, mDb.getSeriesById(info.id), new Runnable() {
-					@Override
-					public void run() {
-						regenGroups();
-					}});
+				Series series = mDb.getSeriesById(info.id);
+				if (series != null) {
+                    StandardDialogs.deleteSeriesAlert(this, mDb, series, new Runnable() {
+                        @Override
+                        public void run() {
+                            regenGroups();
+                        }
+                    });
+                }
 				break;
 			}
 		case EDIT_AUTHOR_ID:

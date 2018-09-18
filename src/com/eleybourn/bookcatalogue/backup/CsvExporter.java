@@ -23,7 +23,6 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.EditBookFieldsFragment;
 import com.eleybourn.bookcatalogue.BooksRow;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
@@ -31,6 +30,8 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -43,29 +44,29 @@ import java.util.Date;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_MASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ISBN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIST_PRICE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_END;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_START;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ISBN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
 /**
@@ -204,9 +205,11 @@ public class CsvExporter implements Exporter {
                             try (Cursor titles = db.fetchAnthologyTitlesByBook(id)) {
                                 if (titles.moveToFirst()) {
                                     do {
-                                        String ant_title = titles.getString(titles.getColumnIndexOrThrow(DOM_TITLE.name));
-                                        String ant_author = titles.getString(titles.getColumnIndexOrThrow(DOM_AUTHOR_NAME.name));
-                                        anthology_titles.append(ant_title).append(" * ").append(ant_author).append("|");
+                                        anthology_titles
+                                                .append( titles.getString(titles.getColumnIndexOrThrow(DOM_TITLE.name)))
+                                                .append(" " + AnthologyTitle.TITLE_AUTHOR_DELIM + " ")
+                                                .append(titles.getString(titles.getColumnIndexOrThrow(DOM_AUTHOR_NAME.name)))
+                                                .append(ArrayUtils.MULTI_STRING_SEPARATOR);
                                     } while (titles.moveToNext());
                                 }
                             }
@@ -225,10 +228,10 @@ public class CsvExporter implements Exporter {
                             while (bookshelves.moveToNext()) {
                                 bookshelves_id_text
                                         .append(bookshelves.getString(bookshelves.getColumnIndex(DOM_ID.name)))
-                                        .append(EditBookFieldsFragment.BOOKSHELF_SEPARATOR);
+                                        .append(Bookshelf.SEPARATOR);
                                 bookshelves_name_text
-                                        .append(ArrayUtils.encodeListItem(EditBookFieldsFragment.BOOKSHELF_SEPARATOR, bookshelves.getString(bookshelves.getColumnIndex(DOM_BOOKSHELF_ID.name))))
-                                        .append(EditBookFieldsFragment.BOOKSHELF_SEPARATOR);
+                                        .append(ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, bookshelves.getString(bookshelves.getColumnIndex(DOM_BOOKSHELF_ID.name))))
+                                        .append(Bookshelf.SEPARATOR);
                             }
                         }
 

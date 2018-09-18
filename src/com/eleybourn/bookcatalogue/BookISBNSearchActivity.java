@@ -79,11 +79,13 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     public static final String BY_SCAN = "scan";
 
     private static final String BKEY_SEARCH_MANAGER_ID = "SearchManagerId";
-    private static final String BKEY_SCANNER_STARTED = "mScannerStarted";
-    private static final String BKEY_LAST_BOOK_INTENT = "LastBookIntent";
+    private static final String LOCAL_BKEY_SCANNER_STARTED = "mScannerStarted";
+    private static final String LOCAL_BKEY_LAST_BOOK_INTENT = "LastBookIntent";
 
     /*
-     *  Mode this activity is in; MANUAL = data entry, SCAN = data from scanner.
+     *  Mode this activity is in:
+     *     MANUAL = data entry
+     *     SCAN = data from scanner.
      *  For SCAN, it loops repeatedly starting the scanner.
      */
     private static final int MODE_MANUAL = 1;
@@ -173,11 +175,9 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
             if (savedInstanceState != null) {
                 mSearchManagerId = savedInstanceState.getLong(BKEY_SEARCH_MANAGER_ID);
 
-                if (savedInstanceState.containsKey(BKEY_SCANNER_STARTED)) {
-                    mScannerStarted = savedInstanceState.getBoolean(BKEY_SCANNER_STARTED);
-                } // else {
-                //System.out.println(mId + " OnCreate BKEY_SCANNER_STARTED NOT PRESENT");
-                //}
+                if (savedInstanceState.containsKey(LOCAL_BKEY_SCANNER_STARTED)) {
+                    mScannerStarted = savedInstanceState.getBoolean(LOCAL_BKEY_SCANNER_STARTED);
+                }
             }
 
             // BUG NOTE 1:
@@ -261,13 +261,13 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                 }
             }
         } catch (SecurityException e) {
-            AlertDialog alertDialog = new AlertDialog.Builder(BookISBNSearchActivity.this)
+            AlertDialog dialog = new AlertDialog.Builder(BookISBNSearchActivity.this)
                     .setMessage(R.string.bad_scanner)
                     .setTitle(R.string.install_scan_title)
                     .setIcon(android.R.drawable.ic_menu_info_details)
                     .create();
 
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
+            dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                     /* text hardcoded as a it is a product name */
                     "ZXing",
                     new DialogInterface.OnClickListener() {
@@ -278,7 +278,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                             finish();
                         }
                     });
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
+            dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                     getResources().getString(android.R.string.cancel),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -288,7 +288,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                     });
             // Prevent the activity result from closing this activity.
             mDisplayingAlert = true;
-            alertDialog.show();
+            dialog.show();
             return true;
         } catch (ActivityNotFoundException e) {
             // Verify - this can be a dangerous operation
@@ -353,17 +353,17 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
 
         mConfirmButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                String mAuthor = mAuthorText.getText().toString();
-                String mTitle = mTitleText.getText().toString();
+                String author = mAuthorText.getText().toString();
+                String title = mTitleText.getText().toString();
 
                 ArrayAdapter<String> adapter = mAuthorAdapter;
-                if (adapter.getPosition(mAuthor) < 0) {
+                if (adapter.getPosition(author) < 0) {
                     // Based on code from filipeximenes we also need to update the adapter here in
                     // case no author or book is added, but we still want to see 'recent' entries.
-                    if (!mAuthor.trim().isEmpty()) {
+                    if (!author.trim().isEmpty()) {
                         boolean found = false;
                         for (String s : mAuthorNames) {
-                            if (s.equalsIgnoreCase(mAuthor)) {
+                            if (s.equalsIgnoreCase(author)) {
                                 found = true;
                                 break;
                             }
@@ -371,13 +371,13 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
 
                         if (!found) {
                             // Keep a list of names as typed to use when we recreate list
-                            mAuthorNames.add(mAuthor);
+                            mAuthorNames.add(author);
                             // Add to adapter, in case search produces no results
-                            adapter.add(mAuthor);
+                            adapter.add(author);
                         }
                     }
                 }
-                go("", mAuthor, mTitle);
+                go("", author, title);
             }
         });
     }
@@ -862,16 +862,15 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
      * Ensure the TaskManager is restored.
      */
     @Override
-    protected void onRestoreInstanceState(Bundle inState) {
-        //System.out.println(mId + " onRestoreInstanceState");
+    protected void onRestoreInstanceState(Bundle instanceState) {
 
-        mSearchManagerId = inState.getLong(BKEY_SEARCH_MANAGER_ID);
+        mSearchManagerId = instanceState.getLong(BKEY_SEARCH_MANAGER_ID);
 
         // Now do 'standard' stuff
-        mLastBookIntent = inState.getParcelable(BKEY_LAST_BOOK_INTENT);
+        mLastBookIntent = instanceState.getParcelable(LOCAL_BKEY_LAST_BOOK_INTENT);
 
         // Call the super method only after we have the searchManager set up
-        super.onRestoreInstanceState(inState);
+        super.onRestoreInstanceState(instanceState);
     }
 
     @Override
@@ -880,24 +879,27 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
 
         // Saving intent data is a kludge due to an apparent Android bug in some
         // handsets. Search for "BUG NOTE 1" in this source file for a discussion
-        Bundle b = getIntent().getExtras();
-        if (b != null) {
-            if (b.containsKey(UniqueId.KEY_ISBN)) {
-                instanceState.putString(UniqueId.KEY_ISBN, b.getString(UniqueId.KEY_ISBN));
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            if (extras.containsKey(UniqueId.KEY_ISBN)) {
+                instanceState.putString(UniqueId.KEY_ISBN, extras.getString(UniqueId.KEY_ISBN));
             }
-            if (b.containsKey(BKEY_BY)) {
-                instanceState.putString(BKEY_BY, b.getString(BKEY_BY));
+            if (extras.containsKey(BKEY_BY)) {
+                instanceState.putString(BKEY_BY, extras.getString(BKEY_BY));
             }
         }
 
-        instanceState.putParcelable(BKEY_LAST_BOOK_INTENT, mLastBookIntent);
-        // Save the current search details as this may be called as a result of a rotate during an alert dialog.
-        instanceState.putString(UniqueId.KEY_AUTHOR_ID, mAuthor); //TOMF ? string as ID ?
-        instanceState.putString(UniqueId.KEY_ISBN, mIsbn);
-        instanceState.putString(UniqueId.KEY_TITLE, mTitle);
-        instanceState.putBoolean(BKEY_SCANNER_STARTED, mScannerStarted);
+        // standard stuff we need
         if (mSearchManagerId != 0) {
             instanceState.putLong(BKEY_SEARCH_MANAGER_ID, mSearchManagerId);
         }
+        instanceState.putParcelable(LOCAL_BKEY_LAST_BOOK_INTENT, mLastBookIntent);
+        instanceState.putBoolean(LOCAL_BKEY_SCANNER_STARTED, mScannerStarted);
+
+        // Save the current search details as this may be called as a result of a rotate during an alert dialog.
+        // note: thse don't actually are getting read ? TODO: probably delete
+        instanceState.putString(UniqueId.KEY_AUTHOR_NAME, mAuthor);
+        instanceState.putString(UniqueId.KEY_ISBN, mIsbn);
+        instanceState.putString(UniqueId.KEY_TITLE, mTitle);
     }
 }

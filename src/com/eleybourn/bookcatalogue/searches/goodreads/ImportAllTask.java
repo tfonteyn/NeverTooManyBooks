@@ -28,6 +28,7 @@ import com.eleybourn.bookcatalogue.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames;
@@ -453,11 +454,11 @@ class ImportAllTask extends GenericTask {
         	for(Bundle sb: shelves) {
         		String shelf = translateBookshelf(db, sb.getString(ListReviewsFieldNames.SHELF));
         		if (shelf != null && !shelf.isEmpty()) {
-        			shelf = ArrayUtils.encodeListItem(EditBookFieldsFragment.BOOKSHELF_SEPARATOR, shelf);
+        			shelf = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, shelf);
         			if (shelfNames == null)
 		        		shelfNames = new StringBuilder(shelf);
         			else
-        				shelfNames.append(EditBookFieldsFragment.BOOKSHELF_SEPARATOR).append(shelf);
+        				shelfNames.append(Bookshelf.SEPARATOR).append(shelf);
         		}
         	}
         	if (shelfNames != null && shelfNames.length() > 0)

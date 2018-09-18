@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -29,12 +28,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
+
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
+
+import java.util.ArrayList;
 
 
 /**
@@ -52,6 +54,7 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
     private static final int DELETE_ID = Menu.FIRST + 1;
 
     private CatalogueDBAdapter mDb;
+    private ArrayList<Bookshelf> mList;
 
     protected int getLayoutId() {
         return R.layout.activity_edit_list_bookshelf;
@@ -64,23 +67,14 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
 
         mDb = new CatalogueDBAdapter(this);
         mDb.open();
-        fillBookshelves();
+        populateList();
         registerForContextMenu(getListView());
     }
 
-    private void fillBookshelves() {
-        //FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
-        //FIXME Use the new {@link android.content.CursorLoader} class with {@link LoaderManager} instead
-        Cursor bookshelfCursor = mDb.fetchAllBookshelves();
-        startManagingCursor(bookshelfCursor);
-
-        // Now create a simple cursor adapter and set it to display
-        String[] fieldsToDisplay = new String[]{DatabaseDefinitions.DOM_BOOKSHELF_ID.name, DatabaseDefinitions.DOM_ID.name};
-        int[] fieldsToBindTo = new int[]{R.id.row_bookshelf};
-
-        SimpleCursorAdapter books = new SimpleCursorAdapter(this, R.layout.row_bookshelf,
-                bookshelfCursor, fieldsToDisplay, fieldsToBindTo);
-        this.setListAdapter(books);
+    private void populateList() {
+        mList = mDb.getBookshelves();
+        ArrayAdapter<Bookshelf> adapter = new ArrayAdapter<>(this, R.layout.row_bookshelf, R.id.row_bookshelf, mList);
+        setListAdapter(adapter);
     }
 
     @Override
@@ -97,7 +91,7 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case INSERT_ID:
-                Intent i = new Intent(this, BookshelfEditActivity.class);
+                Intent i = new Intent(this, EditBookshelfActivity.class);
                 startActivityForResult(i, ACTIVITY_CREATE);
                 return true;
         }
@@ -114,11 +108,13 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
     public boolean onContextItemSelected(android.view.MenuItem item) {
         switch (item.getItemId()) {
             case DELETE_ID:
-                AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-                if (info.id != 1) {
-                    mDb.deleteBookshelf(info.id);
-                    fillBookshelves();
+                AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
+                Bookshelf bookshelf = mList.get(menuInfo.position);
+                if (bookshelf.id != 1) {
+                    mDb.deleteBookshelf(bookshelf.id);
+                    populateList();
                 } else {
+                    //TODO: why not ? as long as we make sure there is another one left.. e.g. count > 2, then you can delete 'one'
                     Toast.makeText(this, R.string.delete_1st_bs, Toast.LENGTH_LONG).show();
                 }
                 return true;
@@ -129,15 +125,17 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        Intent i = new Intent(this, BookshelfEditActivity.class);
-        i.putExtra(UniqueId.KEY_ID, id);
+
+        Bookshelf bookshelf = mList.get(position);
+        Intent i = new Intent(this, EditBookshelfActivity.class);
+        i.putExtra(UniqueId.KEY_ID, bookshelf.id);
         startActivityForResult(i, ACTIVITY_EDIT);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        fillBookshelves();
+        populateList();
     }
 
     @Override

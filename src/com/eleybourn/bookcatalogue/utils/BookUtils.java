@@ -77,7 +77,7 @@ public class BookUtils {
             book.putString(UniqueId.KEY_NOTES, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_NOTES.name)));
             book.putString(UniqueId.KEY_BOOK_PAGES, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PAGES.name)));
             book.putString(UniqueId.KEY_PUBLISHER, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_PUBLISHER.name)));
-            book.putString(UniqueId.KEY_RATING, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_RATING.name)));
+            book.putString(UniqueId.KEY_BOOK_RATING, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_RATING.name)));
             book.putString(UniqueId.KEY_BOOK_READ, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_READ.name)));
             book.putString(UniqueId.KEY_BOOK_READ_END, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_READ_END.name)));
             book.putString(UniqueId.KEY_BOOK_READ_START, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_READ_START.name)));

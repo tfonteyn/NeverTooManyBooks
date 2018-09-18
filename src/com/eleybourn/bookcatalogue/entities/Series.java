@@ -108,11 +108,11 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
         this.id = 0L;
     }
 
-    public Series(@NonNull final String name, @Nullable String number) {
+    public Series(@NonNull final String name, @Nullable final String number) {
         this(0L, name, number);
     }
 
-    public Series(final long id, @NonNull final String name, @Nullable String number) {
+    public Series(final long id, @NonNull final String name, @Nullable final String number) {
         this.id = id;
         this.name = name.trim();
         this.number = cleanupSeriesPosition(number);
@@ -248,6 +248,8 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
      * - ids are equal
      *
      * So the number plays NO ROLE !
+     *
+     * Compare is CASE SENSITIVE !
      */
     @Override
     public boolean equals(Object o) {

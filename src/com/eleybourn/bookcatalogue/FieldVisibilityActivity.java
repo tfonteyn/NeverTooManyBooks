@@ -59,7 +59,7 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
         allFields.add(new FieldInfo(UniqueId.KEY_BOOK_PAGES, R.string.pages, false));
         allFields.add(new FieldInfo(UniqueId.KEY_BOOK_LIST_PRICE, R.string.list_price, false));
         allFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ, R.string.read, false));
-        allFields.add(new FieldInfo(UniqueId.KEY_RATING, R.string.rating, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_BOOK_RATING, R.string.rating, false));
         allFields.add(new FieldInfo(UniqueId.KEY_NOTES, R.string.notes, false));
         allFields.add(new FieldInfo(UniqueId.KEY_ANTHOLOGY_MASK, R.string.anthology, false));
         allFields.add(new FieldInfo(UniqueId.KEY_BOOK_LOCATION, R.string.location_of_book, false));

@@ -303,11 +303,11 @@
 
     <style name="booksonbookshelf_nav_view_header">
         <item name="android:padding">@dimen/padding_border_triple</item>
-        <item name="android:background">#3d5afe</item>
+        <item name="android:background">#FF304ffe</item>
     </style>
 
     <style name="booksonbookshelf_nav_view">
-        <item name="android:background">#e6ffffff</item>
+        <item name="android:background">#661a237e</item>
     </style>
 
     <style name="booklist_book_row_minor_fields">

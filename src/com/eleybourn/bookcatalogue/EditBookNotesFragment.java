@@ -66,8 +66,8 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
             //FieldValidator blankOrDateValidator = new Fields.OrValidator(new Fields.BlankValidator(), new Fields.DateValidator());
             FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
 
-            mFields.add(R.id.rating, UniqueId.KEY_RATING, null);
-            mFields.add(R.id.rating_label, "", UniqueId.KEY_RATING, null);
+            mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING, null);
+            mFields.add(R.id.rating_label, "", UniqueId.KEY_BOOK_RATING, null);
             mFields.add(R.id.read, UniqueId.KEY_BOOK_READ, null);
             mFields.add(R.id.notes, UniqueId.KEY_NOTES, null);
             mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED, null);

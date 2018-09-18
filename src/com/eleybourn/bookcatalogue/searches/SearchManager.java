@@ -417,7 +417,7 @@ public class SearchManager implements TaskManagerListener {
      * @param dest   Destination Bundle
      */
     private void appendData(@NonNull final String key, @NonNull final Bundle source, @NonNull final Bundle dest) {
-        String res = dest.getString(key) + "|" + source.getString(key);
+        String res = dest.getString(key) + ArrayUtils.MULTI_STRING_SEPARATOR + source.getString(key);
         dest.putString(key, res);
     }
 
