@@ -29,8 +29,6 @@ import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_ID;
-
 /**
  * Activity where we can edit a Bookshelf (its name)
  */
@@ -40,7 +38,7 @@ public class BookshelfEditActivity extends BookCatalogueActivity {
 
     private EditText mBookshelfText;
     private Button mConfirmButton;
-    private Long mRowId;
+    private long mRowId;
 
     @Override
     protected int getLayoutId() {
@@ -56,10 +54,14 @@ public class BookshelfEditActivity extends BookCatalogueActivity {
             mDb = new CatalogueDBAdapter(this);
             mDb.open();
 
-            mRowId = savedInstanceState != null ? savedInstanceState.getLong(KEY_ID) : null;
-            if (mRowId == null) {
-                Bundle extras = getIntent().getExtras();
-                mRowId = extras != null ? extras.getLong(KEY_ID) : null;
+            mRowId = 0;
+            if (savedInstanceState != null) {
+                mRowId = savedInstanceState.getLong(UniqueId.KEY_ID);
+            }
+
+            Bundle extras = getIntent().getExtras();
+            if ((mRowId == 0) && (extras != null)) {
+                    mRowId = extras.getLong(UniqueId.KEY_ID);
             }
 
             mConfirmButton = findViewById(R.id.confirm);
@@ -87,7 +89,7 @@ public class BookshelfEditActivity extends BookCatalogueActivity {
     }
 
     private void populateFields() {
-        if (mRowId != null && mRowId > 0) {
+        if (mRowId > 0) {
             mBookshelfText.setText(mDb.getBookshelfName(mRowId));
             mConfirmButton.setText(R.string.save);
         } else {
@@ -99,7 +101,7 @@ public class BookshelfEditActivity extends BookCatalogueActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         try {
-            outState.putLong(KEY_ID, mRowId);
+            outState.putLong(UniqueId.KEY_ID, mRowId);
         } catch (Exception ignore) {
         }
     }
@@ -112,7 +114,7 @@ public class BookshelfEditActivity extends BookCatalogueActivity {
 
     private void saveState() {
         String bookshelf = mBookshelfText.getText().toString().trim();
-        if (mRowId == null || mRowId == 0) {
+        if (mRowId == 0) {
             long id = mDb.insertBookshelf(bookshelf);
             if (id > 0) {
                 mRowId = id;

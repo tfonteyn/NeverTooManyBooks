@@ -360,6 +360,7 @@ public class CoversDbHelper implements AutoCloseable {
 
         SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
+            // count, so no SQLiteDoneException
             if (mExistsStmt.simpleQueryForLong() == 0) {
                 rows = mSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
             } else {

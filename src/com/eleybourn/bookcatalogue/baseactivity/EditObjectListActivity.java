@@ -96,7 +96,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
     protected CatalogueDBAdapter mDb;
     protected String mBookTitle;
     // Row ID... mainly used (if list is from a book) to know if book is new.
-    protected Long mRowId = null;
+    protected long mRowId = 0;
 
     /**
      * Handle 'Cancel'

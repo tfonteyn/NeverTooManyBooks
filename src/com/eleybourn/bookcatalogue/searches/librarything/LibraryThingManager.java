@@ -45,10 +45,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import static com.eleybourn.bookcatalogue.UniqueId.BKEY_AUTHOR_DETAILS;
-import static com.eleybourn.bookcatalogue.UniqueId.BKEY_SERIES_DETAILS;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_TITLE;
-
 /**
  * Handle all aspects of searching (and ultimately synchronizing with) LibraryThing.
  *
@@ -701,7 +697,7 @@ public class LibraryThingManager {
 
             } else if (localName.equalsIgnoreCase(AUTHOR)) {
                 // Add the author
-                ArrayUtils.appendOrAdd(mBookData, BKEY_AUTHOR_DETAILS, mBuilder.toString());
+                ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(FACT)) {
                 // Process the FACT according to the active FIELD type.
@@ -709,11 +705,11 @@ public class LibraryThingManager {
                 switch (mFieldType) {
 
                     case TITLE:
-                        addIfNotPresent(KEY_TITLE);
+                        addIfNotPresent(UniqueId.KEY_TITLE);
                         break;
 
                     case SERIES:
-                        appendOrAdd(BKEY_SERIES_DETAILS);
+                        appendOrAdd(UniqueId.BKEY_SERIES_DETAILS);
                         break;
 
                     case PLACES:

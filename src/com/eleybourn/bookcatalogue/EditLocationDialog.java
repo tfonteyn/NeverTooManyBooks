@@ -26,11 +26,11 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 
 public class EditLocationDialog extends EditStringDialog {
-    EditLocationDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
+    EditLocationDialog(@NonNull final Context context, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
         super(context, db, onChanged);
     }
 
-    public void edit(final String s) {
+    public void edit(@NonNull final String s) {
         super.edit(s, R.layout.dialog_edit_location, R.string.edit_location_details, R.string.name_can_not_be_blank);
     }
 

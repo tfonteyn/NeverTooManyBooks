@@ -53,7 +53,7 @@ public class ExportThread extends ManagedTask {
 
     @Override
     protected void onRun() {
-        if (!StorageUtils.isWritable()) {
+        if (StorageUtils.isWriteProtected()) {
             mManager.doToast("Export Failed - Could not write to external storage");
             return;
         }
@@ -140,26 +140,26 @@ public class ExportThread extends ManagedTask {
 //			'"' + DatabaseDefinitions.KEY_TITLE + "\"," + 			//4
 //			'"' + DatabaseDefinitions.KEY_ISBN + "\"," + 			//5
 //			'"' + DatabaseDefinitions.KEY_PUBLISHER + "\"," + 		//6
-//			'"' + DatabaseDefinitions.KEY_DATE_PUBLISHED + "\"," + 	//7
+//			'"' + DatabaseDefinitions.KEY_BOOK_DATE_PUBLISHED + "\"," + 	//7
 //			'"' + DatabaseDefinitions.KEY_RATING + "\"," + 			//8
 //			'"' + "bookshelf_id\"," + 								//9
 //			'"' + DatabaseDefinitions.KEY_BOOKSHELF + "\"," +		//10
-//			'"' + DatabaseDefinitions.KEY_READ + "\"," +				//11
+//			'"' + DatabaseDefinitions.KEY_BOOK_READ + "\"," +				//11
 //			'"' + DatabaseDefinitions.BKEY_SERIES_DETAILS + "\"," +	//12
-//			'"' + DatabaseDefinitions.KEY_PAGES + "\"," + 			//14
+//			'"' + DatabaseDefinitions.KEY_BOOK_PAGES + "\"," + 			//14
 //			'"' + DatabaseDefinitions.KEY_NOTES + "\"," + 			//15
-//			'"' + DatabaseDefinitions.KEY_LIST_PRICE + "\"," + 		//16
+//			'"' + DatabaseDefinitions.KEY_BOOK_LIST_PRICE + "\"," + 		//16
 //			'"' + DatabaseDefinitions.KEY_ANTHOLOGY_MASK+ "\"," + 		//17
-//			'"' + DatabaseDefinitions.KEY_LOCATION+ "\"," + 			//18
-//			'"' + DatabaseDefinitions.KEY_READ_START+ "\"," + 		//19
-//			'"' + DatabaseDefinitions.KEY_READ_END+ "\"," + 			//20
-//			'"' + DatabaseDefinitions.KEY_FORMAT+ "\"," + 			//21
-//			'"' + DatabaseDefinitions.KEY_SIGNED+ "\"," + 			//22
+//			'"' + DatabaseDefinitions.KEY_BOOK_LOCATION+ "\"," + 			//18
+//			'"' + DatabaseDefinitions.KEY_BOOK_READ_START+ "\"," + 		//19
+//			'"' + DatabaseDefinitions.KEY_BOOK_READ_END+ "\"," + 			//20
+//			'"' + DatabaseDefinitions.KEY_BOOK_FORMAT+ "\"," + 			//21
+//			'"' + DatabaseDefinitions.KEY_BOOK_SIGNED+ "\"," + 			//22
 //			'"' + DatabaseDefinitions.KEY_LOANED_TO+ "\"," +			//23
 //			'"' + "anthology_titles" + "\"," +						//24 
 //			'"' + DatabaseDefinitions.KEY_DESCRIPTION+ "\"," + 		//25
-//			'"' + DatabaseDefinitions.KEY_GENRE+ "\"," + 			//26
-//			'"' + DatabaseDefinitions.KEY_DATE_ADDED+ "\"," + 		//27
+//			'"' + DatabaseDefinitions.KEY_BOOK_GENRE+ "\"," + 			//26
+//			'"' + DatabaseDefinitions.KEY_BOOK_DATE_ADDED+ "\"," + 		//27
 //			'"' + DatabaseDefinitions.DOM_GOODREADS_BOOK_ID + "\"," + 		//28
 //			'"' + DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE + "\"," + 		//29
 //			'"' + DatabaseDefinitions.DOM_LAST_UPDATE_DATE + "\"," + 		//30
@@ -190,14 +190,14 @@ public class ExportThread extends ManagedTask {
 //						// Just get the string from the database and save it. It should be in standard SQL form already.
 //						String dateString = "";
 //						try {
-//							dateString = books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_DATE_PUBLISHED));
+//							dateString = books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_BOOK_DATE_PUBLISHED));
 //						} catch (Exception e) {
 //							//do nothing
 //						}
 //						// Just get the string from the database and save it. It should be in standard SQL form already.
 //						String dateReadStartString = "";
 //						try {
-//							dateReadStartString = books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_READ_START));
+//							dateReadStartString = books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_BOOK_READ_START));
 //						} catch (Exception e) {
 //							Logger.logError(e);
 //							//do nothing
@@ -205,7 +205,7 @@ public class ExportThread extends ManagedTask {
 //						// Just get the string from the database and save it. It should be in standard SQL form already.
 //						String dateReadEndString = "";
 //						try {
-//							dateReadEndString = books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_READ_END));
+//							dateReadEndString = books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_BOOK_READ_END));
 //						} catch (Exception e) {
 //							Logger.logError(e);
 //							//do nothing
@@ -213,7 +213,7 @@ public class ExportThread extends ManagedTask {
 //						// Just get the string from the database and save it. It should be in standard SQL form already.
 //						String dateAddedString = "";
 //						try {
-//							dateAddedString = books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_DATE_ADDED));
+//							dateAddedString = books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_BOOK_DATE_ADDED));
 //						} catch (Exception e) {
 //							//do nothing
 //						}
@@ -261,15 +261,15 @@ public class ExportThread extends ManagedTask {
 //						row.append("\"" + formatCell(bookshelves_name_text) + "\",");
 //						row.append("\"" + formatCell(rv.isRead()) + "\",");
 //						row.append("\"" + formatCell(seriesDetails) + "\",");
-//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_PAGES))) + "\",");
+//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_BOOK_PAGES))) + "\",");
 //						row.append("\"" + formatCell(rv.getNotes()) + "\",");
-//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_LIST_PRICE))) + "\",");
+//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_BOOK_LIST_PRICE))) + "\",");
 //						row.append("\"" + formatCell(anthology) + "\",");
 //						row.append("\"" + formatCell(rv.getLocation()) + "\",");
 //						row.append("\"" + formatCell(dateReadStartString) + "\",");
 //						row.append("\"" + formatCell(dateReadEndString) + "\",");
-//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_FORMAT))) + "\",");
-//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_SIGNED))) + "\",");
+//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_BOOK_FORMAT))) + "\",");
+//						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_BOOK_SIGNED))) + "\",");
 //						row.append("\"" + formatCell(books.getString(books.getColumnIndexOrThrow(DatabaseDefinitions.KEY_LOANED_TO))+"") + "\",");
 //						row.append("\"" + formatCell(anthology_titles) + "\",");
 //						row.append("\"" + formatCell(rv.getDescription()) + "\",");

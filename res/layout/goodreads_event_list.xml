@@ -19,7 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            tools:text="events found"/>
+            tools:text="events found"
+            android:textIsSelectable="true" />
 
         <View
             style="@style/listDividerHorizontal"

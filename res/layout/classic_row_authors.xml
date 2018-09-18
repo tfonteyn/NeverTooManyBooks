@@ -14,7 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        tools:text="Last name"/>
+        tools:text="Last name"
+        android:textIsSelectable="true" />
 
     <TextView
         android:id="@+id/row_given"
@@ -22,6 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/row_family"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        tools:text="First name"/>
+        tools:text="First name"
+        android:textIsSelectable="true" />
 
 </RelativeLayout>

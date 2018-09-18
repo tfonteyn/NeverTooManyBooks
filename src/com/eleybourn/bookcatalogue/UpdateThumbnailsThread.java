@@ -118,13 +118,13 @@ public class UpdateThumbnailsThread extends ManagedTask {
     public void onRun() throws InterruptedException {
         int counter = 0;
         /* Test write to the SDCard; abort if not writable */
-        if (!StorageUtils.isWritable()) {
+        if (StorageUtils.isWriteProtected()) {
             mFinalMessage = getString(R.string.thumbnail_failed_sdcard);
             return;
         }
 
         // ENHANCE: Allow caller to pass cursor (again) so that specific books can be updated (eg. just one book)
-        try (Cursor books = mDb.fetchAllBooks("b." + UniqueId.KEY_ID, "", "", "", "", "", "")) {
+        try (Cursor books = mDb.fetchAllBooks("b." + DatabaseDefinitions.DOM_ID, "", "", "", "", "", "")) {
             mManager.setMax(this, books.getCount());
             while (books.moveToNext() && !isCancelled()) {
                 // Increment the progress counter
@@ -139,7 +139,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
                 // Get the book ID
                 mCurrId = Utils.getLongFromBundle(mOrigData, UniqueId.KEY_ID);
                 // Get the book UUID
-                mCurrUuid = mOrigData.getString(DatabaseDefinitions.DOM_BOOK_UUID.name);
+                mCurrUuid = mOrigData.getString(UniqueId.KEY_BOOK_UUID);
                 // Get the extra data about the book
                 mOrigData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, mDb.getBookAuthorList(mCurrId));
                 mOrigData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, mDb.getBookSeriesList(mCurrId));

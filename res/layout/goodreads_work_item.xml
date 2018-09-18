@@ -38,7 +38,8 @@
                 android:layout_height="0dip"
                 android:layout_weight="1"
                 android:hint="@string/title"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textIsSelectable="true" />
         </LinearLayout>
 
         <LinearLayout
@@ -57,7 +58,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dip"
                 android:layout_weight="1"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textIsSelectable="true" />
         </LinearLayout>
     </LinearLayout>
 

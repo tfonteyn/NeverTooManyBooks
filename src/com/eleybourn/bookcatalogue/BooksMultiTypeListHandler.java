@@ -74,15 +74,15 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_NAME;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FORMAT;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GENRE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LANGUAGE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOCATION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_RATING;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_DAY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_STATUS;
@@ -477,7 +477,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 break;
             }
             case R.id.MENU_SERIES_DELETE: {
-                Long id = rowView.getSeriesId();
+                long id = rowView.getSeriesId();
                 Series s = db.getSeriesById(id);
                 if (s != null) {
                     StandardDialogs.deleteSeriesAlert(context, db, s, new Runnable() {
@@ -618,13 +618,13 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             case RowKinds.ROW_KIND_TITLE_LETTER:
                 return new GenericStringHolder(rowView, DOM_TITLE_LETTER, R.string.no_title);
             case RowKinds.ROW_KIND_GENRE:
-                return new GenericStringHolder(rowView, DOM_GENRE, R.string.no_genre);
+                return new GenericStringHolder(rowView, DOM_BOOK_GENRE, R.string.no_genre);
             case RowKinds.ROW_KIND_LANGUAGE:
-                return new GenericStringHolder(rowView, DOM_LANGUAGE, R.string.empty_with_brackets);
+                return new GenericStringHolder(rowView, DOM_BOOK_LANGUAGE, R.string.empty_with_brackets);
             case RowKinds.ROW_KIND_AUTHOR:
                 return new GenericStringHolder(rowView, DOM_AUTHOR_FORMATTED, R.string.no_author);
             case RowKinds.ROW_KIND_FORMAT:
-                return new GenericStringHolder(rowView, DOM_FORMAT, R.string.empty_with_brackets);
+                return new GenericStringHolder(rowView, DOM_BOOK_FORMAT, R.string.empty_with_brackets);
             case RowKinds.ROW_KIND_PUBLISHER:
                 return new GenericStringHolder(rowView, DOM_PUBLISHER, R.string.no_publisher);
             case RowKinds.ROW_KIND_READ_AND_UNREAD:
@@ -648,7 +648,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             case RowKinds.ROW_KIND_DAY_READ:
                 return new GenericStringHolder(rowView, DOM_READ_DAY, R.string.empty_with_brackets);
             case RowKinds.ROW_KIND_LOCATION:
-                return new GenericStringHolder(rowView, DOM_LOCATION, R.string.empty_with_brackets);
+                return new GenericStringHolder(rowView, DOM_BOOK_LOCATION, R.string.empty_with_brackets);
             case RowKinds.ROW_KIND_UPDATE_YEAR:
                 return new GenericStringHolder(rowView, DOM_UPDATE_YEAR, R.string.empty_with_brackets);
             case RowKinds.ROW_KIND_UPDATE_MONTH:
@@ -658,7 +658,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             case RowKinds.ROW_KIND_BOOKSHELF:
                 return new GenericStringHolder(rowView, DOM_BOOKSHELF_NAME, R.string.empty_with_brackets);
             case RowKinds.ROW_KIND_RATING:
-                return new RatingHolder(rowView, DOM_RATING.name);
+                return new RatingHolder(rowView, DOM_BOOK_RATING.name);
 
             default:
                 throw new RuntimeException("Invalid row kind " + k);
@@ -768,7 +768,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
                         if ((mFlags & BooklistStyle.EXTRAS_LOCATION) != 0) {
                             if (mLocationCol < 0) {
-                                mLocationCol = c.getColumnIndex(UniqueId.KEY_LOCATION);
+                                mLocationCol = c.getColumnIndex(UniqueId.KEY_BOOK_LOCATION);
                             }
                             if (mLocationRes == null) {
                                 mLocationRes = BookCatalogueApp.getResourceString(R.string.location);
@@ -790,7 +790,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
                         if ((mFlags & BooklistStyle.EXTRAS_FORMAT) != 0) {
                             if (mFormatCol < 0) {
-                                mFormatCol = c.getColumnIndex(UniqueId.KEY_FORMAT);
+                                mFormatCol = c.getColumnIndex(UniqueId.KEY_BOOK_FORMAT);
                             }
                             if (mFormatRes == null) {
                                 mFormatRes = BookCatalogueApp.getResourceString(R.string.format);
@@ -943,7 +943,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             float scale = style.isCondensed() ? 0.8f : 1.0f;
 
             read = v.findViewById(R.id.read);
-            if (!FieldVisibilityActivity.isVisible(UniqueId.KEY_READ)) {
+            if (!FieldVisibilityActivity.isVisible(UniqueId.KEY_BOOK_READ)) {
                 read.setVisibility(View.GONE);
             } //else {
             // use the title text size to scale the 'read' icon
@@ -1050,7 +1050,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
 
             // Read
-            if (FieldVisibilityActivity.isVisible(UniqueId.KEY_READ)) {
+            if (FieldVisibilityActivity.isVisible(UniqueId.KEY_BOOK_READ)) {
                 read.setChecked(rowView.isRead());
                 read.setOnClickListener(new View.OnClickListener() {
                     @Override

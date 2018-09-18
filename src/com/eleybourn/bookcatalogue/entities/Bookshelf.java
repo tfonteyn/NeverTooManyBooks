@@ -9,7 +9,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.Serializable;
 
-public class Bookshelf  implements Serializable, Utils.ItemWithIdFixup {
+public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
     private static final long serialVersionUID = 1L;
 
     /**

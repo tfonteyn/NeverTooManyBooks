@@ -95,14 +95,14 @@ public class StorageUtils {
      *
      * @return success or failure
      */
-    static public boolean isWritable() {
+    static public boolean isWriteProtected() {
         try {
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(NOMEDIA_FILE_PATH), UTF8), BUFFER_SIZE);
             out.write("");
             out.close();
-            return true;
-        } catch (IOException e) {
             return false;
+        } catch (IOException e) {
+            return true;
         }
     }
     /**
@@ -454,29 +454,6 @@ public class StorageUtils {
         }
         return totalSize;
     }
-
-//    /**
-//     * return the thumbnail (as a File object) for the given id
-//     *
-//     * @param id The id of the book
-//     *
-//     * @return The File object
-//     */
-//    public static File fetchThumbnailById(final long id) {
-//        return fetchThumbnailById(id, "");
-//    }
-//
-//    /*
-//     * return the thumbnail (as a File object) for the given id. Optionally use a suffix
-//     * on the file name.
-//     *
-//     * @param id The id of the book
-//     * @return The File object
-//     */
-//    @SuppressWarnings("WeakerAccess")
-//    public static File fetchThumbnailById(final long id, @Nullable final String suffix) {
-//        return getThumbnailByName(Long.toString(id), suffix);
-//    }
 
     /**
      * Compare two files based on date. Used for sorting file list by date.

@@ -68,15 +68,15 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
 
             mFields.add(R.id.rating, UniqueId.KEY_RATING, null);
             mFields.add(R.id.rating_label, "", UniqueId.KEY_RATING, null);
-            mFields.add(R.id.read, UniqueId.KEY_READ, null);
+            mFields.add(R.id.read, UniqueId.KEY_BOOK_READ, null);
             mFields.add(R.id.notes, UniqueId.KEY_NOTES, null);
-            mFields.add(R.id.signed, UniqueId.KEY_SIGNED, null);
+            mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED, null);
 
             /* location
              *  TODO: unify with {@link EditBookFieldsFragment#setupMenuMoreButton}
              */
             {
-                mFields.add(R.id.location, UniqueId.KEY_LOCATION, null);
+                mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION, null);
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
                         android.R.layout.simple_dropdown_item_1line, mEditManager.getLocations());
                 mFields.setAdapter(R.id.location, adapter);
@@ -107,7 +107,7 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
 
             Field field;
             // ENHANCE: Add a partial date validator. Or not.
-            field = mFields.add(R.id.read_start, UniqueId.KEY_READ_START, null, dateFormatter);
+            field = mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START, null, dateFormatter);
             field.getView().setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     PartialDatePickerFragment frag = PartialDatePickerFragment.newInstance()
@@ -123,7 +123,7 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
                 }
             });
 
-            field = mFields.add(R.id.read_end, UniqueId.KEY_READ_END, null, dateFormatter);
+            field = mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END, null, dateFormatter);
             field.getView().setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     PartialDatePickerFragment frag = PartialDatePickerFragment.newInstance()
@@ -140,10 +140,10 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
 
             mFields.addCrossValidator(new Fields.FieldCrossValidator() {
                 public void validate(@NonNull Fields fields, @NonNull Bundle values) {
-                    String start = values.getString(UniqueId.KEY_READ_START);
+                    String start = values.getString(UniqueId.KEY_BOOK_READ_START);
                     if (start == null || start.isEmpty())
                         return;
-                    String end = values.getString(UniqueId.KEY_READ_END);
+                    String end = values.getString(UniqueId.KEY_BOOK_READ_END);
                     if (end == null || end.isEmpty())
                         return;
                     if (start.compareToIgnoreCase(end) > 0)
@@ -216,9 +216,9 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
     }
 
     @Override
-    protected void onLoadBookDetails(BookData book, boolean setAllDone) {
+    protected void onLoadBookDetails(@NonNull BookData bookData, boolean setAllDone) {
         if (!setAllDone)
-            mFields.setAll(book);
+            mFields.setAll(bookData);
         // No special handling required; the setAll() done by the caller is enough
         // Restore default visibility and hide unused/unwanted and empty fields
         showHideFields(false);

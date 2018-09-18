@@ -20,6 +20,9 @@
 
 package com.eleybourn.bookcatalogue.database;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 
@@ -41,22 +44,22 @@ public class SqlStatementManager implements AutoCloseable {
         this(null);
     }
 
-    public SqlStatementManager(SynchronizedDb db) {
+    public SqlStatementManager(@Nullable final SynchronizedDb db) {
         mSyncedDb = db;
         mStatements = new Hashtable<>();
     }
 
-    public SynchronizedStatement get(final String name) {
+    public SynchronizedStatement get(@NonNull final String name) {
         return mStatements.get(name);
     }
 
-    public SynchronizedStatement add(String name, String sql) {
+    public SynchronizedStatement add(@NonNull final String name, @NonNull final String sql) {
         if (mSyncedDb == null)
             throw new RuntimeException("Database not set when SqlStatementManager created");
         return add(mSyncedDb, name, sql);
     }
 
-    public SynchronizedStatement add(final SynchronizedDb db, final String name, final String sql) {
+    public SynchronizedStatement add(@NonNull final  SynchronizedDb db, @NonNull final  String name, @NonNull final  String sql) {
         SynchronizedStatement stmt = db.compileStatement(sql);
         SynchronizedStatement old = mStatements.get(name);
         mStatements.put(name, stmt);
@@ -65,13 +68,13 @@ public class SqlStatementManager implements AutoCloseable {
         return stmt;
     }
 
-//    public SynchronizedStatement addOrGet(String name, String sql) {
+//    public SynchronizedStatement addOrGet(@NonNull final String name, @NonNull final String sql) {
 //        if (mSyncedDb == null)
 //            throw new RuntimeException("Database not set when SqlStatementManager created");
 //        return addOrGet(mSyncedDb, name, sql);
 //    }
 //
-//    private SynchronizedStatement addOrGet(final SynchronizedDb db, final String name, final String sql) {
+//    private SynchronizedStatement addOrGet(@NonNull final  SynchronizedDb db, @NonNull final  String name, @NonNull final  String sql) {
 //        SynchronizedStatement stmt = mStatements.get(name);
 //        if (stmt == null) {
 //            stmt = add(db, name, sql);

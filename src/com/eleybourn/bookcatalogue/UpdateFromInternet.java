@@ -103,13 +103,13 @@ public class UpdateFromInternet extends ActivityWithTasks {
         addIfVisible(UniqueId.BKEY_THUMBNAIL, null, R.string.thumbnail, FieldUsages.Usages.COPY_IF_BLANK, false);
         addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES_NAME, R.string.series, FieldUsages.Usages.ADD_EXTRA, true);
         addIfVisible(UniqueId.KEY_PUBLISHER, null, R.string.publisher, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(UniqueId.KEY_DATE_PUBLISHED, null, R.string.date_published, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(UniqueId.KEY_PAGES, null, R.string.pages, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(UniqueId.KEY_LIST_PRICE, null, R.string.list_price, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(UniqueId.KEY_FORMAT, null, R.string.format, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.KEY_BOOK_DATE_PUBLISHED, null, R.string.date_published, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.KEY_BOOK_PAGES, null, R.string.pages, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.KEY_BOOK_LIST_PRICE, null, R.string.list_price, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.KEY_BOOK_FORMAT, null, R.string.format, FieldUsages.Usages.COPY_IF_BLANK, false);
         addIfVisible(UniqueId.KEY_DESCRIPTION, null, R.string.description, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(UniqueId.KEY_GENRE, null, R.string.genre, FieldUsages.Usages.COPY_IF_BLANK, false);
-        addIfVisible(UniqueId.KEY_LANGUAGE, null, R.string.language, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.KEY_BOOK_GENRE, null, R.string.genre, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.KEY_BOOK_LANGUAGE, null, R.string.language, FieldUsages.Usages.COPY_IF_BLANK, false);
 
         // Display the list of fields
         LinearLayout parent = findViewById(R.id.manage_fields_scrollview);

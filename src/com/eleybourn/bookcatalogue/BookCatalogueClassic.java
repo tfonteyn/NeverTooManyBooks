@@ -482,7 +482,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				initViewInfo(v, holder.title, R.id.row_title, FieldVisibilityActivity.TAG + DatabaseDefinitions.DOM_TITLE.name);
 				initViewInfo(v, holder.image, R.id.row_image_view, FieldVisibilityActivity.TAG + UniqueId.BKEY_THUMBNAIL );
 				initViewInfo(v, holder.publisher, R.id.row_publisher, FieldVisibilityActivity.TAG + DatabaseDefinitions.DOM_PUBLISHER.name);
-				initViewInfo(v, holder.read, R.id.row_read_image_view, FieldVisibilityActivity.TAG + DatabaseDefinitions.DOM_READ.name);
+				initViewInfo(v, holder.read, R.id.row_read_image_view, FieldVisibilityActivity.TAG + DatabaseDefinitions.DOM_BOOK_READ.name);
 				initViewInfo(v, holder.series, R.id.row_series, FieldVisibilityActivity.TAG + DatabaseDefinitions.DOM_SERIES_NAME.name);
 
 				ViewTagger.setTag(v, R.id.TAG_HOLDER, holder);
@@ -885,6 +885,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		// so we're not interested in the Cursor returned, only in the fact that
 		// the db does the work ?? AND that we don't leak the Cursor
 		//FIXME: is there any real reason to run a SELECT and then discard it ??
+		//noinspection EmptyTryBlock
 		try (Cursor c = mDb.classicFetchAllAuthors(mBookshelf)){
 		} catch (NullPointerException e) {
 			//reset

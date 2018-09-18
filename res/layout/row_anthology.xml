@@ -13,7 +13,8 @@
         android:paddingEnd="@dimen/padding_border"
         android:paddingStart="@dimen/padding_border"
         android:singleLine="true"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:textIsSelectable="true" />
 
     <TextView
         android:id="@+id/row_author"
@@ -24,5 +25,6 @@
         android:paddingEnd="@dimen/padding_border"
         android:paddingStart="@dimen/padding_border"
         android:singleLine="true"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:textIsSelectable="true" />
 </LinearLayout>

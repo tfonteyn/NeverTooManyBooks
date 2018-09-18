@@ -35,7 +35,11 @@ abstract class EditStringDialog {
     /**
      * AutoCompleteTextView
      */
-    EditStringDialog(Context context, final Runnable onChanged, CatalogueDBAdapter db, int adapterResId, List<String> list) {
+    EditStringDialog(@NonNull final Context context,
+                     @NonNull final CatalogueDBAdapter db,
+                     @NonNull final Runnable onChanged,
+                     final int adapterResId,
+                     @NonNull final List<String> list) {
         mContext = context;
         mOnChanged = onChanged;
         mDb = db;

@@ -114,7 +114,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
             private int mLastPos = 0;
 
             @Override
-            public void onProgress(String message, int position) {
+            public void onProgress(@NonNull String message, int position) {
                 // The progress is sent periodically and has jumps, so we calculate deltas
                 listener.step(message, position - mLastPos);
                 mLastPos = position;

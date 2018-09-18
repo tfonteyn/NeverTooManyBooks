@@ -75,9 +75,9 @@ public class SearchManager implements TaskManagerListener {
     public static final int SEARCH_ALL = SEARCH_GOOGLE | SEARCH_AMAZON | SEARCH_LIBRARY_THING | SEARCH_GOODREADS;
 
     private static final String TAG = "SearchManager";
-    private static final ArrayList<SearchSite> mSearchOrderDefaults = new ArrayList<>();;
+    private static final ArrayList<SearchSite> mSearchOrderDefaults = new ArrayList<>();
     // TODO: not user configurable for now, but plumbing installed
-    private static final ArrayList<SearchSite> mReliabilityOrder = new ArrayList<>(mSearchOrderDefaults);;
+    private static final ArrayList<SearchSite> mReliabilityOrder = new ArrayList<>(mSearchOrderDefaults);
     private static final TaskSwitch mMessageSwitch = new TaskSwitch();
     private static ArrayList<SearchSite> mSearchOrder;
 
@@ -449,7 +449,7 @@ public class SearchManager implements TaskManagerListener {
                 } else if (UniqueId.BKEY_SERIES_DETAILS.equals(k)) {
                     appendData(k, bookData, mBookData);
 
-                } else if (UniqueId.KEY_DATE_PUBLISHED.equals(k)) {// Grab a different date if we can parse it.
+                } else if (UniqueId.KEY_BOOK_DATE_PUBLISHED.equals(k)) {// Grab a different date if we can parse it.
                     String pd = bookData.getString(k);
                     if (pd != null) {
                         Date newDate = DateUtils.parseDate(pd);
@@ -581,7 +581,7 @@ public class SearchManager implements TaskManagerListener {
         // Cleanup other fields
         //Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_TITLE);
         //Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_PUBLISHER);
-        //Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_DATE_PUBLISHED);
+        //Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_BOOK_DATE_PUBLISHED);
         //Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_SERIES_NAME);
 
         // If book is not found or missing required data, warn the user

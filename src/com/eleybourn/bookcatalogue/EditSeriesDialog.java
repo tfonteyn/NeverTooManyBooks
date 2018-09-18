@@ -40,7 +40,7 @@ public class EditSeriesDialog {
     private final CatalogueDBAdapter mDb;
     private final Runnable mOnChanged;
 
-    EditSeriesDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
+    EditSeriesDialog(@NonNull final Context context, @NonNull final CatalogueDBAdapter db, @NonNull final  Runnable onChanged) {
         mDb = db;
         mContext = context;
         mSeriesAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDb.getAllSeries());
@@ -70,8 +70,7 @@ public class EditSeriesDialog {
                     Toast.makeText(mContext, R.string.series_is_blank, Toast.LENGTH_LONG).show();
                     return;
                 }
-                Series newSeries = new Series(newName, "");
-                confirmEditSeries(series, newSeries);
+                confirmEdit(series, new Series(newName, ""));
                 dialog.dismiss();
             }
         });
@@ -86,34 +85,26 @@ public class EditSeriesDialog {
         dialog.show();
     }
 
-    private void confirmEditSeries(@NonNull final Series oldSeries, @NonNull final Series newSeries) {
-        // First, deal with a some special cases...
-
-        // Case: Unchanged.
-        try {
-            if (newSeries.name.compareTo(oldSeries.name) == 0) {
-                // No change to anything; nothing to do
-                return;
-            }
-        } catch (NullPointerException e) {
-            Logger.logError(e);
+    private void confirmEdit(@NonNull final Series from, @NonNull final Series to) {
+        if (to.equals(from)) {
+            return;
         }
 
         // Get the new IDs
-        oldSeries.id = mDb.getSeriesId(oldSeries);
-        newSeries.id = mDb.getSeriesId(newSeries);
+        from.id = mDb.getSeriesId(from);
+        to.id = mDb.getSeriesId(to);
 
         // Case: series is the same (but different case)
-        if (newSeries.id == oldSeries.id) {
+        if (to.id == from.id) {
             // Just update with the most recent spelling and format
-            oldSeries.copyFrom(newSeries);
-            mDb.sendSeries(oldSeries);
+            from.copyFrom(to);
+            mDb.sendSeries(from);
             mOnChanged.run();
             return;
         }
 
-        mDb.globalReplaceSeries(oldSeries, newSeries);
-        oldSeries.copyFrom(newSeries);
+        mDb.globalReplaceSeries(from, to);
+        from.copyFrom(to);
         mOnChanged.run();
     }
 }

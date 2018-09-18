@@ -27,10 +27,10 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 
 public class EditFormatDialog extends EditStringDialog {
     EditFormatDialog(@NonNull final Context context, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
-        super(context, onChanged, db, android.R.layout.simple_dropdown_item_1line, db.getFormats());
+        super(context, db, onChanged, android.R.layout.simple_dropdown_item_1line, db.getFormats());
     }
 
-    public void edit(final String s) {
+    public void edit(@NonNull final String s) {
         super.edit(s, R.layout.dialog_edit_format, R.string.edit_format_name, R.string.name_can_not_be_blank);
     }
 

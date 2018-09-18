@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -43,7 +44,7 @@ import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -98,42 +99,40 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         //menu.clear();
-        final Long currRow = mEditManager.getBookData().getRowId();
+        final long currRow = mEditManager.getBookData().getRowId();
         if (currRow != 0) {
-            MenuItem delete = menu.add(0, DELETE_ID, 0, R.string.menu_delete);
-            delete.setIcon(android.R.drawable.ic_menu_delete);
+            menu.add(0, DELETE_ID, 0, R.string.menu_delete)
+                    .setIcon(android.R.drawable.ic_menu_delete);
 
-            MenuItem duplicate = menu.add(0, DUPLICATE_ID, 0, R.string.menu_duplicate);
-            duplicate.setIcon(android.R.drawable.ic_menu_add);
+            menu.add(0, DUPLICATE_ID, 0, R.string.menu_duplicate)
+                    .setIcon(android.R.drawable.ic_menu_add);
 
             // TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books.
-            MenuItem tweet = menu.add(0, SHARE_ID, 0, R.string.menu_share_this);
-            tweet.setIcon(R.drawable.ic_menu_twitter);
-            // Very rarely used, and easy to miss-click.
+            menu.add(0, SHARE_ID, 0, R.string.menu_share_this)
+                    .setIcon(R.drawable.ic_menu_twitter);
+            // Very rarely used, and easy to miss-click, so do not add as action_if_room!
             //tweet.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
         if (this instanceof BookDetailsReadOnlyFragment) {
-            MenuItem item = menu.add(0, EDIT_OPTIONS_ID, 0, R.string.edit_book);
-            item.setIcon(android.R.drawable.ic_menu_edit);
+            MenuItem item = menu.add(0, EDIT_OPTIONS_ID, 0, R.string.edit_book)
+                    .setIcon(android.R.drawable.ic_menu_edit);
             item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
         boolean hasAuthor = mEditManager.getBookData().getAuthors().size() > 0;
         if (hasAuthor) {
-            MenuItem item = menu.add(0, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0, R.string.amazon_books_by_author);
-            item.setIcon(R.drawable.ic_www_search_2_holo_dark);
+            menu.add(0, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0, R.string.amazon_books_by_author)
+                    .setIcon(R.drawable.ic_www_search_2_holo_dark);
         }
 
         if (mEditManager.getBookData().getSeries().size() > 0) {
             if (hasAuthor) {
-                MenuItem item = menu.add(0, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0, R.string.amazon_books_by_author_in_series);
-                item.setIcon(R.drawable.ic_www_search_2_holo_dark);
+                menu.add(0, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0, R.string.amazon_books_by_author_in_series)
+                        .setIcon(R.drawable.ic_www_search_2_holo_dark);
             }
-            {
-                MenuItem item = menu.add(0, R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0, R.string.amazon_books_in_series);
-                item.setIcon(R.drawable.ic_www_search_2_holo_dark);
-            }
+             menu.add(0, R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0, R.string.amazon_books_in_series)
+                        .setIcon(R.drawable.ic_www_search_2_holo_dark);
         }
     }
 
@@ -143,7 +142,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final Long currRow = mEditManager.getBookData().getRowId();
+        final long currRow = mEditManager.getBookData().getRowId();
 
         try {
             switch (item.getItemId()) {
@@ -198,8 +197,8 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     }
 
     private String getAuthorFromBook() {
-        ArrayList<Author> authors = mEditManager.getBookData().getAuthors();
-        return authors.size() > 0 ? authors.get(0).getDisplayName() : null;
+        ArrayList<Author> list = mEditManager.getBookData().getAuthors();
+        return list.size() > 0 ? list.get(0).getDisplayName() : null;
     }
 
     private String getSeriesFromBook() {
@@ -217,16 +216,17 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     /**
      * Called to load data from the BookData object when needed.
      *
-     * @param book       BookData to load from
-     * @param setAllDone Flag indicating setAll() has already been called on the mFields object
+     * @param bookData      to load from
+     * @param setAllDone    Flag indicating setAll() has already been called on the mFields object
      */
-    abstract protected void onLoadBookDetails(BookData book, @SuppressWarnings("SameParameterValue") boolean setAllDone);
+    abstract protected void onLoadBookDetails(@NonNull final BookData bookData,
+                                              @SuppressWarnings("SameParameterValue") final boolean setAllDone);
 
     /**
      * Default implementation of code to save existing data to the BookData object
      */
-    protected void onSaveBookDetails(BookData book) {
-        mFields.getAll(book);
+    protected void onSaveBookDetails(@NonNull final BookData bookData) {
+        mFields.getAll(bookData);
     }
 
     @Override
@@ -256,7 +256,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     }
 
     @Override
-    public void saveAllEdits(@NonNull DataManager data) {
+    public void saveAllEdits(@NonNull final DataManager dataManager) {
         mFields.getAll(mEditManager.getBookData());
     }
 
@@ -264,7 +264,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      * This is 'final' because we want inheritors to implement onLoadBookDetails()
      */
     @Override
-    public final void reloadData(@NonNull DataManager data) {
+    public final void reloadData(@NonNull final DataManager dataManager) {
         final boolean wasDirty = mEditManager.isDirty();
         onLoadBookDetails(mEditManager.getBookData(), false);
         mEditManager.setDirty(wasDirty);
@@ -281,7 +281,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      * @return The resulting visibility setting value (VISIBLE or GONE)
      */
     @SuppressWarnings("UnusedReturnValue")
-    private int showHideField(boolean hideIfEmpty, int resId, int... relatedFields) {
+    private int showHideField(final boolean hideIfEmpty, final int resId, final int... relatedFields) {
         // Get the base view
         final View v = getView().findViewById(resId);
         int visibility;
@@ -316,7 +316,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      * Hides unused fields if they have not any useful data. Checks all text fields
      * except of author, series and loaned.
      */
-    protected void showHideFields(boolean hideIfEmpty) {
+    protected void showHideFields(final boolean hideIfEmpty) {
         mFields.resetVisibility();
 
         // Check publishing information; in reality only one of these fields will exist
@@ -362,15 +362,15 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      * @author pjw
      */
     public interface BookEditManager {
-        void setShowAnthology(boolean showAnthology);
+        void setShowAnthology(final boolean showAnthology);
 
         boolean isDirty();
 
-        void setDirty(boolean isDirty);
+        void setDirty(final boolean isDirty);
 
         BookData getBookData();
 
-        void setRowId(Long id);
+        void setRowId(final long id);
 
         ArrayList<String> getFormats();
 
@@ -390,53 +390,54 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         /**
          * Ensure that next up/down/left/right View is visible for all sub-views of the passed view.
          */
-        public static void fixFocusSettings(View root) {
+        public static void fixFocusSettings(@NonNull final View root) {
             final INextView getDown = new INextView() {
                 @Override
-                public int getNext(View v) {
+                public int getNext(@NonNull View v) {
                     return v.getNextFocusDownId();
                 }
 
                 @Override
-                public void setNext(View v, int id) {
+                public void setNext(@NonNull View v, int id) {
                     v.setNextFocusDownId(id);
                 }
             };
             final INextView getUp = new INextView() {
                 @Override
-                public int getNext(View v) {
+                public int getNext(@NonNull View v) {
                     return v.getNextFocusUpId();
                 }
 
                 @Override
-                public void setNext(View v, int id) {
+                public void setNext(@NonNull View v, int id) {
                     v.setNextFocusUpId(id);
                 }
             };
             final INextView getLeft = new INextView() {
                 @Override
-                public int getNext(View v) {
+                public int getNext(@NonNull View v) {
                     return v.getNextFocusLeftId();
                 }
 
                 @Override
-                public void setNext(View v, int id) {
+                public void setNext(@NonNull View v, int id) {
                     v.setNextFocusLeftId(id);
                 }
             };
             final INextView getRight = new INextView() {
                 @Override
-                public int getNext(View v) {
+                public int getNext(@NonNull View v) {
                     return v.getNextFocusRightId();
                 }
 
                 @Override
-                public void setNext(View v, int id) {
+                public void setNext(@NonNull View v, int id) {
                     v.setNextFocusRightId(id);
                 }
             };
 
-            Hashtable<Integer, View> vh = new Hashtable<>();
+            @SuppressLint("UseSparseArrays")
+            HashMap<Integer, View> vh = new HashMap<>();
             getViews(root, vh);
 
             for (Map.Entry<Integer, View> ve : vh.entrySet()) {
@@ -454,16 +455,18 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
          * Passed a collection of views, a specific View and an INextView, ensure that the
          * currently set 'next' view is actually a visible view, updating it if necessary.
          *
-         * @param vh     Collection of all views
-         * @param v      View to check
+         * @param list     Collection of all views
+         * @param view      View to check
          * @param getter Methods to get/set 'next' view
          */
-        private static void fixNextView(Hashtable<Integer, View> vh, View v, INextView getter) {
-            int nextId = getter.getNext(v);
+        private static void fixNextView(@NonNull final HashMap<Integer, View> list,
+                                        @NonNull final View view,
+                                        @NonNull final INextView getter) {
+            int nextId = getter.getNext(view);
             if (nextId != View.NO_ID) {
-                int actualNextId = getNextView(vh, nextId, getter);
+                int actualNextId = getNextView(list, nextId, getter);
                 if (actualNextId != nextId)
-                    getter.setNext(v, actualNextId);
+                    getter.setNext(view, actualNextId);
             }
         }
 
@@ -471,49 +474,52 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
          * Passed a collection of views, a specific view and an INextView object find the
          * first VISIBLE object returned by INextView when called recursively.
          *
-         * @param vh     Collection of all views
+         * @param list     Collection of all views
          * @param nextId ID of 'next' view to get
          * @param getter Interface to lookup 'next' ID given a view
          *
          * @return ID if first visible 'next' view
          */
-        private static int getNextView(Hashtable<Integer, View> vh, int nextId, INextView getter) {
-            final View v = vh.get(nextId);
+        private static int getNextView(@NonNull final HashMap<Integer, View> list,
+                                       final int nextId,
+                                       @NonNull final INextView getter) {
+            final View v = list.get(nextId);
             if (v == null)
                 return View.NO_ID;
 
             if (v.getVisibility() == View.VISIBLE)
                 return nextId;
 
-            return getNextView(vh, getter.getNext(v), getter);
+            return getNextView(list, getter.getNext(v), getter);
         }
 
         /**
          * Passed a parent view, add it and all children view (if any) to the passed collection
          *
-         * @param p  Parent View
-         * @param vh Collection
+         * @param parent  Parent View
+         * @param list Collection
          */
-        private static void getViews(View p, Hashtable<Integer, View> vh) {
+        private static void getViews(@NonNull final View parent,
+                                     @NonNull final HashMap<Integer, View> list) {
             // Get the view ID and add it to collection if not already present.
-            final int id = p.getId();
-            if (id != View.NO_ID && !vh.containsKey(id)) {
-                vh.put(id, p);
+            final int id = parent.getId();
+            if (id != View.NO_ID && !list.containsKey(id)) {
+                list.put(id, parent);
             }
             // If it's a ViewGroup, then process children recursively.
-            if (p instanceof ViewGroup) {
-                final ViewGroup g = (ViewGroup) p;
+            if (parent instanceof ViewGroup) {
+                final ViewGroup g = (ViewGroup) parent;
                 final int nChildren = g.getChildCount();
                 for (int i = 0; i < nChildren; i++) {
-                    getViews(g.getChildAt(i), vh);
+                    getViews(g.getChildAt(i), list);
                 }
             }
         }
 
         private interface INextView {
-            int getNext(View v);
+            int getNext(@NonNull final View v);
 
-            void setNext(View v, int id);
+            void setNext(@NonNull final View v, final int id);
         }
 
         /*

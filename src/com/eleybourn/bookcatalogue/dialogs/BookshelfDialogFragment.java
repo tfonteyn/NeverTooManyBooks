@@ -64,17 +64,20 @@ public class BookshelfDialogFragment extends DialogFragment {
      * Constructor
      *
      * @param dialogId    ID passed by caller. Can be 0, will be passed back in event
-     * @param rowId       Book ID
+     * @param bookId      Book ID
      * @param initialText Initial display text for bookshelf list
      * @param initialList Initial encoded list of bookshelves
      *
      * @return Instance of dialog fragment
      */
-    public static BookshelfDialogFragment newInstance(int dialogId, Long rowId, String initialText, String initialList) {
+    public static BookshelfDialogFragment newInstance(final int dialogId,
+                                                      final long bookId,
+                                                      @NonNull final String initialText,
+                                                      @NonNull final String initialList) {
         BookshelfDialogFragment frag = new BookshelfDialogFragment();
         Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_DIALOG_ID, dialogId);
-        args.putLong(BKEY_ROW_ID, rowId);
+        args.putLong(BKEY_ROW_ID, bookId);
         args.putString(BKEY_TEXT, initialText);
         args.putString(BKEY_LIST, initialList);
         frag.setArguments(args);
@@ -115,7 +118,7 @@ public class BookshelfDialogFragment extends DialogFragment {
         final Bundle ags = getArguments();
         mDialogId = ags.getInt(UniqueId.BKEY_DIALOG_ID);
         /* Book ID */
-        Long mRowId = ags.getLong(BKEY_ROW_ID);
+        long rowId = ags.getLong(BKEY_ROW_ID);
         // Retrieve dynamic values
         if (savedInstanceState != null && savedInstanceState.containsKey(BKEY_TEXT)) {
             mCurrText = savedInstanceState.getString(BKEY_TEXT);
@@ -135,7 +138,7 @@ public class BookshelfDialogFragment extends DialogFragment {
         // Build a list of shelves
         CatalogueDBAdapter db = new CatalogueDBAdapter(getActivity());
         db.open();
-        try (Cursor bookshelves_for_book = db.fetchAllBookshelves(mRowId)) {
+        try (Cursor bookshelves_for_book = db.fetchAllBookshelves(rowId)) {
             final View rootView = getView();
 
             // Handle the OK button
@@ -156,7 +159,7 @@ public class BookshelfDialogFragment extends DialogFragment {
                 do {
                     final CheckBox cb = new CheckBox(getActivity());
                     boolean checked = false;
-                    String db_bookshelf = bookshelves_for_book.getString(bookshelves_for_book.getColumnIndex(DatabaseDefinitions.DOM_BOOKSHELF.name)).trim();
+                    String db_bookshelf = bookshelves_for_book.getString(bookshelves_for_book.getColumnIndex(DatabaseDefinitions.DOM_BOOKSHELF_ID.name)).trim();
                     String db_encoded_bookshelf = ArrayUtils.encodeListItem(BOOKSHELF_SEPARATOR, db_bookshelf);
                     if (shelves.contains(BOOKSHELF_SEPARATOR + db_encoded_bookshelf + BOOKSHELF_SEPARATOR)) {
                         checked = true;

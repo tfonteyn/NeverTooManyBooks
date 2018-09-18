@@ -50,7 +50,8 @@
             android:gravity="center_vertical"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold"
-            tools:text="/foo/bar/gum" />
+            tools:text="/foo/bar/gum"
+            android:textIsSelectable="true" />
     </RelativeLayout>
 
     <View

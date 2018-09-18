@@ -47,7 +47,8 @@
                 android:gravity="start"
                 android:singleLine="false"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="style name" />
+                tools:text="style name"
+                android:textIsSelectable="true" />
 
             <TextView
                 android:id="@+id/groups"
@@ -58,7 +59,8 @@
                 android:gravity="start"
                 android:singleLine="false"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="groups" />
+                tools:text="groups"
+                android:textIsSelectable="true" />
 
             <TextView
                 android:id="@+id/kind"
@@ -71,7 +73,8 @@
                 android:paddingStart="10sp"
                 android:singleLine="true"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="kind" />
+                tools:text="kind"
+                android:textIsSelectable="true" />
         </RelativeLayout>
 
         <ImageView

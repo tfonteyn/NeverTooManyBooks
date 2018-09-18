@@ -70,18 +70,14 @@ public class Datum {
             return (Long) o;
         } catch (ClassCastException e) {
             final String s = o.toString();
-            if (s.isEmpty())
+            if (s.isEmpty()) {
                 return 0;
-            else
-                try {
-                    return Long.parseLong(s);
-                } catch (NumberFormatException e1) {
-                    if (toBoolean(o)) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
-                }
+            }
+            try {
+                return Long.parseLong(s);
+            } catch (NumberFormatException e1) {
+                return toBoolean(o) ? 1 : 0;
+            }
         }
     }
 

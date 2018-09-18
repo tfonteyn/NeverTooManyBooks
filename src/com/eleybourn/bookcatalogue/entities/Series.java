@@ -84,8 +84,16 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
     @SuppressWarnings({"FieldCanBeLocal"})
     private final Pattern PATTERN = Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
 
+    /*
+        A Series as defined in the database is really just id+name
+        The number is of course related to the book itself.
+
+        So, when are two series equal ?
+        TODO: the presence of 'number' in this class creates confusion. Should be moved to the book itself.
+     */
     public long id;
     public String name;
+
     public String number;
 
     public Series(@NonNull final String name) {
@@ -104,7 +112,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
         this(0L, name, number);
     }
 
-    public Series(long id, @NonNull final String name, @Nullable String number) {
+    public Series(final long id, @NonNull final String name, @Nullable String number) {
         this.id = id;
         this.name = name.trim();
         this.number = cleanupSeriesPosition(number);
@@ -151,11 +159,14 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
      * Try to cleanup a series position number by removing superfluous text.
      *
      * @param position Position name to cleanup
+     *
+     * @return th series number (remember: number is really alfanum)
      */
     @NonNull
     private static String cleanupSeriesPosition(@Nullable String position) {
-        if (position == null)
+        if (position == null) {
             return "";
+        }
         position = position.trim();
 
         if (mSeriesPosCleanupPat == null) {
@@ -167,7 +178,6 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
         }
 
         Matcher matcher = mSeriesPosCleanupPat.matcher(position);
-
         if (matcher.find()) {
             // Try to remove leading zeros.
             String pos = matcher.group(2);
@@ -184,10 +194,11 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 
     @NonNull
     public String getDisplayName() {
-        if (number != null && !number.isEmpty())
+        if (number != null && !number.isEmpty()) {
             return name + " (" + number + ")";
-        else
+        } else {
             return name;
+        }
     }
 
     @NonNull
@@ -233,16 +244,19 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 
     /**
      * Two series are equal if:
-     * - one or both of them is 'new' (e.g. id == 0) and their names/number are equal
+     * - one or both of them is 'new' (e.g. id == 0) and their names are equal
      * - ids are equal
+     *
+     * So the number plays NO ROLE !
      */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Series series = (Series) o;
         if (id == 0 || series.id == 0) {
-            return Objects.equals(name, series.name) && Objects.equals(number, series.number);
+            return Objects.equals(name, series.name);
         }
         return (id == series.id);
     }

@@ -101,7 +101,7 @@ public class BooksRow {
     @SuppressWarnings("unused")
     public final String getDatePublished() {
         if (mDatePublishedCol < 0) {
-            mDatePublishedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_DATE_PUBLISHED.name);
+            mDatePublishedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED.name);
             if (mDatePublishedCol < 0)
                 throw new RuntimeException("DATE_PUBLISHED column not in result set");
         }
@@ -119,18 +119,18 @@ public class BooksRow {
 
     public final String getFormat() {
         if (mFormatCol < 0) {
-            mFormatCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_FORMAT.name);
+            mFormatCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_FORMAT.name);
             if (mFormatCol < 0)
-                throw new RuntimeException("DOM_FORMAT column not in result set");
+                throw new RuntimeException("DOM_BOOK_FORMAT column not in result set");
         }
         return mCursor.getString(mFormatCol);
     }
 
     public final String getGenre() {
         if (mGenreCol < 0) {
-            mGenreCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_GENRE.name);
+            mGenreCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GENRE.name);
             if (mGenreCol < 0)
-                throw new RuntimeException("DOM_GENRE column not in result set");
+                throw new RuntimeException("DOM_BOOK_GENRE column not in result set");
         }
         return mCursor.getString(mGenreCol);
     }
@@ -155,18 +155,18 @@ public class BooksRow {
 
     public final String getLanguage() {
         if (mLanguageCol < 0) {
-            mLanguageCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_LANGUAGE.name);
+            mLanguageCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LANGUAGE.name);
             if (mLanguageCol < 0)
-                throw new RuntimeException("DOM_LANGUAGE column not in result set");
+                throw new RuntimeException("DOM_BOOK_LANGUAGE column not in result set");
         }
         return mCursor.getString(mLanguageCol);
     }
 
     public final String getLocation() {
         if (mLocationCol < 0) {
-            mLocationCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_LOCATION.name);
+            mLocationCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LOCATION.name);
             if (mLocationCol < 0)
-                throw new RuntimeException("DOM_LOCATION column not in result set");
+                throw new RuntimeException("DOM_BOOK_LOCATION column not in result set");
         }
         return mCursor.getString(mLocationCol);
     }
@@ -200,18 +200,18 @@ public class BooksRow {
 
     public final double getRating() {
         if (mRatingCol < 0) {
-            mRatingCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_RATING.name);
+            mRatingCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_RATING.name);
             if (mRatingCol < 0)
-                throw new RuntimeException("DOM_RATING column not in result set");
+                throw new RuntimeException("DOM_BOOK_RATING column not in result set");
         }
         return mCursor.getDouble(mRatingCol);
     }
 
     public final String getReadEnd() {
         if (mReadEndCol < 0) {
-            mReadEndCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_READ_END.name);
+            mReadEndCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_READ_END.name);
             if (mReadEndCol < 0)
-                throw new RuntimeException("DOM_READ_END column not in result set");
+                throw new RuntimeException("DOM_BOOK_READ_END column not in result set");
         }
         return mCursor.getString(mReadEndCol);
     }
@@ -221,9 +221,9 @@ public class BooksRow {
     }
     public final int getRead() {
         if (mReadCol < 0) {
-            mReadCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_READ.name);
+            mReadCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_READ.name);
             if (mReadCol < 0)
-                throw new RuntimeException("DOM_READ column not in result set");
+                throw new RuntimeException("DOM_BOOK_READ column not in result set");
         }
         return mCursor.getInt(mReadCol);
     }
@@ -242,9 +242,9 @@ public class BooksRow {
     }
     private int getSigned() {
         if (mSignedCol < 0) {
-            mSignedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_SIGNED.name);
+            mSignedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_SIGNED.name);
             if (mSignedCol < 0)
-                throw new RuntimeException("DOM_SIGNED column not in result set");
+                throw new RuntimeException("DOM_BOOK_SIGNED column not in result set");
         }
         return mCursor.getInt(mSignedCol);
     }

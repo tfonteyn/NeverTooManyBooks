@@ -25,36 +25,36 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FORMAT;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GENRE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ISBN;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LANGUAGE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LIST_PRICE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIST_PRICE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOCATION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PAGES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_RATING;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_END;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_START;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_END;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_START;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
 
@@ -95,29 +95,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     static final String DATABASE_CREATE_BOOKSHELF =
             "create table " + DB_TB_BOOKSHELF +
                     " (_id integer primary key autoincrement, " +
-                    DOM_BOOKSHELF + " text not null " +
+                    DOM_BOOKSHELF_ID + " text not null " +
                     ")";
     static final String DATABASE_CREATE_BOOKSHELF_DATA =
             "INSERT INTO " + DB_TB_BOOKSHELF +
-                    " (" + DOM_BOOKSHELF + ") VALUES ('Default')";
+                    " (" + DOM_BOOKSHELF_ID + ") VALUES ('Default')";
     static final String DATABASE_CREATE_LOAN =
             "create table " + DB_TB_LOAN +
                     " (_id integer primary key autoincrement, " +
-                    DOM_BOOK + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
+                    DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
                     DOM_LOANED_TO + " text " +
                     ")";
     static final String DATABASE_CREATE_ANTHOLOGY =
             "create table " + DB_TB_ANTHOLOGY +
                     " (_id integer primary key autoincrement, " +
-                    DOM_BOOK + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
+                    DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
                     DOM_AUTHOR_ID + " integer not null REFERENCES " + DB_TB_AUTHORS + ", " +
                     DOM_TITLE + " text not null, " +
                     DOM_POSITION + " int" +
                     ")";
     static final String DATABASE_CREATE_BOOK_BOOKSHELF_WEAK =
             "create table " + DB_TB_BOOK_BOOKSHELF_WEAK + "(" +
-                    DOM_BOOK + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
-                    DOM_BOOKSHELF + " integer REFERENCES " + DB_TB_BOOKSHELF + " ON DELETE SET NULL ON UPDATE SET NULL" +
+                    DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
+                    DOM_BOOKSHELF_ID + " integer REFERENCES " + DB_TB_BOOKSHELF + " ON DELETE SET NULL ON UPDATE SET NULL" +
                     ")";
     static final String DATABASE_CREATE_SERIES =
             "create table " + DB_TB_SERIES +
@@ -127,18 +127,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     static final String DATABASE_CREATE_BOOK_SERIES =
             "create table " + DB_TB_BOOK_SERIES + "(" +
-                    DOM_BOOK + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
+                    DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
                     DOM_SERIES_ID + " integer REFERENCES " + DB_TB_SERIES + " ON DELETE SET NULL ON UPDATE CASCADE, " +
                     DOM_SERIES_NUM + " text, " +
                     DOM_SERIES_POSITION + " integer," +
-                    "PRIMARY KEY(" + DOM_BOOK + ", " + DOM_SERIES_POSITION + ")" +
+                    "PRIMARY KEY(" + DOM_BOOK_ID + ", " + DOM_SERIES_POSITION + ")" +
                     ")";
     static final String DATABASE_CREATE_BOOK_AUTHOR =
             "create table " + DB_TB_BOOK_AUTHOR + "(" +
-                    DOM_BOOK + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
+                    DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
                     DOM_AUTHOR_ID + " integer REFERENCES " + DB_TB_AUTHORS + " ON DELETE SET NULL ON UPDATE CASCADE, " +
                     DOM_AUTHOR_POSITION + " integer NOT NULL, " +
-                    "PRIMARY KEY(" + DOM_BOOK + ", " + DOM_AUTHOR_POSITION + ")" +
+                    "PRIMARY KEY(" + DOM_BOOK_ID + ", " + DOM_AUTHOR_POSITION + ")" +
                     ")";
 
     /**
@@ -151,22 +151,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DOM_TITLE.getDefinition(true) + ", " +
                     DOM_ISBN.getDefinition(true) + ", " +
                     DOM_PUBLISHER.getDefinition(true) + ", " +
-                    DOM_DATE_PUBLISHED.getDefinition(true) + ", " +
-                    DOM_RATING.getDefinition(true) + ", " +
-                    DOM_READ.getDefinition(true) + ", " +
-                    DOM_PAGES.getDefinition(true) + ", " +
+                    DOM_BOOK_DATE_PUBLISHED.getDefinition(true) + ", " +
+                    DOM_BOOK_RATING.getDefinition(true) + ", " +
+                    DOM_BOOK_READ.getDefinition(true) + ", " +
+                    DOM_BOOK_PAGES.getDefinition(true) + ", " +
                     DOM_NOTES.getDefinition(true) + ", " +
-                    DOM_LIST_PRICE.getDefinition(true) + ", " +
+                    DOM_BOOK_LIST_PRICE.getDefinition(true) + ", " +
                     DOM_ANTHOLOGY_MASK.getDefinition(true) + ", " +
-                    DOM_LOCATION.getDefinition(true) + ", " +
-                    DOM_READ_START.getDefinition(true) + ", " +
-                    DOM_READ_END.getDefinition(true) + ", " +
-                    DOM_FORMAT.getDefinition(true) + ", " +
-                    DOM_SIGNED.getDefinition(true) + ", " +
+                    DOM_BOOK_LOCATION.getDefinition(true) + ", " +
+                    DOM_BOOK_READ_START.getDefinition(true) + ", " +
+                    DOM_BOOK_READ_END.getDefinition(true) + ", " +
+                    DOM_BOOK_FORMAT.getDefinition(true) + ", " +
+                    DOM_BOOK_SIGNED.getDefinition(true) + ", " +
                     DOM_DESCRIPTION.getDefinition(true) + ", " +
-                    DOM_GENRE.getDefinition(true) + ", " +
-                    DOM_LANGUAGE.getDefinition(true) + ", " + // Added in version 82
-                    DOM_DATE_ADDED.getDefinition(true) + ", " +
+                    DOM_BOOK_GENRE.getDefinition(true) + ", " +
+                    DOM_BOOK_LANGUAGE.getDefinition(true) + ", " + // Added in version 82
+                    DOM_BOOK_DATE_ADDED.getDefinition(true) + ", " +
                     DOM_GOODREADS_BOOK_ID.getDefinition(true) + ", " +
                     DOM_GOODREADS_LAST_SYNC_DATE.getDefinition(true) + ", " +
                     DOM_BOOK_UUID.getDefinition(true) + ", " +
@@ -181,23 +181,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //		KEY_TITLE + " text not null, " +
     //		KEY_ISBN + " text, " +
     //		KEY_PUBLISHER + " text, " +
-    //		KEY_DATE_PUBLISHED + " date, " +
+    //		KEY_BOOK_DATE_PUBLISHED + " date, " +
     //		KEY_RATING + " float not null default 0, " +
-    //		KEY_READ + " boolean not null default 0, " +
+    //		KEY_BOOK_READ + " boolean not null default 0, " +
     //		/* KEY_SERIES + " text, " + */
-    //		KEY_PAGES + " int, " +
+    //		KEY_BOOK_PAGES + " int, " +
     //		/* KEY_SERIES_NUM + " text, " + */
     //		KEY_NOTES + " text, " +
-    //		KEY_LIST_PRICE + " text, " +
-    //		KEY_ANTHOLOGY + " int not null default " + ANTHOLOGY_NO + ", " +
-    //		KEY_LOCATION + " text, " +
-    //		KEY_READ_START + " date, " +
-    //		KEY_READ_END + " date, " +
-    //		KEY_FORMAT + " text, " +
-    //		KEY_SIGNED + " boolean not null default 0, " +
+    //		KEY_BOOK_LIST_PRICE + " text, " +
+    //		LOCAL_KEY_ANTHOLOGY + " int not null default " + ANTHOLOGY_NO + ", " +
+    //		KEY_BOOK_LOCATION + " text, " +
+    //		KEY_BOOK_READ_START + " date, " +
+    //		KEY_BOOK_READ_END + " date, " +
+    //		KEY_BOOK_FORMAT + " text, " +
+    //		KEY_BOOK_SIGNED + " boolean not null default 0, " +
     //		KEY_DESCRIPTION + " text, " +
-    //		KEY_GENRE + " text, " +
-    //		KEY_DATE_ADDED + " datetime default current_timestamp, " +
+    //		KEY_BOOK_GENRE + " text, " +
+    //		KEY_BOOK_DATE_ADDED + " datetime default current_timestamp, " +
     //		DOM_GOODREADS_BOOK_ID.getDefinition(true) + ", " +
     //		DOM_BOOK_UUID.getDefinition(true) +
     //		")";
@@ -209,23 +209,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //		KEY_TITLE + " text not null, " +
     //		KEY_ISBN + " text, " +
     //		KEY_PUBLISHER + " text, " +
-    //		KEY_DATE_PUBLISHED + " date, " +
+    //		KEY_BOOK_DATE_PUBLISHED + " date, " +
     //		KEY_RATING + " float not null default 0, " +
-    //		KEY_READ + " boolean not null default 0, " +
+    //		KEY_BOOK_READ + " boolean not null default 0, " +
     //		/* KEY_SERIES + " text, " + */
-    //		KEY_PAGES + " int, " +
+    //		KEY_BOOK_PAGES + " int, " +
     //		/* KEY_SERIES_NUM + " text, " + */
     //		KEY_NOTES + " text, " +
-    //		KEY_LIST_PRICE + " text, " +
-    //		KEY_ANTHOLOGY + " int not null default " + ANTHOLOGY_NO + ", " +
-    //		KEY_LOCATION + " text, " +
-    //		KEY_READ_START + " date, " +
-    //		KEY_READ_END + " date, " +
-    //		KEY_FORMAT + " text, " +
-    //		KEY_SIGNED + " boolean not null default 0, " +
+    //		KEY_BOOK_LIST_PRICE + " text, " +
+    //		LOCAL_KEY_ANTHOLOGY + " int not null default " + ANTHOLOGY_NO + ", " +
+    //		KEY_BOOK_LOCATION + " text, " +
+    //		KEY_BOOK_READ_START + " date, " +
+    //		KEY_BOOK_READ_END + " date, " +
+    //		KEY_BOOK_FORMAT + " text, " +
+    //		KEY_BOOK_SIGNED + " boolean not null default 0, " +
     //		KEY_DESCRIPTION + " text, " +
-    //		KEY_GENRE + " text, " +
-    //		KEY_DATE_ADDED + " datetime default current_timestamp, " +
+    //		KEY_BOOK_GENRE + " text, " +
+    //		KEY_BOOK_DATE_ADDED + " datetime default current_timestamp, " +
     //		DOM_GOODREADS_BOOK_ID.getDefinition(true) +
     //		")";
     private static final String[] DATABASE_CREATE_INDICES = {
@@ -233,7 +233,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "CREATE INDEX IF NOT EXISTS authors_given_names_ci ON " + DB_TB_AUTHORS + " (" + DOM_AUTHOR_GIVEN_NAMES + " " + COLLATION + ");",
             "CREATE INDEX IF NOT EXISTS authors_family_name ON " + DB_TB_AUTHORS + " (" + DOM_AUTHOR_FAMILY_NAME + ");",
             "CREATE INDEX IF NOT EXISTS authors_family_name_ci ON " + DB_TB_AUTHORS + " (" + DOM_AUTHOR_FAMILY_NAME + " " + COLLATION + ");",
-            "CREATE INDEX IF NOT EXISTS bookshelf_bookshelf ON " + DB_TB_BOOKSHELF + " (" + DOM_BOOKSHELF + ");",
+            "CREATE INDEX IF NOT EXISTS bookshelf_bookshelf ON " + DB_TB_BOOKSHELF + " (" + DOM_BOOKSHELF_ID + ");",
             /* "CREATE INDEX IF NOT EXISTS books_author ON "+DB_TB_BOOKS+" ("+KEY_AUTHOR+");",*/
             /*"CREATE INDEX IF NOT EXISTS books_author_ci ON "+DB_TB_BOOKS+" ("+KEY_AUTHOR+" " + COLLATION + ");",*/
             "CREATE INDEX IF NOT EXISTS books_title ON " + DB_TB_BOOKS + " (" + DOM_TITLE + ");",
@@ -243,18 +243,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "CREATE INDEX IF NOT EXISTS books_publisher ON " + DB_TB_BOOKS + " (" + DOM_PUBLISHER + ");",
             "CREATE UNIQUE INDEX IF NOT EXISTS books_uuid ON " + DB_TB_BOOKS + " (" + DOM_BOOK_UUID + ");",
             "CREATE INDEX IF NOT EXISTS books_gr_book ON " + DB_TB_BOOKS + " (" + DOM_GOODREADS_BOOK_ID.name + ");",
-            "CREATE INDEX IF NOT EXISTS anthology_book ON " + DB_TB_ANTHOLOGY + " (" + DOM_BOOK + ");",
+            "CREATE INDEX IF NOT EXISTS anthology_book ON " + DB_TB_ANTHOLOGY + " (" + DOM_BOOK_ID + ");",
             "CREATE INDEX IF NOT EXISTS anthology_author ON " + DB_TB_ANTHOLOGY + " (" + DOM_AUTHOR_ID + ");",
             "CREATE INDEX IF NOT EXISTS anthology_title ON " + DB_TB_ANTHOLOGY + " (" + DOM_TITLE + ");",
             "CREATE UNIQUE INDEX IF NOT EXISTS series_series ON " + DB_TB_SERIES + " (" + DOM_ID + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS loan_book_loaned_to ON " + DB_TB_LOAN + " (" + DOM_BOOK + ");",
-            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_book ON " + DB_TB_BOOK_BOOKSHELF_WEAK + " (" + DOM_BOOK + ");",
-            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_bookshelf ON " + DB_TB_BOOK_BOOKSHELF_WEAK + " (" + DOM_BOOKSHELF + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_series ON " + DB_TB_BOOK_SERIES + " (" + DOM_SERIES_ID + ", " + DOM_BOOK + ", " + DOM_SERIES_NUM + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_book ON " + DB_TB_BOOK_SERIES + " (" + DOM_BOOK + ", " + DOM_SERIES_ID + ", " + DOM_SERIES_NUM + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_author ON " + DB_TB_BOOK_AUTHOR + " (" + DOM_AUTHOR_ID + ", " + DOM_BOOK + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_book ON " + DB_TB_BOOK_AUTHOR + " (" + DOM_BOOK + ", " + DOM_AUTHOR_ID + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS anthology_pk_idx ON " + DB_TB_ANTHOLOGY + " (" + DOM_BOOK + ", " + DOM_AUTHOR_ID + ", " + DOM_TITLE + ")"
+            "CREATE UNIQUE INDEX IF NOT EXISTS loan_book_loaned_to ON " + DB_TB_LOAN + " (" + DOM_BOOK_ID + ");",
+            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_book ON " + DB_TB_BOOK_BOOKSHELF_WEAK + " (" + DOM_BOOK_ID + ");",
+            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_bookshelf ON " + DB_TB_BOOK_BOOKSHELF_WEAK + " (" + DOM_BOOKSHELF_ID + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_series ON " + DB_TB_BOOK_SERIES + " (" + DOM_SERIES_ID + ", " + DOM_BOOK_ID + ", " + DOM_SERIES_NUM + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_book ON " + DB_TB_BOOK_SERIES + " (" + DOM_BOOK_ID + ", " + DOM_SERIES_ID + ", " + DOM_SERIES_NUM + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_author ON " + DB_TB_BOOK_AUTHOR + " (" + DOM_AUTHOR_ID + ", " + DOM_BOOK_ID + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_book ON " + DB_TB_BOOK_AUTHOR + " (" + DOM_BOOK_ID + ", " + DOM_AUTHOR_ID + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS anthology_pk_idx ON " + DB_TB_ANTHOLOGY + " (" + DOM_BOOK_ID + ", " + DOM_AUTHOR_ID + ", " + DOM_TITLE + ")"
     };
     //</editor-fold>
 

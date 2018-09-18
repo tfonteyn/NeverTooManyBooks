@@ -21,8 +21,6 @@ package com.eleybourn.bookcatalogue.entities;
 
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.backup.CsvExporter;
-import com.eleybourn.bookcatalogue.backup.CsvImporter;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -40,6 +38,8 @@ import java.util.ArrayList;
  */
 public class AnthologyTitle implements Serializable ,Utils.ItemWithIdFixup {
     private static final long serialVersionUID = -8715364898312204329L;
+    //TODO: the * was taken from how {@link CsvExporter} and {@link CsvImporter} do the Anthology titles
+    private static final char TITLE_AUTHOR_DELIM = '*';
 
     public long id;
     private long mBookId;
@@ -62,8 +62,8 @@ public class AnthologyTitle implements Serializable ,Utils.ItemWithIdFixup {
      * @param title  Title
      */
     @SuppressWarnings("WeakerAccess")
-    public AnthologyTitle(Long bookId, @NonNull final Author author, @NonNull final String title) {
-        this(0L,bookId, author, title);
+    public AnthologyTitle(final long bookId, @NonNull final Author author, @NonNull final String title) {
+        this(0, bookId, author, title);
     }
 
     /**
@@ -73,7 +73,7 @@ public class AnthologyTitle implements Serializable ,Utils.ItemWithIdFixup {
      * @param title  Title
      */
     @SuppressWarnings("WeakerAccess")
-    public AnthologyTitle(Long id, Long bookId, @NonNull final Author author, @NonNull final String title) {
+    public AnthologyTitle(final long id, final long bookId, @NonNull final Author author, @NonNull final String title) {
         this.id = id;
         this.mBookId = bookId;
         mAuthor = author;
@@ -104,9 +104,6 @@ public class AnthologyTitle implements Serializable ,Utils.ItemWithIdFixup {
 
     /**
      *  Support for encoding to a text file
-     *
-     *  TODO: the * was taken from how {@link CsvExporter} and {@link CsvImporter} do the Anthology titles
-     *  -> make the * a constant
      */
     @Override
     @NonNull
@@ -115,9 +112,9 @@ public class AnthologyTitle implements Serializable ,Utils.ItemWithIdFixup {
     }
 
     private void fromString(@NonNull final String s) {
-        ArrayList<String> tit_aut = ArrayUtils.decodeList('*', s);
-        mTitle = tit_aut.get(0);
-        mAuthor = new Author(tit_aut.get(1));
+        ArrayList<String> data = ArrayUtils.decodeList(TITLE_AUTHOR_DELIM, s);
+        mTitle = data.get(0);
+        mAuthor = new Author(data.get(1));
     }
 
     /**

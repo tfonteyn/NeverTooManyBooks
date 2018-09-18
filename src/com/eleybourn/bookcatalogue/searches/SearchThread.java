@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.searches;
 
 import android.os.Bundle;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.Series.SeriesDetails;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -30,9 +31,6 @@ import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 
 import java.util.ArrayList;
-
-import static com.eleybourn.bookcatalogue.UniqueId.BKEY_SERIES_DETAILS;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_TITLE;
 
 abstract public class SearchThread extends ManagedTask {
     protected static boolean mFetchThumbnail;
@@ -78,20 +76,20 @@ abstract public class SearchThread extends ManagedTask {
      */
     protected void checkForSeriesName() {
         try {
-            if (mBookData.containsKey(KEY_TITLE)) {
-                String thisTitle = mBookData.getString(KEY_TITLE);
+            if (mBookData.containsKey(UniqueId.KEY_TITLE)) {
+                String thisTitle = mBookData.getString(UniqueId.KEY_TITLE);
                 if (thisTitle != null) {
                     SeriesDetails details = Series.findSeries(thisTitle);
                     if (details != null && !details.name.isEmpty()) {
                         ArrayList<Series> sl;
-                        if (mBookData.containsKey(BKEY_SERIES_DETAILS)) {
-                            sl = ArrayUtils.getSeriesUtils().decodeList('|', mBookData.getString(BKEY_SERIES_DETAILS), false);
+                        if (mBookData.containsKey(UniqueId.BKEY_SERIES_DETAILS)) {
+                            sl = ArrayUtils.getSeriesUtils().decodeList('|', mBookData.getString(UniqueId.BKEY_SERIES_DETAILS), false);
                         } else {
                             sl = new ArrayList<>();
                         }
                         sl.add(new Series(details.name, details.position));
-                        mBookData.putString(BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList('|', sl));
-                        mBookData.putString(KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
+                        mBookData.putString(UniqueId.BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList('|', sl));
+                        mBookData.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
                     }
                 }
             }

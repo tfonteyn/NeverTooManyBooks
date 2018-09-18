@@ -34,9 +34,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_ID;
 
 /**
  * Admin Activity where we list all bookshelves and can add/delete/edit them.
@@ -76,7 +75,7 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
         startManagingCursor(bookshelfCursor);
 
         // Now create a simple cursor adapter and set it to display
-        String[] fieldsToDisplay = new String[]{KEY_BOOKSHELF, KEY_ID};
+        String[] fieldsToDisplay = new String[]{DatabaseDefinitions.DOM_BOOKSHELF_ID.name, DatabaseDefinitions.DOM_ID.name};
         int[] fieldsToBindTo = new int[]{R.id.row_bookshelf};
 
         SimpleCursorAdapter books = new SimpleCursorAdapter(this, R.layout.row_bookshelf,
@@ -131,7 +130,7 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         Intent i = new Intent(this, BookshelfEditActivity.class);
-        i.putExtra(KEY_ID, id);
+        i.putExtra(UniqueId.KEY_ID, id);
         startActivityForResult(i, ACTIVITY_EDIT);
     }
 

@@ -12,7 +12,8 @@
         android:layout_marginStart="2dp"
         android:singleLine="false"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        tools:text="some message" />
+        tools:text="some message"
+        android:textIsSelectable="false" />
 
     <View
         android:id="@+id/messageBottomDivider"

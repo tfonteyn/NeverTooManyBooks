@@ -37,13 +37,13 @@ public class EditAuthorDialog {
 	private final CatalogueDBAdapter mDb;
 	private final Runnable mOnChanged;
 
-	EditAuthorDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
+	EditAuthorDialog(@NonNull final Context context, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
 		mDb = db;
 		mContext = context;
 		mOnChanged = onChanged;
 	}
 
-	public void edit(final Author author) {
+	public void edit(@NonNull final Author author) {
 		final Dialog dialog = new StandardDialogs.BasicDialog(mContext);
 		dialog.setContentView(R.layout.dialog_edit_author);
 		dialog.setTitle(R.string.edit_author_details);
@@ -82,28 +82,24 @@ public class EditAuthorDialog {
 		dialog.show();
 	}
 	
-	private void confirmEdit(@NonNull final Author oldAuthor, @NonNull final Author newAuthor) {
-		// First, deal with a some special cases...
-		
-		// Case: Unchanged.
-		if (newAuthor.familyName.compareTo(oldAuthor.familyName) == 0 
-				&& newAuthor.givenNames.compareTo(oldAuthor.givenNames) == 0) {
-			// No change; nothing to do
+	private void confirmEdit(@NonNull final Author from, @NonNull final Author to) {
+
+		if (to.equals(from)) {
 			return;
 		}
 
 		// Get the new author ID
-		oldAuthor.id = mDb.getAuthorIdByName(oldAuthor);
-		newAuthor.id = mDb.getAuthorIdByName(newAuthor);
+		from.id = mDb.getAuthorIdByName(from);
+		to.id = mDb.getAuthorIdByName(to);
 
 		// Case: author is the same, or is only used in this book
-		if (newAuthor.id == oldAuthor.id) {
+		if (to.id == from.id) {
 			// Just update with the most recent spelling and format
-			oldAuthor.copyFrom(newAuthor);
-			mDb.updateOrInsertAuthorByName(oldAuthor);
+			from.copyFrom(to);
+			mDb.updateOrInsertAuthorByName(from);
 		} else {
-			mDb.globalReplaceAuthor(oldAuthor, newAuthor);
-			oldAuthor.copyFrom(newAuthor);
+			mDb.globalReplaceAuthor(from, to);
+			from.copyFrom(to);
 		}
 		mOnChanged.run();
 	}

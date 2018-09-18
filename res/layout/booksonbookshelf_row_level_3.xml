@@ -25,7 +25,8 @@
             android:paddingStart="2dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textStyle="bold"
-            tools:text="third level ?" />
+            tools:text="third level ?"
+            android:textIsSelectable="true" />
 
         <View style="@style/listDividerHorizontal" />
     </LinearLayout>

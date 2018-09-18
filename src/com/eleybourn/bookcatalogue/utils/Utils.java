@@ -88,7 +88,7 @@ public class Utils {
      *
      * @return true if successful
      */
-    static public boolean saveInputToFile(InputStream in, File out) {
+    static public boolean saveInputToFile(@NonNull final InputStream in, @NonNull final File out) {
         File temp = null;
         boolean isOk = false;
 
@@ -132,7 +132,7 @@ public class Utils {
      * @return InputStream
      */
     private static final Object urlLock = new Object();
-    public static InputStream getInputStream(URL url) throws UnknownHostException {
+    public static InputStream getInputStream(@NonNull final URL url) throws UnknownHostException {
 
         synchronized (urlLock) {
 
@@ -238,7 +238,7 @@ public class Utils {
     /*
      *@return boolean return true if the application can access the internet
      */
-    public static boolean isNetworkAvailable(Context context) {
+    public static boolean isNetworkAvailable(@NonNull final Context context) {
         ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null) {
             NetworkInfo[] info = connectivity.getAllNetworkInfo();
@@ -261,7 +261,8 @@ public class Utils {
      *
      * @return Present/absent
      */
-    public static boolean isNonBlankString(Bundle b, String key) {
+    public static boolean isNonBlankString(@NonNull final Bundle b,
+                                           @NonNull final String key) {
         if (b.containsKey(key)) {
             String s = b.getString(key);
             return (s != null && !s.isEmpty());
@@ -279,9 +280,11 @@ public class Utils {
      * @param db   Database connection to lookup IDs
      * @param list List to clean up
      */
-    public static <T extends ItemWithIdFixup> boolean pruneList(CatalogueDBAdapter db, ArrayList<T> list) {
+    public static <T extends ItemWithIdFixup> boolean pruneList(@NonNull final CatalogueDBAdapter db,
+                                                                @NonNull final ArrayList<T> list) {
         Map<String, Boolean> names = new HashMap<>();
-        @SuppressLint("UseSparseArrays") Map<Long, Boolean> ids = new HashMap<>();
+        @SuppressLint("UseSparseArrays")
+        Map<Long, Boolean> ids = new HashMap<>();
 
         // We have to go forwards through the list because 'first item' is important,
         // but we also can't delete things as we traverse if we are going forward. So
@@ -443,7 +446,9 @@ public class Utils {
     }
 
     // TODO: Make sure all URL getters use this if possible.
-    static public void parseUrlOutput(String path, SAXParserFactory factory, DefaultHandler handler) {
+    static public void parseUrlOutput(@NonNull final String path,
+                                      @NonNull final SAXParserFactory factory,
+                                      @NonNull final DefaultHandler handler) {
         SAXParser parser;
         URL url;
 
@@ -473,7 +478,7 @@ public class Utils {
      *
      * @return Spannable with all links
      */
-    public static Spannable linkifyHtml(String html, int linkifyMask) {
+    public static Spannable linkifyHtml(@NonNull final String html, final int linkifyMask) {
         // Get the spannable HTML
         Spanned text = Html.fromHtml(html);
         // Save the span details for later restoration
@@ -641,7 +646,7 @@ public class Utils {
     public static class StatefulBufferedInputStream extends BufferedInputStream implements Closeable{
         private boolean mIsOpen = true;
 
-        StatefulBufferedInputStream(InputStream in) {
+        StatefulBufferedInputStream(@NonNull final InputStream in) {
             super(in);
         }
 

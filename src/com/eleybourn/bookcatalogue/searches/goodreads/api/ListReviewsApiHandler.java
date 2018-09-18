@@ -119,18 +119,18 @@ public class ListReviewsApiHandler extends ApiHandler {
 		public static final String AUTHORS = "__authors";
 		public static final String SHELF = "__shelf";
 		public static final String SHELVES = "__shelves";
-		public static final String DB_PAGES = UniqueId.KEY_PAGES;
+		public static final String DB_PAGES = UniqueId.KEY_BOOK_PAGES; //TOMF
 		public static final String DB_ISBN = UniqueId.KEY_ISBN;
 		public static final String DB_TITLE = UniqueId.KEY_TITLE;
 		public static final String DB_NOTES = UniqueId.KEY_NOTES;
-		public static final String DB_FORMAT = UniqueId.KEY_FORMAT;
+		public static final String DB_FORMAT = UniqueId.KEY_BOOK_FORMAT;
 		public static final String DB_PUBLISHER = UniqueId.KEY_PUBLISHER;
 		public static final String DB_DESCRIPTION = UniqueId.KEY_DESCRIPTION;
 		public static final String DB_AUTHOR_ID = UniqueId.KEY_AUTHOR_ID;
 		public static final String DB_AUTHOR_NAME = UniqueId.KEY_AUTHOR_NAME;
 		public static final String DB_RATING = UniqueId.KEY_RATING;
-		public static final String DB_READ_START = UniqueId.KEY_READ_START;
-		public static final String DB_READ_END = UniqueId.KEY_READ_END;
+		public static final String DB_READ_START = UniqueId.KEY_BOOK_READ_START;
+		public static final String DB_READ_END = UniqueId.KEY_BOOK_READ_END;
 	}
 
 	private SimpleXmlFilter mFilters;

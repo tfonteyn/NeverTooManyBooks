@@ -26,14 +26,16 @@
             android:layout_weight="2"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold" 
-            tools:ignore="NestedWeights" />
+            tools:ignore="NestedWeights"
+            android:textIsSelectable="true" />
 
         <TextView
             android:id="@+id/author"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textIsSelectable="true" />
 
         <TextView
             android:id="@+id/error"
@@ -41,14 +43,16 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            style="@style/error_message" />
+            style="@style/error_message"
+            android:textIsSelectable="true" />
 
         <TextView
             android:id="@+id/date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textIsSelectable="true" />
     </LinearLayout>
 
     <Button

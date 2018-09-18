@@ -258,7 +258,7 @@ class ImportAllTask extends GenericTask {
 		if (mBookshelfLookup == null) {
 			mBookshelfLookup = new Hashtable<>();
 			try(Cursor c = db.fetchAllBookshelves()) {
-				int bsCol = c.getColumnIndex(UniqueId.KEY_BOOKSHELF);
+				int bsCol = c.getColumnIndex(DOM_BOOKSHELF_NAME.name);
 				while (c.moveToNext()) {
 					String name = c.getString(bsCol);
 					mBookshelfLookup.put(GoodreadsManager.canonicalizeBookshelfName(name), name);
@@ -292,9 +292,9 @@ class ImportAllTask extends GenericTask {
 	/**
 	 * Update the book using the GR data
 	 */
-	private void updateBook(CatalogueDBAdapter db, BooksRow rv, Bundle review) {
+	private void updateBook(CatalogueDBAdapter db, BooksRow booksRow, Bundle review) {
 		// Get last date book was sent to GR (may be null)
-		final String lastGrSync = rv.getString(DOM_GOODREADS_LAST_SYNC_DATE.name);
+		final String lastGrSync = booksRow.getString(UniqueId.KEY_GOODREADS_LAST_SYNC_DATE);
 		// If the review has an 'updated' date, then see if we can compare to book
 		if (lastGrSync != null && review.containsKey(UPDATED)) {
 			final String lastUpdate = review.getString(ListReviewsFieldNames.UPDATED);
@@ -305,9 +305,9 @@ class ImportAllTask extends GenericTask {
 		}
 		// We build a new book bundle each time since it will build on the existing
 		// data for the given book, not just replace it.
-		BookData book = buildBundle(db, rv, review);
+		BookData book = buildBundle(db, booksRow, review);
 
-		db.updateBook(rv.getId(), book, CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES|CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);			
+		db.updateBook(booksRow.getId(), book, CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES|CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
 		//db.setGoodreadsSyncDate(rv.getId());
 	}
 
@@ -332,27 +332,27 @@ class ImportAllTask extends GenericTask {
 	 * while other data is processed (eg. dates) and other are combined (authors & series).
 	 */
 	private BookData buildBundle(CatalogueDBAdapter db, BooksRow rv, Bundle review) {
-		BookData book = new BookData();
+		BookData bookData = new BookData();
 
-		addStringIfNonBlank(review, ListReviewsFieldNames.DB_TITLE, book, ListReviewsFieldNames.DB_TITLE);
-		addStringIfNonBlank(review, ListReviewsFieldNames.DB_DESCRIPTION, book, ListReviewsFieldNames.DB_DESCRIPTION);
-		addStringIfNonBlank(review, ListReviewsFieldNames.DB_FORMAT, book, ListReviewsFieldNames.DB_FORMAT);
+		addStringIfNonBlank(review, ListReviewsFieldNames.DB_TITLE, bookData, ListReviewsFieldNames.DB_TITLE);
+		addStringIfNonBlank(review, ListReviewsFieldNames.DB_DESCRIPTION, bookData, ListReviewsFieldNames.DB_DESCRIPTION);
+		addStringIfNonBlank(review, ListReviewsFieldNames.DB_FORMAT, bookData, ListReviewsFieldNames.DB_FORMAT);
 		// Do not sync Notes<->Review. We will add a 'Review' field later.
 		//addStringIfNonBlank(review, ListReviewsFieldNames.DB_NOTES, book, ListReviewsFieldNames.DB_NOTES);
-		addLongIfPresent(review, ListReviewsFieldNames.DB_PAGES, book, ListReviewsFieldNames.DB_PAGES);
-		addStringIfNonBlank(review, ListReviewsFieldNames.DB_PUBLISHER, book, ListReviewsFieldNames.DB_PUBLISHER);
-		Double rating = addDoubleIfPresent(review, ListReviewsFieldNames.DB_RATING, book, ListReviewsFieldNames.DB_RATING);
-		addDateIfValid(review, ListReviewsFieldNames.DB_READ_START, book, ListReviewsFieldNames.DB_READ_START);
-		String readEnd = addDateIfValid(review, ListReviewsFieldNames.DB_READ_END, book, ListReviewsFieldNames.DB_READ_END);
+		addLongIfPresent(review, ListReviewsFieldNames.DB_PAGES, bookData, ListReviewsFieldNames.DB_PAGES);
+		addStringIfNonBlank(review, ListReviewsFieldNames.DB_PUBLISHER, bookData, ListReviewsFieldNames.DB_PUBLISHER);
+		Double rating = addDoubleIfPresent(review, ListReviewsFieldNames.DB_RATING, bookData, ListReviewsFieldNames.DB_RATING);
+		addDateIfValid(review, ListReviewsFieldNames.DB_READ_START, bookData, ListReviewsFieldNames.DB_READ_START);
+		String readEnd = addDateIfValid(review, ListReviewsFieldNames.DB_READ_END, bookData, ListReviewsFieldNames.DB_READ_END);
 
 		// If it has a rating or a 'read_end' date, assume it's read. If these are missing then
 		// DO NOT overwrite existing data since it *may* be read even without these fields.
 		if ( (rating != null && rating > 0) || (readEnd != null && readEnd.length() > 0) ) {
-			book.putBoolean(UniqueId.KEY_READ, true);
+			bookData.putBoolean(UniqueId.KEY_BOOK_READ, true);
 		}
 
-		addStringIfNonBlank(review, ListReviewsFieldNames.DB_TITLE, book, ListReviewsFieldNames.DB_TITLE);
-		addLongIfPresent(review, ListReviewsFieldNames.GR_BOOK_ID, book, DOM_GOODREADS_BOOK_ID.name);
+		addStringIfNonBlank(review, ListReviewsFieldNames.DB_TITLE, bookData, ListReviewsFieldNames.DB_TITLE);
+		addLongIfPresent(review, ListReviewsFieldNames.GR_BOOK_ID, bookData, DOM_GOODREADS_BOOK_ID.name);
 
 		// Find the best (longest) isbn.
 		ArrayList<String> isbns = extractIsbns(review);
@@ -367,19 +367,19 @@ class ImportAllTask extends GenericTask {
 				}
 			}
 			if (bestLen > 0) {
-				book.putString(UniqueId.KEY_ISBN, best);
+				bookData.putString(UniqueId.KEY_ISBN, best);
 			}
 		}
 
         /* Build the pub date based on the components */
         String pubDate = GoodreadsManager.buildDate(review, ListReviewsFieldNames.PUB_YEAR, ListReviewsFieldNames.PUB_MONTH, ListReviewsFieldNames.PUB_DAY, null);
         if (pubDate != null && !pubDate.isEmpty())
-        	book.putString(UniqueId.KEY_DATE_PUBLISHED, pubDate);
+        	bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, pubDate);
         
         ArrayList<Bundle> grAuthors = review.getParcelableArrayList(ListReviewsFieldNames.AUTHORS);
         if (grAuthors == null) {
         	Logger.logError("grAuthors was null");
-        	return book;
+        	return bookData;
 		}
 
         ArrayList<Author> authors;
@@ -397,11 +397,11 @@ class ImportAllTask extends GenericTask {
         		authors.add(new Author(name));
         	}
         }
-        book.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, authors);
+        bookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, authors);
 
         if (rv == null) {
         	// Use the GR added date for new books
-        	addStringIfNonBlank(review, ListReviewsFieldNames.ADDED, book, DOM_DATE_ADDED.name);
+        	addStringIfNonBlank(review, ListReviewsFieldNames.ADDED, bookData, DOM_BOOK_DATE_ADDED.name);
         	// Also fetch thumbnail if add
         	String thumbnail;
         	if (review.containsKey(ListReviewsFieldNames.LARGE_IMAGE)
@@ -416,16 +416,16 @@ class ImportAllTask extends GenericTask {
         	if (thumbnail != null) {
     			String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, UniqueId.GOODREADS_FILENAME_SUFFIX);
     			if (fileSpec.length() > 0)
-    				book.appendOrAdd(UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
-    			book.cleanupThumbnails();        		
+    				bookData.appendOrAdd(UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
+    			bookData.cleanupThumbnails();
         	}
         }
 
         /*
          * Cleanup the title by removing series name, if present
          */
-        if (book.containsKey(UniqueId.KEY_TITLE)) {
-			String thisTitle = book.getString(UniqueId.KEY_TITLE);
+        if (bookData.containsKey(UniqueId.KEY_TITLE)) {
+			String thisTitle = bookData.getString(UniqueId.KEY_TITLE);
 			Series.SeriesDetails details = Series.findSeries(thisTitle);
 			if (details != null && details.name.length() > 0) {
 				ArrayList<Series> allSeries;
@@ -435,10 +435,10 @@ class ImportAllTask extends GenericTask {
 					allSeries = db.getBookSeriesList(rv.getId());
 
 				allSeries.add(new Series(details.name, details.position));
-				book.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar-1));
+				bookData.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar-1));
 
 				Utils.pruneSeriesList(allSeries);
-		        book.putSerializable(UniqueId.BKEY_SERIES_ARRAY, allSeries);
+		        bookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, allSeries);
 			}
         }
 
@@ -447,7 +447,7 @@ class ImportAllTask extends GenericTask {
         	ArrayList<Bundle> shelves = review.getParcelableArrayList(ListReviewsFieldNames.SHELVES);
         	if (shelves == null) {
         		Logger.logError("shelves was null");
-        		return book;
+        		return bookData;
 			}
         	StringBuilder shelfNames = null;
         	for(Bundle sb: shelves) {
@@ -461,16 +461,16 @@ class ImportAllTask extends GenericTask {
         		}
         	}
         	if (shelfNames != null && shelfNames.length() > 0)
-        		book.setBookshelfList(shelfNames.toString());
+        		bookData.setBookshelfList(shelfNames.toString());
         }
         
         // We need to set BOTH of these fields, otherwise the add/update method will set the
         // last_update_date for us, and that will most likely be set ahead of the GR update date
         Date now = new Date();
-        book.putString(DOM_GOODREADS_LAST_SYNC_DATE.name, DateUtils.toSqlDateTime(now));
-        book.putString(DOM_LAST_UPDATE_DATE.name, DateUtils.toSqlDateTime(now));
+        bookData.putString(UniqueId.KEY_GOODREADS_LAST_SYNC_DATE, DateUtils.toSqlDateTime(now));
+        bookData.putString(UniqueId.KEY_LAST_UPDATE_DATE, DateUtils.toSqlDateTime(now));
 
-        return book;
+        return bookData;
 	}
 
 	/**

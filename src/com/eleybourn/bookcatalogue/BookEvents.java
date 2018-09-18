@@ -52,8 +52,6 @@ import net.philipwarner.taskqueue.QueueManager;
 import java.text.DateFormat;
 import java.util.ArrayList;
 
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_ID;
-
 /**
  * Class to define all book-related events that may be stored in the QueueManager.
  *
@@ -83,7 +81,7 @@ public class BookEvents {
      */
     private static void editBook(@NonNull final Context ctx, final long bookId) {
         Intent i = new Intent(ctx, EditBookActivity.class);
-        i.putExtra(KEY_ID, bookId);
+        i.putExtra(UniqueId.KEY_ID, bookId);
         i.putExtra(EditBookActivity.TAB, EditBookActivity.TAB_EDIT);
         ctx.startActivity(i);
     }

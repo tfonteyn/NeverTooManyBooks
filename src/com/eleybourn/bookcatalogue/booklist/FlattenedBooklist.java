@@ -36,7 +36,7 @@ public class FlattenedBooklist implements AutoCloseable {
     /** Default position (before start) */
     private long mPosition = -1;
     /** Book ID from the currently selected row */
-    private Long mBookId = null;
+    private long mBookId = 0;
     /** Collection of statements compiled for this object */
     private SqlStatementManager mStatements;
 
@@ -79,7 +79,7 @@ public class FlattenedBooklist implements AutoCloseable {
         return mTable;
     }
 
-    public Long getBookId() {
+    public long getBookId() {
         return mBookId;
     }
 
@@ -102,20 +102,16 @@ public class FlattenedBooklist implements AutoCloseable {
     /**
      * Passed a statement update the 'current' row details based on the columns returned
      */
-    private boolean updateDetailsFromStatement(@NonNull final SynchronizedStatement stmt) {
+    private boolean fetchBookIdAndPosition(@NonNull final SynchronizedStatement stmt) {
         // Get a pair of ID's separated by a '/'
-        String info;
         try {
-            info = stmt.simpleQueryForString();
+            final String[] data = stmt.simpleQueryForString().split("/");
+            mPosition = Long.parseLong(data[0]);
+            mBookId = Long.parseLong(data[1]);
+            return true;
         } catch (SQLiteDoneException e) {
             return false;
         }
-
-        final String[] data = info.split("/");
-        mPosition = Long.parseLong(data[0]);
-        mBookId = Long.parseLong(data[1]);
-
-        return true;
     }
 
     /**
@@ -135,19 +131,20 @@ public class FlattenedBooklist implements AutoCloseable {
     public boolean moveNext() {
         SynchronizedStatement stmt = mStatements.get(NEXT_STMT_NAME);
         if (stmt == null) {
-            String sql = "Select " + mTable.dot(DOM_ID) + "|| '/' || " + mTable.dot(DOM_BOOK)
+            String sql = "Select " + mTable.dot(DOM_ID) + "|| '/' || " + mTable.dot(DOM_BOOK_ID)
                     + " From " + mTable.ref()
-                    + " Where " + mTable.dot(DOM_ID) + " > ? and " + mTable.dot(DOM_BOOK) + " <> Coalesce(?,-1)"
+                    + " Where " + mTable.dot(DOM_ID) + " > ? and " + mTable.dot(DOM_BOOK_ID) + " <> Coalesce(?,-1)"
                     + " Order by " + mTable.dot(DOM_ID) + " Asc Limit 1";
             stmt = mStatements.add(NEXT_STMT_NAME, sql);
         }
         stmt.bindLong(1, mPosition);
-        if (mBookId != null) {
+        if (mBookId != 0) {
             stmt.bindLong(2, mBookId);
         } else {
             stmt.bindNull(2);
         }
-        return updateDetailsFromStatement(stmt);
+        // Get a pair of ID's separated by a '/'
+        return fetchBookIdAndPosition(stmt);
     }
 
     /**
@@ -158,19 +155,20 @@ public class FlattenedBooklist implements AutoCloseable {
     public boolean movePrev() {
         SynchronizedStatement stmt = mStatements.get(PREV_STMT_NAME);
         if (stmt == null) {
-            String sql = "Select " + mTable.dot(DOM_ID) + "|| '/' || " + mTable.dot(DOM_BOOK)
+            String sql = "Select " + mTable.dot(DOM_ID) + "|| '/' || " + mTable.dot(DOM_BOOK_ID)
                     + " From " + mTable.ref()
-                    + " Where " + mTable.dot(DOM_ID) + " < ? and " + mTable.dot(DOM_BOOK) + " <> Coalesce(?,-1)"
+                    + " Where " + mTable.dot(DOM_ID) + " < ? and " + mTable.dot(DOM_BOOK_ID) + " <> Coalesce(?,-1)"
                     + " Order by " + mTable.dot(DOM_ID) + " Desc Limit 1";
             stmt = mStatements.add(PREV_STMT_NAME, sql);
         }
         stmt.bindLong(1, mPosition);
-        if (mBookId != null) {
+        if (mBookId != 0) {
             stmt.bindLong(2, mBookId);
         } else {
             stmt.bindNull(2);
         }
-        return updateDetailsFromStatement(stmt);
+        // Get a pair of ID's separated by a '/'
+        return fetchBookIdAndPosition(stmt);
     }
 
     /**
@@ -183,12 +181,13 @@ public class FlattenedBooklist implements AutoCloseable {
     public boolean moveTo(@NonNull final Integer pos) {
         SynchronizedStatement stmt = mStatements.get(MOVE_STMT_NAME);
         if (stmt == null) {
-            String sql = "Select " + mTable.dot(DOM_ID) + "|| '/' || " + mTable.dot(DOM_BOOK) +
+            String sql = "Select " + mTable.dot(DOM_ID) + "|| '/' || " + mTable.dot(DOM_BOOK_ID) +
                     " From " + mTable.ref() + " Where " + mTable.dot(DOM_ID) + " = ?";
             stmt = mStatements.add(MOVE_STMT_NAME, sql);
         }
         stmt.bindLong(1, pos);
-        if (updateDetailsFromStatement(stmt)) {
+        // Get a pair of ID's separated by a '/'
+        if (fetchBookIdAndPosition(stmt)) {
             return true;
         } else {
             long posSav = mPosition;
@@ -210,7 +209,7 @@ public class FlattenedBooklist implements AutoCloseable {
     @SuppressWarnings("unused")
     public boolean moveFirst() {
         mPosition = -1;
-        mBookId = null;
+        mBookId = 0;
         return moveNext();
     }
 
@@ -222,7 +221,7 @@ public class FlattenedBooklist implements AutoCloseable {
     @SuppressWarnings("unused")
     public boolean moveLast() {
         mPosition = Long.MAX_VALUE;
-        mBookId = null;
+        mBookId = 0;
         return movePrev();
     }
 
@@ -244,6 +243,7 @@ public class FlattenedBooklist implements AutoCloseable {
             String sql = "Select Count(*) From " + mTable.ref();
             stmt = mStatements.add(COUNT_STMT_NAME, sql);
         }
+        // count, so no SQLiteDoneException
         return stmt.simpleQueryForLong();
     }
 
@@ -261,6 +261,7 @@ public class FlattenedBooklist implements AutoCloseable {
             stmt = mStatements.add(POSITION_STMT_NAME, sql);
         }
         stmt.bindLong(1, mPosition);
+        // count, so no SQLiteDoneException
         return stmt.simpleQueryForLong();
     }
 

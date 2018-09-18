@@ -234,8 +234,10 @@ public class BackupUtils {
         }
 
         @Override
-        public void putItem(@NonNull final Bundle bundle, @NonNull final String key,
-                            @NonNull final String type, @NonNull final String value) throws IOException {
+        public void putItem(@NonNull final Bundle bundle,
+                            @NonNull final String key,
+                            @NonNull final String type,
+                            @NonNull final String value) throws IOException {
             switch (type) {
                 case TYPE_INTEGER:
                     mBundle.putInt(key, Integer.parseInt(value));

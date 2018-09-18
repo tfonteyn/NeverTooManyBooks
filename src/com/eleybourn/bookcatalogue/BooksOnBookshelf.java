@@ -83,7 +83,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS;
 
@@ -1331,7 +1331,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             BooklistBuilder builder = new BooklistBuilder(mDb, mCurrentStyle);
 
             builder.requireDomain(DOM_TITLE, TBL_BOOKS.dot(DOM_TITLE), true);
-            builder.requireDomain(DOM_READ, TBL_BOOKS.dot(DOM_READ), false);
+            builder.requireDomain(DOM_BOOK_READ, TBL_BOOKS.dot(DOM_BOOK_READ), false);
 
             // Build based on our current criteria and return
             builder.build(mRebuildState, mMarkBookId, mCurrentBookshelf, "", "", "", "", mSearchText);

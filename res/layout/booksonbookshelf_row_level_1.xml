@@ -22,7 +22,8 @@
             android:paddingTop="@dimen/padding_border_double"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textStyle="bold"
-            tools:text="Author name f.e." />
+            tools:text="Author name f.e."
+            android:textIsSelectable="true" />
 
         <View
             style="@style/listDividerHorizontal"

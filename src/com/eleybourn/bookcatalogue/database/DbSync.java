@@ -420,7 +420,7 @@ public class DbSync {
         SynchronizedCursor rawQueryWithFactory(@NonNull final SynchronizedCursorFactory factory,
                                                @NonNull final String sql,
                                                @Nullable final String[] selectionArgs,
-                                               @SuppressWarnings("SameParameterValue") String editTable) {
+                                               @SuppressWarnings("SameParameterValue") @NonNull final String editTable) {
             SyncLock l = null;
             if (mTxLock == null)
                 l = mSync.getSharedLock();
@@ -458,7 +458,8 @@ public class DbSync {
                             @NonNull final String[] columns,
                             @NonNull final String selection,
                             @Nullable final String[] selectionArgs,
-                            @Nullable final String groupBy, String having,
+                            @Nullable final String groupBy,
+                            @Nullable final String having,
                             @Nullable final String orderBy) {
             SyncLock l = null;
             if (mTxLock == null)
@@ -478,7 +479,9 @@ public class DbSync {
          *
          * @return the row ID of the newly inserted row, or -1 if an error occurred
          */
-        public long insert(String table, String nullColumnHack, ContentValues values) throws SQLException {
+        public long insert(@NonNull final String table,
+                           @Nullable final String nullColumnHack,
+                           @NonNull final ContentValues values) throws SQLException {
             SyncLock l = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive)
@@ -499,7 +502,10 @@ public class DbSync {
          *
          * @return the number of rows affected
          */
-        public int update(String table, ContentValues values, String whereClause, String[] whereArgs) {
+        public int update(@NonNull final String table,
+                          @NonNull final ContentValues values,
+                          @NonNull final String whereClause,
+                          @Nullable final String[] whereArgs) {
             SyncLock l = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive)
@@ -520,7 +526,9 @@ public class DbSync {
          *
          * @return the number of rows affected
          */
-        public int delete(String table, String whereClause, String[] whereArgs) {
+        public int delete(@NonNull final String table,
+                          @NonNull final String whereClause,
+                          @Nullable final String[] whereArgs) {
             SyncLock l = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive)
@@ -539,7 +547,10 @@ public class DbSync {
         /**
          * Wrapper for underlying database method. It is recommended that custom cursors subclass SynchronizedCursor.
          */
-        public Cursor rawQueryWithFactory(SQLiteDatabase.CursorFactory cursorFactory, String sql, String[] selectionArgs, String editTable) {
+        public Cursor rawQueryWithFactory(@NonNull final SQLiteDatabase.CursorFactory cursorFactory,
+                                          @NonNull final String sql,
+                                          @NonNull final String[] selectionArgs,
+                                          @NonNull final String editTable) {
             SyncLock l = null;
             if (mTxLock == null)
                 l = mSync.getSharedLock();
@@ -554,7 +565,7 @@ public class DbSync {
         /**
          * Locking-aware wrapper for underlying database method.
          */
-        public SynchronizedStatement compileStatement(String sql) {
+        public SynchronizedStatement compileStatement(@NonNull final String sql) {
             SyncLock l = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive)
@@ -591,7 +602,7 @@ public class DbSync {
          *
          * @return the lock
          */
-        public SyncLock beginTransaction(boolean isUpdate) {
+        public SyncLock beginTransaction(final boolean isUpdate) {
             SyncLock l;
             if (isUpdate) {
                 l = mSync.getExclusiveLock();
@@ -623,7 +634,7 @@ public class DbSync {
          *
          * @param l Lock returned from BeginTransaction().
          */
-        public void endTransaction(SyncLock l) {
+        public void endTransaction(@NonNull final SyncLock l) {
             if (mTxLock == null)
                 throw new RuntimeException("Ending a transaction when none is started");
             if (!mTxLock.equals(l))
@@ -677,9 +688,10 @@ public class DbSync {
          */
         public class SynchronizedCursorFactory implements CursorFactory {
             @Override
-            public SynchronizedCursor newCursor(SQLiteDatabase db,
-                                                SQLiteCursorDriver masterQuery, String editTable,
-                                                SQLiteQuery query) {
+            public SynchronizedCursor newCursor(@NonNull final SQLiteDatabase db,
+                                                @NonNull final SQLiteCursorDriver masterQuery,
+                                                @NonNull final String editTable,
+                                                @NonNull final SQLiteQuery query) {
                 return new SynchronizedCursor(masterQuery, editTable, query, mSync);
             }
         }
@@ -702,7 +714,7 @@ public class DbSync {
         /** Indicates close() has been called */
         private boolean mIsClosed = false;
 
-        private SynchronizedStatement(final SynchronizedDb db, final String sql) {
+        private SynchronizedStatement(@NonNull final SynchronizedDb db, @NonNull final String sql) {
             mSync = db.getSynchronizer();
             mSql = sql;
             mIsReadOnly = sql.trim().toLowerCase().startsWith("select");
@@ -843,8 +855,10 @@ public class DbSync {
         private final Synchronizer mSync;
         private int mCount = -1;
 
-        public SynchronizedCursor(SQLiteCursorDriver driver,
-                                  String editTable, SQLiteQuery query, Synchronizer sync) {
+        public SynchronizedCursor(@NonNull final SQLiteCursorDriver driver,
+                                  @NonNull final String editTable,
+                                  @NonNull final SQLiteQuery query,
+                                  @NonNull final Synchronizer sync) {
             super(driver, editTable, query);
             mSync = sync;
         }

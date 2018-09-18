@@ -41,20 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_FORMATTED;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_FORMAT;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_GENRE;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_ISBN;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_LANGUAGE;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_LIST_PRICE;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_PAGES;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_PUBLISHER;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_SERIES_NAME;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_SIGNED;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_TITLE;
-
 /**
  * Abstract class for creating activities containing book details.
  * Here we define common method for all children: database and background initializing,
@@ -501,11 +487,11 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     }
 
     /**
-     * Get the File object for the cover of the book we are editing. If the book
-     * is new, return the standard temp file.
+     * Get the File object for the cover of the book we are editing.
+     * If the book is new (0), return the standard temp file.
      */
-    private File getCoverFile(Long rowId) {
-        if (rowId == null || rowId == 0)
+    private File getCoverFile(final long rowId) {
+        if (rowId == 0)
             return StorageUtils.getTempThumbnail();
         else
             return StorageUtils.getThumbnailByUuid(mDb.getBookUuid(rowId));
@@ -612,7 +598,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      * Ensure that the cached thumbnails for this book are deleted (if present)
      */
     private void invalidateCachedThumbnail() {
-        final Long rowId = mEditManager.getBookData().getRowId();
+        final long rowId = mEditManager.getBookData().getRowId();
         if (rowId != 0) {
             try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(this.getContext())) {
                 coversDbHelper.deleteBookCover(mDb.getBookUuid(rowId));
@@ -633,7 +619,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
          * is handled in pre-processing in the database layer since it also needs to be applied
          * to imported record etc.
          */
-        mFields.add(R.id.title, KEY_TITLE, null);
+        mFields.add(R.id.title, UniqueId.KEY_TITLE, null);
 
         /* Anthology needs special handling, and we use a formatter to do this. If the original
          * value was 0 or 1, then setting/clearing it here should just set the new value to 0 or 1.
@@ -643,34 +629,34 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
          * We also store it in the tag field so that it is automatically serialized with the
          * activity.
          */
-        mFields.add(R.id.anthology, BookData.KEY_ANTHOLOGY, null);
+        mFields.add(R.id.anthology, BookData.LOCAL_KEY_ANTHOLOGY, null);
 
-        mFields.add(R.id.author, "", KEY_AUTHOR_FORMATTED, null);
-        mFields.add(R.id.isbn, KEY_ISBN, null);
+        mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED, null);
+        mFields.add(R.id.isbn, UniqueId.KEY_ISBN, null);
 
         if (root.findViewById(R.id.publisher) != null)
-            mFields.add(R.id.publisher, KEY_PUBLISHER, null);
+            mFields.add(R.id.publisher, UniqueId.KEY_PUBLISHER, null);
 
         if (root.findViewById(R.id.date_published) != null)
-            mFields.add(R.id.date_published, KEY_DATE_PUBLISHED, KEY_DATE_PUBLISHED,
+            mFields.add(R.id.date_published, UniqueId.KEY_BOOK_DATE_PUBLISHED, UniqueId.KEY_BOOK_DATE_PUBLISHED,
                     null, new Fields.DateFieldFormatter());
 
-        mFields.add(R.id.series, KEY_SERIES_NAME, KEY_SERIES_NAME, null);
-        mFields.add(R.id.list_price, KEY_LIST_PRICE, null);
-        mFields.add(R.id.pages, KEY_PAGES, null);
-        mFields.add(R.id.format, KEY_FORMAT, null);
-        //mFields.add(R.id.bookshelf, KEY_BOOKSHELF, null);
-        mFields.add(R.id.description, KEY_DESCRIPTION, null)
+        mFields.add(R.id.series, UniqueId.KEY_SERIES_NAME, UniqueId.KEY_SERIES_NAME, null);
+        mFields.add(R.id.list_price, UniqueId.KEY_BOOK_LIST_PRICE, null);
+        mFields.add(R.id.pages, UniqueId.KEY_BOOK_PAGES, null);
+        mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT, null);
+        //mFields.add(R.id.bookshelf, KEY_BOOKSHELF_NAME, null);
+        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION, null)
                 .setShowHtml(true);
-        mFields.add(R.id.genre, KEY_GENRE, null);
-        mFields.add(R.id.language, KEY_LANGUAGE, null);
+        mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE, null);
+        mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE, null);
 
         mFields.add(R.id.row_img, "", THUMBNAIL, null);
         mFields.getField(R.id.row_img).getView().setOnCreateContextMenuListener(mCreateBookThumbContextMenuListener);
 
-        mFields.add(R.id.format_button, "", KEY_FORMAT, null);
+        mFields.add(R.id.format_button, "", UniqueId.KEY_BOOK_FORMAT, null);
         mFields.add(R.id.bookshelf, BOOKSHELF_TEXT, null).doNoFetch = true; // Output-only field
-        mFields.add(R.id.signed, KEY_SIGNED, null);
+        mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED, null);
     }
 
     /**
@@ -700,14 +686,14 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      */
     protected void populateBookDetailsFields(BookData book) {
         //Set anthology field
-        Integer ant = book.getInt(BookData.KEY_ANTHOLOGY);
+        Integer ant = book.getInt(BookData.LOCAL_KEY_ANTHOLOGY);
         mFields.getField(R.id.anthology).setValue(ant.toString()); // Set checked if ant != 0
     }
 
     /**
      * Sets book thumbnail
      */
-    protected void setBookThumbnail(Long rowId, int maxWidth, int maxHeight) {
+    protected void setBookThumbnail(final long rowId, final int maxWidth, final int maxHeight) {
         // Sets book thumbnail
         ImageView iv = getView().findViewById(R.id.row_img);
         ImageUtils.fetchFileIntoImageView(iv, getCoverFile(rowId), maxWidth, maxHeight, true);

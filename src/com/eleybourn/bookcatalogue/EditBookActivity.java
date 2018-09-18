@@ -24,6 +24,8 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -94,7 +96,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
     /**
      * Key using in intent to start this class in read-only mode
      */
-    private static final String KEY_READ_ONLY = "key_read_only";
+    private static final String LOCAL_BKEY_READ_ONLY = "key_read_only";
     /**
      * Classes used for the Tabs (in order)
      */
@@ -111,17 +113,6 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
     private long mRowId;
     private BookData mBookData;
     private boolean mIsReadOnly;
-
-    // used in Classic mode only, new fields added here for completeness of THIS class, but not added there.... maybe later
-    private String added_format = "";
-    private String added_genre = "";
-    private String added_language = "";
-    private String added_location = "";
-    private String added_publisher= "";
-    private String added_series = "";
-    private String added_title = "";
-    private String added_author = "";
-
     /**
      * Listener to handle 'fling' events; we could handle others but need to be
      * careful about possible clicks and scrolling.
@@ -151,7 +142,15 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
             }
         }
     };
-
+    // used in Classic mode only, new fields added here for completeness of THIS class, but not added there.... maybe later
+    private String added_format = "";
+    private String added_genre = "";
+    private String added_language = "";
+    private String added_location = "";
+    private String added_publisher = "";
+    private String added_series = "";
+    private String added_title = "";
+    private String added_author = "";
     private TabLayout mTabLayout;
     private TabLayout.Tab mAnthologyTab;
 
@@ -226,7 +225,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
         }
         i.putExtra(UniqueId.KEY_ID, id);
         i.putExtra(EditBookActivity.TAB, EditBookActivity.TAB_EDIT); // needed extra for creating EditBookActivity
-        i.putExtra(EditBookActivity.KEY_READ_ONLY, true);
+        i.putExtra(EditBookActivity.LOCAL_BKEY_READ_ONLY, true);
         a.startActivityForResult(i, UniqueId.ACTIVITY_VIEW_BOOK);
         return;
     }
@@ -246,18 +245,23 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
         Bundle extras = getIntent().getExtras();
 
         // We need the row ID
-        Long rowId = savedInstanceState != null ? savedInstanceState.getLong(UniqueId.KEY_ID) : null;
-        if (rowId == null) {
-            rowId = extras != null ? extras.getLong(UniqueId.KEY_ID) : null;
+        long rowId = 0;
+        if (savedInstanceState != null) {
+            rowId = savedInstanceState.getLong(UniqueId.KEY_ID);
         }
-        mRowId = (rowId == null) ? 0 : rowId;
+
+        if ((rowId == 0) && (extras != null)) {
+            rowId = extras.getLong(UniqueId.KEY_ID);
+        }
+        mRowId = rowId;
+
         boolean isExistingBook = (mRowId > 0);
 
         // Get the book data from the bundle or the database
         loadBookData(mRowId, savedInstanceState == null ? extras : savedInstanceState);
 
         mIsReadOnly = (extras != null)
-                && extras.getBoolean(KEY_READ_ONLY, false)
+                && extras.getBoolean(LOCAL_BKEY_READ_ONLY, false)
                 && isExistingBook;
 
         mTabLayout = findViewById(R.id.tabpanel);
@@ -274,8 +278,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
             ArrayList<TabLayout.Tab> mAllTabs = new ArrayList<>();
             try {
 
-                TabLayout.Tab tab;
-                tab = mTabLayout.newTab().setText(R.string.details).setTag(mTabClasses[TAB_EDIT].newInstance());
+                TabLayout.Tab tab = mTabLayout.newTab().setText(R.string.details).setTag(mTabClasses[TAB_EDIT].newInstance());
                 mTabLayout.addTab(tab);
                 mAllTabs.add(tab);
 
@@ -288,7 +291,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
                     mTabLayout.addTab(tab);
                     mAllTabs.add(tab);
 
-                    boolean isAnthology = (mBookData.getRowId() > 0) && (mBookData.getInt(BookData.KEY_ANTHOLOGY) != 0);
+                    boolean isAnthology = (mBookData.getRowId() > 0) && (mBookData.getInt(BookData.LOCAL_KEY_ANTHOLOGY) != 0);
                     setShowAnthology(isAnthology);
                 }
             } catch (InstantiationException | IllegalAccessException e) {
@@ -376,11 +379,12 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
                         pos = 0;
                     }
                     mList.moveTo(pos);
-                    while (!mList.getBookId().equals(mRowId)) {
-                        if (!mList.moveNext())
+                    while (mList.getBookId() != mRowId) {
+                        if (!mList.moveNext()) {
                             break;
+                        }
                     }
-                    if (!mList.getBookId().equals(mRowId)) {
+                    if (mList.getBookId()!= mRowId) {
                         mList.close();
                         mList = null;
                     } else {
@@ -410,13 +414,16 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
     }
 
     /**
-     * This function will populate the forms elements in three different ways 1.
-     * If a valid rowId exists it will populate the fields from the database 2.
-     * If fields have been passed from another activity (e.g. ISBNSearch) it
-     * will populate the fields from the bundle 3. It will leave the fields
-     * blank for new books.
+     * This function will populate the forms elements in three different ways
+     *
+     * 1. If a valid rowId exists it will populate the fields from the database
+     *
+     * 2. If fields have been passed from another activity (e.g. ISBNSearch) it
+     * will populate the fields from the bundle
+     *
+     * 3. It will leave the fields blank for new books.
      */
-    private void loadBookData(Long rowId, Bundle bestBundle) {
+    private void loadBookData(final long rowId, @Nullable final Bundle bestBundle) {
         if (bestBundle != null && bestBundle.containsKey(UniqueId.BKEY_BOOK_DATA)) {
             // If we have saved book data, use it
             mBookData = new BookData(rowId, bestBundle.getBundle(UniqueId.BKEY_BOOK_DATA));
@@ -471,7 +478,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
         Tracker.enterOnSaveInstanceState(this);
         super.onSaveInstanceState(outState);
 
@@ -575,7 +582,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
     }
 
     @Override
-    public void setRowId(Long id) {
+    public void setRowId(final long id) {
         if (mRowId != id) {
             mRowId = id;
             loadBookData(id, null);
@@ -712,10 +719,10 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
         }
 
         added_title = mBookData.getString(UniqueId.KEY_TITLE);
-        added_format = mBookData.getString(UniqueId.KEY_FORMAT);
-        added_genre = mBookData.getString(UniqueId.KEY_GENRE);
-        added_language = mBookData.getString(UniqueId.KEY_LANGUAGE);
-        added_location = mBookData.getString(UniqueId.KEY_LOCATION);
+        added_format = mBookData.getString(UniqueId.KEY_BOOK_FORMAT);
+        added_genre = mBookData.getString(UniqueId.KEY_BOOK_GENRE);
+        added_language = mBookData.getString(UniqueId.KEY_BOOK_LANGUAGE);
+        added_location = mBookData.getString(UniqueId.KEY_BOOK_LOCATION);
         added_publisher = mBookData.getString(UniqueId.KEY_PUBLISHER);
     }
 
@@ -775,6 +782,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
         }
         return mGenres;
     }
+
     /**
      * Load a location list; reloading this list every time a tab changes is slow.
      * So we cache it.
@@ -788,6 +796,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
         }
         return mLocations;
     }
+
     /**
      * Load a language list; reloading this list every time a tab changes is slow.
      * So we cache it.
@@ -801,6 +810,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
         }
         return mLanguages;
     }
+
     /**
      * Load a format list; reloading this list every time a tab changes is slow.
      * So we cache it.

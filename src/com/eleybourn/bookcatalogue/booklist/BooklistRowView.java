@@ -34,17 +34,17 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ABSOLUTE_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FORMAT;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GENRE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_KIND;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LANGUAGE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ROW_KIND;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LEVEL;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOCATION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
@@ -282,9 +282,9 @@ public class BooklistRowView {
 	private int mBookIdCol = -2;
 	public long getBookId() {
 		if (mBookIdCol < 0) {
-			mBookIdCol = mCursor.getColumnIndex(DOM_BOOK.name);
+			mBookIdCol = mCursor.getColumnIndex(DOM_BOOK_ID.name);
 			if (mBookIdCol < 0)
-				throw new RuntimeException("Column " + DOM_BOOK + " not present in cursor");
+				throw new RuntimeException("Column " + DOM_BOOK_ID + " not present in cursor");
 		}
 		return mCursor.getLong(mBookIdCol);
 	}
@@ -348,9 +348,9 @@ public class BooklistRowView {
 	private int mKindCol = -2;
 	public int getKind() {
 		if (mKindCol < 0) {
-			mKindCol = mCursor.getColumnIndex(DOM_KIND.name);
+			mKindCol = mCursor.getColumnIndex(DOM_ROW_KIND.name);
 			if (mKindCol < 0)
-				throw new RuntimeException("Column " + DOM_KIND + " not present in cursor");
+				throw new RuntimeException("Column " + DOM_ROW_KIND + " not present in cursor");
 		}
 		return mCursor.getInt(mKindCol);
 	}
@@ -410,9 +410,9 @@ public class BooklistRowView {
     private int mLanguageCol = -2;
     public String getLanguage() {
         if (mLanguageCol < 0) {
-            mLanguageCol = mCursor.getColumnIndex(DOM_LANGUAGE.name);
+            mLanguageCol = mCursor.getColumnIndex(DOM_BOOK_LANGUAGE.name);
             if (mLanguageCol < 0)
-                throw new RuntimeException("Column " + DOM_LANGUAGE + " not present in cursor");
+                throw new RuntimeException("Column " + DOM_BOOK_LANGUAGE + " not present in cursor");
         }
         return mCursor.getString(mLanguageCol);
     }
@@ -434,9 +434,9 @@ public class BooklistRowView {
 	private int mFormatCol = -2;
 	public String getFormat() {
 		if (mFormatCol < 0) {
-			mFormatCol = mCursor.getColumnIndex(DOM_FORMAT.name);
+			mFormatCol = mCursor.getColumnIndex(DOM_BOOK_FORMAT.name);
 			if (mFormatCol < 0)
-				throw new RuntimeException("Column " + DOM_FORMAT + " not present in cursor");
+				throw new RuntimeException("Column " + DOM_BOOK_FORMAT + " not present in cursor");
 		}
 		return mCursor.getString(mFormatCol);
 	}
@@ -446,9 +446,9 @@ public class BooklistRowView {
 	private int mGenreCol = -2;
 	public String getGenre() {
 		if (mGenreCol < 0) {
-			mGenreCol = mCursor.getColumnIndex(DOM_GENRE.name);
+			mGenreCol = mCursor.getColumnIndex(DOM_BOOK_GENRE.name);
 			if (mGenreCol < 0)
-				throw new RuntimeException("Column " + DOM_GENRE + " not present in cursor");
+				throw new RuntimeException("Column " + DOM_BOOK_GENRE + " not present in cursor");
 		}
 		return mCursor.getString(mGenreCol);
 	}
@@ -458,9 +458,9 @@ public class BooklistRowView {
 	private int mLocationCol = -2;
 	public String getLocation() {
 		if (mLocationCol < 0) {
-			mLocationCol = mCursor.getColumnIndex(DOM_LOCATION.name);
+			mLocationCol = mCursor.getColumnIndex(DOM_BOOK_LOCATION.name);
 			if (mLocationCol < 0)
-				throw new RuntimeException("Column " + DOM_LOCATION + " not present in cursor");
+				throw new RuntimeException("Column " + DOM_BOOK_LOCATION + " not present in cursor");
 		}
 		return mCursor.getString(mLocationCol);
 	}
@@ -507,9 +507,9 @@ public class BooklistRowView {
 	private int mReadCol = -2;
 	public boolean isRead() {
 		if (mReadCol < 0) {
-			mReadCol = mCursor.getColumnIndex(DOM_READ.name);
+			mReadCol = mCursor.getColumnIndex(DOM_BOOK_READ.name);
 			if (mReadCol < 0)
-				throw new RuntimeException("Column " + DOM_READ + " not present in cursor");
+				throw new RuntimeException("Column " + DOM_BOOK_READ + " not present in cursor");
 		}
 		return mCursor.getLong(mReadCol) == 1;
 	}

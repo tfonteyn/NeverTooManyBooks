@@ -35,7 +35,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        tools:text="container for styles list" />
+        tools:text="container for styles list"
+        android:textIsSelectable="false" />
 
     <include
         android:id="@+id/buttonbar_cancel_save"

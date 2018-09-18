@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -67,7 +68,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
      * Display the edit fields page
      */
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_edit_book_fields, container, false);
     }
 
@@ -225,13 +226,13 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
             t0 = System.currentTimeMillis();
         }
-        final BookData book = mEditManager.getBookData();
-        populateFieldsFromBook(book);
-        if (book.getRowId() <= 0) {
+        final BookData bookData = mEditManager.getBookData();
+        populateFieldsFromBook(bookData);
+        if (bookData.getRowId() <= 0) {
             Bundle extras = getActivity().getIntent().getExtras();
             if (extras != null) {
                 // From the ISBN Search (add)
-                if (extras.containsKey(UniqueId.KEY_BOOK)) {
+                if (extras.containsKey(UniqueId.KEY_BOOK_ID)) {
                     throw new RuntimeException("[book] array passed in Intent");
                 } else {
                     Bundle values = extras.getParcelable(UniqueId.BKEY_BOOK_DATA);
@@ -270,8 +271,8 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
      * Use the currently selected bookshelf as default
      */
     private void initDefaultShelf() {
-        final BookData book = mEditManager.getBookData();
-        final String list = book.getBookshelfList();
+        final BookData bookData = mEditManager.getBookData();
+        final String list = bookData.getBookshelfList();
         if (list == null || list.isEmpty()) {
             String currShelf = BCPreferences.getString(BooksOnBookshelf.PREF_BOOKSHELF, "");
             if (currShelf.isEmpty()) {
@@ -280,7 +281,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
             String encoded_shelf = ArrayUtils.encodeListItem(BOOKSHELF_SEPARATOR, currShelf);
             Field fe = mFields.getField(R.id.bookshelf);
             fe.setValue(currShelf);
-            book.setBookshelfList(encoded_shelf);
+            bookData.setBookshelfList(encoded_shelf);
         }
     }
 
@@ -343,9 +344,9 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
     }
 
     @Override
-    protected void onLoadBookDetails(BookData book, boolean setAllDone) {
+    protected void onLoadBookDetails(@NonNull final BookData bookData, final boolean setAllDone) {
         if (!setAllDone) {
-            mFields.setAll(book);
+            mFields.setAll(bookData);
         }
         populateFields();
     }
@@ -366,7 +367,11 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
      * Build a full or partial date in SQL format
      */
     @Override
-    public void onPartialDatePickerSet(int dialogId, PartialDatePickerFragment dialog, Integer year, Integer month, Integer day) {
+    public void onPartialDatePickerSet(final int dialogId,
+                                       @NonNull final PartialDatePickerFragment dialog,
+                                       @NonNull final Integer year,
+                                       @NonNull final Integer month,
+                                       @NonNull final Integer day) {
         String value = DateUtils.buildPartialDate(year, month, day);
         mFields.getField(dialogId).setValue(value);
         dialog.dismiss();
@@ -378,7 +383,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
      * Dismiss it.
      */
     @Override
-    public void onPartialDatePickerCancel(int dialogId, PartialDatePickerFragment dialog) {
+    public void onPartialDatePickerCancel(final int dialogId, @NonNull final PartialDatePickerFragment dialog) {
         dialog.dismiss();
     }
 
@@ -388,7 +393,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
      * Set the appropriate field
      */
     @Override
-    public void onTextFieldEditorSave(int dialogId, TextFieldEditorFragment dialog, String newText) {
+    public void onTextFieldEditorSave(final int dialogId, @NonNull final TextFieldEditorFragment dialog, @NonNull final String newText) {
         mFields.getField(dialogId).setValue(newText);
         dialog.dismiss();
     }
@@ -399,13 +404,17 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
      * Dismiss it.
      */
     @Override
-    public void onTextFieldEditorCancel(int dialogId, TextFieldEditorFragment dialog) {
+    public void onTextFieldEditorCancel(final int dialogId, @NonNull final TextFieldEditorFragment dialog) {
         dialog.dismiss();
     }
 
     @Override
-    public void onBookshelfCheckChanged(int dialogId, BookshelfDialogFragment dialog,
-                                        boolean checked, String shelf, String textList, String encodedList) {
+    public void onBookshelfCheckChanged(final int dialogId,
+                                        @NonNull final BookshelfDialogFragment dialog,
+                                        final boolean checked,
+                                        @NonNull final String shelf,
+                                        @NonNull final String textList,
+                                        @NonNull final String encodedList) {
 
         mFields.getField(R.id.bookshelf).setValue(textList);
         mEditManager.getBookData().setBookshelfList(encodedList);

@@ -161,16 +161,16 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
 		} else if (localName.equalsIgnoreCase(PUBLISHER)){
 			addIfNotPresent(UniqueId.KEY_PUBLISHER);
 		} else if (localName.equalsIgnoreCase(DATE_PUBLISHED)){
-			addIfNotPresent(UniqueId.KEY_DATE_PUBLISHED);
+			addIfNotPresent(UniqueId.KEY_BOOK_DATE_PUBLISHED);
 		} else if (localName.equalsIgnoreCase(PAGES)){
 			String tmp = builder.toString();
 			int index = tmp.indexOf(" pages");
 			if (index > -1) {
 				tmp = tmp.substring(0, index).trim(); 
-				mValues.putString(UniqueId.KEY_PAGES, tmp);
+				mValues.putString(UniqueId.KEY_BOOK_PAGES, tmp);
 			}
 		} else if (localName.equalsIgnoreCase(GENRE)){
-			mValues.putString(UniqueId.KEY_GENRE, builder.toString());
+			mValues.putString(UniqueId.KEY_BOOK_GENRE, builder.toString());
 		} else if (localName.equalsIgnoreCase(DESCRIPTION)){
 			addIfNotPresent(UniqueId.KEY_DESCRIPTION);
 		}

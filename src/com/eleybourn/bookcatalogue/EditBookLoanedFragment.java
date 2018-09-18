@@ -148,9 +148,9 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
     }
 
     @Override
-    protected void onLoadBookDetails(BookData book, boolean setAllDone) {
+    protected void onLoadBookDetails(@NonNull BookData bookData, boolean setAllDone) {
         if (!setAllDone) {
-            mFields.setAll(book);
+            mFields.setAll(bookData);
         }
     }
 

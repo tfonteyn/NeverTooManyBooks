@@ -610,7 +610,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         Object o = in.readObject();
         long version = 0;
         if (o instanceof Long) {
-            // Its the version
+            // It's the version
             version = ((Long) o);
             // Get the next object
             o = in.readObject();

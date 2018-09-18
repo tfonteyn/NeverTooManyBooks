@@ -875,29 +875,29 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle inState) {
-        super.onSaveInstanceState(inState);
+    protected void onSaveInstanceState(Bundle instanceState) {
+        super.onSaveInstanceState(instanceState);
 
         // Saving intent data is a kludge due to an apparent Android bug in some
         // handsets. Search for "BUG NOTE 1" in this source file for a discussion
         Bundle b = getIntent().getExtras();
         if (b != null) {
             if (b.containsKey(UniqueId.KEY_ISBN)) {
-                inState.putString(UniqueId.KEY_ISBN, b.getString(UniqueId.KEY_ISBN));
+                instanceState.putString(UniqueId.KEY_ISBN, b.getString(UniqueId.KEY_ISBN));
             }
             if (b.containsKey(BKEY_BY)) {
-                inState.putString(BKEY_BY, b.getString(BKEY_BY));
+                instanceState.putString(BKEY_BY, b.getString(BKEY_BY));
             }
         }
 
-        inState.putParcelable(BKEY_LAST_BOOK_INTENT, mLastBookIntent);
+        instanceState.putParcelable(BKEY_LAST_BOOK_INTENT, mLastBookIntent);
         // Save the current search details as this may be called as a result of a rotate during an alert dialog.
-        inState.putString(UniqueId.KEY_AUTHOR_ID, mAuthor);
-        inState.putString(UniqueId.KEY_ISBN, mIsbn);
-        inState.putString(UniqueId.KEY_TITLE, mTitle);
-        inState.putBoolean(BKEY_SCANNER_STARTED, mScannerStarted);
+        instanceState.putString(UniqueId.KEY_AUTHOR_ID, mAuthor); //TOMF ? string as ID ?
+        instanceState.putString(UniqueId.KEY_ISBN, mIsbn);
+        instanceState.putString(UniqueId.KEY_TITLE, mTitle);
+        instanceState.putBoolean(BKEY_SCANNER_STARTED, mScannerStarted);
         if (mSearchManagerId != 0) {
-            inState.putLong(BKEY_SEARCH_MANAGER_ID, mSearchManagerId);
+            instanceState.putLong(BKEY_SEARCH_MANAGER_ID, mSearchManagerId);
         }
     }
 }

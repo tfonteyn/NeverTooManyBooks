@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.tasks;
 
-import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -59,9 +58,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 @SuppressWarnings("unused")
 public class SimpleTaskQueue {
-    // Context: could not add context to the constructor, as Android does not want a Context stored in a static
-    // and SimpleTaskQueue is sometimes a static... TODO....
-    private final Context mContext = BookCatalogueApp.getAppContext();
 	// Execution queue
 	private final BlockingStack<SimpleTaskWrapper> mQueue = new BlockingStack<>();
 	// Results queue
@@ -476,9 +472,13 @@ public class SimpleTaskQueue {
 			}
 		}
 
+        /**
+         * @return a database connection associated with this Task
+         */
 		public CatalogueDBAdapter getDb() {
 			if (mDb == null) {
-				mDb = new CatalogueDBAdapter(SimpleTaskQueue.this.mContext);
+			    // Reminder: don't make/put the context in a static variable! -> Memory Leak!
+				mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
 				mDb.open();
 			}
 			return mDb;

@@ -39,7 +39,8 @@
             android:layout_weight="2"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold"
-            tools:text="Export all books to GoodReads" />
+            tools:text="Export all books to GoodReads"
+            android:textIsSelectable="true" />
 
         <TextView
             android:id="@+id/state"
@@ -47,7 +48,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            tools:text="Running (17 events recorded)" />
+            tools:text="Running (17 events recorded)"
+            android:textIsSelectable="true" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -62,7 +64,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="Retry 0 of 17, next at July 20, 2012 17:45:32 GMT" />
+                tools:text="Retry 0 of 17, next at July 20, 2012 17:45:32 GMT"
+                android:textIsSelectable="true" />
 
             <Button
                 android:id="@+id/retry"
@@ -80,7 +83,8 @@
 
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="Last error: foo bar, not sure what really happened" />
+            tools:text="Last error: foo bar, not sure what really happened"
+            android:textIsSelectable="true" />
 
         <LinearLayout
             android:id="@+id/boring_stuff"
@@ -95,7 +99,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="Job ID 123, Queued at 20 Jul 2012 17:50:23 GMT" />
+                tools:text="Job ID 123, Queued at 20 Jul 2012 17:50:23 GMT"
+                android:textIsSelectable="true" />
         </LinearLayout>
     </LinearLayout>
 

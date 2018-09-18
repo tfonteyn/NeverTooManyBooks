@@ -60,9 +60,6 @@ import java.util.ArrayList;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_AUTHOR_FORMATTED;
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_TITLE;
-
 public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 
     private static final int DELETE_ID = Menu.FIRST;
@@ -114,8 +111,8 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     private void loadPage() {
 
         final BookData book = mEditManager.getBookData();
-        mBookAuthor = book.getString(KEY_AUTHOR_FORMATTED);
-        mBookTitle = book.getString(KEY_TITLE);
+        mBookAuthor = book.getString(UniqueId.KEY_AUTHOR_FORMATTED);
+        mBookTitle = book.getString(UniqueId.KEY_TITLE);
 
         // Setup the same author field
         mSame = getView().findViewById(R.id.same_author);
@@ -380,15 +377,15 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     }
 
     @Override
-    protected void onLoadBookDetails(BookData book, boolean setAllDone) {
+    protected void onLoadBookDetails(@NonNull BookData bookData, boolean setAllDone) {
         if (!setAllDone)
-            mFields.setAll(book);
+            mFields.setAll(bookData);
     }
 
     @Override
-    protected void onSaveBookDetails(BookData book) {
-        super.onSaveBookDetails(book);
-        saveState(book);
+    protected void onSaveBookDetails(@NonNull BookData bookData) {
+        super.onSaveBookDetails(bookData);
+        saveState(bookData);
     }
 
     protected class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle> {

@@ -28,14 +28,19 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import static com.eleybourn.bookcatalogue.UniqueId.BKEY_AUTHOR_ARRAY;
 
 /**
  * Activity to edit a list of authors provided in an ArrayList<Author> and
@@ -49,20 +54,18 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
      * Constructor; pass the superclass the main and row based layouts to use.
      */
     public EditAuthorListActivity() {
-        super(BKEY_AUTHOR_ARRAY, R.layout.activity_edit_list_author, R.layout.row_edit_author_list);
+        super(UniqueId.BKEY_AUTHOR_ARRAY, R.layout.activity_edit_list_author, R.layout.row_edit_author_list);
     }
 
     @Override
-    protected void onSetupView(@NonNull View target, @NonNull Author object, int position) {
-        if (object != null) {
-            TextView at = target.findViewById(R.id.row_author);
-            if (at != null) {
-                at.setText(object.getDisplayName());
-            }
-            at = target.findViewById(R.id.row_author_sort);
-            if (at != null) {
-                at.setText(object.getSortName());
-            }
+    protected void onSetupView(@NonNull View target, @NonNull Author object, final int position) {
+        TextView at = target.findViewById(R.id.row_author);
+        if (at != null) {
+            at.setText(object.getDisplayName());
+        }
+        at = target.findViewById(R.id.row_author_sort);
+        if (at != null) {
+            at.setText(object.getSortName());
         }
     }
 
@@ -72,10 +75,10 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
 
         try {
             // Setup autocomplete for author name
-            ArrayAdapter<String> author_adapter = new ArrayAdapter<>(this,
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                     android.R.layout.simple_dropdown_item_1line,
                     mDb.getAllAuthors());
-            ((AutoCompleteTextView) this.findViewById(R.id.author)).setAdapter(author_adapter);
+            ((AutoCompleteTextView) this.findViewById(R.id.author)).setAdapter(adapter);
 
             getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
@@ -87,7 +90,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     /**
      * Do the work of the onClickListener for the 'Add' button.
      */
-    protected void onAdd(View target) {
+    protected void onAdd(@NonNull final View target) {
         AutoCompleteTextView authorField = findViewById(R.id.author);
         String authorName = authorField.getText().toString().trim();
         if (!authorName.isEmpty()) {
@@ -109,7 +112,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     }
 
     @Override
-    protected void onRowClick(@NonNull View target, @NonNull final Author author, int position) {
+    protected void onRowClick(@NonNull View target, @NonNull final Author author, final int position) {
         final Dialog dialog = new StandardDialogs.BasicDialog(this);
         dialog.setContentView(R.layout.dialog_edit_author);
         dialog.setTitle(R.string.edit_author_details);
@@ -136,7 +139,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                 String newGiven = givenView.getText().toString();
                 Author newAuthor = new Author(newFamily, newGiven);
                 dialog.dismiss();
-                confirmEditAuthor(author, newAuthor);
+                confirmEdit(author, newAuthor);
             }
         });
         Button cancelButton = dialog.findViewById(R.id.cancel);
@@ -150,30 +153,26 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         dialog.show();
     }
 
-    private void confirmEditAuthor(@NonNull final Author oldAuthor, @NonNull final Author newAuthor) {
-        // First, deal with a some special cases...
+    private void confirmEdit(@NonNull final Author from, @NonNull final Author to) {
 
-        // Case: Unchanged.
-        if (newAuthor.familyName.compareTo(oldAuthor.familyName) == 0
-                && newAuthor.givenNames.compareTo(oldAuthor.givenNames) == 0) {
-            // No change; nothing to do
+        if (to.equals(from)) {
             return;
         }
 
         // Get the new author ID
-        oldAuthor.id = mDb.getAuthorIdByName(oldAuthor);
-        newAuthor.id = mDb.getAuthorIdByName(newAuthor);
+        from.id = mDb.getAuthorIdByName(from);
+        to.id = mDb.getAuthorIdByName(to);
 
         // See if the old author is used in any other books.
-        long nRefs = mDb.getAuthorBookCount(oldAuthor) + mDb.getAuthorAnthologyCount(oldAuthor);
+        long nRefs = mDb.getAuthorBookCount(from) + mDb.getAuthorAnthologyCount(from);
         boolean oldHasOthers = nRefs > (mRowId == 0 ? 0 : 1);
 
         // Case: author is the same, or is only used in this book
-        if (newAuthor.id == oldAuthor.id || !oldHasOthers) {
+        if (to.id == from.id || !oldHasOthers) {
             // Just update with the most recent spelling and format
-            oldAuthor.copyFrom(newAuthor);
+            from.copyFrom(to);
             Utils.pruneList(mDb, mList);
-            mDb.updateOrInsertAuthorByName(oldAuthor);
+            mDb.updateOrInsertAuthorByName(from);
             mAdapter.notifyDataSetChanged();
             return;
         }
@@ -182,31 +181,33 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         String format = getResources().getString(R.string.changed_author_how_apply);
         String allBooks = getResources().getString(R.string.all_books);
         String thisBook = getResources().getString(R.string.this_book);
-        String message = String.format(format, oldAuthor.getSortName(), newAuthor.getSortName(), allBooks);
-        final AlertDialog alertDialog = new AlertDialog.Builder(this).setMessage(message).create();
+        String message = String.format(format, from.getSortName(), to.getSortName(), allBooks);
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setTitle(getResources().getString(R.string.scope_of_change))
+                .setIcon(android.R.drawable.ic_menu_info_details)
+                .create();
 
-        alertDialog.setTitle(getResources().getString(R.string.scope_of_change));
-        alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
-        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, thisBook, new DialogInterface.OnClickListener() {
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, thisBook, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                oldAuthor.copyFrom(newAuthor);
+                from.copyFrom(to);
                 Utils.pruneList(mDb, mList);
                 mAdapter.notifyDataSetChanged();
-                alertDialog.dismiss();
+                dialog.dismiss();
             }
         });
 
-        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, new DialogInterface.OnClickListener() {
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                mDb.globalReplaceAuthor(oldAuthor, newAuthor);
-                oldAuthor.copyFrom(newAuthor);
+                mDb.globalReplaceAuthor(from, to);
+                from.copyFrom(to);
                 Utils.pruneList(mDb, mList);
                 mAdapter.notifyDataSetChanged();
-                alertDialog.dismiss();
+                dialog.dismiss();
             }
         });
 
-        alertDialog.show();
+        dialog.show();
     }
 
     @Override
@@ -215,24 +216,26 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         Resources res = this.getResources();
         String s = t.getText().toString().trim();
         if (!s.isEmpty()) {
-            final AlertDialog alertDialog = new AlertDialog.Builder(this).setMessage(res.getText(R.string.unsaved_edits)).create();
+            final AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setMessage(res.getText(R.string.unsaved_edits))
+                    .setTitle(res.getText(R.string.unsaved_edits_title))
+                    .setIcon(android.R.drawable.ic_menu_info_details)
+                    .create();
 
-            alertDialog.setTitle(res.getText(R.string.unsaved_edits_title));
-            alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
-            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, res.getText(R.string.yes), new DialogInterface.OnClickListener() {
+            dialog.setButton(DialogInterface.BUTTON_POSITIVE, res.getText(R.string.yes), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     t.setText("");
                     findViewById(R.id.confirm).performClick();
                 }
             });
 
-            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, res.getText(R.string.no), new DialogInterface.OnClickListener() {
+            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, res.getText(R.string.no), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     //do nothing
                 }
             });
 
-            alertDialog.show();
+            dialog.show();
             return false;
         } else {
             return true;

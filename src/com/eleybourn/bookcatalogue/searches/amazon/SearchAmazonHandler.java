@@ -297,7 +297,7 @@ public class SearchAmazonHandler extends DefaultHandler {
                 if ("usd".equalsIgnoreCase(mCurrencyCode) && !mCurrencyAmount.isEmpty()) {
                     try {
                         Float price = Float.parseFloat(mCurrencyAmount) / 100;
-                        addIfNotPresent(UniqueId.KEY_LIST_PRICE, String.format("%.2f", price));
+                        addIfNotPresent(UniqueId.KEY_BOOK_LIST_PRICE, String.format("%.2f", price));
                     } catch (Exception ignore) {
                     }
                 }
@@ -324,15 +324,15 @@ public class SearchAmazonHandler extends DefaultHandler {
                 } else if (localName.equalsIgnoreCase(PUBLISHER)) {
                     addIfNotPresent(UniqueId.KEY_PUBLISHER);
                 } else if (localName.equalsIgnoreCase(DATE_PUBLISHED)) {
-                    addIfNotPresent(UniqueId.KEY_DATE_PUBLISHED);
+                    addIfNotPresent(UniqueId.KEY_BOOK_DATE_PUBLISHED);
                 } else if (localName.equalsIgnoreCase(PAGES)) {
-                    addIfNotPresentOrEqual(UniqueId.KEY_PAGES, "0");
+                    addIfNotPresentOrEqual(UniqueId.KEY_BOOK_PAGES, "0");
                 } else if (localName.equalsIgnoreCase(DESCRIPTION)) {
                     addIfNotPresent(UniqueId.KEY_DESCRIPTION);
                 } else if (localName.equalsIgnoreCase(BINDING)) {
-                    addIfNotPresent(UniqueId.KEY_FORMAT);
+                    addIfNotPresent(UniqueId.KEY_BOOK_FORMAT);
                 } else if (mInLanguage && localName.equalsIgnoreCase(NAME)) {
-                    addIfNotPresent(UniqueId.KEY_LANGUAGE);
+                    addIfNotPresent(UniqueId.KEY_BOOK_LANGUAGE);
                 } else if (mInListPrice && localName.equalsIgnoreCase(AMOUNT)) {
                     mCurrencyAmount = mBuilder.toString();
                 } else if (mInListPrice && localName.equalsIgnoreCase(CURRENCY_CODE)) {

@@ -29,7 +29,7 @@ public class ImportThread extends ManagedTask {
     private final Importer.OnImporterListener mImportListener = new Importer.OnImporterListener() {
 
         @Override
-        public void onProgress(String message, int position) {
+        public void onProgress(@NonNull String message, int position) {
             if (position > 0) {
                 mManager.doProgress(ImportThread.this, message, position);
             } else {

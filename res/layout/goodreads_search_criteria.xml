@@ -39,7 +39,8 @@
                     android:layout_weight="1"
                     android:hint="@string/author"
                     android:singleLine="false"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textIsSelectable="true" />
             </LinearLayout>
 
             <LinearLayout
@@ -60,7 +61,8 @@
                     android:layout_weight="1"
                     android:hint="@string/title"
                     android:singleLine="false"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textIsSelectable="true" />
             </LinearLayout>
 
             <LinearLayout
@@ -81,7 +83,8 @@
                     android:layout_weight="1"
                     android:hint="@string/isbn"
                     android:singleLine="false"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textIsSelectable="true" />
             </LinearLayout>
 
             <View style="@style/listDividerHorizontal" />
@@ -136,7 +139,8 @@
             android:id="@+id/works_found"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textIsSelectable="true" />
     </LinearLayout>
 
 </RelativeLayout>

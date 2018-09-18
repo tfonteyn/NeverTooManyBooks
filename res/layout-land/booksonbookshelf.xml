@@ -63,7 +63,8 @@
                 android:paddingEnd="@dimen/padding_border"
                 android:paddingStart="@dimen/padding_border"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="@string/displaying_n_books_in_m_entries" />
+                tools:text="@string/displaying_n_books_in_m_entries"
+                android:textIsSelectable="true" />
 
                 <TextView
                     android:id="@+id/level_1_text"
@@ -74,7 +75,8 @@
                     android:paddingStart="@dimen/padding_border"
                     android:singleLine="true"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    tools:text="level 1 text" />
+                    tools:text="level 1 text"
+                    android:textIsSelectable="true" />
 
                 <TextView
                     android:id="@+id/level_2_text"
@@ -85,7 +87,8 @@
                     android:paddingStart="@dimen/padding_border"
                     android:singleLine="true"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    tools:text="level 2 text" />
+                    tools:text="level 2 text"
+                    android:textIsSelectable="true" />
         </RelativeLayout>
 
         <View

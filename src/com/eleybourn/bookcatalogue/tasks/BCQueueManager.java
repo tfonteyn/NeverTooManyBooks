@@ -24,6 +24,7 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.AdapterView;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 
 import net.philipwarner.taskqueue.ContextDialogItem;
@@ -52,7 +53,6 @@ public class BCQueueManager extends QueueManager {
     public static final long CAT_GOODREADS_EXPORT_ALL = 4;
     public static final long CAT_GOODREADS_EXPORT_ONE = 5;
 
-    private final Context mContext;
     /**
      * Create the queue we need, if they do not already exist.
      *
@@ -61,7 +61,6 @@ public class BCQueueManager extends QueueManager {
      */
     public BCQueueManager(@NonNull final Context context) {
         super(context);
-        mContext = context;
         initializeQueue(QUEUE_MAIN);
         initializeQueue(QUEUE_SMALL_JOBS);
     }
@@ -97,13 +96,13 @@ public class BCQueueManager extends QueueManager {
     @Override
     @NonNull
     public LegacyTask newLegacyTask(byte[] original) {
-        return new BCLegacyTask(original, mContext.getString(R.string.legacy_task));
+        return new BCLegacyTask(original, BookCatalogueApp.getResourceString(R.string.legacy_task));
     }
 
     @Override
     @NonNull
     public Context getApplicationContext() {
-        return mContext;
+        return BookCatalogueApp.getAppContext();
     }
 
     /**

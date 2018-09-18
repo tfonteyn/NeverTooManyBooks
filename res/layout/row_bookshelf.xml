@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        tools:text="Bookshelf name"/>
+        tools:text="Bookshelf name"
+        android:textIsSelectable="true" />
 
 </LinearLayout>

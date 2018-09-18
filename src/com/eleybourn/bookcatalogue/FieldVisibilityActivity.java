@@ -54,22 +54,22 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
         allFields.add(new FieldInfo(UniqueId.KEY_SERIES_NAME, R.string.series, false));
         allFields.add(new FieldInfo(UniqueId.KEY_SERIES_NUM, R.string.series_num, false));
         allFields.add(new FieldInfo(UniqueId.KEY_PUBLISHER, R.string.publisher, false));
-        allFields.add(new FieldInfo(UniqueId.KEY_DATE_PUBLISHED, R.string.date_published, false));
-        allFields.add(new FieldInfo(UniqueId.KEY_BOOKSHELF, R.string.bookshelf, false));
-        allFields.add(new FieldInfo(UniqueId.KEY_PAGES, R.string.pages, false));
-        allFields.add(new FieldInfo(UniqueId.KEY_LIST_PRICE, R.string.list_price, false));
-        allFields.add(new FieldInfo(UniqueId.KEY_READ, R.string.read, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_BOOK_DATE_PUBLISHED, R.string.date_published, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_BOOKSHELF_NAME, R.string.bookshelf, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_BOOK_PAGES, R.string.pages, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_BOOK_LIST_PRICE, R.string.list_price, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ, R.string.read, false));
         allFields.add(new FieldInfo(UniqueId.KEY_RATING, R.string.rating, false));
         allFields.add(new FieldInfo(UniqueId.KEY_NOTES, R.string.notes, false));
         allFields.add(new FieldInfo(UniqueId.KEY_ANTHOLOGY_MASK, R.string.anthology, false));
-        allFields.add(new FieldInfo(UniqueId.KEY_LOCATION, R.string.location_of_book, false));
-        allFields.add(new FieldInfo(UniqueId.KEY_READ_START, R.string.read_start, false));
-        allFields.add(new FieldInfo(UniqueId.KEY_READ_END, R.string.read_end, false));
-        allFields.add(new FieldInfo(UniqueId.KEY_FORMAT, R.string.format, false));
-        allFields.add(new FieldInfo(UniqueId.KEY_SIGNED, R.string.signed, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_BOOK_LOCATION, R.string.location_of_book, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ_START, R.string.read_start, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ_END, R.string.read_end, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_BOOK_FORMAT, R.string.format, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_BOOK_SIGNED, R.string.signed, false));
         allFields.add(new FieldInfo(UniqueId.KEY_DESCRIPTION, R.string.description, false));
-        allFields.add(new FieldInfo(UniqueId.KEY_GENRE, R.string.genre, false));
-        allFields.add(new FieldInfo(UniqueId.KEY_LANGUAGE, R.string.language, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_BOOK_GENRE, R.string.genre, false));
+        allFields.add(new FieldInfo(UniqueId.KEY_BOOK_LANGUAGE, R.string.language, false));
 
         //NEWKIND: when adding fields that can be invisible, add them here
     }

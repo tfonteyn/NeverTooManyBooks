@@ -47,7 +47,8 @@
                 android:gravity="start"
                 android:singleLine="false"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="style name"/>
+                tools:text="style name"
+                android:textIsSelectable="true" />
 
             <TextView
                 android:id="@+id/info"
@@ -58,7 +59,8 @@
                 android:gravity="start"
                 android:singleLine="false"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="info"/>
+                tools:text="info"
+                android:textIsSelectable="true" />
         </RelativeLayout>
 
         <ImageView

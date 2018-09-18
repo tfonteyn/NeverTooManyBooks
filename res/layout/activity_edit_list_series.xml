@@ -20,7 +20,8 @@
         android:layout_below="@id/toolbar"
         android:hint="@string/title"
         android:textSize="16sp"
-        tools:text="Book Title" />
+        tools:text="Book Title"
+        android:textIsSelectable="true" />
 
     <LinearLayout
         android:id="@+id/top_buttons"

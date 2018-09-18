@@ -37,6 +37,7 @@ import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -47,19 +48,19 @@ import java.util.ArrayList;
 public class BookData extends DataManager {
 
     /** Key for special field */
-    public static final String KEY_ANTHOLOGY = "+IsAnthology";
+    public static final String LOCAL_KEY_ANTHOLOGY = "+IsAnthology";
     /** Key for special field */
-    private static final String BKEY_BOOKSHELF_LIST = "+BookshelfList";
+    private static final String LOCAL_BKEY_BOOKSHELF_LIST = "+BookshelfList";
     /** Key for special field */
-    private static final String KEY_BOOKSHELF_TEXT = "+BookshelfText";
+    private static final String LOCAL_KEY_BOOKSHELF_TEXT = "+BookshelfText";
     /** Row ID for book */
     private long mRowId;
 
     public BookData() {
-        this(0L, null);
+        this(0, null);
     }
 
-    public BookData(@Nullable Long rowId) {
+    public BookData(final long rowId) {
         this(rowId, null);
     }
 
@@ -75,16 +76,12 @@ public class BookData extends DataManager {
     /**
      * Constructor
      *
-     * @param rowId ID of book (may be 0 or null for new)
+     * @param rowId ID of book (may be 0 for new)
      * @param src   Bundle with book data (may be null)
      */
-    public BookData(@Nullable Long rowId, @Nullable final Bundle src) {
-        // Save the row, if possible
-        if (rowId == null) {
-            mRowId = 0;
-        } else {
-            mRowId = rowId;
-        }
+    public BookData(final long rowId, @Nullable final Bundle src) {
+        mRowId = rowId;
+
         // Load from bundle or database
         if (src != null) {
             putAll(src);
@@ -110,11 +107,11 @@ public class BookData extends DataManager {
     }
 
     public String getBookshelfList() {
-        return getString(BKEY_BOOKSHELF_LIST);
+        return getString(LOCAL_BKEY_BOOKSHELF_LIST);
     }
 
-    public void setBookshelfList(String encodedList) {
-        putString(BKEY_BOOKSHELF_LIST, encodedList);
+    public void setBookshelfList(@NonNull final String encodedList) {
+        putString(LOCAL_BKEY_BOOKSHELF_LIST, encodedList);
     }
 
     /**
@@ -176,14 +173,14 @@ public class BookData extends DataManager {
     /**
      * Special Accessor
      */
-    public void setAuthorList(ArrayList<Author> list) {
+    public void setAuthorList(@NonNull final ArrayList<Author> list) {
         putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, list);
     }
 
     /**
      * Special Accessor
      */
-    public void setSeriesList(ArrayList<Series> list) {
+    public void setSeriesList(@NonNull final ArrayList<Series> list) {
         putSerializable(UniqueId.BKEY_SERIES_ARRAY, list);
     }
 
@@ -195,7 +192,7 @@ public class BookData extends DataManager {
     @Nullable
     public String getAuthorTextShort() {
         String newText;
-        ArrayList<Author> list = getAuthors();
+        List<Author> list = getAuthors();
         if (list.size() == 0) {
             newText = null;
         } else {
@@ -243,7 +240,7 @@ public class BookData extends DataManager {
     /**
      * Special Accessor
      */
-    public void setAnthologyTitles(ArrayList<AnthologyTitle> list) {
+    public void setAnthologyTitles(@NonNull final ArrayList<AnthologyTitle> list) {
         putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLE_ARRAY, list);
     }
 
@@ -281,14 +278,14 @@ public class BookData extends DataManager {
      * Convenience Accessor
      */
     public boolean isRead() {
-        return getInt(UniqueId.KEY_READ) != 0;
+        return getInt(UniqueId.KEY_BOOK_READ) != 0;
     }
 
     /**
      * Convenience Accessor
      */
     public boolean isSigned() {
-        return getInt(UniqueId.KEY_SIGNED) != 0;
+        return getInt(UniqueId.KEY_BOOK_SIGNED) != 0;
     }
 
     /**
@@ -296,7 +293,7 @@ public class BookData extends DataManager {
      *
      * @param db Database connection
      */
-    public void refreshAuthorList(CatalogueDBAdapter db) {
+    public void refreshAuthorList(@NonNull final CatalogueDBAdapter db) {
         ArrayList<Author> list = getAuthors();
         for (Author a : list) {
             db.refreshAuthor(a);
@@ -326,11 +323,11 @@ public class BookData extends DataManager {
      *
      * @return The list
      */
-    private String getBookshelfListFromDb(CatalogueDBAdapter db) {
+    private String getBookshelfListFromDb(@NonNull final CatalogueDBAdapter db) {
         try(Cursor bookshelves = db.fetchAllBookshelvesByBook(getRowId())) {
             StringBuilder bookshelves_list = new StringBuilder();
             while (bookshelves.moveToNext()) {
-                String name = bookshelves.getString(bookshelves.getColumnIndex(UniqueId.KEY_BOOKSHELF));
+                String name = bookshelves.getString(bookshelves.getColumnIndex(UniqueId.KEY_BOOKSHELF_NAME));
                 String encoded_name = ArrayUtils.encodeListItem(BookDetailsAbstractFragment.BOOKSHELF_SEPARATOR, name);
                 if (bookshelves_list.length() == 0) {
                     bookshelves_list.append(encoded_name);
@@ -356,7 +353,7 @@ public class BookData extends DataManager {
          * So, despite if being a checkbox, we use an integerValidator and use a special formatter.
          * We also store it in the tag field so that it is automatically serialized with the
          * activity. */
-        addAccessor(KEY_ANTHOLOGY, new DataAccessor() {
+        addAccessor(LOCAL_KEY_ANTHOLOGY, new DataAccessor() {
             @Override
             public Object get(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData) {
                 Integer mask = data.getInt(UniqueId.KEY_ANTHOLOGY_MASK);
@@ -384,7 +381,7 @@ public class BookData extends DataManager {
         });
 
         // Make a formatted list of bookshelves
-        addAccessor(KEY_BOOKSHELF_TEXT, new DataAccessor() {
+        addAccessor(LOCAL_KEY_BOOKSHELF_TEXT, new DataAccessor() {
             @Override
             public Object get(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData) {
                 return getBookshelfText();
@@ -421,8 +418,8 @@ public class BookData extends DataManager {
         });
 
 
-        addValidator(UniqueId.KEY_LIST_PRICE, blankOrFloatValidator);
-        addValidator(UniqueId.KEY_PAGES, blankOrIntegerValidator);
+        addValidator(UniqueId.KEY_BOOK_LIST_PRICE, blankOrFloatValidator);
+        addValidator(UniqueId.KEY_BOOK_PAGES, blankOrIntegerValidator);
     }
 
 }

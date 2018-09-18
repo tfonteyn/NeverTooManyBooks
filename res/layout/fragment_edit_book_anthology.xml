@@ -65,6 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/add_title"
         android:textSize="16sp"
-        tools:text="@string/notset" />
+        tools:text="@string/notset"
+        android:textIsSelectable="false" />
 
 </RelativeLayout>

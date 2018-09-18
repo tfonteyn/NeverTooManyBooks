@@ -31,6 +31,7 @@ import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BooksRow;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
@@ -78,8 +79,6 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import static com.eleybourn.bookcatalogue.UniqueId.KEY_BOOKSHELF;
-
 /**
  * Class to wrap all GoodReads API calls and manage an API connection.
  *
@@ -105,8 +104,10 @@ public class GoodreadsManager {
     private static final String ACCESS_SECRET = "GoodReads.AccessToken.Secret";
     private static final String REQUEST_TOKEN = "GoodReads.RequestToken.Token";
     private static final String REQUEST_SECRET = "GoodReads.RequestToken.Secret";
+
     private final static String DEV_KEY = BookCatalogueApp.getManifestString(GOODREADS_DEV_KEY);
     private final static String DEV_SECRET = BookCatalogueApp.getManifestString(GOODREADS_DEV_SECRET);
+
     // Set to true when the credentials have been successfully verified.
     private static boolean mHhasValidCredentials = false;
     // Cached when credentials have been verified.
@@ -114,7 +115,7 @@ public class GoodreadsManager {
     private static String mAccessSecret = null;
     // Local copies of user data retrieved when the credentials were verified
     private static String mUsername = null;
-    private static long mUserid = 0;
+    private static long mUserId = 0;
     // Stores the last time an API request was made to avoid breaking API rules.
     private static Long mLastRequestTime = 0L;
     // OAuth helpers
@@ -334,7 +335,7 @@ public class GoodreadsManager {
 
             // Save result...
             mUsername = authUserApi.getUsername();
-            mUserid = authUserApi.getUserid();
+            mUserId = authUserApi.getUserid();
 
         } catch (Exception e) {
             // Something went wrong. Clear the access token, mark credentials as bad, and if we used
@@ -591,7 +592,7 @@ public class GoodreadsManager {
         if (!mHhasValidCredentials)
             throw new RuntimeException("GoodReads credentials need to be validated before accessing user data");
 
-        return mUserid;
+        return mUserId;
     }
 
     /**
@@ -741,7 +742,7 @@ public class GoodreadsManager {
             // Build the list of shelves that we have in the local database for the book
             int exclusiveCount = 0;
             try(Cursor shelfCsr = db.getAllBookBookshelvesForGoodreadsCursor(bookId)) {
-                int shelfCol = shelfCsr.getColumnIndexOrThrow(KEY_BOOKSHELF);
+                int shelfCol = shelfCsr.getColumnIndexOrThrow(UniqueId.KEY_BOOKSHELF_NAME);
                 // Collect all shelf names for this book
                 while (shelfCsr.moveToNext()) {
                     final String shelfName = shelfCsr.getString(shelfCol);

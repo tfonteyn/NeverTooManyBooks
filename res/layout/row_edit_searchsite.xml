@@ -53,7 +53,8 @@
                 android:gravity="start"
                 android:singleLine="false"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="site name" />
+                tools:text="site name"
+                android:textIsSelectable="false" />
         </RelativeLayout>
 
         <ImageView

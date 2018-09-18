@@ -45,7 +45,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lines="1"
-            tools:text="123" />
+            tools:text="123"
+            android:textIsSelectable="true" />
 
         <TextView
             android:id="@+id/row_title"
@@ -55,7 +56,8 @@
             android:paddingEnd="@dimen/padding_border_double"
             android:paddingStart="@dimen/padding_border_double"
             android:paddingTop="@dimen/padding_border_double"
-            tools:text="book title" />
+            tools:text="book title"
+            android:textIsSelectable="true" />
 
         <TextView
             android:id="@+id/row_author"
@@ -65,7 +67,8 @@
             android:paddingEnd="@dimen/padding_border_double"
             android:paddingStart="@dimen/padding_border_double"
             android:paddingTop="@dimen/padding_border_double"
-            tools:text="the author" />
+            tools:text="the author"
+            android:textIsSelectable="true" />
     </LinearLayout>
 
     <LinearLayout

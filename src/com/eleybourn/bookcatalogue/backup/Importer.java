@@ -53,7 +53,7 @@ public interface Importer {
      * @author pjw
      */
     interface OnImporterListener {
-        void onProgress(String message, int position);
+        void onProgress(@NonNull final String message, final int position);
 
         boolean isCancelled();
 
@@ -67,6 +67,6 @@ public interface Importer {
      * @author pjw
      */
     interface CoverFinder {
-        void copyOrRenameCoverFile(String srcUuid, long srcId, long dstId) throws IOException;
+        void copyOrRenameCoverFile(@NonNull final String srcUuid, final long srcId, final long dstId) throws IOException;
     }
 }

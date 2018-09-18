@@ -28,43 +28,45 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import static com.eleybourn.bookcatalogue.UniqueId.BKEY_SERIES_ARRAY;
-
 public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
     private ArrayAdapter<String> mSeriesAdapter;
 
     public EditSeriesListActivity() {
-        super(BKEY_SERIES_ARRAY, R.layout.activity_edit_list_series, R.layout.row_edit_series_list);
+        super(UniqueId.BKEY_SERIES_ARRAY, R.layout.activity_edit_list_series, R.layout.row_edit_series_list);
     }
 
     @Override
-    protected void onSetupView(@NonNull View target, @NonNull Series object, int position) {
-        if (object != null) {
-            TextView dt = target.findViewById(R.id.row_series);
-            if (dt != null) {
-                dt.setText(object.getDisplayName());
+    protected void onSetupView(@NonNull View target, @NonNull Series object, final int position) {
+        TextView dt = target.findViewById(R.id.row_series);
+        if (dt != null) {
+            dt.setText(object.getDisplayName());
+        }
+        TextView st = target.findViewById(R.id.row_series_sort);
+        if (st != null) {
+            if (object.getDisplayName().equals(object.getSortName())) {
+                st.setVisibility(View.GONE);
+            } else {
+                st.setVisibility(View.VISIBLE);
+                st.setText(object.getSortName());
             }
-            TextView st = target.findViewById(R.id.row_series_sort);
-            if (st != null) {
-                if (object.getDisplayName().equals(object.getSortName())) {
-                    st.setVisibility(View.GONE);
-                } else {
-                    st.setVisibility(View.VISIBLE);
-                    st.setText(object.getSortName());
-                }
-            }
-            TextView et = target.findViewById(R.id.row_series_num);
-            if (et != null) {
-                et.setText(object.number);
-            }
+        }
+        TextView et = target.findViewById(R.id.row_series_num);
+        if (et != null) {
+            et.setText(object.number);
         }
     }
 
@@ -88,20 +90,22 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected void onAdd(View v) {
+    protected void onAdd(@NonNull final View target) {
         AutoCompleteTextView seriesField = EditSeriesListActivity.this.findViewById(R.id.series);
         String seriesTitle = seriesField.getText().toString().trim();
+
         if (!seriesTitle.isEmpty()) {
             EditText numberField = EditSeriesListActivity.this.findViewById(R.id.series_num);
-            Series series = new Series(seriesTitle, numberField.getText().toString());
-            series.id = mDb.getSeriesId(series);
-            for (Series s : mList) {
-                if (s.equals(series)) {
+            Series newSeries = new Series(seriesTitle, numberField.getText().toString());
+            // see if we can it based on the name
+            newSeries.id = mDb.getSeriesId(newSeries.name);
+            for (Series series : mList) {
+                if (series.equals(newSeries)) {
                     Toast.makeText(EditSeriesListActivity.this, getResources().getString(R.string.series_already_in_list), Toast.LENGTH_LONG).show();
                     return;
                 }
             }
-            mList.add(series);
+            mList.add(newSeries);
             mAdapter.notifyDataSetChanged();
             seriesField.setText("");
             numberField.setText("");
@@ -111,7 +115,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected void onRowClick(@NonNull View target, @NonNull final Series series, int position) {
+    protected void onRowClick(@NonNull View target, @NonNull final Series series, final int position) {
         final Dialog dialog = new StandardDialogs.BasicDialog(this);
         dialog.setContentView(R.layout.dialog_edit_book_series);
         dialog.setTitle(R.string.edit_book_series);
@@ -138,7 +142,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
                 EditText seriesNumberField = dialog.findViewById(R.id.series_num);
                 Series newSeries = new Series(newName, seriesNumberField.getText().toString());
-                confirmEditSeries(series, newSeries);
+                confirmEdit(series, newSeries);
 
                 dialog.dismiss();
             }
@@ -154,18 +158,14 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         dialog.show();
     }
 
-    private void confirmEditSeries(final Series oldSeries, final Series newSeries) {
-        // First, deal with a some special cases...
-
-        boolean nameIsSame = (newSeries.name.compareTo(oldSeries.name) == 0);
-        // Case: Unchanged.
-        if (nameIsSame && newSeries.number.compareTo(oldSeries.number) == 0) {
-            // No change to anything; nothing to do
+    private void confirmEdit(@NonNull final  Series from, @NonNull final  Series to) {
+        if (to.equals(from)) {
             return;
         }
-        if (nameIsSame) {
+
+        if ((to.name.compareTo(from.name) == 0)) {
             // Same name, different number... just update
-            oldSeries.copyFrom(newSeries);
+            from.copyFrom(to);
             Utils.pruneSeriesList(mList);
             Utils.pruneList(mDb, mList);
             mAdapter.notifyDataSetChanged();
@@ -173,20 +173,20 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         }
 
         // Get the new IDs
-        oldSeries.id = mDb.getSeriesId(oldSeries);
-        newSeries.id = mDb.getSeriesId(newSeries);
+        from.id = mDb.getSeriesId(from);
+        to.id = mDb.getSeriesId(to);
 
         // See if the old series is used in any other books.
-        long nRefs = mDb.getSeriesBookCount(oldSeries);
+        long nRefs = mDb.getSeriesBookCount(from);
         boolean oldHasOthers = nRefs > (mRowId == 0 ? 0 : 1);
 
         // Case: series is the same (but different case), or is only used in this book
-        if (newSeries.id == oldSeries.id || !oldHasOthers) {
+        if (to.id == from.id || !oldHasOthers) {
             // Just update with the most recent spelling and format
-            oldSeries.copyFrom(newSeries);
+            from.copyFrom(to);
             Utils.pruneSeriesList(mList);
             Utils.pruneList(mDb, mList);
-            mDb.sendSeries(oldSeries);
+            mDb.sendSeries(from);
             mAdapter.notifyDataSetChanged();
             return;
         }
@@ -195,7 +195,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         String format = getResources().getString(R.string.changed_series_how_apply);
         String allBooks = getResources().getString(R.string.all_books);
         String thisBook = getResources().getString(R.string.this_book);
-        String message = String.format(format, oldSeries.name, newSeries.name, allBooks);
+        String message = String.format(format, from.name, to.name, allBooks);
 
         final AlertDialog alertDialog = new AlertDialog.Builder(this).setMessage(message).create();
 
@@ -203,7 +203,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
         alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, thisBook, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                oldSeries.copyFrom(newSeries);
+                from.copyFrom(to);
                 Utils.pruneSeriesList(mList);
                 Utils.pruneList(mDb, mList);
                 mAdapter.notifyDataSetChanged();
@@ -213,8 +213,8 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
         alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                mDb.globalReplaceSeries(oldSeries, newSeries);
-                oldSeries.copyFrom(newSeries);
+                mDb.globalReplaceSeries(from, to);
+                from.copyFrom(to);
                 Utils.pruneSeriesList(mList);
                 Utils.pruneList(mDb, mList);
                 mAdapter.notifyDataSetChanged();

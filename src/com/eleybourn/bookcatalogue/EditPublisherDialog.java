@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,13 +40,13 @@ public class EditPublisherDialog {
     private final CatalogueDBAdapter mDb;
     private final Runnable mOnChanged;
 
-    EditPublisherDialog(Context context, CatalogueDBAdapter db, final Runnable onChanged) {
+    EditPublisherDialog(@NonNull final Context context, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
         mDb = db;
         mContext = context;
         mOnChanged = onChanged;
     }
 
-    public void edit(final Publisher publisher) {
+    public void edit(@NonNull final Publisher publisher) {
         final Dialog dialog = new StandardDialogs.BasicDialog(mContext);
         dialog.setContentView(R.layout.dialog_edit_publisher);
         dialog.setTitle(R.string.edit_publisher_details);
@@ -80,17 +81,14 @@ public class EditPublisherDialog {
         dialog.show();
     }
 
-    private void confirmEdit(final Publisher oldPublisher, final Publisher newPublisher) {
-        // First, deal with a some special cases...
+    private void confirmEdit(@NonNull final Publisher from, @NonNull final Publisher to) {
 
-        // Case: Unchanged.
-        if (newPublisher.name.compareTo(oldPublisher.name) == 0) {
-            // No change; nothing to do
+        if (to.equals(from)) {
             return;
         }
 
-        mDb.globalReplacePublisher(oldPublisher, newPublisher);
-        oldPublisher.copyFrom(newPublisher);
+        mDb.globalReplacePublisher(from, to);
+        from.copyFrom(to);
 
         mOnChanged.run();
     }

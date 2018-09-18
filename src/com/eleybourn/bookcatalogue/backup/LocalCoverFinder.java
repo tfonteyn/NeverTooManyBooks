@@ -68,6 +68,9 @@ public class LocalCoverFinder implements Importer.CoverFinder {
         }
 
     }
+    private File findExternalCover(final long externalId) {
+        return findExternalCover(Long.toString(externalId));
+    }
 
     private File findExternalCover(@NonNull final String name) {
         // Find the original, if present.
@@ -185,14 +188,12 @@ public class LocalCoverFinder implements Importer.CoverFinder {
      * @param newId      The new file ID
      */
     private void renameCoverImageIfMissing(final long externalId, final long newId) {
-        File orig = findExternalCover(Long.toString(externalId));
+        File orig = findExternalCover(externalId);
         // Nothing to copy?
         if (orig == null || !orig.exists() || orig.length() == 0)
             return;
 
-        String newUuid = mDb.getBookUuid(newId);
-
-        renameFileToCoverImageIfMissing(orig, newUuid);
+        renameFileToCoverImageIfMissing(orig, mDb.getBookUuid(newId));
     }
 
     /**
@@ -203,14 +204,13 @@ public class LocalCoverFinder implements Importer.CoverFinder {
      * @param newId      The new file ID
      */
     private void copyCoverImageIfMissing(final long externalId, final long newId) throws IOException {
-        File orig = findExternalCover(Long.toString(externalId));
+        File orig = findExternalCover(externalId);
         // Nothing to copy?
-        if (orig == null || !orig.exists() || orig.length() == 0)
+        if (orig == null || !orig.exists() || orig.length() == 0) {
             return;
+        }
 
-        String newUuid = mDb.getBookUuid(newId);
-
-        copyFileToCoverImageIfMissing(orig, newUuid);
+        copyFileToCoverImageIfMissing(orig, mDb.getBookUuid(newId));
     }
 
     /**
@@ -220,8 +220,9 @@ public class LocalCoverFinder implements Importer.CoverFinder {
     private void copyCoverImageIfMissing(@NonNull final String uuid) throws IOException {
         File orig = findExternalCover(uuid);
         // Nothing to copy?
-        if (orig == null || !orig.exists())
+        if (orig == null || !orig.exists()) {
             return;
+        }
 
         copyFileToCoverImageIfMissing(orig, uuid);
     }

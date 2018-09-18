@@ -33,7 +33,8 @@
         android:layout_toStartOf="@id/frame"
         android:paddingTop="@dimen/padding_border"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:text="some name" />
+        tools:text="some name"
+        android:textIsSelectable="true" />
 
     <TextView
         android:id="@+id/value"
@@ -45,7 +46,8 @@
         android:paddingEnd="@dimen/padding_border"
         android:paddingStart="@dimen/padding_border"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        tools:text="some value" />
+        tools:text="some value"
+        android:textIsSelectable="true" />
 
     <View style="@style/listDividerHorizontal"/>
 </RelativeLayout>
