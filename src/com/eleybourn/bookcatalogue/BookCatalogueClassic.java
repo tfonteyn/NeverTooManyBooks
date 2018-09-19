@@ -70,7 +70,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import com.eleybourn.bookcatalogue.widgets.FastScrollExpandableListView;
 
-import net.philipwarner.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 
 import java.util.ArrayList;
 
@@ -1210,7 +1210,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			// get a QueueManager and queue the task.
 			QueueManager qm = BookCatalogueApp.getQueueManager();
 			SendOneBookTask task = new SendOneBookTask(info.id);
-			qm.enqueueTask(task, BCQueueManager.QUEUE_MAIN, 0);
+			qm.enqueueTask(task, BCQueueManager.QUEUE_MAIN);
 			return true;
 
 		case EDIT_SERIES_ID:

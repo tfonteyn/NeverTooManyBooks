@@ -29,7 +29,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
 
-import net.philipwarner.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 
 /**
  * Simple class to run in background and verify goodreads credentials then

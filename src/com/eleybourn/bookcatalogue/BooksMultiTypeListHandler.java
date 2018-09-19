@@ -65,7 +65,7 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
-import net.philipwarner.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 
 import java.util.ArrayList;
 
@@ -452,7 +452,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 // get a QueueManager and queue the task.
                 QueueManager qm = BookCatalogueApp.getQueueManager();
                 SendOneBookTask task = new SendOneBookTask(rowView.getBookId());
-                qm.enqueueTask(task, BCQueueManager.QUEUE_MAIN, 0);
+                qm.enqueueTask(task, BCQueueManager.QUEUE_MAIN);
                 return true;
 
             case R.id.MENU_SERIES_EDIT: {

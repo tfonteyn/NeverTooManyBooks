@@ -17,7 +17,7 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTaskAbstract;
 
-import net.philipwarner.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 
 public class GoodreadsUtils {
 	/**
@@ -109,7 +109,7 @@ public class GoodreadsUtils {
 				}
 
 				if (!fragment.isCancelled()) {
-					QueueManager.getQueueManager().enqueueTask(new ImportAllTask(isSync), BCQueueManager.QUEUE_MAIN, 0);
+					QueueManager.getQueueManager().enqueueTask(new ImportAllTask(isSync), BCQueueManager.QUEUE_MAIN);
 					fragment.showToast(fragment.getString(R.string.task_has_been_queued_in_background));
 				}
 			}
@@ -162,7 +162,7 @@ public class GoodreadsUtils {
 			public void run(@NonNull SimpleTaskQueueProgressFragment fragment, @NonNull SimpleTaskContext taskContext) {
 				int msg = checkCanSendToGoodreads();
 				if (msg == 0) {
-					QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(updatesOnly), BCQueueManager.QUEUE_MAIN, 0);
+					QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(updatesOnly), BCQueueManager.QUEUE_MAIN);
 					msg = R.string.task_has_been_queued_in_background;
 				}
 				setState(msg);

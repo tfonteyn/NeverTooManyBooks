@@ -36,7 +36,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.ExportDis
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import net.philipwarner.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 
 /**
  * Task to send a single books details to goodreads.

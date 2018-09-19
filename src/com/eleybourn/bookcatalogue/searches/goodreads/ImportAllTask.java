@@ -46,7 +46,7 @@ import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import net.philipwarner.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -125,7 +125,7 @@ class ImportAllTask extends GenericTask {
             // If it's a sync job, then start the 'send' part and save last syn date
             if (mIsSync) {
                 GoodreadsManager.setLastSyncDate(mStartDate);
-                QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(true), BCQueueManager.QUEUE_MAIN, 0);
+                QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(true), BCQueueManager.QUEUE_MAIN);
             }
             return ok;
         } finally {

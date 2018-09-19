@@ -33,12 +33,12 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
-import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
-import net.philipwarner.taskqueue.ContextDialogItem;
-import net.philipwarner.taskqueue.QueueManager;
-import net.philipwarner.taskqueue.RunnableTask;
-import net.philipwarner.taskqueue.Task;
-import net.philipwarner.taskqueue.TasksCursor;
+import com.eleybourn.bookcatalogue.taskqueue.BindableItemSQLiteCursor;
+import com.eleybourn.bookcatalogue.taskqueue.ContextDialogItem;
+import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.taskqueue.RunnableTask;
+import com.eleybourn.bookcatalogue.taskqueue.Task;
+import com.eleybourn.bookcatalogue.taskqueue.TasksCursor;
 
 import java.text.DateFormat;
 import java.util.ArrayList;

@@ -29,10 +29,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
-import net.philipwarner.taskqueue.BindableItemCursorAdapter;
-import net.philipwarner.taskqueue.BindableItemCursorAdapter.BindableItemBinder;
-import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
-import net.philipwarner.taskqueue.ContextDialogItem;
+import com.eleybourn.bookcatalogue.taskqueue.BindableItemSQLiteCursor;
+import com.eleybourn.bookcatalogue.taskqueue.ContextDialogItem;
+
+import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursorAdapter;
+import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursorAdapter.BindableItemBinder;
 
 import java.util.ArrayList;
 
@@ -87,10 +88,6 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Add handlers for 'Save' and 'Cancel'
-        //setupListener(R.id.confirm, mSaveListener);
-        //setupListener(R.id.cancel, mCancelListener);
-
         mBindableItems = getBindableItemCursor(savedInstanceState);
 
         // Set up list handling
@@ -129,16 +126,6 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
                                         @SuppressWarnings("unused") int position,
                                         @SuppressWarnings("unused") long id) {
         return false;
-    }
-
-    /**
-     * Utility routine to display an array of ContextDialogItems in an alert.
-     *
-     * @param title Title of Alert
-     * @param items Items to display
-     */
-    protected void showContextDialogue(int title, ArrayList<ContextDialogItem> items) {
-        showContextDialogue(getResources().getString(title), items);
     }
 
     /**

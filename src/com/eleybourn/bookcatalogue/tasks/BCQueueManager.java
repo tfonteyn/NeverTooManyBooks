@@ -27,10 +27,10 @@ import android.widget.AdapterView;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 
-import net.philipwarner.taskqueue.ContextDialogItem;
-import net.philipwarner.taskqueue.LegacyEvent;
-import net.philipwarner.taskqueue.LegacyTask;
-import net.philipwarner.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.taskqueue.ContextDialogItem;
+import com.eleybourn.bookcatalogue.taskqueue.LegacyEvent;
+import com.eleybourn.bookcatalogue.taskqueue.LegacyTask;
+import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 
 import java.util.ArrayList;
 
@@ -64,20 +64,6 @@ public class BCQueueManager extends QueueManager {
         initializeQueue(QUEUE_MAIN);
         initializeQueue(QUEUE_SMALL_JOBS);
     }
-
-//	/**
-//	 * Create the queue we need, if they do not already exist.
-//	 * 
-//	 * main: long-running tasks, or tasks that can just wait
-//	 * small_jobs: trivial background tasks that will only take a few seconds.
-//	 */
-//	@Override
-//    public void onCreate() {
-//		super.onCreate();
-//
-//		initializeQueue(QUEUE_MAIN);
-//		initializeQueue(QUEUE_SMALL_JOBS);
-//	}
 
     /**
      * Return a localized LegacyEvent for the passed blob.

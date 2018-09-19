@@ -27,7 +27,7 @@ import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 
-import net.philipwarner.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 
 /**
  * Trivial Activity to handle the callback URI; while using a broadcast receiver would be nicer, 
@@ -55,7 +55,7 @@ public class GoodreadsAuthorizationActivity extends BookCatalogueActivity {
 
 		    // Handle the auth response by passing it off to a background task to check.
 		    GoodreadsAuthorizationResultCheck task = new GoodreadsAuthorizationResultCheck();
-		    QueueManager.getQueueManager().enqueueTask(task, BCQueueManager.QUEUE_SMALL_JOBS, 0);
+		    QueueManager.getQueueManager().enqueueTask(task, BCQueueManager.QUEUE_SMALL_JOBS);
 		}
 
 		// Bring the main app task back to the top

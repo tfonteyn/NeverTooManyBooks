@@ -33,19 +33,19 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
+import com.eleybourn.bookcatalogue.taskqueue.BindableItemSQLiteCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
-import net.philipwarner.taskqueue.BindableItem;
-import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
-import net.philipwarner.taskqueue.ContextDialogItem;
-import net.philipwarner.taskqueue.Event;
-import net.philipwarner.taskqueue.Listeners.EventActions;
-import net.philipwarner.taskqueue.Listeners.OnEventChangeListener;
-import net.philipwarner.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.taskqueue.BindableItem;
+import com.eleybourn.bookcatalogue.taskqueue.ContextDialogItem;
+import com.eleybourn.bookcatalogue.taskqueue.Event;
+import com.eleybourn.bookcatalogue.taskqueue.Listeners.EventActions;
+import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnEventChangeListener;
+import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 
 import java.util.ArrayList;
 
@@ -188,7 +188,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         event.addContextMenuItems(this, parent, v, position, id, items, mDb);
 
         if (items.size() > 0) {
-            showContextDialogue(R.string.select_an_action, items);
+            showContextDialogue(getResources().getString(R.string.select_an_action), items);
         }
     }
 

@@ -183,7 +183,7 @@
         <activity android:name=".searches.librarything.AdministrationLibraryThing" />
 
         <!-- AdministrationFunctions: Background tasks -->
-        <activity android:name=".TaskListActivity" />
+        <activity android:name=".tasks.TaskListActivity" />
 
         <!-- AdministrationFunctions: Search configuration -->
         <activity

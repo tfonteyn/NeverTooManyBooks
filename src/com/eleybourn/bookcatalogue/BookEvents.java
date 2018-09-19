@@ -43,11 +43,11 @@ import com.eleybourn.bookcatalogue.searches.goodreads.SendOneBookTask;
 import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
-import net.philipwarner.taskqueue.BindableItemSQLiteCursor;
-import net.philipwarner.taskqueue.ContextDialogItem;
-import net.philipwarner.taskqueue.Event;
-import net.philipwarner.taskqueue.EventsCursor;
-import net.philipwarner.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.taskqueue.BindableItemSQLiteCursor;
+import com.eleybourn.bookcatalogue.taskqueue.ContextDialogItem;
+import com.eleybourn.bookcatalogue.taskqueue.Event;
+import com.eleybourn.bookcatalogue.taskqueue.EventsCursor;
+import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -301,7 +301,7 @@ public class BookEvents {
             QueueManager qm = BookCatalogueApp.getQueueManager();
             SendOneBookTask task = new SendOneBookTask(mBookId);
             // TODO: MAKE IT USE THE SAME QUEUE? Why????
-            qm.enqueueTask(task, BCQueueManager.QUEUE_SMALL_JOBS, 0);
+            qm.enqueueTask(task, BCQueueManager.QUEUE_SMALL_JOBS);
             qm.deleteEvent(this.getId());
         }
 
