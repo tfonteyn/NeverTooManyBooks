@@ -1808,6 +1808,7 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @return Array of row details, including absolute positions and visibility. Null if not present
      */
+    @Nullable
     public ArrayList<BookRowInfo> getBookAbsolutePositions(final long bookId) {
         String sql = "select " + mNavTable.dot(DOM_ID) + ", " + mNavTable.dot(DOM_VISIBLE) + " From " + mListTable + " bl "
                 + mListTable.join(mNavTable) + " Where " + mListTable.dot(DOM_BOOK_ID) + " = " + bookId;

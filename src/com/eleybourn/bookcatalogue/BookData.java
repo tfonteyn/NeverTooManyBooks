@@ -49,7 +49,7 @@ import java.util.List;
 public class BookData extends DataManager {
 
     /** Key for special field */
-    public static final String LOCAL_KEY_ANTHOLOGY = "+IsAnthology";
+    public static final String KEY_IS_ANTHOLOGY = "+IsAnthology";
     /** Key for special field */
     private static final String LOCAL_BKEY_BOOKSHELF_LIST = "+BookshelfList";
     /** Key for special field */
@@ -354,7 +354,7 @@ public class BookData extends DataManager {
          * So, despite if being a checkbox, we use an integerValidator and use a special formatter.
          * We also store it in the tag field so that it is automatically serialized with the
          * activity. */
-        addAccessor(LOCAL_KEY_ANTHOLOGY, new DataAccessor() {
+        addAccessor(KEY_IS_ANTHOLOGY, new DataAccessor() {
             @Override
             public Object get(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData) {
                 Integer mask = data.getInt(UniqueId.KEY_ANTHOLOGY_MASK);

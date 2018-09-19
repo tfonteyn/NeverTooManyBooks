@@ -213,6 +213,7 @@ public class ArrayUtils<T> {
         return (ArrayList<T>) i.getSerializableExtra(key);
     }
 
+
     /**
      * Decode a text list separated by '|' and encoded by encodeListItem.
      *

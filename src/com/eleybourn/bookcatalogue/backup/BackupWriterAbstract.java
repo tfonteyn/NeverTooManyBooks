@@ -133,7 +133,10 @@ public abstract class BackupWriterAbstract implements BackupWriter {
      * It IS convenient to do it here because we can capture the progress, but we could also
      * have writer.putBooks(exporter, listener) as the method.
      */
-    private File generateBooks(@NonNull final BackupWriterListener listener, final int backupFlags, final Date since, final int numCovers) throws IOException {
+    private File generateBooks(@NonNull final BackupWriterListener listener,
+                               final int backupFlags,
+                               @Nullable final Date since,
+                               final int numCovers) throws IOException {
         // This is an estimate only; we actually don't know how many covers
         // there are in the backup.
         listener.setMax((int) (mDb.getBookCount() * 2 + 1));

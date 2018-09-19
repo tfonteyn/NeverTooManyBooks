@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -22,6 +22,8 @@ package com.eleybourn.bookcatalogue.booklist;
 
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
@@ -34,17 +36,17 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ABSOLUTE_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ROW_KIND;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LEVEL;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LEVEL;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ROW_KIND;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
@@ -53,353 +55,394 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE
 
 /**
  * RowView object for the BooklistCursor.
- * 
+ *
  * Implements methods to perform common tasks on the 'current' row of the cursor.
- * 
+ *
  * @author Philip Warner
  */
 public class BooklistRowView {
-	/** ID counter */
-	private static Integer mBooklistRowViewIdCounter = 0;
-	/** Underlying cursor */
-	private final Cursor mCursor;
-	/** Underlying builder object */
-	private final BooklistBuilder mBuilder;
-	/** Max size of thumbnails based on preferences at object creation time */
-	private final int mMaxThumbnailWidth;
-	/** Max size of thumbnails based on preferences at object creation time */
-	private final int mMaxThumbnailHeight;
-	/** Internal ID for this RowView */
-	private final long mId;
+    /** ID counter */
+    private static Integer mBooklistRowViewIdCounter = 0;
+    /** Underlying cursor */
+    private final Cursor mCursor;
+    /** Underlying builder object */
+    private final BooklistBuilder mBuilder;
+    /** Max size of thumbnails based on preferences at object creation time */
+    private final int mMaxThumbnailWidth;
+    /** Max size of thumbnails based on preferences at object creation time */
+    private final int mMaxThumbnailHeight;
+    /** Internal ID for this RowView */
+    private final long mId;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param c			Underlying Cursor
-	 * @param builder	Underlying Builder
-	 */
-	BooklistRowView(BooklistCursor c, BooklistBuilder builder) {
-		// Allocate ID
-		synchronized(mBooklistRowViewIdCounter) {
-			mId = ++mBooklistRowViewIdCounter;
-		}
+    private int mLevel1Col = -2;
+    private int mLevel2Col = -2;
+    private int mAbsPosCol = -2;
+    private int mBookIdCol = -2;
+    private int mBookUuidCol = -2;
+    private int mSeriesIdCol = -2;
+    private int mAuthorIdCol = -2;
+    private int mKindCol = -2;
+    private int mTitleCol = -2;
+    private int mPubMonthCol = -2;
+    private int mAuthorCol = -2;
+    private int mPublisherCol = -2;
+    private int mLanguageCol = -2;
+    private int mLevelCol = -2;
+    private int mFormatCol = -2;
+    private int mGenreCol = -2;
+    private int mLocationCol = -2;
+    private int mTitleLetterCol = -2;
+    private int mSeriesNameCol = -2;
+    private int mSeriesNumberCol = -2;
+    private int mReadCol = -2;
 
-		// Save underlying objects.
-		mCursor = c;
-		mBuilder = builder;
+    /**
+     * Constructor
+     *
+     * @param c       Underlying Cursor
+     * @param builder Underlying Builder
+     */
+    BooklistRowView(@NonNull final BooklistCursor c, @NonNull final BooklistBuilder builder) {
+        // Allocate ID
+        synchronized (mBooklistRowViewIdCounter) {
+            mId = ++mBooklistRowViewIdCounter;
+        }
 
-		final int extras = mBuilder.getStyle().getExtras();
+        // Save underlying objects.
+        mCursor = c;
+        mBuilder = builder;
 
-		// Get thumbnail size
-		int maxSize = computeThumbnailSize(extras);
-		mMaxThumbnailWidth = maxSize;
-		mMaxThumbnailHeight = maxSize;
-	}
+        final int extras = mBuilder.getStyle().getExtras();
 
-	/**
-	 * Constructor
-	 * 
-	 * @param c			Underlying Cursor
-	 * @param builder	Underlying Builder
-	 */
-	BooklistRowView(BooklistPseudoCursor c, BooklistBuilder builder) {
-		// Allocate ID
-		synchronized(mBooklistRowViewIdCounter) {
-			mId = ++mBooklistRowViewIdCounter;
-		}
+        // Get thumbnail size
+        int maxSize = computeThumbnailSize(extras);
+        mMaxThumbnailWidth = maxSize;
+        mMaxThumbnailHeight = maxSize;
+    }
 
-		// Save underlying objects.
-		mCursor = c;
+    /**
+     * Constructor
+     *
+     * @param c       Underlying Cursor
+     * @param builder Underlying Builder
+     */
+    BooklistRowView(@NonNull final BooklistPseudoCursor c, @NonNull final BooklistBuilder builder) {
+        // Allocate ID
+        synchronized (mBooklistRowViewIdCounter) {
+            mId = ++mBooklistRowViewIdCounter;
+        }
 
-		mBuilder = builder;
+        // Save underlying objects.
+        mCursor = c;
 
-		final int extras = mBuilder.getStyle().getExtras();
+        mBuilder = builder;
 
-		// Get thumbnail size
-		int maxSize = computeThumbnailSize(extras);
-		mMaxThumbnailWidth = maxSize;
-		mMaxThumbnailHeight = maxSize;
-	}
+        final int extras = mBuilder.getStyle().getExtras();
 
-	/**
-	 * Return the thumbnail size in DP.
-	 * 
-	 * @param extras	Flags for style
-	 * 
-	 * @return	Requested thumbnail size
-	 */
-	private int computeThumbnailSize(int extras) {
-		int maxSize;
+        // Get thumbnail size
+        int maxSize = computeThumbnailSize(extras);
+        mMaxThumbnailWidth = maxSize;
+        mMaxThumbnailHeight = maxSize;
+    }
 
-		if ( (extras & BooklistStyle.EXTRAS_THUMBNAIL_LARGE) != 0) {
-			maxSize = 90;
-		} else {
-			maxSize = 60;
-		}
+    /**
+     * Return the thumbnail size in DP.
+     *
+     * @param extras Flags for style
+     *
+     * @return Requested thumbnail size
+     */
+    private int computeThumbnailSize(final int extras) {
+        int maxSize;
 
-		//FIXME: can we use {@link ImageUtils} instead ?
-		DisplayMetrics metrics = BookCatalogueApp.getAppContext().getResources().getDisplayMetrics();
-		maxSize = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, maxSize, metrics));		
-		return maxSize;
-	}
+        if ((extras & BooklistStyle.EXTRAS_THUMBNAIL_LARGE) != 0) {
+            maxSize = 90;
+        } else {
+            maxSize = 60;
+        }
 
-	/**
-	 * Accessor
-	 */
-	public BooklistStyle getStyle() {
-		return mBuilder.getStyle();
-	}
+        //FIXME: can we use {@link ImageUtils} instead ?
+        DisplayMetrics metrics = BookCatalogueApp.getAppContext().getResources().getDisplayMetrics();
+        maxSize = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, maxSize, metrics));
+        return maxSize;
+    }
 
-	public long getId() {
-		return mId;
-	}
+    /**
+     * Accessor
+     */
+    @NonNull
+    public BooklistStyle getStyle() {
+        return mBuilder.getStyle();
+    }
 
-	public int getMaxThumbnailHeight() {
-		return mMaxThumbnailHeight;			
-	}
+    public long getId() {
+        return mId;
+    }
 
-	public int getMaxThumbnailWidth() {
-		return mMaxThumbnailWidth;
-	}
+    public int getMaxThumbnailHeight() {
+        return mMaxThumbnailHeight;
+    }
 
-	/**
-	 * Checks if list displays series numbers anywhere.
-	 */
-	public boolean hasSeries() {
-		return hasColumn(UniqueId.KEY_SERIES_NUM);
-	}
+    public int getMaxThumbnailWidth() {
+        return mMaxThumbnailWidth;
+    }
 
-	/**
-	 * Query underlying cursor for column index.
-	 */
-	public int getColumnIndex(String columnName) {
-		return mCursor.getColumnIndex(columnName);
-	}
+    /**
+     * Checks if list displays series numbers anywhere.
+     */
+    public boolean hasSeries() {
+        return hasColumn(UniqueId.KEY_SERIES_NUM);
+    }
 
-	/**
-	 * Get string from underlying cursor given a column index.
-	 */
-	public String getString(int columnIndex) {
-		return mCursor.getString(columnIndex);
-	}
+    /**
+     * Query underlying cursor for column index.
+     */
+    public int getColumnIndex(@NonNull final String columnName) {
+        return mCursor.getColumnIndex(columnName);
+    }
 
-	/**
-	 * Get the text associated with the highest level group for the current item.
-	 */
-	private int mLevel1Col = -2;
-	public String getLevel1Data() {
-		if (mLevel1Col < 0) {
-			final String name = mBuilder.getDisplayDomain(1).name;
-			mLevel1Col = mCursor.getColumnIndex(name);
-			if (mLevel1Col < 0)
-				throw new RuntimeException("Column " + name + " not present in cursor");
-		}
-		return formatRowGroup(0, mCursor.getString(mLevel1Col));
-	}
+    /**
+     * Get string from underlying cursor given a column index.
+     */
+    @NonNull
+    public String getString(final int columnIndex) {
+        return mCursor.getString(columnIndex);
+    }
 
-	/**
-	 * Get the text associated with the second-highest level group for the current item.
-	 */
-	private int mLevel2Col = -2;
-	public String getLevel2Data() {
-		if (mBuilder.getStyle().size() < 2)
-			return null;
-	
-		if (mLevel2Col < 0) {
-			final String name = mBuilder.getDisplayDomain(2).name;
-			mLevel2Col = mCursor.getColumnIndex(name);
-			if (mLevel2Col < 0)
-				throw new RuntimeException("Column " + name + " not present in cursor");
-		}
-		return formatRowGroup(1, mCursor.getString(mLevel2Col));
-	}
+    /**
+     * Get the text associated with the highest level group for the current item.
+     */
+    @NonNull
+    public String getLevel1Data() {
+        if (mLevel1Col < 0) {
+            final String name = mBuilder.getDisplayDomain(1).name;
+            mLevel1Col = mCursor.getColumnIndex(name);
+            if (mLevel1Col < 0) {
+                throw new RuntimeException("Column " + name + " not present in cursor");
+            }
+        }
+        return formatRowGroup(0, mCursor.getString(mLevel1Col));
+    }
 
-	/**
-	 * Perform any special formatting for a row group.
-	 * 
-	 * @param level		Level of the row group
-	 * @param s			Source value
-	 * @return			Formatted string
-	 */
-	private String formatRowGroup(int level, String s) {
-		switch(mBuilder.getStyle().getGroupAt(level).kind) {
-		case RowKinds.ROW_KIND_MONTH_ADDED:
-		case RowKinds.ROW_KIND_MONTH_PUBLISHED:
-		case RowKinds.ROW_KIND_MONTH_READ:
-		case RowKinds.ROW_KIND_UPDATE_MONTH:
-			try {
-				int i = Integer.parseInt(s);
-				// If valid, get the name
-				if (i > 0 && i <= 12) {
-					// Create static formatter if necessary
-					s = DateUtils.getMonthName(i);
-				}				
-			} catch (Exception ignored) {}
-			break;
+    /**
+     * Get the text associated with the second-highest level group for the current item.
+     */
+    @Nullable
+    public String getLevel2Data() {
+        if (mBuilder.getStyle().size() < 2) {
+            return null;
+        }
 
-		case RowKinds.ROW_KIND_RATING:
-			try {
-				int i = Integer.parseInt(s);
-				// If valid, get the name
-				if (i >= 0 && i <= 5) {
-					Resources r = BookCatalogueApp.getAppContext().getResources();
-					s = r.getQuantityString(R.plurals.n_stars, i, i);
-				}				
-			} catch (Exception ignored) {}
-			break;
-			
-		default:
-			break;
-		}
-		return s;
-	}
+        if (mLevel2Col < 0) {
+            final String name = mBuilder.getDisplayDomain(2).name;
+            mLevel2Col = mCursor.getColumnIndex(name);
+            if (mLevel2Col < 0) {
+                throw new RuntimeException("Column " + name + " not present in cursor");
+            }
+        }
+        return formatRowGroup(1, mCursor.getString(mLevel2Col));
+    }
 
-	/**
-	 * Check if a given column is present in underlying cursor.
-	 */
-	private boolean hasColumn(String name) {
-		return mCursor.getColumnIndex(name) >= 0;
-	}
+    /**
+     * Perform any special formatting for a row group.
+     *
+     * @param level Level of the row group
+     * @param s     Source value
+     *
+     * @return Formatted string
+     */
+    @NonNull
+    private String formatRowGroup(final int level, @NonNull final String s) {
+        switch (mBuilder.getStyle().getGroupAt(level).kind) {
+            case RowKinds.ROW_KIND_MONTH_ADDED:
+            case RowKinds.ROW_KIND_MONTH_PUBLISHED:
+            case RowKinds.ROW_KIND_MONTH_READ:
+            case RowKinds.ROW_KIND_UPDATE_MONTH:
+                try {
+                    int i = Integer.parseInt(s);
+                    // If valid, get the name
+                    if (i > 0 && i <= 12) {
+                        // Create static formatter if necessary
+                        return DateUtils.getMonthName(i);
+                    }
+                } catch (Exception ignored) {
+                }
+                break;
 
-	/**
-	 * Get the 'absolute position' for the current row. This is a value
-	 * generated by the builder object.
-	 */
-	private int mAbsPosCol = -2;
-	public int getAbsolutePosition() {
-		if (mAbsPosCol < 0) {
-			final String name = DOM_ABSOLUTE_POSITION.name;
-			mAbsPosCol = mCursor.getColumnIndex(name);
-			if (mAbsPosCol < 0)
-				throw new RuntimeException("Column " + name + " not present in cursor");
-		}
-		return mCursor.getInt(mAbsPosCol);
-	}
+            case RowKinds.ROW_KIND_RATING:
+                try {
+                    int i = Integer.parseInt(s);
+                    // If valid, get the name
+                    if (i >= 0 && i <= 5) {
+                        Resources r = BookCatalogueApp.getAppContext().getResources();
+                        return r.getQuantityString(R.plurals.n_stars, i, i);
+                    }
+                } catch (Exception ignored) {
+                }
+                break;
 
-	/**
-	 * Convenience function to retrieve column value.
-	 */
-	private int mBookIdCol = -2;
-	public long getBookId() {
-		if (mBookIdCol < 0) {
-			mBookIdCol = mCursor.getColumnIndex(DOM_BOOK_ID.name);
-			if (mBookIdCol < 0)
-				throw new RuntimeException("Column " + DOM_BOOK_ID + " not present in cursor");
-		}
-		return mCursor.getLong(mBookIdCol);
-	}
+            default:
+                break;
+        }
+        return s;
+    }
 
-	/**
-	 * Convenience function to retrieve column value.
-	 */
-	private int mBookUuidCol = -2;
-	public String getBookUuid() {
-		if (mBookUuidCol < 0) {
-			mBookUuidCol = mCursor.getColumnIndex(DOM_BOOK_UUID.name);
-			if (mBookUuidCol < 0)
-				throw new RuntimeException("Column " + DOM_BOOK_UUID + " not present in cursor");
-		}
-		return mCursor.getString(mBookUuidCol);
-	}
+    /**
+     * Check if a given column is present in underlying cursor.
+     */
+    private boolean hasColumn(@NonNull final String name) {
+        return mCursor.getColumnIndex(name) >= 0;
+    }
 
-	/**
-	 * Convenience function to retrieve column value.
-	 */
-	private int mSeriesIdCol = -2;
-	public long getSeriesId() {
-		if (mSeriesIdCol < 0) {
-			mSeriesIdCol = mCursor.getColumnIndex(DOM_SERIES_ID.name);
-			if (mSeriesIdCol < 0)
-				throw new RuntimeException("Column " + DOM_SERIES_ID + " not present in cursor");
-		}
-		return mCursor.getLong(mSeriesIdCol);
-	}
+    /**
+     * Get the 'absolute position' for the current row. This is a value
+     * generated by the builder object.
+     */
+    public int getAbsolutePosition() {
+        if (mAbsPosCol < 0) {
+            final String name = DOM_ABSOLUTE_POSITION.name;
+            mAbsPosCol = mCursor.getColumnIndex(name);
+            if (mAbsPosCol < 0) {
+                throw new RuntimeException("Column " + name + " not present in cursor");
+            }
+        }
+        return mCursor.getInt(mAbsPosCol);
+    }
 
-	public boolean hasSeriesId() {
-		if (mSeriesIdCol >= 0)
-			return true;
-		mSeriesIdCol = mCursor.getColumnIndex(DOM_SERIES_ID.name);
-		return (mSeriesIdCol >= 0);
-	}
-
-	/**
-	 * Convenience function to retrieve column value.
-	 */
-	private int mAuthorIdCol = -2;
-	public long getAuthorId() {
-		if (mAuthorIdCol < 0) {
-			mAuthorIdCol = mCursor.getColumnIndex(DOM_AUTHOR_ID.name);
-			if (mAuthorIdCol < 0)
-				throw new RuntimeException("Column " + DOM_AUTHOR_ID + " not present in cursor");
-		}
-		return mCursor.getLong(mAuthorIdCol);
-	}
-
-	public boolean hasAuthorId() {
-		if (mAuthorIdCol >= 0)
-			return true;
-		mAuthorIdCol = mCursor.getColumnIndex(DOM_AUTHOR_ID.name);
-		return (mAuthorIdCol >= 0);
-	}
-
-	/**
-	 * Convenience function to retrieve column value.
-	 */
-	private int mKindCol = -2;
-	public int getKind() {
-		if (mKindCol < 0) {
-			mKindCol = mCursor.getColumnIndex(DOM_ROW_KIND.name);
-			if (mKindCol < 0)
-				throw new RuntimeException("Column " + DOM_ROW_KIND + " not present in cursor");
-		}
-		return mCursor.getInt(mKindCol);
-	}
-	/**
-	 * Convenience function to retrieve column value.
-	 */
-	private int mTitleCol = -2;
-	public String getTitle() {
-		if (mTitleCol < 0) {
-			mTitleCol = mCursor.getColumnIndex(DOM_TITLE.name);
-			if (mTitleCol < 0)
-				throw new RuntimeException("Column " + DOM_TITLE + " not present in cursor");
-		}
-		//System.out.println("BooklistRowView(" + mId + ") title at " + mTitleCol + " in cursor " + mCursor.getId());
-		return mCursor.getString(mTitleCol);
-	}
-	/**
-	 * Convenience function to retrieve column value.
-	 */
-	private int mPubMonthCol = -2;
-	public String getPublicationMonth() {
-		if (mPubMonthCol < 0) {
-			mPubMonthCol = mCursor.getColumnIndex(DOM_PUBLICATION_MONTH.name);
-			if (mPubMonthCol < 0)
-				throw new RuntimeException("Column " + DOM_PUBLICATION_MONTH + " not present in cursor");
-		}
-		return mCursor.getString(mPubMonthCol);
-	}
-	/**
-	 * Convenience function to retrieve column value.
-	 */
-	private int mAuthorCol = -2;
-	public String getAuthorName() {
-		if (mAuthorCol < 0) {
-			mAuthorCol = mCursor.getColumnIndex(DOM_AUTHOR_FORMATTED.name);
-			if (mAuthorCol < 0)
-				throw new RuntimeException("Column " + DOM_AUTHOR_FORMATTED + " not present in cursor");
-		}
-		return mCursor.getString(mAuthorCol);
-	}
     /**
      * Convenience function to retrieve column value.
      */
-    private int mPublisherCol = -2;
+    public long getBookId() {
+        if (mBookIdCol < 0) {
+            mBookIdCol = mCursor.getColumnIndex(DOM_BOOK_ID.name);
+            if (mBookIdCol < 0) {
+                throw new RuntimeException("Column " + DOM_BOOK_ID + " not present in cursor");
+            }
+        }
+        return mCursor.getLong(mBookIdCol);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    @NonNull
+    public String getBookUuid() {
+        if (mBookUuidCol < 0) {
+            mBookUuidCol = mCursor.getColumnIndex(DOM_BOOK_UUID.name);
+            if (mBookUuidCol < 0) {
+                throw new RuntimeException("Column " + DOM_BOOK_UUID + " not present in cursor");
+            }
+        }
+        return mCursor.getString(mBookUuidCol);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    public long getSeriesId() {
+        if (mSeriesIdCol < 0) {
+            mSeriesIdCol = mCursor.getColumnIndex(DOM_SERIES_ID.name);
+            if (mSeriesIdCol < 0) {
+                throw new RuntimeException("Column " + DOM_SERIES_ID + " not present in cursor");
+            }
+        }
+        return mCursor.getLong(mSeriesIdCol);
+    }
+
+    public boolean hasSeriesId() {
+        if (mSeriesIdCol >= 0) {
+            return true;
+        }
+        mSeriesIdCol = mCursor.getColumnIndex(DOM_SERIES_ID.name);
+        return (mSeriesIdCol >= 0);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    public long getAuthorId() {
+        if (mAuthorIdCol < 0) {
+            mAuthorIdCol = mCursor.getColumnIndex(DOM_AUTHOR_ID.name);
+            if (mAuthorIdCol < 0) {
+                throw new RuntimeException("Column " + DOM_AUTHOR_ID + " not present in cursor");
+            }
+        }
+        return mCursor.getLong(mAuthorIdCol);
+    }
+
+    public boolean hasAuthorId() {
+        if (mAuthorIdCol >= 0) {
+            return true;
+        }
+        mAuthorIdCol = mCursor.getColumnIndex(DOM_AUTHOR_ID.name);
+        return (mAuthorIdCol >= 0);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    public int getKind() {
+        if (mKindCol < 0) {
+            mKindCol = mCursor.getColumnIndex(DOM_ROW_KIND.name);
+            if (mKindCol < 0) {
+                throw new RuntimeException("Column " + DOM_ROW_KIND + " not present in cursor");
+            }
+        }
+        return mCursor.getInt(mKindCol);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    @NonNull
+    public String getTitle() {
+        if (mTitleCol < 0) {
+            mTitleCol = mCursor.getColumnIndex(DOM_TITLE.name);
+            if (mTitleCol < 0) {
+                throw new RuntimeException("Column " + DOM_TITLE + " not present in cursor");
+            }
+        }
+        return mCursor.getString(mTitleCol);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    @NonNull
+    public String getPublicationMonth() {
+        if (mPubMonthCol < 0) {
+            mPubMonthCol = mCursor.getColumnIndex(DOM_PUBLICATION_MONTH.name);
+            if (mPubMonthCol < 0) {
+                throw new RuntimeException("Column " + DOM_PUBLICATION_MONTH + " not present in cursor");
+            }
+        }
+        return mCursor.getString(mPubMonthCol);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    @NonNull
+    public String getAuthorName() {
+        if (mAuthorCol < 0) {
+            mAuthorCol = mCursor.getColumnIndex(DOM_AUTHOR_FORMATTED.name);
+            if (mAuthorCol < 0) {
+                throw new RuntimeException("Column " + DOM_AUTHOR_FORMATTED + " not present in cursor");
+            }
+        }
+        return mCursor.getString(mAuthorCol);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    @NonNull
     public String getPublisherName() {
         if (mPublisherCol < 0) {
             mPublisherCol = mCursor.getColumnIndex(DOM_PUBLISHER.name);
-            if (mPublisherCol < 0)
+            if (mPublisherCol < 0) {
                 throw new RuntimeException("Column " + DOM_PUBLISHER + " not present in cursor");
+            }
         }
         return mCursor.getString(mPublisherCol);
     }
@@ -407,110 +450,124 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    private int mLanguageCol = -2;
+    @NonNull
     public String getLanguage() {
         if (mLanguageCol < 0) {
             mLanguageCol = mCursor.getColumnIndex(DOM_BOOK_LANGUAGE.name);
-            if (mLanguageCol < 0)
+            if (mLanguageCol < 0) {
                 throw new RuntimeException("Column " + DOM_BOOK_LANGUAGE + " not present in cursor");
+            }
         }
         return mCursor.getString(mLanguageCol);
     }
-    /**
-	 * Convenience function to retrieve column value.
-	 */
-	private int mLevelCol = -2;
-	public int getLevel() {
-		if (mLevelCol < 0) {
-			mLevelCol = mCursor.getColumnIndex(DOM_LEVEL.name);
-			if (mLevelCol < 0)
-				throw new RuntimeException("Column " + DOM_LEVEL + " not present in cursor");
-		}
-		return mCursor.getInt(mLevelCol);
-	}
-	/**
-	 * Convenience function to retrieve column value.
-	 */
-	private int mFormatCol = -2;
-	public String getFormat() {
-		if (mFormatCol < 0) {
-			mFormatCol = mCursor.getColumnIndex(DOM_BOOK_FORMAT.name);
-			if (mFormatCol < 0)
-				throw new RuntimeException("Column " + DOM_BOOK_FORMAT + " not present in cursor");
-		}
-		return mCursor.getString(mFormatCol);
-	}
-	/**
-	 * Convenience function to retrieve column value.
-	 */
-	private int mGenreCol = -2;
-	public String getGenre() {
-		if (mGenreCol < 0) {
-			mGenreCol = mCursor.getColumnIndex(DOM_BOOK_GENRE.name);
-			if (mGenreCol < 0)
-				throw new RuntimeException("Column " + DOM_BOOK_GENRE + " not present in cursor");
-		}
-		return mCursor.getString(mGenreCol);
-	}
-	/**
-	 * Convenience function to retrieve column value.
-	 */
-	private int mLocationCol = -2;
-	public String getLocation() {
-		if (mLocationCol < 0) {
-			mLocationCol = mCursor.getColumnIndex(DOM_BOOK_LOCATION.name);
-			if (mLocationCol < 0)
-				throw new RuntimeException("Column " + DOM_BOOK_LOCATION + " not present in cursor");
-		}
-		return mCursor.getString(mLocationCol);
-	}
-	/**
-	 * Convenience function to retrieve column value.
-	 */
-	private int mTitleLetterCol = -2;
-	public String getTitleLetter() {
-		if (mTitleLetterCol < 0) {
-			mTitleLetterCol = mCursor.getColumnIndex(DOM_TITLE_LETTER.name);
-			if (mTitleLetterCol < 0)
-				throw new RuntimeException("Column " + DOM_TITLE_LETTER.name + " not present in cursor");
-		}
-		return mCursor.getString(mTitleLetterCol);
-	}
 
-	/**
-	 * Convenience function to retrieve column value.
-	 */
-	private int mSeriesNameCol = -2;
-	public String getSeriesName() {
-		if (mSeriesNameCol < 0) {
-			mSeriesNameCol = mCursor.getColumnIndex(DOM_SERIES_NAME.name);
-			if (mSeriesNameCol < 0)
-				throw new RuntimeException("Column " + DOM_SERIES_NAME + " not present in cursor");
-		}
-		return mCursor.getString(mSeriesNameCol);
-	}
-	/**
-	 * Convenience function to retrieve column value.
-	 */
-	private int mSeriesNumberCol = -2;
-	public String getSeriesNumber() {
-		if (mSeriesNumberCol < 0) {
-			mSeriesNumberCol = mCursor.getColumnIndex(DOM_SERIES_NUM.name);
-			if (mSeriesNumberCol < 0)
-				throw new RuntimeException("Column " + DOM_SERIES_NUM + " not present in cursor");
-		}
-		return mCursor.getString(mSeriesNumberCol);
-	}
-	/**
-	 * Convenience function to retrieve column value.
-	 */
-	private int mReadCol = -2;
-	public boolean isRead() {
-		if (mReadCol < 0) {
-			mReadCol = mCursor.getColumnIndex(DOM_BOOK_READ.name);
-			if (mReadCol < 0)
-				throw new RuntimeException("Column " + DOM_BOOK_READ + " not present in cursor");
-		}
-		return mCursor.getLong(mReadCol) == 1;
-	}
+    /**
+     * Convenience function to retrieve column value.
+     */
+    public int getLevel() {
+        if (mLevelCol < 0) {
+            mLevelCol = mCursor.getColumnIndex(DOM_LEVEL.name);
+            if (mLevelCol < 0) {
+                throw new RuntimeException("Column " + DOM_LEVEL + " not present in cursor");
+            }
+        }
+        return mCursor.getInt(mLevelCol);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    @NonNull
+    public String getFormat() {
+        if (mFormatCol < 0) {
+            mFormatCol = mCursor.getColumnIndex(DOM_BOOK_FORMAT.name);
+            if (mFormatCol < 0) {
+                throw new RuntimeException("Column " + DOM_BOOK_FORMAT + " not present in cursor");
+            }
+        }
+        return mCursor.getString(mFormatCol);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    @NonNull
+    public String getGenre() {
+        if (mGenreCol < 0) {
+            mGenreCol = mCursor.getColumnIndex(DOM_BOOK_GENRE.name);
+            if (mGenreCol < 0) {
+                throw new RuntimeException("Column " + DOM_BOOK_GENRE + " not present in cursor");
+            }
+        }
+        return mCursor.getString(mGenreCol);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    @NonNull
+    public String getLocation() {
+        if (mLocationCol < 0) {
+            mLocationCol = mCursor.getColumnIndex(DOM_BOOK_LOCATION.name);
+            if (mLocationCol < 0) {
+                throw new RuntimeException("Column " + DOM_BOOK_LOCATION + " not present in cursor");
+            }
+        }
+        return mCursor.getString(mLocationCol);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    @NonNull
+    public String getTitleLetter() {
+        if (mTitleLetterCol < 0) {
+            mTitleLetterCol = mCursor.getColumnIndex(DOM_TITLE_LETTER.name);
+            if (mTitleLetterCol < 0) {
+                throw new RuntimeException("Column " + DOM_TITLE_LETTER.name + " not present in cursor");
+            }
+        }
+        return mCursor.getString(mTitleLetterCol);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    @NonNull
+    public String getSeriesName() {
+        if (mSeriesNameCol < 0) {
+            mSeriesNameCol = mCursor.getColumnIndex(DOM_SERIES_NAME.name);
+            if (mSeriesNameCol < 0) {
+                throw new RuntimeException("Column " + DOM_SERIES_NAME + " not present in cursor");
+            }
+        }
+        return mCursor.getString(mSeriesNameCol);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    @NonNull
+    public String getSeriesNumber() {
+        if (mSeriesNumberCol < 0) {
+            mSeriesNumberCol = mCursor.getColumnIndex(DOM_SERIES_NUM.name);
+            if (mSeriesNumberCol < 0) {
+                throw new RuntimeException("Column " + DOM_SERIES_NUM + " not present in cursor");
+            }
+        }
+        return mCursor.getString(mSeriesNumberCol);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    public boolean isRead() {
+        if (mReadCol < 0) {
+            mReadCol = mCursor.getColumnIndex(DOM_BOOK_READ.name);
+            if (mReadCol < 0) {
+                throw new RuntimeException("Column " + DOM_BOOK_READ + " not present in cursor");
+            }
+        }
+        return mCursor.getLong(mReadCol) == 1;
+    }
 }

@@ -109,7 +109,7 @@ public class SendAllBooksTask extends GenericTask {
 
 		// Ensure we are allowed
 		if (!grManager.hasValidCredentials()) {
-			throw new NotAuthorizedException(null);
+			throw new NotAuthorizedException();
 		}
 
 		db.open();

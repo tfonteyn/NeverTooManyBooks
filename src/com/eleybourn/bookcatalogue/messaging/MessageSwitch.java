@@ -169,6 +169,7 @@ public class MessageSwitch<T, U> {
      *
      * @return Controller object of type 'U'
      */
+    @Nullable
     public U getController(@NonNull final Long senderId) {
         MessageSender<U> sender = mSenders.get(senderId);
         if (sender != null) {

@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
@@ -226,7 +227,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      * case SENSITIVE !
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable final Object o) {
         if (this == o)
             return true;
 

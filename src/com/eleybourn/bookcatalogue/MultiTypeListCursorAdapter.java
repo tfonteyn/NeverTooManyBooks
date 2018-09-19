@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,6 +119,7 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
      * actual text coming from {@link MultiTypeListHandler#getSectionText(Cursor)}}
 	 */
 	@Override
+	@Nullable
 	public String[] getSectionTextForPosition(final int position) {
         Tracker.enterFunction(this,"getSectionTextForPosition",position);
 		final Cursor cursor = this.getCursor();

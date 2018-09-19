@@ -55,6 +55,9 @@ public class DateValidator extends DefaultFieldValidator {
 
         try {
             java.util.Date d = DateUtils.parseDate(data.getString(datum));
+            if (d == null) {
+                throw new ValidatorException(R.string.vldt_date_expected, new Object[]{datum.getKey()});
+            }
             data.putString(datum, DateUtils.toSqlDateTime(d));
         } catch (Exception e) {
             throw new ValidatorException(R.string.vldt_date_expected, new Object[]{datum.getKey()});

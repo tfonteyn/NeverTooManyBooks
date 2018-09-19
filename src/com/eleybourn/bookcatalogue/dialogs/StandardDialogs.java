@@ -332,7 +332,9 @@ public class StandardDialogs {
                 //	btn.invalidate();
                 //}
                 dialog.dismiss();
-                handler.onClick(item);
+                if (item != null) {
+                    handler.onClick(item);
+                }
             }
         };
 
@@ -403,7 +405,7 @@ public class StandardDialogs {
      * Interface to listen for item selection in a custom dialog list
      */
     public interface SimpleDialogOnClickListener {
-        void onClick(SimpleDialogItem item);
+        void onClick(@NonNull final SimpleDialogItem item);
     }
 
     /**
@@ -413,7 +415,7 @@ public class StandardDialogs {
         private final File mFile;
 
         @SuppressWarnings("WeakerAccess")
-        public SimpleDialogFileItem(File file) {
+        public SimpleDialogFileItem(@NonNull final File file) {
             mFile = file;
         }
 
@@ -421,7 +423,8 @@ public class StandardDialogs {
             return mFile;
         }
 
-        public RadioButton getSelector(View v) {
+        @Nullable
+        public RadioButton getSelector(@NonNull final View v) {
             return null;
         }
 
@@ -454,21 +457,23 @@ public class StandardDialogs {
     public static class SimpleDialogObjectItem implements SimpleDialogItem {
         private final Object mObject;
 
-        SimpleDialogObjectItem(Object object) {
+        SimpleDialogObjectItem(@NonNull final Object object) {
             mObject = object;
         }
 
         /**
          * Get a View to display the object -> toString() and put into RadioButton.text
          */
-        public View getView(LayoutInflater inflater) {
+        @NonNull
+        public View getView(@NonNull final LayoutInflater inflater) {
             View view = inflater.inflate(R.layout.dialog_string_list_item, null);
             TextView name = view.findViewById(R.id.name);
             name.setText(mObject.toString());
             return view;
         }
 
-        public RadioButton getSelector(View v) {
+        @NonNull
+        public RadioButton getSelector(@NonNull final View v) {
             return (RadioButton) v.findViewById(R.id.selector);
         }
 
@@ -485,7 +490,7 @@ public class StandardDialogs {
         final int mItemId;
         final int mDrawableId;
 
-        public SimpleDialogMenuItem(Object object, int itemId, int icon) {
+        public SimpleDialogMenuItem(@NonNull final Object object, final int itemId, final int icon) {
             super(object);
             mItemId = itemId;
             mDrawableId = icon;
@@ -496,7 +501,8 @@ public class StandardDialogs {
         }
 
         @Override
-        public View getView(LayoutInflater inflater) {
+        @NonNull
+        public View getView(@NonNull final LayoutInflater inflater) {
             View v = super.getView(inflater);
             TextView name = v.findViewById(R.id.name);
             name.setCompoundDrawablesWithIntrinsicBounds(mDrawableId, 0, 0, 0);
@@ -519,7 +525,7 @@ public class StandardDialogs {
          *
          * @param context the context
          */
-        public BasicDialog(Context context) {
+        public BasicDialog(@NonNull final Context context) {
             this(context, true);
         }
 
@@ -529,7 +535,7 @@ public class StandardDialogs {
          * @param context         the context
          * @param enableActionBar flag
          */
-        public BasicDialog(Context context, boolean enableActionBar) {
+        public BasicDialog(@NonNull final Context context, final boolean enableActionBar) {
             super(context, enableActionBar ? BookCatalogueApp.getDialogThemeResId() : 0);
 
             Button closeButton = findViewById(android.R.id.closeButton);

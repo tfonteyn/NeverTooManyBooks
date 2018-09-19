@@ -196,10 +196,15 @@ public class BookUtils {
     public static boolean setRead(@NonNull final CatalogueDBAdapter db,
                                   @NonNull final BookData bookData,
                                   final boolean read) {
-        int prev = bookData.getInt(UniqueId.KEY_BOOK_READ);
+        int prevRead = bookData.getInt(UniqueId.KEY_BOOK_READ);
+        String prevReadEnd = bookData.getString(UniqueId.KEY_BOOK_READ_END);
+
         bookData.putInt(UniqueId.KEY_BOOK_READ, read ? 1 : 0);
+        bookData.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
+
         if (!db.updateBook(bookData.getRowId(), bookData, 0)) {
-            bookData.putInt(UniqueId.KEY_BOOK_READ, prev);
+            bookData.putInt(UniqueId.KEY_BOOK_READ, prevRead);
+            bookData.putString(UniqueId.KEY_BOOK_READ_END, prevReadEnd);
             return false;
         }
         return true;
@@ -209,18 +214,17 @@ public class BookUtils {
     public static boolean setRead(@NonNull final CatalogueDBAdapter db,
                                   final long bookId,
                                   final boolean read) {
-        BookData book = new BookData(bookId);
-        book.putBoolean(UniqueId.KEY_BOOK_READ, read);
-        return db.updateBook(bookId, book, 0);
+        BookData bookData = new BookData(bookId);
+        bookData.putBoolean(UniqueId.KEY_BOOK_READ, read);
+        bookData.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
+        return db.updateBook(bookId, bookData, 0);
     }
 
     @SuppressWarnings("UnusedReturnValue")
     public static boolean setRead(final long bookId, final boolean read) {
         CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         db.open();
-        BookData bookData = new BookData(bookId);
-        bookData.putBoolean(UniqueId.KEY_BOOK_READ, read);
-        boolean ok = db.updateBook(bookId, bookData, 0);
+        boolean ok =setRead(db, bookId, read);
         db.close();
         return ok;
     }

@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.database.definitions;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DbSync;
@@ -41,6 +42,7 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
         mColumns = describeTable(tableName);
     }
 
+    @Nullable
     public ColumnInfo getColumn(String name) {
         String lcName = name.toLowerCase();
         if (!mColumns.containsKey(lcName))

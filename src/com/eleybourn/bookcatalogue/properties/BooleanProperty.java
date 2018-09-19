@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.properties;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,8 +32,6 @@ import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.properties.Property.BooleanValue;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
-
-import java.util.Objects;
 
 /**
  * Extends ValuePropertyWithGlobalDefault to create a trinary value (or nullable boolean?) with
@@ -45,21 +44,20 @@ import java.util.Objects;
 public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> implements BooleanValue {
 
 
-     public BooleanProperty(@NonNull final String uniqueId, @NonNull final PropertyGroup group,
-                            final int nameResourceId) {
-         // yes, default value is set (as expected) to 'false' but note the 'value'
-         // is EXPLICITLY set to 'null' ! This is needed to make ValuePropertyWithGlobalDefault#getResolvedValue
-         // work correctly, as it assumes 'null' to be a flag for globalism.
-        super(uniqueId, group, nameResourceId, false, null, null);
+    public BooleanProperty(@NonNull final String uniqueId,
+                           @NonNull final PropertyGroup group,
+                           final int nameResourceId) {
+        super(uniqueId, group, nameResourceId, false);
     }
 
+    @NonNull
     @Override
-    public View getView(LayoutInflater inflater) {
+    public View getView(@NonNull final LayoutInflater inflater) {
         // Get the view and setup holder
         View v = inflater.inflate(R.layout.property_value_boolean, null);
         final Holder h = new Holder();
 
-        h.p = this;
+        h.property = this;
         h.cb = v.findViewById(R.id.checkbox);
         h.name = v.findViewById(R.id.name);
         h.value = v.findViewById(R.id.value);
@@ -94,85 +92,114 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
         return v;
     }
 
-    private void handleClick(View v) {
-        Holder h = ViewTagger.getTag(v, R.id.TAG_PROPERTY);
-        Boolean b = Objects.requireNonNull(h).p.get();
+    private void handleClick(@NonNull final View v) {
+        Holder holder = ViewTagger.getTag(v, R.id.TAG_PROPERTY);
+        Boolean value = holder.property.get();
         // Cycle through three values: 'null', 'true', 'false'. If the value is 'global' omit 'null'.
-        if (b == null) {
-            b = true;
-        } else if (b) {
-            b = false;
+        if (value == null) {
+            value = true;
+        } else if (value) {
+            value = false;
         } else {
-            if (isGlobal())
-                b = true;
-            else
-                b = null;
+            if (isGlobal()) {
+                value = true;
+            } else {
+                value = null;
+            }
         }
-        h.p.set(b);
-        h.p.setViewValues(h, b);
+        holder.property.set(value);
+        holder.property.setViewValues(holder, value);
     }
 
     /** Set the checkbox and text fields based on passed value. */
-    private void setViewValues(Holder h, Boolean b) {
-        if (b != null) {
+    private void setViewValues(@NonNull final Holder holder, @Nullable final Boolean value) {
+        if (value != null) {
             // We have a value, so setup based on it
-            h.cb.setChecked(b);
-            h.name.setText(this.getNameResourceId());
-            if (b)
-                h.value.setText(R.string.yes);
-            else
-                h.value.setText(R.string.no);
-            h.cb.setPressed(false);
+            holder.cb.setChecked(value);
+            holder.name.setText(this.getNameResourceId());
+            if (value) {
+                holder.value.setText(R.string.yes);
+            } else {
+                holder.value.setText(R.string.no);
+            }
+            holder.cb.setPressed(false);
         } else {
             // Null value; use defaults.
-            Boolean resolved = getResolvedValue();
-            if (resolved == null)
-                resolved = false;
-            h.cb.setChecked(resolved);
-            h.name.setText(this.getName());
-            h.value.setText(R.string.use_default_setting);
-            h.cb.setPressed(false);
+            holder.cb.setChecked(isTrue());
+            holder.name.setText(this.getName());
+            holder.value.setText(R.string.use_default_setting);
+            holder.cb.setPressed(false);
         }
     }
 
     @Override
+    @NonNull
     protected Boolean getGlobalDefault() {
-        return BCPreferences.getBoolean(getPreferenceKey(), getDefaultValue());
+        Boolean b = getDefaultValue();
+        if (b == null) {
+            throw new IllegalStateException();
+        }
+        return BCPreferences.getBoolean(getPreferenceKey(), b);
     }
 
     @Override
-    protected BooleanProperty setGlobalDefault(Boolean value) {
+    @Nullable
+    protected BooleanProperty setGlobalDefault(@Nullable final Boolean value) {
+        if (value == null) {
+            throw new IllegalStateException();
+        }
         BCPreferences.setBoolean(getPreferenceKey(), value);
         return this;
     }
 
+    @NonNull
     @Override
-    public BooleanProperty set(Property p) {
-        if (!(p instanceof BooleanValue))
-            throw new RuntimeException("Can not find a compatible interface for boolean parameter");
+    public BooleanProperty set(@NonNull final Property p) {
+        if (!(p instanceof BooleanValue)) {
+            throw new IllegalStateException();
+        }
         BooleanValue bv = (BooleanValue) p;
         set(bv.get());
         return this;
     }
 
+    public boolean isTrue() {
+        Boolean b =  super.getResolvedValue();
+        return (b != null ? b: false);
+    }
+
+    @Nullable
     @Override
+    @Deprecated
+    public Boolean getResolvedValue() {
+        return super.getResolvedValue();
+    }
+
+    @Override
+    @NonNull
     public BooleanProperty setGlobal(boolean isGlobal) {
         super.setGlobal(isGlobal);
         return this;
     }
 
+    @NonNull
     @Override
-    public BooleanProperty setDefaultValue(Boolean value) {
+    public BooleanProperty setDefaultValue(@Nullable final Boolean value) {
+        if (value == null) {
+            throw new IllegalStateException();
+        }
         super.setDefaultValue(value);
         return this;
     }
 
+    @NonNull
     @Override
-    public BooleanProperty setGroup(PropertyGroup group) {
+    public BooleanProperty setGroup(@NonNull final PropertyGroup group) {
         super.setGroup(group);
         return this;
     }
 
+    @NonNull
     @Override
     public BooleanProperty setWeight(int weight) {
         super.setWeight(weight);
@@ -180,7 +207,8 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     }
 
     @Override
-    public BooleanProperty setPreferenceKey(String key) {
+    @NonNull
+    public BooleanProperty setPreferenceKey(@NonNull final String key) {
         super.setPreferenceKey(key);
         return this;
     }
@@ -189,8 +217,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
         CheckBox cb;
         TextView name;
         TextView value;
-        BooleanProperty p;
+        BooleanProperty property;
     }
-
 }
 

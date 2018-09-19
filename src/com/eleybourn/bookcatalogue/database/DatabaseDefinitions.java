@@ -162,6 +162,7 @@ public class DatabaseDefinitions {
 
     public static final DomainDefinition DOM_LOANED_TO = new DomainDefinition("loaned_to", TableInfo.TYPE_TEXT, NOT_NULL, "");
     public static final DomainDefinition DOM_LOANED_TO_SORT = new DomainDefinition("loaned_to_sort", TableInfo.TYPE_INT, NOT_NULL, "");
+
     public static final DomainDefinition DOM_MARK = new DomainDefinition("mark", "boolean", "default 0");
     public static final DomainDefinition DOM_NOTES = new DomainDefinition("notes", TableInfo.TYPE_TEXT);
     public static final DomainDefinition DOM_PRIMARY_SERIES_COUNT = new DomainDefinition("primary_series_count", TableInfo.TYPE_INTEGER);

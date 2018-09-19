@@ -25,6 +25,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
@@ -116,6 +117,7 @@ public class BackupInfo {
         return mBundle.getInt(INFO_COMPATARCHIVER);
     }
 
+    @Nullable
     public Date getCreateDate() {
         return DateUtils.parseDate(mBundle.getString(INFO_CREATEDATE));
     }
@@ -124,10 +126,12 @@ public class BackupInfo {
         return mBundle.getInt(INFO_NUMBOOKS);
     }
 
+    @Nullable
     public String getAppPackage() {
         return mBundle.getString(INFO_APPPACKAGE);
     }
 
+    @Nullable
     public String getAppVersionName() {
         return mBundle.getString(INFO_APPVERSIONNAME);
     }

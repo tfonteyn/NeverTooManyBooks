@@ -27,6 +27,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -58,7 +59,9 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
     };
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_edit_book_loan_base, container, false);
     }
 
@@ -113,7 +116,7 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
      *
      * @param user The user the book was loaned to
      */
-    private void showLoaned(String user) {
+    private void showLoaned(@NonNull final String user) {
         ScrollView sv = loadFragmentIntoScrollView(R.layout.fragment_edit_book_loaned);
 
         TextView who = sv.findViewById(R.id.who);
@@ -129,7 +132,7 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
     }
 
     @NonNull
-    private ScrollView loadFragmentIntoScrollView(int resId) {
+    private ScrollView loadFragmentIntoScrollView(final int resId) {
         ScrollView sv = getView().findViewById(R.id.root);
         sv.removeAllViews();
         getActivity().getLayoutInflater().inflate(resId, sv);
@@ -148,7 +151,7 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
     }
 
     @Override
-    protected void onLoadBookDetails(@NonNull BookData bookData, boolean setAllDone) {
+    protected void onLoadBookDetails(@NonNull final BookData bookData, final boolean setAllDone) {
         if (!setAllDone) {
             mFields.setAll(bookData);
         }
@@ -160,6 +163,7 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
      *
      * @return an ArrayList of names
      */
+    @NonNull
     private ArrayList<String> getFriends() {
         ArrayList<String> friend_list = new ArrayList<>();
 
@@ -176,25 +180,25 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
 
         ContentResolver cr = getActivity().getContentResolver();
         try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION, null, null, null)) {
-            while (contactsCursor.moveToNext()) {
-                String name = contactsCursor.getString
-                        (contactsCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
-                friend_list.add(name);
+            if (contactsCursor != null) {
+                while (contactsCursor.moveToNext()) {
+                    String name = contactsCursor.getString
+                            (contactsCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
+                    friend_list.add(name);
+                }
             }
         }
         return friend_list;
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 0) {
             if (ContextCompat.checkSelfPermission(getContext(),
                     Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-                //FIXME: this needs more work... we need to tell the adapter to reload the list.
-                if (BuildConfig.DEBUG) {
+                //FIXME: this needs more work... we need to tell the adapter to reload the list. Or do we ?
                     System.out.println("FIXME: this needs more work... we need to tell the adapter to reload the list.");
-                }
             }
         }
     }

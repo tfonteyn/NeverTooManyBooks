@@ -23,7 +23,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textStyle="bold"
             tools:text="Author name f.e."
-            android:textIsSelectable="true" />
+            android:textIsSelectable="false" />
 
         <View
             style="@style/listDividerHorizontal"

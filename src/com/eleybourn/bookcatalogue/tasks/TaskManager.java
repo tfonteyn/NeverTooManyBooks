@@ -301,6 +301,7 @@ public class TaskManager implements AutoCloseable {
      *
      * @return TaskInfo associated with task.
      */
+    @Nullable
     private TaskInfo getTaskInfo(@NonNull final ManagedTask task) {
         synchronized (mTasks) {
             for (TaskInfo taskInfo : mTasks) {

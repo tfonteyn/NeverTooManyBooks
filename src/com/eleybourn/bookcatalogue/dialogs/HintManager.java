@@ -23,6 +23,8 @@ package com.eleybourn.bookcatalogue.dialogs;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.View;
@@ -89,12 +91,15 @@ public class HintManager {
         }
     }
 
-    public static boolean shouldBeShown(int hintStringId) {
+    public static boolean shouldBeShown(final int hintStringId) {
         return mHints.get(hintStringId).shouldBeShown();
     }
 
     /** Display the passed hint, if the user has not disabled it */
-    public static void displayHint(Context context, int stringId, final Runnable postRun, Object... args) {
+    public static void displayHint(@NonNull final Context context,
+                                   final int stringId,
+                                   @Nullable final Runnable postRun,
+                                   @Nullable final Object... args) {
         // Get the hint and return if it has been disabled.
         final Hint h = mHints.get(stringId);
         if (!h.shouldBeShown()) {
@@ -160,7 +165,7 @@ public class HintManager {
          *
          * @param key Preferences key suffix specific to this hint
          */
-        private Hint(String key) {
+        private Hint(@NonNull final String key) {
             this.key = key;
         }
 
@@ -169,6 +174,7 @@ public class HintManager {
          *
          * @return Fully qualified preference name
          */
+        @NonNull
         String getFullPrefName() {
             return PREF_HINT + key;
         }
@@ -178,7 +184,7 @@ public class HintManager {
          *
          * @param visible Flag indicating future visibility
          */
-        public void setVisibility(boolean visible) {
+        public void setVisibility(final boolean visible) {
             BCPreferences.edit().putBoolean(getFullPrefName(), visible).commit();
         }
 
@@ -193,7 +199,7 @@ public class HintManager {
             return mHasBeenDisplayed;
         }
 
-        void setHasBeenDisplayed(boolean hasBeenDisplayed) {
+        void setHasBeenDisplayed(final boolean hasBeenDisplayed) {
             mHasBeenDisplayed = hasBeenDisplayed;
         }
     }

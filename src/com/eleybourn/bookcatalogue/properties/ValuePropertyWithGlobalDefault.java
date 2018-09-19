@@ -32,41 +32,19 @@ import android.support.annotation.Nullable;
  */
 public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
     /** Underlying value */
-    private T mValue;
+    private T mValue = null;
     /** Key in preferences for default value */
-    private String mDefaultPrefKey;
+    private String mDefaultPrefKey = null;
     /** Default value, for case when not in preferences, or no preferences given */
-    private T mDefaultValue;
+    private T mDefaultValue = null;
     /** Indicates that this instance is to only use the global default */
     private boolean mIsGlobal = false;
 
     /**
      * Constructor
      *
-     * @param uniqueId       Unique property name; just needs to be unique for the collection it belongs to. Simplest to use a pref name, if there is one.
-     * @param group          PropertyGroup it belongs to
-     * @param nameResourceId Resource ID for name string
-     *
-     * @param defaultValue   Default value used in case preferences is null, or returns null
-     * @param preferenceKey  Key into Preferences for default value (may be null)
-     * @param value          Current value (may be null)
-     */
-    ValuePropertyWithGlobalDefault(@NonNull final String uniqueId,
-                                   @NonNull final PropertyGroup group,
-                                   final int nameResourceId,
-                                   @Nullable final T defaultValue,
-                                   @Nullable final String preferenceKey,
-                                   @Nullable final T value) {
-        super(uniqueId, group, nameResourceId);
-        mDefaultValue = defaultValue;
-        mDefaultPrefKey = preferenceKey;
-        mValue = value;
-    }
-
-    /**
-     * Constructor
-     *
-     * @param uniqueId       Unique property name; just needs to be unique for the collection it belongs to. Simplest to use a pref name, if there is one.
+     * @param uniqueId       Unique property name; just needs to be unique for the collection it belongs to.
+     *                       Simplest to use a pref name, if there is one.
      * @param group          PropertyGroup it belongs to
      * @param nameResourceId Resource ID for name string
      */
@@ -76,72 +54,125 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
         super(uniqueId, group, nameResourceId);
     }
 
+    /**
+     * Constructor
+     *
+     * @param uniqueId       Unique property name; just needs to be unique for the collection it belongs to.
+     *                       Simplest to use a pref name, if there is one.
+     * @param group          PropertyGroup it belongs to
+     * @param nameResourceId Resource ID for name string
+     * @param defaultValue   Default value used in case preferences is null, or returns null
+     */
+    ValuePropertyWithGlobalDefault(@NonNull final String uniqueId,
+                                   @NonNull final PropertyGroup group,
+                                   final int nameResourceId,
+                                   @NonNull final T defaultValue) {
+        super(uniqueId, group, nameResourceId);
+        mDefaultValue = defaultValue;
+    }
+
+    /**
+     * Constructor
+     *
+     * @param uniqueId       Unique property name; just needs to be unique for the collection it belongs to. Simplest to use a pref name, if there is one.
+     * @param group          PropertyGroup it belongs to
+     * @param nameResourceId Resource ID for name string
+     * @param defaultValue   Default value used in case preferences is null, or returns null
+     * @param value          Current value (may be null)
+     */
+    ValuePropertyWithGlobalDefault(@NonNull final String uniqueId,
+                                   @NonNull final PropertyGroup group,
+                                   final int nameResourceId,
+                                   @Nullable final T defaultValue,
+                                   @Nullable final T value) {
+        super(uniqueId, group, nameResourceId);
+        mDefaultValue = defaultValue;
+        mValue = value;
+    }
+
     /** Children must implement accessor for global default */
+    @Nullable
     protected abstract T getGlobalDefault();
 
     /** Children must implement accessor for global default */
     @SuppressWarnings("UnusedReturnValue")
-    protected abstract ValuePropertyWithGlobalDefault<T> setGlobalDefault(T value);
+    protected abstract ValuePropertyWithGlobalDefault<T> setGlobalDefault(@Nullable final T value);
 
     /** Accessor for underlying (or global) value */
+    @Nullable
     public T get() {
-        if (mIsGlobal)
+        if (mIsGlobal) {
             return getGlobalDefault();
-        else
+        } else {
             return mValue;
+        }
     }
 
     /** Accessor for underlying (or global) value */
-    public ValuePropertyWithGlobalDefault<T> set(T value) {
+    @NonNull
+    public ValuePropertyWithGlobalDefault<T> set(@Nullable final T value) {
         mValue = value;
-        if (mIsGlobal)
+        if (mIsGlobal) {
             setGlobalDefault(value);
+        }
         return this;
     }
 
     /** Accessor for for fully resolved/defaulted value */
+    @Nullable
     public T getResolvedValue() {
-        if (mIsGlobal)
+        if (mIsGlobal) {
             return getGlobalDefault();
-        else if (mValue == null) {
-            if (hasGlobalDefault())
+        } else if (mValue == null) {
+            if (hasGlobalDefault()) {
                 return getGlobalDefault();
-            else
+            } else {
                 return mDefaultValue;
-        } else
+            }
+        } else {
             return mValue;
+        }
     }
 
     public boolean isGlobal() {
         return mIsGlobal;
     }
 
-    public ValuePropertyWithGlobalDefault<T> setGlobal(boolean isGlobal) {
+    @NonNull
+    public ValuePropertyWithGlobalDefault<T> setGlobal(final boolean isGlobal) {
         if (isGlobal && !hasGlobalDefault()) {
-            throw new RuntimeException("Can not set a parameter to global if preference value has not been specified");
+            throw new IllegalStateException();
         }
         mIsGlobal = isGlobal;
         return this;
     }
 
+    @Nullable
     public String toString() {
         return (mValue == null ? null : mValue.toString());
     }
 
+    @Nullable
     T getDefaultValue() {
         return mDefaultValue;
     }
 
-    String getPreferenceKey() {
-        return mDefaultPrefKey;
-    }
-
-    public ValuePropertyWithGlobalDefault<T> setDefaultValue(T value) {
+    @NonNull
+    public ValuePropertyWithGlobalDefault<T> setDefaultValue(@Nullable final T value) {
         mDefaultValue = value;
         return this;
     }
 
-    public ValuePropertyWithGlobalDefault<T> setPreferenceKey(String key) {
+    @NonNull
+    String getPreferenceKey() {
+        if (mDefaultPrefKey == null) {
+            throw new IllegalStateException();
+        }
+        return mDefaultPrefKey;
+    }
+
+    @NonNull
+    public ValuePropertyWithGlobalDefault<T> setPreferenceKey(@NonNull final String key) {
         mDefaultPrefKey = key;
         return this;
     }
@@ -152,9 +183,10 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
     }
 
     /** Utility to check if the current value IS the default value */
-    boolean isDefault(T value) {
-        if (hasGlobalDefault() && !isGlobal())
+    boolean isDefault(@Nullable final T value) {
+        if (hasGlobalDefault() && !isGlobal()) {
             return (value == null);
+        }
 
         // We have a default value, and no global prefs
         return value == null

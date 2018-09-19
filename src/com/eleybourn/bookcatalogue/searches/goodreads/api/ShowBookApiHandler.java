@@ -466,7 +466,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         // Use ISBN13 by preference
         if (mBook.containsKey(ISBN13)) {
             String s = mBook.getString(ISBN13);
-            if (s.length() == 13)
+            if (s != null && s.length() == 13)
                 mBook.putString(UniqueId.KEY_ISBN, s);
         }
 
@@ -482,9 +482,9 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             String bestImage = null;
             if (mBook.containsKey(IMAGE)) {
                 bestImage = mBook.getString(IMAGE);
-                if (bestImage.contains(UniqueId.BKEY_NOCOVER) && mBook.containsKey(SMALL_IMAGE)) {
+                if (bestImage != null && bestImage.contains(UniqueId.BKEY_NOCOVER) && mBook.containsKey(SMALL_IMAGE)) {
                     bestImage = mBook.getString(SMALL_IMAGE);
-                    if (bestImage.contains(UniqueId.BKEY_NOCOVER))
+                    if (bestImage != null && bestImage.contains(UniqueId.BKEY_NOCOVER))
                         bestImage = null;
                 }
             }
@@ -704,20 +704,20 @@ public abstract class ShowBookApiHandler extends ApiHandler {
      */
     public static final class ShowBookFieldNames {
 
-        public static final String ISBN13 = "__isbn13";
-        public static final String IMAGE = "__image";
-        public static final String SMALL_IMAGE = "__smallImage";
-        public static final String PUBLICATION_YEAR = "__pub_year";
-        public static final String PUBLICATION_MONTH = "__pub_month";
-        public static final String PUBLICATION_DAY = "__pub_day";
-        public static final String IS_EBOOK = "__is_ebook";
-        public static final String WORK_ID = "__work_id";
-        public static final String ORIG_PUBLICATION_YEAR = "__orig_pub_year";
-        public static final String ORIG_PUBLICATION_MONTH = "__orig_pub_month";
-        public static final String ORIG_PUBLICATION_DAY = "__orig_pub_day";
-        public static final String ORIG_TITLE = "__orig_title";
-        public static final String RATING = "__rating";
-        public static final String BOOK_URL = "__url";
+        static final String ISBN13 = "__isbn13";
+        static final String IMAGE = "__image";
+        static final String SMALL_IMAGE = "__smallImage";
+        static final String PUBLICATION_YEAR = "__pub_year";
+        static final String PUBLICATION_MONTH = "__pub_month";
+        static final String PUBLICATION_DAY = "__pub_day";
+        static final String IS_EBOOK = "__is_ebook";
+        static final String WORK_ID = "__work_id";
+        static final String ORIG_PUBLICATION_YEAR = "__orig_pub_year";
+        static final String ORIG_PUBLICATION_MONTH = "__orig_pub_month";
+        static final String ORIG_PUBLICATION_DAY = "__orig_pub_day";
+        static final String ORIG_TITLE = "__orig_title";
+        static final String RATING = "__rating";
+        static final String BOOK_URL = "__url";
 
         public static final String SHELVES = "__shelves";
         public static final String BOOK_ID = "__book_id";

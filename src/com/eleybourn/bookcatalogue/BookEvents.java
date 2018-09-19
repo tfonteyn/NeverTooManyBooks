@@ -332,9 +332,7 @@ public class BookEvents {
                     holder.retry.setVisibility(View.GONE);
                 }
             } finally {
-                // Always close
-                if (booksCursor != null)
-                    booksCursor.close();
+                booksCursor.close();
             }
 
             return true;
@@ -360,7 +358,7 @@ public class BookEvents {
                                     GrSendBookEvent event = ViewTagger.getTag(v, R.id.TAG_EVENT);
                                     event.retry();
                                     QueueManager.getQueueManager().deleteEvent(id);
-                                } catch (Exception e) {
+                                } catch (Exception ignore) {
                                     // not a book event?
                                 }
                             }

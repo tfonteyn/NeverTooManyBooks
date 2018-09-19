@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.booklist;
 
 import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler;
@@ -159,6 +160,16 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     private static final ItemEntries<Integer> mLoanedFilterListItems = new ItemEntries<>();
 
     static {
+        mCondensedListItems.add(null, R.string.use_default_setting);
+        mCondensedListItems.add(false, R.string.normal);
+        mCondensedListItems.add(true, R.string.smaller);
+
+        mShowHeaderInfoListItems.add(null, R.string.use_default_setting);
+        mShowHeaderInfoListItems.add(SUMMARY_HIDE, R.string.hide_summary_details);
+        mShowHeaderInfoListItems.add(SUMMARY_SHOW_COUNT, R.string.show_book_count);
+        mShowHeaderInfoListItems.add(SUMMARY_SHOW_LEVEL_1_AND_COUNT, R.string.show_first_level_and_book_count);
+        mShowHeaderInfoListItems.add(SUMMARY_SHOW_ALL, R.string.show_all_summary_details);
+
         mReadFilterListItems.add(FILTER_NO, R.string.select_unread_only);
         mReadFilterListItems.add(FILTER_YES, R.string.select_read_only);
         mReadFilterListItems.add(FILTER_EITHER, R.string.all_books);
@@ -174,23 +185,13 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         mLoanedFilterListItems.add(FILTER_NO, R.string.select_loaned_no);
         mLoanedFilterListItems.add(FILTER_YES, R.string.select_loaned_yes);
         mLoanedFilterListItems.add(FILTER_EITHER, R.string.all_books);
-
-        mCondensedListItems.add(null, R.string.use_default_setting);
-        mCondensedListItems.add(false, R.string.normal);
-        mCondensedListItems.add(true, R.string.smaller);
-
-        mShowHeaderInfoListItems.add(null, R.string.use_default_setting);
-        mShowHeaderInfoListItems.add(SUMMARY_HIDE, R.string.hide_summary_details);
-        mShowHeaderInfoListItems.add(SUMMARY_SHOW_COUNT, R.string.show_book_count);
-        mShowHeaderInfoListItems.add(SUMMARY_SHOW_LEVEL_1_AND_COUNT, R.string.show_first_level_and_book_count);
-        mShowHeaderInfoListItems.add(SUMMARY_SHOW_ALL, R.string.show_all_summary_details);
     }
 
     /** List of groups */
     private final ArrayList<BooklistGroup> mGroups;
     /** ID if string representing name of this style. Used for standard system-defined styles */
     private int mNameStringId;
-    /** User-defined name of this style. Used for user-defined styles */
+    /** User-defined name of this style. */
     @SuppressWarnings("unused")
     private String mName; // TODO: Legacy field designed for backward serialization compatibility
     /** replaces mName */
@@ -213,7 +214,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /** Extra details to show on book rows */
     private transient BooleanProperty mXtraShowAuthor;
 
-    /** 'READ' filter */
+    /** filters */
     private transient IntegerListProperty mXtraReadFilter;
     private transient IntegerListProperty mXtraSignedFilter;
     private transient IntegerListProperty mXtraAnthologyFilter;
@@ -233,7 +234,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Constructor for system-defined styles.
      */
-    BooklistStyle(int stringId) {
+    BooklistStyle(final int stringId) {
         mNameStringId = stringId;
         mGroups = new ArrayList<>();
         initProperties();
@@ -243,7 +244,6 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Constructor for user-defined styles.
      */
-    @SuppressWarnings("SameParameterValue")
     BooklistStyle(@NonNull final String name) {
         initProperties();
         mNameStringId = 0;
@@ -252,30 +252,31 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     }
 
     public int getReadFilter() {
-        return mXtraReadFilter.getResolvedValue();
+        return mXtraReadFilter.getInt();
     }
     public int getSignedFilter() {
-        return mXtraSignedFilter.getResolvedValue();
+        return mXtraSignedFilter.getInt();
     }
     public int getAnthologyFilter() {
-        return mXtraAnthologyFilter.getResolvedValue();
+        return mXtraAnthologyFilter.getInt();
     }
     public int getLoanedFilter() {
-        return mXtraLoanedFilter.getResolvedValue();
+        return mXtraLoanedFilter.getInt();
     }
 
-    public void setReadFilter(Integer v) {
+    public void setReadFilter(@NonNull final Integer v) {
         mXtraReadFilter.set(v);
     }
-    public void setSignedFilter(Integer v) {
+    public void setSignedFilter(@NonNull final Integer v) {
         mXtraSignedFilter.set(v);
     }
-    public void setAnthologyFilter(Integer v) {
+    public void setAnthologyFilter(@NonNull final Integer v) {
         mXtraAnthologyFilter.set(v);
     }
-    public void setLoanedFilter(Integer v) {
+    public void setLoanedFilter(@NonNull final Integer v) {
         mXtraLoanedFilter.set(v);
     }
+
     /**
      * Accessor for flag indicating style is among preferred styles.
      */
@@ -286,25 +287,28 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Accessor for flag indicating style is among preferred styles.
      */
-    public void setPreferred(boolean isPreferred) {
+    public void setPreferred(final boolean isPreferred) {
         mIsPreferred = isPreferred;
     }
 
     /**
      * Accessor. Returns system name or user-defined name based on kind of style this object defines.
      */
+    @NonNull
     public String getDisplayName() {
         String s = mNameProperty.getResolvedValue();
-        if (!s.isEmpty())
-            return s;
-        else
+
+        if ((s == null) || s.isEmpty()) {
             return BookCatalogueApp.getResourceString(mNameStringId);
+        } else {
+            return s;
+        }
     }
 
     /**
      * Accessor. Sets user-defined name.
      */
-    public void setName(String name) {
+    public void setName(@NonNull final String name) {
         mNameProperty.set(name);
         mNameStringId = 0;
     }
@@ -312,6 +316,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Accessor. Returns a standardised form of the style name. This name is unique.
      */
+    @NonNull
     public String getCanonicalName() {
         if (isUserDefined())
             return getRowId() + "-u";
@@ -333,7 +338,8 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      * @return Newly created group.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public BooklistGroup addGroup(int kind) {
+    @NonNull
+    public BooklistGroup addGroup(final int kind) {
         BooklistGroup g = BooklistGroup.newGroup(kind);
         addGroup(g);
         return g;
@@ -344,10 +350,11 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      *
      * @param kind Kind of group to add.
      *
-     * @return Newly created group.
+     * @return removed group.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public BooklistGroup removeGroup(int kind) {
+    @Nullable
+    public BooklistGroup removeGroup(final int kind) {
         BooklistGroup toRemove = null;
         for (BooklistGroup g : mGroups) {
             if (g.kind == kind) {
@@ -355,8 +362,9 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
                 break;
             }
         }
-        if (toRemove != null)
+        if (toRemove != null) {
             mGroups.remove(toRemove);
+        }
 
         return toRemove;
     }
@@ -429,6 +437,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Get all of the properties of this Style and its groups.
      */
+    @NonNull
     public Properties getProperties() {
         Properties props = new Properties()
                 .add(mXtraShowThumbnails)
@@ -503,25 +512,25 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     public int getExtras() {
         int extras = 0;
 
-        if (mXtraShowThumbnails.getResolvedValue())
+        if (mXtraShowThumbnails.isTrue())
             extras |= EXTRAS_THUMBNAIL;
 
-        if (mXtraLargeThumbnails.getResolvedValue())
+        if (mXtraLargeThumbnails.isTrue())
             extras |= EXTRAS_THUMBNAIL_LARGE;
 
-        if (mXtraShowBookshelves.getResolvedValue())
+        if (mXtraShowBookshelves.isTrue())
             extras |= EXTRAS_BOOKSHELVES;
 
-        if (mXtraShowLocation.getResolvedValue())
+        if (mXtraShowLocation.isTrue())
             extras |= EXTRAS_LOCATION;
 
-        if (mXtraShowPublisher.getResolvedValue())
+        if (mXtraShowPublisher.isTrue())
             extras |= EXTRAS_PUBLISHER;
 
-        if (mXtraShowFormat.getResolvedValue())
+        if (mXtraShowFormat.isTrue())
             extras |= EXTRAS_FORMAT;
 
-        if (mXtraShowAuthor.getResolvedValue())
+        if (mXtraShowAuthor.isTrue())
             extras |= EXTRAS_AUTHOR;
 
         return extras;
@@ -530,7 +539,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Check if ths style has the specified group
      */
-    public boolean hasKind(int kind) {
+    public boolean hasKind(final int kind) {
         for (BooklistGroup g : mGroups) {
             if (g.kind == kind)
                 return true;
@@ -541,7 +550,8 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Get the group at the passed index.
      */
-    public BooklistGroup getGroupAt(int index) {
+    @NonNull
+    public BooklistGroup getGroupAt(final int index) {
         return mGroups.get(index);
     }
 
@@ -562,7 +572,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Accessor for underlying database row id, set by query that retrieves the object.
      */
-    public void setRowId(long rowId) {
+    public void setRowId(final long rowId) {
         mRowId = rowId;
     }
 
@@ -592,7 +602,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         out.writeObject(mCondensed.get());
         out.writeObject(mNameProperty.get());
         out.writeObject(mShowHeaderInfo.get());
-        // added in 4
+        // added in v4
         out.writeObject(mXtraShowFormat.get());
         out.writeObject(mXtraSignedFilter.get());
         out.writeObject(mXtraAnthologyFilter.get());
@@ -623,26 +633,26 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         mXtraShowPublisher.set((Boolean) in.readObject());
         mXtraShowAuthor.set((Boolean) in.readObject());
         mXtraReadFilter.set((Integer) in.readObject());
-        if (version > 0)
+        if (version > 0) {
             mCondensed.set((Boolean) in.readObject());
-        if (version > 1)
+        }
+        if (version > 1) {
             mNameProperty.set((String) in.readObject());
-        else
+        } else {
             mNameProperty.set(mName);
-        // Added mShowHeaderInfo with version 3
-        if (version > 2) {
-            // Changed it from Boolean to Integer in version 4
-            if (version == 3) {
-                Boolean isSet = (Boolean) in.readObject();
-                if (isSet == null) {
-                    mShowHeaderInfo.set((Integer) null);
-                } else {
-                    mShowHeaderInfo.set(isSet ? SUMMARY_SHOW_ALL : SUMMARY_HIDE);
-                }
+        }
+        // Added mShowHeaderInfo as a Boolean in version 3
+        if (version == 3) {
+            Boolean isSet = (Boolean) in.readObject();
+            if (isSet == null) {
+                mShowHeaderInfo.set((Integer) null);
             } else {
-                // version 4
-                mShowHeaderInfo.set((Integer) in.readObject());
+                mShowHeaderInfo.set(isSet ? SUMMARY_SHOW_ALL : SUMMARY_HIDE);
             }
+        }
+        // Changed mShowHeaderInfo from Boolean to Integer in version 4
+        if (version > 3) {
+            mShowHeaderInfo.set((Integer) in.readObject());
         }
         if (version > 4) {
             mXtraShowFormat.set((Boolean) in.readObject());
@@ -650,26 +660,25 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
             mXtraSignedFilter.set((Integer) in.readObject());
             mXtraAnthologyFilter.set((Integer) in.readObject());
             mXtraLoanedFilter.set((Integer) in.readObject());
-
         }
     }
 
     public boolean isCondensed() {
-        return mCondensed.getResolvedValue();
+        return mCondensed.isTrue();
     }
 
-    public void setCondensed(boolean condensed) {
+    public void setCondensed(final boolean condensed) {
         mCondensed.set(condensed);
     }
 
-    public void setShowThumbnails(boolean show) {
+    public void setShowThumbnails(final boolean show) {
         mXtraShowThumbnails.set(show);
     }
 
 
 
     public int getShowHeaderInfo() {
-        return mShowHeaderInfo.getResolvedValue();
+        return mShowHeaderInfo.getInt();
     }
 
     /**
@@ -677,32 +686,36 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      * Either updates or creates as necessary
      */
     public void saveToDb(@NonNull final CatalogueDBAdapter db) {
-        if (getRowId() == 0)
+        if (getRowId() == 0) {
             mRowId = db.insertBooklistStyle(this);
-        else
+        } else {
             db.updateBooklistStyle(this);
+        }
     }
 
     /**
      * Delete this style from the database
      */
     public void deleteFromDb(@NonNull final CatalogueDBAdapter db) {
-        if (getRowId() == 0)
+        if (getRowId() == 0) {
             throw new RuntimeException("Style is not stored in the database, can not be deleted");
+        }
         db.deleteBooklistStyle(this.getRowId());
     }
 
     /**
      * Convenience function to return a list of group names.
      */
+    @NonNull
     public String getGroupListDisplayNames() {
         StringBuilder groups = new StringBuilder();
         boolean first = true;
         for (BooklistGroup g : this) {
-            if (first)
+            if (first) {
                 first = false;
-            else
+            } else {
                 groups.append(" / ");
+            }
             groups.append(g.getName());
         }
         return groups.toString();
@@ -711,6 +724,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Construct a deep clone of this object.
      */
+    @Nullable
     public BooklistStyle getClone() throws DeserializationException {
         return SerializationUtils.cloneObject(this);
     }
@@ -718,7 +732,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Accessor to allow setting of Extras value directly.
      */
-    public void setShowAuthor(boolean show) {
+    public void setShowAuthor(final boolean show) {
         mXtraShowAuthor.set(show);
     }
 
@@ -734,7 +748,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         final DomainDefinition[] domains;
 
         /** Constructor */
-        CompoundKey(String prefix, DomainDefinition... domains) {
+        CompoundKey(@NonNull final String prefix, @NonNull final DomainDefinition... domains) {
             this.prefix = prefix;
             this.domains = domains;
         }

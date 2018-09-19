@@ -89,7 +89,7 @@ public class SerializationUtils {
     public static class DeserializationException extends Exception {
         private static final long serialVersionUID = -2040548134317746620L;
 
-        DeserializationException(Exception e) {
+        DeserializationException(@Nullable final Exception e) {
             super();
             initCause(e);
         }

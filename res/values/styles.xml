@@ -316,7 +316,7 @@
         <item name="android:paddingEnd">@dimen/padding_border</item>
         <item name="android:paddingStart">@dimen/padding_border</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:textIsSelectable">true</item>
+        <item name="android:textIsSelectable">false</item>
     </style>
 
     <style name="read_checkbox">

@@ -93,7 +93,7 @@ public class SendOneBookTask extends GenericTask {
 		GoodreadsManager grManager = new GoodreadsManager();
 
 		if (!grManager.hasValidCredentials()) {
-			throw new NotAuthorizedException(null);
+			throw new NotAuthorizedException();
 		}
 
 		Context ctx = context.getApplicationContext();

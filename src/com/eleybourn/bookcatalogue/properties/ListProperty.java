@@ -27,6 +27,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -54,11 +55,18 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
     ListProperty(@NonNull final ItemEntries<T> list,
                  @NonNull final String uniqueId,
                  @NonNull final PropertyGroup group,
+                 final int nameResourceId) {
+        super(uniqueId, group, nameResourceId);
+        mList = list;
+    }
+
+    ListProperty(@NonNull final ItemEntries<T> list,
+                 @NonNull final String uniqueId,
+                 @NonNull final PropertyGroup group,
                  final int nameResourceId,
                  @Nullable final T defaultValue,
-                 @SuppressWarnings("SameParameterValue") @Nullable final String defaultPref,
                  @Nullable final T value) {
-        super(uniqueId, group, nameResourceId, defaultValue, defaultPref, value);
+        super(uniqueId, group, nameResourceId, defaultValue, value);
         mList = list;
     }
 
@@ -68,20 +76,21 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
     }
 
     /** Return the default list editor view with associated event handlers. */
+    @NonNull
     @Override
-    public View getView(final LayoutInflater inflater) {
-        View view = inflater.inflate(R.layout.property_value_list, null);
-        ViewTagger.setTag(view, R.id.TAG_PROPERTY, this);
+    public View getView(@NonNull final LayoutInflater inflater) {
+        final ViewGroup root = (ViewGroup)inflater.inflate(R.layout.property_value_list, null);
+        ViewTagger.setTag(root, R.id.TAG_PROPERTY, this);
         // Display the list of values when clicked.
-        view.setOnClickListener(new OnClickListener() {
+        root.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
-                handleClick(v, inflater);
+            public void onClick(View view) {
+                handleClick(root, view, inflater);
             }
         });
 
         // Set the name
-        TextView text = view.findViewById(R.id.name);
+        TextView text = root.findViewById(R.id.name);
         text.setText(getName());
 
         // Try to find the list item that corresponds to the current stored value.
@@ -92,33 +101,33 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
                     entry = e;
                 }
             } else {
-                if (get() != null && get().equals(e.value)) {
+                if (get() != null && e.value.equals(get())) {
                     entry = e;
                 }
             }
         }
         // Display current value
-        setValueInView(view, entry);
+        setValueInView(root, entry);
 
-        return view;
+        return root;
     }
 
-    private void handleClick(final View base, final LayoutInflater inflater) {
+    private void handleClick(@NonNull final ViewGroup root, @NonNull final View base, @NonNull final LayoutInflater inflater) {
         final ItemEntries<T> items = getListItems();
         if (this.hasHint()) {
             HintManager.displayHint(base.getContext(), this.getHint(), new Runnable() {
                 @Override
                 public void run() {
-                    displayList(base, inflater, items);
+                    displayList(root, base, inflater, items);
                 }
             });
         } else {
-            displayList(base, inflater, items);
+            displayList(root, base, inflater, items);
         }
     }
 
     /** Set the 'value' field in the passed view to match the passed item. */
-    private void setValueInView(View baseView, ItemEntry<T> item) {
+    private void setValueInView(@NonNull final View baseView, @Nullable final ItemEntry<T> item) {
         TextView text = baseView.findViewById(R.id.value);
 
         if (item == null) {
@@ -140,12 +149,12 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
      * @param inflater LayoutInflater
      * @param items    All list items
      */
-    private void displayList(final View baseView, final LayoutInflater inflater, ItemEntries<T> items) {
+    private void displayList(@NonNull final ViewGroup rootViewGroup, @NonNull final View baseView, @NonNull final LayoutInflater inflater, @NonNull final ItemEntries<T> items) {
 
         T currentValue = this.get();
 
         // Get the view and the radio group
-        View root = inflater.inflate(R.layout.property_value_list_list, null);
+        View root = inflater.inflate(R.layout.property_value_list_list, rootViewGroup);
         final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext())
                 .setView(root)
                 .create();
@@ -175,7 +184,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
                     selected = true;
 
                 // Make the view for this item
-                View line = inflater.inflate(R.layout.property_value_list_item, null);
+                View line = inflater.inflate(R.layout.property_value_list_item, rootViewGroup);
                 RadioButton sel = line.findViewById(R.id.selector);
 
                 //Set the various values
@@ -223,9 +232,9 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         Object[] textArgs;
 
         /** Constructor. Instantiates string. */
-        ItemEntry(T value, int resourceId, Object... args) {
+        ItemEntry(@Nullable final T value, final int resourceId, final Object... args) {
             this.value = value;
-            this.textId = resourceId; //BookCatalogueApp.getResourceString(resourceId);
+            this.textId = resourceId;
             this.textArgs = args;
         }
 
@@ -233,6 +242,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
             return BookCatalogueApp.getResourceString(textId, textArgs);
         }
 
+        @Nullable
         public T getValue() {
             return value;
         }
@@ -266,7 +276,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
          *
          * @return this for chaining
          */
-        public ItemEntries<T> add(T value, int stringId, Object... args) {
+        public ItemEntries<T> add(@Nullable final T value, int stringId, Object... args) {
             mList.add(new ItemEntry<>(value, stringId, args));
             return this;
         }

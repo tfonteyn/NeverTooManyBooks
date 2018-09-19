@@ -22,6 +22,8 @@ package com.eleybourn.bookcatalogue.booklist;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -109,7 +111,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
             title = getString(R.string.edit_style_colon_name, mStyle.getDisplayName());
         }
 
-        this.setTitle(title);
+        setTitle(title);
 
         // Display hint if required
         if (savedInstanceState == null) {
@@ -153,9 +155,9 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
         if (mSaveToDb) {
             mStyle.saveToDb(getDb());
         }
-        Intent i = new Intent();
-        i.putExtra(BKEY_STYLE, mStyle);
-        setResult(RESULT_OK, i);
+        Intent intent = new Intent();
+        intent.putExtra(BKEY_STYLE, mStyle);
+        setResult(RESULT_OK, intent);
         finish();
 
     }
@@ -185,9 +187,11 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
     /**
      * Get/create database as required.
      */
+    @NonNull
     private CatalogueDBAdapter getDb() {
-        if (mDb == null)
+        if (mDb == null) {
             mDb = new CatalogueDBAdapter(this);
+        }
         mDb.open();
         return mDb;
     }
@@ -198,8 +202,9 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mDb != null)
+        if (mDb != null) {
             mDb.close();
+        }
     }
 
     /**
@@ -221,23 +226,26 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
          * Get the property 'value': just a list of the groups.
          */
         @Override
+        @NonNull
         public String get() {
             return mStyle.getGroupListDisplayNames();
         }
 
         /**
-         * Can not be 'set'. Will be edited vi the button->activity.
+         * Can not be 'set'. Will be edited via the button->activity.
          */
         @Override
-        public GroupsProperty set(String value) {
+        @NonNull
+        public GroupsProperty set(@Nullable final String value) {
             throw new RuntimeException("Attempt to set read-only property string");
         }
 
         /**
          * Setup the view for a single line/property
          */
+        @NonNull
         @Override
-        public View getView(LayoutInflater inflater) {
+        public View getView(@NonNull final LayoutInflater inflater) {
             View v = inflater.inflate(R.layout.property_value_string_button, null);
             ViewTagger.setTag(v, R.id.TAG_PROPERTY, this);
 

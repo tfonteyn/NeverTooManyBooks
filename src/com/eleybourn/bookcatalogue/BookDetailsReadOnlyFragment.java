@@ -110,7 +110,7 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
             showSignedStatus(book);
             formatFormatSection(book);
             formatPublishingSection(book);
-            if (0 != book.getInt(BookData.LOCAL_KEY_ANTHOLOGY)) {
+            if (0 != book.getInt(BookData.KEY_IS_ANTHOLOGY)) {
                 showAnthologySection(book);
             }
 
@@ -229,7 +229,7 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
             getView().findViewById(R.id.lbl_series).setVisibility(View.VISIBLE);
             getView().findViewById(R.id.series).setVisibility(View.VISIBLE);
 
-            String newText = null;
+            String newText = "";
             Utils.pruneSeriesList(series);
             Utils.pruneList(mDb, series);
             int seriesCount = series.size();
@@ -309,11 +309,9 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
         String value;
 
         if (hasDate) {
-            try {
-                Date d = DateUtils.parseDate(date);
+            Date d = DateUtils.parseDate(date);
+            if (d != null) {
                 date = DateUtils.toPrettyDate(d);
-            } catch (Exception e) {
-                // Ignore; just use what we have
             }
         }
 
@@ -429,7 +427,11 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
         /**
          * Display as a human-friendly date
          */
+        @Nullable
         public String format(@NonNull final Field f, @Nullable final String source) {
+            if (source == null) {
+                return null;
+            }
             try {
                 boolean val = Datum.toBoolean(source, false);
                 return BookCatalogueApp.getResourceString(val ? R.string.yes : R.string.no);

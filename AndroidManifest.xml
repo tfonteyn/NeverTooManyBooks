@@ -154,7 +154,7 @@
         <!-- ************************************************************ -->
 
         <!-- Manage Bookshelves -->
-        <activity android:name=".BookshelfAdminActivity" />
+        <activity android:name=".EditBookshelfListActivity" />
         <activity
             android:name=".EditBookshelfActivity"
             android:windowSoftInputMode="adjustResize" />

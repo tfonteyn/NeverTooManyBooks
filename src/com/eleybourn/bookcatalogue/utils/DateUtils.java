@@ -91,26 +91,34 @@ public class DateUtils {
      * @param format        date format to add
      * @param needEnglish   if set, also add the localized english version
      */
-    private static void addParseDateFormat(@NonNull final String format, boolean needEnglish) {
+    private static void addParseDateFormat(@NonNull final String format, final boolean needEnglish) {
         mParseDateFormats.add(new SimpleDateFormat(format));
         if (needEnglish) {
             mParseDateFormats.add(new SimpleDateFormat(format, Locale.ENGLISH));
         }
     }
-
-    public static String toLocalSqlDateOnly(Date d) {
+    @NonNull
+    public static String toLocalSqlDateOnly(@NonNull final Date d) {
         return LOCAL_DATE_SQL.format(d);
     }
-    public static String toSqlDateOnly(Date d) {
+    @NonNull
+    public static String toSqlDateOnly(@NonNull final Date d) {
         return DATE_SQL.format(d);
     }
-    public static String toSqlDateTime(Date d) {
+    @NonNull
+    public static String todaySqlDateOnly() {
+        return DATE_SQL.format(new Date());
+    }
+    @NonNull
+    public static String toSqlDateTime(@NonNull final Date d) {
         return DATE_FULL_HMSS_SQL.format(d);
     }
-    public static String toPrettyDate(Date d) {
+    @NonNull
+    public static String toPrettyDate(@NonNull final Date d) {
         return DATE_DISPLAY.format(d);
     }
-    public static String toPrettyDateTime(Date d) {
+    @NonNull
+    public static String toPrettyDateTime(@NonNull final Date d) {
         return DateFormat.getDateTimeInstance().format(d);
     }
 
@@ -121,7 +129,10 @@ public class DateUtils {
      * @return		Resulting date if parsed, otherwise null
      */
     @Nullable
-    public static Date parseDate(@NonNull final String s) {
+    public static Date parseDate(@Nullable final String s) {
+        if (s == null) {
+            return null;
+        }
         // First try to parse using strict rules
         Date d = parseDate(s, false);
         if (d != null) {
@@ -143,7 +154,11 @@ public class DateUtils {
      * @return				Resulting date if parsed, otherwise null
      */
     @Nullable
-    private static Date parseDate(@NonNull final String s, final boolean lenient) {
+    private static Date parseDate(@Nullable final String s, final boolean lenient) {
+        if (s == null) {
+            return null;
+        }
+
         for (SimpleDateFormat sdf : mParseDateFormats ) {
             try {
                 sdf.setLenient(lenient);

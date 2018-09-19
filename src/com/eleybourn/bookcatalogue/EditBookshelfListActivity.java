@@ -45,13 +45,13 @@ import java.util.ArrayList;
  * ENHANCE:
  * - isDirty functionality
  */
-public class BookshelfAdminActivity extends BookCatalogueListActivity
+public class EditBookshelfListActivity extends BookCatalogueListActivity
 {
     private static final int ACTIVITY_CREATE = 0;
     private static final int ACTIVITY_EDIT = 1;
 
-    private static final int INSERT_ID = Menu.FIRST;
-    private static final int DELETE_ID = Menu.FIRST + 1;
+    private static final int MENU_INSERT_ID = Menu.FIRST;
+    private static final int MENU_DELETE_ID = Menu.FIRST + 1;
 
     private CatalogueDBAdapter mDb;
     private ArrayList<Bookshelf> mList;
@@ -80,7 +80,7 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        menu.add(0, INSERT_ID, 0,
+        menu.add(0, MENU_INSERT_ID, 0,
                 R.string.menu_insert_bs)
                 .setIcon(android.R.drawable.ic_menu_add)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
@@ -90,7 +90,7 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case INSERT_ID:
+            case MENU_INSERT_ID:
                 Intent i = new Intent(this, EditBookshelfActivity.class);
                 startActivityForResult(i, ACTIVITY_CREATE);
                 return true;
@@ -101,13 +101,14 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, DELETE_ID, 0, R.string.menu_delete_bs);
+        menu.add(0, MENU_DELETE_ID, 0, R.string.menu_delete_bs)
+                .setIcon(android.R.drawable.ic_menu_delete);
     }
 
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
         switch (item.getItemId()) {
-            case DELETE_ID:
+            case MENU_DELETE_ID:
                 AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
                 Bookshelf bookshelf = mList.get(menuInfo.position);
                 if (bookshelf.id != 1) {
@@ -127,9 +128,9 @@ public class BookshelfAdminActivity extends BookCatalogueListActivity
         super.onListItemClick(l, v, position, id);
 
         Bookshelf bookshelf = mList.get(position);
-        Intent i = new Intent(this, EditBookshelfActivity.class);
-        i.putExtra(UniqueId.KEY_ID, bookshelf.id);
-        startActivityForResult(i, ACTIVITY_EDIT);
+        Intent intent = new Intent(this, EditBookshelfActivity.class);
+        intent.putExtra(UniqueId.KEY_ID, bookshelf.id);
+        startActivityForResult(intent, ACTIVITY_EDIT);
     }
 
     @Override

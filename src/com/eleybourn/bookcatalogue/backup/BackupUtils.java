@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter;
@@ -229,6 +230,7 @@ public class BackupUtils {
         }
 
         @Override
+        @Nullable
         public Object get(@NonNull final String key) {
             return mBundle.get(key);
         }

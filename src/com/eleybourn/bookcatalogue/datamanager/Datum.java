@@ -257,6 +257,7 @@ public class Datum {
      *
      * @return The object data
      */
+    @Nullable
     public Object get(@NonNull final DataManager data, @NonNull final Bundle bundle) {
         if (mAccessor == null) {
             return bundle.get(mKey);
@@ -497,6 +498,7 @@ public class Datum {
      *
      * @return The data
      */
+    @Nullable
     public Serializable getSerializable(@SuppressWarnings("unused") @NonNull final DataManager data, @NonNull final Bundle bundle) {
         if (mAccessor == null) {
             return bundle.getSerializable(mKey);

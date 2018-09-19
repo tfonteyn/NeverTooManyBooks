@@ -166,7 +166,11 @@ public class Fields extends ArrayList<Fields.Field> {
      * @throws ParseException If parse failed.
      * @return Parsed date
      */
-    private static Date parseDate(String s) throws ParseException {
+    @NonNull
+    private static Date parseDate(@Nullable final String s) throws ParseException {
+        if(s == null) {
+            throw new ParseException("Can't parse null", 0);
+        }
         Date d;
         try {
             // Parse as SQL/ANSI date
@@ -299,8 +303,9 @@ public class Fields extends ArrayList<Fields.Field> {
      */
     public Field getField(final int id) {
         for (Field f : this) {
-            if (f.id == id)
+            if (f.id == id) {
                 return f;
+            }
         }
         throw new IllegalArgumentException();
     }
@@ -314,8 +319,9 @@ public class Fields extends ArrayList<Fields.Field> {
     public void setAdapter(final int fieldId, @NonNull final ArrayAdapter<String> adapter) {
         Field f = getField(fieldId);
         TextView tv = (TextView) f.getView();
-        if (tv instanceof AutoCompleteTextView)
+        if (tv instanceof AutoCompleteTextView) {
             ((AutoCompleteTextView) tv).setAdapter(adapter);
+        }
     }
 
     /**
@@ -401,15 +407,17 @@ public class Fields extends ArrayList<Fields.Field> {
                     mValidationExceptions.add(e);
                     isOk = false;
                     // Always save the value...even if invalid. Or at least try to.
-                    if (!crossValidating)
+                    if (!crossValidating) {
                         try {
                             values.putString(fe.column, fe.getValue().toString());
                         } catch (Exception ignored) {
                         }
+                    }
                 }
             } else {
-                if (!fe.column.isEmpty())
+                if (!fe.column.isEmpty()) {
                     fe.getValue(values);
+                }
             }
         }
         return isOk;
@@ -441,12 +449,14 @@ public class Fields extends ArrayList<Fields.Field> {
         mValidationExceptions.clear();
 
         // First, just validate individual fields with the cross-val flag set false
-        if (!validate(values, false))
+        if (!validate(values, false)) {
             isOk = false;
+        }
 
         // Now re-run with cross-val set to true.
-        if (!validate(values, true))
+        if (!validate(values, true)) {
             isOk = false;
+        }
 
         // Finally run the local cross-validation
         for (FieldCrossValidator v : mCrossValidators) {
@@ -466,14 +476,15 @@ public class Fields extends ArrayList<Fields.Field> {
      * @return res The resource manager to use when looking up strings.
      */
     public String getValidationExceptionMessage(@NonNull final Resources res) {
-        if (mValidationExceptions.size() == 0)
+        if (mValidationExceptions.size() == 0) {
             return "No error";
-        else {
+        } else {
             StringBuilder message = new StringBuilder();
             Iterator<ValidatorException> i = mValidationExceptions.iterator();
             int cnt = 1;
-            if (i.hasNext())
+            if (i.hasNext()) {
                 message.append("(").append(cnt).append(") ").append(i.next().getFormattedMessage(res));
+            }
             while (i.hasNext()) {
                 cnt++;
                 message.append(" (").append(cnt).append(") ").append(i.next().getFormattedMessage(res)).append("\n");
@@ -792,8 +803,9 @@ public class Fields extends ArrayList<Fields.Field> {
 
         public void set(@NonNull final Field field, @Nullable final String s) {
             synchronized (this) {
-                if (mIsSetting)
+                if (mIsSetting) {
                     return; // Avoid recursion now we watch text
+                }
                 mIsSetting = true;
             }
             try {
@@ -842,10 +854,12 @@ public class Fields extends ArrayList<Fields.Field> {
                     String newVal = field.format(s);
                     // Despite assurances otherwise, getText() apparently returns null sometimes
                     String oldVal = v.getText() == null ? null : v.getText().toString();
-                    if (newVal == null && oldVal == null)
+                    if (newVal == null && oldVal == null) {
                         return;
-                    if (newVal != null && oldVal != null && newVal.equals(oldVal))
+                    }
+                    if (newVal != null && oldVal != null && newVal.equals(oldVal)) {
                         return;
+                    }
                     v.setText(newVal);
                 }
             } finally {
@@ -913,26 +927,29 @@ public class Fields extends ArrayList<Fields.Field> {
 
         public void get(@NonNull final Field field, @NonNull final Bundle values) {
             CheckBox v = (CheckBox) field.getView();
-            if (field.formatter != null)
+            if (field.formatter != null) {
                 values.putString(field.column, field.extract(v.isChecked() ? "1" : "0"));
-            else
+            } else {
                 values.putBoolean(field.column, v.isChecked());
+            }
         }
 
         @Override
         public void get(@NonNull final Field field, @NonNull final DataManager values) {
             CheckBox v = (CheckBox) field.getView();
-            if (field.formatter != null)
+            if (field.formatter != null) {
                 values.putString(field.column, field.extract(v.isChecked() ? "1" : "0"));
-            else
+            } else {
                 values.putBoolean(field.column, v.isChecked());
+            }
         }
 
         public Object get(@NonNull final Field field) {
-            if (field.formatter != null)
+            if (field.formatter != null) {
                 return field.formatter.extract(field, (((CheckBox) field.getView()).isChecked() ? "1" : "0"));
-            else
+            } else {
                 return ((CheckBox) field.getView()).isChecked() ? 1 : 0;
+            }
         }
     }
 
@@ -944,10 +961,11 @@ public class Fields extends ArrayList<Fields.Field> {
     static public class RatingBarAccessor implements FieldDataAccessor {
         public void set(@NonNull final Field field, @NonNull final Cursor c) {
             RatingBar v = (RatingBar) field.getView();
-            if (field.formatter != null)
+            if (field.formatter != null) {
                 v.setRating(Float.parseFloat(field.formatter.format(field, c.getString(c.getColumnIndex(field.column)))));
-            else
+            } else {
                 v.setRating(c.getFloat(c.getColumnIndex(field.column)));
+            }
         }
 
         public void set(@NonNull final Field field, @NonNull final Bundle b) {
@@ -971,18 +989,20 @@ public class Fields extends ArrayList<Fields.Field> {
 
         public void get(@NonNull final Field field, @NonNull final Bundle values) {
             RatingBar v = (RatingBar) field.getView();
-            if (field.formatter != null)
+            if (field.formatter != null) {
                 values.putString(field.column, field.extract("" + v.getRating()));
-            else
+            } else {
                 values.putFloat(field.column, v.getRating());
+            }
         }
 
         public void get(@NonNull final Field field, @NonNull final DataManager values) {
             RatingBar v = (RatingBar) field.getView();
-            if (field.formatter != null)
+            if (field.formatter != null) {
                 values.putString(field.column, field.extract("" + v.getRating()));
-            else
+            } else {
                 values.putFloat(field.column, v.getRating());
+            }
         }
 
         public Object get(@NonNull final Field field) {
@@ -1013,8 +1033,9 @@ public class Fields extends ArrayList<Fields.Field> {
         public void set(@NonNull final Field field, @Nullable String s) {
             s = field.format(s);
             Spinner v = (Spinner) field.getView();
-            if (v == null)
+            if (v == null) {
                 return;
+            }
             for (int i = 0; i < v.getCount(); i++) {
                 if (v.getItemAtPosition(i).equals(s)) {
                     v.setSelection(i);
@@ -1026,14 +1047,15 @@ public class Fields extends ArrayList<Fields.Field> {
         public void get(@NonNull final Field field, @NonNull final Bundle values) {
             String value;
             Spinner v = (Spinner) field.getView();
-            if (v == null)
+            if (v == null) {
                 value = "";
-            else {
+            } else {
                 Object selItem = v.getSelectedItem();
-                if (selItem != null)
+                if (selItem != null) {
                     value = selItem.toString();
-                else
+                } else {
                     value = "";
+                }
             }
             values.putString(field.column, value);
         }
@@ -1041,14 +1063,15 @@ public class Fields extends ArrayList<Fields.Field> {
         public void get(@NonNull final Field field, @NonNull final DataManager values) {
             String value;
             Spinner v = (Spinner) field.getView();
-            if (v == null)
+            if (v == null) {
                 value = "";
-            else {
+            } else {
                 Object selItem = v.getSelectedItem();
-                if (selItem != null)
+                if (selItem != null) {
                     value = selItem.toString();
-                else
+                } else {
                     value = "";
+                }
             }
             values.putString(field.column, value);
         }
@@ -1056,14 +1079,15 @@ public class Fields extends ArrayList<Fields.Field> {
         public Object get(@NonNull final Field field) {
             String value;
             Spinner v = (Spinner) field.getView();
-            if (v == null)
+            if (v == null) {
                 value = "";
-            else {
+            } else {
                 Object selItem = v.getSelectedItem();
-                if (selItem != null)
+                if (selItem != null) {
                     value = selItem.toString();
-                else
+                } else {
                     value = "";
+                }
             }
             return field.extract(value);
         }
@@ -1079,6 +1103,7 @@ public class Fields extends ArrayList<Fields.Field> {
         /**
          * Display as a human-friendly date
          */
+        @Nullable
         public String format(@NonNull final Field f, @Nullable String source) {
             try {
                 java.util.Date d = parseDate(source);
@@ -1132,6 +1157,7 @@ public class Fields extends ArrayList<Fields.Field> {
         }
 
         @Override
+        @Nullable
         public View findViewById(final int id) {
             if (mFragment.get() == null) {
                 if (BuildConfig.DEBUG) {
@@ -1219,8 +1245,9 @@ public class Fields extends ArrayList<Fields.Field> {
              * Load the layout from the passed Activity based on the ID and set visibility and accessor.
              */
             FieldsContext c = fields.getContext();
-            if (c == null)
+            if (c == null) {
                 return;
+            }
 
             // Lookup the view
             final View view = c.findViewById(id);
@@ -1293,8 +1320,9 @@ public class Fields extends ArrayList<Fields.Field> {
          * Reset one fields visibility based on user preferences
          */
         private void resetVisibility(@Nullable final FieldsContext c) {
-            if (c == null)
+            if (c == null) {
                 return;
+            }
             // Lookup the view
             final View view = c.findViewById(id);
             if (view != null) {
@@ -1329,6 +1357,7 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @return all fields
          */
+        @Nullable
         protected Fields getFields() {
             if (mFields == null) {
                 return null;
@@ -1342,6 +1371,7 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @return Resulting View, or null.
          */
+        @Nullable
         View getView() {
             Fields fs = mFields.get();
             if (fs == null) {
@@ -1424,9 +1454,11 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @return Formatted value
          */
+        @Nullable
         public String format(@Nullable final String s) {
-            if (formatter == null)
+            if (formatter == null) {
                 return s;
+            }
             return formatter.format(this, s);
         }
 
@@ -1434,8 +1466,9 @@ public class Fields extends ArrayList<Fields.Field> {
          * Utility function to call the formatters extract() method if present, or just return the raw value.
          */
         public String extract(@NonNull final String s) {
-            if (formatter == null)
+            if (formatter == null) {
                 return s;
+            }
             return formatter.extract(this, s);
         }
 

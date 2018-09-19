@@ -29,6 +29,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -392,8 +393,9 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				if (mFromCols == null) {
 					String [] fromNames = ViewManager.this.getFrom();
 					mFromCols = new int[fromNames.length];
-					for(int i = 0 ; i < fromNames.length; i++ )
-						mFromCols[i] = cursor.getColumnIndex(fromNames[i]);
+					for(int i = 0 ; i < fromNames.length; i++ ) {
+                        mFromCols[i] = cursor.getColumnIndex(fromNames[i]);
+                    }
 				}
 		        for (int i = 0; i < mToIds.length; i++) {
 		            View v = view.findViewById(mToIds[i]);
@@ -415,9 +417,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			 * Override the getChildrenCursor. This runs the SQL to extract the titles per author
 			 */
 			@Override
+			@Nullable
 			protected Cursor getChildrenCursor(Cursor groupCursor) {
-				if (mDb == null) // We are terminating
-					return null;
+                // We are terminating
+				if (mDb == null) {
+                    return null;
+                }
 
 				// Get the DB cursor
 				SQLiteCursor children = ViewManager.this.getChildrenCursor(groupCursor);
@@ -447,12 +452,14 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				info.show = mPrefs.getBoolean(setting, true);
 				info.view = v.findViewById(id);
 				if (!info.show) {
-					if (info.view != null)
-						info.view.setVisibility(View.GONE);
+					if (info.view != null) {
+                        info.view.setVisibility(View.GONE);
+                    }
 				} else {
 					info.show = (info.view != null);
-					if (info.show)
-						info.view.setVisibility(View.VISIBLE);
+					if (info.show) {
+                        info.view.setVisibility(View.VISIBLE);
+                    }
 				}
 			}
 			/**
@@ -465,8 +472,9 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 					info.view.setVisibility(View.GONE);
 				} else {
 					info.show = (info.view != null);
-					if (info.show)
-						info.view.setVisibility(View.VISIBLE);
+					if (info.show) {
+                        info.view.setVisibility(View.VISIBLE);
+                    }
 				}
 			}
 
@@ -503,11 +511,13 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				final BooksCursor snapshot = (BooksCursor) origCursor;
 				final BooksRow rowView = snapshot.getRowView();
 
-				if (holder.author.show)
-					holder.author.view.setText(rowView.getPrimaryAuthorName());
+				if (holder.author.show) {
+                    holder.author.view.setText(rowView.getPrimaryAuthorName());
+                }
 
-				if (holder.title.show)
-					holder.title.view.setText(rowView.getTitle());
+				if (holder.title.show) {
+                    holder.title.view.setText(rowView.getTitle());
+                }
 
 				if (holder.image.show) {
 					//CatalogueDBAdapter.fetchThumbnailIntoImageView(cursor.getId(),holder.image.view, LIST_THUMBNAIL_SIZE, LIST_THUMBNAIL_SIZE, true, mTaskQueue);
@@ -538,8 +548,9 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 					}
 				}
 
-				if (holder.publisher.show)
-					holder.publisher.view.setText(rowView.getPublisher());
+				if (holder.publisher.show) {
+                    holder.publisher.view.setText(rowView.getPublisher());
+                }
 			}
 
 			/**
@@ -949,16 +960,18 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		expandableList.setOnGroupExpandListener(new OnGroupExpandListener() {
 			@Override
 			public void onGroupExpand(int groupPosition) {
-				if (mLoadingGroups == 0)
-					adjustCurrentGroup(groupPosition, 1, false);
+				if (mLoadingGroups == 0) {
+                    adjustCurrentGroup(groupPosition, 1, false);
+                }
 			}
 		});
 		// Extend the onGroupClick (Close) - Every click should remove from the currentGroup array
 		expandableList.setOnGroupCollapseListener(new OnGroupCollapseListener() {
 			@Override
 			public void onGroupCollapse(int groupPosition) {
-				if (mLoadingGroups == 0)
-					adjustCurrentGroup(groupPosition, -1, false);
+				if (mLoadingGroups == 0) {
+                    adjustCurrentGroup(groupPosition, -1, false);
+                }
 			}
 		});
 
@@ -1013,10 +1026,11 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 */
 	private void loadCurrentGroup() {
 		try {
-			if (currentGroup != null)
-				currentGroup.clear();
-			else
-				currentGroup = new ArrayList<>();
+			if (currentGroup != null) {
+                currentGroup.clear();
+            } else {
+                currentGroup = new ArrayList<>();
+            }
 
 			int count = mPrefs.getInt(STATE_CURRENT_GROUP_COUNT, -1);
 
@@ -1166,8 +1180,9 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 					mDb.purgeSeries();
 					fillData();
 				}});
-			if (res != 0)
-				Toast.makeText(this, res, Toast.LENGTH_LONG).show();
+			if (res != 0) {
+                Toast.makeText(this, res, Toast.LENGTH_LONG).show();
+            }
 			return true;
 
 		case EDIT_BOOK:

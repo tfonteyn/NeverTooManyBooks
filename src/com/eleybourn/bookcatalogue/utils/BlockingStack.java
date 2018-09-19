@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.utils;
 
+import android.support.annotation.Nullable;
+
 import java.util.Stack;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -124,6 +126,7 @@ public class BlockingStack<T> {
 	/**
 	 * Remove an object from the stack, wait if none.
 	 */
+	@Nullable
 	public T pop(long waitMilliseconds) throws InterruptedException {
 		final ReentrantLock popLock = mPopLock;
 
@@ -155,6 +158,7 @@ public class BlockingStack<T> {
 	/**
 	 * Return an object if available, otherwise null.
 	 */
+	@Nullable
 	public T poll() throws InterruptedException {
 		final ReentrantLock popLock = mPopLock;
 

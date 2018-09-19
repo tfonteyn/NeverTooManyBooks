@@ -62,11 +62,14 @@ public class ShowBookByIsbnApiHandler extends ShowBookApiHandler {
 	public Bundle get(@NonNull String isbn, boolean fetchThumbnail) throws
 			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
 			NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
-		if (isbn == null)
+		//noinspection ConstantConditions  we need to make ABSOLUTELY SURE...
+		if (isbn == null) {
 			throw new RuntimeException("Null ISBN specified in search");
+		}
 		isbn = isbn.trim();
-		if (!IsbnUtils.isValid(isbn))
+		if (!IsbnUtils.isValid(isbn)) {
 			throw new RuntimeException(BookCatalogueApp.getResourceString(R.string.invalid_isbn_x_specified_in_search, isbn));
+		}
 
 		// Setup API call //
 		final String urlBase = GOODREADS_API_ROOT + "/book/isbn?format=xml&isbn=%1$s&key=%2$s"; //format=xml&

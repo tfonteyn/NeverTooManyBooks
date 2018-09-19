@@ -96,14 +96,16 @@ public class PropertyGroup {
     public static int compare(@NonNull final PropertyGroup lhs, @NonNull final PropertyGroup rhs) {
         // Compare weights
         final int wCmp = lhs.weight.compareTo(rhs.weight);
-        if (wCmp != 0)
+        if (wCmp != 0) {
             return wCmp;
+        }
 
         // Weights match, compare names
-        if (lhs.nameId != rhs.nameId)
+        if (lhs.nameId != rhs.nameId) {
             return lhs.getName().compareTo(rhs.getName());
-        else
+        } else {
             return 0;
+        }
     }
 
     public int getNameId() {
@@ -112,8 +114,9 @@ public class PropertyGroup {
 
     /** Realize and return the group name */
     private String getName() {
-        if (mName == null)
+        if (mName == null) {
             mName = BookCatalogueApp.getResourceString(nameId);
+        }
         return mName;
     }
 
@@ -128,8 +131,9 @@ public class PropertyGroup {
         /** Add the passed group */
         @SuppressWarnings("UnusedReturnValue")
         PropertyGroup addGroup(PropertyGroup g) {
-            if (this.containsKey(g.id) && (this.get(g.id) != g))
-                throw new RuntimeException("Duplicate PropertyGroup ID " + g.id);
+            if (this.containsKey(g.id) && (this.get(g.id) != g)) {
+                throw new IllegalStateException("Duplicate PropertyGroup ID " + g.id);
+            }
 
             this.put(g.id, g);
             return g;

@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.properties;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.properties.Property.IntegerValue;
@@ -35,48 +36,81 @@ public class IntegerListProperty extends ListProperty<Integer> implements Intege
     public IntegerListProperty(@NonNull final ItemEntries<Integer> list,
                                @NonNull final String uniqueId, @NonNull final PropertyGroup group,
                                final int nameResourceId) {
-        super(list, uniqueId, group, nameResourceId, null, null, null);
+        super(list, uniqueId, group, nameResourceId);
     }
 
     @Override
+    @Nullable
     protected Integer getGlobalDefault() {
-        return BCPreferences.getInt(getPreferenceKey(), getDefaultValue());
+        Integer value = getDefaultValue();
+        if (value == null) {
+            throw new IllegalStateException();
+        }
+        return BCPreferences.getInt(getPreferenceKey(), value);
     }
 
     @Override
-    protected IntegerListProperty setGlobalDefault(final Integer value) {
+    @NonNull
+    protected IntegerListProperty setGlobalDefault(@Nullable final Integer value) {
+        if (value == null) {
+            throw new IllegalStateException();
+        }
         BCPreferences.setInt(getPreferenceKey(), value);
         return this;
     }
 
-
-
+    @NonNull
     @Override
     public IntegerListProperty setGlobal(final boolean isGlobal) {
         super.setGlobal(isGlobal);
         return this;
     }
 
+    @NonNull
     @Override
     public IntegerListProperty setDefaultValue(final Integer value) {
         super.setDefaultValue(value);
         return this;
     }
 
+    @Nullable
     @Override
-    public IntegerListProperty setPreferenceKey(final String key) {
+    public Integer getDefaultValue() {
+        return super.getDefaultValue();
+    }
+
+    @NonNull
+    @Override
+    public IntegerListProperty setPreferenceKey(@NonNull final String key) {
         super.setPreferenceKey(key);
         return this;
     }
 
+    @NonNull
     @Override
-    public IntegerListProperty set(final Property p) {
+    public IntegerListProperty set(@NonNull final Property p) {
         if (!(p instanceof IntegerValue)) {
-            throw new RuntimeException("Can not find a compatible interface for integer parameter");
+            throw new IllegalStateException("Can not find a compatible interface for integer parameter");
         }
         IntegerValue v = (IntegerValue) p;
         set(v.get());
         return this;
+    }
+
+    @Nullable
+    @Override
+    @Deprecated
+    public Integer getResolvedValue() {
+        return super.getResolvedValue();
+    }
+
+    /**
+     *
+     * @return value itself, or 0 when null
+     */
+    public int getInt() {
+        Integer value = super.getResolvedValue();
+        return (value != null ? value : 0);
     }
 }
 

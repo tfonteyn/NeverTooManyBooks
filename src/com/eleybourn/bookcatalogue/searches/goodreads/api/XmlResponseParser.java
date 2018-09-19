@@ -50,7 +50,7 @@ public class XmlResponseParser extends DefaultHandler {
 	 */
 	public XmlResponseParser(XmlFilter rootFilter) {
 		// Build the root context and add to hierarchy.
-		ElementContext ctx = new ElementContext(null, null, null, null, null);
+		ElementContext ctx = new ElementContext();
 		ctx.filter = rootFilter;
 		mParents.add(ctx);
 	}

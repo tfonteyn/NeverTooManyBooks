@@ -21,6 +21,8 @@
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -79,7 +81,7 @@ public class ShelfAddBookHandler extends ApiHandler {
 	/**
 	 * Add the passed book to the passed shelf
 	 */
-	public long add(String shelfName, long grBookId) 
+	public long add(@NonNull final String shelfName, final long grBookId)
 			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
 			NotAuthorizedException, BookNotFoundException, NetworkException
 	{
@@ -90,7 +92,7 @@ public class ShelfAddBookHandler extends ApiHandler {
 	 * Remove the passed book from the passed shelf
 	 */	
 	@SuppressWarnings("UnusedReturnValue")
-	public long remove(String shelfName, long grBookId)
+	public long remove(@NonNull final String shelfName, final long grBookId)
 			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
 			NotAuthorizedException, BookNotFoundException, NetworkException
 	{
@@ -100,7 +102,7 @@ public class ShelfAddBookHandler extends ApiHandler {
 	/**
 	 * Do the main work; same API call for add & remove
 	 */
-	private long doCall(String shelfName, long grBookId, boolean isRemove) 
+	private long doCall(@NonNull final String shelfName, final long grBookId, final boolean isRemove)
 			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
 			NotAuthorizedException, BookNotFoundException, NetworkException
 	{

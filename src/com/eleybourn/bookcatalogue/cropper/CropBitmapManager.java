@@ -19,6 +19,7 @@ package com.eleybourn.bookcatalogue.cropper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.FileDescriptor;
 import java.util.Iterator;
@@ -112,6 +113,7 @@ public class CropBitmapManager {
 		getOrCreateThreadStatus(t).mOptions = options;
 	}
 
+	@Nullable
 	synchronized BitmapFactory.Options getDecodingOptions(Thread t) {
 		ThreadStatus status = mThreadStatus.get(t);
 		return status != null ? status.mOptions : null;
@@ -186,6 +188,7 @@ public class CropBitmapManager {
 	/**
 	 * The real place to delegate bitmap decoding to BitmapFactory.
 	 */
+	@Nullable
 	public Bitmap decodeFileDescriptor(FileDescriptor fd,
 			BitmapFactory.Options options) {
 		if (options.mCancel) {

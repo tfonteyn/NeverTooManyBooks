@@ -171,23 +171,24 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
     /**
      * Open book for viewing in edit or read-only mode.
      *
-     * @param a        current activity from which we start
+     * @param activity Current activity from which we start
      * @param id       The id of the book to view
-     * @param builder  (Optional) builder for underlying book list. Only used in
-     *                 read-only view.
-     * @param position (Optional) position in underlying book list. Only used in
-     *                 read-only view.
+     * @param builder  (Optional) builder for underlying book list. Only used in read-only view.
+     * @param position (Optional) position in underlying book list. Only used in read-only view.
      */
-    public static void openBook(Activity a, long id, BooklistBuilder builder, Integer position) {
+    public static void openBook(@NonNull final Activity activity,
+                                final long id,
+                                @Nullable final BooklistBuilder builder,
+                                @Nullable final Integer position) {
         if (BCPreferences.getOpenBookReadOnly()) {
             // Make a flattened copy of the list of books, if available
             String listTable = null;
             if (builder != null) {
                 listTable = builder.createFlattenedBooklist().getTable().getName();
             }
-            viewBook(a, id, listTable, position);
+            viewBook(activity, id, listTable, position);
         } else {
-            editBook(a, id, EditBookActivity.TAB_EDIT);
+            editBook(activity, id, EditBookActivity.TAB_EDIT);
         }
     }
 
@@ -198,11 +199,11 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
      * @param id  The id of the book to edit
      * @param tab Which tab to open first
      */
-    public static void editBook(Activity a, long id, int tab) {
-        Intent i = new Intent(a, EditBookActivity.class);
-        i.putExtra(UniqueId.KEY_ID, id);
-        i.putExtra(EditBookActivity.TAB, tab);
-        a.startActivityForResult(i, UniqueId.ACTIVITY_EDIT_BOOK);
+    public static void editBook(@NonNull final Activity activity, final long id, final int tab) {
+        Intent intent = new Intent(activity, EditBookActivity.class);
+        intent.putExtra(UniqueId.KEY_ID, id);
+        intent.putExtra(EditBookActivity.TAB, tab);
+        activity.startActivityForResult(intent, UniqueId.ACTIVITY_EDIT_BOOK);
         return;
     }
 
@@ -210,23 +211,24 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
      * Load the EditBookActivity tab activity in read-only mode. The first tab is book
      * details.
      *
-     * @param a         current activity from which we start
+     * @param activity  Current activity from which we start
      * @param id        The id of the book to view
-     * @param listTable (Optional) name of the temp table containing a list of book
-     *                  IDs.
-     * @param position  (Optional) position in underlying book list. Only used in
-     *                  read-only view.
+     * @param listTable (Optional) name of the temp table containing a list of book IDs.
+     * @param position  (Optional) position in underlying book list. Only used in read-only view.
      */
-    private static void viewBook(Activity a, long id, String listTable, Integer position) {
-        Intent i = new Intent(a, EditBookActivity.class);
-        i.putExtra(BKEY_FLATTENED_BOOKLIST, listTable);
+    private static void viewBook(@NonNull final Activity activity,
+                                 final long id,
+                                 @Nullable final String listTable,
+                                 @Nullable final Integer position) {
+        Intent intent = new Intent(activity, EditBookActivity.class);
+        intent.putExtra(BKEY_FLATTENED_BOOKLIST, listTable);
         if (position != null) {
-            i.putExtra(FLATTENED_BOOKLIST_POSITION, position);
+            intent.putExtra(FLATTENED_BOOKLIST_POSITION, position);
         }
-        i.putExtra(UniqueId.KEY_ID, id);
-        i.putExtra(EditBookActivity.TAB, EditBookActivity.TAB_EDIT); // needed extra for creating EditBookActivity
-        i.putExtra(EditBookActivity.LOCAL_BKEY_READ_ONLY, true);
-        a.startActivityForResult(i, UniqueId.ACTIVITY_VIEW_BOOK);
+        intent.putExtra(UniqueId.KEY_ID, id);
+        intent.putExtra(EditBookActivity.TAB, EditBookActivity.TAB_EDIT); // needed extra for creating EditBookActivity
+        intent.putExtra(EditBookActivity.LOCAL_BKEY_READ_ONLY, true);
+        activity.startActivityForResult(intent, UniqueId.ACTIVITY_VIEW_BOOK);
         return;
     }
 
@@ -291,7 +293,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
                     mTabLayout.addTab(tab);
                     mAllTabs.add(tab);
 
-                    boolean isAnthology = (mBookData.getRowId() > 0) && (mBookData.getInt(BookData.LOCAL_KEY_ANTHOLOGY) != 0);
+                    boolean isAnthology = (mBookData.getRowId() > 0) && (mBookData.getInt(BookData.KEY_IS_ANTHOLOGY) != 0);
                     setShowAnthology(isAnthology);
                 }
             } catch (InstantiationException | IllegalAccessException e) {
@@ -351,7 +353,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
         Tracker.exitOnCreate(this);
     }
 
-    private void replaceTab(Fragment fragment) {
+    private void replaceTab(@NonNull final Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment, fragment)
@@ -361,7 +363,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
     /**
      * If we are passed a flat book list, get it and validate it
      */
-    private void initBooklist(Bundle extras, Bundle savedInstanceState) {
+    private void initBooklist(@Nullable final Bundle extras, @Nullable final Bundle savedInstanceState) {
         if (extras != null) {
             String list = extras.getString(BKEY_FLATTENED_BOOKLIST);
             if (list != null && !list.isEmpty()) {
@@ -937,16 +939,16 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
 
     private class TabListener implements TabLayout.OnTabSelectedListener {
         @Override
-        public void onTabSelected(TabLayout.Tab tab) {
-            replaceTab((Fragment) tab.getTag());
+        public void onTabSelected(@NonNull final TabLayout.Tab tab) {
+            replaceTab((Fragment) tab.getTag()); //TOMF: fragment sits in tag... rethink ?
         }
 
         @Override
-        public void onTabUnselected(TabLayout.Tab tab) {
+        public void onTabUnselected(@NonNull final TabLayout.Tab tab) {
         }
 
         @Override
-        public void onTabReselected(TabLayout.Tab tab) {
+        public void onTabReselected(@NonNull final TabLayout.Tab tab) {
         }
     }
 
@@ -956,19 +958,19 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
         }
 
         public void success() {
-            Intent i = new Intent();
-            i.putExtra(UniqueId.KEY_ID, mBookData.getRowId());
-            i.putExtra(ADDED_HAS_INFO, true);
-            i.putExtra(ADDED_GENRE, added_genre);
-            i.putExtra(ADDED_FORMAT, added_format);
-            i.putExtra(ADDED_LANGUAGE, added_language);
-            i.putExtra(ADDED_LOCATION, added_location);
-            i.putExtra(ADDED_PUBLISHER, added_publisher);
-            i.putExtra(ADDED_SERIES, added_series);
-            i.putExtra(ADDED_TITLE, added_title);
-            i.putExtra(ADDED_AUTHOR, added_author);
+            Intent intent = new Intent();
+            intent.putExtra(UniqueId.KEY_ID, mBookData.getRowId());
+            intent.putExtra(ADDED_HAS_INFO, true);
+            intent.putExtra(ADDED_GENRE, added_genre);
+            intent.putExtra(ADDED_FORMAT, added_format);
+            intent.putExtra(ADDED_LANGUAGE, added_language);
+            intent.putExtra(ADDED_LOCATION, added_location);
+            intent.putExtra(ADDED_PUBLISHER, added_publisher);
+            intent.putExtra(ADDED_SERIES, added_series);
+            intent.putExtra(ADDED_TITLE, added_title);
+            intent.putExtra(ADDED_AUTHOR, added_author);
 
-            setResult(Activity.RESULT_OK, i);
+            setResult(Activity.RESULT_OK, intent);
             finish();
         }
 

@@ -26,6 +26,7 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -461,7 +462,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
                         getString(R.string.more_than_one_export_file_blah),
                         files, new SimpleDialogOnClickListener() {
                             @Override
-                            public void onClick(SimpleDialogItem item) {
+                            public void onClick(@NonNull final SimpleDialogItem item) {
                                 SimpleDialogFileItem fileItem = (SimpleDialogFileItem) item;
                                 importFromCSV(fileItem.getFile().getAbsolutePath());
                             }

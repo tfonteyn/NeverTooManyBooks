@@ -229,7 +229,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
         final T item = this.getItem(position);
 
         // Get the view; if not defined, load it.

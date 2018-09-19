@@ -255,7 +255,9 @@ public class SearchAmazonHandler extends DefaultHandler {
      * @param value Value to compare to; if present but equal to this, it will be overwritten
      */
     private void addIfNotPresentOrEqual(@NonNull final String key, @SuppressWarnings("SameParameterValue") String value) {
-        if (!mBookData.containsKey(key) || mBookData.getString(key).isEmpty() || mBookData.getString(key).equals(value)) {
+        if (!mBookData.containsKey(key)
+                || mBookData.getString(key).isEmpty()
+                || mBookData.getString(key).equals(value)) {
             mBookData.putString(key, mBuilder.toString());
         }
     }

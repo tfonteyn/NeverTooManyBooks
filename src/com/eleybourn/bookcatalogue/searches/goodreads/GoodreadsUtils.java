@@ -33,10 +33,10 @@ public class GoodreadsUtils {
 		
 		/* Goodreads SYNC Link */
 		{
-			View v = grDialog.findViewById(R.id.sync_with_goodreads_label);
+			View view = grDialog.findViewById(R.id.sync_with_goodreads_label);
 			// Make line flash when clicked.
-			v.setBackgroundResource(android.R.drawable.list_selector_background);
-			v.setOnClickListener(new OnClickListener() {
+			view.setBackgroundResource(android.R.drawable.list_selector_background);
+			view.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					GoodreadsUtils.importAllFromGoodreads(activity, true);
@@ -47,10 +47,10 @@ public class GoodreadsUtils {
 
 		/* Goodreads IMPORT Link */
 		{
-			View v = grDialog.findViewById(R.id.import_all_from_goodreads_label);
+			View view = grDialog.findViewById(R.id.import_all_from_goodreads_label);
 			// Make line flash when clicked.
-			v.setBackgroundResource(android.R.drawable.list_selector_background);
-			v.setOnClickListener(new OnClickListener() {
+			view.setBackgroundResource(android.R.drawable.list_selector_background);
+			view.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					GoodreadsUtils.importAllFromGoodreads(activity, false);
@@ -61,10 +61,10 @@ public class GoodreadsUtils {
 
 		/* Goodreads EXPORT Link */
 		{
-			View v = grDialog.findViewById(R.id.send_books_to_goodreads_label);
+			View view = grDialog.findViewById(R.id.send_books_to_goodreads_label);
 			// Make line flash when clicked.
-			v.setBackgroundResource(android.R.drawable.list_selector_background);
-			v.setOnClickListener(new OnClickListener() {
+			view.setBackgroundResource(android.R.drawable.list_selector_background);
+			view.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					sendBooksToGoodreads(activity);

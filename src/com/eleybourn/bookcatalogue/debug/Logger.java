@@ -22,6 +22,8 @@ package com.eleybourn.bookcatalogue.debug;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -40,14 +42,14 @@ public class Logger {
     private Logger() {
     }
 
-    public static void logError(String msg) {
+    public static void logError(@NonNull final String msg) {
         logError(null, msg);
     }
 
-    public static void logError(Exception e) {
+    public static void logError(@Nullable final Exception e) {
         logError(e, "");
     }
-    public static void logError(Error e) {
+    public static void logError(@Nullable final Error e) {
         logError(new RuntimeException(e), "");
     }
     /**
@@ -55,7 +57,7 @@ public class Logger {
      *
      * @param e The exception to log
      */
-    public static void logError(Exception e, String msg) {
+    public static void logError(@Nullable final Exception e, @NonNull final String msg) {
         @SuppressLint("SimpleDateFormat")
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String now = dateFormat.format(new Date());

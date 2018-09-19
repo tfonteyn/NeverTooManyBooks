@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -19,6 +19,9 @@
  */
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
+
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
@@ -41,52 +44,55 @@ import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GO
 
 /**
  * TODO: ReviewUpdateHandler WORK IN PROGRESS
- * 
+ *
  * @author Philip Warner
  */
 public class ReviewUpdateHandler extends ApiHandler {
 
-	public ReviewUpdateHandler(GoodreadsManager manager) {
-		super(manager);
-	}
+    public ReviewUpdateHandler(@NonNull final GoodreadsManager manager) {
+        super(manager);
+    }
 
-	public void update(long reviewId, boolean isRead, String readAt, String review, int rating) 
-			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
-					NotAuthorizedException, BookNotFoundException, NetworkException
-	{
-		HttpPost post = new HttpPost(GOODREADS_API_ROOT + "/review/" + reviewId + ".xml");
+    public void update(final long reviewId,
+                       final boolean isRead,
+                       @Nullable final String readAt,
+                       @Nullable final String review,
+                       final int rating)
+            throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
+            NotAuthorizedException, BookNotFoundException, NetworkException {
+        HttpPost post = new HttpPost(GOODREADS_API_ROOT + "/review/" + reviewId + ".xml");
 
-		//StringBuilder shelvesString = null;
-		//if (shelves != null && shelves.size() > 0) {
-		//	shelvesString = new StringBuilder();
-		//    if (shelves.size() > 0) {
-		//        shelvesString.append(shelves.get(0));
-		//    }
-		//    for (int i = 1; i < shelves.size(); i++) {
-		//        shelvesString.append("," + shelves.get(i));
-		//    }
-		//}
+        //StringBuilder shelvesString = null;
+        //if (shelves != null && shelves.size() > 0) {
+        //	shelvesString = new StringBuilder();
+        //    if (shelves.size() > 0) {
+        //        shelvesString.append(shelves.get(0));
+        //    }
+        //    for (int i = 1; i < shelves.size(); i++) {
+        //        shelvesString.append("," + shelves.get(i));
+        //    }
+        //}
 
-		// Set the 'read' or 'to-read' shelf based on status.
-		// Note a lot of point...it does not update goodreads!
-		ArrayList<NameValuePair> parameters = new ArrayList<>();
+        // Set the 'read' or 'to-read' shelf based on status.
+        // Note a lot of point...it does not update goodreads!
+        ArrayList<NameValuePair> parameters = new ArrayList<>();
         if (isRead)
-        	parameters.add(new BasicNameValuePair("shelf", "read"));
+            parameters.add(new BasicNameValuePair("shelf", "read"));
         else
-	    	parameters.add(new BasicNameValuePair("shelf", "to-read"));
+            parameters.add(new BasicNameValuePair("shelf", "to-read"));
         //if (shelvesString != null)
-	    //    parameters.add(new BasicNameValuePair("shelf", shelvesString.toString()));
-        
+        //    parameters.add(new BasicNameValuePair("shelf", shelvesString.toString()));
+
         if (review != null)
-	        parameters.add(new BasicNameValuePair("review[review]", review));
+            parameters.add(new BasicNameValuePair("review[review]", review));
 
         if (readAt != null && !readAt.isEmpty())
-	        parameters.add(new BasicNameValuePair("review[read_at]", readAt));
-        
-        if (rating >= 0)
-	        parameters.add(new BasicNameValuePair("review[rating]", Integer.toString(rating)));
+            parameters.add(new BasicNameValuePair("review[read_at]", readAt));
 
-        post.setEntity(new UrlEncodedFormEntity(parameters, "UTF8"));	        	
+        if (rating >= 0)
+            parameters.add(new BasicNameValuePair("review[rating]", Integer.toString(rating)));
+
+        post.setEntity(new UrlEncodedFormEntity(parameters, "UTF8"));
 
         //ReviewUpdateParser handler = new ReviewUpdateParser();
         mManager.execute(post, null, true);
@@ -123,6 +129,6 @@ public class ReviewUpdateHandler extends ApiHandler {
 			  <work-id type='integer'>2422333</work-id>
 			</review>
          */
-	}
+    }
 
 }

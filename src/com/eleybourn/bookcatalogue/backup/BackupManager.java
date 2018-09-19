@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.backup;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
@@ -68,7 +69,8 @@ public class BackupManager {
      */
     public static File backupCatalogue(@NonNull final FragmentActivity context,
                                        @NonNull final File requestedFile, final int taskId,
-                                       final int backupFlags, final Date since) {
+                                       final int backupFlags,
+                                       @Nullable final Date since) {
         final int flags = backupFlags & Exporter.EXPORT_MASK;
         if (flags == 0) {
             throw new RuntimeException("Backup flags must be specified");

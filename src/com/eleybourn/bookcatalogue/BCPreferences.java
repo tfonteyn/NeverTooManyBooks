@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -17,14 +18,13 @@ import java.util.Map;
  */
 public class BCPreferences {
 
-    /** Name to use for global preferences; non-global should be moved to appropriate Activity code */
+    /* Names to use for global preferences; non-global should be moved to appropriate Activity code */
 
-    // old style prefs without the TAG="App" prefix
-    public static final String PREF_BOOKLIST_STYLE = "APP.BooklistStyle";
     /** Last full backup date */
     private static final String PREF_LAST_BACKUP_DATE = "Backup.LastDate";
     /** Last full backup file path */
     private static final String PREF_LAST_BACKUP_FILE = "Backup.LastFile";
+
     // All new prefs should start with TAG
     private static final String TAG = "App";
     public static final String PREF_CLASSIC_MY_BOOKS = TAG + ".includeClassicView";
@@ -50,10 +50,6 @@ public class BCPreferences {
      * {@link PreferencesActivity}
      ***********************************************************************/
 
-    public static boolean getStartInClassic() {
-        return getBoolean(PREF_CLASSIC_MY_BOOKS, false);
-    }
-
     public static boolean getUseExternalImageCropper() {
         return getBoolean(PREF_USE_EXTERNAL_IMAGE_CROPPER, false);
     }
@@ -66,25 +62,26 @@ public class BCPreferences {
         return getInt(PREF_AUTOROTATE_CAMERA_IMAGES, 90);
     }
 
-    public static int getTheme(int defaultValue) {
+    public static int getTheme(final int defaultValue) {
         return getInt(PREF_APP_THEME, defaultValue);
     }
 
+    @Nullable
     public static String getLocale() {
         return getString(PREF_APP_LOCALE, null);
     }
 
+    @NonNull
     public static String getLastBackupFile() {
+        //noinspection ConstantConditions
         return getString(PREF_LAST_BACKUP_FILE, StorageUtils.getSharedStorage().getAbsolutePath());
     }
 
-    /**
-     * Setters
-     */
     public static void setLastBackupFile(@NonNull final String file) {
         setString(PREF_LAST_BACKUP_FILE, file);
     }
 
+    @Nullable
     public static String getLastBackupDate() {
         return getString(PREF_LAST_BACKUP_DATE, null);
     }
@@ -97,10 +94,6 @@ public class BCPreferences {
         return getBoolean(PREF_OPEN_BOOK_READ_ONLY, true);
     }
 
-    public static String getBookListStyle(@NonNull final String defaultValue) {
-        return getString(PREF_BOOKLIST_STYLE, defaultValue);
-    }
-
     /* *********************************************************************
      * Direct type access to the preferences
      ***********************************************************************/
@@ -110,7 +103,7 @@ public class BCPreferences {
         boolean result;
         try {
             result = BookCatalogueApp.getSharedPreferences().getBoolean(name, defaultValue);
-        } catch (Exception e) {
+        } catch (ClassCastException e) {
             result = defaultValue;
         }
         return result;
@@ -127,18 +120,19 @@ public class BCPreferences {
     }
 
     /** Get a named string preference */
-    public static String getString(@NonNull final String name, final String defaultValue) {
+    @Nullable
+    public static String getString(@Nullable final String name, @Nullable final String defaultValue) {
         String result;
         try {
             result = BookCatalogueApp.getSharedPreferences().getString(name, defaultValue);
-        } catch (Exception e) {
+        } catch (ClassCastException e) {
             result = defaultValue;
         }
         return result;
     }
 
     /** Set a named string preference */
-    public static void setString(@NonNull final String name, String value) {
+    public static void setString(@NonNull final String name, @Nullable final String value) {
         Editor ed = edit();
         try {
             ed.putString(name, value);
@@ -148,18 +142,18 @@ public class BCPreferences {
     }
 
     /** Get a named string preference */
-    public static int getInt(@NonNull final String name, int defaultValue) {
+    public static int getInt(@NonNull final String name, final int defaultValue) {
         int result;
         try {
             result = BookCatalogueApp.getSharedPreferences().getInt(name, defaultValue);
-        } catch (Exception e) {
+        } catch (ClassCastException e) {
             result = defaultValue;
         }
         return result;
     }
 
     /** Set a named string preference */
-    public static void setInt(@NonNull final String name, int value) {
+    public static void setInt(@NonNull final String name, final int value) {
         Editor ed = edit();
         try {
             ed.putInt(name, value);

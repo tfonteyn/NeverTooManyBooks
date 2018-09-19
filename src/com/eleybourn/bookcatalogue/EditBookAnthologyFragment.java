@@ -390,12 +390,16 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 
     protected class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle> {
 
-        AnthologyTitleListAdapter(Context context, int rowViewId, ArrayList<AnthologyTitle> items) {
+        AnthologyTitleListAdapter(@NonNull final Context context,
+                                  final int rowViewId,
+                                  @NonNull final ArrayList<AnthologyTitle> items) {
             super(context, rowViewId, items);
         }
 
         @Override
-        protected void onSetupView(@NonNull View convertView, @NonNull AnthologyTitle item, int position) {
+        protected void onSetupView(@NonNull final View convertView,
+                                   @NonNull final AnthologyTitle item,
+                                   final int position) {
             TextView author = convertView.findViewById(R.id.row_author);
             author.setText(item.getAuthor().getDisplayName());
             TextView title = convertView.findViewById(R.id.row_title);

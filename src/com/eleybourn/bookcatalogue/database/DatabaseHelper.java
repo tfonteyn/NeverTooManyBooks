@@ -190,7 +190,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //		/* KEY_SERIES_NUM + " text, " + */
     //		KEY_NOTES + " text, " +
     //		KEY_BOOK_LIST_PRICE + " text, " +
-    //		LOCAL_KEY_ANTHOLOGY + " int not null default " + ANTHOLOGY_NO + ", " +
+    //		KEY_IS_ANTHOLOGY + " int not null default " + ANTHOLOGY_NO + ", " +
     //		KEY_BOOK_LOCATION + " text, " +
     //		KEY_BOOK_READ_START + " date, " +
     //		KEY_BOOK_READ_END + " date, " +
@@ -218,7 +218,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //		/* KEY_SERIES_NUM + " text, " + */
     //		KEY_NOTES + " text, " +
     //		KEY_BOOK_LIST_PRICE + " text, " +
-    //		LOCAL_KEY_ANTHOLOGY + " int not null default " + ANTHOLOGY_NO + ", " +
+    //		KEY_IS_ANTHOLOGY + " int not null default " + ANTHOLOGY_NO + ", " +
     //		KEY_BOOK_LOCATION + " text, " +
     //		KEY_BOOK_READ_START + " date, " +
     //		KEY_BOOK_READ_END + " date, " +

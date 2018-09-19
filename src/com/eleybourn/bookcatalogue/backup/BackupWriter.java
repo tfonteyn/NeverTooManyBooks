@@ -91,12 +91,12 @@ public interface BackupWriter extends Closeable {
         /**
          * Set the end point for the progress
          */
-        void setMax(int max);
+        void setMax(final int max);
 
         /**
          * Advance progress by 'delta'
          */
-        void step(String message, int delta);
+        void step(@Nullable final String message, final int delta);
 
         /**
          * Check if operation is cancelled
@@ -111,6 +111,6 @@ public interface BackupWriter extends Closeable {
         /**
          * Save the total books exported
          */
-        void setTotalBooks(int books);
+        void setTotalBooks(final int books);
     }
 }

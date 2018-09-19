@@ -207,7 +207,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                         list, field.getValue().toString(),
                         new SimpleDialogOnClickListener() {
                             @Override
-                            public void onClick(SimpleDialogItem item) {
+                            public void onClick(@NonNull final SimpleDialogItem item) {
                                 field.setValue(item.toString());
                             }
                         });
@@ -235,12 +235,12 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                 // From the ISBN Search (add)
                 Bundle values = extras.getParcelable(UniqueId.BKEY_BOOK_DATA);
                 if (values != null) {
-                    for (Field f : mFields) {
-                        if (!f.column.isEmpty() && values.containsKey(f.column)) {
+                    for (Field field : mFields) {
+                        if (!field.column.isEmpty() && values.containsKey(field.column)) {
                             try {
-                                f.setValue(values.getString(f.column));
+                                field.setValue(values.getString(field.column));
                             } catch (Exception ignore) {
-                                Logger.logError(ignore, "Populate field " + f.column + " failed: " + ignore.getMessage());
+                                Logger.logError(ignore, "Populate field " + field.column + " failed: " + ignore.getMessage());
                             }
                         }
                     }

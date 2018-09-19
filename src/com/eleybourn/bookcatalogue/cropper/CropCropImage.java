@@ -35,6 +35,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.StatFs;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -54,304 +56,491 @@ import java.util.concurrent.CountDownLatch;
  * The activity can crop specific region of interest from an image.
  */
 public class CropCropImage extends CropMonitoredActivity {
-	// private static final String TAG = "CropImage";
+    // private static final String TAG = "CropImage";
 
+    private static final String BKEY_CIRCLE_CROP = "circleCrop";
+    private static final String BKEY_IMAGE_PATH = "image-path";
+    private static final String BKEY_OUTPUT = "output";
+    private static final String BKEY_ASPECT_X = "aspectX";
+    private static final String BKEY_ASPECT_Y = "aspectY";
+    private static final String BKEY_OUTPUT_X = "outputX";
+    private static final String BKEY_OUTPUT_Y = "outputY";
+    private static final String BKEY_SCALE = "scale";
+    private static final String BKEY_SCALE_UP_IF_NEEDED = "scaleUpIfNeeded";
+    private static final String BKEY_WHOLE_IMAGE = "whole-image";
+    private static final int NO_STORAGE_ERROR = -1;
+    private static final int CANNOT_STAT_ERROR = -2;
     @SuppressWarnings("FieldCanBeLocal")
     private final boolean DO_FACE_DETECTION = false;
+    // These are various options can be specified in the intent.
+    private final Bitmap.CompressFormat mOutputFormat =
+            Bitmap.CompressFormat.JPEG; // only used with mSaveUri
+    private final Handler mHandler = new Handler();
+    private final CropBitmapManager.ThreadSet mDecodingThreads = new CropBitmapManager.ThreadSet();
+    boolean mWaitingToPick; // Whether we are wait the user to pick a face.
+    boolean mSaving; // Whether the "save" button is already clicked.
+    CropHighlightView mCrop;
+    private Uri mSaveUri = null;
+    private int mAspectX, mAspectY;
+    private boolean mCircleCrop = false;
+    // These options specify the output image size and whether we should
+    // scale the output to fit it (or just crop it).
+    private int mOutputX, mOutputY;
+    private boolean mScale;
+    //Flag
+    private boolean mScaleUp = true;
+    // Flag indicating if default crop rect is whole image
+    private boolean mCropWholeImage = false;
+    private CropImageView mImageView;
+    private ContentResolver mContentResolver;
+    private Bitmap mBitmap;
+    private final Runnable mRunFaceDetection = new Runnable() {
+        final FaceDetector.Face[] mFaces = new FaceDetector.Face[3];
+        float mScale = 1F;
+        Matrix mImageMatrix;
+        int mNumFaces;
 
-	private static final String BKEY_CIRCLE_CROP = "circleCrop";
-	private static final String BKEY_IMAGE_PATH = "image-path";
-	private static final String BKEY_OUTPUT = "output";
-	private static final String BKEY_ASPECT_X = "aspectX";
-	private static final String BKEY_ASPECT_Y = "aspectY";
-	private static final String BKEY_OUTPUT_X = "outputX";
-	private static final String BKEY_OUTPUT_Y = "outputY";
-	private static final String BKEY_SCALE = "scale";
-	private static final String BKEY_SCALE_UP_IF_NEEDED = "scaleUpIfNeeded";
-	private static final String BKEY_WHOLE_IMAGE = "whole-image";
+        // For each face, we create a HightlightView for it.
+        private void handleFace(FaceDetector.Face f) {
+            PointF midPoint = new PointF();
 
-	// These are various options can be specified in the intent.
-	private final Bitmap.CompressFormat mOutputFormat =
-			Bitmap.CompressFormat.JPEG; // only used with mSaveUri
+            int r = ((int) (f.eyesDistance() * mScale)) * 2;
+            f.getMidPoint(midPoint);
+            midPoint.x *= mScale;
+            midPoint.y *= mScale;
 
-	private Uri mSaveUri = null;
-	private int mAspectX, mAspectY;
-	private boolean mCircleCrop = false;
-	private final Handler mHandler = new Handler();
+            int midX = (int) midPoint.x;
+            int midY = (int) midPoint.y;
 
-	// These options specify the output image size and whether we should
-	// scale the output to fit it (or just crop it).
-	private int mOutputX, mOutputY;
-	private boolean mScale;
+            CropHighlightView hv = new CropHighlightView(mImageView);
 
-	//Flag
-	private boolean mScaleUp = true;
-	// Flag indicating if default crop rect is whole image
-	private boolean mCropWholeImage = false;
+            int width = mBitmap.getWidth();
+            int height = mBitmap.getHeight();
 
+            Rect imageRect = new Rect(0, 0, width, height);
 
-	boolean mWaitingToPick; // Whether we are wait the user to pick a face.
-	boolean mSaving; // Whether the "save" button is already clicked.
+            RectF faceRect = new RectF(midX, midY, midX, midY);
+            faceRect.inset(-r, -r);
+            if (faceRect.left < 0) {
+                faceRect.inset(-faceRect.left, -faceRect.left);
+            }
 
-	private CropImageView mImageView;
-	private ContentResolver mContentResolver;
+            if (faceRect.top < 0) {
+                faceRect.inset(-faceRect.top, -faceRect.top);
+            }
 
-	private Bitmap mBitmap;
-	private final CropBitmapManager.ThreadSet mDecodingThreads = new CropBitmapManager.ThreadSet();
-	CropHighlightView mCrop;
+            if (faceRect.right > imageRect.right) {
+                faceRect.inset(faceRect.right - imageRect.right, faceRect.right
+                        - imageRect.right);
+            }
 
-	private CropIImage mImage;
+            if (faceRect.bottom > imageRect.bottom) {
+                faceRect.inset(faceRect.bottom - imageRect.bottom,
+                        faceRect.bottom - imageRect.bottom);
+            }
 
-	@Override
-	protected int getLayoutId() {
-		return R.layout.cropcropimage;
-	}
+            hv.setup(mImageMatrix, imageRect, faceRect, mCircleCrop,
+                    mAspectX != 0 && mAspectY != 0);
 
-	@Override
-	public void onCreate(Bundle icicle) {
-		// Do this first to avoid 'must be first errors'
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
+            mImageView.add(hv);
+        }
 
-		super.onCreate(icicle);
+        // Create a default HighlightView if we found no face in the picture.
+        private void makeDefault() {
+            CropHighlightView hv = new CropHighlightView(mImageView);
 
-		mContentResolver = getContentResolver();
+            int width = mBitmap.getWidth();
+            int height = mBitmap.getHeight();
 
-		mImageView = findViewById(R.id.image);
+            Rect imageRect = new Rect(0, 0, width, height);
 
-		showStorageToast(this);
+            int cropWidth;
+            int cropHeight;
+            if (mCropWholeImage) {
+                cropWidth = width;
+                cropHeight = height;
+            } else {
+                // make the default size about 4/5 of the width or height
+                int dv = Math.min(width, height);// XXXX * 4 / 5;
+                cropWidth = dv;
+                cropHeight = dv;
+            }
 
-		Intent intent = getIntent();
-		Bundle extras = intent.getExtras();
-		if (extras != null) {
-			if (extras.getString(BKEY_CIRCLE_CROP) != null) {
-				mCircleCrop = true;
-				mAspectX = 1;
-				mAspectY = 1;
-			}
+            // Even though we may be set to 'crop-whole-image', we need to obey
+            // aspect ratio if set.
+            if (mAspectX != 0 && mAspectY != 0) {
+                if (mAspectX > mAspectY) {
+                    cropHeight = cropWidth * mAspectY / mAspectX;
+                } else {
+                    cropWidth = cropHeight * mAspectX / mAspectY;
+                }
+            }
 
-			String imagePath = extras.getString(BKEY_IMAGE_PATH);
+            int x = (width - cropWidth) / 2;
+            int y = (height - cropHeight) / 2;
 
-			// Use the "output" parameter if present, otherwise overwrite
-			// existing file
-			String imgUri = extras.getString(BKEY_OUTPUT);
-			if (imgUri == null)
-				imgUri = imagePath;
+            RectF cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
+            hv.setup(mImageMatrix, imageRect, cropRect, mCircleCrop,
+                    mAspectX != 0 && mAspectY != 0);
+            mImageView.add(hv);
+        }
 
-			mSaveUri = getImageUri(imgUri);
+        // Scale the image down for faster face detection.
+        @Nullable
+        private Bitmap prepareBitmap() {
+            if (mBitmap == null) {
+                return null;
+            }
 
-			mBitmap = getBitmap(imagePath);
+            // 256 pixels wide is enough.
+            if (mBitmap.getWidth() > 256) {
+                mScale = 256.0F / mBitmap.getWidth();
+            }
+            Matrix matrix = new Matrix();
+            matrix.setScale(mScale, mScale);
+            return Bitmap.createBitmap(mBitmap, 0, 0,
+                    mBitmap.getWidth(), mBitmap.getHeight(), matrix, true);
+        }
 
-			mAspectX = extras.getInt(BKEY_ASPECT_X);
-			mAspectY = extras.getInt(BKEY_ASPECT_Y);
-			mOutputX = extras.getInt(BKEY_OUTPUT_X);
-			mOutputY = extras.getInt(BKEY_OUTPUT_Y);
-			mScale = extras.getBoolean(BKEY_SCALE, true);
-			mScaleUp = extras.getBoolean(BKEY_SCALE_UP_IF_NEEDED, true);
-			mCropWholeImage = extras.getBoolean(BKEY_WHOLE_IMAGE, false);
-		}
+        public void run() {
+            mImageMatrix = mImageView.getImageMatrix();
+            Bitmap faceBitmap = prepareBitmap();
 
-		if (mBitmap == null) {
-			finish();
-			return;
-		}
+            mScale = 1.0F / mScale;
+            //noinspection ConstantConditions
+            if (faceBitmap != null && DO_FACE_DETECTION) {
+                //noinspection UnusedAssignment
+                FaceDetector detector = new FaceDetector(faceBitmap.getWidth(), faceBitmap.getHeight(), mFaces.length);
+                mNumFaces = detector.findFaces(faceBitmap, mFaces);
+            }
 
-		// Make UI fullscreen.
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            if (faceBitmap != null && faceBitmap != mBitmap) {
+                faceBitmap.recycle();
+            }
 
-		findViewById(R.id.cancel).setOnClickListener(
-				new View.OnClickListener() {
-					public void onClick(View v) {
-						setResult(RESULT_CANCELED);
-						finish();
-					}
-				});
+            mHandler.post(new Runnable() {
+                public void run() {
+                    mWaitingToPick = mNumFaces > 1;
+                    if (mNumFaces > 0) {
+                        for (int i = 0; i < mNumFaces; i++) {
+                            handleFace(mFaces[i]);
+                        }
+                    } else {
+                        makeDefault();
+                    }
+                    mImageView.invalidate();
+                    if (mImageView.mHighlightViews.size() == 1) {
+                        mCrop = mImageView.mHighlightViews.get(0);
+                        mCrop.setFocus(true);
+                    }
 
-		findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				onSaveClicked();
-			}
-		});
-		startFaceDetection();
-	}
+                    if (mNumFaces > 1) {
+                        Toast t = Toast.makeText(CropCropImage.this,
+                                "Multi face crop help", Toast.LENGTH_SHORT);
+                        t.show();
+                    }
+                }
+            });
+        }
+    };
+    private CropIImage mImage;
 
-	private Uri getImageUri(String path) {
-		return Uri.fromFile(new File(path));
-	}
+    private static void showStorageToast(Activity activity) {
+        showStorageToast(activity, calculatePicturesRemaining());
+    }
 
-	private Bitmap getBitmap(String path) {
-		Uri uri = getImageUri(path);
-		InputStream in;
-		try {
-			in = mContentResolver.openInputStream(uri);
-			return BitmapFactory.decodeStream(in);
-		} catch (FileNotFoundException ignored) {
-		}
-		return null;
-	}
+    private static void showStorageToast(Activity activity, int remaining) {
+        String noStorageText = null;
 
-	private void startFaceDetection() {
-		if (isFinishing()) {
-			return;
-		}
+        if (remaining == NO_STORAGE_ERROR) {
+            if (Environment.MEDIA_CHECKING.equals(Environment.getExternalStorageState())) {
+                noStorageText = activity.getString(R.string.storage_error_preparing_card);
+            } else {
+                noStorageText = activity.getString(R.string.storage_error_no_card);
+            }
+        } else if (remaining < 1) {
+            noStorageText = activity.getString(R.string.storage_error_no_space);
+        }
 
-		mImageView.setImageBitmapResetBase(mBitmap, true);
+        if (noStorageText != null) {
+            Toast.makeText(activity, noStorageText, Toast.LENGTH_LONG).show();
+        }
+    }
 
-		CropUtil.startBackgroundJob(this, null, "Please wait\u2026",
-				new Runnable() {
-					public void run() {
-						final CountDownLatch latch = new CountDownLatch(1);
-						final Bitmap b = (mImage != null) ?
-								mImage.fullSizeBitmap(CropIImage.UNCONSTRAINED, 1024 * 1024)
-								: mBitmap;
-						mHandler.post(new Runnable() {
-							public void run() {
-								if (b != mBitmap && b != null) {
-									// Do not recycle until mBitmap has been set
-									// to the new bitmap!
-									Bitmap toRecycle = mBitmap;
-									mBitmap = b;
-									mImageView.setImageBitmapResetBase(mBitmap,
-											true);
-									toRecycle.recycle();
-								}
-								if (mImageView.getScale() == 1F) {
-									mImageView.center(true, true);
-								}
-								latch.countDown();
-							}
-						});
-						try {
-							latch.await();
-						} catch (InterruptedException e) {
-							throw new RuntimeException(e);
-						}
-						mRunFaceDetection.run();
-					}
-				}, mHandler);
-	}
+    private static int calculatePicturesRemaining() {
+        try {
+            /*
+             * if (!ImageManager.hasStorage()) { return NO_STORAGE_ERROR; } else
+             * {
+             */
+            String storageDirectory = Environment.getExternalStorageDirectory()
+                    .toString();
+            StatFs stat = new StatFs(storageDirectory);
+            long remaining = (stat.getAvailableBlocksLong() * stat.getBlockSizeLong()) / 400000L;
+            return (int) remaining;
+            // }
+        } catch (Exception ex) {
+            // if we can't stat the filesystem then we don't know how many
+            // pictures are remaining. it might be zero but just leave it
+            // blank since we really don't know.
+            return CANNOT_STAT_ERROR;
+        }
+    }
 
-	private void onSaveClicked() {
-		// TODO this code needs to change to use the decode/crop/encode single
-		// step api so that we don't require that the whole (possibly large)
-		// bitmap doesn't have to be read into memory
-		if (mSaving)
-			return;
+    @Override
+    protected int getLayoutId() {
+        return R.layout.cropcropimage;
+    }
 
-		if (mCrop == null) {
-			return;
-		}
+    @Override
+    public void onCreate(Bundle icicle) {
+        // Do this first to avoid 'must be first errors'
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-		mSaving = true;
+        super.onCreate(icicle);
 
-		Rect r = mCrop.getCropRect();
+        mContentResolver = getContentResolver();
 
-		int width = r.width();
-		int height = r.height();
+        mImageView = findViewById(R.id.image);
 
-		// If we are circle cropping, we want alpha channel, which is the
-		// third param here.
-		Bitmap croppedImage = Bitmap.createBitmap(width, height,
-				mCircleCrop ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565);
-		{
-			Canvas canvas = new Canvas(croppedImage);
-			Rect dstRect = new Rect(0, 0, width, height);
-			canvas.drawBitmap(mBitmap, r, dstRect, null);
-		}
+        showStorageToast(this);
 
-		if (mCircleCrop) {
-			// OK, so what's all this about?
-			// Bitmaps are inherently rectangular but we want to return
-			// something that's basically a circle. So we fill in the
-			// area around the circle with alpha. Note the all important
-			// PortDuff.Mode.CLEAR.
-			Canvas c = new Canvas(croppedImage);
-			Path p = new Path();
-			p.addCircle(width / 2F, height / 2F, width / 2F, Path.Direction.CW);
-			c.clipPath(p, Region.Op.DIFFERENCE);
-			c.drawColor(0x00000000, PorterDuff.Mode.CLEAR);
-		}
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            if (extras.getString(BKEY_CIRCLE_CROP) != null) {
+                mCircleCrop = true;
+                mAspectX = 1;
+                mAspectY = 1;
+            }
 
-		/* If the output is required to a specific size then scale or fill */
-		if (mOutputX != 0 && mOutputY != 0) {
-			if (mScale) {
-				/* Scale the image to the required dimensions */
-				Bitmap old = croppedImage;
-				croppedImage = CropUtil.transform(new Matrix(), croppedImage,
-						mOutputX, mOutputY, mScaleUp);
-				if (old != croppedImage) {
-					old.recycle();
-				}
-			} else {
+            String imagePath = extras.getString(BKEY_IMAGE_PATH);
 
-				/*
-				 * Don't scale the image crop it to the size requested. Create
-				 * an new image with the cropped image in the center and the
-				 * extra space filled.
-				 */
+            // Use the "output" parameter if present, otherwise overwrite
+            // existing file
+            String imgUri = extras.getString(BKEY_OUTPUT);
+            if (imgUri == null) {
+                imgUri = imagePath;
+            }
+//TOMF
+            mSaveUri = getImageUri(imgUri);
 
-				// Don't scale the image but instead fill it so it's the
-				// required dimension
-				Bitmap b = Bitmap.createBitmap(mOutputX, mOutputY,
-						Bitmap.Config.RGB_565);
-				Canvas canvas = new Canvas(b);
+            mBitmap = getBitmap(imagePath);
 
-				Rect srcRect = mCrop.getCropRect();
-				Rect dstRect = new Rect(0, 0, mOutputX, mOutputY);
+            mAspectX = extras.getInt(BKEY_ASPECT_X);
+            mAspectY = extras.getInt(BKEY_ASPECT_Y);
+            mOutputX = extras.getInt(BKEY_OUTPUT_X);
+            mOutputY = extras.getInt(BKEY_OUTPUT_Y);
+            mScale = extras.getBoolean(BKEY_SCALE, true);
+            mScaleUp = extras.getBoolean(BKEY_SCALE_UP_IF_NEEDED, true);
+            mCropWholeImage = extras.getBoolean(BKEY_WHOLE_IMAGE, false);
+        }
 
-				int dx = (srcRect.width() - dstRect.width()) / 2;
-				int dy = (srcRect.height() - dstRect.height()) / 2;
+        if (mBitmap == null) {
+            finish();
+            return;
+        }
 
-				/* If the srcRect is too big, use the center part of it. */
-				srcRect.inset(Math.max(0, dx), Math.max(0, dy));
+        // Make UI fullscreen.
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-				/* If the dstRect is too big, use the center part of it. */
-				dstRect.inset(Math.max(0, -dx), Math.max(0, -dy));
+        findViewById(R.id.cancel).setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View v) {
+                        setResult(RESULT_CANCELED);
+                        finish();
+                    }
+                });
 
-				/* Draw the cropped bitmap in the center */
-				canvas.drawBitmap(mBitmap, srcRect, dstRect, null);
+        findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                onSaveClicked();
+            }
+        });
+        startFaceDetection();
+    }
 
-				/* Set the cropped bitmap as the new bitmap */
-				croppedImage.recycle();
-				croppedImage = b;
-			}
-		}
+    @NonNull
+    private Uri getImageUri(@NonNull final String path) {
+        return Uri.fromFile(new File(path));
+    }
 
-		// Return the cropped image directly or save it to the specified URI.
-		Bundle myExtras = getIntent().getExtras();
-		if (myExtras != null
-				&& (myExtras.getParcelable("data") != null || myExtras
-						.getBoolean("return-data"))) {
-			Bundle extras = new Bundle();
-			extras.putParcelable("data", croppedImage);
-			setResult(RESULT_OK, (new Intent()).setAction("inline-data")
-					.putExtras(extras));
-			finish();
-		} else {
-			final Bitmap b = croppedImage;
-			CropUtil.startBackgroundJob(this, null, "Saving image",
-					new Runnable() {
-						public void run() {
-							saveOutput(b);
-						}
-					}, mHandler);
-		}
-	}
+    @Nullable
+    private Bitmap getBitmap(@NonNull final String path) {
+        Uri uri = getImageUri(path);
+        InputStream in;
+        try {
+            in = mContentResolver.openInputStream(uri);
+            return BitmapFactory.decodeStream(in);
+        } catch (FileNotFoundException ignored) {
+        }
+        return null;
+    }
 
-	private void saveOutput(Bitmap croppedImage) {
-		if (mSaveUri != null) {
-			try (OutputStream outputStream = mContentResolver.openOutputStream(mSaveUri)){
-				if (outputStream != null) {
-					croppedImage.compress(mOutputFormat, 75, outputStream);
-				}
-			} catch (IOException ex) {
-				// TODO: report error to caller
-				Logger.logError(ex, "Error while saving image");
-			}
+    private void startFaceDetection() {
+        if (isFinishing()) {
+            return;
+        }
 
-			Bundle extras = new Bundle();
-			setResult(RESULT_OK,
-					new Intent(mSaveUri.toString()).putExtras(extras));
-		}
+        mImageView.setImageBitmapResetBase(mBitmap, true);
+
+        CropUtil.startBackgroundJob(this, null, "Please wait\u2026",
+                new Runnable() {
+                    public void run() {
+                        final CountDownLatch latch = new CountDownLatch(1);
+                        final Bitmap b = (mImage != null) ?
+                                mImage.fullSizeBitmap(CropIImage.UNCONSTRAINED, 1024 * 1024)
+                                : mBitmap;
+                        mHandler.post(new Runnable() {
+                            public void run() {
+                                if (b != mBitmap && b != null) {
+                                    // Do not recycle until mBitmap has been set
+                                    // to the new bitmap!
+                                    Bitmap toRecycle = mBitmap;
+                                    mBitmap = b;
+                                    mImageView.setImageBitmapResetBase(mBitmap,
+                                            true);
+                                    toRecycle.recycle();
+                                }
+                                if (mImageView.getScale() == 1F) {
+                                    mImageView.center(true, true);
+                                }
+                                latch.countDown();
+                            }
+                        });
+                        try {
+                            latch.await();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                        mRunFaceDetection.run();
+                    }
+                }, mHandler);
+    }
+
+    private void onSaveClicked() {
+        // TODO this code needs to change to use the decode/crop/encode single
+        // step api so that we don't require that the whole (possibly large)
+        // bitmap doesn't have to be read into memory
+        if (mSaving) {
+            return;
+        }
+
+        if (mCrop == null) {
+            return;
+        }
+
+        mSaving = true;
+
+        Rect r = mCrop.getCropRect();
+
+        int width = r.width();
+        int height = r.height();
+
+        // If we are circle cropping, we want alpha channel, which is the
+        // third param here.
+        Bitmap croppedImage = Bitmap.createBitmap(width, height,
+                mCircleCrop ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565);
+        {
+            Canvas canvas = new Canvas(croppedImage);
+            Rect dstRect = new Rect(0, 0, width, height);
+            canvas.drawBitmap(mBitmap, r, dstRect, null);
+        }
+
+        if (mCircleCrop) {
+            // OK, so what's all this about?
+            // Bitmaps are inherently rectangular but we want to return
+            // something that's basically a circle. So we fill in the
+            // area around the circle with alpha. Note the all important
+            // PortDuff.Mode.CLEAR.
+            Canvas c = new Canvas(croppedImage);
+            Path p = new Path();
+            p.addCircle(width / 2F, height / 2F, width / 2F, Path.Direction.CW);
+            c.clipPath(p, Region.Op.DIFFERENCE);
+            c.drawColor(0x00000000, PorterDuff.Mode.CLEAR);
+        }
+
+        /* If the output is required to a specific size then scale or fill */
+        if (mOutputX != 0 && mOutputY != 0) {
+            if (mScale) {
+                /* Scale the image to the required dimensions */
+                Bitmap old = croppedImage;
+                croppedImage = CropUtil.transform(new Matrix(), croppedImage,
+                        mOutputX, mOutputY, mScaleUp);
+                if (old != croppedImage) {
+                    old.recycle();
+                }
+            } else {
+
+                /*
+                 * Don't scale the image crop it to the size requested. Create
+                 * an new image with the cropped image in the center and the
+                 * extra space filled.
+                 */
+
+                // Don't scale the image but instead fill it so it's the
+                // required dimension
+                Bitmap b = Bitmap.createBitmap(mOutputX, mOutputY,
+                        Bitmap.Config.RGB_565);
+                Canvas canvas = new Canvas(b);
+
+                Rect srcRect = mCrop.getCropRect();
+                Rect dstRect = new Rect(0, 0, mOutputX, mOutputY);
+
+                int dx = (srcRect.width() - dstRect.width()) / 2;
+                int dy = (srcRect.height() - dstRect.height()) / 2;
+
+                /* If the srcRect is too big, use the center part of it. */
+                srcRect.inset(Math.max(0, dx), Math.max(0, dy));
+
+                /* If the dstRect is too big, use the center part of it. */
+                dstRect.inset(Math.max(0, -dx), Math.max(0, -dy));
+
+                /* Draw the cropped bitmap in the center */
+                canvas.drawBitmap(mBitmap, srcRect, dstRect, null);
+
+                /* Set the cropped bitmap as the new bitmap */
+                croppedImage.recycle();
+                croppedImage = b;
+            }
+        }
+
+        // Return the cropped image directly or save it to the specified URI.
+        Bundle myExtras = getIntent().getExtras();
+        if (myExtras != null
+                && (myExtras.getParcelable("data") != null || myExtras
+                .getBoolean("return-data"))) {
+            Bundle extras = new Bundle();
+            extras.putParcelable("data", croppedImage);
+            setResult(RESULT_OK, (new Intent()).setAction("inline-data")
+                    .putExtras(extras));
+            finish();
+        } else {
+            final Bitmap b = croppedImage;
+            CropUtil.startBackgroundJob(this, null, "Saving image",
+                    new Runnable() {
+                        public void run() {
+                            saveOutput(b);
+                        }
+                    }, mHandler);
+        }
+    }
+
+    private void saveOutput(Bitmap croppedImage) {
+        if (mSaveUri != null) {
+            try (OutputStream outputStream = mContentResolver.openOutputStream(mSaveUri)) {
+                if (outputStream != null) {
+                    croppedImage.compress(mOutputFormat, 75, outputStream);
+                }
+            } catch (IOException ex) {
+                // TODO: report error to caller
+                Logger.logError(ex, "Error while saving image");
+            }
+
+            Bundle extras = new Bundle();
+            setResult(RESULT_OK,
+                    new Intent(mSaveUri.toString()).putExtras(extras));
+        }
 		/* else {
 			 * Bundle extras = new Bundle(); extras.putString("rect",
 			 * mCrop.getCropRect().toString());
@@ -386,217 +575,24 @@ public class CropCropImage extends CropMonitoredActivity {
 
 		}
 		*/
-		croppedImage.recycle();
-		finish();
-	}
+        croppedImage.recycle();
+        finish();
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		CropBitmapManager.instance().cancelThreadDecoding(mDecodingThreads);
-		// DO NOT RECYCLE HERE; will leave mBitmap unusable after a resume.
-		// mBitmap.recycle();
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
+        CropBitmapManager.instance().cancelThreadDecoding(mDecodingThreads);
+        // DO NOT RECYCLE HERE; will leave mBitmap unusable after a resume.
+        // mBitmap.recycle();
+    }
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		if (mBitmap != null && !mBitmap.isRecycled())
-			mBitmap.recycle();
-	}
-
-	private final Runnable mRunFaceDetection = new Runnable() {
-		float mScale = 1F;
-		Matrix mImageMatrix;
-		final FaceDetector.Face[] mFaces = new FaceDetector.Face[3];
-		int mNumFaces;
-
-		// For each face, we create a HightlightView for it.
-		private void handleFace(FaceDetector.Face f) {
-			PointF midPoint = new PointF();
-
-			int r = ((int) (f.eyesDistance() * mScale)) * 2;
-			f.getMidPoint(midPoint);
-			midPoint.x *= mScale;
-			midPoint.y *= mScale;
-
-			int midX = (int) midPoint.x;
-			int midY = (int) midPoint.y;
-
-			CropHighlightView hv = new CropHighlightView(mImageView);
-
-			int width = mBitmap.getWidth();
-			int height = mBitmap.getHeight();
-
-			Rect imageRect = new Rect(0, 0, width, height);
-
-			RectF faceRect = new RectF(midX, midY, midX, midY);
-			faceRect.inset(-r, -r);
-			if (faceRect.left < 0) {
-				faceRect.inset(-faceRect.left, -faceRect.left);
-			}
-
-			if (faceRect.top < 0) {
-				faceRect.inset(-faceRect.top, -faceRect.top);
-			}
-
-			if (faceRect.right > imageRect.right) {
-				faceRect.inset(faceRect.right - imageRect.right, faceRect.right
-						- imageRect.right);
-			}
-
-			if (faceRect.bottom > imageRect.bottom) {
-				faceRect.inset(faceRect.bottom - imageRect.bottom,
-						faceRect.bottom - imageRect.bottom);
-			}
-
-			hv.setup(mImageMatrix, imageRect, faceRect, mCircleCrop,
-					mAspectX != 0 && mAspectY != 0);
-
-			mImageView.add(hv);
-		}
-
-		// Create a default HighlightView if we found no face in the picture.
-		private void makeDefault() {
-			CropHighlightView hv = new CropHighlightView(mImageView);
-
-			int width = mBitmap.getWidth();
-			int height = mBitmap.getHeight();
-
-			Rect imageRect = new Rect(0, 0, width, height);
-
-			int cropWidth;
-			int cropHeight;
-			if (mCropWholeImage) {
-				cropWidth = width;
-				cropHeight = height;
-			} else {
-				// make the default size about 4/5 of the width or height
-                int dv = Math.min(width, height);// XXXX * 4 / 5;
-				cropWidth = dv;
-				cropHeight = dv;
-			}
-
-			// Even though we may be set to 'crop-whole-image', we need to obey
-			// aspect ratio if set.
-			if (mAspectX != 0 && mAspectY != 0) {
-				if (mAspectX > mAspectY) {
-					cropHeight = cropWidth * mAspectY / mAspectX;
-				} else {
-					cropWidth = cropHeight * mAspectX / mAspectY;
-				}
-			}
-
-			int x = (width - cropWidth) / 2;
-			int y = (height - cropHeight) / 2;
-
-			RectF cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
-			hv.setup(mImageMatrix, imageRect, cropRect, mCircleCrop,
-					mAspectX != 0 && mAspectY != 0);
-			mImageView.add(hv);
-		}
-
-		// Scale the image down for faster face detection.
-		private Bitmap prepareBitmap() {
-			if (mBitmap == null) {
-				return null;
-			}
-
-			// 256 pixels wide is enough.
-			if (mBitmap.getWidth() > 256) {
-				mScale = 256.0F / mBitmap.getWidth();
-			}
-			Matrix matrix = new Matrix();
-			matrix.setScale(mScale, mScale);
-			return Bitmap.createBitmap(mBitmap, 0, 0,
-					mBitmap.getWidth(), mBitmap.getHeight(), matrix, true);
-		}
-
-		public void run() {
-			mImageMatrix = mImageView.getImageMatrix();
-			Bitmap faceBitmap = prepareBitmap();
-
-			mScale = 1.0F / mScale;
-			//noinspection ConstantConditions
-			if (faceBitmap != null && DO_FACE_DETECTION) {
-				//noinspection UnusedAssignment
-				FaceDetector detector = new FaceDetector(faceBitmap.getWidth(), faceBitmap.getHeight(), mFaces.length);
-				mNumFaces = detector.findFaces(faceBitmap, mFaces);
-			}
-
-			if (faceBitmap != null && faceBitmap != mBitmap) {
-				faceBitmap.recycle();
-			}
-
-			mHandler.post(new Runnable() {
-				public void run() {
-					mWaitingToPick = mNumFaces > 1;
-					if (mNumFaces > 0) {
-						for (int i = 0; i < mNumFaces; i++) {
-							handleFace(mFaces[i]);
-						}
-					} else {
-						makeDefault();
-					}
-					mImageView.invalidate();
-					if (mImageView.mHighlightViews.size() == 1) {
-						mCrop = mImageView.mHighlightViews.get(0);
-						mCrop.setFocus(true);
-					}
-
-					if (mNumFaces > 1) {
-						Toast t = Toast.makeText(CropCropImage.this,
-								"Multi face crop help", Toast.LENGTH_SHORT);
-						t.show();
-					}
-				}
-			});
-		}
-	};
-
-	private static final int NO_STORAGE_ERROR = -1;
-	private static final int CANNOT_STAT_ERROR = -2;
-
-	private static void showStorageToast(Activity activity) {
-		showStorageToast(activity, calculatePicturesRemaining());
-	}
-
-	private static void showStorageToast(Activity activity, int remaining) {
-		String noStorageText = null;
-
-		if (remaining == NO_STORAGE_ERROR) {
-			if (Environment.MEDIA_CHECKING.equals(Environment.getExternalStorageState())) {
-				noStorageText = activity.getString(R.string.storage_error_preparing_card);
-			} else {
-				noStorageText = activity.getString(R.string.storage_error_no_card);
-			}
-		} else if (remaining < 1) {
-			noStorageText = activity.getString(R.string.storage_error_no_space);
-		}
-
-		if (noStorageText != null) {
-			Toast.makeText(activity, noStorageText, Toast.LENGTH_LONG).show();
-		}
-	}
-
-	private static int calculatePicturesRemaining() {
-		try {
-			/*
-			 * if (!ImageManager.hasStorage()) { return NO_STORAGE_ERROR; } else
-			 * {
-			 */
-			String storageDirectory = Environment.getExternalStorageDirectory()
-					.toString();
-			StatFs stat = new StatFs(storageDirectory);
-			long remaining = (stat.getAvailableBlocksLong() * stat.getBlockSizeLong()) / 400000L;
-			return (int) remaining;
-			// }
-		} catch (Exception ex) {
-			// if we can't stat the filesystem then we don't know how many
-			// pictures are remaining. it might be zero but just leave it
-			// blank since we really don't know.
-			return CANNOT_STAT_ERROR;
-		}
-	}
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mBitmap != null && !mBitmap.isRecycled()) {
+            mBitmap.recycle();
+        }
+    }
 
 }

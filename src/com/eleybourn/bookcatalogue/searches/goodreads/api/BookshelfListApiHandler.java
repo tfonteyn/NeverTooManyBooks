@@ -89,7 +89,7 @@ public class BookshelfListApiHandler extends ApiHandler {
 		// Sort by update_dte (descending) so sync is faster. Specify 'shelf=all' because it seems goodreads returns 
 		// the shelf that is selected in 'My Books' on the web interface by default.
 		final String urlBase = GOODREADS_API_ROOT + "/shelf/list.xml?key=%1$s&page=%2$s&user_id=%3$s";
-		final String url = String.format(urlBase, mManager.getDeveloperKey(), page, mManager.getUserid());
+		final String url = String.format(urlBase, mManager.getDeveloperKey(), page, mManager.getUserId());
 		HttpGet get = new HttpGet(url);
 
 		// Inital debug code:

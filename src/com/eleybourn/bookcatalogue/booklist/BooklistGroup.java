@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.booklist;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle.CompoundKey;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
@@ -170,15 +171,17 @@ public class BooklistGroup implements Serializable {
     }
 
     /** Setter for compound key */
-    public void setKeyComponents(@NonNull final String prefix, DomainDefinition... domains) {
+    public void setKeyComponents(@NonNull final String prefix, @NonNull final DomainDefinition... domains) {
         mCompoundKey = new CompoundKey(prefix, domains);
     }
 
     /** Getter for compound key */
+    @NonNull
     public CompoundKey getCompoundKey() {
         return mCompoundKey;
     }
 
+    @NonNull
     public String getName() {
         return mRowKindNames.get(kind);
     }
@@ -188,6 +191,7 @@ public class BooklistGroup implements Serializable {
 
     /**
      * Custom serialization support.
+     * @see Serializable
      */
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
@@ -195,6 +199,7 @@ public class BooklistGroup implements Serializable {
 
     /**
      * Pseudo-constructor for custom serialization support.
+     * @see Serializable
      */
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
@@ -204,35 +209,35 @@ public class BooklistGroup implements Serializable {
      * Static definitions of the kinds of rows that can be displayed and summarized.
      * Adding new row types needs to involve changes to:
      *
-     * - BooklistBuilder (to build the correct SQL)
-     * - BooksMultiTypeListHandler (to know what to do with the new type)
+     * - {@link BooklistBuilder} (to build the correct SQL)
+     * - {@link BooksMultiTypeListHandler} (to know what to do with the new type)
      *
      * @author Philip Warner
      */
     public static final class RowKinds {
-        public static final int ROW_KIND_BOOK = 0;                // Supported
+        public static final int ROW_KIND_BOOK = 0;              // Supported
         public static final int ROW_KIND_AUTHOR = 1;            // Supported
         public static final int ROW_KIND_SERIES = 2;            // Supported
-        public static final int ROW_KIND_GENRE = 3;                // Supported
-        public static final int ROW_KIND_PUBLISHER = 4;            // Supported
-        public static final int ROW_KIND_READ_AND_UNREAD = 5;    // Supported
+        public static final int ROW_KIND_GENRE = 3;             // Supported
+        public static final int ROW_KIND_PUBLISHER = 4;         // Supported
+        public static final int ROW_KIND_READ_AND_UNREAD = 5;   // Supported
         public static final int ROW_KIND_LOANED = 6;            // Supported
         public static final int ROW_KIND_YEAR_PUBLISHED = 7;    // Supported
-        public static final int ROW_KIND_MONTH_PUBLISHED = 8;    // Supported
-        public static final int ROW_KIND_TITLE_LETTER = 9;        // Supported
-        public static final int ROW_KIND_YEAR_ADDED = 10;        // Supported
-        public static final int ROW_KIND_MONTH_ADDED = 11;        // Supported
+        public static final int ROW_KIND_MONTH_PUBLISHED = 8;   // Supported
+        public static final int ROW_KIND_TITLE_LETTER = 9;      // Supported
+        public static final int ROW_KIND_YEAR_ADDED = 10;       // Supported
+        public static final int ROW_KIND_MONTH_ADDED = 11;      // Supported
         public static final int ROW_KIND_DAY_ADDED = 12;        // Supported
-        public static final int ROW_KIND_FORMAT = 13;            // Supported
+        public static final int ROW_KIND_FORMAT = 13;           // Supported
         public static final int ROW_KIND_YEAR_READ = 14;        // Supported
-        public static final int ROW_KIND_MONTH_READ = 15;        // Supported
-        public static final int ROW_KIND_DAY_READ = 16;            // Supported
-        public static final int ROW_KIND_LOCATION = 17;            // Supported
-        public static final int ROW_KIND_LANGUAGE = 18;            // Supported
-        public static final int ROW_KIND_UPDATE_YEAR = 19;        // Supported
-        public static final int ROW_KIND_UPDATE_MONTH = 20;        // Supported
-        public static final int ROW_KIND_UPDATE_DAY = 21;        // Supported
-        public static final int ROW_KIND_RATING = 22;            // Supported
+        public static final int ROW_KIND_MONTH_READ = 15;       // Supported
+        public static final int ROW_KIND_DAY_READ = 16;         // Supported
+        public static final int ROW_KIND_LOCATION = 17;         // Supported
+        public static final int ROW_KIND_LANGUAGE = 18;         // Supported
+        public static final int ROW_KIND_UPDATE_YEAR = 19;      // Supported
+        public static final int ROW_KIND_UPDATE_MONTH = 20;     // Supported
+        public static final int ROW_KIND_UPDATE_DAY = 21;       // Supported
+        public static final int ROW_KIND_RATING = 22;           // Supported
         public static final int ROW_KIND_BOOKSHELF = 23;        // Supported
         // NEWKIND: Add new kinds here
         public static final int ROW_KIND_MAX = 23;                // **** NOTE **** ALWAYS update after adding a row kind...
@@ -250,40 +255,29 @@ public class BooklistGroup implements Serializable {
         private static final long serialVersionUID = 1L;
 
         /**
-         * Add a value, throwing an exception if key already stored
-         *
          * @param key   Key for new value
          * @param value Data for new value
+         *
+         * @throws RuntimeException if key already stored
          */
         @SuppressWarnings("SameReturnValue")
-        public V add(K key, V value) {
-            if (super.put(key, value) != null)
+        @NonNull
+        public V add(@NonNull final K key, @NonNull final V value) {
+            if (super.put(key, value) != null) {
                 throw new RuntimeException("Map already contains key value" + key);
-            return null;
+            }
+            return value;
         }
 
         /**
-         * Just calls add(...)
-         *
          * @param key   Key for new value
          * @param value Data for new value
          */
         @Override
-        public V put(K key, V value) {
+        @NonNull
+        public V put(@NonNull final K key, @NonNull final V value) {
             return add(key, value);
         }
-
-        ///**
-        // * Same semantics as old 'put' method; just replace the value (or add).
-        // *
-        // * @param key		Key for new value
-        // * @param value		Data for new value
-        // *
-        // * @return			Old value, or null
-        // */
-        //public V replace(K key, V value) {
-        //	return super.put(key, value);
-        //}
     }
 
     /**
@@ -323,6 +317,7 @@ public class BooklistGroup implements Serializable {
 
         /**
          * Custom serialization support.
+         * @see Serializable
          */
         private void writeObject(ObjectOutputStream out) throws IOException {
             out.defaultWriteObject();
@@ -331,8 +326,9 @@ public class BooklistGroup implements Serializable {
         }
 
         /**
-         * Pseudo-constructor for custom serialization support.
+         * Custom serialization support.
          * We need to set the name resource ID for the properties since these may change across versions.
+         * @see Serializable
          */
         private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
             in.defaultReadObject();
@@ -342,11 +338,11 @@ public class BooklistGroup implements Serializable {
         }
 
         public boolean getAllSeries() {
-            return mAllSeries.getResolvedValue();
+            return mAllSeries.isTrue();
         }
 
         @Override
-        public void getStyleProperties(@NonNull Properties list) {
+        public void getStyleProperties(@NonNull final Properties list) {
             super.getStyleProperties(list);
             list.add(mAllSeries);
         }
@@ -389,8 +385,8 @@ public class BooklistGroup implements Serializable {
         }
 
         /**
-         * Create the properties objects; these are transient, so not created by deserialization, and need to
-         * be created in constructors as well.
+         * Create the properties objects; these are transient, so not created by deserialization,
+         * and need to be created in constructors as well.
          */
         private void initProperties() {
             mAllAuthors = new BooleanListProperty(mAllAuthorsItems, "AllAuthors",
@@ -405,6 +401,7 @@ public class BooklistGroup implements Serializable {
 
         /**
          * Custom serialization support.
+         * @see Serializable
          */
         private void writeObject(ObjectOutputStream out) throws IOException {
             out.defaultWriteObject();
@@ -416,6 +413,7 @@ public class BooklistGroup implements Serializable {
         /**
          * Pseudo-constructor for custom serialization support.
          * We need to set the name resource ID for the properties since these may change across versions.
+         *
          */
         private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
             in.defaultReadObject();
@@ -426,11 +424,11 @@ public class BooklistGroup implements Serializable {
         }
 
         public boolean getAllAuthors() {
-            return mAllAuthors.getResolvedValue();
+            return mAllAuthors.isTrue();
         }
 
         public boolean getGivenName() {
-            return mGivenName.getResolvedValue();
+            return mGivenName.isTrue();
         }
 
         /**

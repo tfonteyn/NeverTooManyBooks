@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.properties;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -43,19 +44,16 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
     /** Flag indicating value must be non-blank */
     private boolean mRequireNonBlank = false;
 
-    public StringProperty(@NonNull final String uniqueId, @NonNull final PropertyGroup group,
+    public StringProperty(@NonNull final String uniqueId,
+                          @NonNull final PropertyGroup group,
                           final int nameResourceId) {
-        super(uniqueId, group, nameResourceId, "", null, null);
-    }
-
-    public StringProperty setRequireNonBlank(boolean requireNonBlank) {
-        mRequireNonBlank = requireNonBlank;
-        return this;
+        super(uniqueId, group, nameResourceId, "");
     }
 
     /** Build the editor for this property */
     @Override
-    public View getView(LayoutInflater inflater) {
+    @NonNull
+    public View getView(@NonNull final LayoutInflater inflater) {
         // Get base view and components. Tag them.
         View v = inflater.inflate(R.layout.property_value_string, null);
         ViewTagger.setTag(v, R.id.TAG_PROPERTY, this);
@@ -86,41 +84,54 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
         return v;
     }
 
+    @NonNull
+    public StringProperty setRequireNonBlank(final boolean requireNonBlank) {
+        mRequireNonBlank = requireNonBlank;
+        return this;
+    }
+
     /** Get underlying preferences value */
     @Override
+    @Nullable
     protected String getGlobalDefault() {
         return BCPreferences.getString(getPreferenceKey(), getDefaultValue());
     }
 
     /** Set underlying preferences value */
     @Override
-    protected StringProperty setGlobalDefault(String value) {
+    @NonNull
+    protected StringProperty setGlobalDefault(@Nullable final String value) {
         BCPreferences.setString(getPreferenceKey(), value);
         return this;
     }
 
     @Override
-    public StringProperty setDefaultValue(final String value) {
+    @NonNull
+    public StringProperty setDefaultValue(@Nullable final String value) {
         super.setDefaultValue(value);
         return this;
     }
 
     @Override
+    @NonNull
     public StringProperty setWeight(final int weight) {
         super.setWeight(weight);
         return this;
     }
 
     @Override
-    public StringProperty setGroup(final PropertyGroup group) {
+    @NonNull
+    public StringProperty setGroup(@NonNull final PropertyGroup group) {
         super.setGroup(group);
         return this;
     }
 
     @Override
-    public StringProperty set(Property p) {
-        if (!(p instanceof StringValue))
-            throw new RuntimeException("Can not find a compatible interface for string parameter");
+    @NonNull
+    public StringProperty set(@NonNull final Property p) {
+        if (!(p instanceof StringValue)) {
+            throw new IllegalStateException("Can not find a compatible interface for string parameter");
+        }
         StringValue bv = (StringValue) p;
         set(bv.get());
         return this;
@@ -131,15 +142,18 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
     public void validate() {
         if (mRequireNonBlank) {
             String s = get();
-            if (s == null || s.trim().isEmpty())
+            if (s == null || s.trim().isEmpty()) {
                 throw new ValidationException(BookCatalogueApp.getResourceString(R.string.thing_must_not_be_blank, getName()));
+            }
         }
     }
 
     @Override
+    @NonNull
     public String toString() {
         return "StringProperty{" +
                 "mRequireNonBlank=" + mRequireNonBlank +
+                super.toString() +
                 '}';
     }
 }

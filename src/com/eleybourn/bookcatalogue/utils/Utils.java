@@ -123,6 +123,7 @@ public class Utils {
         return isOk;
     }
 
+    private static final Object lock = new Object();
     /**
      * Utility routine to get the data from a URL. Makes sure timeout is set to avoid application
      * stalling.
@@ -131,10 +132,10 @@ public class Utils {
      *
      * @return InputStream
      */
-    private static final Object urlLock = new Object();
+    @Nullable
     public static InputStream getInputStream(@NonNull final URL url) throws UnknownHostException {
 
-        synchronized (urlLock) {
+        synchronized (lock) {
 
             int retries = 3;
             while (true) {

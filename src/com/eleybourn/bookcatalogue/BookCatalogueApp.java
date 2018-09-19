@@ -32,6 +32,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -48,7 +49,9 @@ import org.acra.sender.ReportSenderException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * BookCatalogue Application implementation. Useful for making globals available
@@ -128,40 +131,28 @@ public class BookCatalogueApp extends Application {
         return DIALOG_THEMES[mLastTheme];
     }
 
-    /**
-     * Set of OnLocaleChangedListeners
-     */
-    private static final HashSet<WeakReference<OnLocaleChangedListener>> mOnLocaleChangedListeners = new HashSet<>();
-    /**
-     * Never store a context in a static, use the instance instead
-     */
+    /** Set of OnLocaleChangedListeners */
+    private static final Set<WeakReference<OnLocaleChangedListener>> mOnLocaleChangedListeners = new HashSet<>();
+    /** Never store a context in a static, use the instance instead */
     private static BookCatalogueApp mInstance;
-
-    /**
-     * Used to sent notifications regarding tasks
-     */
+    /** Used to sent notifications regarding tasks */
     private static NotificationManager mNotifier;
 
     private static BCQueueManager mQueueManager = null;
-    /**
-     * The locale used at startup; so that we can revert to system locale if we want to
-     */
+    /** The locale used at startup; so that we can revert to system locale if we want to */
     private static Locale mInitialLocale = null;
-    /**
-     * User-specified default locale
-     */
+    /** User-specified default locale */
     private static Locale mPreferredLocale = null;
-    /**
-     * Last locale used so; cached so we can check if it has genuinely changed
-     */
+    /** Last locale used so; cached so we can check if it has genuinely changed */
     private static Locale mLastLocale = null;
+
     /**
      * Tests if the Locale has changed + updates the global setting
      *TODO: check OnSharedPreferenceChangeListener ?
      *
      * @return  true is a change was detected
      */
-    public synchronized static boolean hasLocalChanged(Resources res) {
+    public synchronized static boolean hasLocalChanged(@NonNull final Resources res) {
         Locale current = mPreferredLocale;
         if ((current != null && !current.equals(mLastLocale)) || (current == null && mLastLocale != null)) {
             mLastLocale = current;
@@ -171,9 +162,7 @@ public class BookCatalogueApp extends Application {
         return false;
     }
 
-    /**
-     * List of supported locales
-     */
+    /** List of supported locales */
     private static ArrayList<String> mSupportedLocales = null;
     /**
      * Shared Preferences Listener
@@ -221,26 +210,27 @@ public class BookCatalogueApp extends Application {
      *
      * @return Locale corresponding to passed name
      */
-    public static Locale localeFromName(String name) {
+    @NonNull
+    public static Locale localeFromName(@NonNull final String name) {
         String[] parts;
         if (name.contains("_")) {
             parts = name.split("_");
         } else {
             parts = name.split("-");
         }
-        Locale l;
+        Locale locale;
         switch (parts.length) {
             case 1:
-                l = new Locale(parts[0]);
+                locale = new Locale(parts[0]);
                 break;
             case 2:
-                l = new Locale(parts[0], parts[1]);
+                locale = new Locale(parts[0], parts[1]);
                 break;
             default:
-                l = new Locale(parts[0], parts[1], parts[2]);
+                locale = new Locale(parts[0], parts[1], parts[2]);
                 break;
         }
-        return l;
+        return locale;
     }
 
     @NonNull
@@ -304,7 +294,7 @@ public class BookCatalogueApp extends Application {
      *
      * @return Localized resource string
      */
-    public static String getResourceString(int resId) {
+    public static String getResourceString(final int resId) {
         return getAppContext().getString(resId);
     }
 
@@ -315,7 +305,7 @@ public class BookCatalogueApp extends Application {
      *
      * @return Localized resource string[]
      */
-    public static String[] getResourceStringArray(int resId) {
+    public static String[] getResourceStringArray(final int resId) {
         return getAppContext().getResources().getStringArray(resId);
     }
 
@@ -353,7 +343,8 @@ public class BookCatalogueApp extends Application {
      *
      * @return Localized resource string
      */
-    public static String getResourceString(int resId, Object... objects) {
+    @NonNull
+    public static String getResourceString(final int resId, @Nullable final Object... objects) {
         return getAppContext().getString(resId, objects);
     }
 
@@ -363,7 +354,8 @@ public class BookCatalogueApp extends Application {
      * @param name  string to read
      * @return      value
      */
-    public static String getManifestString(String name) {
+    @NonNull
+    public static String getManifestString(@Nullable final String name) {
         ApplicationInfo ai;
         try {
             ai = mInstance.getApplicationContext()
@@ -373,27 +365,34 @@ public class BookCatalogueApp extends Application {
             Logger.logError(e);
             throw new NullPointerException("See log for PackageManager.NameNotFoundException");
         }
-
-        return ai.metaData.getString(name);
+        String result = ai.metaData.getString(name);
+        if (result == null) {
+            throw new IllegalStateException();
+        }
+        return result;
     }
 
     /**
      * Return the Intent that will be used by the notifications manager when a notification
      * is clicked; should bring the app to the foreground.
      */
-    public static Intent getAppToForegroundIntent(Context c) {
-        Intent i = new Intent(c, StartupActivity.class);
-        i.setAction("android.intent.action.MAIN");
-        i.addCategory(Intent.CATEGORY_LAUNCHER);
+    @NonNull
+    public static Intent getAppToForegroundIntent(Context context) {
+        Intent intent = new Intent(context, StartupActivity.class);
+        intent.setAction("android.intent.action.MAIN");
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
         // No idea what to do with this!
-        i.putExtra(BKEY_BRING_FG, true);
-        return i;
+        intent.putExtra(BKEY_BRING_FG, true);
+        return intent;
     }
 
     /**
      * Show a notification while this app is running.
      */
-    public static void showNotification(int id, String title, String message, Intent i) {
+    public static void showNotification(final int id,
+                                        @NonNull final String title,
+                                        @NonNull final String message,
+                                        @NonNull final Intent intent) {
 
         Notification notification = new Notification.Builder(getAppContext())
                 .setSmallIcon(R.drawable.ic_stat_logo)
@@ -402,7 +401,7 @@ public class BookCatalogueApp extends Application {
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)
                 // The PendingIntent to launch our activity if the user selects this notification
-                .setContentIntent(PendingIntent.getActivity(getAppContext(), 0, i, 0))
+                .setContentIntent(PendingIntent.getActivity(getAppContext(), 0, intent, 0))
                 .build();
 
         mNotifier.notify(id, notification);
@@ -464,7 +463,7 @@ public class BookCatalogueApp extends Application {
      *
      * @return true if it was actually changed
      */
-    private static void applyPreferredLocaleIfNecessary(Resources res) {
+    private static void applyPreferredLocaleIfNecessary(@NonNull final Resources res) {
         if (mPreferredLocale == null || (res.getConfiguration().locale.equals(mPreferredLocale))) {
             return;
         }
@@ -480,6 +479,7 @@ public class BookCatalogueApp extends Application {
      *
      * @return ArrayList of locale names
      */
+    @NonNull
     public static ArrayList<String> getSupportedLocales() {
         if (mSupportedLocales == null) {
             mSupportedLocales = new ArrayList<>();
@@ -496,11 +496,13 @@ public class BookCatalogueApp extends Application {
         return mSupportedLocales;
     }
 
+    @NonNull
     public static Locale getSystemLocal() {
         return mInitialLocale;
     }
 
     /** no point in storing a local reference, the thing itself is a singleton */
+    @NonNull
     public static SharedPreferences getSharedPreferences() {
         return mInstance.getApplicationContext().getSharedPreferences(APP_SHARED_PREFERENCES, MODE_PRIVATE);
     }
@@ -559,7 +561,7 @@ public class BookCatalogueApp extends Application {
      * Send a message to all registered OnLocaleChangedListeners, and cleanup any dead references.
      */
     private void notifyLocaleChanged() {
-        ArrayList<WeakReference<OnLocaleChangedListener>> toRemove = new ArrayList<>();
+        List<WeakReference<OnLocaleChangedListener>> toRemove = new ArrayList<>();
 
         for (WeakReference<OnLocaleChangedListener> ref : mOnLocaleChangedListeners) {
             OnLocaleChangedListener l = ref.get();
@@ -595,7 +597,7 @@ public class BookCatalogueApp extends Application {
 
     public class BcReportSender extends org.acra.sender.EmailIntentSender {
 
-        BcReportSender(Context ctx) {
+        BcReportSender(@NonNull final Context ctx) {
             super(ctx);
         }
 

@@ -822,6 +822,7 @@ public class CatalogueDBAdapter {
 
         boolean success;
         try {
+            //TODO: redo with a 'delete()' call, so we get 'rows affected'
             mPurgeBookAuthorsStmt.execute();
             success = true;
         } catch (Exception ignore) {
@@ -1512,10 +1513,14 @@ public class CatalogueDBAdapter {
             }
 
             // We may be just updating series, or author lists but we still update the last_update_date.
-            if ((flags & BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT) == 0 || !values.containsKey(DOM_LAST_UPDATE_DATE.name))
+            if ((flags & BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT) == 0 || !values.containsKey(DOM_LAST_UPDATE_DATE.name)) {
                 values.put(DOM_LAST_UPDATE_DATE.name, DateUtils.toSqlDateTime(Calendar.getInstance().getTime()));
+            }
+
             // ALWAYS set the INSTANCE_UPDATE_DATE; this is used for backups
             //args.put(DOM_INSTANCE_UPDATE_DATE.name, Utils.toSqlDateTime(Calendar.getInstance().getTime()));
+
+            // go !
             boolean success = mSyncedDb.update(DB_TB_BOOKS, values, DOM_ID + "=" + bookId, null) > 0;
 
             String bookshelf = bookData.getBookshelfList();
@@ -1740,6 +1745,7 @@ public class CatalogueDBAdapter {
 
         // If we have series details, save them.
         if (series != null) {
+            //TODO: redo with 'delete()'
             if (mDeleteBookSeriesStmt == null) {
                 mDeleteBookSeriesStmt = mStatements.add("mDeleteBookSeriesStmt",
                         "Delete from " + DB_TB_BOOK_SERIES + " Where " + DOM_BOOK_ID + " = ?");
@@ -1747,7 +1753,6 @@ public class CatalogueDBAdapter {
             // Delete the current series
             mDeleteBookSeriesStmt.bindLong(1, bookId);
             mDeleteBookSeriesStmt.execute();
-
 
             if (mAddBookSeriesStmt == null) {
                 mAddBookSeriesStmt = mStatements.add("mAddBookSeriesStmt",
@@ -2575,16 +2580,15 @@ public class CatalogueDBAdapter {
      * @return the number of rows affected
      */
     public int deleteBookshelf(final long id) {
-        int rowsAffected = mSyncedDb.delete(DB_TB_BOOK_BOOKSHELF_WEAK, DOM_BOOKSHELF_NAME + "=" + id, null);
-        if (rowsAffected > 0) {
-            rowsAffected = mSyncedDb.delete(DB_TB_BOOKSHELF, DOM_ID + "=" + id, null);
-            if (rowsAffected > 0) {
-                setBooksDirtyByBookshelf(id);
-            }
+
+        boolean dirty = (0 < mSyncedDb.delete(DB_TB_BOOK_BOOKSHELF_WEAK, DOM_BOOKSHELF_NAME + "=" + id, null));
+        int rowsAffected = mSyncedDb.delete(DB_TB_BOOKSHELF, DOM_ID + "=" + id, null);
+
+        if (dirty || rowsAffected > 0) {
+            setBooksDirtyByBookshelf(id);
         }
         return rowsAffected;
     }
-
 
     /** used in {@link #getBookshelfId}*/
     private SynchronizedStatement mGetBookshelfIdStmt = null;
@@ -3024,7 +3028,7 @@ public class CatalogueDBAdapter {
         values.put(DOM_BOOK_ID.name, bookData.getRowId());
         values.put(DOM_LOANED_TO.name, bookData.getString(DOM_LOANED_TO.name));
         long result = mSyncedDb.insert(DB_TB_LOAN, null, values);
-        this.deleteLoansWithoutBooks();
+        deleteLoansWithoutBooks();
         if (dirtyBookIfNecessary) {
             setBookDirty(bookData.getRowId());
         }

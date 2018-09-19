@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -162,6 +163,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         }
     }
 
+    @Nullable
     private ExportSettings createSettings() {
         final ExportSettings settings = new ExportSettings();
 

@@ -97,7 +97,7 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
                                 mEditManager.getLocations(), field.getValue().toString(),
                                 new StandardDialogs.SimpleDialogOnClickListener() {
                                     @Override
-                                    public void onClick(StandardDialogs.SimpleDialogItem item) {
+                                    public void onClick(@NonNull final StandardDialogs.SimpleDialogItem item) {
                                         field.setValue(item.toString());
                                     }
                                 });

@@ -68,10 +68,13 @@ public class LocalCoverFinder implements Importer.CoverFinder {
         }
 
     }
+
+    @Nullable
     private File findExternalCover(final long externalId) {
         return findExternalCover(Long.toString(externalId));
     }
 
+    @Nullable
     private File findExternalCover(@NonNull final String name) {
         // Find the original, if present.
         File orig = new File(mSrc + File.separator + name + ".jpg");

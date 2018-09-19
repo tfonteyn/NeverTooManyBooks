@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.cursors;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -160,6 +161,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
      * Get a collection of open cursors at the current time.
      */
     @SuppressWarnings("UnusedAssignment")
+    @Nullable
     private static ArrayList<TrackedCursor> getCursors() {
         if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
             ArrayList<TrackedCursor> list = new ArrayList<>();

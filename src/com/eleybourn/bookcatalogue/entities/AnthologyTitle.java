@@ -31,9 +31,13 @@ import java.util.ArrayList;
 /**
  * Class to represent a single title within an anthology
  *
- * The table has a limitation right now... an AnthologyTitle can only exist in ONE book
- * -> TODO split "anthology" table into "anthology" table without book id, and a new table "anthology_book" linking
- * latter one must then have:
+ * The table has some limitations right now
+ * 1. can only exist in ONE book
+ * -> TODO split "anthology" table into "anthology" table without bookid/position, and "anthology_book_weak"
+ * 2. can only have one author
+ * -> TODO? might be overkill
+ *
+ * "anthology_book_weak" must then have:
  * - id
  * - book_id
  * - anthology_id

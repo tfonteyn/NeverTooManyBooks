@@ -23,6 +23,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -56,7 +57,7 @@ public class TextFieldEditorFragment extends DialogFragment {
 	 *
 	 * @return			Created fragment
 	 */
-	public static TextFieldEditorFragment newInstance(int dialogId, int titleId, String text) {
+	public static TextFieldEditorFragment newInstance(final int dialogId, final int titleId, @Nullable String text) {
     	TextFieldEditorFragment frag = new TextFieldEditorFragment();
         Bundle args = new Bundle();
         args.putString(BKEY_TEXT, text);
@@ -100,11 +101,11 @@ public class TextFieldEditorFragment extends DialogFragment {
 	 */
 	private final TextFieldEditor.OnEditListener mEditListener = new TextFieldEditor.OnEditListener(){
 		@Override
-		public void onSaved(TextFieldEditor dialog, @NonNull String newText) {
+		public void onSaved(@NonNull TextFieldEditor dialog, @NonNull String newText) {
 			((OnTextFieldEditorListener)getActivity()).onTextFieldEditorSave(mDialogId, TextFieldEditorFragment.this, newText);
 		}
 		@Override
-		public void onCancel(TextFieldEditor dialog) {
+		public void onCancel(@NonNull TextFieldEditor dialog) {
 			((OnTextFieldEditorListener)getActivity()).onTextFieldEditorCancel(mDialogId, TextFieldEditorFragment.this);
 		}
 	};

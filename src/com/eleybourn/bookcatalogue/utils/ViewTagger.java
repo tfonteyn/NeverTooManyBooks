@@ -31,7 +31,7 @@ import android.view.View;
  *
  * http://code.google.com/p/android/issues/detail?id=18273
  *
- * TODO: above bug was fixed in Android 4, but this class is rather nice
+ * TODO: above bug was fixed in Android 4
  *
  * It seems that an 'interesting' design choice was made to use the view itself as a weak key to the into
  * another collection, which then causes the views to never be GC'd.
@@ -56,30 +56,30 @@ public class ViewTagger {
      * Internal static method to get (and optionally create) a ViewTagger object
      * on tha passed view.
      *
-     * @param v          View with tag
-     * @param autoCreate Indicates if tagger should be created if not present
+     * @param view          View with tag
+     * @param autoCreate    Indicates if tagger should be created if not present
      *
      * @return ViewTagger object
      */
     @Nullable
-    private static ViewTagger getTagger(@NonNull final View v, boolean autoCreate) {
+    private static ViewTagger getTagger(@NonNull final View view, final boolean autoCreate) {
         // See if we have one already
-        Object o = v.getTag();
+        Object o = view.getTag();
         ViewTagger tagger = null;
         if (o == null) {
             // Create if requested
             if (autoCreate) {
                 tagger = new ViewTagger();
-                v.setTag(tagger);
+                view.setTag(tagger);
             }
+            return tagger;
         } else {
             // Make sure it's a valid object type
             if (!(o instanceof ViewTagger)) {
                 throw new RuntimeException("View already has a tag that is not a ViewTagger");
             }
-            tagger = (ViewTagger) o;
+            return (ViewTagger) o;
         }
-        return tagger;
     }
 
     /**
@@ -90,8 +90,9 @@ public class ViewTagger {
     @Nullable
     public static Object getTag(@NonNull final View v) {
         ViewTagger tagger = getTagger(v, false);
-        if (tagger == null)
+        if (tagger == null) {
             return null;
+        }
 
         return tagger.get();
     }
@@ -106,10 +107,11 @@ public class ViewTagger {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public static <T> T getTag(@NonNull final View v, int key) {
+    public static <T> T getTag(@NonNull final View v, final int key) {
         ViewTagger tagger = getTagger(v, false);
-        if (tagger == null)
+        if (tagger == null) {
             return null;
+        }
 
         return (T) tagger.get(key);
     }
@@ -120,9 +122,8 @@ public class ViewTagger {
      * @param v     View from which to retrieve tag
      * @param value Object to store at specified tag
      */
-    public static void setTag(@NonNull final View v, Object value) {
-        getTagger(v, true)
-                .set(value);
+    public static void setTag(@NonNull final View v, @Nullable final Object value) {
+        getTagger(v, true).set(value);
     }
 
     /**
@@ -132,9 +133,10 @@ public class ViewTagger {
      * @param key   Key of tag to store
      * @param value Object to store at specified tag
      */
-    public static void setTag(@NonNull final View v, int key, Object value) {
-        getTagger(v, true)
-                .set(key, value);
+    public static void setTag(@NonNull final View v,
+                              final int key,
+                              @Nullable final Object value) {
+        getTagger(v, true).set(key, value);
     }
 
     /**
@@ -142,7 +144,7 @@ public class ViewTagger {
      *
      * @param value Value of id-less tag
      */
-    public void set(Object value) {
+    public void set(@Nullable final Object value) {
         mBareTag = value;
     }
 
@@ -152,10 +154,11 @@ public class ViewTagger {
      * @param key   Key of new tag
      * @param value Object to store at specified tag
      */
-    public void set(int key, Object value) {
+    public void set(final int key, @Nullable final Object value) {
         synchronized (this) {
-            if (mTags == null)
+            if (mTags == null) {
                 mTags = new SparseArray<>();
+            }
             mTags.put(key, value);
         }
     }
@@ -176,10 +179,12 @@ public class ViewTagger {
      *
      * @return Object at specified key
      */
-    public Object get(int key) {
+    @Nullable
+    public Object get(final int key) {
         synchronized (this) {
-            if (mTags == null)
+            if (mTags == null) {
                 return null;
+            }
             return mTags.get(key);
         }
     }

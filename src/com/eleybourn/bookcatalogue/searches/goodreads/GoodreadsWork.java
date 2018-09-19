@@ -63,12 +63,12 @@ public class GoodreadsWork {
 	public void handleTaskFinished(byte[] bytes) {
 		imageBytes = bytes;
 
-		ImageView v = mImageView.get();
-		if (v != null) {
-			synchronized(v) {
+		ImageView imageView = mImageView.get();
+		if (imageView != null) {
+			synchronized(imageView) {
 				// Make sure our view is still associated with us
-				if (ViewTagger.getTag(v, R.id.TAG_GOODREADS_WORK).equals(this)) {
-					v.setImageBitmap( ImageUtils.getBitmapFromBytes(imageBytes) );
+				if (this.equals(ViewTagger.getTag(imageView, R.id.TAG_GOODREADS_WORK))) {
+					imageView.setImageBitmap( ImageUtils.getBitmapFromBytes(imageBytes) );
 				}
 			}						
 		}

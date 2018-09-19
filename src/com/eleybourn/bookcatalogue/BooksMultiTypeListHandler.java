@@ -239,7 +239,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             return db.getAuthorById(rowView.getAuthorId()).getDisplayName();
         } else if (rowView.getKind() == RowKinds.ROW_KIND_BOOK) {
             ArrayList<Author> authors = db.getBookAuthorList(rowView.getBookId());
-            if (authors != null && authors.size() > 0)
+            if (authors.size() > 0)
                 return authors.get(0).getDisplayName();
         }
         return null;
@@ -311,7 +311,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 }
 
                 case RowKinds.ROW_KIND_PUBLISHER: {
-                    String s = rowView.getPublisherName();
+                    String s = rowView.getPublisherName(); //TOMF
                     if (s != null && !s.isEmpty()) {
                         addMenuItem(menu, R.id.MENU_PUBLISHER_EDIT, R.string.menu_edit_publisher, android.R.drawable.ic_menu_edit);
                     }
@@ -471,8 +471,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                             }
                         }
                     });
-                    Series series = db.getSeriesById(id);
-                    d.edit(series);
+                    d.edit(db.getSeriesById(id));
                 }
                 break;
             }
@@ -1031,7 +1030,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             if (rowView.hasSeries()) {
                 final String seriesNumber = rowView.getSeriesNumber();
                 final String seriesName = rowView.getSeriesName();
-                if (seriesName == null || seriesName.isEmpty()) {
+                if (seriesName == null || seriesName.isEmpty()) { //TOMF
                     // Hide it.
                     seriesNum.setVisibility(View.GONE);
                     seriesNumLong.setVisibility(View.GONE);

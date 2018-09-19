@@ -3,6 +3,8 @@ package com.eleybourn.bookcatalogue.searches.amazon;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.webkit.WebView;
 import android.widget.Toast;
 
@@ -33,7 +35,7 @@ public class AmazonUtils {
 	// key into the Manifest meta-data
 	private static final String AMAZON_KEY = "amazon.appkey";
 
-	private static void openLink(Activity context, String author, String series) {
+	private static void openLink(@NonNull final Activity context, @Nullable String author, @Nullable String series) {
 		// Build the URL and args
 		String url = AmazonManager.getBaseURL() + SUFFIX_BASE_URL;
 		author = cleanupSearchString(author);
@@ -67,6 +69,7 @@ public class AmazonUtils {
 		}
 	}
 
+	@Nullable
 	private static String buildSearchArgs(String author, String series) {
 		// This code works, but Amazon have a nasty tendency to cancel Associate IDs...
 		//String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
@@ -103,7 +106,7 @@ public class AmazonUtils {
 		
 	}
 	
-	private static String cleanupSearchString(String search) {
+	private static String cleanupSearchString(@Nullable final String search) {
 		if (search == null)
 			return "";
 
@@ -123,7 +126,7 @@ public class AmazonUtils {
 		return out.toString();
 	}
 
-	public static void openAmazonSearchPage(Activity context, String author, String series) {
+	public static void openAmazonSearchPage(@NonNull final Activity context, @Nullable final String author, @Nullable final String series) {
 
 		try {
 			openLink(context, author, series);

@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.properties;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 
@@ -31,9 +32,11 @@ import com.eleybourn.bookcatalogue.BCPreferences;
  */
 public class StringListProperty extends ListProperty<String> implements Property.StringValue {
 
-    public StringListProperty(@NonNull final ItemEntries<String> list, @NonNull final String uniqueId,
-                              @NonNull final PropertyGroup group, int nameResourceId) {
-        super(list, uniqueId, group, nameResourceId, null, null, null);
+    public StringListProperty(@NonNull final ItemEntries<String> list,
+                              @NonNull final String uniqueId,
+                              @NonNull final PropertyGroup group,
+                              final int nameResourceId) {
+        super(list, uniqueId, group, nameResourceId);
     }
 
     @Override
@@ -42,15 +45,16 @@ public class StringListProperty extends ListProperty<String> implements Property
     }
 
     @Override
-    protected StringListProperty setGlobalDefault(String value) {
+    protected StringListProperty setGlobalDefault(@Nullable String value) {
         BCPreferences.setString(getPreferenceKey(), value);
         return this;
     }
 
+    @NonNull
     @Override
-    public StringListProperty set(Property p) {
+    public StringListProperty set(@NonNull Property p) {
         if (!(p instanceof StringValue))
-            throw new RuntimeException("Can not find a compatible interface for string parameter");
+            throw new IllegalStateException("Can not find a compatible interface for string parameter");
         StringValue v = (StringValue) p;
         set(v.get());
         return this;

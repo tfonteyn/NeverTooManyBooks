@@ -749,8 +749,12 @@ public class DbSync {
         /**
          * Wrapper for underlying method on SQLiteStatement.
          */
-        public void bindBlob(final int index, final byte[] value) {
-            mStatement.bindBlob(index, value);
+        public void bindBlob(final int index, @Nullable final byte[] value) {
+            if (value == null) {
+                mStatement.bindNull(index);
+            } else {
+                mStatement.bindBlob(index, value);
+            }
         }
 
         /**

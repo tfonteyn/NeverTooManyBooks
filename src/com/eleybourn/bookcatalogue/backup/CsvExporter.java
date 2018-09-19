@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.backup;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BooksRow;
@@ -86,7 +87,8 @@ public class CsvExporter implements Exporter {
 
     public boolean export(@NonNull final OutputStream outputStream,
                           @NonNull final Exporter.ExportListener listener,
-                          final int backupFlags, Date since) throws IOException {
+                          final int backupFlags,
+                          @Nullable Date since) throws IOException {
         final String UNKNOWN = BookCatalogueApp.getResourceString(R.string.unknown);
         final String AUTHOR = BookCatalogueApp.getResourceString(R.string.author);
 

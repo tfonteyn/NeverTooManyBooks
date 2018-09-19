@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.booklist;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.PreferencesBaseActivity;
@@ -106,15 +107,23 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
      * Get the current preferred rebuild state for the list
      */
     public static int getRebuildState() {
-        return mBooklistStateProperty.get();
+        Integer value = mBooklistStateProperty.get();
+        if (value == null) {
+            value = mBooklistStateProperty.getDefaultValue();
+            if (value == null) {
+                throw new IllegalStateException();
+            }
+        }
+        return value;
+
     }
 
     public static boolean isThumbnailCacheEnabled() {
-        return mCacheThumbnailsProperty.getResolvedValue();
+        return mCacheThumbnailsProperty.isTrue();
     }
 
     public static boolean isBackgroundThumbnailsEnabled() {
-        return mBackgroundThumbnailsProperty.getResolvedValue();
+        return mBackgroundThumbnailsProperty.isTrue();
     }
 
     /**
@@ -145,21 +154,16 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
      * Setup each component of the layout using the passed preferences
      */
     @Override
-    protected void setupViews(Properties globalProperties) {
-        /*
-         * This activity predominantly shows 'Property' objects; we build that collection here.
-         */
-
+    protected void setupViews(@NonNull final Properties globalProperties) {
         // Create a dummy style and add one group of each kind
         BooklistStyle style = new BooklistStyle("");
-        for (int i : BooklistGroup.getRowKinds()) {
-            if (i != RowKinds.ROW_KIND_BOOK)
-                style.addGroup(i);
+        for (int kind : BooklistGroup.getRowKinds()) {
+            if (kind != RowKinds.ROW_KIND_BOOK)
+                style.addGroup(kind);
         }
 
         // Get all the properties from the style that have global defaults.
-        Properties allProps = style.getProperties();
-        for (Property property : allProps) {
+        for (Property property : style.getProperties()) {
             if (property instanceof ValuePropertyWithGlobalDefault) {
                 ValuePropertyWithGlobalDefault<?> globProp = (ValuePropertyWithGlobalDefault<?>) property;
                 if (globProp.hasGlobalDefault()) {
@@ -172,7 +176,6 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
         globalProperties.add(mBooklistStateProperty);
         globalProperties.add(mCacheThumbnailsProperty);
         globalProperties.add(mBackgroundThumbnailsProperty);
-
     }
 
     /**

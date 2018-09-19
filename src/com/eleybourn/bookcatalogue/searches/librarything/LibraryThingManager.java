@@ -23,6 +23,8 @@ package com.eleybourn.bookcatalogue.searches.librarything;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -116,8 +118,9 @@ public class LibraryThingManager {
             // mLastRequestTime must be updated while synchronized. As soon as this
             // block is left, another block may perform another update.
             //
-            if (wait < 0)
+            if (wait < 0) {
                 wait = 0;
+            }
             mLastRequestTime = now + wait;
         }
         if (wait > 0) {
@@ -135,8 +138,9 @@ public class LibraryThingManager {
     public static ArrayList<String> searchEditions(String isbn) {
         // Base path for an ISBN search
         String path = String.format(EDITIONS_URL, isbn);
-        if (isbn.isEmpty())
+        if (isbn.isEmpty()) {
             throw new RuntimeException("Can not get editions without an ISBN");
+        }
 
         ArrayList<String> editions = new ArrayList<>();
 
@@ -156,8 +160,9 @@ public class LibraryThingManager {
     public static void showLtAlertIfNecessary(Context context, boolean always, String suffix) {
         if (Utils.USE_LT) {
             LibraryThingManager ltm = new LibraryThingManager(context);
-            if (!ltm.isAvailable())
+            if (!ltm.isAvailable()) {
                 StandardDialogs.needLibraryThingAlert(context, always, suffix);
+            }
         }
     }
 
@@ -455,14 +460,16 @@ public class LibraryThingManager {
      */
     public void searchByIsbn(String isbn, boolean fetchThumbnail, Bundle bookData) {
         String devKey = getDevKey();
-        if (devKey.isEmpty())
+        if (devKey.isEmpty()) {
             throw new RuntimeException("Developer Key not available");
+        }
 
         // Base path for an ISBN search
         String path = String.format(DETAIL_URL, devKey, isbn);
 
-        if (isbn.isEmpty())
+        if (isbn.isEmpty()) {
             throw new IllegalArgumentException();
+        }
 
         URL url;
 
@@ -487,8 +494,9 @@ public class LibraryThingManager {
             Logger.logError(e, s);
         }
 
-        if (fetchThumbnail)
+        if (fetchThumbnail) {
             getCoverImage(isbn, bookData, ImageSizes.LARGE);
+        }
 
         return;
     }
@@ -496,13 +504,14 @@ public class LibraryThingManager {
     /**
      * Get the cover image using the ISBN
      */
-    private String getCoverImageUrl(String isbn, ImageSizes size) {
+    @NonNull
+    private String getCoverImageUrl(@NonNull final String isbn, @NonNull final ImageSizes size) {
         String devKey = getDevKey();
-        if (devKey.isEmpty())
+        if (devKey.isEmpty()) {
             throw new RuntimeException("Developer Key not available");
+        }
 
-        String path = COVER_URL_SMALL;
-
+        String path;
         switch (size) {
             case SMALL:
                 path = COVER_URL_SMALL;
@@ -512,6 +521,9 @@ public class LibraryThingManager {
                 break;
             case LARGE:
                 path = COVER_URL_LARGE;
+                break;
+            default:
+                path = COVER_URL_SMALL;
                 break;
         }
         // Get the 'large' version
@@ -523,7 +535,8 @@ public class LibraryThingManager {
      *
      * @return the fileSpec
      **/
-    public String getCoverImage(String isbn, Bundle bookData, ImageSizes size) {
+    @NonNull
+    public String getCoverImage(@NonNull final String isbn, @Nullable final Bundle bookData, @NonNull final ImageSizes size) {
         String url = getCoverImageUrl(isbn, size);
         if (DEBUG_SWITCHES.LIBRARYTHING && BuildConfig.DEBUG) {
             System.out.println("LTM: " + url + " " + isbn + " " + size);
@@ -544,6 +557,7 @@ public class LibraryThingManager {
         return getDevKey().length() > 0;
     }
 
+    @NonNull
     private String getDevKey() {
         SharedPreferences prefs = mAppContext.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
         String key = prefs.getString(LT_DEVKEY_PREF_NAME, "");

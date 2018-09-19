@@ -53,73 +53,39 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     private static final String BKEY_TASK_ID = "taskId";
 
 
-    /**
-     * The underlying task queue
-     */
+    /** The underlying task queue */
     private final SimpleTaskQueue mQueue;
-    /**
-     * Handler so we can detect UI thread
-     */
+    /** Handler so we can detect UI thread */
     private final Handler mHandler = new Handler();
-    /**
-     * List of messages to be sent to the underlying activity, but not yet sent
-     */
+    /** List of messages to be sent to the underlying activity, but not yet sent */
     private final ArrayList<TaskMessage> mTaskMessages = new ArrayList<>();
-    /**
-     * List of messages queued; only used if activity not present when showToast() is called
-     */
+    /** List of messages queued; only used if activity not present when showToast() is called */
     private ArrayList<String> mMessages = null;
-    /**
-     * Flag indicating dialog was cancelled
-     */
+    /** Flag indicating dialog was cancelled */
     private boolean mWasCancelled = false;
-    /**
-     * Max value of progress (for determinate progress)
-     */
+    /** Max value of progress (for determinate progress) */
     private String mMessage = null;
-    /**
-     * Max value of progress (for determinate progress)
-     */
+    /** Max value of progress (for determinate progress) */
     private int mMax;
-    /**
-     * Current value of progress (for determinate progress)
-     */
+    /** Current value of progress (for determinate progress) */
     private int mProgress = 0;
-    /**
-     * Flag indicating underlying field has changed so that progress dialog will be updated
-     */
+    /** Flag indicating underlying field has changed so that progress dialog will be updated */
     private boolean mMessageChanged = false;
-    /**
-     * Flag indicating underlying field has changed so that progress dialog will be updated
-     */
+    /** Flag indicating underlying field has changed so that progress dialog will be updated */
     private boolean mProgressChanged = false;
-    /**
-     * Flag indicating underlying field has changed so that progress dialog will be updated
-     */
+    /** Flag indicating underlying field has changed so that progress dialog will be updated */
     private boolean mMaxChanged = false;
-    /**
-     * Flag indicating underlying field has changed so that progress dialog will be updated
-     */
+    /** Flag indicating underlying field has changed so that progress dialog will be updated */
     private boolean mNumberFormatChanged = false;
-    /**
-     * Format of number part of dialog
-     */
+    /** Format of number part of dialog */
     private String mNumberFormat = null;
-    /**
-     * Unique ID for this task. Can be used like menu or activity IDs
-     */
+    /** Unique ID for this task. Can be used like menu or activity IDs */
     private int mTaskId;
-    /**
-     * Flag, defaults to true, that can be set by tasks and is passed to listeners
-     */
+    /** Flag, defaults to true, that can be set by tasks and is passed to listeners */
     private boolean mSuccess = true;
-    /**
-     * Flag indicating a Refresher has been posted but not run yet
-     */
+    /** Flag indicating a Refresher has been posted but not run yet */
     private boolean mRefresherQueued = false;
-    /**
-     * Runnable object to refresh the dialog
-     */
+    /** Runnable object to refresh the dialog */
     private final Runnable mRefresher = new Runnable() {
         @Override
         public void run() {
@@ -135,9 +101,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      */
     public SimpleTaskQueueProgressFragment() {
         mQueue = new SimpleTaskQueue("FragmentQueue");
-		/*
-	  Dismiss dialog if all tasks finished
-	 */
+		/* Dismiss dialog if all tasks finished */
         SimpleTaskQueue.OnTaskFinishListener mTaskFinishListener = new SimpleTaskQueue.OnTaskFinishListener() {
 
             @Override
@@ -158,15 +122,18 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      * @param message Message to display
      * @param task    Task to run
      */
-    public static SimpleTaskQueueProgressFragment runTaskWithProgress(final FragmentActivity context, int message,
-                                                                      FragmentTask task, boolean isIndeterminate, int taskId) {
+    public static SimpleTaskQueueProgressFragment runTaskWithProgress(@NonNull final FragmentActivity context,
+                                                                      final int message,
+                                                                      @NonNull final FragmentTask task,
+                                                                      final boolean isIndeterminate,
+                                                                      final int taskId) {
         SimpleTaskQueueProgressFragment frag = SimpleTaskQueueProgressFragment.newInstance(message, isIndeterminate, taskId);
         frag.enqueue(task);
         frag.show(context.getSupportFragmentManager(), null);
         return frag;
     }
 
-    private static SimpleTaskQueueProgressFragment newInstance(int title, boolean isIndeterminate, int taskId) {
+    private static SimpleTaskQueueProgressFragment newInstance(final int title, final boolean isIndeterminate, final int taskId) {
         SimpleTaskQueueProgressFragment frag = new SimpleTaskQueueProgressFragment();
         Bundle args = new Bundle();
         args.putInt(BKEY_TITLE, title);
@@ -179,7 +146,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     /**
      * Queue a TaskMessage and then try to process the queue.
      */
-    private void queueMessage(TaskMessage m) {
+    private void queueMessage(@NonNull final TaskMessage m) {
 
         synchronized (mTaskMessages) {
             mTaskMessages.add(m);
@@ -190,7 +157,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     /**
      * Queue a TaskFinished message
      */
-    private void queueTaskFinished(FragmentTask t, Exception e) {
+    private void queueTaskFinished(@NonNull final FragmentTask t, @Nullable final Exception e) {
         queueMessage(new TaskFinishedMessage(t, e));
     }
 
@@ -239,8 +206,9 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
                 } else {
                     // Assume the toast message was sent before the fragment was displayed; this
                     // list will be read in onAttach
-                    if (mMessages == null)
+                    if (mMessages == null) {
                         mMessages = new ArrayList<>();
+                    }
                     mMessages.add(message);
                 }
             }
@@ -279,8 +247,9 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         synchronized (this) {
             if (mMessages != null) {
                 for (String message : mMessages) {
-                    if (message != null && !message.isEmpty())
+                    if (message != null && !message.isEmpty()) {
                         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+                    }
                 }
                 mMessages.clear();
             }
@@ -360,8 +329,9 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     public void onResume() {
         super.onResume();
         // If task finished, dismiss.
-        if (!mQueue.hasActiveTasks())
+        if (!mQueue.hasActiveTasks()) {
             dismiss();
+        }
     }
 
     /**
@@ -473,7 +443,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         }
     }
 
-    private void setDialogNumberFormat(ProgressDialog d) {
+    private void setDialogNumberFormat(@NonNull final ProgressDialog d) {
         // previously seen null issue fixed in .. at least API 21 probably earlier
         d.setProgressNumberFormat(mNumberFormat);
     }
@@ -481,7 +451,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     /**
      * Set the progress max value
      */
-    public void setMax(int max) {
+    public void setMax(final int max) {
         mMax = max;
         mMaxChanged = true;
         requestUpdateProgress();
@@ -490,7 +460,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     /**
      * Set the progress number format, if the API will support it
      */
-    public void setNumberFormat(String format) {
+    public void setNumberFormat(@Nullable final String format) {
         synchronized (this) {
             mNumberFormat = format;
             mNumberFormatChanged = true;
@@ -505,8 +475,9 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      */
     @Override
     public void onDestroyView() {
-        if (getDialog() != null && getRetainInstance())
+        if (getDialog() != null && getRetainInstance()) {
             getDialog().setDismissMessage(null);
+        }
         super.onDestroyView();
     }
 

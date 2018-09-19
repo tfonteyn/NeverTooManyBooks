@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.properties;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.properties.Property.BooleanValue;
@@ -38,57 +39,78 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
                                 @NonNull final String uniqueId,
                                final PropertyGroup group,
                                final int nameResourceId) {
-        super(list, uniqueId, group, nameResourceId, false, null, false);
+        super(list, uniqueId, group, nameResourceId, false, false);
     }
 
     @Override
     protected Boolean getGlobalDefault() {
-        return BCPreferences.getBoolean(getPreferenceKey(), getDefaultValue());
+        Boolean value = getDefaultValue();
+        if (value == null) {
+            throw new IllegalStateException();
+        }
+        return BCPreferences.getBoolean(getPreferenceKey(), value);
     }
 
-    @Override
-    protected BooleanListProperty setGlobalDefault(Boolean value) {
+    protected BooleanListProperty setGlobalDefault(final Boolean value) {
         BCPreferences.setBoolean(getPreferenceKey(), value);
         return this;
     }
 
+    @NonNull
     @Override
     public BooleanListProperty setGlobal(final boolean isGlobal) {
         super.setGlobal(isGlobal);
         return this;
     }
 
+    @NonNull
     @Override
     public BooleanListProperty setHint(final int hint) {
         super.setHint(hint);
         return this;
     }
 
+    @NonNull
     @Override
     public BooleanListProperty setDefaultValue(final Boolean value) {
         super.setDefaultValue(value);
         return this;
     }
 
+    @NonNull
     @Override
     public BooleanListProperty setWeight(final int weight) {
         super.setWeight(weight);
         return this;
     }
 
+    @NonNull
     @Override
-    public BooleanListProperty setPreferenceKey(final String key) {
+    public BooleanListProperty setPreferenceKey(@NonNull final String key) {
         super.setPreferenceKey(key);
         return this;
     }
 
+    @NonNull
     @Override
-    public BooleanListProperty set(Property p) {
+    public BooleanListProperty set(@NonNull final Property p) {
         if (!(p instanceof BooleanValue))
-            throw new RuntimeException("Can not find a compatible interface for boolean parameter");
+            throw new IllegalStateException();
         BooleanValue v = (BooleanValue) p;
         set(v.get());
         return this;
+    }
+
+    public boolean isTrue() {
+        Boolean b =  super.getResolvedValue();
+        return (b != null ? b: false);
+    }
+
+    @Nullable
+    @Override
+    @Deprecated
+    public Boolean getResolvedValue() {
+        return super.getResolvedValue();
     }
 }
 

@@ -25,6 +25,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -55,7 +56,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
     /**
      * Constructor
      */
-    public BooklistStylesListActivity() {
+    public BooklistStylesListActivity() { //TOMF
         super(null, R.layout.booklist_styles_edit_list, R.layout.booklist_styles_edit_row);
     }
 
@@ -85,6 +86,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
      * Required by parent class since we do not pass a key for the intent to get the list.
      */
     @Override
+    @NonNull
     protected ArrayList<BooklistStyle> getList() {
         ArrayList<BooklistStyle> styles = new ArrayList<>();
         // get the preferred styles first
@@ -102,7 +104,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
     }
 
     @Override
-    protected void onSetupView(@NonNull View target, @NonNull BooklistStyle style, int position) {
+    protected void onSetupView(@NonNull View target, @NonNull BooklistStyle style, final int position) {
         Holder holder;
         holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
         if (holder == null) {
@@ -197,7 +199,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
      * @param style       Actual style
      * @param alwaysClone Force a clone, even if its already user-defined
      */
-    private void editStyle(int position, BooklistStyle style, boolean alwaysClone) {
+    private void editStyle(final int position, @NonNull BooklistStyle style, final boolean alwaysClone) {
         // Save the current row
         mEditedRow = position;
 
@@ -213,18 +215,18 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
             }
         }
 
-        Intent i = new Intent(this, BooklistStylePropertiesActivity.class);
-        i.putExtra(BooklistStylePropertiesActivity.BKEY_STYLE, style);
-        startActivityForResult(i, UniqueId.ACTIVITY_BOOKLIST_STYLE);
+        Intent intent = new Intent(this, BooklistStylePropertiesActivity.class);
+        intent.putExtra(BooklistStylePropertiesActivity.BKEY_STYLE, style);
+        startActivityForResult(intent, UniqueId.ACTIVITY_BOOKLIST_STYLE);
     }
 
     @Override
     protected void onListChanged() {
-        BooklistStyles.SaveMenuOrder(mList);
+        BooklistStyles.saveMenuOrder(mList);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
@@ -239,7 +241,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
      *
      * @param data Data passed to onActivityResult
      */
-    private void handleStyleResult(Intent data) {
+    private void handleStyleResult(@Nullable final Intent data) {
         // Make sure we have a style. If not, the user must have cancelled.
         if (data == null || !data.hasExtra(BooklistStylePropertiesActivity.BKEY_STYLE))
             return;
@@ -253,7 +255,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
                 // Was added. So put at top and mark as preferred
                 result.setPreferred(true);
                 mList.add(0, result);
-                BooklistStyles.SaveMenuOrder(mList);
+                BooklistStyles.saveMenuOrder(mList);
             } else {
                 BooklistStyle origStyle = mList.get(mEditedRow);
                 if (origStyle.getRowId() != result.getRowId()) {
@@ -274,7 +276,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
                         mList.add(mEditedRow, result);
                     }
                     if (result.isPreferred())
-                        BooklistStyles.SaveMenuOrder(mList);
+                        BooklistStyles.saveMenuOrder(mList);
                 } else {
                     mList.set(mEditedRow, result);
                 }
@@ -323,7 +325,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
          * @param stringId ID of String for this item
          * @param id       ID of this item
          */
-        ContextItem(int stringId, int id) {
+        ContextItem(final int stringId, final int id) {
             mString = getString(stringId);
             mId = id;
         }
@@ -347,7 +349,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
          * Use the string object to provide the CharSequence implementation
          */
         @Override
-        public char charAt(int index) {
+        public char charAt(final int index) {
             return mString.charAt(index);
         }
 
@@ -363,7 +365,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
          * Use the string object to provide the CharSequence implementation
          */
         @Override
-        public CharSequence subSequence(int start, int end) {
+        public CharSequence subSequence(final int start, final int end) {
             return mString.subSequence(start, end);
         }
     }

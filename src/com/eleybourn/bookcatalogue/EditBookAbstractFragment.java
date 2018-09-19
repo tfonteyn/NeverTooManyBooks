@@ -196,11 +196,13 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         return false;
     }
 
+    @Nullable
     private String getAuthorFromBook() {
         ArrayList<Author> list = mEditManager.getBookData().getAuthors();
         return list.size() > 0 ? list.get(0).getDisplayName() : null;
     }
 
+    @Nullable
     private String getSeriesFromBook() {
         ArrayList<Series> list = mEditManager.getBookData().getSeries();
         return list.size() > 0 ? list.get(0).name : null;

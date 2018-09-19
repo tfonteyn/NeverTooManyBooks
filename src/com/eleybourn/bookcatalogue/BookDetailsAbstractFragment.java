@@ -8,6 +8,7 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
@@ -125,8 +126,8 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      */
     private final OnImageSelectedListener mOnImageSelectedListener = new OnImageSelectedListener() {
         @Override
-        public void onImageSelected(String fileSpec) {
-            if (mCoverBrowser != null && fileSpec != null) {
+        public void onImageSelected(@NonNull String fileSpec) {
+            if (mCoverBrowser != null) {
                 // Get the current file
                 File bookFile = getCoverFile(mEditManager.getBookData().getRowId());
                 // Get the new file
@@ -598,7 +599,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     private void invalidateCachedThumbnail() {
         final long rowId = mEditManager.getBookData().getRowId();
         if (rowId != 0) {
-            try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(this.getContext())) {
+            try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(getContext())) {
                 coversDbHelper.deleteBookCover(mDb.getBookUuid(rowId));
             } catch (Exception e) {
                 Logger.logError(e, "Error cleaning up cached cover images");
@@ -627,7 +628,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
          * We also store it in the tag field so that it is automatically serialized with the
          * activity.
          */
-        mFields.add(R.id.anthology, BookData.LOCAL_KEY_ANTHOLOGY, null);
+        mFields.add(R.id.anthology, BookData.KEY_IS_ANTHOLOGY, null);
 
         mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED, null);
         mFields.add(R.id.isbn, UniqueId.KEY_ISBN, null);
@@ -684,7 +685,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      */
     protected void populateBookDetailsFields(BookData book) {
         //Set anthology field
-        Integer ant = book.getInt(BookData.LOCAL_KEY_ANTHOLOGY);
+        Integer ant = book.getInt(BookData.KEY_IS_ANTHOLOGY);
         mFields.getField(R.id.anthology).setValue(ant.toString()); // Set checked if ant != 0
     }
 

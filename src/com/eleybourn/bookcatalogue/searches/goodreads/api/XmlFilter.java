@@ -132,7 +132,7 @@ public class XmlFilter {
      *
      * @return Boolean indicating it matches.
      */
-    private boolean matches(String tag) {
+    private boolean matches(@Nullable final String tag) {
         return mTagName.equalsIgnoreCase(tag);
     }
 
@@ -152,7 +152,7 @@ public class XmlFilter {
      * @return Matching filter, or NULL
      */
     @Nullable
-    private XmlFilter getSubFilter(String name) {
+    private XmlFilter getSubFilter(@Nullable final String name) {
         for (XmlFilter f : mSubFilters) {
             if (f.matches(name))
                 return f;
@@ -201,7 +201,7 @@ public class XmlFilter {
     }
 
     @NonNull
-    public XmlFilter setEndAction(@NonNull final XmlHandler endAction, final Object userArg) {
+    public XmlFilter setEndAction(@NonNull final XmlHandler endAction, @Nullable final Object userArg) {
         if (mEndAction != null)
             throw new RuntimeException("End Action already set");
         mEndAction = endAction;
@@ -222,7 +222,7 @@ public class XmlFilter {
     }
 
     @NonNull
-    public XmlFilter setStartAction(@NonNull final XmlHandler startAction, final Object userArg) {
+    public XmlFilter setStartAction(@NonNull final XmlHandler startAction, @Nullable final Object userArg) {
         if (mStartAction != null)
             throw new RuntimeException("Start Action already set");
         mStartAction = startAction;
@@ -269,7 +269,19 @@ public class XmlFilter {
         public XmlFilter filter;
         public Object userArg;
 
-        public ElementContext(String uri, String localName, String name, Attributes attributes, String preText) {
+        public ElementContext() {
+            this.uri = null;
+            this.localName = null;
+            this.name = null;
+            this.attributes = null;
+            this.preText = null;
+        }
+
+        public ElementContext(@Nullable final String uri,
+                              @Nullable final String localName,
+                              @Nullable final String name,
+                              @Nullable final Attributes attributes,
+                              @Nullable final String preText) {
             this.uri = uri;
             this.localName = localName;
             this.name = name;

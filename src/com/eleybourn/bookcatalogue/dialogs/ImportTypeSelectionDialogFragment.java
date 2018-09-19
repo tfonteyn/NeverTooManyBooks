@@ -100,20 +100,20 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
             mArchiveHasValidDates = false;
         }
 
-        View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_import_type_selection, null);
-        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(v).setTitle(R.string.import_from_archive).create();
-        alertDialog.setIcon(android.R.drawable.ic_menu_help);
-        alertDialog.setCanceledOnTouchOutside(false);
-
-        setOnClickListener(v, R.id.all_books_row);
+        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_import_type_selection, null);
+        setOnClickListener(view, R.id.all_books_row);
         if (mArchiveHasValidDates) {
-            setOnClickListener(v, R.id.new_and_changed_books_row);
+            setOnClickListener(view, R.id.new_and_changed_books_row);
         } else {
-            TextView blurb = v.findViewById(R.id.new_and_changed_books_blurb);
+            TextView blurb = view.findViewById(R.id.new_and_changed_books_blurb);
             blurb.setText(R.string.old_archive_blurb);
         }
 
-        return alertDialog;
+        AlertDialog dialog = new AlertDialog.Builder(getActivity()).setView(view).setTitle(R.string.import_from_archive)
+                .setIcon(android.R.drawable.ic_menu_help)
+                .create();
+        dialog.setCanceledOnTouchOutside(false);
+        return dialog;
     }
 
     private void handleClick(@NonNull final View v) {

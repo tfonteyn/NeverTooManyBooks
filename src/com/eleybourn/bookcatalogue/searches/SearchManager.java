@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -80,37 +81,6 @@ public class SearchManager implements TaskManagerListener {
     private static final ArrayList<SearchSite> mReliabilityOrder = new ArrayList<>(mSearchOrderDefaults);
     private static final TaskSwitch mMessageSwitch = new TaskSwitch();
     private static ArrayList<SearchSite> mSearchOrder;
-
-    private void initSearchSites() {
-        /*
-         * default search order
-         *
-         * NEWKIND: make sure to set the reliability field correctly
-         *
-         *  {SEARCH_GOODREADS, SEARCH_AMAZON, SEARCH_GOOGLE, SEARCH_LIBRARY_THING}
-         */
-        mSearchOrderDefaults.add(new SearchSite(0, 1, SEARCH_AMAZON, "Amazon", true));
-        mSearchOrderDefaults.add(new SearchSite(1, 0, SEARCH_GOODREADS, "GoodReads", true));
-        mSearchOrderDefaults.add(new SearchSite(2, 2, SEARCH_GOOGLE, "Google", true));
-        mSearchOrderDefaults.add(new SearchSite(3, 3, SEARCH_LIBRARY_THING, "LibraryThing", true));
-
-        mSearchOrder = new ArrayList<>(mSearchOrderDefaults);
-
-        SharedPreferences p = mTaskManager.getContext().getSharedPreferences(APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
-        for (SearchSite site : mSearchOrderDefaults) {
-            site.enabled = p.getBoolean(TAG + "." + site.name + ".enabled", site.enabled);
-            site.order = p.getInt(TAG + "." + site.name + ".order", site.order);
-            site.reliability = p.getInt(TAG + "." + site.name + ".reliability", site.reliability);
-
-            mSearchOrder.set(site.order, site);
-            mReliabilityOrder.set(site.reliability, site);
-        }
-
-//        if (BuildConfig.DEBUG) {
-//            BCPreferences.dumpPreferences();
-//        }
-    }
-
     // TaskManager for threads; may have other threads than the ones this object creates.
     @NonNull
     private final TaskManager mTaskManager;
@@ -147,7 +117,6 @@ public class SearchManager implements TaskManagerListener {
     private boolean mHasIsbn;
     // Whether of not to fetch thumbnails
     private boolean mFetchThumbnail;
-
     /** Output from search threads */
     private Hashtable<Integer, Bundle> mSearchResults = new Hashtable<>();
 
@@ -163,16 +132,6 @@ public class SearchManager implements TaskManagerListener {
         getMessageSwitch().addListener(getSenderId(), taskHandler, false);
     }
 
-//	/**
-//	 * Task handler for thread management; caller MUST implement this to get
-//	 * search results.
-//	 * 
-//	 * @author Philip Warner
-//	 */
-//	public interface SearchResultHandler extends ManagedTask.TaskListener {
-//		void onSearchFinished(Bundle bookData, boolean cancelled);
-//	}
-
     private static void saveSearchSites() {
         SharedPreferences.Editor e = BookCatalogueApp.getSharedPreferences().edit();
         for (SearchSite site : mSearchOrder) {
@@ -185,6 +144,16 @@ public class SearchManager implements TaskManagerListener {
 //            BCPreferences.dumpPreferences();
 //        }
     }
+
+//	/**
+//	 * Task handler for thread management; caller MUST implement this to get
+//	 * search results.
+//	 * 
+//	 * @author Philip Warner
+//	 */
+//	public interface SearchResultHandler extends ManagedTask.TaskListener {
+//		void onSearchFinished(Bundle bookData, boolean cancelled);
+//	}
 
     public static ArrayList<SearchSite> getSiteSearchOrder() {
         return mSearchOrder;
@@ -199,6 +168,36 @@ public class SearchManager implements TaskManagerListener {
         return mMessageSwitch;
     }
 
+    private void initSearchSites() {
+        /*
+         * default search order
+         *
+         * NEWKIND: make sure to set the reliability field correctly
+         *
+         *  {SEARCH_GOODREADS, SEARCH_AMAZON, SEARCH_GOOGLE, SEARCH_LIBRARY_THING}
+         */
+        mSearchOrderDefaults.add(new SearchSite(0, 1, SEARCH_AMAZON, "Amazon", true));
+        mSearchOrderDefaults.add(new SearchSite(1, 0, SEARCH_GOODREADS, "GoodReads", true));
+        mSearchOrderDefaults.add(new SearchSite(2, 2, SEARCH_GOOGLE, "Google", true));
+        mSearchOrderDefaults.add(new SearchSite(3, 3, SEARCH_LIBRARY_THING, "LibraryThing", true));
+
+        mSearchOrder = new ArrayList<>(mSearchOrderDefaults);
+
+        SharedPreferences p = mTaskManager.getContext().getSharedPreferences(APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        for (SearchSite site : mSearchOrderDefaults) {
+            site.enabled = p.getBoolean(TAG + "." + site.name + ".enabled", site.enabled);
+            site.order = p.getInt(TAG + "." + site.name + ".order", site.order);
+            site.reliability = p.getInt(TAG + "." + site.name + ".reliability", site.reliability);
+
+            mSearchOrder.set(site.order, site);
+            mReliabilityOrder.set(site.reliability, site);
+        }
+
+//        if (BuildConfig.DEBUG) {
+//            BCPreferences.dumpPreferences();
+//        }
+    }
+
     /**
      * When a task has ended, see if we are finished (no more tasks running).
      * If so, finish.
@@ -211,8 +210,9 @@ public class SearchManager implements TaskManagerListener {
         }
 
         // Handle the result, and optionally queue another task
-        if (task instanceof SearchThread)
+        if (task instanceof SearchThread) {
             handleSearchTaskFinished((SearchThread) task);
+        }
 
         // Remove the finished task, and terminate if no more.
         synchronized (mRunningTasks) {
@@ -325,9 +325,14 @@ public class SearchManager implements TaskManagerListener {
      * @param title  Title to search for
      * @param isbn   ISBN to search for
      */
-    public void search(String author, String title, String isbn, boolean fetchThumbnail, int searchFlags) {
-        if ((searchFlags & SEARCH_ALL) == 0)
+    public void search(@Nullable final String author,
+                       @NonNull final String title,
+                       @Nullable final String isbn,
+                       final boolean fetchThumbnail,
+                       final int searchFlags) {
+        if ((searchFlags & SEARCH_ALL) == 0) {
             throw new RuntimeException("Must specify at least one source to use");
+        }
 
         if (mRunningTasks.size() > 0) {
             throw new RuntimeException("Attempting to start new search while previous search running");
@@ -353,7 +358,7 @@ public class SearchManager implements TaskManagerListener {
 
         mFetchThumbnail = fetchThumbnail;
 
-        // XXXX: Not entirely sure why this code was targetted at the UI thread.
+        // XXXX: Not entirely sure why this code was targeted at the UI thread.
         doSearch();
         //if (mTaskManager.runningInUiThread()) {
         //	doSearch();
@@ -429,19 +434,21 @@ public class SearchManager implements TaskManagerListener {
      */
     private void accumulateData(int searchId) {
         // See if we got data from this source
-        if (!mSearchResults.containsKey(searchId))
+        if (!mSearchResults.containsKey(searchId)) {
             return;
+        }
         Bundle bookData = mSearchResults.get(searchId);
 
         // See if we REALLY got data from this source
-        if (bookData == null)
+        if (bookData == null) {
             return;
+        }
 
         for (String k : bookData.keySet()) {
             // If its not there, copy it.
-            if (!mBookData.containsKey(k) || mBookData.getString(k) == null || mBookData.getString(k).trim().isEmpty())
+            if (!mBookData.containsKey(k) || mBookData.getString(k) == null || mBookData.getString(k).trim().isEmpty()) {
                 mBookData.putString(k, bookData.get(k).toString());
-            else {
+            } else {
                 // Copy, append or update data as appropriate.
                 if (UniqueId.BKEY_AUTHOR_DETAILS.equals(k)) {
                     appendData(k, bookData, mBookData);
@@ -497,14 +504,16 @@ public class SearchManager implements TaskManagerListener {
             mBookData.putString(UniqueId.KEY_ISBN, mIsbn);
         } else {
             // If ISBN was not passed, then just used the default order
-            for (SearchSite site : mReliabilityOrder)
+            for (SearchSite site : mReliabilityOrder) {
                 results.add(site.id);
+            }
         }
 
 
         // Merge the data we have. We do this in a fixed order rather than as the threads finish.
-        for (int i : results)
+        for (int i : results) {
             accumulateData(i);
+        }
 
         // If there are thumbnails present, pick the biggest, delete others and rename.
         ImageUtils.cleanupThumbnails(mBookData);
@@ -532,8 +541,9 @@ public class SearchManager implements TaskManagerListener {
         } catch (Exception ignored) {
         }
 
-        if (title == null || title.isEmpty())
+        if (title == null || title.isEmpty()) {
             title = mTitle;
+        }
 
         if (title != null && !title.isEmpty()) {
             mBookData.putString(UniqueId.KEY_TITLE, title);
@@ -546,8 +556,9 @@ public class SearchManager implements TaskManagerListener {
         } catch (Exception ignored) {
         }
 
-        if (isbn == null || isbn.isEmpty())
+        if (isbn == null || isbn.isEmpty()) {
             isbn = mIsbn;
+        }
 
         if (isbn != null && !isbn.isEmpty()) {
             mBookData.putString(UniqueId.KEY_ISBN, isbn);
@@ -635,12 +646,15 @@ public class SearchManager implements TaskManagerListener {
         for (SearchSite source : mSearchOrder) {
             // If requested search contains this source...
             if (source.enabled && ((sources & source.id) != 0))
-                // If we have not run this search...
+            // If we have not run this search...
+            {
                 if (!mSearchResults.containsKey(source.id)) {
                     // Run it now
-                    if (startOneSearch(source.id))
+                    if (startOneSearch(source.id)) {
                         started = true;
+                    }
                 }
+            }
         }
         return started;
     }

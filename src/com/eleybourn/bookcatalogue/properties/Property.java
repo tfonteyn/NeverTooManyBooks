@@ -54,7 +54,7 @@ public abstract class Property {
     @NonNull
     private transient PropertyGroup mGroup;
     /** Resource ID for name of this property */
-    private transient int mNameResourceId;
+    private final transient int mNameResourceId;
 
     /** Property weight (for sorting). Most will remain set at 0. */
     private int mWeight = 0;
@@ -85,6 +85,7 @@ public abstract class Property {
     /**
      * @return the string name of this property
      */
+    @NonNull
     public String getName() {
         return BookCatalogueApp.getResourceString(mNameResourceId);
     }
@@ -93,19 +94,23 @@ public abstract class Property {
         return mWeight;
     }
 
+    @NonNull
     public Property setWeight(final int weight) {
         mWeight = weight;
         return this;
     }
 
+    @NonNull
     public String getUniqueName() {
         return mUniqueId;
     }
 
+    @NonNull
     public PropertyGroup getGroup() {
         return mGroup;
     }
 
+    @NonNull
     public Property setGroup(final PropertyGroup group) {
         mGroup = group;
         return this;
@@ -113,11 +118,6 @@ public abstract class Property {
 
     public int getNameResourceId() {
         return mNameResourceId;
-    }
-
-    public Property setNameResourceId(final int id) {
-        mNameResourceId = id;
-        return this;
     }
 
     boolean hasHint() {
@@ -129,6 +129,7 @@ public abstract class Property {
     }
 
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public Property setHint(final int hint) {
         mHint = hint;
         return this;
@@ -140,10 +141,12 @@ public abstract class Property {
 
     /** Children must implement set(Property) */
     @SuppressWarnings("UnusedReturnValue")
-    public abstract Property set(final Property p);
+    @NonNull
+    public abstract Property set(@NonNull final Property p);
 
     /** Children must implement getView to return an editor for this object */
-    public abstract View getView(final LayoutInflater inflater);
+    @NonNull
+    public abstract View getView(@NonNull final LayoutInflater inflater);
 
     /**
      * Interface used to help setting one property based on another property value.
@@ -179,10 +182,10 @@ public abstract class Property {
     }
 
     /**  Exception used by validation code. */
-    public static class ValidationException extends RuntimeException {
+    public static class ValidationException extends IllegalStateException {
         private static final long serialVersionUID = -1086124703257379812L;
 
-        ValidationException(String message) {
+        ValidationException(@NonNull final String message) {
             super(message);
         }
     }

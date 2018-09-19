@@ -1,9 +1,10 @@
 package com.eleybourn.bookcatalogue.searches.googlebooks;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -21,24 +22,24 @@ public class GoogleBooksManager {
 
     private static final String PREFS_HOST_URL = "GoogleBooksManager.hostUrl";
 
+    @NonNull
     public static String getBaseURL() {
+        //noinspection ConstantConditions
         return BCPreferences.getString(PREFS_HOST_URL, "http://books.google.com");
     }
 
-    public static void setBaseURL(String url) {
-        if (BuildConfig.DEBUG) {
-            System.out.println("GoogleBooksManager new base url: " + url);
-        }
+    public static void setBaseURL(@NonNull final String url) {
         BCPreferences.setString(PREFS_HOST_URL, url);
     }
 
-    static public File getThumbnailFromIsbn(String isbn) {
-        Bundle b = new Bundle();
+    @Nullable
+    static public File getThumbnailFromIsbn(@NonNull final String isbn) {
+        Bundle bookData = new Bundle();
         try {
-            searchGoogle(isbn, "", "", b, true);
-            if (b.containsKey(UniqueId.BKEY_THUMBNAIL_USCORE)
-                    && b.getString(UniqueId.BKEY_THUMBNAIL_USCORE) != null) {
-                File f = new File(Objects.requireNonNull(b.getString(UniqueId.BKEY_THUMBNAIL_USCORE)));
+            searchGoogle(isbn, "", "", bookData, true);
+            if (bookData.containsKey(UniqueId.BKEY_THUMBNAIL_USCORE)
+                    && bookData.getString(UniqueId.BKEY_THUMBNAIL_USCORE) != null) {
+                File f = new File(Objects.requireNonNull(bookData.getString(UniqueId.BKEY_THUMBNAIL_USCORE)));
                 File newName = new File(f.getAbsolutePath() + "_" + isbn);
                 //noinspection ResultOfMethodCallIgnored
                 f.renameTo(newName);
@@ -52,16 +53,20 @@ public class GoogleBooksManager {
         }
     }
 
-    static public void searchGoogle(String mIsbn, String author, String title, Bundle bookData, boolean fetchThumbnail) {
+    static public void searchGoogle(@NonNull final String isbn,
+                                    @NonNull String author,
+                                    @NonNull String title,
+                                    @NonNull final Bundle bookData,
+                                    final boolean fetchThumbnail) {
         //replace spaces with %20
         author = author.replace(" ", "%20");
         title = title.replace(" ", "%20");
 
         String path = getBaseURL() + "/books/feeds/volumes";
-        if (mIsbn.isEmpty()) {
+        if (isbn.isEmpty()) {
             path += "?q=" + "intitle%3A" + title + "%2Binauthor%3A" + author + "";
         } else {
-            path += "?q=ISBN%3C" + mIsbn + "%3E";
+            path += "?q=ISBN%3C" + isbn + "%3E";
         }
         URL url;
 

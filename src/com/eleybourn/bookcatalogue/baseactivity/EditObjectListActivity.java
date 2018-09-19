@@ -124,10 +124,10 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
     private final OnClickListener mSaveListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent i = new Intent();
-            i.putExtra(mBKey, mList);
-            if (onSave(i)) {
-                setResult(RESULT_OK, i);
+            Intent intent = new Intent();
+            intent.putExtra(mBKey, mList);
+            if (onSave(intent)) {
+                setResult(RESULT_OK, intent);
                 finish();
             }
         }
@@ -232,6 +232,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
     /**
      * Called to get the list if it was not in the intent.
      */
+    @Nullable
     protected ArrayList<T> getList() {
         return null;
     }
@@ -274,7 +275,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
             setupListener(R.id.confirm, mSaveListener);
             setupListener(R.id.cancel, mCancelListener);
             setupListener(R.id.add, mAddListener);
-
+//TOMF
             // Ask the subclass to setup the list; we need this before building the adapter.
             if (savedInstanceState != null && mBKey != null && savedInstanceState.containsKey(mBKey)) {
                 mList = ArrayUtils.getListFromBundle(savedInstanceState, mBKey);

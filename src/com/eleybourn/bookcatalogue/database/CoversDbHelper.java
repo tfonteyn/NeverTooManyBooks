@@ -31,18 +31,19 @@ import android.database.sqlite.SQLiteQuery;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.GetThumbnailTask;
+import com.eleybourn.bookcatalogue.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
+import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.IndexDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
-import com.eleybourn.bookcatalogue.cursors.TrackedCursor;
-import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -147,7 +148,7 @@ public class CoversDbHelper implements AutoCloseable {
     /**
      * Constructor. Fill in required fields.
      */
-    private CoversDbHelper(Context context) {
+    private CoversDbHelper(@NonNull final Context context) {
         if (mSyncedDb == null) {
             final SQLiteOpenHelper mHelper = new CoversHelper(context,
                     StorageUtils.getFile(COVERS_DATABASE_NAME).getAbsolutePath(),
@@ -210,7 +211,7 @@ public class CoversDbHelper implements AutoCloseable {
      * <p>
      * or call close() yourself ... but if you forget, you might waste resources
      */
-    public static CoversDbHelper getInstance(Context context) {
+    public static CoversDbHelper getInstance(@NonNull final Context context) {
         if (mInstance == null) {
             mInstance = new CoversDbHelper(context);
         }
@@ -301,6 +302,7 @@ public class CoversDbHelper implements AutoCloseable {
      *
      * @return byte[] of image data
      */
+    @Nullable
     private byte[] getFile(final String filename, final Date lastModified) {
         if (mSyncedDb == null) {
             return null;
@@ -322,7 +324,7 @@ public class CoversDbHelper implements AutoCloseable {
     /**
      * Save the passed bitmap to a 'file'
      */
-    public void saveFile(final Bitmap bm, final String filename) {
+    public void saveFile(@NonNull final Bitmap bm, @NonNull final  String filename) {
         if (mSyncedDb == null) {
             return;
         }
@@ -334,7 +336,7 @@ public class CoversDbHelper implements AutoCloseable {
         saveFile(filename, bm.getHeight(), bm.getWidth(), bytes);
     }
 
-    private void saveFile(final String filename, final int height, final int width, final byte[] bytes) {
+    private void saveFile(@NonNull final  String filename, final int height, final int width, @NonNull final  byte[] bytes) {
         if (mSyncedDb == null) {
             return;
         }
@@ -394,10 +396,14 @@ public class CoversDbHelper implements AutoCloseable {
      * @param maxWidth     used to construct the cacheId
      * @param maxHeight    used to construct the cacheId
      *
-     * @return Bitmap (if cached) or NULL (if not cached)
+     * @return Bitmap (if cached) or null (if not cached)
      */
-    public Bitmap fetchCachedImageIntoImageView(final File originalFile, final ImageView destView,
-                                                final String hash, final int maxWidth, final int maxHeight) {
+    @Nullable
+    public Bitmap fetchCachedImageIntoImageView(@NonNull final  File originalFile,
+                                                @Nullable final ImageView destView,
+                                                @NonNull final  String hash,
+                                                final int maxWidth,
+                                                final int maxHeight) {
         return fetchCachedImageIntoImageView(originalFile, destView, getThumbnailCoverCacheId(hash, maxWidth, maxHeight));
     }
 
@@ -411,8 +417,10 @@ public class CoversDbHelper implements AutoCloseable {
      * @return Bitmap (if cached) or NULL (if not cached)
      */
     @SuppressWarnings("WeakerAccess")
-    public Bitmap fetchCachedImageIntoImageView(final File originalFile, final ImageView destView,
-                                                final String cacheId) {
+    @Nullable
+    public Bitmap fetchCachedImageIntoImageView(@Nullable final File originalFile,
+                                                @Nullable final ImageView destView,
+                                                @NonNull final  String cacheId) {
         if (mSyncedDb == null) {
             return null;
         }
@@ -461,7 +469,7 @@ public class CoversDbHelper implements AutoCloseable {
     /**
      * Erase all cached images relating to the passed book UUID.
      */
-    public void eraseCachedBookCover(String uuid) {
+    public void eraseCachedBookCover(@NonNull final String uuid) {
         if (mSyncedDb == null) {
             return;
         }
@@ -485,7 +493,10 @@ public class CoversDbHelper implements AutoCloseable {
 
     private static class CoversHelper extends SQLiteOpenHelper {
 
-        CoversHelper(Context context, String dbFilePath, CursorFactory factory, int version) {
+        CoversHelper(@NonNull final Context context,
+                     @NonNull final String dbFilePath,
+                     @NonNull final CursorFactory factory,
+                     final int version) {
             super(context, dbFilePath, factory, version);
         }
 
@@ -493,7 +504,7 @@ public class CoversDbHelper implements AutoCloseable {
          * As with SQLiteOpenHelper, routine called to create DB
          */
         @Override
-        public void onCreate(SQLiteDatabase db) {
+        public void onCreate(@NonNull final SQLiteDatabase db) {
             createTables(new SynchronizedDb(db, mSynchronizer), TABLES);
         }
 
@@ -501,9 +512,8 @@ public class CoversDbHelper implements AutoCloseable {
          * As with SQLiteOpenHelper, routine called to upgrade DB
          */
         @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        public void onUpgrade(@NonNull final SQLiteDatabase db, final int oldVersion, final int newVersion) {
             throw new RuntimeException("Upgrades not handled yet!");
         }
-
     }
 }
