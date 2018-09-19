@@ -168,11 +168,10 @@ public class GoodreadsManager {
 
         // Get the stored token values from prefs, and setup the consumer if present
 
-        mAccessToken = BCPreferences.getString(ACCESS_TOKEN, "");
-        mAccessSecret = BCPreferences.getString(ACCESS_SECRET, "");
+        mAccessToken = BCPreferences.getStringOrEmpty(ACCESS_TOKEN);
+        mAccessSecret = BCPreferences.getStringOrEmpty(ACCESS_SECRET);
 
-        return mAccessToken != null && mAccessSecret != null &&
-                !mAccessToken.isEmpty() && !mAccessSecret.isEmpty();
+        return !(mAccessToken.isEmpty() || mAccessSecret.isEmpty());
     }
 
     /**
@@ -335,8 +334,8 @@ public class GoodreadsManager {
      */
     private boolean validateCredentials() {
         // Get the stored token values from prefs, and setup the consumer
-        mAccessToken = BCPreferences.getString(ACCESS_TOKEN, "");
-        mAccessSecret = BCPreferences.getString(ACCESS_SECRET, "");
+        mAccessToken = BCPreferences.getStringOrEmpty(ACCESS_TOKEN);
+        mAccessSecret = BCPreferences.getStringOrEmpty(ACCESS_SECRET);
 
         mConsumer.setTokenWithSecret(mAccessToken, mAccessSecret);
 
@@ -411,10 +410,10 @@ public class GoodreadsManager {
      */
     public void handleAuthentication() throws NotAuthorizedException {
         // Get the saved request tokens.
-        String tokenString = BCPreferences.getString(REQUEST_TOKEN, "");
-        String secretString = BCPreferences.getString(REQUEST_SECRET, "");
+        String tokenString = BCPreferences.getStringOrEmpty(REQUEST_TOKEN);
+        String secretString = BCPreferences.getStringOrEmpty(REQUEST_SECRET);
 
-        if (tokenString == null || tokenString.isEmpty() || secretString == null || secretString.isEmpty()) {
+        if (tokenString.isEmpty() || secretString.isEmpty()) {
             throw new RuntimeException("Expected a request token to be stored in preferences; none found");
         }
 

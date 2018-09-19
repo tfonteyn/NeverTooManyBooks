@@ -208,7 +208,7 @@ public class CsvExporter implements Exporter {
                                 if (titles.moveToFirst()) {
                                     do {
                                         anthology_titles
-                                                .append( titles.getString(titles.getColumnIndexOrThrow(DOM_TITLE.name)))
+                                                .append(titles.getString(titles.getColumnIndexOrThrow(DOM_TITLE.name)))
                                                 .append(" " + AnthologyTitle.TITLE_AUTHOR_DELIM + " ")
                                                 .append(titles.getString(titles.getColumnIndexOrThrow(DOM_AUTHOR_NAME.name)))
                                                 .append(ArrayUtils.MULTI_STRING_SEPARATOR);

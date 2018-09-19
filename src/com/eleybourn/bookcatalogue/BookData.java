@@ -19,7 +19,6 @@
  */
 package com.eleybourn.bookcatalogue;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -160,7 +159,7 @@ public class BookData extends DataManager {
                 // Get author, series, bookshelf and anthology title lists
                 setAuthorList(db.getBookAuthorList(getRowId()));
                 setSeriesList(db.getBookSeriesList(getRowId()));
-                setBookshelfList(getBookshelfListFromDb(db));
+                setBookshelfList( db.getBookshelfAsStringList(getRowId()));
                 setAnthologyTitles(db.getBookAnthologyTitleList(getRowId()));
 
             } catch (Exception e) {
@@ -315,29 +314,6 @@ public class BookData extends DataManager {
      */
     public Bundle getRawData() {
         return mBundle;
-    }
-
-    /**
-     * Create the list of bookshelves in the underlying data
-     *
-     * @param db Database connection
-     *
-     * @return The list
-     */
-    private String getBookshelfListFromDb(@NonNull final CatalogueDBAdapter db) {
-        try(Cursor bookshelves = db.fetchAllBookshelvesByBook(getRowId())) {
-            StringBuilder bookshelves_list = new StringBuilder();
-            while (bookshelves.moveToNext()) {
-                String name = bookshelves.getString(bookshelves.getColumnIndex(UniqueId.KEY_BOOKSHELF_NAME));
-                String encoded_name = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, name);
-                if (bookshelves_list.length() == 0) {
-                    bookshelves_list.append(encoded_name);
-                } else {
-                    bookshelves_list.append(Bookshelf.SEPARATOR).append(encoded_name);
-                }
-            }
-            return bookshelves_list.toString();
-        }
     }
 
     /**

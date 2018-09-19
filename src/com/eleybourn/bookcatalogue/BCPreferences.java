@@ -119,6 +119,24 @@ public class BCPreferences {
         }
     }
 
+    /**
+     * Get a named string preference
+     *
+     * @param name the string to get
+     *
+     * @return the found string, or the empty string when not found.
+     */
+    @NonNull
+    public static String getStringOrEmpty(@Nullable final String name) {
+        String result;
+        try {
+            result = BookCatalogueApp.getSharedPreferences().getString(name, "");
+        } catch (ClassCastException e) {
+            result = "";
+        }
+        return result;
+    }
+
     /** Get a named string preference */
     @Nullable
     public static String getString(@Nullable final String name, @Nullable final String defaultValue) {

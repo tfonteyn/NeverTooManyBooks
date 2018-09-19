@@ -77,7 +77,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
             // Setup autocomplete for author name
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                     android.R.layout.simple_dropdown_item_1line,
-                    mDb.getAllAuthors());
+                    mDb.getAuthors());
             ((AutoCompleteTextView) this.findViewById(R.id.author)).setAdapter(adapter);
 
             getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);

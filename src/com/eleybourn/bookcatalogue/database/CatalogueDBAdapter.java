@@ -791,15 +791,41 @@ public class CatalogueDBAdapter {
      * @return a complete list of author names from the database; used for AutoComplete.
      */
     @NonNull
-    public ArrayList<String> getAllAuthors() {
+    public ArrayList<String> getAuthors() {
         ArrayList<String> list = new ArrayList<>();
-        try(Cursor cursor = classicFetchAllAuthors())  {
+        try(Cursor cursor = fetchAllAuthors(true, false))  {
             while (cursor.moveToNext()) {
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(DOM_AUTHOR_FORMATTED.name));
                 list.add(name);
             }
             return list;
         }
+    }
+
+    /**
+     * Return a Cursor over the list of all books in the database
+     *
+     * @param sortByFamily		flag
+     * @param firstOnly			flag
+     * @return Cursor over all notes
+     */
+    @NonNull
+    private Cursor fetchAllAuthors(final boolean sortByFamily, final boolean firstOnly) {
+        String order;
+        if (sortByFamily) {
+            order = " ORDER BY Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION;
+        } else {
+            order = " ORDER BY Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION;
+        }
+
+        String sql = "SELECT DISTINCT " + getAuthorFields("a", DOM_ID.name) +
+                " FROM " + DB_TB_AUTHORS + " a, " + DB_TB_BOOK_AUTHOR + " ab " +
+                " WHERE a." + DOM_ID + "=ab." + DOM_AUTHOR_ID + " ";
+        if (firstOnly) {
+            sql += " AND ab." + DOM_AUTHOR_POSITION + "=1 ";
+        }
+
+        return mSyncedDb.rawQuery(sql + order, new String[]{});
     }
 
     /** Statements for {@link #purgeAuthors} */
@@ -999,42 +1025,6 @@ public class CatalogueDBAdapter {
     }
 
     /**
-     * Return a Cursor over the list of all books in the database
-     *
-     * @return Cursor over all notes
-     */
-    @NonNull
-    private Cursor classicFetchAllAuthors() {
-        return classicFetchAllAuthors(true, false);
-    }
-
-    /**
-     * Return a Cursor over the list of all books in the database
-     *
-     * @param sortByFamily		flag
-     * @param firstOnly			flag
-     * @return Cursor over all notes
-     */
-    @NonNull
-    private Cursor classicFetchAllAuthors(final boolean sortByFamily, final boolean firstOnly) {
-        String order;
-        if (sortByFamily) {
-            order = " ORDER BY Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION;
-        } else {
-            order = " ORDER BY Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION;
-        }
-
-        String sql = "SELECT DISTINCT " + getAuthorFields("a", DOM_ID.name) +
-                " FROM " + DB_TB_AUTHORS + " a, " + DB_TB_BOOK_AUTHOR + " ab " +
-                " WHERE a." + DOM_ID + "=ab." + DOM_AUTHOR_ID + " ";
-        if (firstOnly) {
-            sql += " AND ab." + DOM_AUTHOR_POSITION + "=1 ";
-        }
-
-        return mSyncedDb.rawQuery(sql + order, new String[]{});
-    }
-
-    /**
      * Return a Cursor over the list of all authors in the database
      *
      * @param bookshelf Which bookshelf is it in. Can be "All Books"
@@ -1042,23 +1032,7 @@ public class CatalogueDBAdapter {
      * @return Cursor over all notes
      */
     @NonNull
-    public Cursor classicFetchAllAuthors(String bookshelf) {
-        return classicFetchAllAuthors(bookshelf, true, false);
-    }
-
-    /**
-     * Return a Cursor over the list of all authors in the database
-     *
-     * @param bookshelf Which bookshelf is it in. Can be "All Books"
-     *
-     * @return Cursor over all notes
-     */
-    @NonNull
-    public Cursor classicFetchAllAuthors(@Nullable final String bookshelf, final boolean sortByFamily, final boolean firstOnly) {
-        if (bookshelf == null || bookshelf.isEmpty()) {
-            return classicFetchAllAuthors(sortByFamily, firstOnly);
-        }
-
+    public Cursor classicFetchAllAuthors(@NonNull final String bookshelf, final boolean sortByFamily, final boolean firstOnly) {
         String order;
         if (sortByFamily) {
             order = " ORDER BY Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION;
@@ -1073,19 +1047,6 @@ public class CatalogueDBAdapter {
 
         return mSyncedDb.rawQuery(sql, new String[]{});
     }
-
-    /**
-     * Return a Cursor over the author in the database which meet the provided search criteria
-     *
-     * @param searchText The search query
-     * @param bookshelf The bookshelf to search within
-     * @return Cursor over all authors
-     */
-    @NonNull
-    public Cursor classicFetchAuthors(@NonNull final String searchText, @NonNull final String bookshelf) {
-        return classicFetchAuthors(searchText, bookshelf, true, false);
-    }
-
     /**
      * Return a Cursor over the author in the database which meet the provided search criteria
      *
@@ -1353,6 +1314,7 @@ public class CatalogueDBAdapter {
      * @param bookId id of book to delete
      * @return the number of rows affected
      */
+    @SuppressWarnings("UnusedReturnValue")
     public int deleteBook(final long bookId) {
         String uuid = null;
         try {
@@ -2579,6 +2541,7 @@ public class CatalogueDBAdapter {
      *
      * @return the number of rows affected
      */
+    @SuppressWarnings("UnusedReturnValue")
     public int deleteBookshelf(final long id) {
 
         boolean dirty = (0 < mSyncedDb.delete(DB_TB_BOOK_BOOKSHELF_WEAK, DOM_BOOKSHELF_NAME + "=" + id, null));
@@ -2684,6 +2647,28 @@ public class CatalogueDBAdapter {
                 list.add(new Bookshelf(cursor.getLong(0), cursor.getString(1)));
             }
             return list;
+        }
+    }
+    /**
+     * Create the list of bookshelves in the underlying data
+     *
+     *
+     * @return The list
+     */
+    public String getBookshelfAsStringList(final long bookId) {
+        try(Cursor cursor = fetchAllBookshelvesByBook(bookId)) {
+            StringBuilder bookshelves_list = new StringBuilder();
+            int bsCol = cursor.getColumnIndex(UniqueId.KEY_BOOKSHELF_NAME);
+            while (cursor.moveToNext()) {
+                String name = cursor.getString(bsCol);
+                String encoded_name = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, name);
+                if (bookshelves_list.length() == 0) {
+                    bookshelves_list.append(encoded_name);
+                } else {
+                    bookshelves_list.append(Bookshelf.SEPARATOR).append(encoded_name);
+                }
+            }
+            return bookshelves_list.toString();
         }
     }
 
@@ -2912,6 +2897,12 @@ public class CatalogueDBAdapter {
         }
     }
 
+
+    //</editor-fold>
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Classic Genre">
     /**
      * This will return a list of all genres within the given bookshelf
      *
@@ -2919,7 +2910,7 @@ public class CatalogueDBAdapter {
      * @return Cursor over all series
      */
     @NonNull
-    public Cursor fetchGenresByBookshelf(@NonNull final String bookshelf) {
+    public Cursor classicFetchGenresByBookshelf(@NonNull final String bookshelf) {
         // Null 'order' to suppress ordering
         String baseSql = fetchAllBooksInnerSql(null, bookshelf, "", "", "", "", "");
 
@@ -2937,7 +2928,7 @@ public class CatalogueDBAdapter {
      * @param bookshelf The bookshelf to search within. Can be the string "All Books"
      * @return The position of the book, or 0 when not found
      */
-    public int getGenrePositionByGenre(@NonNull final String genre, @NonNull final String bookshelf) {
+    public int classicGetGenrePositionByGenre(@NonNull final String genre, @NonNull final String bookshelf) {
         if (genre.equals(META_EMPTY_GENRE))
             return 0;
 
@@ -2959,7 +2950,7 @@ public class CatalogueDBAdapter {
      * @return Cursor over all notes
      */
     @NonNull
-    public Cursor fetchGenres(@NonNull final String searchText, @NonNull final String bookshelf) {
+    public Cursor classicFetchGenres(@NonNull final String searchText, @NonNull final String bookshelf) {
         String baseSql = this.fetchAllBooksInnerSql("1", bookshelf, "", "", searchText, "", "");
         String sql = "SELECT DISTINCT Case When " + DOM_BOOK_GENRE + " = '' Then '" + META_EMPTY_GENRE + "' else " + DOM_BOOK_GENRE + " End " + COLLATION +
                 " AS " + DOM_ID + " " + baseSql;
@@ -3043,6 +3034,7 @@ public class CatalogueDBAdapter {
      *
      * @return 	the number of rows affected
      */
+    @SuppressWarnings("UnusedReturnValue")
     public int deleteLoan(final long bookId, final boolean dirtyBookIfNecessary) {
         int rowsAffected = mSyncedDb.delete(DB_TB_LOAN, DOM_BOOK_ID + "=" + bookId, null);
         if (rowsAffected == 0) {
@@ -3061,6 +3053,7 @@ public class CatalogueDBAdapter {
      *
      * @return the number of rows affected
      */
+    @SuppressWarnings("UnusedReturnValue")
     private int deleteLoansWithoutBooks() {
         return mSyncedDb.delete(DB_TB_LOAN,
                 "("+ DOM_BOOK_ID + "=''" +
@@ -3213,6 +3206,7 @@ public class CatalogueDBAdapter {
      * @param id 	series to delete
      * @return the number of rows affected
      */
+    @SuppressWarnings("UnusedReturnValue")
     public int deleteSeries(final long id) {
         int rowsAffected = mSyncedDb.delete(DB_TB_BOOK_SERIES, DOM_SERIES_ID + " = " + id, null);
         if (rowsAffected == 0) {
@@ -4002,7 +3996,7 @@ public class CatalogueDBAdapter {
      *
      * @throws SQLiteDoneException if not found
 	 */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "WeakerAccess"})
     @NonNull
 	public String getGoodreadsSyncDate(final long bookId)  throws SQLiteDoneException{
 		if (mGetGoodreadsSyncDateStmt == null) {

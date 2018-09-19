@@ -167,14 +167,14 @@ public class BookEvents {
                                 final BindableItemSQLiteCursor bindableCursor,
                                 final Object appInfo) {
             final EventsCursor cursor = (EventsCursor) bindableCursor;
-            BookEventHolder holder = ViewTagger.getTag(view, R.id.TAG_BOOK_EVENT_HOLDER);
-            CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;
 
             // Update event info binding; the Views in the holder are unchanged, but when it is reused
             // the Event and ID will change.
+            BookEventHolder holder = ViewTagger.getTag(view, R.id.TAG_BOOK_EVENT_HOLDER);
             holder.event = this;
             holder.rowId = cursor.getId();
 
+            CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;
             ArrayList<Author> authors = db.getBookAuthorList(mBookId);
             String author;
             if (authors.size() > 0) {
@@ -309,7 +309,10 @@ public class BookEvents {
          * Override to allow modification of view.
          */
         @Override
-        public boolean bindView(final View view, final Context context, final BindableItemSQLiteCursor bindableCursor, final Object appInfo) {
+        public boolean bindView(@NonNull final View view,
+                                @NonNull final Context context,
+                                @NonNull final BindableItemSQLiteCursor bindableCursor,
+                                @NonNull final Object appInfo) {
             // Get the 'standard' view.
             super.bindView(view, context, bindableCursor, appInfo);
 

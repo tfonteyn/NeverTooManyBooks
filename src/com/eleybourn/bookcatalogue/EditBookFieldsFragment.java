@@ -271,13 +271,13 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         final BookData bookData = mEditManager.getBookData();
         final String list = bookData.getBookshelfList();
         if (list == null || list.isEmpty()) {
-            String currShelf = BCPreferences.getString(BooksOnBookshelf.PREF_BOOKSHELF, "");
-            if (currShelf.isEmpty()) {
-                currShelf = mDb.getBookshelfName(1);
+            String currentShelf = BCPreferences.getStringOrEmpty(BooksOnBookshelf.PREF_BOOKSHELF);
+            if (currentShelf.isEmpty()) {
+                currentShelf = mDb.getBookshelfName(1);
             }
-            String encoded_shelf = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, currShelf);
             Field fe = mFields.getField(R.id.bookshelf);
-            fe.setValue(currShelf);
+            fe.setValue(currentShelf);
+            String encoded_shelf = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, currentShelf);
             bookData.setBookshelfList(encoded_shelf);
         }
     }

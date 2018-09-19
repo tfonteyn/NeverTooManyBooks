@@ -84,6 +84,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
 
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_NAME;
+
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
  *
@@ -984,17 +986,15 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         int currentPos = 0;
         int position = 1;
 
-        try (Cursor bookshelves = mDb.fetchAllBookshelves()) {
-            if (bookshelves.moveToFirst()) {
-                do {
-                    String this_bookshelf = bookshelves.getString(1);
-                    if (this_bookshelf.equals(mCurrentBookshelf)) {
-                        currentPos = position;
-                    }
-                    position++;
-                    mBookshelfAdapter.add(this_bookshelf);
+        try (Cursor cursor = mDb.fetchAllBookshelves()) {
+            int bsCol = cursor.getColumnIndex(DOM_BOOKSHELF_NAME.name);
+            while (cursor.moveToNext()) {
+                String bookshelfName = cursor.getString(bsCol);
+                if (bookshelfName.equals(mCurrentBookshelf)) {
+                    currentPos = position;
                 }
-                while (bookshelves.moveToNext());
+                position++;
+                mBookshelfAdapter.add(bookshelfName);
             }
         }
         // Set the current bookshelf. We use this to force the correct bookshelf after

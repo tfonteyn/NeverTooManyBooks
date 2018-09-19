@@ -124,7 +124,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
             }
         });
 
-        ArrayAdapter<String> author_adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, mDb.getAllAuthors());
+        ArrayAdapter<String> author_adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, mDb.getAuthors());
         mAuthorText = getView().findViewById(R.id.add_author);
         mAuthorText.setAdapter(author_adapter);
         mAuthorText.setVisibility(mSame.isChecked() ? View.GONE : View.VISIBLE);

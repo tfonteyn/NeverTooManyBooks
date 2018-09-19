@@ -822,7 +822,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
         mAuthorText = findViewById(R.id.author);
         if (mAuthorText != null) {
             // Get all known authors and build a hash of the names
-            final ArrayList<String> authors = mDb.getAllAuthors();
+            final ArrayList<String> authors = mDb.getAuthors();
             final HashSet<String> uniqueNames = new HashSet<>();
             for (String s : authors)
                 uniqueNames.add(s.toUpperCase());

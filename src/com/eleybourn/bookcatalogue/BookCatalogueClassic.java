@@ -74,6 +74,8 @@ import net.philipwarner.taskqueue.QueueManager;
 
 import java.util.ArrayList;
 
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_NAME;
+
 /*
  * A book catalogue application that integrates with Google Books.
  */
@@ -209,17 +211,15 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		mSpinnerAdapter.add(getString(R.string.all_books));
 		pos++;
 
-		try (Cursor bookshelves = mDb.fetchAllBookshelves()) {
-			if (bookshelves.moveToFirst()) {
-				do {
-					String this_bookshelf = bookshelves.getString(1);
-					if (mBookshelf.equals(this_bookshelf)) {
-						bspos = pos;
-					}
-					pos++;
-					mSpinnerAdapter.add(this_bookshelf);
-				}
-				while (bookshelves.moveToNext());
+		try (Cursor cursor = mDb.fetchAllBookshelves()) {
+			int bsCol = cursor.getColumnIndex(DOM_BOOKSHELF_NAME.name);
+            while (cursor.moveToNext()) {
+                String bookshelfName = cursor.getString(bsCol);
+                if (mBookshelf.equals(bookshelfName)) {
+                    bspos = pos;
+                }
+                pos++;
+                mSpinnerAdapter.add(bookshelfName);
 			}
 		}
 		// Set the current bookshelf. We use this to force the correct bookshelf after
@@ -662,10 +662,10 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
 				// Return all books for the given bookshelf
-				mCursor = mDb.classicFetchAllAuthors(mBookshelf);
+				mCursor = mDb.classicFetchAllAuthors(mBookshelf,true,false);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDb.classicFetchAuthors(search_query, mBookshelf);
+				mCursor = mDb.classicFetchAuthors(search_query, mBookshelf,true,false);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
 			return mCursor;
@@ -839,10 +839,10 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		public Cursor newGroupCursor() {
 			if (search_query.isEmpty()) {
 				// Return all books (for the bookshelf)
-				mCursor = mDb.fetchGenresByBookshelf(mBookshelf);
+				mCursor = mDb.classicFetchGenresByBookshelf(mBookshelf);
 			} else {
 				// Return the search results instead of all books (for the bookshelf)
-				mCursor = mDb.fetchGenres(search_query, mBookshelf);
+				mCursor = mDb.classicFetchGenres(search_query, mBookshelf);
 			}
 			mGroupIdColumnIndex = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
 			return mCursor;
@@ -897,7 +897,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		// the db does the work ?? AND that we don't leak the Cursor
 		//FIXME: is there any real reason to run a SELECT and then discard it ??
 		//noinspection EmptyTryBlock
-		try (Cursor c = mDb.classicFetchAllAuthors(mBookshelf)){
+		try (Cursor c = mDb.classicFetchAllAuthors(mBookshelf, true, false)){
 		} catch (NullPointerException e) {
 			//reset
 			mDb = new CatalogueDBAdapter(this);
@@ -1353,7 +1353,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 						}
 						case SORT_GENRE: {
 							justAdded = intent.getStringExtra(EditBookActivity.ADDED_GENRE);
-							int position = mDb.getGenrePositionByGenre(justAdded, mBookshelf);
+							int position = mDb.classicGetGenrePositionByGenre(justAdded, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}

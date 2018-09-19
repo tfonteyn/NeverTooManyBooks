@@ -270,10 +270,10 @@ class ImportAllTask extends GenericTask {
     private String translateBookshelf(@NonNull final CatalogueDBAdapter db, @NonNull final String grShelfName) {
         if (mBookshelfLookup == null) {
             mBookshelfLookup = new Hashtable<>();
-            try (Cursor c = db.fetchAllBookshelves()) {
-                int bsCol = c.getColumnIndex(DOM_BOOKSHELF_NAME.name);
-                while (c.moveToNext()) {
-                    String name = c.getString(bsCol);
+            try (Cursor cursor = db.fetchAllBookshelves()) {
+                int bsCol = cursor.getColumnIndex(DOM_BOOKSHELF_NAME.name);
+                while (cursor.moveToNext()) {
+                    String name = cursor.getString(bsCol);
                     mBookshelfLookup.put(GoodreadsManager.canonicalizeBookshelfName(name), name);
                 }
             }
