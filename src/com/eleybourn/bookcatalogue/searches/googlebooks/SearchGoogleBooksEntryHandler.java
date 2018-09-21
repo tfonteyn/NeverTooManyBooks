@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.googlebooks;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
@@ -132,7 +133,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
 	}
 
 	@Override
-	public void characters(char[] ch, int start, int length) throws SAXException {
+	public void characters(@NonNull final char[] ch, final int start, final int length) throws SAXException {
 		super.characters(ch, start, length);
 		builder.append(ch, start, length);
 	}
@@ -144,7 +145,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
 	}
 
 	@Override
-	public void endElement(String uri, String localName, String name) throws SAXException {
+	public void endElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name) throws SAXException {
 		super.endElement(uri, localName, name);
 		if (localName.equalsIgnoreCase(TITLE)){
 			addIfNotPresent(UniqueId.KEY_TITLE);
@@ -184,7 +185,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
 	}
 
 	@Override
-	public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
+	public void startElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name, @NonNull final Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, name, attributes);
 		if (mFetchThumbnail && localName.equalsIgnoreCase(THUMBNAIL)){
 			if (("http://schemas.google.com/books/2008/thumbnail").equals(attributes.getValue("", "rel"))) {

@@ -89,8 +89,8 @@ public class EditAuthorDialog {
 		}
 
 		// Get the new author ID
-		from.id = mDb.getAuthorIdByName(from);
-		to.id = mDb.getAuthorIdByName(to);
+		from.id = mDb.getAuthorIdByName(from.familyName, from.givenNames);
+		to.id = mDb.getAuthorIdByName(to.familyName, to.givenNames);
 
 		// Case: author is the same, or is only used in this book
 		if (to.id == from.id) {

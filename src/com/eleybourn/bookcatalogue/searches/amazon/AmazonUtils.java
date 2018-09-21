@@ -142,6 +142,5 @@ public class AmazonUtils {
 			//	context.startActivity(loadweb);
 			//}
 		}
-		return;
-	}
+    }
 }

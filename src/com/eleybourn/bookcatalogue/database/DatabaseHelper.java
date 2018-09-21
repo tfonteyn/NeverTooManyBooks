@@ -384,7 +384,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param newVersion The new version number of the database
      */
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
         mDbWasCreated = false;
 
         int curVersion = oldVersion;

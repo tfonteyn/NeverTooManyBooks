@@ -31,6 +31,11 @@ import java.util.ArrayList;
 /**
  * Class to represent a single title within an anthology
  *
+ * Note:
+ *   these are always insert/update'd ONLY when a book is insert/update'd
+ *   Hence writes are always a List<AnthologyTitle> in one go. This circumvents the 'position' column
+ *   as the update will simply insert in-order and auto increment position.
+ *
  * The table has some limitations right now
  * 1. can only exist in ONE book
  * -> TODO split "anthology" table into "anthology" table without bookid/position, and "anthology_book_weak"
@@ -96,7 +101,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     @SuppressWarnings("WeakerAccess")
     public AnthologyTitle(final long id, final long bookId, @NonNull final Author author, @NonNull final String title, final int position) {
         this.id = id;
-        this.mBookId = bookId;
+        mBookId = bookId;
         mAuthor = author;
         mTitle = title.trim();
         mPosition = position;
@@ -147,7 +152,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
 
     @Override
     public long fixupId(@NonNull final CatalogueDBAdapter db) {
-        this.id = db.getAnthologyTitleId(this);
+        this.id = db.getAnthologyTitleId(mBookId, mAuthor.getId(), mTitle);
         return this.id;
     }
 

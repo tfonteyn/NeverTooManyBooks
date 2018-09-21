@@ -22,12 +22,13 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 
 /**
  * Trivial Activity to handle the callback URI; while using a broadcast receiver would be nicer, 
@@ -40,7 +41,7 @@ import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
  */
 public class GoodreadsAuthorizationActivity extends BookCatalogueActivity {
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(@Nullable final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		// Get the payload and make sure it is what we expect

@@ -60,7 +60,6 @@ public class FloatValidator extends DefaultFieldValidator {
                 v = Float.parseFloat(o.toString());
             }
             data.putFloat(datum, v);
-            return;
         } catch (Exception e) {
             throw new ValidatorException(R.string.vldt_real_expected, new Object[]{datum.getKey()});
         }

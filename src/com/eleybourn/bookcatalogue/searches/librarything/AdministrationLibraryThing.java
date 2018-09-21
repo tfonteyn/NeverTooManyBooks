@@ -26,6 +26,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -58,7 +59,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(@Nullable final Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
 			setTitle(R.string.library_thing);
@@ -76,7 +77,6 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 			public void onClick(View v) {
 				Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(LibraryThingManager.BASE_URL + "/"));
 				startActivity(loadweb); 
-				return;
 			}
 		});
 		
@@ -87,7 +87,6 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 			public void onClick(View v) {
 				Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(LibraryThingManager.BASE_URL + "/services/keys.php"));
 				startActivity(loadweb); 
-				return;
 			}
 		});
 
@@ -113,7 +112,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 						 * Validate the key by getting a known cover
 						 */
 						@Override
-						public void run(@NonNull SimpleTaskQueueProgressFragment fragment, @NonNull SimpleTaskContext taskContext) {
+						public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {
 							//TEST Library Thing
 							Bundle tmp = new Bundle(); 
 							LibraryThingManager ltm = new LibraryThingManager(AdministrationLibraryThing.this);
@@ -133,7 +132,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 						}
 
 						@Override
-						public void onFinish(@NonNull SimpleTaskQueueProgressFragment fragment, Exception exception) {
+						public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception exception) {
 						}
 
 					};
@@ -142,7 +141,6 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 					SimpleTaskQueueProgressFragment.runTaskWithProgress(AdministrationLibraryThing.this, R.string.connecting_to_web_site, task, true, 0);
 
 				}
-				return;
 			}
 		});
 
@@ -158,7 +156,6 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 						ed.remove(key);
 				}
 				ed.apply();
-				return;
 			}
 		});
 		

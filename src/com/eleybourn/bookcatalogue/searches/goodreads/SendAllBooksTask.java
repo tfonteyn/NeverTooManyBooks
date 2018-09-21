@@ -21,18 +21,19 @@
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookEvents.GrNoIsbnEvent;
 import com.eleybourn.bookcatalogue.BookEvents.GrNoMatchEvent;
-import com.eleybourn.bookcatalogue.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.BooksRow;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.ExportDisposition;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
@@ -73,7 +74,7 @@ public class SendAllBooksTask extends GenericTask {
 	 * Run the task, log exceptions.
 	 */
 	@Override
-	public boolean run(QueueManager manager, Context c) {
+	public boolean run(@NonNull QueueManager manager, @NonNull Context c) {
 		boolean result = false;
 		try {
 			result = sendAllBooks(manager, c);			
@@ -90,14 +91,15 @@ public class SendAllBooksTask extends GenericTask {
 		//int lastSave = mCount;
 		boolean needsRetryReset = true;
 
-		// TODO: Work out a way of checking if GR site is up
+		// ENHANCE: Work out a way of checking if GR site is up
 		//if (!Utils.hostIsAvailable(context, "www.goodreads.com"))
 		//	return false;
 
 		if (!Utils.isNetworkAvailable(context)) {
-			// Only wait 5 mins max on network errors.
-			if (getRetryDelay() > 300)
+			// Only wait 5 minutes max on network errors.
+			if (getRetryDelay() > 300) {
 				setRetryDelay(300);
+			}
 			return false;
 		}
 
@@ -152,9 +154,10 @@ public class SendAllBooksTask extends GenericTask {
 					mNotFound++;
 					break;
 				case networkError:
-					// Only wait 5 mins on network errors.
-					if (getRetryDelay() > 300)
-						setRetryDelay(300);						
+					// Only wait 5 minutes on network errors.
+					if (getRetryDelay() > 300) {
+						setRetryDelay(300);
+					}
 					queueManager.saveTask(this);
 					return false;
 				}
@@ -171,7 +174,7 @@ public class SendAllBooksTask extends GenericTask {
 				// Save every few rows in case phone dies (and to allow task queries to see data)
 				// Actually, save every row because it updates the UI, and sending a row takes a while.
 				//if (mCount - lastSave >= 5) {
-				//	qmanager.saveTask(this);
+				//	queueManager.saveTask(this);
 				//	lastSave = mCount;
 				//}
 				queueManager.saveTask(this);
@@ -183,7 +186,7 @@ public class SendAllBooksTask extends GenericTask {
 			}
 
 		} finally {
-			if (books != null)
+			if (books != null) {
 				try {
 					books.close();
 				} catch (Exception ignore)
@@ -191,6 +194,7 @@ public class SendAllBooksTask extends GenericTask {
 					// Ignore failures, but log them
 					Logger.logError(ignore, "Failed to close GoodReads books cursor");
 				}
+			}
 			try {
 				db.close();
 			} catch(Exception ignored)
@@ -215,7 +219,7 @@ public class SendAllBooksTask extends GenericTask {
 	}
 
 	@Override
-	public long getCategory() {
+	public int getCategory() {
 		return BCQueueManager.CAT_GOODREADS_EXPORT_ALL;
 	}
 }

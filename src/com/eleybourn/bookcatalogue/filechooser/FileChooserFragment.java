@@ -155,7 +155,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      * Save our root path and list
      */
     @Override
-    public void onSaveInstanceState(@NonNull final Bundle state) {
+    public void onSaveInstanceState(@Nullable final Bundle state) {
         super.onSaveInstanceState(state);
         state.putString(BKEY_ROOT_PATH, mRootPath.getAbsolutePath());
         state.putParcelableArrayList(BKEY_LIST, mList);

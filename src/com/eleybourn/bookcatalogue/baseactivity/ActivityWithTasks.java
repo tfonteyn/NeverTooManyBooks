@@ -27,6 +27,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
@@ -86,7 +87,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
      */
     private final OnKeyListener mDialogKeyListener = new OnKeyListener() {
         @Override
-        public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+        public boolean onKey(final DialogInterface dialog, final int keyCode, final KeyEvent event) {
             if (event.getAction() == KeyEvent.ACTION_UP) {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
                     // Toasting a message here makes the app look less responsive, because
@@ -112,13 +113,13 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
      */
     private final TaskManagerListener mTaskListener = new TaskManagerListener() {
         @Override
-        public void onTaskEnded(@NonNull TaskManager manager, @NonNull ManagedTask task) {
+        public void onTaskEnded(@NonNull final TaskManager manager, @NonNull final ManagedTask task) {
             // Just pass this one on
             ActivityWithTasks.this.onTaskEnded(task);
         }
 
         @Override
-        public void onProgress(int count, int max, @NonNull String message) {
+        public void onProgress(final int count, final int max, @NonNull final String message) {
             if (BuildConfig.DEBUG) {
                 String dbgMsg = count + "/" + max + ", '" + message.replace("\n", "\\n") + "'";
                 Tracker.handleEvent(ActivityWithTasks.this, "SearchProgress " + dbgMsg, States.Running);
@@ -142,7 +143,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
          * Display a Toast message
          */
         @Override
-        public void onToast(@NonNull String message) {
+        public void onToast(@NonNull final String message) {
             Toast.makeText(ActivityWithTasks.this, message, Toast.LENGTH_LONG).show();
         }
 
@@ -158,7 +159,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Restore mTaskManagerId if present

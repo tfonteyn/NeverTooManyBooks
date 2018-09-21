@@ -245,11 +245,11 @@ public class CropCropImage extends CropMonitoredActivity {
     };
     private CropIImage mImage;
 
-    private static void showStorageToast(Activity activity) {
+    private static void showStorageToast(@NonNull final Activity activity) {
         showStorageToast(activity, calculatePicturesRemaining());
     }
 
-    private static void showStorageToast(Activity activity, int remaining) {
+    private static void showStorageToast(@NonNull final Activity activity, final int remaining) {
         String noStorageText = null;
 
         if (remaining == NO_STORAGE_ERROR) {
@@ -293,11 +293,11 @@ public class CropCropImage extends CropMonitoredActivity {
     }
 
     @Override
-    public void onCreate(Bundle icicle) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         // Do this first to avoid 'must be first errors'
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        super.onCreate(icicle);
+        super.onCreate(savedInstanceState);
 
         mContentResolver = getContentResolver();
 
@@ -526,7 +526,7 @@ public class CropCropImage extends CropMonitoredActivity {
         }
     }
 
-    private void saveOutput(Bitmap croppedImage) {
+    private void saveOutput(@NonNull final Bitmap croppedImage) {
         if (mSaveUri != null) {
             try (OutputStream outputStream = mContentResolver.openOutputStream(mSaveUri)) {
                 if (outputStream != null) {

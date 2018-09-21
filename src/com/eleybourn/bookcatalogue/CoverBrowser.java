@@ -271,7 +271,7 @@ public class CoverBrowser {
 
         @NonNull
         @Override
-        public Object instantiateItem(@NonNull ViewGroup collection, final int position) {
+        public Object instantiateItem(@NonNull final ViewGroup collection, final int position) {
             ImageView coverImage = new ImageView(mActivity);
 
             // If we are shutdown, just return a view
@@ -401,7 +401,7 @@ public class CoverBrowser {
         }
 
         @Override
-        public void run(@NonNull SimpleTaskContext taskContext) {
+        public void run(@NonNull final SimpleTaskContext taskContext) {
             // Start the download
             mFilename = mFileManager.download(mIsbn, ImageSizes.SMALL);
             File file = new File(mFilename); //TOMF

@@ -107,13 +107,14 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /** version field used in serialised data reading from file, see {@link #readObject} */
     private static final long realSerialVersion = 5;
 
+    private static final String SFX_SHOW_AUTHOR = "ShowAuthor";
     private static final String SFX_SHOW_BOOKSHELVES = "ShowBookshelves";
+    private static final String SFX_SHOW_FORMAT = "ShowFormat";
     private static final String SFX_SHOW_LOCATION = "ShowLocation";
     private static final String SFX_SHOW_PUBLISHER = "ShowPublisher";
-    private static final String SFX_SHOW_AUTHOR = "ShowAuthor";
+
     private static final String SFX_SHOW_THUMBNAILS = "ShowThumbnails";
     private static final String SFX_LARGE_THUMBNAILS = "LargeThumbnails";
-    private static final String SFX_SHOW_FORMAT = "ShowFormat";
 
     private static final String SFX_CONDENSED = "Condensed";
     private static final String SFX_SHOW_HEADER_INFO = "ShowHeaderInfo";
@@ -688,6 +689,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     public void saveToDb(@NonNull final CatalogueDBAdapter db) {
         if (getRowId() == 0) {
             mRowId = db.insertBooklistStyle(this);
+            //FIXME: ignoring failure
         } else {
             db.updateBooklistStyle(this);
         }
@@ -724,7 +726,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Construct a deep clone of this object.
      */
-    @Nullable
+    @NonNull
     public BooklistStyle getClone() throws DeserializationException {
         return SerializationUtils.cloneObject(this);
     }

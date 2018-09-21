@@ -19,6 +19,8 @@ package com.eleybourn.bookcatalogue.cropper;
 import java.util.ArrayList;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 
@@ -27,51 +29,51 @@ public abstract class CropMonitoredActivity extends BookCatalogueActivity {
 	private final ArrayList<LifeCycleListener> mListeners = new ArrayList<>();
 
 	public interface LifeCycleListener {
-		void onActivityCreated(CropMonitoredActivity activity);
+		void onActivityCreated(@NonNull final CropMonitoredActivity activity);
 
-		void onActivityDestroyed(CropMonitoredActivity activity);
+		void onActivityDestroyed(@NonNull final CropMonitoredActivity activity);
 
-		void onActivityPaused(CropMonitoredActivity activity);
+		void onActivityPaused(@NonNull final CropMonitoredActivity activity);
 
-		void onActivityResumed(CropMonitoredActivity activity);
+		void onActivityResumed(@NonNull final CropMonitoredActivity activity);
 
-		void onActivityStarted(CropMonitoredActivity activity);
+		void onActivityStarted(@NonNull final CropMonitoredActivity activity);
 
-		void onActivityStopped(CropMonitoredActivity activity);
+		void onActivityStopped(@NonNull final CropMonitoredActivity activity);
 	}
 
 	public static class LifeCycleAdapter implements LifeCycleListener {
-		public void onActivityCreated(CropMonitoredActivity activity) {
+		public void onActivityCreated(@NonNull final CropMonitoredActivity activity) {
 		}
 
-		public void onActivityDestroyed(CropMonitoredActivity activity) {
+		public void onActivityDestroyed(@NonNull final CropMonitoredActivity activity) {
 		}
 
-		public void onActivityPaused(CropMonitoredActivity activity) {
+		public void onActivityPaused(@NonNull final CropMonitoredActivity activity) {
 		}
 
-		public void onActivityResumed(CropMonitoredActivity activity) {
+		public void onActivityResumed(@NonNull final CropMonitoredActivity activity) {
 		}
 
-		public void onActivityStarted(CropMonitoredActivity activity) {
+		public void onActivityStarted(@NonNull final CropMonitoredActivity activity) {
 		}
 
-		public void onActivityStopped(CropMonitoredActivity activity) {
+		public void onActivityStopped(@NonNull final CropMonitoredActivity activity) {
 		}
 	}
 
-	public void addLifeCycleListener(LifeCycleListener listener) {
+	public void addLifeCycleListener(@NonNull final LifeCycleListener listener) {
 		if (mListeners.contains(listener))
 			return;
 		mListeners.add(listener);
 	}
 
-	public void removeLifeCycleListener(LifeCycleListener listener) {
+	public void removeLifeCycleListener(@NonNull final LifeCycleListener listener) {
 		mListeners.remove(listener);
 	}
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(@Nullable final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		for (LifeCycleListener listener : mListeners) {
 			listener.onActivityCreated(this);

@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -97,7 +98,7 @@ public class BookshelfDialogFragment extends DialogFragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_bookshelves, null);
     }
 
@@ -105,13 +106,13 @@ public class BookshelfDialogFragment extends DialogFragment {
      * Save instance variables that we need
      */
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         outState.putString(BKEY_LIST, mCurrList);
         outState.putString(BKEY_TEXT, mCurrText);
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         // Grab the args
@@ -138,7 +139,7 @@ public class BookshelfDialogFragment extends DialogFragment {
         // Build a list of shelves
         CatalogueDBAdapter db = new CatalogueDBAdapter(getActivity());
         db.open();
-        try (Cursor bookshelves_for_book = db.fetchAllBookshelves(rowId)) {
+        try (Cursor bookshelves_for_book = db.fetchBookshelvesByBookId(rowId)) {
             final View rootView = getView();
 
             // Handle the OK button
@@ -232,6 +233,11 @@ public class BookshelfDialogFragment extends DialogFragment {
      * @author pjw
      */
     public interface OnBookshelfCheckChangeListener {
-        void onBookshelfCheckChanged(int dialogId, BookshelfDialogFragment dialog, boolean checked, String shelf, String textList, String encodedList);
+        void onBookshelfCheckChanged(final int dialogId,
+                                     @NonNull final BookshelfDialogFragment dialog,
+                                     final boolean checked,
+                                     @NonNull final String shelf,
+                                     @NonNull final String textList,
+                                     @NonNull final String encodedList);
     }
 }

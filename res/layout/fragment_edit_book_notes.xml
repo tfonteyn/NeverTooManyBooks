@@ -148,11 +148,10 @@
 
             <AutoCompleteTextView
                 android:id="@+id/location"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentStart="true"
+                style="@style/editorFieldText"
                 android:layout_below="@id/location_heading"
+                android:layout_toStartOf="@id/location_button"
+                android:layout_centerVertical="true"
                 android:completionThreshold="2"
                 android:inputType="textCapSentences" />
 

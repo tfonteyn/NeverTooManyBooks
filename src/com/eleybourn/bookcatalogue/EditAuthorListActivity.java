@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -58,7 +59,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     }
 
     @Override
-    protected void onSetupView(@NonNull View target, @NonNull Author object, final int position) {
+    protected void onSetupView(@NonNull final View target, @NonNull final Author object, final int position) {
         TextView at = target.findViewById(R.id.row_author);
         if (at != null) {
             at.setText(object.getDisplayName());
@@ -69,7 +70,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         }
     }
 
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setTitle(mBookTitle);
 
@@ -90,13 +91,13 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     /**
      * Do the work of the onClickListener for the 'Add' button.
      */
-    protected void onAdd(@NonNull final View target) {
+    protected void onAdd(final View target) {
         AutoCompleteTextView authorField = findViewById(R.id.author);
         String authorName = authorField.getText().toString().trim();
         if (!authorName.isEmpty()) {
             // Get an author and try to find in DB.
             Author author = new Author(authorField.getText().toString());
-            author.id = mDb.getAuthorIdByName(author);
+            author.id = mDb.getAuthorIdByName(author.familyName, author.givenNames);
             for (Author s : mList) {
                 if (s.equals(author)) {
                     Toast.makeText(this, getResources().getString(R.string.author_already_in_list), Toast.LENGTH_LONG).show();
@@ -112,7 +113,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     }
 
     @Override
-    protected void onRowClick(@NonNull View target, @NonNull final Author author, final int position) {
+    protected void onRowClick(@NonNull final View target, @NonNull final Author author, final int position) {
         final Dialog dialog = new StandardDialogs.BasicDialog(this);
         dialog.setContentView(R.layout.dialog_edit_author);
         dialog.setTitle(R.string.edit_author_details);
@@ -160,11 +161,11 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         }
 
         // Get the new author ID
-        from.id = mDb.getAuthorIdByName(from);
-        to.id = mDb.getAuthorIdByName(to);
+        from.id = mDb.getAuthorIdByName(from.familyName, from.givenNames);
+        to.id = mDb.getAuthorIdByName(to.familyName, to.givenNames);
 
         // See if the old author is used in any other books.
-        long nRefs = mDb.getAuthorBookCount(from) + mDb.getAuthorAnthologyCount(from);
+        long nRefs = mDb.countAuthorBooks(from) + mDb.countAuthorAnthologies(from);
         boolean oldHasOthers = nRefs > (mRowId == 0 ? 0 : 1);
 
         // Case: author is the same, or is only used in this book
@@ -189,7 +190,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, thisBook, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(final DialogInterface dialog, final int which) {
                 from.copyFrom(to);
                 Utils.pruneList(mDb, mList);
                 mAdapter.notifyDataSetChanged();
@@ -198,7 +199,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(final DialogInterface dialog, final int which) {
                 mDb.globalReplaceAuthor(from, to);
                 from.copyFrom(to);
                 Utils.pruneList(mDb, mList);
@@ -211,7 +212,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     }
 
     @Override
-    protected boolean onSave(@NonNull Intent intent) {
+    protected boolean onSave(@NonNull final Intent intent) {
         final AutoCompleteTextView t = EditAuthorListActivity.this.findViewById(R.id.author);
         Resources res = this.getResources();
         String s = t.getText().toString().trim();
@@ -223,14 +224,14 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                     .create();
 
             dialog.setButton(DialogInterface.BUTTON_POSITIVE, res.getText(R.string.yes), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
+                public void onClick(final DialogInterface dialog, final int which) {
                     t.setText("");
                     findViewById(R.id.confirm).performClick();
                 }
             });
 
             dialog.setButton(DialogInterface.BUTTON_NEGATIVE, res.getText(R.string.no), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
+                public void onClick(final DialogInterface dialog, final int which) {
                     //do nothing
                 }
             });

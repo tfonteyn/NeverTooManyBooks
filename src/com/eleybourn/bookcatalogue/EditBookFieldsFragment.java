@@ -273,7 +273,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         if (list == null || list.isEmpty()) {
             String currentShelf = BCPreferences.getStringOrEmpty(BooksOnBookshelf.PREF_BOOKSHELF);
             if (currentShelf.isEmpty()) {
-                currentShelf = mDb.getBookshelfName(1);
+                currentShelf = mDb.getBookshelfName(1); //FIXME: the hardcoded one again
             }
             Field fe = mFields.getField(R.id.bookshelf);
             fe.setValue(currentShelf);
@@ -283,21 +283,21 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         Tracker.enterOnSaveInstanceState(this);
         super.onSaveInstanceState(outState);
         Tracker.exitOnSaveInstanceState(this);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode);
         try {
             super.onActivityResult(requestCode, resultCode, intent);
 
             switch (requestCode) {
                 case ACTIVITY_EDIT_AUTHORS:
-                    if (resultCode == Activity.RESULT_OK && intent.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
+                    if (resultCode == Activity.RESULT_OK && intent != null && intent.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
                         mEditManager.getBookData().setAuthorList(ArrayUtils.getAuthorFromIntentExtras(intent));
                         mEditManager.setDirty(true);
                     } else {
@@ -311,7 +311,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                     populateAuthorListField();
                     mEditManager.setDirty(oldDirty);
                 case ACTIVITY_EDIT_SERIES:
-                    if (resultCode == Activity.RESULT_OK && intent.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
+                    if (resultCode == Activity.RESULT_OK && intent != null && intent.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
                         mEditManager.getBookData().setSeriesList(ArrayUtils.getSeriesFromIntentExtras(intent));
                         populateSeriesListField();
                         mEditManager.setDirty(true);
@@ -349,7 +349,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
         if (FieldVisibilityActivity.isVisible(UniqueId.BKEY_THUMBNAIL)) {
             menu.add(0, EditBookAbstractFragment.THUMBNAIL_OPTIONS_ID, 0, R.string.cover_options_cc_ellipsis)
                     .setIcon(android.R.drawable.ic_menu_camera)
@@ -366,9 +366,9 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
     @Override
     public void onPartialDatePickerSet(final int dialogId,
                                        @NonNull final PartialDatePickerFragment dialog,
-                                       @NonNull final Integer year,
-                                       @NonNull final Integer month,
-                                       @NonNull final Integer day) {
+                                       @Nullable final Integer year,
+                                       @Nullable final Integer month,
+                                       @Nullable final Integer day) {
         String value = DateUtils.buildPartialDate(year, month, day);
         mFields.getField(dialogId).setValue(value);
         dialog.dismiss();

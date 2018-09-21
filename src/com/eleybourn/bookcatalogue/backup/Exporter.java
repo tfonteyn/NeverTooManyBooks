@@ -63,9 +63,9 @@ public interface Exporter {
      * @author pjw
      */
     interface ExportListener {
-        void setMax(int max);
+        void setMax(final int max);
 
-        void onProgress(String message, int position);
+        void onProgress(@NonNull final String message, final int position);
 
         boolean isCancelled();
     }

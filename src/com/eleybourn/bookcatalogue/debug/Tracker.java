@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.debug;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import org.acra.ACRA;
@@ -53,48 +55,48 @@ public class Tracker {
 	private static final Event[] mEventBuffer = new Event[K_MAX_EVENTS];
 	private static int mNextEventBufferPos = 0;
 
-	public static void enterOnActivityCreated(Object a) {
+	public static void enterOnActivityCreated(@NonNull final Object a) {
 		handleEvent(a,"OnActivityCreated (" + a + ")", States.Enter);
 	}
-	public static void exitOnActivityCreated(Object a) {
+	public static void exitOnActivityCreated(@NonNull final Object a) {
 		handleEvent(a,"OnActivityCreated (" + a + ")", States.Exit);
 	}
 
-	public static void enterOnActivityResult(Object a, int requestCode, int resultCode) {
+	public static void enterOnActivityResult(@NonNull final Object a, final int requestCode, final int resultCode) {
 		handleEvent(a,"OnActivityResult[" + requestCode + "," + resultCode + "] (" + a + ")", States.Enter);
 	}
-	public static void exitOnActivityResult(Object a, int requestCode, int resultCode) {
+	public static void exitOnActivityResult(@NonNull final Object a, final int requestCode, final int resultCode) {
 		handleEvent(a,"OnActivityResult[" + requestCode + "," + resultCode + "] (" + a + ")", States.Exit);
 	}
 
-	public static void enterOnCreate(Object a) {
+	public static void enterOnCreate(@NonNull final Object a) {
 		handleEvent(a,"OnCreate (" + a + ")", States.Enter);
 	}
-	public static void exitOnCreate(Object a) {
+	public static void exitOnCreate(@NonNull final Object a) {
 		handleEvent(a,"OnCreate (" + a + ")", States.Exit);
 	}
-	public static void enterOnCreateView(Object a) {
+	public static void enterOnCreateView(@NonNull final Object a) {
 		handleEvent(a,"OnCreateView (" + a + ")", States.Enter);
 	}
-	public static void exitOnCreateView(Object a) {
+	public static void exitOnCreateView(@NonNull final Object a) {
 		handleEvent(a,"OnCreateView (" + a + ")", States.Exit);
 	}
-	public static void enterOnDestroy(Object a) {
+	public static void enterOnDestroy(@NonNull final Object a) {
 		handleEvent(a,"OnDestroy", States.Enter);
 	}
-	public static void exitOnDestroy(Object a) {
+	public static void exitOnDestroy(@NonNull final Object a) {
 		handleEvent(a,"OnDestroy", States.Exit);		
 	}
-	public static void enterOnPause(Object a) {
+	public static void enterOnPause(@NonNull final Object a) {
 		handleEvent(a,"OnPause (" + a + ")", States.Enter);
 	}
-	public static void exitOnPause(Object a) {
+	public static void exitOnPause(@NonNull final Object a) {
 		handleEvent(a,"OnPause (" + a + ")", States.Exit);
 	}
-	public static void enterOnResume(Object a) {
+	public static void enterOnResume(@NonNull final Object a) {
 		handleEvent(a,"OnResume (" + a + ")", States.Enter);
 	}
-	public static void exitOnResume(Object a) {
+	public static void exitOnResume(@NonNull final Object a) {
 		handleEvent(a,"OnResume (" + a + ")", States.Exit);
 	}
 	public static void enterOnSaveInstanceState(Object a) {
@@ -103,20 +105,20 @@ public class Tracker {
 	public static void exitOnSaveInstanceState(Object a) {
 		handleEvent(a,"OnSaveInstanceState", States.Exit);
 	}
-	public static void enterFunction(Object a, String name, Object... params) {
-		StringBuilder fullname = new StringBuilder(name + "(");
+	public static void enterFunction(@NonNull final Object a, @NonNull final String name, @NonNull final Object... params) {
+		StringBuilder fullName = new StringBuilder(name + "(");
 		for (Object o : params) {
-			fullname.append(o).append(",");
+			fullName.append(o).append(",");
 		}
-		fullname.append(")");
+		fullName.append(")");
 
-        handleEvent(a,fullname.toString(), States.Enter);
+        handleEvent(a,fullName.toString(), States.Enter);
     }
-    public static void exitFunction(Object a, String name) {
+    public static void exitFunction(@NonNull final Object a, @NonNull final String name) {
         handleEvent(a,name, States.Exit);
     }
 
-	public static void handleEvent(Object o, String name, States type) {
+	public static void handleEvent(@NonNull final Object o, @NonNull final String name, @NonNull final States type) {
 		Event e = new Event(o, name, type);
 		mEventBuffer[mNextEventBufferPos] = e;
 		ACRA.getErrorReporter().putCustomData("History-" + mNextEventBufferPos, e.getInfo());

@@ -24,7 +24,7 @@ import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.cursors.TrackedCursor;
+import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 
 /**

@@ -202,7 +202,7 @@ public class BookUtils {
         bookData.putInt(UniqueId.KEY_BOOK_READ, read ? 1 : 0);
         bookData.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
 
-        if (!db.updateBook(bookData.getRowId(), bookData, 0)) {
+        if (!( 1== db.updateBook(bookData.getRowId(), bookData, 0))) {
             bookData.putInt(UniqueId.KEY_BOOK_READ, prevRead);
             bookData.putString(UniqueId.KEY_BOOK_READ_END, prevReadEnd);
             return false;
@@ -217,7 +217,7 @@ public class BookUtils {
         BookData bookData = new BookData(bookId);
         bookData.putBoolean(UniqueId.KEY_BOOK_READ, read);
         bookData.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
-        return db.updateBook(bookId, bookData, 0);
+        return 1 == db.updateBook(bookId, bookData, 0);
     }
 
     @SuppressWarnings("UnusedReturnValue")

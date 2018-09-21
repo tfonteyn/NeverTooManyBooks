@@ -28,7 +28,7 @@ import com.eleybourn.bookcatalogue.BooksRow;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
@@ -204,7 +204,7 @@ public class CsvExporter implements Exporter {
                         int anthology = bookCursor.getInt(bookCursor.getColumnIndexOrThrow(DOM_ANTHOLOGY_MASK.name));
                         StringBuilder anthology_titles = new StringBuilder();
                         if (anthology != 0) {
-                            try (Cursor titles = db.fetchAnthologyTitlesByBook(id)) {
+                            try (Cursor titles = db.fetchAnthologyTitlesByBookId(id)) {
                                 if (titles.moveToFirst()) {
                                     do {
                                         anthology_titles

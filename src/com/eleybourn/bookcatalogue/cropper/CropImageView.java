@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.cropper;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
@@ -27,8 +28,11 @@ public class CropImageView extends CropImageViewTouchBase {
     }
 
     @Override
-    protected void onLayout(boolean changed, int left, int top, int right,
-                            int bottom) {
+    protected void onLayout(final boolean changed,
+                            final int left,
+                            final int top,
+                            final int right,
+                            final int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         if (mBitmapDisplayed.getBitmap() != null) {
             for (CropHighlightView hv : mHighlightViews) {
@@ -42,7 +46,7 @@ public class CropImageView extends CropImageViewTouchBase {
     }
 
     @Override
-    protected void zoomTo(float scale, float centerX, float centerY) {
+    protected void zoomTo(final float scale, final float centerX, final float centerY) {
         super.zoomTo(scale, centerX, centerY);
         for (CropHighlightView hv : mHighlightViews) {
             hv.mMatrix.set(getImageMatrix());
@@ -69,7 +73,7 @@ public class CropImageView extends CropImageViewTouchBase {
     }
 
     @Override
-    protected void postTranslate(float deltaX, float deltaY) {
+    protected void postTranslate(final float deltaX, final float deltaY) {
         super.postTranslate(deltaX, deltaY);
         for (int i = 0; i < mHighlightViews.size(); i++) {
             CropHighlightView hv = mHighlightViews.get(i);
@@ -80,7 +84,7 @@ public class CropImageView extends CropImageViewTouchBase {
 
     // According to the event's position, change the focus to the first
     // hitting cropping rectangle.
-    private void recomputeFocus(MotionEvent event) {
+    private void recomputeFocus(@NonNull final MotionEvent event) {
         for (int i = 0; i < mHighlightViews.size(); i++) {
             CropHighlightView hv = mHighlightViews.get(i);
             hv.setFocus(false);
@@ -102,7 +106,7 @@ public class CropImageView extends CropImageViewTouchBase {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(final MotionEvent event) {
         CropCropImage cropImage = (CropCropImage) mContext;
         if (cropImage.mSaving) {
             return false;
@@ -184,7 +188,7 @@ public class CropImageView extends CropImageViewTouchBase {
     }
 
     // Pan the displayed image to make sure the cropping rectangle is visible.
-    private void ensureVisible(CropHighlightView hv) {
+    private void ensureVisible(@NonNull final CropHighlightView hv) {
         Rect r = hv.mDrawRect;
 
         int panDeltaX1 = Math.max(0, mLeft - r.left);
@@ -203,7 +207,7 @@ public class CropImageView extends CropImageViewTouchBase {
 
     // If the cropping rectangle's size changed significantly, change the
     // view's center and scale according to the cropping rectangle.
-    private void centerBasedOnHighlightView(CropHighlightView hv) {
+    private void centerBasedOnHighlightView(@NonNull final CropHighlightView hv) {
         Rect drawRect = hv.mDrawRect;
 
         float width = drawRect.width();
@@ -229,7 +233,7 @@ public class CropImageView extends CropImageViewTouchBase {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(final Canvas canvas) {
         try {
             super.onDraw(canvas);
             for (int i = 0; i < mHighlightViews.size(); i++) {
@@ -240,7 +244,7 @@ public class CropImageView extends CropImageViewTouchBase {
         }
     }
 
-    public void add(CropHighlightView hv) {
+    public void add(@NonNull final CropHighlightView hv) {
         mHighlightViews.add(hv);
         invalidate();
     }

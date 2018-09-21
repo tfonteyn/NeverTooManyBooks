@@ -24,15 +24,12 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.View.OnClickListener;
 
 /**
  * Collection of utility functions used in this package.
  */
 public class CropUtil {
     // private static final String TAG = "db.CropUtil";
-
-    private static OnClickListener sNullOnClickListener;
 
     private CropUtil() {
     }
@@ -71,8 +68,11 @@ public class CropUtil {
      * minSideLength = IImage.UNCONSTRAINED.
      */
 
-    public static Bitmap transform(Matrix scaler, Bitmap source,
-                                   int targetWidth, int targetHeight, boolean scaleUp) {
+    public static Bitmap transform(@NonNull Matrix scaler,
+                                   @NonNull final Bitmap source,
+                                   final int targetWidth,
+                                   final int targetHeight,
+                                   final boolean scaleUp) {
         int deltaX = source.getWidth() - targetWidth;
         int deltaY = source.getHeight() - targetHeight;
         if (!scaleUp && (deltaX < 0 || deltaY < 0)) {
@@ -197,9 +197,9 @@ public class CropUtil {
 
     public static void startBackgroundJob(@NonNull final CropMonitoredActivity activity,
                                           @Nullable final String title,
-                                          String message,
-                                          Runnable job,
-                                          Handler handler) {
+                                          @NonNull final String message,
+                                          @NonNull final Runnable job,
+                                          @NonNull final Handler handler) {
         // Make the progress dialog not-cancelable, so that we can guarantee
         // the thread will be done before the activity getting destroyed.
         ProgressDialog dialog = ProgressDialog.show(activity, title, message,
@@ -255,8 +255,10 @@ public class CropUtil {
             }
         };
 
-        BackgroundJob(CropMonitoredActivity activity, Runnable job,
-                      ProgressDialog dialog, Handler handler) {
+        BackgroundJob(@NonNull final CropMonitoredActivity activity,
+                      @NonNull final Runnable job,
+                      @NonNull final ProgressDialog dialog,
+                      @NonNull final Handler handler) {
             mActivity = activity;
             mDialog = dialog;
             mJob = job;
@@ -273,7 +275,7 @@ public class CropUtil {
         }
 
         @Override
-        public void onActivityDestroyed(CropMonitoredActivity activity) {
+        public void onActivityDestroyed(@NonNull final CropMonitoredActivity activity) {
             // We get here only when the onDestroyed being called before
             // the mCleanupRunner. So, run it now and remove it from the queue
             mCleanupRunner.run();
@@ -281,12 +283,12 @@ public class CropUtil {
         }
 
         @Override
-        public void onActivityStopped(CropMonitoredActivity activity) {
+        public void onActivityStopped(@NonNull final CropMonitoredActivity activity) {
             mDialog.hide();
         }
 
         @Override
-        public void onActivityStarted(CropMonitoredActivity activity) {
+        public void onActivityStarted(@NonNull final CropMonitoredActivity activity) {
             mDialog.show();
         }
     }

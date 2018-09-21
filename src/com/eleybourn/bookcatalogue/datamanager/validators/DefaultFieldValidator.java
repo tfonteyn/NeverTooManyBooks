@@ -65,7 +65,6 @@ public class DefaultFieldValidator implements DataValidator {
             if (value.toString().trim().isEmpty()) {
                 data.putString(datum, mDefault);
             }
-            return;
         } catch (Exception e) {
             throw new ValidatorException(R.string.vldt_unable_to_get_value, new Object[]{datum.getKey()});
         }

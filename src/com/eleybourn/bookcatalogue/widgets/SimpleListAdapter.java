@@ -324,19 +324,19 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      * will be the complete row View. Use the TAG on that to get
      * the physical row number.
      *
-     * @param v View to search from
+     * @param view View to search from
      *
      * @return The row view.
      */
-    public Integer getViewRow(@NonNull View v) {
-        while (v.getId() != R.id.row) {
-            ViewParent p = v.getParent();
-            if (!(p instanceof View)) {
+    public Integer getViewRow(@NonNull View view) {
+        while (view.getId() != R.id.row) {
+            ViewParent parent = view.getParent();
+            if (!(parent instanceof View)) {
                 throw new RuntimeException("Could not find row view in view ancestors");
             }
-            v = (View) p;
+            view = (View) parent;
         }
-        Object o = ViewTagger.getTag(v, R.id.TAG_POSITION);
+        Object o = ViewTagger.getTag(view, R.id.TAG_POSITION);
         if (o == null)
             throw new RuntimeException("A view with the tag R.id.row was found, but it is not the view for the row");
         return (Integer) o;

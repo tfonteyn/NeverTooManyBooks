@@ -498,7 +498,6 @@ public class LibraryThingManager {
             getCoverImage(isbn, bookData, ImageSizes.LARGE);
         }
 
-        return;
     }
 
     /**
@@ -600,13 +599,13 @@ public class LibraryThingManager {
         }
 
         @Override
-        public void characters(char[] ch, int start, int length) throws SAXException {
+        public void characters(final char[] ch, final int start, final int length) throws SAXException {
             super.characters(ch, start, length);
             mBuilder.append(ch, start, length);
         }
 
         @Override
-        public void endElement(String uri, String localName, String name) throws SAXException {
+        public void endElement(final String uri, final String localName, final String name) throws SAXException {
             super.endElement(uri, localName, name);
 
             if (localName.equalsIgnoreCase(ISBN)) {
@@ -640,7 +639,7 @@ public class LibraryThingManager {
         }
 
         @Override
-        public void characters(char[] ch, int start, int length) throws SAXException {
+        public void characters(final char[] ch, final int start, final int length) throws SAXException {
             super.characters(ch, start, length);
             mBuilder.append(ch, start, length);
         }
@@ -667,7 +666,7 @@ public class LibraryThingManager {
         }
 
         @Override
-        public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
+        public void startElement(final String uri, final String localName, final String name, final Attributes attributes) throws SAXException {
             super.startElement(uri, localName, name, attributes);
 
             // reset the string. See note in endElement() for a discussion.
@@ -702,7 +701,7 @@ public class LibraryThingManager {
         }
 
         @Override
-        public void endElement(String uri, String localName, String name) throws SAXException {
+        public void endElement(final String uri, final String localName, final String name) throws SAXException {
             super.endElement(uri, localName, name);
 
             if (localName.equalsIgnoreCase(FIELD)) {

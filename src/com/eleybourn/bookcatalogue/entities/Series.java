@@ -167,7 +167,6 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
         if (position == null) {
             return "";
         }
-        position = position.trim();
 
         if (mSeriesPosCleanupPat == null) {
             mSeriesPosCleanupPat = Pattern.compile(SERIES_REGEX_1, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
@@ -177,6 +176,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
             mSeriesIntegerPat = Pattern.compile(numericExp);
         }
 
+        position = position.trim();
         Matcher matcher = mSeriesPosCleanupPat.matcher(position);
         if (matcher.find()) {
             // Try to remove leading zeros.

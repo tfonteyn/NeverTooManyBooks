@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.filechooser;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
@@ -65,7 +66,7 @@ public class BackupChooser extends FileChooser implements
      */
     private File mBackupFile = null;
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Set the correct title

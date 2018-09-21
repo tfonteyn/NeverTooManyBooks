@@ -93,7 +93,7 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
+    public boolean onTouchEvent(final MotionEvent ev) {
         //We capture any touches not already handled by the ViewPager
         // to implement scrolling from a touch outside the pager bounds.
         switch (ev.getAction()) {
@@ -109,14 +109,14 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
     }
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
         //Force the container to redraw on scrolling.
         //Without this the outer pages render initially and then stay static
         if (mNeedsRedraw) invalidate();
     }
 
     @Override
-    public void onPageSelected(int position) { }
+    public void onPageSelected(final int position) { }
 
     @Override
     public void onPageScrollStateChanged(int state) {

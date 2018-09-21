@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.database;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
@@ -268,7 +269,7 @@ class UpgradeDatabase {
         }
     }
 
-    public static int doUpgrade(SQLiteDatabase db, DbSync.SynchronizedDb syncedDb, int oldVersion) {
+    public static int doUpgrade(@NonNull final SQLiteDatabase db, @NonNull final DbSync.SynchronizedDb syncedDb, final int oldVersion) {
         int curVersion = oldVersion;
 
         if (curVersion == 11) {

@@ -201,7 +201,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
 
     @Override
     public long fixupId(@NonNull final CatalogueDBAdapter db) {
-        this.id = db.getAuthorIdByName(this);
+        this.id = db.getAuthorIdByName(this.familyName, this.givenNames);
         return this.id;
     }
 

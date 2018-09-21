@@ -42,13 +42,13 @@ public class TrivialParser extends DefaultHandler {
 	}
 
 	@Override
-	public void characters(char[] ch, int start, int length) throws SAXException {
+	public void characters(final char[] ch, final int start, final int length) throws SAXException {
 		super.characters(ch, start, length);
 		m_Builder.append(ch, start, length);
 	}
 
 	@Override
-	public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
+	public void startElement(final String uri, final String localName, final String name, final Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, name, attributes);
 
 		m_Builder.append("<");
@@ -77,7 +77,7 @@ public class TrivialParser extends DefaultHandler {
 	}
 
 	@Override
-	public void endElement(String uri, String localName, String name) throws SAXException {
+	public void endElement(final String uri, final String localName, final String name) throws SAXException {
 		super.endElement(uri, localName, name);
 
 		m_Builder.append("</");

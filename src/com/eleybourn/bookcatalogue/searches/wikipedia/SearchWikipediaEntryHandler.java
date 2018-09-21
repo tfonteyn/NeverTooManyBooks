@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.searches.wikipedia;
 
+import android.support.annotation.NonNull;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -56,13 +58,13 @@ public class SearchWikipediaEntryHandler extends DefaultHandler {
 	}
 	
 	@Override
-	public void characters(char[] ch, int start, int length) throws SAXException {
+	public void characters(@NonNull final char[] ch, final int start, final int length) throws SAXException {
 		super.characters(ch, start, length);
 		builder.append(ch, start, length);
 	}
 
 	@Override
-	public void endElement(String uri, String localName, String name) throws SAXException {
+	public void endElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name) throws SAXException {
 		super.endElement(uri, localName, name);
 		// don't do anything if we are in the table of contents
 		if (!intoc) {
@@ -127,7 +129,7 @@ public class SearchWikipediaEntryHandler extends DefaultHandler {
 	}
 	
 	@Override
-	public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
+	public void startElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name, @NonNull final Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, name, attributes);
 		if (localName.equalsIgnoreCase(DIV)) {
 			div++;

@@ -460,8 +460,6 @@ public class BookCatalogueApp extends Application {
      * Set the current preferred locale in the passed resources.
      *
      * @param res Resources to use
-     *
-     * @return true if it was actually changed
      */
     private static void applyPreferredLocaleIfNecessary(@NonNull final Resources res) {
         if (mPreferredLocale == null || (res.getConfiguration().locale.equals(mPreferredLocale))) {

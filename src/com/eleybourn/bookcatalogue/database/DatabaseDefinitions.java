@@ -36,6 +36,8 @@ public class DatabaseDefinitions {
     /**
      * UNIQUE table aliases to use for each table.
      * They are collected here so checking uniqueness is as simple as possible.
+     *
+     * If you think you need these outside, think again and use the TableDefinition.getAlias()
      */
     private static final String ALIAS_ANTHOLOGY = "an";
     private static final String ALIAS_AUTHORS = "a";
@@ -64,6 +66,7 @@ public class DatabaseDefinitions {
     static final String DB_TB_BOOKSHELF = "bookshelf";
     static final String DB_TB_LOAN = "loan";
     static final String DB_TB_SERIES = "series";
+    static final String DB_TB_BOOKLIST_STYLES = "book_list_styles";
 
     private static final String NOT_NULL = "not null";
     /*
@@ -191,7 +194,7 @@ public class DatabaseDefinitions {
     /**
      * Definition for the custom booklist styles table
      */
-    public static final TableDefinition TBL_BOOK_LIST_STYLES = new TableDefinition("book_list_styles")
+    public static final TableDefinition TBL_BOOK_LIST_STYLES = new TableDefinition(DB_TB_BOOKLIST_STYLES)
             .addDomains(DOM_ID, DOM_STYLE)
             .setAlias(ALIAS_BOOK_LIST_STYLES)
             .addIndex("id", true, DOM_ID);
@@ -254,7 +257,6 @@ public class DatabaseDefinitions {
             .setPrimaryKey(DOM_BOOK_ID, DOM_BOOKSHELF_ID)
             .addReference(TBL_BOOKS, DOM_BOOK_ID)
             .addReference(TBL_BOOKSHELF, DOM_BOOKSHELF_ID);
-
 
     /**
      * Partial representation of LOAN table

@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
 
 import org.xml.sax.Attributes;
@@ -59,7 +61,7 @@ public class XmlResponseParser extends DefaultHandler {
 	 * Gather inter-tag text
 	 */
 	@Override
-	public void characters(char[] ch, int start, int length) throws SAXException {
+	public void characters(@NonNull final char[] ch, final int start, final int length) throws SAXException {
 		super.characters(ch, start, length);
 		mBuilder.append(ch, start, length);
 	}
@@ -68,7 +70,7 @@ public class XmlResponseParser extends DefaultHandler {
 	 * Handle a new tag.
 	 */
 	@Override
-	public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
+	public void startElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name, @NonNull final Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, name, attributes);
 
 		// Get the current context (ie. the enclosing tag)
@@ -99,7 +101,7 @@ public class XmlResponseParser extends DefaultHandler {
 	 * Handle the end of the current tag
 	 */
 	@Override
-	public void endElement(String uri, String localName, String name) throws SAXException {
+	public void endElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name) throws SAXException {
 		super.endElement(uri, localName, name);
 
 		// Get out current context from the hierarchy and pop from stack

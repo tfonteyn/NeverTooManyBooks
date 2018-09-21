@@ -714,14 +714,11 @@ public class TableDefinition implements AutoCloseable {
      * Check if the table exists within the passed DB
      */
     public boolean exists(@NonNull final DbSync.SynchronizedDb db) {
-        DbSync.SynchronizedStatement stmt = db.compileStatement(mExistsSql);
-        try {
+        try (DbSync.SynchronizedStatement stmt = db.compileStatement(mExistsSql)) {
             stmt.bindString(1, getName());
             stmt.bindString(2, getName());
             // count, so no SQLiteDoneException
             return (stmt.simpleQueryForLong() > 0);
-        } finally {
-            stmt.close();
         }
     }
 

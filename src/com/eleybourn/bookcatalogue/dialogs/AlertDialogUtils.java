@@ -41,7 +41,7 @@ public class AlertDialogUtils {
      * @param title Title of Alert
      * @param items Items to display
      */
-    public static void showContextDialogue(Context context, String title, ArrayList<AlertDialogItem> items) {
+    public static void showContextDialogue(@NonNull final Context context, @NonNull final String title, @NonNull final ArrayList<AlertDialogItem> items) {
         if (items.size() > 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle(title);
@@ -50,7 +50,7 @@ public class AlertDialogUtils {
             items.toArray(itemArray);
 
             builder.setItems(itemArray, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int item) {
+                public void onClick(final DialogInterface dialog, final int item) {
                     itemArray[item].handler.run();
                 }
             });
@@ -69,7 +69,7 @@ public class AlertDialogUtils {
         public final String name;
         public final Runnable handler;
 
-        public AlertDialogItem(String name, Runnable handler) {
+        public AlertDialogItem(@NonNull final String name, @NonNull final Runnable handler) {
             this.name = name;
             this.handler = handler;
         }
@@ -81,7 +81,7 @@ public class AlertDialogUtils {
         }
 
         @Override
-        public char charAt(int index) {
+        public char charAt(final int index) {
             return name.charAt(index);
         }
 
@@ -91,7 +91,7 @@ public class AlertDialogUtils {
         }
 
         @Override
-        public CharSequence subSequence(int start, int end) {
+        public CharSequence subSequence(final int start, final int end) {
             return name.subSequence(start, end);
         }
     }

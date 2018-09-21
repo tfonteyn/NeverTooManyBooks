@@ -66,7 +66,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
             // Estimate the total steps
             int estTotal = 1;
             // First, see how many books in total
-            final int maxBooks = (int) mDb.getBookCount();
+            final int maxBooks = mDb.countBooks();
 
             int coverCount;
             if ((backupFlags & Exporter.EXPORT_COVERS) != 0)
@@ -139,13 +139,13 @@ public abstract class BackupWriterAbstract implements BackupWriter {
                                final int numCovers) throws IOException {
         // This is an estimate only; we actually don't know how many covers
         // there are in the backup.
-        listener.setMax((int) (mDb.getBookCount() * 2 + 1));
+        listener.setMax((mDb.countBooks() * 2 + 1));
 
         final Exporter.ExportListener exportListener = new Exporter.ExportListener() {
             private int mLastPos = 0;
 
             @Override
-            public void onProgress(String message, int position) {
+            public void onProgress(@NonNull String message, final int position) {
                 // The progress is sent periodically and has jumps, so we calculate deltas
                 listener.step(message, position - mLastPos);
                 mLastPos = position;
@@ -157,7 +157,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
             }
 
             @Override
-            public void setMax(int max) {
+            public void setMax(final int max) {
                 // Save the book count for later
                 listener.setTotalBooks(max);
                 // Update the progress bar to a more reasonable value
@@ -219,7 +219,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 //	private void writeBooks(final BackupWriterListener listener, final int backupFlags, final Date since) throws IOException {
 //		// This is an estimate only; we actually don't know how many covers
 //		// there are in the backup.
-//		listener.setMax((int) (mDb.getBookCount() * 2 + 1));
+//		listener.setMax((int) (mDb.countBooks() * 2 + 1));
 //
 //		Exporter.ExportListener exportListener = new Exporter.ExportListener() {
 //			private int mLastPos = 0;

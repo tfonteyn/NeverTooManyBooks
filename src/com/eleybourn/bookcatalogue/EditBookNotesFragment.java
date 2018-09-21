@@ -49,12 +49,12 @@ import java.util.Date;
 public class EditBookNotesFragment extends EditBookAbstractFragment implements OnPartialDatePickerListener {
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_edit_book_notes, container, false);
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         try {
             super.onActivityCreated(savedInstanceState);
@@ -139,7 +139,7 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
             });
 
             mFields.addCrossValidator(new Fields.FieldCrossValidator() {
-                public void validate(@NonNull Fields fields, @NonNull Bundle values) {
+                public void validate(@NonNull final Fields fields, @NonNull final Bundle values) {
                     String start = values.getString(UniqueId.KEY_BOOK_READ_START);
                     if (start == null || start.isEmpty())
                         return;
@@ -175,7 +175,7 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
         Tracker.exitOnCreate(this);
     }
 
-    private String getDateFrom(int fieldResId) {
+    private String getDateFrom(final int fieldResId) {
         Object o = mFields.getField(fieldResId).getValue();
         if (o == null || o.toString().isEmpty()) {
             return DateUtils.toSqlDateTime(new Date());
@@ -190,7 +190,9 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
      * Build a full or partial date in SQL format
      */
     @Override
-    public void onPartialDatePickerSet(int dialogId, PartialDatePickerFragment dialog, Integer year, Integer month, Integer day) {
+    public void onPartialDatePickerSet(final int dialogId,
+                                       @NonNull final PartialDatePickerFragment dialog,
+                                       @Nullable final Integer year, @Nullable final Integer month, @Nullable final Integer day) {
         String value = DateUtils.buildPartialDate(year, month, day);
         mFields.getField(dialogId).setValue(value);
         dialog.dismiss();
@@ -202,7 +204,7 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
      * Dismiss it.
      */
     @Override
-    public void onPartialDatePickerCancel(int dialogId, PartialDatePickerFragment dialog) {
+    public void onPartialDatePickerCancel(final int dialogId, @NonNull final PartialDatePickerFragment dialog) {
         dialog.dismiss();
     }
 
@@ -216,7 +218,7 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
     }
 
     @Override
-    protected void onLoadBookDetails(@NonNull BookData bookData, boolean setAllDone) {
+    protected void onLoadBookDetails(@NonNull final BookData bookData, final boolean setAllDone) {
         if (!setAllDone)
             mFields.setAll(bookData);
         // No special handling required; the setAll() done by the caller is enough

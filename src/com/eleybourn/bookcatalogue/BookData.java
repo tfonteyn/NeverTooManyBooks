@@ -23,7 +23,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
@@ -159,7 +159,7 @@ public class BookData extends DataManager {
                 // Get author, series, bookshelf and anthology title lists
                 setAuthorList(db.getBookAuthorList(getRowId()));
                 setSeriesList(db.getBookSeriesList(getRowId()));
-                setBookshelfList( db.getBookshelfAsStringList(getRowId()));
+                setBookshelfList( db.getBookshelvesByBookIdAsStringList(getRowId()));
                 setAnthologyTitles(db.getBookAnthologyTitleList(getRowId()));
 
             } catch (Exception e) {
@@ -332,13 +332,13 @@ public class BookData extends DataManager {
          * activity. */
         addAccessor(KEY_IS_ANTHOLOGY, new DataAccessor() {
             @Override
-            public Object get(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData) {
+            public Object get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
                 Integer mask = data.getInt(UniqueId.KEY_ANTHOLOGY_MASK);
                 return mask != 0 ? "1" : "0";
             }
 
             @Override
-            public void set(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData, @NonNull Object value) {
+            public void set(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData, @NonNull final Object value) {
                 Integer mask = getInt(UniqueId.KEY_ANTHOLOGY_MASK);
                 // Parse the string the CheckBox returns us (0 or 1)
                 if (Datum.toBoolean(value)) {
@@ -351,7 +351,7 @@ public class BookData extends DataManager {
             }
 
             @Override
-            public boolean isPresent(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData) {
+            public boolean isPresent(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
                 return rawData.containsKey(UniqueId.KEY_ANTHOLOGY_MASK);
             }
 
@@ -360,17 +360,17 @@ public class BookData extends DataManager {
         // Make a formatted list of bookshelves
         addAccessor(LOCAL_KEY_BOOKSHELF_TEXT, new DataAccessor() {
             @Override
-            public Object get(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData) {
+            public Object get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
                 return getBookshelfText();
             }
 
             @Override
-            public void set(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData, @NonNull Object value) {
+            public void set(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData, @NonNull final Object value) {
                 throw new RuntimeException("Bookshelf Text can not be set");
             }
 
             @Override
-            public boolean isPresent(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData) {
+            public boolean isPresent(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
                 return !getBookshelfText().isEmpty();
             }
         });
@@ -378,18 +378,18 @@ public class BookData extends DataManager {
         // Whenever the row ID is written, make sure mRowId is updated.
         addAccessor(UniqueId.KEY_ID, new DataAccessor() {
             @Override
-            public Object get(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData) {
+            public Object get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
                 return Datum.toLong(rawData.get(datum.getKey()));
             }
 
             @Override
-            public void set(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData, @NonNull Object value) {
+            public void set(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData, @NonNull final Object value) {
                 rawData.putLong(datum.getKey(), Datum.toLong(value));
                 mRowId = rawData.getLong(datum.getKey());
             }
 
             @Override
-            public boolean isPresent(@NonNull DataManager data, @NonNull Datum datum, @NonNull Bundle rawData) {
+            public boolean isPresent(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
                 return true;
             }
         });

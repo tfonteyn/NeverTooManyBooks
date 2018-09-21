@@ -44,8 +44,8 @@ public class TextFieldEditorFragment extends DialogFragment {
 	 * @author pjw
 	 */
 	public interface OnTextFieldEditorListener {
-		void onTextFieldEditorSave(int dialogId, TextFieldEditorFragment dialog, String newText);
-		void onTextFieldEditorCancel(int dialogId, TextFieldEditorFragment dialog);
+		void onTextFieldEditorSave(final int dialogId, @NonNull final TextFieldEditorFragment dialog, @NonNull final String newText);
+		void onTextFieldEditorCancel(final int dialogId, @NonNull final TextFieldEditorFragment dialog);
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class TextFieldEditorFragment extends DialogFragment {
 	 *
 	 * @return			Created fragment
 	 */
-	public static TextFieldEditorFragment newInstance(final int dialogId, final int titleId, @Nullable String text) {
+	public static TextFieldEditorFragment newInstance(final int dialogId, final int titleId, @Nullable final String text) {
     	TextFieldEditorFragment frag = new TextFieldEditorFragment();
         Bundle args = new Bundle();
         args.putString(BKEY_TEXT, text);
@@ -71,7 +71,7 @@ public class TextFieldEditorFragment extends DialogFragment {
 	 * Ensure activity supports event
 	 */
 	@Override
-	public void onAttach(Context a) {
+	public void onAttach(@NonNull final Context a) {
 		super.onAttach(a);
 
 		if (! (a instanceof OnTextFieldEditorListener))
@@ -84,7 +84,7 @@ public class TextFieldEditorFragment extends DialogFragment {
 	 */
     @NonNull
 	@Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@NonNull final Bundle savedInstanceState) {
     	mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
         int title = getArguments().getInt(BKEY_TITLE);
         String text = getArguments().getString(BKEY_TEXT);
@@ -101,11 +101,11 @@ public class TextFieldEditorFragment extends DialogFragment {
 	 */
 	private final TextFieldEditor.OnEditListener mEditListener = new TextFieldEditor.OnEditListener(){
 		@Override
-		public void onSaved(@NonNull TextFieldEditor dialog, @NonNull String newText) {
+		public void onSaved(@NonNull final TextFieldEditor dialog, @NonNull final String newText) {
 			((OnTextFieldEditorListener)getActivity()).onTextFieldEditorSave(mDialogId, TextFieldEditorFragment.this, newText);
 		}
 		@Override
-		public void onCancel(@NonNull TextFieldEditor dialog) {
+		public void onCancel(@NonNull final TextFieldEditor dialog) {
 			((OnTextFieldEditorListener)getActivity()).onTextFieldEditorCancel(mDialogId, TextFieldEditorFragment.this);
 		}
 	};

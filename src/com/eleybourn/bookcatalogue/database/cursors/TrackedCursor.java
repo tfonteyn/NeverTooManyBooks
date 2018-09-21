@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.cursors;
+package com.eleybourn.bookcatalogue.database.cursors;
 
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
@@ -37,13 +37,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * TRACKED_CURSER CLASS to help com.eleybourn.bookcatalogue.debug cursor leakage.
+ * DEBUG CLASS to help com.eleybourn.bookcatalogue.debug cursor leakage.
  *
  * By using TrackedCursorFactory it is possible to use this class to analyze when and
  * where cursors are being allocated, and whether they are being de-allocated in a timely
  * fashion.
  *
- * Most code is removed by (TRACKED_CURSER && BuildConfig.TRACKED_CURSER) for production.
+ * Most code is removed by BuildConfig.DEBUG for production.
  *
  * @author Philip Warner
  */

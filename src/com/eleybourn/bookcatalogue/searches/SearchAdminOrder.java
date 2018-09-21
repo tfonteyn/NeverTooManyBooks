@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.searches;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckedTextView;
@@ -32,7 +33,7 @@ public class SearchAdminOrder extends BookCatalogueListActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.search_internet);
         mList = SearchManager.getSiteSearchOrder();
@@ -42,7 +43,7 @@ public class SearchAdminOrder extends BookCatalogueListActivity {
         Button confirmBtn = findViewById(R.id.confirm);
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 ArrayList<SearchManager.SearchSite> newList = new ArrayList<>(mList);
                 ListView list = getListView();
                 for (int i=0; i < list.getChildCount(); i++) {
@@ -63,7 +64,7 @@ public class SearchAdminOrder extends BookCatalogueListActivity {
         Button cancelBtn = findViewById(R.id.cancel);
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 finish();
             }
         });
@@ -71,12 +72,12 @@ public class SearchAdminOrder extends BookCatalogueListActivity {
 
     private class SearchSiteListAdapter extends SimpleListAdapter<SearchManager.SearchSite> {
 
-        SearchSiteListAdapter(Context context, int rowViewId, ArrayList<SearchManager.SearchSite> list) {
+        SearchSiteListAdapter(@NonNull final Context context, final int rowViewId, @NonNull final ArrayList<SearchManager.SearchSite> list) {
             super(context, rowViewId, list);
         }
 
         @Override
-        protected void onSetupView(@NonNull View convertView, @NonNull final SearchManager.SearchSite item, int position) {
+        protected void onSetupView(@NonNull final View convertView, @NonNull final SearchManager.SearchSite item, final int position) {
             final TextView name = convertView.findViewById(R.id.row_name);
             name.setText(item.name);
 

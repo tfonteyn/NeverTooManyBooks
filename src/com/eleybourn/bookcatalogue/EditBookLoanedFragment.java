@@ -76,7 +76,7 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
         Tracker.enterOnCreate(this);
         try {
             super.onActivityCreated(savedInstanceState);
-            String friend = mDb.getLoanByBook(mEditManager.getBookData().getRowId());
+            String friend = mDb.getLoanByBookId(mEditManager.getBookData().getRowId());
             if (friend == null) {
                 showLoanTo();
             } else {
@@ -142,12 +142,12 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
     private void saveLoan(@NonNull final String friend) {
         BookData values = mEditManager.getBookData();
         values.putString(UniqueId.KEY_LOANED_TO, friend);
+        //FIXME: ignoring failure
         mDb.insertLoan(values, true);
     }
 
     private void removeLoan() {
         mDb.deleteLoan(mEditManager.getBookData().getRowId(), true);
-        return;
     }
 
     @Override

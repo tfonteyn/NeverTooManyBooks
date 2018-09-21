@@ -22,6 +22,8 @@ package com.eleybourn.bookcatalogue;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -61,7 +63,7 @@ public class EditBookshelfListActivity extends BookCatalogueListActivity
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_manage_bs);
 
@@ -78,7 +80,7 @@ public class EditBookshelfListActivity extends BookCatalogueListActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         super.onCreateOptionsMenu(menu);
         menu.add(0, MENU_INSERT_ID, 0,
                 R.string.menu_insert_bs)
@@ -88,7 +90,7 @@ public class EditBookshelfListActivity extends BookCatalogueListActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case MENU_INSERT_ID:
                 Intent i = new Intent(this, EditBookshelfActivity.class);
@@ -99,14 +101,14 @@ public class EditBookshelfListActivity extends BookCatalogueListActivity
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(final ContextMenu menu, final View v, final ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(0, MENU_DELETE_ID, 0, R.string.menu_delete_bs)
                 .setIcon(android.R.drawable.ic_menu_delete);
     }
 
     @Override
-    public boolean onContextItemSelected(android.view.MenuItem item) {
+    public boolean onContextItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case MENU_DELETE_ID:
                 AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
@@ -124,7 +126,7 @@ public class EditBookshelfListActivity extends BookCatalogueListActivity
     }
 
     @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
+    protected void onListItemClick(@NonNull final ListView l, @NonNull final View v, final int position, final long id) {
         super.onListItemClick(l, v, position, id);
 
         Bookshelf bookshelf = mList.get(position);
@@ -134,7 +136,7 @@ public class EditBookshelfListActivity extends BookCatalogueListActivity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         populateList();
     }

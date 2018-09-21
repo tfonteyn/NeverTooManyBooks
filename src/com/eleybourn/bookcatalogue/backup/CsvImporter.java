@@ -19,7 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
-import android.database.sqlite.SQLiteDoneException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -44,6 +43,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
+
+import static com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement.INSERT_FAILED;
 
 /**
  * Implementation of Importer that reads a CSV file.
@@ -218,6 +219,7 @@ public class CsvImporter implements Importer {
                         doUpdate = true;
                         // Always import empty IDs...even if they are duplicates.
                         long id = db.insertBook(bookData, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+                        //FIXME: insert might have failed... what to do ?
                         bookData.putLong(UniqueId.KEY_ID, id);
                         // Would be nice to import a cover, but with no ID/UUID that is not possible
                         //mImportCreated++;
@@ -257,7 +259,7 @@ public class CsvImporter implements Importer {
                             //mImportUpdated++;
                         } else {
                             doUpdate = true;
-                            long newId = db.insertBook(bookId, bookData, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+                            long newId = db.insertBookWithId(bookId, bookData, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
                             nCreated++;
                             //mImportCreated++;
                             bookData.putLong(UniqueId.KEY_ID, newId);
@@ -332,37 +334,28 @@ public class CsvImporter implements Importer {
     private boolean importBooks_updateOnlyIfNewer(@NonNull final CatalogueDBAdapter db,
                                                   @NonNull final BookData bookData,
                                                   final long bookId) {
-        String bookDateStr;
-        try {
-            bookDateStr = db.getBookUpdateDate(bookId);
-        } catch (SQLiteDoneException ignore) {
-            bookDateStr = null;
-        }
+        String bookDateStr = db.getBookUpdateDate(bookId);
 
-        Date bookDate;
-        if (bookDateStr == null || bookDateStr.isEmpty()) {
-            bookDate = null; // Local record has never been updated
-        } else {
+        Date bookDate = null;
+        if (bookDateStr != null && !bookDateStr.isEmpty()) {
             try {
                 bookDate = DateUtils.parseDate(bookDateStr);
-            } catch (Exception e) {
-                bookDate = null; // Treat as if never updated
+            } catch (Exception ignore) {
+                // Treat as if never updated
             }
         }
 
-        Date importDate;
         String importDateStr = bookData.getString(UniqueId.KEY_LAST_UPDATE_DATE);
-        if (importDateStr == null || importDateStr.isEmpty()) {
-            importDate = null; // Imported record has never been updated
-        } else {
+
+        Date importDate = null;
+        if (importDateStr != null && !importDateStr.isEmpty()) {
             try {
                 importDate = DateUtils.parseDate(importDateStr);
-            } catch (Exception e) {
-                importDate = null; // Treat as if never updated
+            } catch (Exception ignore) {
+                // Treat as if never updated
             }
         }
-        return importDate != null
-                && (bookDate == null || importDate.compareTo(bookDate) > 0);
+        return importDate != null && (bookDate == null || importDate.compareTo(bookDate) > 0);
     }
 
     private void importBooks_handleAnthology(@NonNull final CatalogueDBAdapter db,
@@ -376,21 +369,23 @@ public class CsvImporter implements Importer {
         if (anthology != 0) {
             long id = bookData.getLong(UniqueId.KEY_ID);
             // We have anthology details, delete the current details.
-            db.deleteAnthologyTitlesByBook(id, false);
+            db.deleteAnthologyTitlesByBookId(id, false);
             int oldi = 0;
             String anthology_titles = bookData.getString(UniqueId.BKEY_ANTHOLOGY_TITLES);
             try {
                 int i = anthology_titles.indexOf(ArrayUtils.MULTI_STRING_SEPARATOR, oldi);
                 while (i > -1) {
                     String extracted_title = anthology_titles.substring(oldi, i).trim();
-
                     int j = extracted_title.indexOf(AnthologyTitle.TITLE_AUTHOR_DELIM);
                     if (j > -1) {
                         String ant_title = extracted_title.substring(0, j).trim();
                         String ant_author = extracted_title.substring((j + 1)).trim();
 
                         Author author = Author.toAuthor(ant_author);
-                        db.insertAnthologyTitle(id, author, ant_title, true, false);
+                        long newId = db.insertAnthologyTitle(id, author, ant_title, true, false);
+                        if (newId == INSERT_FAILED) {
+                            Logger.logError("Failed to insert: " + anthology_titles);
+                        }
                     }
                     oldi = i + 1;
                     i = anthology_titles.indexOf(ArrayUtils.MULTI_STRING_SEPARATOR, oldi);
@@ -405,6 +400,7 @@ public class CsvImporter implements Importer {
                                         @NonNull final BookData bookData) {
         long id = bookData.getLong(UniqueId.KEY_ID);
         db.deleteLoan(id, false);
+        //FIXME: ignoring failure
         db.insertLoan(bookData, false);
     }
 

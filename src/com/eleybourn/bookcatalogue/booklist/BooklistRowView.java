@@ -34,7 +34,6 @@ import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ABSOLUTE_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
@@ -44,14 +43,12 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LEVEL;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ROW_KIND;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE_LETTER;
 
 /**
  * RowView object for the BooklistCursor.
@@ -83,15 +80,12 @@ public class BooklistRowView {
     private int mAuthorIdCol = -2;
     private int mKindCol = -2;
     private int mTitleCol = -2;
-    private int mPubMonthCol = -2;
-    private int mAuthorCol = -2;
     private int mPublisherCol = -2;
     private int mLanguageCol = -2;
     private int mLevelCol = -2;
     private int mFormatCol = -2;
     private int mGenreCol = -2;
     private int mLocationCol = -2;
-    private int mTitleLetterCol = -2;
     private int mSeriesNameCol = -2;
     private int mSeriesNumberCol = -2;
     private int mReadCol = -2;
@@ -161,7 +155,6 @@ public class BooklistRowView {
             maxSize = 60;
         }
 
-        //FIXME: can we use {@link ImageUtils} instead ?
         DisplayMetrics metrics = BookCatalogueApp.getAppContext().getResources().getDisplayMetrics();
         maxSize = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, maxSize, metrics));
         return maxSize;
@@ -204,7 +197,7 @@ public class BooklistRowView {
     /**
      * Get string from underlying cursor given a column index.
      */
-    @NonNull
+    @Nullable
     public String getString(final int columnIndex) {
         return mCursor.getString(columnIndex);
     }
@@ -212,7 +205,7 @@ public class BooklistRowView {
     /**
      * Get the text associated with the highest level group for the current item.
      */
-    @NonNull
+    @Nullable
     public String getLevel1Data() {
         if (mLevel1Col < 0) {
             final String name = mBuilder.getDisplayDomain(1).name;
@@ -249,10 +242,10 @@ public class BooklistRowView {
      * @param level Level of the row group
      * @param s     Source value
      *
-     * @return Formatted string
+     * @return Formatted string, or original string on any failure
      */
-    @NonNull
-    private String formatRowGroup(final int level, @NonNull final String s) {
+    @Nullable
+    private String formatRowGroup(final int level, @Nullable final String s) {
         switch (mBuilder.getStyle().getGroupAt(level).kind) {
             case RowKinds.ROW_KIND_MONTH_ADDED:
             case RowKinds.ROW_KIND_MONTH_PUBLISHED:
@@ -325,7 +318,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @NonNull
+    @Nullable
     public String getBookUuid() {
         if (mBookUuidCol < 0) {
             mBookUuidCol = mCursor.getColumnIndex(DOM_BOOK_UUID.name);
@@ -394,7 +387,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @NonNull
+    @Nullable
     public String getTitle() {
         if (mTitleCol < 0) {
             mTitleCol = mCursor.getColumnIndex(DOM_TITLE.name);
@@ -408,35 +401,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @NonNull
-    public String getPublicationMonth() {
-        if (mPubMonthCol < 0) {
-            mPubMonthCol = mCursor.getColumnIndex(DOM_PUBLICATION_MONTH.name);
-            if (mPubMonthCol < 0) {
-                throw new RuntimeException("Column " + DOM_PUBLICATION_MONTH + " not present in cursor");
-            }
-        }
-        return mCursor.getString(mPubMonthCol);
-    }
-
-    /**
-     * Convenience function to retrieve column value.
-     */
-    @NonNull
-    public String getAuthorName() {
-        if (mAuthorCol < 0) {
-            mAuthorCol = mCursor.getColumnIndex(DOM_AUTHOR_FORMATTED.name);
-            if (mAuthorCol < 0) {
-                throw new RuntimeException("Column " + DOM_AUTHOR_FORMATTED + " not present in cursor");
-            }
-        }
-        return mCursor.getString(mAuthorCol);
-    }
-
-    /**
-     * Convenience function to retrieve column value.
-     */
-    @NonNull
+    @Nullable
     public String getPublisherName() {
         if (mPublisherCol < 0) {
             mPublisherCol = mCursor.getColumnIndex(DOM_PUBLISHER.name);
@@ -450,7 +415,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @NonNull
+    @Nullable
     public String getLanguage() {
         if (mLanguageCol < 0) {
             mLanguageCol = mCursor.getColumnIndex(DOM_BOOK_LANGUAGE.name);
@@ -477,7 +442,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @NonNull
+    @Nullable
     public String getFormat() {
         if (mFormatCol < 0) {
             mFormatCol = mCursor.getColumnIndex(DOM_BOOK_FORMAT.name);
@@ -491,7 +456,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @NonNull
+    @Nullable
     public String getGenre() {
         if (mGenreCol < 0) {
             mGenreCol = mCursor.getColumnIndex(DOM_BOOK_GENRE.name);
@@ -505,7 +470,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @NonNull
+    @Nullable
     public String getLocation() {
         if (mLocationCol < 0) {
             mLocationCol = mCursor.getColumnIndex(DOM_BOOK_LOCATION.name);
@@ -519,21 +484,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @NonNull
-    public String getTitleLetter() {
-        if (mTitleLetterCol < 0) {
-            mTitleLetterCol = mCursor.getColumnIndex(DOM_TITLE_LETTER.name);
-            if (mTitleLetterCol < 0) {
-                throw new RuntimeException("Column " + DOM_TITLE_LETTER.name + " not present in cursor");
-            }
-        }
-        return mCursor.getString(mTitleLetterCol);
-    }
-
-    /**
-     * Convenience function to retrieve column value.
-     */
-    @NonNull
+    @Nullable
     public String getSeriesName() {
         if (mSeriesNameCol < 0) {
             mSeriesNameCol = mCursor.getColumnIndex(DOM_SERIES_NAME.name);
@@ -547,7 +498,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @NonNull
+    @Nullable
     public String getSeriesNumber() {
         if (mSeriesNumberCol < 0) {
             mSeriesNumberCol = mCursor.getColumnIndex(DOM_SERIES_NUM.name);

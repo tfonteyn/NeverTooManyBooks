@@ -148,7 +148,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
      * @param savedInstanceState The saved bundle (from pausing). Can be null.
      */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         try {
             //do we have a network connection?
@@ -223,7 +223,6 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                 onCreateByName();
             } else if (BY_SCAN.equals(mBy)) {
                 if (onCreateByScan(savedInstanceState)) {
-                    return;
                 }
             }
         } finally {
@@ -271,7 +270,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                     /* text hardcoded as a it is a product name */
                     "ZXing",
                     new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(final DialogInterface dialog, final int which) {
                             Intent marketIntent = new Intent(Intent.ACTION_VIEW,
                                     Uri.parse("market://details?id=com.google.zxing.client.android"));
                             startActivity(marketIntent);
@@ -281,7 +280,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
             dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                     getResources().getString(android.R.string.cancel),
                     new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(final DialogInterface dialog, final int which) {
                             //do nothing
                             finish();
                         }
@@ -305,8 +304,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                         /* text hardcoded as a it is a product name */
                         "pic2shop",
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                //TODO?
+                            public void onClick(final DialogInterface dialog, final int which) {
                                 Intent marketIntent = new Intent(Intent.ACTION_VIEW,
                                         Uri.parse("market://details?id=com.visionsmarts.pic2shop"));
                                 startActivity(marketIntent);
@@ -317,7 +315,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                         /* text hardcoded as a it is a product name */
                         "ZXing",
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(final DialogInterface dialog, final int which) {
                                 Intent marketIntent = new Intent(Intent.ACTION_VIEW,
                                         Uri.parse("market://details?id=com.google.zxing.client.android"));
                                 startActivity(marketIntent);
@@ -327,7 +325,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                 dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                         getResources().getString(android.R.string.cancel),
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(final DialogInterface dialog, final int which) {
                                 //do nothing
                                 finish();
                             }
@@ -522,13 +520,13 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
 					alertDialog.setTitle(R.string.duplicate_title);
 					alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
 					alertDialog.setButton(this.getResources().getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
+						public void onClick(final DialogInterface dialog, final int which) {
 							go(isbn);
 							return;
 						}
 					});
 					alertDialog.setButton2(this.getResources().getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
+						public void onClick(final DialogInterface dialog, final int which) {
 							finish();
 							return;
 						}
@@ -629,20 +627,19 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
 
                         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getResources().getString(R.string.add),
                                 new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
+                                    public void onClick(final DialogInterface dialog, final int which) {
                                         doSearchBook();
-                                        return;
                                     }
                                 });
                         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getResources().getString(R.string.edit_book),
                                 new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
+                                    public void onClick(final DialogInterface dialog, final int which) {
                                         EditBookActivity.editBook(BookISBNSearchActivity.this, existingId, EditBookActivity.TAB_EDIT);
                                     }
                                 });
                         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getResources().getString(android.R.string.cancel),
                                 new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
+                                    public void onClick(final DialogInterface dialog, final int which) {
                                         //do nothing
                                         if (mMode == MODE_SCAN) {
                                             // reset the now-discarded details
@@ -651,7 +648,6 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                                             mTitle = "";
                                             startScannerActivity();
                                         }
-                                        return;
                                     }
                                 });
                         dialog.show();
@@ -698,13 +694,11 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                 Logger.logError(e);
                 Toast.makeText(this, R.string.search_fail, Toast.LENGTH_LONG).show();
                 finish();
-                return;
             }
         } else {
             // System.out.println(mId + " doSearchBook no criteria");
             if (mMode == MODE_SCAN)
                 startScannerActivity();
-            return;
         }
     }
 
@@ -773,7 +767,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
      * This is a straight passthrough
      */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
         //System.out.println("BookISBNSearchActivity onActivityResult " + resultCode);
         super.onActivityResult(requestCode, resultCode, intent);
         switch (requestCode) {
@@ -897,7 +891,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
         instanceState.putBoolean(LOCAL_BKEY_SCANNER_STARTED, mScannerStarted);
 
         // Save the current search details as this may be called as a result of a rotate during an alert dialog.
-        // note: thse don't actually are getting read ? TODO: probably delete
+        // note: these don't actually are getting read ? TODO: probably delete
         instanceState.putString(UniqueId.KEY_AUTHOR_NAME, mAuthor);
         instanceState.putString(UniqueId.KEY_ISBN, mIsbn);
         instanceState.putString(UniqueId.KEY_TITLE, mTitle);

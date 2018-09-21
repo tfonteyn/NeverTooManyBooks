@@ -23,6 +23,7 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
@@ -77,23 +78,23 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     private Recycler mRecycler;
     private Runnable mOnLayoutRunnable = null;
 
-    public CropImageViewTouchBase(Context context) {
+    public CropImageViewTouchBase(@NonNull final Context context) {
         super(context);
         init();
     }
-    public CropImageViewTouchBase(Context context, AttributeSet attrs) {
+    public CropImageViewTouchBase(@NonNull final Context context, @NonNull final AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
     @SuppressWarnings("unused")
-    public void setRecycler(Recycler r) {
+    public void setRecycler(@NonNull final Recycler r) {
         mRecycler = r;
     }
 
     @Override
-    protected void onLayout(boolean changed, int left, int top, int right,
-                            int bottom) {
+    protected void onLayout(final boolean changed, final int left, final int top, final int right,
+                            final int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         mLeft = left;
         mRight = right;
@@ -113,7 +114,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyDown(final int keyCode, final KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && getScale() > 1.0f) {
             // If we're zoomed in, pressing Back jumps out to show the entire
             // image, otherwise Back returns the user to the gallery.
@@ -128,7 +129,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         setImageBitmap(bitmap, 0);
     }
 
-    private void setImageBitmap(@Nullable Bitmap bitmap, final int rotation) {
+    private void setImageBitmap(@Nullable final Bitmap bitmap, final int rotation) {
         super.setImageBitmap(bitmap);
         Drawable d = getDrawable();
         if (d != null) {
@@ -155,7 +156,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         setImageRotateBitmapResetBase(new CropRotateBitmap(bitmap), resetSupp);
     }
 
-    public void setImageRotateBitmapResetBase(final CropRotateBitmap bitmap, final boolean resetSupp) {
+    public void setImageRotateBitmapResetBase(@NonNull final CropRotateBitmap bitmap, final boolean resetSupp) {
         final int viewWidth = getWidth();
 
         if (viewWidth <= 0) {
@@ -187,7 +188,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     // view's dimensions then center it (literally). If the image
     // is scaled larger than the view and is translated out of view
     // then translate it back into view (i.e. eliminate black bars).
-    protected void center(boolean horizontal, boolean vertical) {
+    protected void center(final boolean horizontal, final boolean vertical) {
         if (mBitmapDisplayed.getBitmap() == null) {
             return;
         }
@@ -247,13 +248,13 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
-    protected float getValue(Matrix matrix, int whichValue) {
+    protected float getValue(@NonNull final Matrix matrix, final int whichValue) {
         matrix.getValues(mMatrixValues);
         return mMatrixValues[whichValue];
     }
 
     // Get the scale factor out of the matrix.
-    protected float getScale(Matrix matrix) {
+    protected float getScale(@NonNull final Matrix matrix) {
         return getValue(matrix, Matrix.MSCALE_X);
     }
 
@@ -262,7 +263,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     }
 
     // Setup the base matrix so that the image is centered and scaled properly.
-    private void getProperBaseMatrix(CropRotateBitmap bitmap, Matrix matrix) {
+    private void getProperBaseMatrix(@NonNull final CropRotateBitmap bitmap, @NonNull final Matrix matrix) {
         float viewWidth = getWidth();
         float viewHeight = getHeight();
 
@@ -309,7 +310,9 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         return Math.max(fw, fh) * 4;
     }
 
-    protected void zoomTo(float scale, float centerX, float centerY) {
+    protected void zoomTo(float scale,
+                          final float centerX,
+                          final float centerY) {
         if (scale > mMaxZoom) {
             scale = mMaxZoom;
         }
@@ -322,7 +325,8 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         center(true, true);
     }
 
-    protected void zoomTo(final float scale, final float centerX,
+    protected void zoomTo(final float scale,
+                          final float centerX,
                           final float centerY,
                           @SuppressWarnings("SameParameterValue") final float durationMs) {
         final float incrementPerMs = (scale - getScale()) / durationMs;
@@ -343,7 +347,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         });
     }
 
-    protected void zoomTo(@SuppressWarnings("SameParameterValue") float scale) {
+    protected void zoomTo(@SuppressWarnings("SameParameterValue") final float scale) {
         float cx = getWidth() / 2F;
         float cy = getHeight() / 2F;
 
@@ -358,7 +362,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         zoomOut(SCALE_RATE);
     }
 
-    protected void zoomIn(float rate) {
+    protected void zoomIn(final float rate) {
         if (getScale() >= mMaxZoom) {
             return; // Don't let the user zoom into the molecular level.
         }
@@ -373,7 +377,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         setImageMatrix(getImageViewMatrix());
     }
 
-    protected void zoomOut(float rate) {
+    protected void zoomOut(final float rate) {
         if (mBitmapDisplayed.getBitmap() == null) {
             return;
         }
@@ -394,11 +398,11 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         center(true, true);
     }
 
-    protected void postTranslate(float dx, float dy) {
+    protected void postTranslate(final float dx, final float dy) {
         mSuppMatrix.postTranslate(dx, dy);
     }
 
-    protected void panBy(float dx, float dy) {
+    protected void panBy(final float dx, final float dy) {
         postTranslate(dx, dy);
         setImageMatrix(getImageViewMatrix());
     }
@@ -406,6 +410,6 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     // ImageViewTouchBase will pass a Bitmap to the Recycler if it has finished
     // its use of that Bitmap.
     public interface Recycler {
-        void recycle(Bitmap b);
+        void recycle(@NonNull final Bitmap b);
     }
 }

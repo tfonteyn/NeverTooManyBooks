@@ -22,6 +22,8 @@ package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
@@ -29,35 +31,22 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
-import com.eleybourn.bookcatalogue.taskqueue.BindableItemSQLiteCursor;
-import com.eleybourn.bookcatalogue.taskqueue.ContextDialogItem;
-
-import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursorAdapter;
-import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursorAdapter.BindableItemBinder;
+import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
+import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
+import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
+import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter.BindableItemBinder;
 
 import java.util.ArrayList;
 
 /**
- * NOTE!!!!!
- * This code is copied from TaskQueue *solely* so that it can inherit from BookCatalogueListActivity instead
- * of Activity. If this code needs changes either update it's subclasses OR update the code in TaskQueue
- * and re-copy the file.
- * NOTE!!!!!
- *
  * @author pjw
  */
 abstract public class BindableItemListActivity extends BookCatalogueListActivity implements BindableItemBinder {
-    /**
-     * The resource ID for the base view
-     */
+    /** The resource ID for the base view */
     private final int mBaseViewId;
-    /**
-     * Cursor of book IDs
-     */
-    private BindableItemSQLiteCursor mBindableItems;
-    /**
-     * Adapter for list
-     */
+    /** Cursor of book IDs */
+    private BindableItemCursor mBindableItems;
+    /** Adapter for list */
     private BindableItemCursorAdapter mListAdapter;
 
     /**
@@ -65,7 +54,7 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
      *
      * @param baseViewId Resource id of base view
      */
-    public BindableItemListActivity(int baseViewId) {
+    public BindableItemListActivity(final int baseViewId) {
         mBaseViewId = baseViewId;
     }
 
@@ -77,7 +66,7 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
      *
      * @return TaskNotesCursor to use
      */
-    protected abstract BindableItemSQLiteCursor getBindableItemCursor(Bundle savedInstanceState);
+    protected abstract BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState);
 
     @Override
     protected int getLayoutId() {
@@ -85,7 +74,7 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mBindableItems = getBindableItemCursor(savedInstanceState);
@@ -99,14 +88,14 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
 
         lv.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+            public void onItemClick(final AdapterView<?> parent, final View v, final int position, final long id) {
                 BindableItemListActivity.this.onListItemClick(parent, v, position, id);
             }
         });
         lv.setOnItemLongClickListener(new OnItemLongClickListener() {
 
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
+            public boolean onItemLongClick(final AdapterView<?> parent, final View v, final int position, final long id) {
                 return BindableItemListActivity.this.onListItemLongClick(parent, v, position, id);
             }
         });
@@ -117,14 +106,14 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
         mListAdapter.notifyDataSetChanged();
     }
 
-    protected void onListItemClick(AdapterView<?> parent, View v, int position, long id) {
+    protected void onListItemClick(@NonNull final AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
     }
 
     @SuppressWarnings("SameReturnValue")
-    private boolean onListItemLongClick(@SuppressWarnings("unused") AdapterView<?> parent,
-                                        @SuppressWarnings("unused") View v,
-                                        @SuppressWarnings("unused") int position,
-                                        @SuppressWarnings("unused") long id) {
+    private boolean onListItemLongClick(@SuppressWarnings("unused") @NonNull final AdapterView<?> parent,
+                                        @SuppressWarnings("unused") @NonNull final View v,
+                                        @SuppressWarnings("unused") final int position,
+                                        @SuppressWarnings("unused") final long id) {
         return false;
     }
 
@@ -134,7 +123,7 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
      * @param title Title of Alert
      * @param items Items to display
      */
-    protected void showContextDialogue(String title, ArrayList<ContextDialogItem> items) {
+    protected void showContextDialogue(@NonNull final String title, @NonNull final ArrayList<ContextDialogItem> items) {
         if (items.size() > 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(title);
@@ -143,7 +132,7 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
             items.toArray(itemArray);
 
             builder.setItems(itemArray, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int item) {
+                public void onClick(final DialogInterface dialog, final int item) {
                     itemArray[item].handler.run();
                 }
             });

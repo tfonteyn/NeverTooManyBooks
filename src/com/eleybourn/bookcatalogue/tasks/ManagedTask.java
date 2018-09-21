@@ -58,7 +58,7 @@ abstract public class ManagedTask extends Thread {
     protected final TaskManager mManager;
     /** Flag indicating the main onRun method has completed. Set in call do doFinish() in the UI thread. */
     private boolean mFinished = false;
-    /** Indicates the user has requested a cancel. Up to subclass to decice what to do. Set by TaskManager. */
+    /** Indicates the user has requested a cancel. Up to subclass to decide what to do. Set by TaskManager. */
     private boolean mCancelFlg = false;
 
     /**
@@ -83,7 +83,7 @@ abstract public class ManagedTask extends Thread {
      * will be called in the reconnect() call.
      *
      * The subclass must return 'true' if it was able to execute all required code in any required
-     * TaskHandler. It does not matter if that code failed or succeeded, only that the Taskhandler
+     * TaskHandler. It does not matter if that code failed or succeeded, only that the TaskHandler
      * was executed (if necessary). TaskHandler objects will be cleared by the disconnect() call
      * and reset by the reconnect() call.
      */
@@ -109,7 +109,7 @@ abstract public class ManagedTask extends Thread {
      * @param message Message to display
      * @param count   Counter. 0 if Max not set.
      */
-    public void doProgress(String message, int count) {
+    public void doProgress(@NonNull final String message, final int count) {
         mManager.doProgress(this, message, count);
     }
 
@@ -118,7 +118,7 @@ abstract public class ManagedTask extends Thread {
      *
      * @param message Message to display
      */
-    protected void doToast(String message) {
+    protected void doToast(@NonNull final String message) {
         mManager.doToast(message);
     }
 
@@ -148,7 +148,7 @@ abstract public class ManagedTask extends Thread {
         // Queue the 'onTaskFinished' message; this should also inform the TaskManager
         mMessageSwitch.send(mMessageSenderId, new MessageSwitch.Message<TaskListener>() {
                     @Override
-                    public boolean deliver(@NonNull TaskListener listener) {
+                    public boolean deliver(@NonNull final TaskListener listener) {
                         listener.onTaskFinished(ManagedTask.this);
                         return false;
                     }
@@ -192,7 +192,7 @@ abstract public class ManagedTask extends Thread {
      * @author Philip Warner
      */
     public interface TaskListener {
-        void onTaskFinished(ManagedTask t);
+        void onTaskFinished(@NonNull final ManagedTask t);
     }
 
     /**

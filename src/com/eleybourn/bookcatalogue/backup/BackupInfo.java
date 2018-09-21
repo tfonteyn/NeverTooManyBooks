@@ -83,7 +83,8 @@ public class BackupInfo {
      */
     public static BackupInfo createInfo(@NonNull final BackupContainer container,
                                         @NonNull final Context context,
-                                        int bookCount, int coverCount) {
+                                        final int bookCount,
+                                        final int coverCount) {
         Bundle info = new Bundle();
 
         info.putInt(INFO_ARCHVERSION, container.getVersion());

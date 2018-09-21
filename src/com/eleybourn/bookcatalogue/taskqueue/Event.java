@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.taskqueue;
 
+import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
+
 import java.io.Serializable;
 
 
@@ -37,7 +39,7 @@ import java.io.Serializable;
  * @author Philip Warner
  *
  */
-public abstract class Event implements Serializable, BindableItem {
+public abstract class Event implements Serializable, BindableItemCursorAdapter.BindableItem {
 	private static final long serialVersionUID = 5209097408979831308L;
 
 	private final String m_description;

@@ -688,7 +688,7 @@ public class GoodreadsManager {
 
     private void updateReview(final long reviewId,
                               final boolean isRead,
-                              @Nullable String readAt,
+                              @Nullable final String readAt,
                               @SuppressWarnings("SameParameterValue") @Nullable final String review,
                               final int rating) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,

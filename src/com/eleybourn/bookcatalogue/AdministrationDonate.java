@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -48,7 +49,7 @@ public class AdministrationDonate extends BookCatalogueActivity {
 	 * Called when the activity is first created. 
 	 */
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(@Nullable final Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
 			setTitle(R.string.app_name);
@@ -72,9 +73,8 @@ public class AdministrationDonate extends BookCatalogueActivity {
 				public void onClick(View v) {
 					Intent loadweb = new Intent(Intent.ACTION_VIEW,
 							Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=WHD6PFWXXTPX8&lc=AU&item_name=BookCatalogue&item_number=BCPP&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted"));
-					startActivity(loadweb); 
-					return;
-				}
+					startActivity(loadweb);
+                }
 			};
 
 		/* Donation Link */
@@ -90,9 +90,8 @@ public class AdministrationDonate extends BookCatalogueActivity {
 			public void onClick(View v) {
 				Intent loadweb = new Intent(Intent.ACTION_VIEW,
 						Uri.parse("https://www.amazon.com/gp/registry/wishlist/2A2E48ONH64HM?tag=bookcatalogue-20"));
-				startActivity(loadweb); 
-				return;
-			}
+				startActivity(loadweb);
+            }
 		});
 		
 	}

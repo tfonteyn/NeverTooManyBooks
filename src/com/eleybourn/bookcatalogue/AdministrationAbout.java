@@ -28,6 +28,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.View;
@@ -56,7 +57,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
 	 * Called when the activity is first created. 
 	 */
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(@Nullable final Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
  			setTitle(R.string.app_name);
@@ -92,34 +93,30 @@ public class AdministrationAbout extends BookCatalogueActivity {
 			@Override
 			public void onClick(View v) {
 				Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.webpage)));
-				startActivity(loadweb); 
-				return;
-			}
+				startActivity(loadweb);
+            }
 		});
 		TextView sourcecode = findViewById(R.id.sourcecode);
 		sourcecode.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.sourcecode)));
-				startActivity(loadweb); 
-				return;
-			}
+				startActivity(loadweb);
+            }
 		});
 		TextView contact1 = findViewById(R.id.contact1);
 		contact1.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				sendContactEmail(R.string.contact1);
-				return;
-			}
+            }
 		});
 		TextView contact2 = findViewById(R.id.contact2);
 		contact2.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				sendContactEmail(R.string.contact2);
-				return;
-			}
+            }
 		});
 		
 		{

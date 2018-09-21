@@ -64,7 +64,7 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
      * @return A collection of ColumnInfo objects.
      */
     @NonNull
-    private Map<String, ColumnInfo> describeTable(@NonNull String tableName) {
+    private Map<String, ColumnInfo> describeTable(@NonNull final String tableName) {
         String sql = "PRAGMA table_info(" + tableName + ")";
 
         Map<String, ColumnInfo> allColumns = new HashMap<>();

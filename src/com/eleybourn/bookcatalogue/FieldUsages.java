@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue;
 
+import android.support.annotation.NonNull;
+
 import java.util.LinkedHashMap;
 
 /**
@@ -36,7 +38,7 @@ public class FieldUsages extends LinkedHashMap<String,FieldUsages.FieldUsage> {
     public enum Usages { COPY_IF_BLANK, ADD_EXTRA, OVERWRITE }
 
     @SuppressWarnings("UnusedReturnValue")
-    public FieldUsage put(FieldUsage usage) {
+    public FieldUsage put(@NonNull final FieldUsage usage) {
         this.put(usage.fieldName, usage);
         return usage;
     }
@@ -48,7 +50,7 @@ public class FieldUsages extends LinkedHashMap<String,FieldUsages.FieldUsage> {
         public boolean selected;
         public final boolean canAppend;
 
-        public FieldUsage(String name, int id, Usages usage, boolean canAppend) {
+        public FieldUsage(@NonNull final String name, final int id, @NonNull final Usages usage, final boolean canAppend) {
             this.fieldName = name;
             this.stringId = id;
             this.usage = usage;

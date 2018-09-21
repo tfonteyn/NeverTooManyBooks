@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,14 +32,13 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
-
-import com.eleybourn.bookcatalogue.taskqueue.BindableItemSQLiteCursor;
-import com.eleybourn.bookcatalogue.taskqueue.ContextDialogItem;
+import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
+import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.taskqueue.RunnableTask;
 import com.eleybourn.bookcatalogue.taskqueue.Task;
 import com.eleybourn.bookcatalogue.taskqueue.TasksCursor;
+import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -64,7 +64,10 @@ public abstract class GenericTask extends RunnableTask {
      * Create a new View
      */
     @Override
-    public View newListItemView(LayoutInflater inflater, Context context, BindableItemSQLiteCursor cursor, ViewGroup parent) {
+    public View newListItemView(@NonNull final LayoutInflater inflater,
+                                @NonNull final Context context,
+                                @NonNull final BindableItemCursor cursor,
+                                @NonNull final ViewGroup parent) {
         View view = inflater.inflate(R.layout.task_info, parent, false);
         ViewTagger.setTag(view, R.id.TAG_TASK, this);
         TaskHolder holder = new TaskHolder();
@@ -90,10 +93,13 @@ public abstract class GenericTask extends RunnableTask {
      * Bind task details to passed View
      */
     @Override
-    public boolean bindView(View view, Context context, BindableItemSQLiteCursor bindAbleCursor, Object appInfo) {
+    public void bindView(@NonNull final View view,
+                         @NonNull final Context context,
+                         @NonNull final BindableItemCursor bindAbleCursor,
+                         @NonNull final Object appInfo) {
         TaskHolder holder = ViewTagger.getTag(view, R.id.TAG_TASK_HOLDER);
         if (holder == null) {
-            return false;
+            return;
         }
 
         TasksCursor cursor = (TasksCursor) bindAbleCursor;
@@ -148,7 +154,6 @@ public abstract class GenericTask extends RunnableTask {
                 this.getId(),
                 DateFormat.getDateTimeInstance().format(cursor.getQueuedDate())));
         //view.requestLayout();
-        return true;
     }
 
     /**
@@ -156,9 +161,9 @@ public abstract class GenericTask extends RunnableTask {
      * - Allow task deletion
      */
     @Override
-    public void addContextMenuItems(Context ctx, AdapterView<?> parent, View v,
-                                    int position, final long id, ArrayList<ContextDialogItem> items,
-                                    Object appInfo) {
+    public void addContextMenuItems(@NonNull Context ctx, @NonNull AdapterView<?> parent, @NonNull View v,
+                                    int position, final long id, @NonNull ArrayList<ContextDialogItem> items,
+                                    @NonNull Object appInfo) {
 
         items.add(new ContextDialogItem(ctx.getString(R.string.delete_task), new Runnable() {
                     @Override

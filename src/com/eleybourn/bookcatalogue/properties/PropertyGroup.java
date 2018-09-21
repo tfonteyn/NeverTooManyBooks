@@ -85,7 +85,7 @@ public class PropertyGroup {
     private String mName = null;
 
     /** Constructor */
-    private PropertyGroup(int id, int nameId, int weight) {
+    private PropertyGroup(final int id, final int nameId, final int weight) {
         this.id = id;
         this.nameId = nameId;
         this.weight = weight;
@@ -130,7 +130,7 @@ public class PropertyGroup {
 
         /** Add the passed group */
         @SuppressWarnings("UnusedReturnValue")
-        PropertyGroup addGroup(PropertyGroup g) {
+        PropertyGroup addGroup(@NonNull final PropertyGroup g) {
             if (this.containsKey(g.id) && (this.get(g.id) != g)) {
                 throw new IllegalStateException("Duplicate PropertyGroup ID " + g.id);
             }
@@ -140,7 +140,7 @@ public class PropertyGroup {
         }
 
         /** Construct and add a group based on parameters */
-        PropertyGroup addGroup(int id, int nameId, int weight) {
+        PropertyGroup addGroup(final int id, final int nameId, final int weight) {
             PropertyGroup g = new PropertyGroup(id, nameId, weight);
             addGroup(g);
             return g;

@@ -142,9 +142,6 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
         synchronized (this) {
             if (!mCursors.containsKey(cursorId)) {
                 // Get a new cursor
-                if (BuildConfig.DEBUG) {
-                    System.out.println("Getting cursor at " + cursorId);
-                }
                 mCursors.put(cursorId, mBuilder.getOffsetCursor(cursorStartPos, CURSOR_SIZE));
 
                 // Add this cursor id to the 'top' of the MRU list.

@@ -192,7 +192,7 @@ public class Queue extends Thread {
                 message = TaskActions.completed;
             } else if (requeue) {
                 System.out.println("Task " + task.getId() + " requeueing");
-                m_dba.setTaskRequeque(task);
+                m_dba.setTaskRequeue(task);
                 message = TaskActions.waiting;
             } else {
                 System.out.println("Task " + task.getId() + " failed");

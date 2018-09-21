@@ -50,7 +50,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
     private long mUpdateSenderId = 0;
     private final ManagedTask.TaskListener mThumbnailsHandler = new ManagedTask.TaskListener() {
         @Override
-        public void onTaskFinished(ManagedTask t) {
+        public void onTaskFinished(@NonNull ManagedTask t) {
             mUpdateSenderId = 0;
             finish();
         }
@@ -63,7 +63,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.update_fields);
@@ -88,8 +88,9 @@ public class UpdateFromInternet extends ActivityWithTasks {
             visField = field;
         }
 
-        if (mPrefs.getBoolean(FieldVisibilityActivity.TAG + visField, true))
+        if (mPrefs.getBoolean(FieldVisibilityActivity.TAG + visField, true)) {
             mFieldUsages.put(new FieldUsages.FieldUsage(field, stringId, usage, canAppend));
+        }
     }
 
     /**
@@ -153,7 +154,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                 }
 
                 /** setText as "text (extra)" */
-                private void setCheckBoxText(CheckBox cbx, int textId, int extraId) {
+                private void setCheckBoxText(@NonNull final CheckBox cbx, final int textId, final int extraId) {
                     cbx.setText(getResources().getString(R.string.a_bracket_b_bracket,
                             getResources().getString(textId),
                             getResources().getString(extraId)));
@@ -186,7 +187,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
         Button confirmBtn = findViewById(R.id.confirm);
         confirmBtn.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 // Get the selections the user made
                 if (readUserSelections() == 0) {
                     Toast.makeText(UpdateFromInternet.this, R.string.select_min_1_field, Toast.LENGTH_LONG).show();
@@ -206,38 +207,34 @@ public class UpdateFromInternet extends ActivityWithTasks {
                     alertDialog.setTitle(R.string.update_fields);
                     alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
                     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternet.this.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(final DialogInterface dialog, final int which) {
                             mFieldUsages.get(UniqueId.BKEY_THUMBNAIL).usage = FieldUsages.Usages.OVERWRITE;
                             startUpdate();
-                            return;
                         }
                     });
                     alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, UpdateFromInternet.this.getResources().getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
                         @SuppressWarnings("EmptyMethod")
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(final DialogInterface dialog, final int which) {
                             //do nothing
-                            return;
                         }
                     });
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, UpdateFromInternet.this.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(final DialogInterface dialog, final int which) {
                             mFieldUsages.get(UniqueId.BKEY_THUMBNAIL).usage = FieldUsages.Usages.COPY_IF_BLANK;
                             startUpdate();
-                            return;
                         }
                     });
                     alertDialog.show();
                 } else {
                     startUpdate();
                 }
-                return;
             }
         });
 
         Button cancelBtn = findViewById(R.id.cancel);
         cancelBtn.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 finish();
             }
         });
@@ -253,8 +250,9 @@ public class UpdateFromInternet extends ActivityWithTasks {
             if (cb != null) {
                 FieldUsages.FieldUsage usage = (FieldUsages.FieldUsage) ViewTagger.getTag(cb);
                 usage.selected = cb.isChecked();
-                if (usage.selected)
+                if (usage.selected) {
                     nSelected++;
+                }
             }
         }
         return nSelected;
@@ -271,8 +269,9 @@ public class UpdateFromInternet extends ActivityWithTasks {
     protected void onPause() {
         Tracker.enterOnPause(this);
         super.onPause();
-        if (mUpdateSenderId != 0)
+        if (mUpdateSenderId != 0) {
             UpdateThumbnailsThread.getMessageSwitch().removeListener(mUpdateSenderId, mThumbnailsHandler);
+        }
         Tracker.exitOnPause(this);
     }
 
@@ -280,8 +279,9 @@ public class UpdateFromInternet extends ActivityWithTasks {
     protected void onResume() {
         Tracker.enterOnResume(this);
         super.onResume();
-        if (mUpdateSenderId != 0)
+        if (mUpdateSenderId != 0) {
             UpdateThumbnailsThread.getMessageSwitch().addListener(mUpdateSenderId, mThumbnailsHandler, true);
+        }
         Tracker.exitOnResume(this);
     }
 }

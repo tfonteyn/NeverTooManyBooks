@@ -22,7 +22,7 @@
             android:paddingTop="@dimen/padding_border_double"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textStyle="bold"
-            tools:text="Author name f.e."
+            tools:text="Expandable top level, author f.e."
             android:textIsSelectable="false" />
 
         <View

@@ -56,7 +56,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
     /**
      * Constructor
      */
-    public BooklistStylesListActivity() { //TOMF
+    public BooklistStylesListActivity() {
         super(null, R.layout.booklist_styles_edit_list, R.layout.booklist_styles_edit_row);
     }
 
@@ -66,7 +66,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.preferred_styles);
@@ -104,7 +104,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
     }
 
     @Override
-    protected void onSetupView(@NonNull View target, @NonNull BooklistStyle style, final int position) {
+    protected void onSetupView(@NonNull final View target, @NonNull final BooklistStyle style, final int position) {
         Holder holder;
         holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
         if (holder == null) {
@@ -154,7 +154,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
      * Use the RowClick to present a pseudo context menu.
      */
     @Override
-    protected void onRowClick(@NonNull View target, @NonNull final BooklistStyle style, final int position) {
+    protected void onRowClick(@NonNull final View target, @NonNull final BooklistStyle style, final int position) {
         // Build the array of menu items based on the style we are editing
         final ArrayList<ContextItem> items = new ArrayList<>();
         if (style.isUserDefined()) {
@@ -170,7 +170,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
         final AlertDialog dialog = new AlertDialog.Builder(getLayoutInflater().getContext())
                 .setItems(csa, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(final DialogInterface dialog, final int which) {
                         switch (items.get(which).getId()) {
                             case R.id.MENU_STYLE_DELETE:
                                 style.deleteFromDb(mDb);
@@ -185,6 +185,8 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
                                 editStyle(position, style, true);
                                 dialog.dismiss();
                                 return;
+                            default:
+                                break;
                         }
                     }
                 }).create();

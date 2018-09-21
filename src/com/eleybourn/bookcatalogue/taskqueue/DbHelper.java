@@ -31,7 +31,7 @@ import java.util.Map;
  *
  * @author Philip Warner
  */
-public class DbHelper extends SQLiteOpenHelper {
+class DbHelper extends SQLiteOpenHelper {
 
     // File name for database
     private static final String DB_NAME = "net.philipwarner.taskqueue.database.db";
@@ -39,13 +39,13 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final int DB_VERSION = 2;
 
     // Domain names for fields in tables. Yes, I mix nomenclatures.
+
+    protected static final String DOM_ID = "_id"; // Needs to start with '_' so CursorAdapter understands its an ID
     static final String DOM_CATEGORY = "category";
     static final String DOM_EXCEPTION = "exception";
     static final String DOM_FAILURE_REASON = "failure_reason";
-    protected static final String DOM_ID = "_id"; // Needs to start with '_' so CursorAdapter understands its an ID
     static final String DOM_NAME = "name";
     static final String DOM_EVENT = "event";
-
     static final String DOM_EVENT_COUNT = "event_count";
 
     static final String DOM_EVENT_DATE = "event_date";
@@ -61,10 +61,10 @@ public class DbHelper extends SQLiteOpenHelper {
 
     private static final String TBL_CONFIG = "config";
 
+    private static final String TBL_CONFIG_DEFN = DOM_ID + " integer primary key autoincrement," +
+            DOM_NAME + " text not null," +
+            DOM_VALUE + "blob not null";
 
-    private static final String TBL_CONFIG_DEFN = DOM_ID + " integer primary key autoincrement,"
-            + DOM_NAME + " text not null,"
-            + DOM_VALUE + " blob not null";
 
     // Queue definition. In a future version, implement LIFO and FIFO queues (we just do FIFO in
     // version 1). Also implement 'strict' queues, where a 'strict' FIFO queue requires that
@@ -152,12 +152,12 @@ public class DbHelper extends SQLiteOpenHelper {
         // Indices
 
         // We have one counter per table to manage index numeric suffixes.
-        Map<String,Integer> counters = new Hashtable<String,Integer>();
+        Map<String,Integer> counters = new Hashtable<>();
         // Loop through definitions.
         for(String[] defn : m_indices) {
             // Get prefix fields
             final String tbl = defn[0];
-            final String qual = defn[1];
+            final String qualifier = defn[1];
             // See how many are already defined for this table; get next counter value
             int cnt;
             if (counters.containsKey(tbl)) {
@@ -169,7 +169,7 @@ public class DbHelper extends SQLiteOpenHelper {
             counters.put(tbl, cnt);
 
             // Start definition using first field.
-            StringBuilder sql = new StringBuilder("Create " + qual + " Index " + tbl + "_IX" + cnt + " On " + tbl + "(\n");
+            StringBuilder sql = new StringBuilder("Create " + qualifier + " Index " + tbl + "_IX" + cnt + " On " + tbl + "(\n");
             sql.append("    ").append(defn[2]);
             // Loop through remaining fields, if any
             for(int i = 3; i < defn.length; i++) {
@@ -185,7 +185,7 @@ public class DbHelper extends SQLiteOpenHelper {
      * Called to upgrade DB.
      */
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
         int currVersion = oldVersion;
 
         if (currVersion == 1) {

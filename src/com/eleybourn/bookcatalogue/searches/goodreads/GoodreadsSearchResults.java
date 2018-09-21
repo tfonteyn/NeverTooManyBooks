@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -61,7 +62,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(@Nullable final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		mDb = new CatalogueDBAdapter(this);
@@ -76,14 +77,13 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 		} else {
 			Toast.makeText(this, getString(R.string.please_enter_search_criteria), Toast.LENGTH_LONG).show();
 			finish();
-			return;
 		}
 	}
 
 	/**
 	 * Perform the search.
 	 */
-	private void doSearch(@NonNull String criteria) {
+	private void doSearch(@NonNull final String criteria) {
 		// Get the GR stuff we need
 		GoodreadsManager grMgr = new GoodreadsManager();
 		SearchBooksApiHandler searcher = new SearchBooksApiHandler(grMgr);
@@ -119,7 +119,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 	 * @author Philip Warner
 	 */
 	private class ListHolder {
-		ListHolder(final ImageView cover) {
+		ListHolder(@NonNull final ImageView cover) {
 			this.cover = cover;
 		}
 
@@ -135,7 +135,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 	 *
 	 * @param v		View that was clicked.
 	 */
-	private void doItemClick(View v) {
+	private void doItemClick(@NonNull final View v) {
 		ListHolder holder = (ListHolder)ViewTagger.getTag(v);
 		// TODO: Implement edition lookup - requires access to work.editions API from GR
 		Toast.makeText(this, "Not implemented: see " + holder.title + " by " + holder.author, Toast.LENGTH_LONG).show();
@@ -159,7 +159,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
 		}
 
 		@NonNull
-		public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+		public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
 			ListHolder holder;
 			if(convertView == null) {
 				// Not recycling

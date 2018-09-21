@@ -148,7 +148,7 @@ public class UpgradeMessageManager {
         final int version;
         final int messageId;
 
-        UpgradeMessage(int version, int messageId) {
+        UpgradeMessage(final int version, final int messageId) {
             this.version = version;
             this.messageId = messageId;
         }
@@ -166,7 +166,7 @@ public class UpgradeMessageManager {
     private static class UpgradeMessages extends ArrayList<UpgradeMessage> {
         private static final long serialVersionUID = -1646609828897186899L;
 
-        public UpgradeMessages add(int version, int messageId) {
+        public UpgradeMessages add(final int version, final int messageId) {
             this.add(new UpgradeMessage(version, messageId));
             return this;
         }

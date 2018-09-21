@@ -37,7 +37,7 @@ import java.util.Date;
  *
  * @author n.silin
  */
-public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
+public class BookDetailsFragment extends BookDetailsAbstractFragment {
 
     /**
      * ok, so why an Adapter and not handle this just like Series is currently handled....
@@ -46,7 +46,7 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
      * TODO once done, retrofit the same to Series.
      */
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreateView(this);
         final View v = inflater.inflate(R.layout.book_details, null);
         Tracker.exitOnCreateView(this);
@@ -54,7 +54,7 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         /* In superclass onCreate method we initialize fields, background,
          * display metrics and other. So see super.onActivityCreated */
         super.onActivityCreated(savedInstanceState);
@@ -80,7 +80,7 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
      * This is a straight passthrough
      */
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         switch (requestCode) {
             case UniqueId.ACTIVITY_EDIT_BOOK:
@@ -96,7 +96,7 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
     @Override
     /* The only difference from super class method is initializing of additional
      * fields needed for read-only mode (user notes, loaned, etc.) */
-    protected void populateFieldsFromBook(BookData book) {
+    protected void populateFieldsFromBook(@NonNull final BookData book) {
         try {
             populateBookDetailsFields(book);
 
@@ -134,7 +134,7 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
     /**
      * FIXME: use a background task to build the list instead of on the UI thread !
      */
-    private void showAnthologySection(final BookData book) {
+    private void showAnthologySection(@NonNull final BookData book) {
         View section = getView().findViewById(R.id.anthology_section);
         final ArrayList<AnthologyTitle> list = book.getAnthologyTitles();
         if (list.isEmpty()) {
@@ -223,7 +223,6 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
             // Hide 'Series' label and data
             getView().findViewById(R.id.lbl_series).setVisibility(View.GONE);
             getView().findViewById(R.id.series).setVisibility(View.GONE);
-            return;
         } else {
             // Show 'Series' label and data
             getView().findViewById(R.id.lbl_series).setVisibility(View.VISIBLE);
@@ -338,7 +337,7 @@ public class BookDetailsReadOnlyFragment extends BookDetailsAbstractFragment {
      * @param rowId Database row _id of the loaned book
      */
     private void showLoanedInfo(final long rowId) {
-        String personLoanedTo = mDb.getLoanByBook(rowId);
+        String personLoanedTo = mDb.getLoanByBookId(rowId);
         TextView textView = getView().findViewById(R.id.who);
         if (personLoanedTo != null) {
             textView.setVisibility(View.VISIBLE);

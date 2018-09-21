@@ -36,7 +36,7 @@ import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.GetThumbnailTask;
-import com.eleybourn.bookcatalogue.cursors.TrackedCursor;
+import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
@@ -127,18 +127,9 @@ public class CoversDbHelper implements AutoCloseable {
      * List of statements we create so we can clean them when the instance is closed.
      */
     private final SqlStatementManager mStatements = new SqlStatementManager();
-    /**
-     * Delete the cached covers associated with the passed hash
-     *
-     * @param filename
-     */
+
     private SynchronizedStatement mDeleteBookCoversStmt = null;
-    /**
-     * Save the passed encoded image data to a 'file'
-     *
-     * @param filename
-     * @param bm
-     */
+
     private SynchronizedStatement mExistsStmt = null;
     /**
      * Erase all images in the covers cache
@@ -276,6 +267,9 @@ public class CoversDbHelper implements AutoCloseable {
 //		}
 //	}
 
+    /**
+     * Delete the cached covers associated with the passed hash
+     */
     public void deleteBookCover(final String bookHash) {
         if (mSyncedDb == null) {
             return;
@@ -315,8 +309,9 @@ public class CoversDbHelper implements AutoCloseable {
                 null,
                 null,
                 null)) {
-            if (!c.moveToFirst())
+            if (!c.moveToFirst()) {
                 return null;
+            }
             return c.getBlob(0);
         }
     }
@@ -336,14 +331,18 @@ public class CoversDbHelper implements AutoCloseable {
         saveFile(filename, bm.getHeight(), bm.getWidth(), bytes);
     }
 
+    /**
+     * Save the passed encoded image data to a 'file'
+     *
+     */
     private void saveFile(@NonNull final  String filename, final int height, final int width, @NonNull final  byte[] bytes) {
         if (mSyncedDb == null) {
             return;
         }
 
         if (mExistsStmt == null) {
-            String sql = "Select Count(" + DOM_ID + ") From " + TBL_IMAGE + " Where " + DOM_FILENAME + " = ?";
-            mExistsStmt = mStatements.add(mSyncedDb, "mExistsStmt", sql);
+            mExistsStmt = mStatements.add(mSyncedDb, "mExistsStmt",
+                    "Select Count(" + DOM_ID + ") From " + TBL_IMAGE + " Where " + DOM_FILENAME + " = ?");
         }
 
         ContentValues cv = new ContentValues();
@@ -358,18 +357,19 @@ public class CoversDbHelper implements AutoCloseable {
         cv.put(DOM_SIZE.name, bytes.length);
 
         mExistsStmt.bindString(1, filename);
-        long rows;
+        long rowsAffected;
 
         SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
             // count, so no SQLiteDoneException
             if (mExistsStmt.simpleQueryForLong() == 0) {
-                rows = mSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
+                rowsAffected = mSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
             } else {
-                rows = mSyncedDb.update(TBL_IMAGE.getName(), cv, DOM_FILENAME.name + " = ?", new String[]{filename});
+                rowsAffected = mSyncedDb.update(TBL_IMAGE.getName(), cv, DOM_FILENAME.name + " = ?", new String[]{filename});
             }
-            if (rows == 0)
+            if (rowsAffected == 0) {
                 throw new RuntimeException("Failed to insert data");
+            }
             mSyncedDb.setTransactionSuccessful();
         } finally {
             mSyncedDb.endTransaction(txLock);
@@ -381,8 +381,8 @@ public class CoversDbHelper implements AutoCloseable {
             return;
         }
         if (mEraseCoverCacheStmt == null) {
-            String sql = "Delete From " + TBL_IMAGE;
-            mEraseCoverCacheStmt = mStatements.add(mSyncedDb, "mEraseCoverCacheStmt", sql);
+            mEraseCoverCacheStmt = mStatements.add(mSyncedDb, "mEraseCoverCacheStmt",
+                    "Delete From " + TBL_IMAGE);
         }
         mEraseCoverCacheStmt.execute();
     }
@@ -429,10 +429,11 @@ public class CoversDbHelper implements AutoCloseable {
 
         byte[] bytes;
         Date expiry;
-        if (originalFile == null)
+        if (originalFile == null) {
             expiry = new Date(0L);
-        else
+        } else {
             expiry = new Date(originalFile.lastModified());
+        }
 
         // Wrap in try/catch. It's possible the SDCard got removed and DB is now inaccessible
         try {
@@ -455,12 +456,14 @@ public class CoversDbHelper implements AutoCloseable {
             // Remember: the view may have been re-purposed and have a different associated task which
             // must be removed from the view and removed from the queue.
             //
-            if (destView != null)
+            if (destView != null) {
                 GetThumbnailTask.clearOldTaskFromView(destView);
+            }
 
             // We found it in cache
-            if (destView != null)
+            if (destView != null) {
                 destView.setImageBitmap(bm);
+            }
             // Return the image
         }
         return bm;
@@ -468,15 +471,18 @@ public class CoversDbHelper implements AutoCloseable {
 
     /**
      * Erase all cached images relating to the passed book UUID.
+     *
+     * @return the number of rows affected
      */
-    public void eraseCachedBookCover(@NonNull final String uuid) {
+    @SuppressWarnings("UnusedReturnValue")
+    public int eraseCachedBookCover(@NonNull final String uuid) {
         if (mSyncedDb == null) {
-            return;
+            return 0;
         }
         // We use encodeString here because it's possible a user screws up the data and imports
         // bad UUIDs...this has happened.
         String sql = DOM_FILENAME + " glob '" + CatalogueDBAdapter.encodeString(uuid) + ".*'";
-        mSyncedDb.delete(TBL_IMAGE.getName(), sql, new String[]{});
+        return mSyncedDb.delete(TBL_IMAGE.getName(), sql, new String[]{});
     }
 
     /**
@@ -504,7 +510,7 @@ public class CoversDbHelper implements AutoCloseable {
          * As with SQLiteOpenHelper, routine called to create DB
          */
         @Override
-        public void onCreate(@NonNull final SQLiteDatabase db) {
+        public void onCreate(final SQLiteDatabase db) {
             createTables(new SynchronizedDb(db, mSynchronizer), TABLES);
         }
 
@@ -512,7 +518,7 @@ public class CoversDbHelper implements AutoCloseable {
          * As with SQLiteOpenHelper, routine called to upgrade DB
          */
         @Override
-        public void onUpgrade(@NonNull final SQLiteDatabase db, final int oldVersion, final int newVersion) {
+        public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
             throw new RuntimeException("Upgrades not handled yet!");
         }
     }

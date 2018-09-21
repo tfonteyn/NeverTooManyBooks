@@ -88,7 +88,7 @@ public class MessageDialogFragment extends DialogFragment {
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                 getString(btnPos),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(final DialogInterface dialog, final int which) {
                         handleButton(AlertDialog.BUTTON_POSITIVE);
                     }
                 });
@@ -97,7 +97,7 @@ public class MessageDialogFragment extends DialogFragment {
             dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                     getString(btnNeg),
                     new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(final DialogInterface dialog, final int which) {
                             handleButton(AlertDialog.BUTTON_NEGATIVE);
                         }
                     });
@@ -106,7 +106,7 @@ public class MessageDialogFragment extends DialogFragment {
             dialog.setButton(AlertDialog.BUTTON_NEUTRAL,
                     getString(btnNeut),
                     new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(final DialogInterface dialog, final int which) {
                             handleButton(AlertDialog.BUTTON_NEUTRAL);
                         }
                     });

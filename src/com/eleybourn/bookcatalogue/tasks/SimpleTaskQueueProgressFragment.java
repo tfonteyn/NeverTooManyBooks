@@ -105,7 +105,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         SimpleTaskQueue.OnTaskFinishListener mTaskFinishListener = new SimpleTaskQueue.OnTaskFinishListener() {
 
             @Override
-            public void onTaskFinish(@NonNull SimpleTask task, Exception e) {
+            public void onTaskFinish(@NonNull final SimpleTask task, @Nullable final Exception e) {
                 // If there are no more tasks, close this dialog
                 if (!mQueue.hasActiveTasks()) {
                     queueAllTasksFinished();
@@ -197,7 +197,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     /**
      * Utility routine to display a Toast message or queue it as appropriate.
      */
-    public void showToast(final String message) {
+    public void showToast(@NonNull final String message) {
         // Can only display in main thread.
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             synchronized (this) {
@@ -226,14 +226,14 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     /**
      * Post a runnable to the UI thread
      */
-    public void post(Runnable r) {
+    public void post(@NonNull final Runnable r) {
         mHandler.post(r);
     }
 
     /**
      * Enqueue a task for this fragment
      */
-    private void enqueue(FragmentTask task) {
+    private void enqueue(@NonNull final FragmentTask task) {
         mQueue.enqueue(new FragmentTaskWrapper(task));
     }
 
@@ -241,7 +241,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      * Ensure activity supports event
      */
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
 
         synchronized (this) {
@@ -259,7 +259,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // VERY IMPORTANT. We do not want this destroyed!
         setRetainInstance(true);
@@ -287,7 +287,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      */
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
         ProgressDialog dialog = new ProgressDialog(getActivity());
         dialog.setCancelable(true);
@@ -319,7 +319,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     }
 
     @Override
-    public void onCancel(DialogInterface dialog) {
+    public void onCancel(@NonNull final DialogInterface dialog) {
         super.onCancel(dialog);
         mWasCancelled = true;
         mQueue.finish();
@@ -377,14 +377,14 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     /**
      * Convenience method to step the progress by 1.
      */
-    public void step(String message) {
+    public void step(@Nullable final String message) {
         step(message, 1);
     }
 
     /**
      * Convenience method to step the progress by the passed delta
      */
-    public void step(String message, int delta) {
+    public void step(@Nullable final String message, final int delta) {
         synchronized (this) {
             if (message != null) {
                 mMessage = message;
@@ -399,7 +399,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     /**
      * Direct update of message and progress value
      */
-    public void onProgress(String message, int progress) {
+    public void onProgress(@Nullable final String message, final int progress) {
 
         synchronized (this) {
             if (message != null) {

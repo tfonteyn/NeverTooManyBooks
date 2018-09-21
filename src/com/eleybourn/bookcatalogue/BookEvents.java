@@ -35,19 +35,18 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.searches.goodreads.SendOneBookTask;
-import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
-
-import com.eleybourn.bookcatalogue.taskqueue.BindableItemSQLiteCursor;
-import com.eleybourn.bookcatalogue.taskqueue.ContextDialogItem;
 import com.eleybourn.bookcatalogue.taskqueue.Event;
 import com.eleybourn.bookcatalogue.taskqueue.EventsCursor;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
+import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -134,10 +133,10 @@ public class BookEvents {
          * This method also prepares the BookEventHolder object for the View.
          */
         @Override
-        public View newListItemView(final LayoutInflater inflater,
-                                    final Context context,
-                                    final BindableItemSQLiteCursor cursor,
-                                    final ViewGroup parent) {
+        public View newListItemView(@NonNull final LayoutInflater inflater,
+                                    @NonNull final Context context,
+                                    @NonNull final BindableItemCursor cursor,
+                                    @NonNull final ViewGroup parent) {
             View view = inflater.inflate(R.layout.row_book_event_info, parent, false);
             ViewTagger.setTag(view, R.id.TAG_EVENT, this);
             BookEventHolder holder = new BookEventHolder();
@@ -162,10 +161,10 @@ public class BookEvents {
          * Display the related book details in the passed View object.
          */
         @Override
-        public boolean bindView(final View view,
-                                final Context context,
-                                final BindableItemSQLiteCursor bindableCursor,
-                                final Object appInfo) {
+        public void bindView(@NonNull final View view,
+                             @NonNull final Context context,
+                             @NonNull final BindableItemCursor bindableCursor,
+                             @NonNull final Object appInfo) {
             final EventsCursor cursor = (EventsCursor) bindableCursor;
 
             // Update event info binding; the Views in the holder are unchanged, but when it is reused
@@ -217,7 +216,6 @@ public class BookEvents {
                 }
             });
 
-            return true;
         }
 
         /**
@@ -225,12 +223,12 @@ public class BookEvents {
          * Subclass can override this and add items at end/start or just replace these completely.
          */
         @Override
-        public void addContextMenuItems(final Context ctx,
-                                        final AdapterView<?> parent,
-                                        final View v,
+        public void addContextMenuItems(@NonNull final Context ctx,
+                                        @NonNull final AdapterView<?> parent,
+                                        @NonNull final View v,
                                         final int position, final long id,
-                                        final ArrayList<ContextDialogItem> items,
-                                        final Object appInfo) {
+                                        @NonNull final ArrayList<ContextDialogItem> items,
+                                        @NonNull final Object appInfo) {
 
             // EDIT BOOK
             items.add(new ContextDialogItem(ctx.getString(R.string.edit_book), new Runnable() {
@@ -309,10 +307,10 @@ public class BookEvents {
          * Override to allow modification of view.
          */
         @Override
-        public boolean bindView(@NonNull final View view,
-                                @NonNull final Context context,
-                                @NonNull final BindableItemSQLiteCursor bindableCursor,
-                                @NonNull final Object appInfo) {
+        public void bindView(@NonNull final View view,
+                             @NonNull final Context context,
+                             @NonNull final BindableItemCursor bindableCursor,
+                             @NonNull final Object appInfo) {
             // Get the 'standard' view.
             super.bindView(view, context, bindableCursor, appInfo);
 
@@ -338,19 +336,17 @@ public class BookEvents {
                 booksCursor.close();
             }
 
-            return true;
         }
 
         /**
          * Override to allow a new context menu item.
          */
         @Override
-        public void addContextMenuItems(final Context ctx, final AdapterView<?> parent, final View v, final int position, final long id, ArrayList<ContextDialogItem> items, Object appInfo) {
+        public void addContextMenuItems(@NonNull final Context ctx, @NonNull final AdapterView<?> parent, @NonNull final View v, final int position, final long id, @NonNull ArrayList<ContextDialogItem> items, @NonNull Object appInfo) {
             super.addContextMenuItems(ctx, parent, v, position, id, items, appInfo);
 
             final CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;
-            final BooksCursor booksCursor = db.getBookForGoodreadsCursor(mBookId);
-            try {
+            try (BooksCursor booksCursor = db.getBookForGoodreadsCursor(mBookId)) {
                 final BooksRow book = booksCursor.getRowView();
                 if (booksCursor.moveToFirst()) {
                     if (!book.getIsbn().isEmpty()) {
@@ -368,8 +364,6 @@ public class BookEvents {
                         }));
                     }
                 }
-            } finally {
-                booksCursor.close();
             }
         }
     }

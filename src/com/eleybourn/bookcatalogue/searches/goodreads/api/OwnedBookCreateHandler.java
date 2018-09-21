@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -95,7 +97,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 		//int mWorkId = 0;
 
 		@Override
-		public void characters(char[] ch, int start, int length) throws SAXException {
+		public void characters(@NonNull final char[] ch, final int start, final int length) throws SAXException {
 			super.characters(ch, start, length);
 			mBuilder.append(ch, start, length);
 		}
@@ -113,7 +115,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 		//}
 
 		@Override
-		public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
+		public void startElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name, @NonNull final Attributes attributes) throws SAXException {
 			super.startElement(uri, localName, name, attributes);
 
 			// reset the string. See note in endElement() for a discussion.
@@ -122,7 +124,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 		}
 
 		@Override
-		public void endElement(String uri, String localName, String name) throws SAXException {
+		public void endElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name) throws SAXException {
 			super.endElement(uri, localName, name);
 
 			if (localName.equalsIgnoreCase(BOOK_ID)) {

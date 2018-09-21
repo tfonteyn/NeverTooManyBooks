@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.Manifest;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 
 public class StartupWithSplashActivity extends SplashPermissionsActivity {
 
@@ -17,7 +18,7 @@ public class StartupWithSplashActivity extends SplashPermissionsActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splashscreen);
     }

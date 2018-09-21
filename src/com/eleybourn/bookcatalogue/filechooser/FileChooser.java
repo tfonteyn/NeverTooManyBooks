@@ -76,7 +76,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Determine the dialog type

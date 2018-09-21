@@ -111,7 +111,7 @@ public abstract class Property {
     }
 
     @NonNull
-    public Property setGroup(final PropertyGroup group) {
+    public Property setGroup(@NonNull final PropertyGroup group) {
         mGroup = group;
         return this;
     }

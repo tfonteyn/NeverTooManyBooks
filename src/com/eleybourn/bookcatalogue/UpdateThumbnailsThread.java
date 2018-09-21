@@ -124,7 +124,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
         }
 
         // ENHANCE: Allow caller to pass cursor (again) so that specific books can be updated (eg. just one book)
-        try (Cursor books = mDb.fetchAllBooks("b." + DatabaseDefinitions.DOM_ID, "", "", "", "", "", "")) {
+        try (Cursor books = mDb.fetchBooks("b." + DatabaseDefinitions.DOM_ID, "", "", "", "", "", "")) {
             mManager.setMax(this, books.getCount());
             while (books.moveToNext() && !isCancelled()) {
                 // Increment the progress counter

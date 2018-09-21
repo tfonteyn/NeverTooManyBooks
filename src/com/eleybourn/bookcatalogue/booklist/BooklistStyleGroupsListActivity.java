@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.booklist;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckedTextView;
@@ -64,7 +65,7 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         try {
             // Get the intent and get the style and other settings
             Intent intent = this.getIntent();
@@ -109,7 +110,7 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
     }
 
     @Override
-    protected void onAdd(@NonNull final View v) {
+    protected void onAdd(final View v) {
         throw new RuntimeException("Unexpected call to 'onAdd'");
     }
 

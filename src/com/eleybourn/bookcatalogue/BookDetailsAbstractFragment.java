@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
@@ -46,6 +47,8 @@ import java.util.Objects;
  * Abstract class for creating activities containing book details.
  * Here we define common method for all children: database and background initializing,
  * initializing fields and display metrics and other common tasks.
+ *
+ * Basically used by {@link BookDetailsFragment} and {@link EditBookFieldsFragment}
  *
  * @author n.silin
  */
@@ -126,7 +129,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      */
     private final OnImageSelectedListener mOnImageSelectedListener = new OnImageSelectedListener() {
         @Override
-        public void onImageSelected(@NonNull String fileSpec) {
+        public void onImageSelected(@NonNull final String fileSpec) {
             if (mCoverBrowser != null) {
                 // Get the current file
                 File bookFile = getCoverFile(mEditManager.getBookData().getRowId());
@@ -149,7 +152,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     private boolean mGotCameraImage = false;
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
         Tracker.enterOnActivityResult(this, requestCode,resultCode);
         try {
             super.onActivityResult(requestCode, resultCode, intent);
@@ -239,7 +242,6 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                             setCoverImage();
                         }
                     }
-                    return;
                 }
             }
         } finally {
@@ -250,7 +252,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     /* Note that you should use setContentView() method in descendant before running this.
      */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         // See how big the display is and use that to set bitmap sizes
@@ -298,7 +300,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(@NonNull final MenuItem item) {
         Tracker.handleEvent(this, "Context Menu Item " + item.getItemId(), Tracker.States.Enter);
 
         try {
@@ -386,7 +388,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     }
 
     @SuppressWarnings("unused")
-    private void copyFile(File src, File dst) throws IOException {
+    private void copyFile(@NonNull final File src, @NonNull final File dst) throws IOException {
         FileInputStream fis = new FileInputStream(src);
         FileOutputStream fos = new FileOutputStream(dst);
         FileChannel inChannel = fis.getChannel();
@@ -404,7 +406,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         }
     }
 
-    private void cropCoverImage(File thumbFile) {
+    private void cropCoverImage(@NonNull final File thumbFile) {
         if (BCPreferences.getUseExternalImageCropper()) {
             cropCoverImageExternal(thumbFile);
         } else {
@@ -412,7 +414,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         }
     }
 
-    private void cropCoverImageInternal(File thumbFile) {
+    private void cropCoverImageInternal(@NonNull final File thumbFile) {
         Intent crop_intent = new Intent(getActivity(), CropCropImage.class);
         // here you have to pass absolute path to your file
         crop_intent.putExtra(BKEY_IMAGE_PATH, thumbFile.getAbsolutePath());
@@ -428,7 +430,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         startActivityForResult(crop_intent, CODE_CROP_RESULT_INTERNAL);
     }
 
-    private void cropCoverImageExternal(File thumbFile) {
+    private void cropCoverImageExternal(@NonNull final File thumbFile) {
         Tracker.handleEvent(this, "cropCoverImageExternal", Tracker.States.Enter);
         try {
             Intent intent = new Intent("com.android.camera.action.CROP");
@@ -555,7 +557,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      *
      * @param angle by a specified amount
      */
-    private void rotateThumbnail(long angle) {
+    private void rotateThumbnail(final long angle) {
         boolean retry = true;
         while (retry) {
             try {
@@ -664,7 +666,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      * and {@link #populateSeriesListField()} methods.<br>
      * Data defined by its _id in db.
      */
-    protected void populateFieldsFromBook(BookData book) {
+    protected void populateFieldsFromBook(@NonNull final BookData book) {
         // From the database (edit)
         try {
 
@@ -683,7 +685,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      * Inflates all fields with data from cursor and populates UI fields with it.
      * Also set thumbnail of the book.
      */
-    protected void populateBookDetailsFields(BookData book) {
+    protected void populateBookDetailsFields(@NonNull final BookData book) {
         //Set anthology field
         Integer ant = book.getInt(BookData.KEY_IS_ANTHOLOGY);
         mFields.getField(R.id.anthology).setValue(ant.toString()); // Set checked if ant != 0
@@ -719,7 +721,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      *
      * @return true if populated, false otherwise
      */
-    protected boolean populateBookshelvesField(Fields fields, BookData book) {
+    protected boolean populateBookshelvesField(@NonNull final Fields fields, @NonNull final BookData book) {
         boolean result = false;
         try {
             // Display the selected bookshelves

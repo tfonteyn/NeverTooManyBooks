@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * TaskQueue is free software: you can redistribute it and/or modify
@@ -20,107 +20,114 @@
 
 package com.eleybourn.bookcatalogue.taskqueue;
 
+import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
 
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
+import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
 
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
-import static com.eleybourn.bookcatalogue.utils.SerializationUtils.deserializeObject;
 import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_EVENT;
 import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_EVENT_DATE;
 import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_ID;
+import static com.eleybourn.bookcatalogue.utils.SerializationUtils.deserializeObject;
 
 /**
  * Cursor subclass used to make accessing TaskExceptions a little easier.
- * 
- * @author Philip Warner
  *
+ * @author Philip Warner
  */
-public class EventsCursor extends BindableItemSQLiteCursor {
+public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
 
-	private final Map<Long,Boolean> m_selections = new Hashtable<>();
-
-	/**
-	 * Constructor, based on SQLiteCursor constructor
-	 */
-	EventsCursor(SQLiteCursorDriver driver, String editTable, SQLiteQuery query) {
-		super(driver, editTable, query);
-	}
-
-	/** Column number of ID column. */
-	private static int m_idCol = -1;
-	/**
-	 * Accessor for ID field.
-	 * 
-	 * @return	row id
-	 */
-	public long getId() {
-		if (m_idCol == -1)
-			m_idCol = this.getColumnIndex(DOM_ID);
-		return getLong(m_idCol);
-	}
+    /** Column number of ID column. */
+    private static int m_idCol = -1;
+    /** Column number of date column. */
+    private static int m_dateCol = -1;
+    /** Column number of Exception column. */
+    private static int m_eventCol = -1;
+    private final Map<Long, Boolean> m_selections = new Hashtable<>();
 
 
-	/** Column number of date column. */
-	private static int m_dateCol = -1;
-	/**
-	 * Accessor for Exception date field.
-	 * 
-	 * @return	Exception date
-	 */
-	public Date getEventDate() {
-		if (m_dateCol == -1)
-			m_dateCol = this.getColumnIndex(DOM_EVENT_DATE);
-		return Utils.string2date(getString(m_dateCol));
-	}
+    /**
+     * Constructor, based on SQLiteCursor constructor
+     */
+    EventsCursor(SQLiteCursorDriver driver, String editTable, SQLiteQuery query) {
+        super(driver, editTable, query);
+    }
 
-	/** Column number of Exception column. */
-	private static int m_eventCol = -1;
-	/**
-	 * Accessor for Exception field.
-	 * 
-	 * @return	TaskException object
-	 */
-	public Event getEvent()  {
-		if (m_eventCol == -1)
-			m_eventCol = this.getColumnIndex(DOM_EVENT);
-		byte[] blob = getBlob(m_eventCol);
-		Event e;
-		try {
-			e = deserializeObject(blob);
-		} catch (SerializationUtils.DeserializationException de) {
-			e = QueueManager.getQueueManager().newLegacyEvent(blob);
-		}
-		e.setId(this.getId());
-		return e;
-	}
+    /**
+     * Accessor for ID field.
+     *
+     * @return row id
+     */
+    public long getId() {
+        if (m_idCol == -1)
+            m_idCol = this.getColumnIndex(DOM_ID);
+        return getLong(m_idCol);
+    }
 
-	/**
-	 * Fake attribute to handle multi-select ListViews. if we ever do them.
-	 * 
-	 * @return	Flag indicating if current row has been marked as 'selected'.
-	 */
-	public boolean getIsSelected() {
-		return getIsSelected(getId());
-	}
+    /**
+     * Accessor for Exception date field.
+     *
+     * @return Exception date
+     */
+    public Date getEventDate() {
+        if (m_dateCol == -1)
+            m_dateCol = this.getColumnIndex(DOM_EVENT_DATE);
+        Date date = DateUtils.parseDate(getString(m_dateCol));
+        if (date == null) {
+            date = new Date();
+        }
+        return date;
+    }
 
-	private boolean getIsSelected(long id) {
-		if (m_selections.containsKey(id)) {
-			return m_selections.get(id);			
-		} else {
-			return false;
-		}
-	}
-	public void setIsSelected(long id, boolean selected) {
-		m_selections.put(id, selected);
-	}
+    /**
+     * Accessor for Exception field.
+     *
+     * @return TaskException object
+     */
+    public Event getEvent() {
+        if (m_eventCol == -1)
+            m_eventCol = this.getColumnIndex(DOM_EVENT);
+        byte[] blob = getBlob(m_eventCol);
+        Event e;
+        try {
+            e = deserializeObject(blob);
+        } catch (SerializationUtils.DeserializationException de) {
+            e = QueueManager.getQueueManager().newLegacyEvent(blob);
+        }
+        e.setId(this.getId());
+        return e;
+    }
 
-	@Override
-	public BindableItem getBindableItem() {
-		return getEvent();
-	}
+    /**
+     * Fake attribute to handle multi-select ListViews. if we ever do them.
+     *
+     * @return Flag indicating if current row has been marked as 'selected'.
+     */
+    public boolean getIsSelected() {
+        return getIsSelected(getId());
+    }
+
+    private boolean getIsSelected(long id) {
+        if (m_selections.containsKey(id)) {
+            return m_selections.get(id);
+        } else {
+            return false;
+        }
+    }
+
+    public void setIsSelected(long id, boolean selected) {
+        m_selections.put(id, selected);
+    }
+
+    @Override
+    public BindableItemCursorAdapter.BindableItem getBindableItem() {
+        return getEvent();
+    }
 }

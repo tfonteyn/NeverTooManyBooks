@@ -138,7 +138,7 @@ public class StartupActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (BuildConfig.DEBUG) {
@@ -258,7 +258,7 @@ public class StartupActivity extends AppCompatActivity {
             // Listen for task completions
             mTaskQueue.setTaskFinishListener(new OnTaskFinishListener() {
                 @Override
-                public void onTaskFinish(@NonNull SimpleTask task, Exception e) {
+                public void onTaskFinish(@NonNull final SimpleTask task, @Nullable final Exception e) {
                     taskCompleted(task);
                 }
             });
@@ -315,14 +315,14 @@ public class StartupActivity extends AppCompatActivity {
             dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                     getResources().getString(android.R.string.cancel)
                     , new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(final DialogInterface dialog, final int which) {
                             dialog.dismiss();
                         }
                     });
             dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                     getResources().getString(android.R.string.ok),
                     new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(final DialogInterface dialog, final int which) {
                             mExportRequired = true;
                             dialog.dismiss();
                         }
@@ -381,7 +381,7 @@ public class StartupActivity extends AppCompatActivity {
 
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(final DialogInterface dialog, final int which) {
                         UpgradeMessageManager.setMessageAcknowledged();
                         stage3Startup();
                     }

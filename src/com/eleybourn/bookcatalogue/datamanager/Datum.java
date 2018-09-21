@@ -479,7 +479,7 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public Datum putString(@NonNull final DataManager data, @NonNull Bundle bundle, @NonNull final String value) {
+    public Datum putString(@NonNull final DataManager data, @NonNull final Bundle bundle, @NonNull final String value) {
         if (mAccessor == null) {
             bundle.putString(mKey, value);
         } else {

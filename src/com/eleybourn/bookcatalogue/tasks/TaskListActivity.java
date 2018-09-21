@@ -22,6 +22,8 @@ package com.eleybourn.bookcatalogue.tasks;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -29,21 +31,20 @@ import android.widget.AdapterView;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
-import com.eleybourn.bookcatalogue.taskqueue.BindableItemSQLiteCursor;
+import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsExportFailuresActivity;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
-
-import com.eleybourn.bookcatalogue.taskqueue.BindableItem;
-import com.eleybourn.bookcatalogue.taskqueue.ContextDialogItem;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnTaskChangeListener;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.TaskActions;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.taskqueue.Task;
 import com.eleybourn.bookcatalogue.taskqueue.TasksCursor;
 import com.eleybourn.bookcatalogue.taskqueue.TasksCursor.TaskCursorSubtype;
+import com.eleybourn.bookcatalogue.utils.ViewTagger;
+import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
 
 import java.util.ArrayList;
 
@@ -73,7 +74,7 @@ public class TaskListActivity extends BindableItemListActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.background_tasks);
@@ -114,7 +115,7 @@ public class TaskListActivity extends BindableItemListActivity {
      * Build a context menu dialogue when an item is clicked.
      */
     @Override
-    public void onListItemClick(AdapterView<?> parent, final View v, final int position, final long id) {
+    public void onListItemClick(@NonNull AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
         Task task = ViewTagger.getTag(v, R.id.TAG_TASK);
         ArrayList<ContextDialogItem> items = new ArrayList<>();
 
@@ -149,7 +150,7 @@ public class TaskListActivity extends BindableItemListActivity {
      * Pass binding off to the task object.
      */
     @Override
-    public void bindViewToItem(Context context, View view, BindableItemSQLiteCursor cursor, BindableItem bindable) {
+    public void bindViewToItem(@NonNull Context context, @Nullable View view, @NonNull BindableItemCursor cursor, @NonNull BindableItemCursorAdapter.BindableItem bindable) {
         ViewTagger.setTag(view, R.id.TAG_TASK, bindable);
         bindable.bindView(view, context, cursor, mDb);
     }
@@ -158,7 +159,7 @@ public class TaskListActivity extends BindableItemListActivity {
      * Get a cursor returning the tasks we are interested in (in this case all tasks)
      */
     @Override
-    protected BindableItemSQLiteCursor getBindableItemCursor(Bundle savedInstanceState) {
+    protected BindableItemCursor getBindableItemCursor(Bundle savedInstanceState) {
         mCursor = QueueManager.getQueueManager().getTasks(TaskCursorSubtype.all);
         return mCursor;
     }

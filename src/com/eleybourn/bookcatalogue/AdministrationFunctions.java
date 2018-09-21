@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -93,7 +94,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
      * Called when the activity is first created.
      */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.administration_label);
@@ -393,14 +394,14 @@ public class AdministrationFunctions extends ActivityWithTasks {
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
                 AdministrationFunctions.this.getResources().getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(final DialogInterface dialog, final int which) {
                         importFromCSV();
                     }
                 });
         alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                 AdministrationFunctions.this.getResources().getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(final DialogInterface dialog, final int which) {
                         //do nothing
                     }
                 });
@@ -451,7 +452,6 @@ public class AdministrationFunctions extends ActivityWithTasks {
         // If none, exit with message
         if (files == null || files.size() == 0) {
             Toast.makeText(this, R.string.no_export_files_found, Toast.LENGTH_LONG).show();
-            return;
         } else {
             if (files.size() == 1) {
                 // If only 1, just use it
@@ -475,8 +475,8 @@ public class AdministrationFunctions extends ActivityWithTasks {
     /**
      * Import all data from the passed CSV file spec
      */
-    private void importFromCSV(String filespec) {
-        new ImportThread(getTaskManager(), filespec).start();
+    private void importFromCSV(String fileSpec) {
+        new ImportThread(getTaskManager(), fileSpec).start();
     }
 
     /**
@@ -499,7 +499,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         switch (requestCode) {
             case ACTIVITY_BOOKSHELF:
@@ -548,7 +548,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
                 getResources().getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(final DialogInterface dialog, final int which) {
                         // setup the mail message
                         final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
                         emailIntent.setType("plain/text");
@@ -575,7 +575,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
         alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                 getResources().getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(final DialogInterface dialog, final int which) {
                         //do nothing
                         dialog.dismiss();
                     }

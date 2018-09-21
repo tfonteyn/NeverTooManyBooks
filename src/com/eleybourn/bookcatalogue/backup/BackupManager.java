@@ -87,7 +87,7 @@ public class BackupManager {
             private boolean mBackupOk = false;
 
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull SimpleTaskContext taskContext) {
+            public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {
                 BackupWriter wrt = null;
 
                 try {
@@ -101,12 +101,12 @@ public class BackupManager {
                         private int mTotalBooks = 0;
 
                         @Override
-                        public void setMax(int max) {
+                        public void setMax(final int max) {
                             fragment.setMax(max);
                         }
 
                         @Override
-                        public void step(String message, int delta) {
+                        public void step(@Nullable final String message, final int delta) {
                             fragment.step(message, delta);
                         }
 
@@ -121,7 +121,7 @@ public class BackupManager {
                         }
 
                         @Override
-                        public void setTotalBooks(int books) {
+                        public void setTotalBooks(final int books) {
                             mTotalBooks = books;
                         }
                     }, backupFlags, since);
@@ -165,7 +165,7 @@ public class BackupManager {
             }
 
             @Override
-            public void onFinish(@NonNull SimpleTaskQueueProgressFragment fragment, Exception exception) {
+            public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception exception) {
                 super.onFinish(fragment, exception);
                 if (exception != null) {
                     if (tempFile.exists()) {
@@ -195,12 +195,13 @@ public class BackupManager {
      * We use a FragmentTask so that long actions do not occur in the UI thread.
      */
     public static void restoreCatalogue(@NonNull final FragmentActivity context,
-                                        @NonNull final File inputFile, final int taskId,
+                                        @NonNull final File inputFile,
+                                        final int taskId,
                                         final int importFlags) {
 
         final FragmentTask task = new FragmentTaskAbstract() {
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull SimpleTaskContext taskContext) {
+            public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {
                 try {
                     if (BuildConfig.DEBUG) {
                         System.out.println("Importing " + inputFile.getAbsolutePath());
@@ -213,7 +214,7 @@ public class BackupManager {
                         }
 
                         @Override
-                        public void step(@NonNull String message, int delta) {
+                        public void step(@NonNull final String message, final int delta) {
                             fragment.step(message, delta);
                         }
 

@@ -212,16 +212,9 @@ public class SearchAmazonHandler extends DefaultHandler {
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
     }
-//	/*
-//	 * A public function the return a book structure
-//	 */
-//	public String[] getBook(){
-//		String[] book = {author, title, isbn, publisher, date_published, rating,  bookshelf, read, series, pages, series_num, list_price, anthology, location, read_start, read_end, audiobook, signed, description, genre};
-//		return book;
-//	}
 
     @Override
-    public void characters(char[] ch, int start, int length) throws SAXException {
+    public void characters(final char[] ch, final int start, final int length) throws SAXException {
         super.characters(ch, start, length);
         mBuilder.append(ch, start, length);
     }
@@ -231,7 +224,7 @@ public class SearchAmazonHandler extends DefaultHandler {
      *
      * @param key Key for data to add
      */
-    private void addIfNotPresent(String key) {
+    private void addIfNotPresent(@NonNull final String key) {
         if (!mBookData.containsKey(key) || mBookData.getString(key).isEmpty()) {
             mBookData.putString(key, mBuilder.toString());
         }
@@ -242,7 +235,7 @@ public class SearchAmazonHandler extends DefaultHandler {
      *
      * @param key Key for data to add
      */
-    private void addIfNotPresent(String key, String value) {
+    private void addIfNotPresent(@NonNull final String key, @NonNull final String value) {
         if (!mBookData.containsKey(key) || mBookData.getString(key).isEmpty()) {
             mBookData.putString(key, value);
         }
@@ -254,7 +247,7 @@ public class SearchAmazonHandler extends DefaultHandler {
      * @param key   Key for data to add
      * @param value Value to compare to; if present but equal to this, it will be overwritten
      */
-    private void addIfNotPresentOrEqual(@NonNull final String key, @SuppressWarnings("SameParameterValue") String value) {
+    private void addIfNotPresentOrEqual(@NonNull final String key, @SuppressWarnings("SameParameterValue") @NonNull final String value) {
         if (!mBookData.containsKey(key)
                 || mBookData.getString(key).isEmpty()
                 || mBookData.getString(key).equals(value)) {
@@ -282,7 +275,7 @@ public class SearchAmazonHandler extends DefaultHandler {
      * Also download the thumbnail and store in a tmp location
      */
     @Override
-    public void endElement(String uri, String localName, String name) throws SAXException {
+    public void endElement(final String uri, final String localName, final String name) throws SAXException {
         super.endElement(uri, localName, name);
         try {
             if (localName.equalsIgnoreCase(THUMBNAIL)) {
@@ -374,7 +367,7 @@ public class SearchAmazonHandler extends DefaultHandler {
      * Start each XML element. Specifically identify when we are in the item element and set the appropriate flag.
      */
     @Override
-    public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
+    public void startElement(final String uri, final String localName, final String name, final Attributes attributes) throws SAXException {
         super.startElement(uri, localName, name, attributes);
         if (!done && localName.equalsIgnoreCase(ENTRY)) {
             entry = true;

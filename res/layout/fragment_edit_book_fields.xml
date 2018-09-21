@@ -88,6 +88,13 @@
                 android:inputType="text" />
         </RelativeLayout>
 
+        <CheckBox
+            android:id="@+id/anthology"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="@string/is_anthology" />
+
         <RelativeLayout
             android:id="@+id/row_series"
             android:layout_width="match_parent"
@@ -123,6 +130,8 @@
                 android:id="@+id/publisher"
                 style="@style/personalNameTextEntry"
                 android:layout_below="@id/heading"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@id/publisher_button"
                 android:completionThreshold="2" />
 
             <ImageView
@@ -183,16 +192,14 @@
             <TextView
                 android:id="@+id/heading"
                 style="@style/editorFieldHeader"
-                android:layout_alignParentTop="false"
-                android:layout_centerVertical="true"
                 android:labelFor="@id/pages"
                 android:text="@string/pages" />
 
             <EditText
                 android:id="@+id/pages"
                 style="@style/editorFieldText"
-                android:layout_alignParentStart="false"
-                android:layout_toEndOf="@id/heading"
+                android:layout_below="@id/heading"
+                android:layout_centerVertical="true"
                 android:inputType="number" />
         </RelativeLayout>
 
@@ -204,16 +211,14 @@
             <TextView
                 android:id="@+id/heading"
                 style="@style/editorFieldHeader"
-                android:layout_alignParentTop="false"
-                android:layout_centerVertical="true"
                 android:labelFor="@id/list_price"
                 android:text="@string/list_price" />
 
             <EditText
                 android:id="@+id/list_price"
                 style="@style/editorFieldText"
-                android:layout_alignParentStart="false"
-                android:layout_toEndOf="@id/heading"
+                android:layout_below="@id/heading"
+                android:layout_centerVertical="true"
                 android:inputType="numberDecimal" />
         </RelativeLayout>
 
@@ -260,6 +265,8 @@
                 android:id="@+id/genre"
                 style="@style/editorFieldText"
                 android:layout_below="@id/heading"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@id/genre_button"
                 android:completionThreshold="2"
                 android:inputType="textCapWords" />
 
@@ -299,13 +306,6 @@
                 app:srcCompat="@android:drawable/ic_menu_more"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
-
-        <CheckBox
-            android:id="@+id/anthology"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:text="@string/is_anthology" />
 
         <RelativeLayout
             android:id="@+id/row_description_label"

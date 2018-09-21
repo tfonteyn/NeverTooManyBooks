@@ -31,7 +31,7 @@ import com.eleybourn.bookcatalogue.BookData;
 import com.eleybourn.bookcatalogue.BooksRow;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -234,7 +234,7 @@ class ImportAllTask extends GenericTask {
 
                 ArrayList<String> isbns = extractIsbns(review);
                 if (isbns != null && isbns.size() > 0) {
-                    c = db.fetchBooksByIsbns(isbns);
+                    c = db.fetchBooksByIsbnList(isbns);
                     found = c.moveToFirst();
                 }
             }
@@ -270,7 +270,7 @@ class ImportAllTask extends GenericTask {
     private String translateBookshelf(@NonNull final CatalogueDBAdapter db, @NonNull final String grShelfName) {
         if (mBookshelfLookup == null) {
             mBookshelfLookup = new Hashtable<>();
-            try (Cursor cursor = db.fetchAllBookshelves()) {
+            try (Cursor cursor = db.fetchBookshelves()) {
                 int bsCol = cursor.getColumnIndex(DOM_BOOKSHELF_NAME.name);
                 while (cursor.moveToNext()) {
                     String name = cursor.getString(bsCol);
@@ -332,6 +332,7 @@ class ImportAllTask extends GenericTask {
     private void createBook(@NonNull final CatalogueDBAdapter db, @NonNull final Bundle review) {
         BookData book = buildBundle(db, null, review);
         long id = db.insertBook(book, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+        //FIXME: ignoring failure
         if (book.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
             String uuid = db.getBookUuid(id);
             File thumb = StorageUtils.getTempThumbnail();
@@ -495,7 +496,7 @@ class ImportAllTask extends GenericTask {
      * attempt to translate as appropriate and will not add the date if it cannot
      * be parsed.
      *
-     * @Return reformatted sql date, or null if not able to parse
+     * @return reformatted sql date, or null if not able to parse
      */
     @Nullable
     private String addDateIfValid(Bundle source, String sourceField, BookData dest, String destField) {
@@ -573,7 +574,7 @@ class ImportAllTask extends GenericTask {
     }
 
     @Override
-    public long getCategory() {
+    public int getCategory() {
         return BCQueueManager.CAT_GOODREADS_IMPORT_ALL;
     }
 

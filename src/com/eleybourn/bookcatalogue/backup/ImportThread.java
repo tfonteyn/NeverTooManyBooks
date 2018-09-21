@@ -29,7 +29,7 @@ public class ImportThread extends ManagedTask {
     private final Importer.OnImporterListener mImportListener = new Importer.OnImporterListener() {
 
         @Override
-        public void onProgress(@NonNull String message, int position) {
+        public void onProgress(@NonNull final String message, final int position) {
             if (position > 0) {
                 mManager.doProgress(ImportThread.this, message, position);
             } else {
@@ -43,7 +43,7 @@ public class ImportThread extends ManagedTask {
         }
 
         @Override
-        public void setMax(int max) {
+        public void setMax(final int max) {
             mManager.setMax(ImportThread.this, max);
         }
     };
@@ -321,7 +321,7 @@ public class ImportThread extends ManagedTask {
 //				try {
 //					if (!hasUuid && !hasNumericId) {
 //						// Always import empty IDs...even if they are duplicates.
-//						Long id = mDb.insertBook(values);
+//						Long id = mDb.insertBookWithId(values);
 //						values.putString(DatabaseDefinitions.KEY_ID, id.toString());
 //						// Would be nice to import a cover, but with no ID/UUID thats not possible
 //						//mImportCreated++;
@@ -354,7 +354,7 @@ public class ImportThread extends ManagedTask {
 //							mDb.updateBook(idLong, values, false);
 //							//mImportUpdated++;
 //						} else {
-//							newId = mDb.insertBook(idLong, values);
+//							newId = mDb.insertBookWithId(idLong, values);
 //							//mImportCreated++;
 //							values.putString(DatabaseDefinitions.KEY_ID, newId.toString());
 //							idLong = newId;

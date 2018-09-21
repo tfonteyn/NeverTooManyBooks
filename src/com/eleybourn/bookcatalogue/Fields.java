@@ -163,12 +163,13 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @param s String to parse
      *
-     * @throws ParseException If parse failed.
      * @return Parsed date
+     *
+     * @throws ParseException If parse failed.
      */
     @NonNull
     private static Date parseDate(@Nullable final String s) throws ParseException {
-        if(s == null) {
+        if (s == null) {
             throw new ParseException("Can't parse null", 0);
         }
         Date d;
@@ -384,7 +385,7 @@ public class Fields extends ArrayList<Fields.Field> {
             }
         }
     }
-    
+
     /**
      * Internal utility routine to perform one loop validating all fields.
      *
@@ -699,7 +700,7 @@ public class Fields extends ArrayList<Fields.Field> {
         private boolean mFormatHtml;
         private String mRawValue;
 
-         TextViewAccessor() {
+        TextViewAccessor() {
         }
 
         public void set(@NonNull final Field field, @NonNull final Cursor c) {
@@ -911,26 +912,25 @@ public class Fields extends ArrayList<Fields.Field> {
             set(field, data.getString(field.column));
         }
 
-        public void set(@NonNull final Field field, @Nullable String s) {
-            CheckBox v = (CheckBox) field.getView();
+        public void set(@NonNull final Field field, @Nullable final String s) {
+            CheckBox cb = (CheckBox) field.getView();
             if (s != null) {
                 try {
-                    s = field.format(s);
-                    v.setChecked(Datum.toBoolean(s, true));
+                    cb.setChecked(Datum.toBoolean(field.format(s), true));
                 } catch (Exception e) {
-                    v.setChecked(false);
+                    cb.setChecked(false);
                 }
             } else {
-                v.setChecked(false);
+                cb.setChecked(false);
             }
         }
 
         public void get(@NonNull final Field field, @NonNull final Bundle values) {
-            CheckBox v = (CheckBox) field.getView();
+            CheckBox cb = (CheckBox) field.getView();
             if (field.formatter != null) {
-                values.putString(field.column, field.extract(v.isChecked() ? "1" : "0"));
+                values.putString(field.column, field.extract(cb.isChecked() ? "1" : "0"));
             } else {
-                values.putBoolean(field.column, v.isChecked());
+                values.putBoolean(field.column, cb.isChecked());
             }
         }
 
@@ -976,12 +976,11 @@ public class Fields extends ArrayList<Fields.Field> {
             set(field, data.getString(field.column));
         }
 
-        public void set(@NonNull final Field field, @Nullable String s) {
+        public void set(@NonNull final Field field, @Nullable final String s) {
             RatingBar v = (RatingBar) field.getView();
             Float f = 0.0f;
             try {
-                s = field.format(s);
-                f = Float.parseFloat(s);
+                f = Float.parseFloat(field.format(s));
             } catch (Exception ignored) {
             }
             v.setRating(f);
@@ -1018,7 +1017,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @author Philip Warner
      */
     static public class SpinnerAccessor implements FieldDataAccessor {
-        public void set(@NonNull final Field field, @NonNull Cursor c) {
+        public void set(@NonNull final Field field, @NonNull final Cursor c) {
             set(field, c.getString(c.getColumnIndex(field.column)));
         }
 
@@ -1030,8 +1029,8 @@ public class Fields extends ArrayList<Fields.Field> {
             set(field, data.getString(field.column));
         }
 
-        public void set(@NonNull final Field field, @Nullable String s) {
-            s = field.format(s);
+        public void set(@NonNull final Field field, @Nullable final String value) {
+            String s = field.format(value);
             Spinner v = (Spinner) field.getView();
             if (v == null) {
                 return;
@@ -1104,7 +1103,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * Display as a human-friendly date
          */
         @Nullable
-        public String format(@NonNull final Field f, @Nullable String source) {
+        public String format(@NonNull final Field f, @Nullable final String source) {
             try {
                 java.util.Date d = parseDate(source);
                 return mDateDisplaySdf.format(d);
@@ -1116,7 +1115,7 @@ public class Fields extends ArrayList<Fields.Field> {
         /**
          * Extract as an SQL date.
          */
-        public String extract(@NonNull final Field f, @NonNull String source) {
+        public String extract(@NonNull final Field f, @NonNull final String source) {
             try {
                 java.util.Date d = parseDate(source);
                 return mDateSqlSdf.format(d);
@@ -1264,21 +1263,21 @@ public class Fields extends ArrayList<Fields.Field> {
                 } else if (view instanceof EditText) {
                     mAccessor = new EditTextAccessor();
                     EditText et = (EditText) view;
-                    et.addTextChangedListener(new TextWatcher() {
+                    et.addTextChangedListener(
+                            new TextWatcher() {
+                                @Override
+                                public void afterTextChanged(Editable arg0) {
+                                    Field.this.setValue(arg0.toString());
+                                }
 
-                                                  @Override
-                                                  public void afterTextChanged(Editable arg0) {
-                                                      Field.this.setValue(arg0.toString());
-                                                  }
+                                @Override
+                                public void beforeTextChanged(final CharSequence arg0, final int arg1, final int arg2, final int arg3) {
+                                }
 
-                                                  @Override
-                                                  public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-                                                  }
-
-                                                  @Override
-                                                  public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-                                                  }
-                                              }
+                                @Override
+                                public void onTextChanged(final CharSequence arg0, final int arg1, final int arg2, final int arg3) {
+                                }
+                            }
                     );
 
                 } else if (view instanceof Button) {
@@ -1319,12 +1318,12 @@ public class Fields extends ArrayList<Fields.Field> {
         /**
          * Reset one fields visibility based on user preferences
          */
-        private void resetVisibility(@Nullable final FieldsContext c) {
-            if (c == null) {
+        private void resetVisibility(@Nullable final FieldsContext context) {
+            if (context == null) {
                 return;
             }
             // Lookup the view
-            final View view = c.findViewById(id);
+            final View view = context.findViewById(id);
             if (view != null) {
                 visible = BCPreferences.getBoolean(FieldVisibilityActivity.TAG + group, true);
                 view.setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -1401,8 +1400,6 @@ public class Fields extends ArrayList<Fields.Field> {
 
         /**
          * Set the current value of the tag field.
-         *
-         * @return Current value of tag.
          */
         public void setTag(@NonNull final Object tag) {
             mTag = tag;
@@ -1431,18 +1428,14 @@ public class Fields extends ArrayList<Fields.Field> {
 
         /**
          * Get the current value of this field and put into the Bundle collection.
-         *
-         * @return Current value in native form.
-         */
+         **/
         public void getValue(@NonNull final Bundle values) {
             mAccessor.get(this, values);
         }
 
         /**
          * Get the current value of this field and put into the Bundle collection.
-         *
-         * @return Current value in native form.
-         */
+         **/
         public void getValue(@NonNull final DataManager data) {
             mAccessor.get(this, data);
         }

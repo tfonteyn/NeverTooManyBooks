@@ -149,7 +149,10 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
      * @param inflater LayoutInflater
      * @param items    All list items
      */
-    private void displayList(@NonNull final ViewGroup rootViewGroup, @NonNull final View baseView, @NonNull final LayoutInflater inflater, @NonNull final ItemEntries<T> items) {
+    private void displayList(@NonNull final ViewGroup rootViewGroup,
+                             @NonNull final View baseView,
+                             @NonNull final LayoutInflater inflater,
+                             @NonNull final ItemEntries<T> items) {
 
         T currentValue = this.get();
 
@@ -232,7 +235,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         Object[] textArgs;
 
         /** Constructor. Instantiates string. */
-        ItemEntry(@Nullable final T value, final int resourceId, final Object... args) {
+        ItemEntry(@NonNull final T value, final int resourceId, final Object... args) {
             this.value = value;
             this.textId = resourceId;
             this.textArgs = args;
@@ -276,7 +279,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
          *
          * @return this for chaining
          */
-        public ItemEntries<T> add(@Nullable final T value, int stringId, Object... args) {
+        public ItemEntries<T> add(@NonNull final T value, final int stringId, @NonNull final Object... args) {
             mList.add(new ItemEntry<>(value, stringId, args));
             return this;
         }
@@ -311,7 +314,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         final ItemEntry<T> item;
         final View baseView;
 
-        Holder(ItemEntry<T> item, View baseView) {
+        Holder(@NonNull final ItemEntry<T> item, @NonNull final View baseView) {
             this.item = item;
             this.baseView = baseView;
         }

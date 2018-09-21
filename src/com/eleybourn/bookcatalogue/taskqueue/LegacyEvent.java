@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.taskqueue;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,14 +29,17 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
+
 import java.util.ArrayList;
 
 /**
- * Class to wrap events that can not be deseriialized so that the EventsCursor *always* returns a valid Event.
+ * Class to wrap events that can not be deserialized so that the EventsCursor *always* returns a valid Event.
  * 
  * @author Philip Warner
  */
-public abstract class LegacyEvent extends Event {
+public class LegacyEvent extends Event {
 
 	private static final long serialVersionUID = -8518718598973561219L;
 	private static final int TEXT_FIELD_1 = 1;
@@ -48,7 +52,7 @@ public abstract class LegacyEvent extends Event {
 	}
 
 	@Override
-	public View newListItemView(LayoutInflater inflater, Context context, BindableItemSQLiteCursor cursor, ViewGroup parent)
+	public View newListItemView(@NonNull LayoutInflater inflater, @NonNull Context context, @NonNull BindableItemCursor cursor, @NonNull ViewGroup parent)
 	{
 		LinearLayout root = new LinearLayout(context);
 		root.setOrientation(LinearLayout.VERTICAL);
@@ -63,10 +67,9 @@ public abstract class LegacyEvent extends Event {
 	}
 
 	@Override
-	public boolean bindView(View view, Context context, BindableItemSQLiteCursor cursor, Object appInfo) {
+	public void bindView(@NonNull View view, @NonNull Context context, @NonNull BindableItemCursor cursor, @NonNull Object appInfo) {
 		((TextView)view.findViewById(TEXT_FIELD_1)).setText("Legacy Event Placeholder for Event #" + this.getId());
 		((TextView)view.findViewById(TEXT_FIELD_2)).setText("This event is obsolete and can not be recovered. It is probably advisable to delete it.");
-		return true;
 	}
 
 	public byte[] getOriginal() {
@@ -74,5 +77,16 @@ public abstract class LegacyEvent extends Event {
 	}
 
 	@Override
-	public abstract void addContextMenuItems(final Context ctx, AdapterView<?> parent, final View v, final int position, final long id, ArrayList<ContextDialogItem> items, Object appInfo);
-}
+	public void addContextMenuItems(@NonNull final Context ctx, @NonNull final AdapterView<?> parent,
+									@NonNull final View v, final int position, final long id,
+									@NonNull final ArrayList<ContextDialogItem> items,
+									@NonNull final Object appInfo) {
+
+		items.add(new ContextDialogItem(ctx.getString(R.string.delete_event), new Runnable() {
+			@Override
+			public void run() {
+				QueueManager.getQueueManager().deleteEvent(LegacyEvent.this.getId());
+			}
+		}));
+
+	}}

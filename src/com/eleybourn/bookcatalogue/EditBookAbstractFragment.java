@@ -69,13 +69,13 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     protected CatalogueDBAdapter mDb;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setHasOptionsMenu(true);
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
 
         if (!(context instanceof BookEditManager))
@@ -87,7 +87,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mFields = new Fields(this);
     }
@@ -96,7 +96,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      * Define the common menu options; each subclass can add more as necessary
      */
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         //menu.clear();
         final long currRow = mEditManager.getBookData().getRowId();
@@ -114,7 +114,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
             //tweet.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
-        if (this instanceof BookDetailsReadOnlyFragment) {
+        if (this instanceof BookDetailsFragment) {
             MenuItem item = menu.add(0, EDIT_OPTIONS_ID, 0, R.string.edit_book)
                     .setIcon(android.R.drawable.ic_menu_edit);
             item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
@@ -141,7 +141,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      * statement to call the appropriate functions (or other activities)
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         final long currRow = mEditManager.getBookData().getRowId();
 
         try {
@@ -245,7 +245,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         // Set the listener to monitor edits
         mFields.setAfterFieldChangeListener(new AfterFieldChangeListener() {
             @Override
-            public void afterFieldChange(@NonNull Field field, @Nullable String newValue) {
+            public void afterFieldChange(@NonNull Field field, @Nullable final String newValue) {
                 mEditManager.setDirty(true);
             }
         });
@@ -395,45 +395,45 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         public static void fixFocusSettings(@NonNull final View root) {
             final INextView getDown = new INextView() {
                 @Override
-                public int getNext(@NonNull View v) {
+                public int getNext(@NonNull final View v) {
                     return v.getNextFocusDownId();
                 }
 
                 @Override
-                public void setNext(@NonNull View v, int id) {
+                public void setNext(@NonNull final View v, final int id) {
                     v.setNextFocusDownId(id);
                 }
             };
             final INextView getUp = new INextView() {
                 @Override
-                public int getNext(@NonNull View v) {
+                public int getNext(@NonNull final View v) {
                     return v.getNextFocusUpId();
                 }
 
                 @Override
-                public void setNext(@NonNull View v, int id) {
+                public void setNext(@NonNull final View v, final int id) {
                     v.setNextFocusUpId(id);
                 }
             };
             final INextView getLeft = new INextView() {
                 @Override
-                public int getNext(@NonNull View v) {
+                public int getNext(@NonNull final View v) {
                     return v.getNextFocusLeftId();
                 }
 
                 @Override
-                public void setNext(@NonNull View v, int id) {
+                public void setNext(@NonNull final View v, final int id) {
                     v.setNextFocusLeftId(id);
                 }
             };
             final INextView getRight = new INextView() {
                 @Override
-                public int getNext(@NonNull View v) {
+                public int getNext(@NonNull final View v) {
                     return v.getNextFocusRightId();
                 }
 
                 @Override
-                public void setNext(@NonNull View v, int id) {
+                public void setNext(@NonNull final View v, final int id) {
                     v.setNextFocusRightId(id);
                 }
             };

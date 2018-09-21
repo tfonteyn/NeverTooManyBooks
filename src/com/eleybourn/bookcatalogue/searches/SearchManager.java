@@ -243,11 +243,11 @@ public class SearchManager implements TaskManagerListener {
      * Other taskManager messages...we ignore them
      */
     @Override
-    public void onProgress(int count, int max, @NonNull String message) {
+    public void onProgress(final int count, final int max, @NonNull final String message) {
     }
 
     @Override
-    public void onToast(@NonNull String message) {
+    public void onToast(@NonNull final String message) {
     }
 
     @Override
@@ -606,7 +606,7 @@ public class SearchManager implements TaskManagerListener {
     private void sendSearchFinished() {
         mMessageSwitch.send(mMessageSenderId, new MessageSwitch.Message<SearchListener>() {
                     @Override
-                    public boolean deliver(@NonNull SearchListener listener) {
+                    public boolean deliver(@NonNull final SearchListener listener) {
                         return listener.onSearchFinished(mBookData, mCancelledFlg);
                     }
                 }

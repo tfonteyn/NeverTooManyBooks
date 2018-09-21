@@ -15,10 +15,13 @@ public class DomainDefinition {
 
     private final String constraint;
 
-    public DomainDefinition(@NonNull final String name, @NonNull final String type) {
+    public DomainDefinition(@NonNull final String name,
+                            @NonNull final String type) {
         this(name,type, "", "");
     }
-    public DomainDefinition(@NonNull final String name, @NonNull final String type, @NonNull final String extra) {
+    public DomainDefinition(@NonNull final String name,
+                            @NonNull final String type,
+                            @NonNull final String extra) {
         this(name,type, "", extra);
     }
 
@@ -28,7 +31,10 @@ public class DomainDefinition {
      * @param constraint    (optional but non null) for example "not null"
      * @param extra         (optional, but non null) for example "default 0'
      */
-    public DomainDefinition(@NonNull final String name, @NonNull final String type, @NonNull final String constraint, @NonNull final String extra) {
+    public DomainDefinition(@NonNull final String name,
+                            @NonNull final String type,
+                            @NonNull final String constraint,
+                            @NonNull final String extra) {
         this.name = name;
         this.type = type;
         this.extra = extra;
@@ -48,10 +54,17 @@ public class DomainDefinition {
 
     /** Get the SQL used to define this domain */
     @NonNull
+    public String getDefinition() {
+        return name + " " + type + " " + extra + " " + constraint;
+    }
+
+    /** Get the SQL used to define this domain */
+    @NonNull
     public String getDefinition(boolean withConstraints) {
         String s = name + " " + type + " " + extra;
-        if (withConstraints)
+        if (withConstraints) {
             s += " " + constraint;
+        }
         return s;
     }
 }

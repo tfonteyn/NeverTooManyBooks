@@ -24,6 +24,7 @@ import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
@@ -114,11 +115,11 @@ public class SearchCatalogue extends BookCatalogueActivity {
         }
 
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
         }
 
         @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
         }
     };
 
@@ -128,7 +129,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Get the DB and setup the layout.
@@ -201,7 +202,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
         // Save time to log how long query takes.
         long t0 = System.currentTimeMillis();
 
-        //BooksCursor c = mDb.fetchAllBooks(""/*order*/, ""/*bookshelf*/,
+        //BooksCursor c = mDb.fetchBooks(""/*order*/, ""/*bookshelf*/,
         //		"(" + DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME + " like '%" + author + "%' " + CatalogueDBAdapter.COLLATION + " or " + DatabaseDefinitions.KEY_AUTHOR_GIVEN_NAMES + " like '%" + author + "%' " + CatalogueDBAdapter.COLLATION + ")",
         //		"b." + DatabaseDefinitions.KEY_TITLE + " like '%" + title + "%' " + CatalogueDBAdapter.COLLATION + ",
         //		""/*searchText*/, ""/*loaned_to*/, ""/*seriesName*/);
@@ -239,7 +240,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
      * @param dirty Indicates the user action made the last search invalid
      */
     @SuppressLint("SetTextI18n")
-    private void userIsActive(boolean dirty) {
+    private void userIsActive(final boolean dirty) {
         synchronized (SearchCatalogue.this) {
             // Mark search dirty if necessary
             mSearchDirty = mSearchDirty || dirty;
@@ -281,8 +282,9 @@ public class SearchCatalogue extends BookCatalogueActivity {
     public void onDestroy() {
         super.onDestroy();
         try {
-            if (mDb != null)
+            if (mDb != null) {
                 mDb.close();
+            }
         } catch (Exception ignored) {
         }
         try {
@@ -315,8 +317,9 @@ public class SearchCatalogue extends BookCatalogueActivity {
                     }
                 }
             }
-            if (doSearch)
+            if (doSearch) {
                 doSearch();
+            }
         }
     }
 }

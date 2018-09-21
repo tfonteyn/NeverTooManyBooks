@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 
@@ -20,7 +21,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
  */
 public class BookCatalogue extends BookCatalogueActivity {
 
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(@Nullable final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Intent i = new Intent(this, StartupActivity.class);
 		startActivity(i);

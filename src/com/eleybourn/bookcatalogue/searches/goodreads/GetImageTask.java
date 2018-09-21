@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
@@ -66,7 +67,7 @@ public class GetImageTask implements SimpleTask {
 	 * Just get the URL
 	 */
 	@Override
-	public void run(@NonNull SimpleTaskContext taskContext) {
+	public void run(@NonNull final SimpleTaskContext taskContext) {
 		mBytes = ImageUtils.getBytesFromUrl(mUrl);
 	}
 
@@ -74,7 +75,7 @@ public class GetImageTask implements SimpleTask {
 	 * Tell the GoodreadsWork about it.
 	 */
 	@Override
-	public void onFinish(Exception e) {
+	public void onFinish(@Nullable final Exception e) {
 		mWork.handleTaskFinished(mBytes);
 	}
 

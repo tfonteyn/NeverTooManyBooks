@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -50,7 +51,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected void onSetupView(@NonNull View target, @NonNull Series object, final int position) {
+    protected void onSetupView(@NonNull final View target, @NonNull final Series object, final int position) {
         TextView dt = target.findViewById(R.id.row_series);
         if (dt != null) {
             dt.setText(object.getDisplayName());
@@ -71,7 +72,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setTitle(mBookTitle);
 
@@ -90,14 +91,14 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected void onAdd(@NonNull final View target) {
+    protected void onAdd(final View target) {
         AutoCompleteTextView seriesField = EditSeriesListActivity.this.findViewById(R.id.series);
         String seriesTitle = seriesField.getText().toString().trim();
 
         if (!seriesTitle.isEmpty()) {
             EditText numberField = EditSeriesListActivity.this.findViewById(R.id.series_num);
             Series newSeries = new Series(seriesTitle, numberField.getText().toString());
-            // see if we can it based on the name
+            // see if we can find it based on the name
             newSeries.id = mDb.getSeriesId(newSeries.name);
             for (Series series : mList) {
                 if (series.equals(newSeries)) {
@@ -115,7 +116,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected void onRowClick(@NonNull View target, @NonNull final Series series, final int position) {
+    protected void onRowClick(@NonNull final View target, @NonNull final Series series, final int position) {
         final Dialog dialog = new StandardDialogs.BasicDialog(this);
         dialog.setContentView(R.layout.dialog_edit_book_series);
         dialog.setTitle(R.string.edit_book_series);
@@ -177,7 +178,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         to.id = mDb.getSeriesId(to);
 
         // See if the old series is used in any other books.
-        long nRefs = mDb.getSeriesBookCount(from);
+        long nRefs = mDb.countSeriesBooks(from);
         boolean oldHasOthers = nRefs > (mRowId == 0 ? 0 : 1);
 
         // Case: series is the same (but different case), or is only used in this book
@@ -202,7 +203,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         alertDialog.setTitle(getResources().getString(R.string.scope_of_change));
         alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
         alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, thisBook, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(final DialogInterface dialog, final int which) {
                 from.copyFrom(to);
                 Utils.pruneSeriesList(mList);
                 Utils.pruneList(mDb, mList);
@@ -212,7 +213,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         });
 
         alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(final DialogInterface dialog, final int which) {
                 mDb.globalReplaceSeries(from, to);
                 from.copyFrom(to);
                 Utils.pruneSeriesList(mList);
@@ -226,7 +227,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected boolean onSave(@NonNull Intent intent) {
+    protected boolean onSave(@NonNull final Intent intent) {
         final AutoCompleteTextView t = EditSeriesListActivity.this.findViewById(R.id.series);
         Resources res = this.getResources();
         String s = t.getText().toString().trim();
@@ -236,14 +237,14 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             alertDialog.setTitle(res.getText(R.string.unsaved_edits_title));
             alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
             alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, res.getText(R.string.yes), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
+                public void onClick(final DialogInterface dialog, final int which) {
                     t.setText("");
                     findViewById(R.id.confirm).performClick();
                 }
             });
 
             alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, res.getText(R.string.no), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
+                public void onClick(final DialogInterface dialog, final int which) {
                     //do nothing
                 }
             });

@@ -59,7 +59,7 @@ public class ShowBookByIsbnApiHandler extends ShowBookApiHandler {
 	 *
 	 * @return	the array of GoodreadsWork objects.
 	 */
-	public Bundle get(@NonNull String isbn, boolean fetchThumbnail) throws
+	public Bundle get(@NonNull String isbn, final boolean fetchThumbnail) throws
 			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
 			NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 		//noinspection ConstantConditions  we need to make ABSOLUTELY SURE...
@@ -73,7 +73,7 @@ public class ShowBookByIsbnApiHandler extends ShowBookApiHandler {
 
 		// Setup API call //
 		final String urlBase = GOODREADS_API_ROOT + "/book/isbn?format=xml&isbn=%1$s&key=%2$s"; //format=xml&
-		final String url = String.format(urlBase, isbn.trim(), mManager.getDeveloperKey());
+		final String url = String.format(urlBase, isbn, mManager.getDeveloperKey());
 		HttpGet get = new HttpGet(url);
 
 		return sendRequest(get, fetchThumbnail);

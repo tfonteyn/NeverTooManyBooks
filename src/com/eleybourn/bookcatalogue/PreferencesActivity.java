@@ -21,6 +21,8 @@
 package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.baseactivity.PreferencesBaseActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
@@ -217,7 +219,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Make sure the names are correct
         updateLocalesListItems();
@@ -243,7 +245,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
      * Display current preferences and set handlers to catch changes.
      */
     @Override
-    protected void setupViews(Properties globalProps) {
+    protected void setupViews(@NonNull Properties globalProps) {
         // Add the locally constructed properties
         for (Property p : mProperties)
             globalProps.add(p);

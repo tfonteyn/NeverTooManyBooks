@@ -52,7 +52,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
-import com.eleybourn.bookcatalogue.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -124,7 +124,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 * Called when the activity is first created.
 	 */
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(@Nullable final Bundle savedInstanceState) {
 
 		//check which strings.xml file is currently active
 		if (!getString(R.string.system_app_name).equals(Utils.APP_NAME)) {
@@ -211,7 +211,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		mSpinnerAdapter.add(getString(R.string.all_books));
 		pos++;
 
-		try (Cursor cursor = mDb.fetchAllBookshelves()) {
+		try (Cursor cursor = mDb.fetchBookshelves()) {
 			int bsCol = cursor.getColumnIndex(DOM_BOOKSHELF_NAME.name);
             while (cursor.moveToNext()) {
                 String bookshelfName = cursor.getString(bsCol);
@@ -258,7 +258,6 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			@Override
 			public void onClick(View v) {
 				mBookshelfText.performClick();
-				return;
 			}
 		});
 
@@ -267,7 +266,6 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			@Override
 			public void onClick(View v) {
 				mBookshelfText.performClick();
-				return;
 			}
 		});
 
@@ -371,7 +369,6 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			 * before the call to 'super'...so we use an instance variable in the
 			 * containing class.
 			 *
-			 * @param context
 			 */
 			private int[] mFromCols = null;
 			private final int[] mToIds;
@@ -990,7 +987,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		/* Add number to bookshelf */
 		TextView mBookshelfNumView = findViewById(R.id.bookshelf_num);
 		try {
-			mBookshelfNumView.setText(BookCatalogueApp.getResourceString(R.string.brackets, mDb.countBooks(mBookshelf)));
+			mBookshelfNumView.setText(BookCatalogueApp.getResourceString(R.string.brackets, mDb.classicCountBooks(mBookshelf)));
 		} catch (IllegalStateException e) {
 			Logger.logError(e);
 		}
@@ -1018,7 +1015,6 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
-		return;
 	}
 
 	/*
@@ -1046,7 +1042,6 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		} catch (Exception e) {
 			Logger.logError(e);
 		}
-		return;
 	}
 
 	/**
@@ -1093,7 +1088,6 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				mLoadingGroups -= 1;
 			}
 		}
-		return;
 	}
 
 	/**
@@ -1102,7 +1096,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	 * @param adj    Adjustment to make (+1/-1 = open/close)
      * @param force    If force is true, then it will be always be added (if adj=1), even if it already exists - but moved to the end
      */
-	private void adjustCurrentGroup(int pos, int adj, boolean force) {
+	private void adjustCurrentGroup(final int pos, final int adj, final boolean force) {
 		int index = currentGroup.indexOf(pos);
 		if (index == -1) {
 			//it does not exist (so is not open), so if adj=1, add to the list
@@ -1253,7 +1247,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 						mDb.purgeAuthors();
 						regenGroups();
 					}});
-				d.edit(mDb.getAuthorById(info.id));
+				d.edit(mDb.getAuthor(info.id));
 				break;
 			}
 		}
@@ -1447,15 +1441,5 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		FastScrollExpandableListView lv = (FastScrollExpandableListView)this.getExpandableListView();
 		lv.setFastScrollEnabled(false);
 		lv.setFastScrollEnabled(true);
-	}
-
-	/**
-	 * Accessor used by Robotium test harness.
-	 *
-	 * @param s		New search string.
-	 */
-	public void setSearchQuery(String s) {
-		search_query = s;
-		regenGroups();
 	}
 }

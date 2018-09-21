@@ -140,7 +140,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * @param baseViewId Resource id of base view
      * @param rowViewId  Resource id of row view
      */
-    protected EditObjectListActivity(@NonNull final String bkey, final int baseViewId, final int rowViewId) {
+    protected EditObjectListActivity(@Nullable final String bkey, final int baseViewId, final int rowViewId) {
         mBKey = bkey;
         mBaseViewId = baseViewId;
         mRowViewId = rowViewId;
@@ -264,7 +264,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
             // Setup the DB
@@ -275,7 +275,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
             setupListener(R.id.confirm, mSaveListener);
             setupListener(R.id.cancel, mCancelListener);
             setupListener(R.id.add, mAddListener);
-//TOMF
+
             // Ask the subclass to setup the list; we need this before building the adapter.
             if (savedInstanceState != null && mBKey != null && savedInstanceState.containsKey(mBKey)) {
                 mList = ArrayUtils.getListFromBundle(savedInstanceState, mBKey);
@@ -330,7 +330,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * @param id View ID
      * @param s  String to set
      */
-    protected void setTextOrHideView(int id, @Nullable String s) {
+    protected void setTextOrHideView(int id, @Nullable final String s) {
         TextView v = this.findViewById(id);
         if (v == null) {
             return;
@@ -346,7 +346,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * Ensure that the list is saved.
      */
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         // save list
         outState.putSerializable(mBKey, mList);
@@ -367,7 +367,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * class.
      */
     @Override
-    public void onRestoreInstanceState(Bundle state) {
+    public void onRestoreInstanceState(final Bundle state) {
         super.onRestoreInstanceState(state);
     }
 
@@ -384,7 +384,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * probably needs an interface
      */
     protected class EditObjectListAdapter extends SimpleListAdapter<T> {
-        EditObjectListAdapter(Context context, int rowViewId, ArrayList<T> items) {
+        EditObjectListAdapter(@NonNull final Context context, final int rowViewId, @NonNull final ArrayList<T> items) {
             super(context, rowViewId, items);
         }
 
@@ -419,7 +419,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
         }
 
         @Override
-        protected void onRowUp(@NonNull View target, @NonNull T item, final int position) {
+        protected void onRowUp(@NonNull final View target, @NonNull final T item, final int position) {
             EditObjectListActivity.this.onRowUp(target, item, position);
         }
     }

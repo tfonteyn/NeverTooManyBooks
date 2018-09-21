@@ -52,7 +52,7 @@ public class IsbnUtils {
      * @return either the valid ISBN equivalent, or the input string if conversion failed.
      */
     @NonNull
-    public static String upc2isbn(@NonNull String input) {
+    public static String upc2isbn(@NonNull final String input) {
         int len = input.length();
         if (len == 10 || len == 13) {
             return input;

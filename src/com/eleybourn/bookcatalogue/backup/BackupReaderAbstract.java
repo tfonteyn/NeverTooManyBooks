@@ -114,7 +114,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
             private int mLastPos = 0;
 
             @Override
-            public void onProgress(@NonNull String message, int position) {
+            public void onProgress(@NonNull final String message, final int position) {
                 // The progress is sent periodically and has jumps, so we calculate deltas
                 listener.step(message, position - mLastPos);
                 mLastPos = position;
@@ -126,7 +126,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
             }
 
             @Override
-            public void setMax(int max) {
+            public void setMax(final int max) {
                 // Ignore; we know how many books there are
             }
         };

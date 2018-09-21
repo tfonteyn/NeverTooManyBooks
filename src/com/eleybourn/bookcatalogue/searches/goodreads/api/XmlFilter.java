@@ -107,7 +107,7 @@ public class XmlFilter {
      * @return The filter matching the final tag name passed.
      */
     @NonNull
-    private static XmlFilter buildFilter(@NonNull final XmlFilter root, int depth, @NonNull final Iterator<String> iter) {
+    private static XmlFilter buildFilter(@NonNull final XmlFilter root, final int depth, @NonNull final Iterator<String> iter) {
         //if (!root.matches(filters[depth]))
         //	throw new RuntimeException("Filter at depth=" + depth + " does not match first filter parameter");
         final String curr = iter.next();

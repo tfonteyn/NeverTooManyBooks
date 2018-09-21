@@ -34,7 +34,7 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
  * because it involves compression and IO, and can be safely queued. Failures can be ignored
  * because it is just writing to a cache used solely for optimization.
  * 
- * This class also has its onw statis SimpleTaskQueue.
+ * This class also has its own static SimpleTaskQueue.
  * 
  * @author Philip Warner
  */
@@ -98,7 +98,7 @@ public class ThumbnailCacheWriterTask implements SimpleTask {
 	 * Do the main work in the background thread.
 	 */
 	@Override
-	public void run(@NonNull SimpleTaskContext taskContext) {
+	public void run(@NonNull final SimpleTaskContext taskContext) {
 		if (mBitmap.isRecycled()) {
 			// Was probably recycled by rapid scrolling of view
 			mBitmap = null;

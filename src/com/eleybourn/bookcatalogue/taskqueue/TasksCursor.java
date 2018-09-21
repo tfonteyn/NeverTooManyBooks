@@ -21,16 +21,18 @@
 package com.eleybourn.bookcatalogue.taskqueue;
 
 import android.database.Cursor;
+import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteQuery;
 
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
+import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
 
 import java.util.Date;
 
-import static com.eleybourn.bookcatalogue.utils.SerializationUtils.deserializeObject;
 import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_CATEGORY;
 import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_EVENT_COUNT;
 import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_EXCEPTION;
@@ -43,13 +45,14 @@ import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_TASK;
 import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_TASK_ID;
 import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.TBL_EVENT;
 import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.TBL_TASK;
+import static com.eleybourn.bookcatalogue.utils.SerializationUtils.deserializeObject;
 
 /**
  * Cursor subclass used to make accessing Tasks a little easier.
  *
  * @author Philip Warner
  */
-public class TasksCursor extends BindableItemSQLiteCursor {
+public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
 
     /** Static Factory object to create the custom cursor */
     private static final CursorFactory m_factory = new CursorFactory() {
@@ -83,7 +86,6 @@ public class TasksCursor extends BindableItemSQLiteCursor {
     /** Column number of ID column. */
     private static int m_idCol = -1;
 
-    ;
     /** Column number of date column. */
     private static int m_queuedDateCol = -1;
     /** Column number of retry date column. */
@@ -185,7 +187,12 @@ public class TasksCursor extends BindableItemSQLiteCursor {
         if (m_queuedDateCol == -1) {
             m_queuedDateCol = this.getColumnIndex(DOM_QUEUED_DATE);
         }
-        return Utils.string2date(getString(m_queuedDateCol));
+
+        Date date = DateUtils.parseDate(getString(m_queuedDateCol));
+        if (date == null) {
+            date = new Date();
+        }
+        return date;
     }
 
     /**
@@ -197,7 +204,14 @@ public class TasksCursor extends BindableItemSQLiteCursor {
         if (m_retryDateCol == -1) {
             m_retryDateCol = this.getColumnIndex(DOM_RETRY_DATE);
         }
-        return Utils.string2date(getString(m_retryDateCol));
+
+        Date date = DateUtils.parseDate(getString(m_retryDateCol));
+        if (date == null) {
+            date = new Date();
+        }
+        return date;
+
+
     }
 
     /**
@@ -269,7 +283,7 @@ public class TasksCursor extends BindableItemSQLiteCursor {
     }
 
     @Override
-    public BindableItem getBindableItem() {
+    public BindableItemCursorAdapter.BindableItem getBindableItem() {
         return getTask();
     }
 

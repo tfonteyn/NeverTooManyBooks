@@ -204,7 +204,6 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
         intent.putExtra(UniqueId.KEY_ID, id);
         intent.putExtra(EditBookActivity.TAB, tab);
         activity.startActivityForResult(intent, UniqueId.ACTIVITY_EDIT_BOOK);
-        return;
     }
 
     /**
@@ -229,7 +228,6 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
         intent.putExtra(EditBookActivity.TAB, EditBookActivity.TAB_EDIT); // needed extra for creating EditBookActivity
         intent.putExtra(EditBookActivity.LOCAL_BKEY_READ_ONLY, true);
         activity.startActivityForResult(intent, UniqueId.ACTIVITY_VIEW_BOOK);
-        return;
     }
 
     @Override
@@ -238,7 +236,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
         mDb.open();
@@ -270,7 +268,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
         mTabLayout.addOnTabSelectedListener(new TabListener());
 
         if (mIsReadOnly) {
-            BookDetailsReadOnlyFragment details = new BookDetailsReadOnlyFragment();
+            BookDetailsFragment details = new BookDetailsFragment();
             details.setArguments(extras);
             replaceTab(details);
 
@@ -440,7 +438,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
      */
     @SuppressWarnings("EmptyMethod")
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         // 1. the call to duplicateBook() no longer uses this ID
         // 2. We can't just finish(); there might be unsaved edits.
@@ -480,7 +478,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
     }
 
     @Override
-    protected void onSaveInstanceState(@NonNull final Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         Tracker.enterOnSaveInstanceState(this);
         super.onSaveInstanceState(outState);
 
@@ -505,7 +503,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
      * Mark the data as dirty (or not)
      */
     @Override
-    public void setDirty(boolean dirty) {
+    public void setDirty(final boolean dirty) {
         mIsDirtyFlg = dirty;
     }
 
@@ -516,7 +514,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
      * We don't use onBackPressed because it does not work with API level 4.
      */
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyDown(final int keyCode, final KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (isDirty()) {
                 StandardDialogs.showConfirmUnsavedEditsDialog(this, null);
@@ -559,7 +557,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
      * Show or hide the anthology tab
      * FIXME:  android:ellipsize="end" and maxLine="1" on the TextView used by the mAnthologyTab... how ?
      */
-    public void setShowAnthology(boolean showAnthology) {
+    public void setShowAnthology(final boolean showAnthology) {
         if (showAnthology) {
             if (mAnthologyTab == null) {
                 try {
@@ -598,8 +596,6 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
 
     /**
      * Validate the current data in all fields that have validators. Display any errors.
-     *
-     * @return Boolean success or failure.
      */
     private void validate() {
         if (!mBookData.validate()) {
@@ -623,7 +619,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
      *
      * @param nextStep The next step to be executed on success/failure.
      */
-    private void saveState(final PostSaveAction nextStep) {
+    private void saveState(@NonNull final PostSaveAction nextStep) {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
         if (frag instanceof DataEditor) {
             ((DataEditor) frag).saveAllEdits(mBookData);
@@ -660,18 +656,16 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                         this.getResources().getString(android.R.string.ok),
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                updateOrCreate();
+                            public void onClick(final DialogInterface dialog, final int which) {
+                                updateOrInsert();
                                 nextStep.success();
-                                return;
                             }
                         });
                 dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                         this.getResources().getString(android.R.string.cancel),
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(final DialogInterface dialog, final int which) {
                                 nextStep.failure();
-                                return;
                             }
                         });
                 dialog.show();
@@ -680,15 +674,14 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
         }
 
         // No special actions required...just do it.
-        updateOrCreate();
+        updateOrInsert();
         nextStep.success();
-        return;
     }
 
     /**
      * Save the collected book details
      */
-    private void updateOrCreate() {
+    private void updateOrInsert() {
         if (mRowId == 0) {
             long id = mDb.insertBook(mBookData, 0);
 
@@ -830,7 +823,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
      * Dialog handler; pass results to relevant destination
      */
     @Override
-    public void onPartialDatePickerSet(int dialogId, PartialDatePickerFragment dialog, Integer year, Integer month, Integer day) {
+    public void onPartialDatePickerSet(final int dialogId, @NonNull final PartialDatePickerFragment dialog, @Nullable final Integer year, @Nullable final Integer month, @Nullable final Integer day) {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
         if (frag instanceof OnPartialDatePickerListener) {
             ((OnPartialDatePickerListener) frag).onPartialDatePickerSet(dialogId, dialog, year, month, day);
@@ -847,7 +840,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
      * Dialog handler; pass results to relevant destination
      */
     @Override
-    public void onPartialDatePickerCancel(int dialogId, PartialDatePickerFragment dialog) {
+    public void onPartialDatePickerCancel(final int dialogId, @NonNull final PartialDatePickerFragment dialog) {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
         if (frag instanceof OnPartialDatePickerListener) {
             ((OnPartialDatePickerListener) frag).onPartialDatePickerCancel(dialogId, dialog);
@@ -865,7 +858,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
      * Dialog handler; pass results to relevant destination
      */
     @Override
-    public void onTextFieldEditorSave(int dialogId, TextFieldEditorFragment dialog, String newText) {
+    public void onTextFieldEditorSave(final int dialogId, @NonNull final TextFieldEditorFragment dialog, @NonNull final String newText) {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
         if (frag instanceof OnTextFieldEditorListener) {
             ((OnTextFieldEditorListener) frag).onTextFieldEditorSave(dialogId, dialog, newText);
@@ -882,7 +875,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
      * Dialog handler; pass results to relevant destination
      */
     @Override
-    public void onTextFieldEditorCancel(int dialogId, TextFieldEditorFragment dialog) {
+    public void onTextFieldEditorCancel(final int dialogId, @NonNull final TextFieldEditorFragment dialog) {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
         if (frag instanceof OnTextFieldEditorListener) {
             ((OnTextFieldEditorListener) frag).onTextFieldEditorCancel(dialogId, dialog);
@@ -899,8 +892,12 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
      * Dialog handler; pass results to relevant destination
      */
     @Override
-    public void onBookshelfCheckChanged(int dialogId, BookshelfDialogFragment dialog, boolean checked, String shelf,
-                                        String textList, String encodedList) {
+    public void onBookshelfCheckChanged(final int dialogId,
+                                        @NonNull final BookshelfDialogFragment dialog,
+                                        final boolean checked,
+                                        @NonNull final String shelf,
+                                        @NonNull final String textList,
+                                        @NonNull final String encodedList) {
 
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
         if (frag instanceof OnBookshelfCheckChangeListener) {
@@ -915,7 +912,7 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
      * menu handler; handle the 'home' key, otherwise, pass on the event
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 doFinish();
@@ -939,16 +936,16 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
 
     private class TabListener implements TabLayout.OnTabSelectedListener {
         @Override
-        public void onTabSelected(@NonNull final TabLayout.Tab tab) {
+        public void onTabSelected(final TabLayout.Tab tab) {
             replaceTab((Fragment) tab.getTag()); //TOMF: fragment sits in tag... rethink ?
         }
 
         @Override
-        public void onTabUnselected(@NonNull final TabLayout.Tab tab) {
+        public void onTabUnselected(final TabLayout.Tab tab) {
         }
 
         @Override
-        public void onTabReselected(@NonNull final TabLayout.Tab tab) {
+        public void onTabReselected(final TabLayout.Tab tab) {
         }
     }
 

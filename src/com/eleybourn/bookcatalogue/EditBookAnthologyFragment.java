@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -89,7 +90,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     private ArrayList<AnthologyTitle> mList;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_edit_book_anthology, container, false);
     }
 
@@ -180,7 +181,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         getListView().setOnItemClickListener(new OnItemClickListener() {
 
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 mEditPosition = position;
                 AnthologyTitle anthology = mList.get(position);
                 mTitleText.setText(anthology.getTitle());
@@ -262,7 +263,6 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
             Logger.logError(e);
         }
         fillAnthology();
-        return;
     }
 
     private void showAnthologyConfirm(final ArrayList<String> titles) {
@@ -278,7 +278,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
                 this.getResources().getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(final DialogInterface dialog, final int which) {
                         for (int j = 0; j < titles.size(); j++) {
                             String anthology_title = titles.get(j);
                             anthology_title = anthology_title + ", ";
@@ -303,16 +303,14 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
                         }
                         AnthologyTitleListAdapter adapter = ((AnthologyTitleListAdapter) EditBookAnthologyFragment.this.getListView().getAdapter());
                         adapter.notifyDataSetChanged();
-                        return;
                     }
                 });
         alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                 this.getResources().getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
                     @SuppressWarnings("EmptyMethod")
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(final DialogInterface dialog, final int which) {
                         //do nothing
-                        return;
                     }
                 });
         alertDialog.show();
@@ -335,7 +333,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
      * call the appropriate functions (or other activities)
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case POPULATE:
                 searchWikipedia();
@@ -377,13 +375,13 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     }
 
     @Override
-    protected void onLoadBookDetails(@NonNull BookData bookData, boolean setAllDone) {
+    protected void onLoadBookDetails(@NonNull final BookData bookData, final boolean setAllDone) {
         if (!setAllDone)
             mFields.setAll(bookData);
     }
 
     @Override
-    protected void onSaveBookDetails(@NonNull BookData bookData) {
+    protected void onSaveBookDetails(@NonNull final BookData bookData) {
         super.onSaveBookDetails(bookData);
         saveState(bookData);
     }
@@ -407,7 +405,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         }
 
         @Override
-        protected void onRowClick(@NonNull View v, @NonNull AnthologyTitle item, int position) {
+        protected void onRowClick(@NonNull final View v, @NonNull final AnthologyTitle item, final int position) {
             mTitleText.setText(item.getTitle());
             mAuthorText.setText(item.getAuthor().getDisplayName());
             mEditPosition = position;

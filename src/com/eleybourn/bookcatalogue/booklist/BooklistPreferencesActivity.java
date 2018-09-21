@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.booklist;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.PreferencesBaseActivity;
@@ -138,7 +139,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
      * Build the activity UI
      */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
             setTitle(R.string.booklist_preferences);

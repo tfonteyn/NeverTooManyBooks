@@ -151,13 +151,13 @@ public class PartialDatePicker extends AlertDialog {
                 new OnItemSelectedListener() {
 
                     @Override
-                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                    public void onItemSelected(final AdapterView<?> parentView, final View selectedItemView, final int position, final long id) {
                         int pos = mMonthSpinner.getSelectedItemPosition();
                         handleMonth(pos);
                     }
 
                     @Override
-                    public void onNothingSelected(AdapterView<?> arg0) {
+                    public void onNothingSelected(final AdapterView<?> arg0) {
                         handleMonth(null);
                     }
                 }
@@ -168,13 +168,13 @@ public class PartialDatePicker extends AlertDialog {
                 new OnItemSelectedListener() {
 
                     @Override
-                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                    public void onItemSelected(final AdapterView<?> parentView, final View selectedItemView, final int position, final long id) {
                         int pos = mDaySpinner.getSelectedItemPosition();
                         handleDay(pos);
                     }
 
                     @Override
-                    public void onNothingSelected(AdapterView<?> arg0) {
+                    public void onNothingSelected(final AdapterView<?> arg0) {
                         handleDay(null);
                     }
                 }
@@ -184,18 +184,18 @@ public class PartialDatePicker extends AlertDialog {
         mYearView.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void afterTextChanged(Editable s) {
+            public void afterTextChanged(final Editable s) {
                 handleYear();
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
+            public void beforeTextChanged(final CharSequence s, final int start, final int count,
+                                          final int after) {
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before,
-                                      int count) {
+            public void onTextChanged(final CharSequence s, final int start, final int before,
+                                      final int count) {
             }
         });
 
@@ -203,7 +203,7 @@ public class PartialDatePicker extends AlertDialog {
         root.findViewById(R.id.plus).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(final View v) {
                         String text;
                         if (mYear != null) {
                             text = (++mYear).toString();
@@ -219,7 +219,7 @@ public class PartialDatePicker extends AlertDialog {
         root.findViewById(R.id.minus).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(final View v) {
                         String text;
                         if (mYear != null) {
                             // We can't support negative years yet because of sorting issues and the fact that
@@ -243,7 +243,7 @@ public class PartialDatePicker extends AlertDialog {
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
-                            public void onClick(View v) {
+                            public void onClick(final View v) {
                                 int pos = (mMonthSpinner.getSelectedItemPosition() + 1) % mMonthSpinner.getCount();
                                 mMonthSpinner.setSelection(pos);
                             }
@@ -255,7 +255,7 @@ public class PartialDatePicker extends AlertDialog {
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
-                            public void onClick(View v) {
+                            public void onClick(final View v) {
                                 int pos = (mMonthSpinner.getSelectedItemPosition() - 1 + mMonthSpinner.getCount()) % mMonthSpinner.getCount();
                                 mMonthSpinner.setSelection(pos);
                             }
@@ -267,7 +267,7 @@ public class PartialDatePicker extends AlertDialog {
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
-                            public void onClick(View v) {
+                            public void onClick(final View v) {
                                 int pos = (mDaySpinner.getSelectedItemPosition() + 1) % mDaySpinner.getCount();
                                 mDaySpinner.setSelection(pos);
                             }
@@ -279,7 +279,7 @@ public class PartialDatePicker extends AlertDialog {
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
-                            public void onClick(View v) {
+                            public void onClick(final View v) {
                                 int pos = (mDaySpinner.getSelectedItemPosition() - 1 + mDaySpinner.getCount()) % mDaySpinner.getCount();
                                 mDaySpinner.setSelection(pos);
                             }
@@ -291,7 +291,7 @@ public class PartialDatePicker extends AlertDialog {
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
-                            public void onClick(View v) {
+                            public void onClick(final View v) {
                                 // Ensure the date is 'hierarchically valid'; require year, if month is non-null, require month if day non-null
                                 if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
                                     Toast.makeText(mContext, R.string.if_day_is_specified_month_and_year_must_be, Toast.LENGTH_LONG).show();
@@ -309,7 +309,7 @@ public class PartialDatePicker extends AlertDialog {
         root.findViewById(R.id.cancel).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(final View v) {
                         if (mListener != null)
                             mListener.onCancel(PartialDatePicker.this);
                     }

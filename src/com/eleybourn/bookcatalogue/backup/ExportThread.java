@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.backup;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -24,7 +26,7 @@ public class ExportThread extends ManagedTask {
 
     private final Exporter.ExportListener mOnExportListener = new Exporter.ExportListener() {
         @Override
-        public void onProgress(String message, int position) {
+        public void onProgress(@NonNull final String message, final int position) {
             if (position > 0) {
                 mManager.doProgress(ExportThread.this, message, position);
             } else {
@@ -38,14 +40,14 @@ public class ExportThread extends ManagedTask {
         }
 
         @Override
-        public void setMax(int max) {
+        public void setMax(final int max) {
             mManager.setMax(ExportThread.this, max);
         }
 
     };
     private CatalogueDBAdapter mDb;
 
-    public ExportThread(TaskManager manager) {
+    public ExportThread(@NonNull final TaskManager manager) {
         super(manager);
         mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         mDb.open();

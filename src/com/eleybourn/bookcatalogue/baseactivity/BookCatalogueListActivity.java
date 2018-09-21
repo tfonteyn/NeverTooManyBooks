@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -43,7 +45,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
 
     private final Handler mHandler = new Handler();
     private final AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {
-        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+        public void onItemClick(final AdapterView<?> parent, final View v, final int position, final long id) {
             onListItemClick((ListView) parent, v, position, id);
         }
     };
@@ -62,12 +64,12 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         return super.onOptionsItemSelected(item);
     }
 
@@ -87,7 +89,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
      * @param position The position of the view in the list
      * @param id       The row id of the item that was clicked
      */
-    protected void onListItemClick(ListView l, View v, int position, long id) {
+    protected void onListItemClick(@NonNull final ListView l, @NonNull final View v, final int position, final long id) {
     }
 
     /**
@@ -97,7 +99,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
      * @see Activity#onRestoreInstanceState(Bundle)
      */
     @Override
-    protected void onRestoreInstanceState(Bundle state) {
+    protected void onRestoreInstanceState(final Bundle state) {
         ensureList();
         super.onRestoreInstanceState(state);
     }
@@ -141,7 +143,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
      * Set the currently selected list item to the specified position with the adapter's data
      */
     @SuppressWarnings("unused")
-    public void setSelection(int position) {
+    public void setSelection(final int position) {
         mList.setSelection(position);
     }
 
@@ -180,7 +182,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
     /**
      * Provide the cursor for the list view.
      */
-    public void setListAdapter(ListAdapter adapter) {
+    public void setListAdapter(@NonNull final ListAdapter adapter) {
         synchronized (this) {
             ensureList();
             mAdapter = adapter;
@@ -190,7 +192,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
 
     private void ensureList() {
         if (mList != null) {
-            return;
+            // do nothing
         }
     }
 }

@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.taskqueue;
+package com.eleybourn.bookcatalogue.dialogs;
 
 import android.support.annotation.NonNull;
 
@@ -32,7 +32,7 @@ import android.support.annotation.NonNull;
 public class ContextDialogItem implements CharSequence {
 	public String name;
 	public Runnable handler;
-	public ContextDialogItem(String name, Runnable handler ) {
+	public ContextDialogItem(@NonNull final String name, @NonNull final Runnable handler ) {
 		this.name = name;
 		this.handler = handler;
 	}
@@ -50,7 +50,7 @@ public class ContextDialogItem implements CharSequence {
 		return name.length();
 	}
 	@Override
-	public CharSequence subSequence(int start, int end) {
+	public CharSequence subSequence(final int start, final int end) {
 		return name.subSequence(start, end);
 	}
 }

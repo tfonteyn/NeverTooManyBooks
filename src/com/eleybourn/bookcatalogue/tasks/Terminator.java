@@ -111,7 +111,7 @@ public class Terminator {
 	private static class TerminatorTask implements SimpleTask {
 
 		@Override
-		public void run(@NonNull SimpleTaskContext taskContext) {
+		public void run(@NonNull final SimpleTaskContext taskContext) {
 			if (BuildConfig.DEBUG) {
 				System.out.println("Terminator starting");
 			}

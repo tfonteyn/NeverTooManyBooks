@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.taskqueue;
 
+import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
+
 import java.io.Serializable;
 
 /**
@@ -36,7 +38,7 @@ import java.io.Serializable;
  * @author Philip Warner
  *
  */
-public abstract class Task implements Serializable, BindableItem {
+public abstract class Task implements Serializable, BindableItemCursorAdapter.BindableItem {
 
 	private static final long serialVersionUID = -1735892871810069L;
 
@@ -58,7 +60,7 @@ public abstract class Task implements Serializable, BindableItem {
 	 * allow an application to ensure only one job of a particular category is queued, or
 	 * to retrieve all jobs of a particular category.
 	 */
-	public abstract long getCategory();
+	public abstract int getCategory();
 
 	//protected abstract boolean run(Context context, int id);
 	//public abstract boolean abort(int id);

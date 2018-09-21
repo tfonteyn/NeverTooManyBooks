@@ -106,8 +106,6 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
      * <p>
      * NOTE: Do NOT call this in static initialization of application. This method requires the
      * application context to be present.
-     *
-     * @return BooklistStyles object
      */
     private static void getBuiltinStyles(@NonNull final BooklistStyles styles) {
         // First build the stock ones
@@ -247,8 +245,6 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
 
     /**
      * Static method to get all user-defined styles from the passed database.
-     *
-     * @return BooklistStyles object
      */
     private static void getUserStyles(@NonNull final CatalogueDBAdapter db,
                                       @NonNull final BooklistStyles styles) {

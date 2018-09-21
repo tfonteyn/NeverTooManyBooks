@@ -58,7 +58,9 @@ public class DateUtils {
 
     private static final ArrayList<SimpleDateFormat> mParseDateFormats = new ArrayList<>();
     static {
+        // the reasoning is that only english speaking countries even consider using Month first formatting.
         final boolean isEnglish = (Locale.getDefault().getLanguage().equals(Locale.ENGLISH.getLanguage()));
+
         addParseDateFormat("dd-MMM-yyyy HH:mm:ss", !isEnglish);
         addParseDateFormat("dd-MMM-yyyy HH:mm", !isEnglish);
         addParseDateFormat("dd-MMM-yyyy", !isEnglish);
@@ -125,21 +127,21 @@ public class DateUtils {
     /**
      * Attempt to parse a date string based on a range of possible formats.
      *
-     * @param s		String to parse
+     * @param dateString		String to parse
      * @return		Resulting date if parsed, otherwise null
      */
     @Nullable
-    public static Date parseDate(@Nullable final String s) {
-        if (s == null) {
+    public static Date parseDate(@Nullable final String dateString) {
+        if (dateString == null) {
             return null;
         }
         // First try to parse using strict rules
-        Date d = parseDate(s, false);
+        Date d = parseDate(dateString, false);
         if (d != null) {
             return d;
         }
         // OK, be lenient
-        return parseDate(s, true);
+        return parseDate(dateString, true);
     }
 
     /**
@@ -148,21 +150,21 @@ public class DateUtils {
      *
      * If any Exception, returns null
      *
-     * @param s				String to parse
+     * @param dateString				String to parse
      * @param lenient		True if parsing should be lenient
      *
      * @return				Resulting date if parsed, otherwise null
      */
     @Nullable
-    private static Date parseDate(@Nullable final String s, final boolean lenient) {
-        if (s == null) {
+    private static Date parseDate(@Nullable final String dateString, final boolean lenient) {
+        if (dateString == null) {
             return null;
         }
-
+        // try all formats until one fits.
         for (SimpleDateFormat sdf : mParseDateFormats ) {
             try {
                 sdf.setLenient(lenient);
-                return sdf.parse(s);
+                return sdf.parse(dateString);
             } catch (ParseException ignore) {
             }
         }
@@ -171,7 +173,7 @@ public class DateUtils {
         try {
             DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
             df.setLenient(lenient);
-            return df.parse(s);
+            return df.parse(dateString);
         } catch (ParseException ignore) {
         }
         return null;
@@ -228,7 +230,7 @@ public class DateUtils {
         }
     }
 
-//    public String convertDate(@NonNull String date) {
+//    public String convertDate(@NonNull final String date) {
 //        switch (date.length()) {
 //            case 2:
 //                //assume yy

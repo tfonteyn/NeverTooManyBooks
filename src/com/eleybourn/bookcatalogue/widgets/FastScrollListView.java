@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.widgets;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.AbsListView;
@@ -44,7 +45,7 @@ public class FastScrollListView extends ListView {
     private OnScrollListener mOnScrollListener = null;
     private final OnScrollListener mOnScrollDispatcher = new OnScrollListener() {
         @Override
-        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        public void onScroll(final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
             if (mScroller != null)
                 mScroller.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
             if (mOnScrollListener != null)
@@ -52,29 +53,30 @@ public class FastScrollListView extends ListView {
         }
 
         @Override
-        public void onScrollStateChanged(AbsListView view, int scrollState) {
+        public void onScrollStateChanged(final AbsListView view, final int scrollState) {
             if (mOnScrollListener != null)
                 mOnScrollListener.onScrollStateChanged(view, scrollState);
         }
     };
+
     {
         super.setOnScrollListener(mOnScrollDispatcher);
     }
 
-    public FastScrollListView(Context context) {
+    public FastScrollListView(@NonNull final Context context) {
         super(context);
     }
 
-    public FastScrollListView(Context context, AttributeSet attrs) {
+    public FastScrollListView(@NonNull final Context context, @NonNull final AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public FastScrollListView(Context context, AttributeSet attrs, int defStyle) {
+    public FastScrollListView(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
     }
 
     @Override
-    public void setOnScrollListener(OnScrollListener listener) {
+    public void setOnScrollListener(final OnScrollListener listener) {
         mOnScrollListener = listener;
     }
 
@@ -92,7 +94,7 @@ public class FastScrollListView extends ListView {
      * Pass to scroller if defined, otherwise perform default actions.
      */
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
+    public boolean onInterceptTouchEvent(final MotionEvent ev) {
         return mScroller != null && mScroller.onInterceptTouchEvent(ev) || super.onInterceptTouchEvent(ev);
 
     }
@@ -101,7 +103,7 @@ public class FastScrollListView extends ListView {
      * Pass to scroller if defined, otherwise perform default actions.
      */
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+    protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         if (mScroller != null)
             mScroller.onSizeChanged(w, h, oldw, oldh);
@@ -111,7 +113,7 @@ public class FastScrollListView extends ListView {
      * Pass to scroller if defined, otherwise perform default actions.
      */
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
+    public boolean onTouchEvent(final MotionEvent ev) {
         return mScroller != null && mScroller.onTouchEvent(ev) || super.onTouchEvent(ev);
 
     }
@@ -120,7 +122,7 @@ public class FastScrollListView extends ListView {
      * Send draw() to the scroller as well.
      */
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(final Canvas canvas) {
         super.draw(canvas);
         if (mScroller != null)
             mScroller.draw(canvas);
@@ -130,7 +132,7 @@ public class FastScrollListView extends ListView {
      * Depending on 'enabled', either stop or start the scroller.
      */
     @Override
-    public void setFastScrollEnabled(boolean enabled) {
+    public void setFastScrollEnabled(final boolean enabled) {
         if (!enabled) {
             if (mScroller != null) {
                 mScroller.stop();

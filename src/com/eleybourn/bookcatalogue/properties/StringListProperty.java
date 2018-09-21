@@ -45,14 +45,14 @@ public class StringListProperty extends ListProperty<String> implements Property
     }
 
     @Override
-    protected StringListProperty setGlobalDefault(@Nullable String value) {
+    protected StringListProperty setGlobalDefault(@Nullable final String value) {
         BCPreferences.setString(getPreferenceKey(), value);
         return this;
     }
 
     @NonNull
     @Override
-    public StringListProperty set(@NonNull Property p) {
+    public StringListProperty set(@NonNull final Property p) {
         if (!(p instanceof StringValue))
             throw new IllegalStateException("Can not find a compatible interface for string parameter");
         StringValue v = (StringValue) p;

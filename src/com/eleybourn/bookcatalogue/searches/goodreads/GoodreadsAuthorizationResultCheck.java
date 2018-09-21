@@ -22,14 +22,15 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
 
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 
 /**
  * Simple class to run in background and verify goodreads credentials then
@@ -49,7 +50,7 @@ class GoodreadsAuthorizationResultCheck extends GenericTask {
 	}
 
 	@Override
-	public boolean run(QueueManager manager, Context c) {
+	public boolean run(@NonNull QueueManager manager, @NonNull Context c) {
 		GoodreadsManager grMgr = new GoodreadsManager();
 		// Bring the app to the front using the launcher intent
 		Intent i = new Intent(c, StartupActivity.class);
@@ -80,7 +81,7 @@ class GoodreadsAuthorizationResultCheck extends GenericTask {
 	}
 
 	@Override
-	public long getCategory() {
+	public int getCategory() {
 		return BCQueueManager.CAT_GOODREADS_AUTH;
 	}
 

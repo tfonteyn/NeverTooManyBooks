@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -40,7 +41,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
 
         setTheme(BookCatalogueApp.getThemeResId());
         super.onCreate(savedInstanceState);
@@ -89,7 +90,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
         return mNavigationView;
     }
 
-    private void setNavigationView(NavigationView navigationView) {
+    private void setNavigationView(@Nullable final NavigationView navigationView) {
         this.mNavigationView = navigationView;
         if (mNavigationView != null) {
             navigationView.setNavigationItemSelectedListener(this);
@@ -97,14 +98,14 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         return false;
     }
 
     /**
      * @param drawerLayout  your custom one
      */
-    private void setDrawerLayout(DrawerLayout drawerLayout) {
+    private void setDrawerLayout(@NonNull final DrawerLayout drawerLayout) {
         this.mDrawerLayout = drawerLayout;
     }
 
@@ -117,7 +118,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {
             // Default handler for home icon

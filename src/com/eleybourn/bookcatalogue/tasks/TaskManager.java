@@ -93,7 +93,7 @@ public class TaskManager implements AutoCloseable {
      */
     private final ManagedTask.TaskListener mTaskListener = new ManagedTask.TaskListener() {
         @Override
-        public void onTaskFinished(ManagedTask t) {
+        public void onTaskFinished(@NonNull ManagedTask t) {
             TaskManager.this.onTaskFinished(t);
         }
 
@@ -218,7 +218,6 @@ public class TaskManager implements AutoCloseable {
             t.progressMessage = message;
             t.progressCurrent = count;
             updateProgressDialog();
-            return;
         }
     }
 
@@ -321,7 +320,6 @@ public class TaskManager implements AutoCloseable {
         if (taskInfo != null) {
             taskInfo.progressMax = max;
             updateProgressDialog();
-            return;
         }
     }
 
@@ -344,7 +342,6 @@ public class TaskManager implements AutoCloseable {
         if (taskInfo != null) {
             taskInfo.progressCurrent = count;
             updateProgressDialog();
-            return;
         }
     }
 

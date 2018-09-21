@@ -23,6 +23,8 @@ package com.eleybourn.bookcatalogue.utils;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.debug.Logger;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -44,6 +46,7 @@ public class SerializationUtils {
      * @param o Object to convert
      *
      * @return Resulting byte array. NULL on failure.
+     * FIXME: not all callers check null returns.... never happens or ?, for now lets log error
      */
     @Nullable
     public static byte[] serializeObject(@NonNull final Serializable o) {
@@ -51,6 +54,7 @@ public class SerializationUtils {
         try (ObjectOutput out = new ObjectOutputStream(bos)) {
             out.writeObject(o);
         } catch (IOException e) {
+            Logger.logError(e);
             return null;
         }
         return bos.toByteArray();
@@ -72,11 +76,11 @@ public class SerializationUtils {
     /**
      * Serialize then de-serialize to create a deep clone.
      */
-    @Nullable
+    @NonNull
     public static <T extends Serializable> T cloneObject(@NonNull final T o) throws DeserializationException {
         byte[] bytes = serializeObject(o);
         if (bytes == null) {
-            return null;
+            throw new DeserializationException();
         }
         return deserializeObject(bytes);
     }
@@ -89,6 +93,9 @@ public class SerializationUtils {
     public static class DeserializationException extends Exception {
         private static final long serialVersionUID = -2040548134317746620L;
 
+        DeserializationException() {
+            super();
+        }
         DeserializationException(@Nullable final Exception e) {
             super();
             initCause(e);

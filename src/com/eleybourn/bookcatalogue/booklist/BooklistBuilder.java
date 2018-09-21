@@ -433,7 +433,8 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Utility function to return a glob expression to get the 'day' from a text date field in a standard way.
      *
-     * Just look for 4 leading numbers followed by 2 or 1 digit, and then 1 or two digits. We don't care about anything else.
+     * Just look for 4 leading numbers followed by 2 or 1 digit, and then 1 or two digits.
+     * We don't care about anything else.
      *
      * @param fieldSpec fully qualified field name
      * @param toLocal   convert the fieldSpec to local time from UTC
@@ -585,13 +586,25 @@ public class BooklistBuilder implements AutoCloseable {
                         // Save this for later use
                         seriesGroup = (BooklistSeriesGroup) booklistGroup;
                         // Group and sort by name
-                        summary.addDomain(DOM_SERIES_NAME, TBL_SERIES.dot(DOM_SERIES_NAME), SummaryBuilder.FLAG_GROUPED + SummaryBuilder.FLAG_SORTED);
+                        summary.addDomain(DOM_SERIES_NAME,
+                                TBL_SERIES.dot(DOM_SERIES_NAME),
+                                SummaryBuilder.FLAG_GROUPED + SummaryBuilder.FLAG_SORTED);
+
                         // Group by ID (we want the ID available and there is a *chance* two series will have the same name...with bad data */
-                        summary.addDomain(DOM_SERIES_ID, TBL_BOOK_SERIES.dot(DOM_SERIES_ID), SummaryBuilder.FLAG_GROUPED);
+                        summary.addDomain(DOM_SERIES_ID,
+                                TBL_BOOK_SERIES.dot(DOM_SERIES_ID),
+                                SummaryBuilder.FLAG_GROUPED);
+
                         // We want the series position in the base data
-                        summary.addDomain(DOM_SERIES_POSITION, TBL_BOOK_SERIES.dot(DOM_SERIES_POSITION), SummaryBuilder.FLAG_NONE);
+                        summary.addDomain(DOM_SERIES_POSITION,
+                                TBL_BOOK_SERIES.dot(DOM_SERIES_POSITION),
+                                SummaryBuilder.FLAG_NONE);
+
                         // We want a counter of how many books use the series as a primary series, so we can skip some series
-                        summary.addDomain(DOM_PRIMARY_SERIES_COUNT, "case when Coalesce(" + TBL_BOOK_SERIES.dot(DOM_SERIES_POSITION) + ",1) == 1 then 1 else 0 end", SummaryBuilder.FLAG_NONE);
+                        summary.addDomain(DOM_PRIMARY_SERIES_COUNT,
+                                "case when Coalesce(" + TBL_BOOK_SERIES.dot(DOM_SERIES_POSITION) + ",1) == 1 then 1 else 0 end",
+                                SummaryBuilder.FLAG_NONE);
+
                         // This group can be given a name of the form 's/<n>' where <n> is the series id, eg. 's/18'.
                         booklistGroup.setKeyComponents("s", DOM_SERIES_ID);
                         break;
@@ -1270,8 +1283,6 @@ public class BooklistBuilder implements AutoCloseable {
                 //sql = "select * from " + mTableName + " Order by " + mSortColumnList;
 
                 //return (BooklistCursor) mSyncedDb.rawQueryWithFactory(mBooklistCursorFactory, sql, EMPTY_STRING_ARRAY, "");
-
-                return;
 
             } finally {
                 mSyncedDb.endTransaction(txLock);
@@ -2013,28 +2024,28 @@ public class BooklistBuilder implements AutoCloseable {
      */
     private void buildExpandNodeStatements() {
         if (mGetNodeLevelStmt == null) {
-            String sql = "Select " + DOM_LEVEL + "||'/'||" + DOM_EXPANDED + " From " + mNavTable.ref() + " Where " + mNavTable.dot(DOM_ID) + " = ?";
-            mGetNodeLevelStmt = mStatements.add("mGetNodeLevelStmt", sql);
+            mGetNodeLevelStmt = mStatements.add("mGetNodeLevelStmt",
+                    "SELECT " + DOM_LEVEL + "||'/'||" + DOM_EXPANDED +
+                            " FROM " + mNavTable.ref() + " WHERE " + mNavTable.dot(DOM_ID) + " = ?");
         }
         if (mGetNextAtSameLevelStmt == null) {
-            String sql = "Select Coalesce( max(" + DOM_ID + "), -1) From (" +
-                    " Select " + DOM_ID + " From " + mNavTable.ref() + " Where " +
-                    mNavTable.dot(DOM_ID) + " > ?" +
-                    " and " + mNavTable.dot(DOM_LEVEL) + " = ?" +
-                    " Order by " + DOM_ID + " Limit 1) zzz";
-            mGetNextAtSameLevelStmt = mStatements.add("mGetNextAtSameLevelStmt", sql);
+            mGetNextAtSameLevelStmt = mStatements.add("mGetNextAtSameLevelStmt",
+                    "SELECT Coalesce( max(" + DOM_ID + "), -1) FROM " +
+                            "(SELECT " + DOM_ID + " FROM " + mNavTable.ref() +
+                                " WHERE " + mNavTable.dot(DOM_ID) + " > ? and " + mNavTable.dot(DOM_LEVEL) + " = ?" +
+                                " Order by " + DOM_ID + " Limit 1" +
+                            ")" +
+                            " zzz");
         }
         if (mShowStmt == null) {
-            String sql = "Update " + mNavTable +
-                    " Set " + DOM_VISIBLE + " = ?," + DOM_EXPANDED + " = ?" +
-                    " where " + DOM_ID + " > ? and " + DOM_LEVEL + " > ? and " + DOM_ID + " < ?";
-            mShowStmt = mStatements.add("mShowStmt", sql);
+            mShowStmt = mStatements.add("mShowStmt",
+                    "UPDATE " + mNavTable +
+                    " SET " + DOM_VISIBLE + " = ?," + DOM_EXPANDED + " = ?" +
+                    " WHERE " + DOM_ID + " > ? and " + DOM_LEVEL + " > ? and " + DOM_ID + " < ?");
         }
         if (mExpandStmt == null) {
-            String sql = "Update " + mNavTable +
-                    " Set " + DOM_EXPANDED + " = ?" +
-                    " where " + DOM_ID + " = ?";
-            mExpandStmt = mStatements.add("mExpandStmt", sql);
+            mExpandStmt = mStatements.add("mExpandStmt",
+                    "UPDATE " + mNavTable + " SET " + DOM_EXPANDED + " = ? WHERE " + DOM_ID + " = ?");
         }
     }
 
@@ -2045,13 +2056,13 @@ public class BooklistBuilder implements AutoCloseable {
     public void expandAll(final boolean expand) {
         long t0 = System.currentTimeMillis();
         if (expand) {
-            String sql = "Update " + mNavTable + " Set expanded = 1, visible = 1";
+            String sql = "UPDATE " + mNavTable + " SET expanded = 1, visible = 1";
             mSyncedDb.execSQL(sql);
             saveListNodeSettings();
         } else {
-            String sql = "Update " + mNavTable + " Set expanded = 0, visible = 0 Where level > 1";
+            String sql = "UPDATE " + mNavTable + " SET expanded = 0, visible = 0 WHERE level > 1";
             mSyncedDb.execSQL(sql);
-            sql = "Update " + mNavTable + " Set expanded = 0 Where level = 1";
+            sql = "UPDATE " + mNavTable + " SET expanded = 0 WHERE level = 1";
             mSyncedDb.execSQL(sql);
             deleteListNodeSettings();
         }
@@ -2091,13 +2102,10 @@ public class BooklistBuilder implements AutoCloseable {
         // Find the next row at the same level
         mGetNextAtSameLevelStmt.bindLong(1, rowId);
         mGetNextAtSameLevelStmt.bindLong(2, level);
-        long next;
-        try {
-            next = mGetNextAtSameLevelStmt.simpleQueryForLong();
-        } catch (SQLiteDoneException e) {
+        long next = mGetNextAtSameLevelStmt.simpleQueryForLong();
+        if (next < 0) {
             next = Long.MAX_VALUE;
         }
-
         // Mark intervening nodes as visible/invisible
         mShowStmt.bindLong(1, isExpanded);
         mShowStmt.bindLong(2, isExpanded);

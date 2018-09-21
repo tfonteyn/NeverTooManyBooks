@@ -72,7 +72,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Button save = findViewById(R.id.confirm);
@@ -163,7 +163,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         switch (requestCode) {
             case UniqueId.ACTIVITY_BOOKLIST_STYLE_GROUPS:

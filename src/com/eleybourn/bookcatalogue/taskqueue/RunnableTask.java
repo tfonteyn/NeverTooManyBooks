@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.taskqueue;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 /**
  * Extends the Task object to add a run(...) method that avoids the need to implement a runOneTask() method
@@ -31,12 +32,12 @@ import android.content.Context;
  */
 public abstract class RunnableTask extends Task {
 
-	public RunnableTask(String description) {
+	public RunnableTask(@NonNull final String description) {
 		super(description);
 	}
 
 	private static final long serialVersionUID = 5399775565316896935L;
 
-	public abstract boolean run(QueueManager manager, Context c);
+	public abstract boolean run(@NonNull final QueueManager manager, @NonNull final Context c);
 
 }

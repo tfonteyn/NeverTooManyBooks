@@ -64,17 +64,19 @@ public class Logger {
 
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
+
         if (e != null) {
+            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
             e.printStackTrace(pw);
+            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         } else {
-            printStackTrace();
+            printStackTrace(null);
         }
 
         String error = "An Exception/Error Occurred @ " + now + "\n" +
                 "In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ") \n" +
                 msg + "\n" +
                 sw;
-        //Log.e("BookCatalogue", error);
 
         try {
             // RELEASE Remove Log.e! Replace with ACRA?
@@ -110,11 +112,15 @@ public class Logger {
         }
     }
 
-    @SuppressWarnings("unused")
-    public static void printStackTrace() {
+    public static void printStackTrace(@Nullable final String msg) {
+        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        if (msg != null) {
+            System.out.println(msg);
+        }
         StackTraceElement[] all = Thread.currentThread().getStackTrace();
         for (StackTraceElement element : all) {
             System.out.println(element);
         }
+        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
     }
 }

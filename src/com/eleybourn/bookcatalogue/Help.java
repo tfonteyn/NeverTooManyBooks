@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -54,7 +55,7 @@ public class Help extends BookCatalogueActivity {
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(@Nullable final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		try {
 			setTitle(R.string.app_name);
@@ -69,8 +70,7 @@ public class Help extends BookCatalogueActivity {
 				@Override
 				public void onClick(View v) {
 					Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.helppage)));
-					startActivity(loadweb); 
-					return;
+					startActivity(loadweb);
 				}
 			});
 			
@@ -79,8 +79,7 @@ public class Help extends BookCatalogueActivity {
 				@Override
 				public void onClick(View v) {
 					Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.helppage)));
-					startActivity(loadweb); 
-					return;
+					startActivity(loadweb);
 				}
 			});
 			
