@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.eleybourn.bookcatalogue"
     android:installLocation="auto"
     android:versionCode="179"
     android:versionName="5.2.2">
+    <!-- original package -->
+    <!--package="com.eleybourn.bookcatalogue"-->
+    <!--android:installLocation="auto"-->
+    <!--android:versionCode="179"-->
+    <!--android:versionName="5.2.2"-->
+
     <!--
  2018-08-20: https://developer.android.com/about/dashboards/
         6+      23  ->  66.5%
@@ -269,7 +276,7 @@
                     android:host="goodreadsauth"
                     android:scheme="${packageName}" />
             </intent-filter>
-            <intent-filter>
+            <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -289,7 +296,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
-            <intent-filter>
+            <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />

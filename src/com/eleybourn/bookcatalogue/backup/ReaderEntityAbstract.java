@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -38,96 +38,99 @@ import java.io.Reader;
 import java.io.Serializable;
 
 /**
- * Basic implementation of format-agnostic ReaderEntity methods using 
+ * Basic implementation of format-agnostic ReaderEntity methods using
  * only a limited set of methods from the base interface.
- * 
+ *
  * @author pjw
  */
 public abstract class ReaderEntityAbstract implements ReaderEntity {
-	
-	@Override
-	public void saveToDirectory(@NonNull final File dir) throws IOException {
-		// Make sure it's a directory
-		if (!dir.isDirectory())
-			throw new RuntimeException("Specified path is not a directory");
 
-		// Build the new File and save
-		final File output = new File(dir.getAbsoluteFile() + File.separator + getName());
-		saveToFile(output);
-	}
+    @Override
+    public void saveToDirectory(@NonNull final File dir) throws IOException {
+        if (!dir.isDirectory()) {
+            throw new RuntimeException("Specified path is not a directory");
+        }
 
-	@Override
-	public void saveToFile(@NonNull final File outFile) throws IOException {
-		// Open output and copy bytes.
-		final FileOutputStream out = new FileOutputStream(outFile);
-		try {
-			final byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
-			final InputStream in = getStream();
-			while (true) {
-				int cnt = in.read(buffer);
-				if (cnt <= 0)
-					break;
-				out.write(buffer, 0, cnt);
-			}
-		} finally {
-			if (out.getChannel().isOpen())
-				out.close();
-			try {
-				//noinspection ResultOfMethodCallIgnored
-				outFile.setLastModified(this.getDateModified().getTime());
-			} catch (Exception e) {
-				// Ignore...it's nice to set the date, but not mandatory
-			}
-		}
-	}
+        // Build the new File and save
+        final File output = new File(dir.getAbsoluteFile() + File.separator + getName());
+        saveToFile(output);
+    }
 
-	/**
-	 * Read the input as XML and put it into a Bundle
-	 */
-	public Bundle getBundle() throws IOException {
-		final BufferedReader in = new BufferedReaderNoClose(new InputStreamReader(getStream(), TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
-		return BackupUtils.bundleFromXml(in);
-	}
+    @Override
+    public void saveToFile(@NonNull final File outFile) throws IOException {
+        final byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
 
-	/**
-	 * Read the input as XML and put it into a SharedPreferences
-	 */
-	public void getPreferences(@NonNull final SharedPreferences prefs) throws IOException {
-		final BufferedReader in = new BufferedReaderNoClose(new InputStreamReader(getStream(), TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
-		BackupUtils.preferencesFromXml(in, prefs);
-	}
+        // Open output and copy bytes.
+        final FileOutputStream out = new FileOutputStream(outFile);
+        try {
+            final InputStream in = getStream();
+            while (true) {
+                int cnt = in.read(buffer);
+                if (cnt <= 0) {
+                    break;
+                }
+                out.write(buffer, 0, cnt);
+            }
+        } finally {
+            if (out.getChannel().isOpen()) {
+                out.close();
+            }
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                outFile.setLastModified(this.getDateModified().getTime());
+            } catch (Exception ignore) {
+                // Ignore...it's nice to set the date, but not mandatory
+            }
+        }
+    }
 
-	/**
-	 * The sax parser closes streams, which is not good on a Tar archive entry
-	 * @author pjw
-	 *
-	 */
-	private static class BufferedReaderNoClose extends BufferedReader
-    {
+    /**
+     * Read the input as XML and put it into a Bundle
+     */
+    public Bundle getBundle() throws IOException {
+        final BufferedReader in = new BufferedReaderNoClose(new InputStreamReader(getStream(), TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
+        return BackupUtils.bundleFromXml(in);
+    }
+
+    /**
+     * Read the input as XML and put it into a SharedPreferences
+     */
+    public void getPreferences(@NonNull final SharedPreferences prefs) throws IOException {
+        final BufferedReader in = new BufferedReaderNoClose(new InputStreamReader(getStream(), TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
+        BackupUtils.preferencesFromXml(in, prefs);
+    }
+
+    @Override
+    public Serializable getSerializable() throws IOException, DeserializationException {
+        // Turn the input into a byte array
+        final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+
+        final byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
+
+        while (true) {
+            int cnt = getStream().read(buffer);
+            if (cnt <= 0) {
+                break;
+            }
+            byteStream.write(buffer);
+        }
+        byteStream.close();
+        // Deserialize the byte array
+        return SerializationUtils.deserializeObject(byteStream.toByteArray());
+    }
+
+    /**
+     * The sax parser closes streams, which is not good on a Tar archive entry
+     *
+     * @author pjw
+     */
+    private static class BufferedReaderNoClose extends BufferedReader {
         BufferedReaderNoClose(@NonNull final Reader in, final int flags) {
-			super(in, flags);
-		}
+            super(in, flags);
+        }
 
         @Override
         public void close() {
         }
     }
-
-	@Override
-	public Serializable getSerializable() throws IOException, DeserializationException {
-		// Turn the input into a byte array
-		final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-
-		final byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
-		
-		while (true) {
-			int cnt = getStream().read(buffer);
-			if (cnt <= 0)
-				break;
-			byteStream.write(buffer);
-		}
-		byteStream.close();
-		// Deserialize the byte array
-		return SerializationUtils.deserializeObject(byteStream.toByteArray());
-	}
 }

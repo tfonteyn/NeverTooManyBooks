@@ -45,7 +45,8 @@ public class TarReaderEntity extends ReaderEntityAbstract {
      * @param entry  Corresponding archive entry
      * @param type   Type of item
      */
-    TarReaderEntity(@NonNull final TarBackupReader reader, @NonNull final TarArchiveEntry entry,
+    TarReaderEntity(@NonNull final TarBackupReader reader,
+                    @NonNull final TarArchiveEntry entry,
                     @NonNull final BackupEntityType type) {
         mReader = reader;
         mEntry = entry;

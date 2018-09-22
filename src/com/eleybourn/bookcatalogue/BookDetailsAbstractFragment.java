@@ -33,15 +33,11 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Abstract class for creating activities containing book details.
@@ -141,8 +137,9 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                 // update current activity
                 setCoverImage();
             }
-            if (mCoverBrowser != null)
+            if (mCoverBrowser != null) {
                 mCoverBrowser.dismiss();
+            }
             mCoverBrowser = null;
         }
     };
@@ -159,85 +156,37 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             switch (requestCode) {
                 case CODE_ADD_PHOTO:
                     if (resultCode == Activity.RESULT_OK && intent != null && intent.getExtras() != null) {
-                        File cameraFile = getCameraImageFile();
-                        Bitmap x = (Bitmap) intent.getExtras().get(BKEY_DATA);
-                        if (x != null && x.getWidth() > 0 && x.getHeight() > 0) {
-                            Matrix m = new Matrix();
-                            m.postRotate(BCPreferences.getAutoRotateCameraImagesInDegrees());
-                            x = Bitmap.createBitmap(x, 0, 0, x.getWidth(), x.getHeight(), m, true);
-                            // Create a file to copy the thumbnail into
-                            FileOutputStream f;
-                            try {
-                                f = new FileOutputStream(cameraFile.getAbsoluteFile());
-                            } catch (FileNotFoundException e) {
-                                Logger.logError(e);
-                                return;
-                            }
-
-                            x.compress(Bitmap.CompressFormat.PNG, 100, f);
-
-                            cropCoverImage(cameraFile);
-                            mGotCameraImage = true;
-                        } else {
-                            Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - camera image empty", Tracker.States.Running);
-                        }
+                        addFromCamera(requestCode, resultCode, intent);
                     }
                     return;
                 case CODE_ADD_GALLERY:
                     if (resultCode == Activity.RESULT_OK) {
-                        Uri selectedImageUri = intent.getData();
-
-                        if (selectedImageUri != null) {
-                            boolean imageOk = false;
-                            // If no 'content' scheme, then use the content resolver.
-                            try {
-                                InputStream in = getActivity().getContentResolver().openInputStream(selectedImageUri);
-                                imageOk = Utils.saveInputToFile(Objects.requireNonNull(in), getCoverFile(mEditManager.getBookData().getRowId()));
-                            } catch (FileNotFoundException e) {
-                                Logger.logError(e, "Unable to copy content to file");
-                            }
-                            if (imageOk) {
-                                // Update the ImageView with the new image
-                                setCoverImage();
-                            } else {
-                                String s = getResources().getString(R.string.could_not_copy_image) + ". " + getResources().getString(R.string.if_the_problem_persists);
-                                Toast.makeText(getActivity(), s, Toast.LENGTH_LONG).show();
-                            }
-                        } else {
-                            /* Deal with the case where the chooser returns a null intent. This seems to happen
-                             * when the filename is not properly understood by the choose (eg. an apostrophe in
-                             * the file name confuses ES File Explorer in the current version as of 23-Sep-2012. */
-                            Toast.makeText(getActivity(), R.string.could_not_copy_image, Toast.LENGTH_LONG).show();
-                        }
+                        addFromGallery(intent);
                     }
                     return;
                 case CODE_CROP_RESULT_EXTERNAL: {
                     File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
-                    File cropped = this.getCroppedImageFileName();
+                    File cropped = this.getCroppedTempCoverFile();
                     if (resultCode == Activity.RESULT_OK) {
                         if (cropped.exists()) {
+                            StorageUtils.renameFile(cropped, thumbFile);
                             // Update the ImageView with the new image
-                            //noinspection ResultOfMethodCallIgnored
-                            cropped.renameTo(thumbFile);
                             setCoverImage();
                         } else {
                             Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - result OK, no image file", Tracker.States.Running);
                         }
                     } else {
                         Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - bad result", Tracker.States.Running);
-                        if (cropped.exists())
-                            //noinspection ResultOfMethodCallIgnored
-                            cropped.delete();
+                        StorageUtils.deleteFile(cropped);
                     }
                     return;
                 }
                 case CODE_CROP_RESULT_INTERNAL: {
                     File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
-                    File cropped = this.getCroppedImageFileName();
+                    File cropped = this.getCroppedTempCoverFile();
                     if (resultCode == Activity.RESULT_OK) {
                         if (cropped.exists()) {
-                            //noinspection ResultOfMethodCallIgnored
-                            cropped.renameTo(thumbFile);
+                            StorageUtils.renameFile(cropped, thumbFile);
                             // Update the ImageView with the new image
                             setCoverImage();
                         }
@@ -246,6 +195,61 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             }
         } finally {
             Tracker.exitOnActivityResult(this,requestCode,resultCode);
+        }
+    }
+
+    private void addFromGallery(@Nullable final Intent intent) {
+        @SuppressWarnings("ConstantConditions")
+        Uri selectedImageUri = intent.getData();
+
+        if (selectedImageUri != null) {
+            boolean imageOk = false;
+            // If no 'content' scheme, then use the content resolver.
+            try {
+                InputStream in = getContext().getContentResolver().openInputStream(selectedImageUri);
+                imageOk = StorageUtils.saveInputStreamToFile(in, getCoverFile(mEditManager.getBookData().getRowId()));
+            } catch (FileNotFoundException e) {
+                Logger.logError(e, "Unable to copy content to file");
+            }
+            if (imageOk) {
+                // Update the ImageView with the new image
+                setCoverImage();
+            } else {
+                String s = getResources().getString(R.string.could_not_copy_image) + ". " + getResources().getString(R.string.if_the_problem_persists);
+                Toast.makeText(getContext(), s, Toast.LENGTH_LONG).show();
+            }
+        } else {
+            /* Deal with the case where the chooser returns a null intent. This seems to happen
+             * when the filename is not properly understood by the choose (eg. an apostrophe in
+             * the file name confuses ES File Explorer in the current version as of 23-Sep-2012. */
+            Toast.makeText(getContext(), R.string.could_not_copy_image, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void addFromCamera(final int requestCode, final int resultCode, @NonNull final Intent intent) {
+
+        Bitmap bitmap = (Bitmap) intent.getExtras().get(BKEY_DATA);
+        if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
+            Matrix m = new Matrix();
+            m.postRotate(BCPreferences.getAutoRotateCameraImagesInDegrees());
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
+
+            File cameraFile = getCameraTempCoverFile();
+            FileOutputStream out;
+            // Create a file to copy the thumbnail into
+            try {
+                out = new FileOutputStream(cameraFile.getAbsoluteFile());
+            } catch (FileNotFoundException e) {
+                Logger.logError(e);
+                return;
+            }
+
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+
+            cropCoverImage(cameraFile);
+            mGotCameraImage = true;
+        } else {
+            Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - camera image empty", Tracker.States.Running);
         }
     }
 
@@ -334,13 +338,13 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                 case CODE_ADD_PHOTO:
                     // Increment the temp counter and cleanup the temp directory
                     mTempImageCounter++;
-                    cleanupTempImages();
+                    StorageUtils.cleanupTempDirectory();
                     // Get a photo
                     Intent pIntent = new Intent("android.media.action.IMAGE_CAPTURE");
 //				We don't do this because we have no reliable way to rotate a large image
 //				without producing memory exhaustion; Android does not include a file-based
 //				image rotation.
-//				File f = this.getCameraImageFile();
+//				File f = this.getCameraTempCoverFile();
 //				if (f.exists())
 //					f.delete();
 //				pIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
@@ -371,41 +375,6 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         }
     }
 
-    /**
-     * Delete everything in the temp file directory
-     */
-    private void cleanupTempImages() {
-        File dir = StorageUtils.getTempImageDirectory();
-        if (dir.exists() && dir.isDirectory()) {
-            File[] files = dir.listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    //noinspection ResultOfMethodCallIgnored
-                    f.delete();
-                }
-            }
-        }
-    }
-
-    @SuppressWarnings("unused")
-    private void copyFile(@NonNull final File src, @NonNull final File dst) throws IOException {
-        FileInputStream fis = new FileInputStream(src);
-        FileOutputStream fos = new FileOutputStream(dst);
-        FileChannel inChannel = fis.getChannel();
-        FileChannel outChannel = fos.getChannel();
-
-        try {
-            inChannel.transferTo(0, inChannel.size(), outChannel);
-        } finally {
-            if (inChannel != null) {
-                inChannel.close();
-            }
-            outChannel.close();
-            fis.close();
-            fos.close();
-        }
-    }
-
     private void cropCoverImage(@NonNull final File thumbFile) {
         if (BCPreferences.getUseExternalImageCropper()) {
             cropCoverImageExternal(thumbFile);
@@ -421,7 +390,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         crop_intent.putExtra(BKEY_SCALE, true);
         crop_intent.putExtra(BKEY_WHOLE_IMAGE, BCPreferences.getCropFrameWholeImage());
         // Get and set the output file spec, and make sure it does not already exist.
-        File cropped = this.getCroppedImageFileName();
+        File cropped = this.getCroppedTempCoverFile();
         if (cropped.exists()) {
             //noinspection ResultOfMethodCallIgnored
             cropped.delete();
@@ -453,10 +422,12 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             // True to return a Bitmap, false to directly save the cropped image
             intent.putExtra(BKEY_RETURN_DATA, false);
             // Save output image in uri
-            File cropped = this.getCroppedImageFileName();
+            File cropped = this.getCroppedTempCoverFile();
             if (cropped.exists())
                 //noinspection ResultOfMethodCallIgnored
+            {
                 cropped.delete();
+            }
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(cropped.getAbsolutePath())));
 
             List<ResolveInfo> list = getActivity().getPackageManager().queryIntentActivities(intent, 0);
@@ -479,7 +450,9 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
             if (thumbFile != null && thumbFile.exists())
                 //noinspection ResultOfMethodCallIgnored
+            {
                 thumbFile.delete();
+            }
         } catch (Exception e) {
             Logger.logError(e);
         }
@@ -492,24 +465,25 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      * If the book is new (0), return the standard temp file.
      */
     private File getCoverFile(final long rowId) {
-        if (rowId == 0)
-            return StorageUtils.getTempThumbnail();
-        else
-            return StorageUtils.getThumbnailByUuid(mDb.getBookUuid(rowId));
+        if (rowId == 0) {
+            return StorageUtils.getTempCoverFile();
+        } else {
+            return StorageUtils.getCoverFile(mDb.getBookUuid(rowId));
+        }
     }
 
     /**
      * Get a temp file for camera images
      */
-    private File getCameraImageFile() {
-        return StorageUtils.getTempImageFile("camera" + mTempImageCounter + ".jpg");
+    private File getCameraTempCoverFile() {
+        return StorageUtils.getTempCoverFile("camera", "" +mTempImageCounter);
     }
 
     /**
      * Get a temp file for cropping output
      */
-    private File getCroppedImageFileName() {
-        return StorageUtils.getTempImageFile("cropped" + mTempImageCounter + ".jpg");
+    private File getCroppedTempCoverFile() {
+        return StorageUtils.getTempCoverFile("cropped", "" + mTempImageCounter);
     }
 
     /**
@@ -546,8 +520,9 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                 mEditManager.getBookData().setSeriesList(list);
             }
             newText = list.get(0).getDisplayName();
-            if (list.size() > 1)
+            if (list.size() > 1) {
                 newText += " " + getResources().getString(R.string.and_others);
+            }
         }
         mFields.getField(R.id.series).setValue(newText);
     }
@@ -563,27 +538,29 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             try {
                 File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
 
-                Bitmap origBm = ImageUtils.fetchFileIntoImageView(null, thumbFile, mThumper.zoomed * 2, mThumper.zoomed * 2, true);
-                if (origBm == null)
+                Bitmap bitmap = ImageUtils.fetchFileIntoImageView(null, thumbFile,
+                        mThumper.zoomed * 2, mThumper.zoomed * 2, true);
+                if (bitmap == null) {
                     return;
+                }
 
-                Matrix m = new Matrix();
-                m.postRotate(angle);
-                Bitmap rotBm = Bitmap.createBitmap(origBm, 0, 0, origBm.getWidth(), origBm.getHeight(), m, true);
-                if (rotBm != origBm) {
-                    origBm.recycle();
+                Matrix matrix = new Matrix();
+                matrix.postRotate(angle);
+                Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                if (rotatedBitmap != bitmap) {
+                    bitmap.recycle();
                 }
 
                 /* Create a file to copy the thumbnail into */
-                FileOutputStream f;
+                FileOutputStream outFos;
                 try {
-                    f = new FileOutputStream(thumbFile.getAbsoluteFile());
+                    outFos = new FileOutputStream(thumbFile.getAbsoluteFile());
                 } catch (FileNotFoundException e) {
                     Logger.logError(e);
                     return;
                 }
-                rotBm.compress(Bitmap.CompressFormat.PNG, 100, f);
-                rotBm.recycle();
+                rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outFos);
+                rotatedBitmap.recycle();
             } catch (java.lang.OutOfMemoryError e) {
                 if (retry) {
                     System.gc();
@@ -635,12 +612,14 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED, null);
         mFields.add(R.id.isbn, UniqueId.KEY_ISBN, null);
 
-        if (root.findViewById(R.id.publisher) != null)
+        if (root.findViewById(R.id.publisher) != null) {
             mFields.add(R.id.publisher, UniqueId.KEY_PUBLISHER, null);
+        }
 
-        if (root.findViewById(R.id.date_published) != null)
+        if (root.findViewById(R.id.date_published) != null) {
             mFields.add(R.id.date_published, UniqueId.KEY_BOOK_DATE_PUBLISHED, UniqueId.KEY_BOOK_DATE_PUBLISHED,
                     null, new Fields.DateFieldFormatter());
+        }
 
         mFields.add(R.id.series, UniqueId.KEY_SERIES_NAME, UniqueId.KEY_SERIES_NAME, null);
         mFields.add(R.id.list_price, UniqueId.KEY_BOOK_LIST_PRICE, null);

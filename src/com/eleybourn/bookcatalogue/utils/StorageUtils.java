@@ -39,6 +39,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -53,33 +54,42 @@ import java.util.regex.Pattern;
  */
 public class StorageUtils {
 
-    // our root directory to be created on the 'external storage'
-    public static final String DIRECTORY_NAME = "bookCatalogue";
+    /** our root directory to be created on the 'external storage' */
+    private static final String DIRECTORY_NAME = "bookCatalogue";
+
     private static final String UTF8 = "utf8";
     private static final int BUFFER_SIZE = 8192;
-
-    private static final String DATABASE_NAME = "book_catalogue";
-    // directories
+    /** root external storage */
     private static final String EXTERNAL_FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + DIRECTORY_NAME;
-    private static final String TEMP_IMAGE_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "tmp_images";
-    // files in above directories
-    private static final String ERRORLOG_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "error.log";
+    /** sub directory for temporary images */
+    private static final String TEMP_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "tmp_images";
+
+    /** permanent location for cover files. For now hardcoded, but the intention is to allow user-defined. */
+    private static final String COVER_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "covers";
+    /** serious errors are written to this file */
+    private static final String ERROR_LOG_FILE = "error.log";
+    /** standard export file */
+    private static final String EXPORT_FILE_NAME = "export.csv";
+    /** standard temp export file, first we write here, then rename to csv */
+    private static final String EXPORT_TEMP_FILE_NAME = "export.tmp";
+    /** written to root external storage as 'writable' test + prevent 'detection' by apps who want to 'do things' with media */
     private static final String NOMEDIA_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + ".nomedia";
+
+
     private static final String[] mPurgeableFilePrefixes = new String[]{
-            DIRECTORY_NAME + "DbUpgrade",
-            DIRECTORY_NAME + "DbExport",
-            "error.log",
-            "tmp"};
+            "DbUpgrade", "DbExport", "error.log", "tmp"};
+
+    /**
+     * Scan all mount points for '/bookCatalogue' directory and collect a list
+     * of all CSV files.
+     */
+    private static final Pattern MOUNT_POINT_PATH = Pattern.compile("^\\s*[^\\s]+\\s+([^\\s]+)");
 
     private StorageUtils() {
     }
 
     public static String getErrorLog() {
-        return ERRORLOG_FILE_PATH;
-    }
-
-    public static String getDatabaseName() {
-        return DATABASE_NAME;
+        return EXTERNAL_FILE_PATH + File.separator + ERROR_LOG_FILE;
     }
 
     private static void createDir(@NonNull final String name) {
@@ -105,6 +115,7 @@ public class StorageUtils {
             return true;
         }
     }
+
     /**
      * Make sure the external shared directory exists
      * Logs failures themselves, but does NOT fail function
@@ -113,12 +124,13 @@ public class StorageUtils {
      */
     public static void initSharedDirectories() {
         File rootDir = new File(EXTERNAL_FILE_PATH);
-        // quick return
-        if (rootDir.exists() && rootDir.isDirectory())
+        if (rootDir.exists() && rootDir.isDirectory()) {
             return;
+        }
 
         createDir(EXTERNAL_FILE_PATH);
-        createDir(TEMP_IMAGE_FILE_PATH);
+        createDir(COVER_FILE_PATH);
+        createDir(TEMP_FILE_PATH);
 
         // * A .nomedia file will be created which will stop the thumbnails showing up in the gallery (thanks Brandon)
         try {
@@ -129,117 +141,135 @@ public class StorageUtils {
         }
     }
 
-    /**
-     * Get a File, don't check on existence or creation
-     */
-    public static File getFile(@NonNull final String fileName) {
-        if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
-            System.out.println("StorageUtils.getFile: Accessing file: " + EXTERNAL_FILE_PATH + File.separator + fileName);
-        }
-        return new File(EXTERNAL_FILE_PATH + File.separator + fileName);
+    private static File getTempStorage() {
+        return new File(TEMP_FILE_PATH);
+    }
+
+    public static File getExportFile() {
+        return new File(EXTERNAL_FILE_PATH + File.separator + EXPORT_FILE_NAME);
+    }
+    public static File getTempExportFile() {
+        return new File(EXTERNAL_FILE_PATH + File.separator + EXPORT_TEMP_FILE_NAME);
     }
 
     /**
-     * @return the shared root Directory object, create if needed
+     * @return the shared root Directory object
      */
     public static File getSharedStorage() {
         return new File(EXTERNAL_FILE_PATH);
     }
-
     /**
-     * @param fileName in the temp image directory
      *
+     * return a general purpose File, located in the Shared Storage path (or a sub directory)
+     * Don't use this for standard cover management.
+     *
+     * @param fileName the relative filename (including sub dirs) to the Shared Storage path
      * @return the file
      */
-    public static File getTempImageFile(@NonNull final String fileName) {
-        return getFile(TEMP_IMAGE_FILE_PATH + File.separator + fileName);
+    public static File getFile(@NonNull final String fileName) {
+        return new File(EXTERNAL_FILE_PATH + File.separator + fileName);
     }
 
-    /**
-     * @return the temp image directory
-     */
-    public static File getTempImageDirectory() {
-        return new File(TEMP_IMAGE_FILE_PATH);
-    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public static File getCoverStorage() {
+        return new File(COVER_FILE_PATH);
+    }
 
     /**
      * Get the 'standard' temp file name for new books
      */
-    public static File getTempThumbnail() {
-        return getTempThumbnail("");
+    public static File getTempCoverFile() {
+        if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+            Logger.printStackTrace("Someone wants a bare tmp.jpg ? why ?");
+        }
+        return getTempCoverFile("tmp", "");
     }
 
     /**
      * Get the 'standard' temp file name for new books, including a suffix
      */
-    public static File getTempThumbnail(@NonNull final String suffix) {
-        return getFile("tmp" + suffix + ".jpg");
+    public static File getTempCoverFile(@NonNull final String name) {
+        return getTempCoverFile("tmp", name);
     }
 
     /**
-     * return the thumbnail (as a File object) for the given hash
-     *
-     * @param uuid The uuid of the book
-     *
-     * @return The File object
+     * Get the 'standard' temp file name for new books, including a suffix
+     * Located in the normal Covers directory
      */
-    public static File getThumbnailByUuid(@Nullable final String uuid) {
-        return getThumbnailByUuid(uuid, "");
+    public static File getTempCoverFile(@NonNull final String prefix, @NonNull final String name) {
+        return new File(COVER_FILE_PATH + File.separator + prefix + name + ".jpg");
     }
 
     /**
-     * return the thumbnail (as a File object) for the given id.
+     * return the cover for the given uuid.
      *
-     * @param uuid   The id of the book
-     * @param suffix Optionally use a suffix on the file name.
+     * @param uuid of the book,
      *
-     * @return The File object
+     * @return The File object for existing files, or a new placeholder.
      */
-    public static File getThumbnailByUuid(@Nullable final String uuid, @SuppressWarnings("SameParameterValue") String suffix) {
-        return getThumbnailByName(uuid, suffix);
-    }
-
-    /**
-     * return the thumbnail (as a File object) for the given id.
-     *
-     * @param prefix Optional on the file name.
-     * @param suffix Optional on the file name.
-     *
-     * @return The File object
-     */
-    public static File getThumbnailByName(@Nullable final String prefix, @Nullable String suffix) {
-        if (suffix == null) {
-            suffix = "";
+    public static File getCoverFile(@NonNull final String uuid) {
+        final File jpg = new File(COVER_FILE_PATH + File.separator + uuid + ".jpg");
+        if (jpg.exists()) {
+            return jpg;
+        }
+        // could be a png
+        final File png = new File(COVER_FILE_PATH + File.separator + uuid + ".png");
+        if (png.exists()) {
+            return png;
         }
 
-        if (prefix == null || prefix.isEmpty()) {
-            return getTempThumbnail(suffix);
-        } else {
-            final File jpg = getFile(prefix + suffix + ".jpg");
-            if (!jpg.exists()) {
-                final File png = getFile(prefix + suffix + ".png");
-                if (png.exists())
-                    return png;
-                else {
-                    return jpg;
+        // we need a new file,
+        // return new File(COVER_FILE_PATH + File.separator + uuid + ".jpg");
+        return jpg;
+    }
+
+
+    /**
+     * Delete *everything* in the temp file directory
+     */
+    public static void cleanupTempDirectory() {
+        File dir = getTempStorage();
+        if (dir.exists() && dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    deleteFile(file);
                 }
-            } else {
-                return jpg;
             }
         }
     }
 
-
-
+    /**
+     * Count size + (optional) Cleanup any purgeable files.
+     *
+     * @param reallyDelete if true, delete files, if false only count bytes
+     *
+     * @return the total size in bytes of purgeable/purged files.
+     */
+    public static long purgeFiles(final boolean reallyDelete) {
+        long totalSize = 0;
+        for (String name : getCoverStorage().list()) {
+            for (String prefix : mPurgeableFilePrefixes) {
+                if (name.startsWith(prefix)) {
+                    final File file = getFile(name);
+                    totalSize += file.length();
+                    if (reallyDelete) {
+                        deleteFile(file);
+                    }
+                }
+            }
+        }
+        return totalSize;
+    }
 
     /**
      * @param db     file to backup
-     * @param suffix suffix to apply to the directory name
+     * @param toFile suffix to apply to the directory name
      */
-    public static void backupDbFile(@NonNull final SQLiteDatabase db, String suffix) {
+    public static void backupDbFile(@NonNull final SQLiteDatabase db, @NonNull final String toFile) {
         try {
-            final String fileName = DIRECTORY_NAME + suffix;
+            final String fileName = DIRECTORY_NAME + toFile;
 
             //check if it exists
             final File existing = getFile(fileName);
@@ -266,16 +296,7 @@ public class StorageUtils {
         }
     }
 
-    /**
-     * Scan all mount points for '/bookCatalogue' directory and collect a list
-     * of all CSV files.
-     */
-    private static final Pattern MOUNT_POINT_PATH = Pattern.compile("^\\s*[^\\s]+\\s+([^\\s]+)");
     public static ArrayList<File> findExportFiles() {
-
-
-
-
         // Make a filter for files ending in .csv
         FilenameFilter csvFilter = new FilenameFilter() {
             @Override
@@ -321,11 +342,12 @@ public class StorageUtils {
         } catch (IOException e) {
             Logger.logError(e, "Failed to open/scan/read /proc/mounts");
         } finally {
-            if (in != null)
+            if (in != null) {
                 try {
                     in.close();
                 } catch (Exception ignored) {
                 }
+            }
         }
 
         // Sometimes (Android 6?) the /proc/mount search seems to fail, so we revert to environment vars
@@ -420,40 +442,138 @@ public class StorageUtils {
         return files;
     }
 
-
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // Standard File management methods
 
     /**
-     * Count size + (optional) Cleanup any purgeable files.
+     * Given a InputStream, save it to a file.
      *
-     * @param reallyDelete  if true, delete files, if false only count bytes
+     * @param in  InputStream to read
+     * @param out File to save
      *
-     * @return the total size in bytes of purgeable/purged files.
+     * @return true if successful
      */
-    public static long cleanupFiles(boolean reallyDelete) {
-        long totalSize = 0;
-        final File dir = getSharedStorage();
-        for (String name : dir.list()) {
-            boolean purge = false;
-            for (String prefix : mPurgeableFilePrefixes) {
-                if (name.startsWith(prefix)) {
-                    purge = true;
-                    break;
-                }
+    public static boolean saveInputStreamToFile(@NonNull final InputStream in, @NonNull final File out) {
+        File temp = null;
+        try {
+            // Get a temp file to avoid overwriting output unless copy works
+            temp = File.createTempFile("temp_", null, getTempStorage());
+            FileOutputStream tempFos = new FileOutputStream(temp);
+            // Copy from input to temp file
+            byte[] buffer = new byte[65536];
+            int len1;
+            while ((len1 = in.read(buffer)) >= 0) {
+                tempFos.write(buffer, 0, len1);
             }
-            if (purge) {
-                try {
-                    final File file = getFile(name);
-                    totalSize += file.length();
-                    if (reallyDelete) {
-                        //noinspection ResultOfMethodCallIgnored
-                        file.delete();
-                    }
-                } catch (NullPointerException ignored) {
-                }
+            tempFos.close();
+            // All OK, so rename to real output file
+            renameFile(temp, out);
+            return true;
+        } catch (IOException e) {
+            Logger.logError(e);
+        } finally {
+            deleteFile(temp);
+        }
+        return false;
+    }
+
+    /**
+     * just to avoid boilerplate coding.
+     *
+     * @param file to delete
+     */
+    public static void deleteFile(@Nullable final File file) {
+        if (file != null && file.exists()) {
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
+            } catch (Exception e) {
+                Logger.logError(e);
             }
         }
-        return totalSize;
     }
+
+    /**
+     * ENHANCE: make suitable for multiple filesystems using {@link #copyFile(File, File)}
+     * from the Android docs {@link File#renameTo(File)}: Both paths be on the same mount point.
+     *
+     * @return true if the rename worked, this is really a "to.exists()" call.
+     *              and not relying on the OS renameTo call.
+     */
+    public static boolean renameFile(@NonNull final File src, @NonNull final File dst) {
+        if (src.exists()) {
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                src.renameTo(dst);
+            } catch (Exception e) {
+                Logger.logError(e);
+            }
+        }
+        return dst.exists();
+    }
+
+    public static void copyFile(@NonNull final File src, @NonNull final File dst) throws IOException {
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            // Open in & out
+            in = new FileInputStream(src);
+            out = new FileOutputStream(dst);
+            // Get a buffer
+            byte[] buffer = new byte[8192];
+            int nRead;
+            // Copy
+            while ((nRead = in.read(buffer)) > 0) {
+                out.write(buffer, 0, nRead);
+            }
+            // Close both. We close them here so exceptions are signalled
+            in.close();
+            in = null;
+            out.close();
+            out = null;
+        } finally {
+            // If not already closed, close.
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException ignored) {
+            }
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException ignored) {
+            }
+        }
+    }
+
+    /**
+     * Channels are FAST... TODO: replace old method with this one.
+     *
+     * @param src
+     * @param dst
+     * @throws IOException
+     */
+    @SuppressWarnings("unused")
+    private static void copyFile2(@NonNull final File src, @NonNull final File dst) throws IOException {
+        FileInputStream fis = new FileInputStream(src);
+        FileOutputStream fos = new FileOutputStream(dst);
+        FileChannel inChannel = fis.getChannel();
+        FileChannel outChannel = fos.getChannel();
+
+        try {
+            inChannel.transferTo(0, inChannel.size(), outChannel);
+        } finally {
+            if (inChannel != null) {
+                inChannel.close();
+            }
+            outChannel.close();
+            fis.close();
+            fos.close();
+        }
+    }
+
 
     /**
      * Compare two files based on date. Used for sorting file list by date.
@@ -467,7 +587,7 @@ public class StorageUtils {
         /**
          * Constructor
          */
-        FileDateComparator(int direction) {
+        FileDateComparator(final int direction) {
             mDirection = direction < 0 ? -1 : 1;
         }
 
@@ -475,15 +595,16 @@ public class StorageUtils {
          * Compare based on modified date
          */
         @Override
-        public int compare(File lhs, File rhs) {
+        public int compare(@NonNull final File lhs, @NonNull final File rhs) {
             final long l = lhs.lastModified();
             final long r = rhs.lastModified();
-            if (l < r)
+            if (l < r) {
                 return -mDirection;
-            else if (l > r)
+            } else if (l > r) {
                 return mDirection;
-            else
+            } else {
                 return 0;
+            }
         }
     }
 }

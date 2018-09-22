@@ -123,10 +123,11 @@ public class StartupActivity extends AppCompatActivity {
      */
     @Nullable
     public static StartupActivity getActiveActivity() {
-        if (mStartupActivity != null)
+        if (mStartupActivity != null) {
             return mStartupActivity.get();
-        else
+        } else {
             return null;
+        }
     }
 
     public static boolean hasBeenCalled() {
@@ -167,7 +168,7 @@ public class StartupActivity extends AppCompatActivity {
             updateProgress(getString(R.string.starting));
 
             // at this point the user will have granted us STORAGE permission,
-            // so make sure we have our directories ready
+            // so make sure we have our directories are ready
             StorageUtils.initSharedDirectories();
 
             SimpleTaskQueue q = getQueue();
@@ -186,8 +187,9 @@ public class StartupActivity extends AppCompatActivity {
 
         // If no tasks were queued, then move on to stage 2. Otherwise, the completed
         // tasks will cause stage 2 to start.
-        if (mTaskQueue == null)
+        if (mTaskQueue == null) {
             stage2Startup();
+        }
     }
 
     /**
@@ -214,8 +216,9 @@ public class StartupActivity extends AppCompatActivity {
             if (!isFinishing()) {
                 try {
                     mProgress.setMessage(message);
-                    if (!mProgress.isShowing())
+                    if (!mProgress.isShowing()) {
                         mProgress.show();
+                    }
                 } catch (Exception e) {
                     Logger.logError(e);
                 }

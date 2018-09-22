@@ -27,11 +27,7 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * Class to find covers for an importer when the import is reading from a local directory.
@@ -47,7 +43,6 @@ public class LocalCoverFinder implements Importer.CoverFinder {
     LocalCoverFinder(@NonNull final String srcPath, @NonNull final String dstPath) {
         mSrc = srcPath;
         mIsForeign = !mSrc.equals(dstPath);
-
         mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         mDb.open();
     }
@@ -55,15 +50,17 @@ public class LocalCoverFinder implements Importer.CoverFinder {
     public void copyOrRenameCoverFile(@Nullable final String srcUuid, final long srcId, final long dstId) throws IOException {
         if (srcUuid != null && !srcUuid.isEmpty()) {
             // Only copy UUID files if they are foreign...since they already exists, otherwise.
-            if (mIsForeign)
+            if (mIsForeign) {
                 copyCoverImageIfMissing(srcUuid);
+            }
         } else {
             if (srcId != 0) {
                 // This will be a rename or a copy
-                if (mIsForeign)
+                if (mIsForeign) {
                     copyCoverImageIfMissing(srcId, dstId);
-                else
+                } else {
                     renameCoverImageIfMissing(srcId, dstId);
+                }
             }
         }
 
@@ -96,25 +93,18 @@ public class LocalCoverFinder implements Importer.CoverFinder {
      * @return Existing file (if length > 0), or new file object
      */
     private File getNewCoverFile(@NonNull final File orig, @NonNull final String newUuid) {
-        File newFile;
         // Check for ANY current image; delete empty ones and retry
-        newFile = StorageUtils.getThumbnailByUuid(newUuid);
+        File newFile = StorageUtils.getCoverFile(newUuid);
         while (newFile.exists()) {
-            if (newFile.length() > 0)
+            if (newFile.length() > 0) {
                 return newFile;
-            else
-                //noinspection ResultOfMethodCallIgnored
-                newFile.delete();
-            newFile = StorageUtils.getThumbnailByUuid(newUuid);
+            } else {
+                StorageUtils.deleteFile(newFile);
+            }
+            newFile = StorageUtils.getCoverFile(newUuid);
         }
 
-        // Get the new path based on the input file type.
-        if (orig.getAbsolutePath().toLowerCase().endsWith(".png"))
-            newFile = StorageUtils.getFile(newUuid + ".png");
-        else
-            newFile = StorageUtils.getFile(newUuid + ".jpg");
-
-        return newFile;
+        return StorageUtils.getCoverFile(newUuid);
     }
 
     /**
@@ -123,46 +113,17 @@ public class LocalCoverFinder implements Importer.CoverFinder {
      */
     private void copyFileToCoverImageIfMissing(@Nullable final File orig, @NonNull final String newUuid) throws IOException {
         // Nothing to copy?
-        if (orig == null || !orig.exists() || orig.length() == 0)
+        if (orig == null || !orig.exists() || orig.length() == 0) {
             return;
+        }
 
         // Check for ANY current image
         final File newFile = getNewCoverFile(orig, newUuid);
-        if (newFile.exists())
+        if (newFile.exists()) {
             return;
-
-        // Copy it.
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            // Open in & out
-            in = new FileInputStream(orig);
-            out = new FileOutputStream(newFile);
-            // Get a buffer
-            byte[] buffer = new byte[8192];
-            int nRead;
-            // Copy
-            while ((nRead = in.read(buffer)) > 0) {
-                out.write(buffer, 0, nRead);
-            }
-            // Close both. We close them here so exceptions are signalled
-            in.close();
-            in = null;
-            out.close();
-            out = null;
-        } finally {
-            // If not already closed, close.
-            try {
-                if (in != null)
-                    in.close();
-            } catch (IOException ignored) {
-            }
-            try {
-                if (out != null)
-                    out.close();
-            } catch (IOException ignored) {
-            }
         }
+
+        StorageUtils.copyFile(orig, newFile);
     }
 
     /**
@@ -171,13 +132,15 @@ public class LocalCoverFinder implements Importer.CoverFinder {
      */
     private void renameFileToCoverImageIfMissing(@Nullable final File orig, @NonNull final String newUuid) {
         // Nothing to copy?
-        if (orig == null || !orig.exists() || orig.length() == 0)
+        if (orig == null || !orig.exists() || orig.length() == 0) {
             return;
+        }
 
         // Check for ANY current image
         final File newFile = getNewCoverFile(orig, newUuid);
-        if (newFile.exists())
+        if (newFile.exists()) {
             return;
+        }
 
         //noinspection ResultOfMethodCallIgnored
         orig.renameTo(newFile);
@@ -193,8 +156,9 @@ public class LocalCoverFinder implements Importer.CoverFinder {
     private void renameCoverImageIfMissing(final long externalId, final long newId) {
         File orig = findExternalCover(externalId);
         // Nothing to copy?
-        if (orig == null || !orig.exists() || orig.length() == 0)
+        if (orig == null || !orig.exists() || orig.length() == 0) {
             return;
+        }
 
         renameFileToCoverImageIfMissing(orig, mDb.getBookUuid(newId));
     }

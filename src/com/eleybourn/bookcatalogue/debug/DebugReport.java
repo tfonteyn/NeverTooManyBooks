@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.debug;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -8,6 +9,7 @@ import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
@@ -24,11 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DebugReport {
+
+    /** files with these prefixes in the standard External Storage Directory will be bundled in the report */
     private static final String[] FILE_PREFIXES = new String[]{
-            StorageUtils.DIRECTORY_NAME + "DbUpgrade",
-            StorageUtils.DIRECTORY_NAME + "DbExport",
-            "error.log",
-            "export.csv"};
+            "DbUpgrade", "DbExport", "error.log", "export.csv"};
 
     /**
      * Return the MD5 hash of the public key that signed this app, or a useful
@@ -42,6 +43,7 @@ public class DebugReport {
         try {
             // Get app info
             PackageManager manager = context.getPackageManager();
+            @SuppressLint("PackageManagerGetSignatures")
             PackageInfo appInfo = manager.getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
 
             // Each sig is a PK of the signer:
@@ -60,17 +62,19 @@ public class DebugReport {
                             first = false;
                         }
                         String byteString = Integer.toHexString(0xFF & aPublicKey);
-                        if (byteString.length() == 1)
+                        if (byteString.length() == 1) {
                             hexString.append("0");
+                        }
                         hexString.append(byteString);
                     }
                     String fingerprint = hexString.toString();
 
                     // Append as needed (theoretically could have more than one sig */
-                    if (signedBy.length() == 0)
+                    if (signedBy.length() == 0) {
                         signedBy.append(fingerprint);
-                    else
+                    } else {
                         signedBy.append("/").append(fingerprint);
+                    }
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {
@@ -90,12 +94,12 @@ public class DebugReport {
      *
      * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MAILING LIST OR FORUM!
      */
-    public static void sendDebugInfo(Context context, CatalogueDBAdapter db) {
+    public static void sendDebugInfo(@NonNull final Context context, @NonNull final CatalogueDBAdapter db) {
         // Create a temp DB copy.
-        String tmpFileName = StorageUtils.DIRECTORY_NAME + "DbExport-tmp.db";
-        db.backupDbFile(tmpFileName);
-        File dbFile = StorageUtils.getFile(tmpFileName);
+        File dbFile = StorageUtils.getFile("DbExport-tmp.db");
         dbFile.deleteOnExit();
+        db.backupDbFile(dbFile.getName());
+
         // setup the mail message
         final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
         emailIntent.setType("plain/text");
@@ -167,17 +171,18 @@ public class DebugReport {
         ArrayList<String> files = new ArrayList<>();
 
         // Find all files of interest to send
-        File dir = StorageUtils.getSharedStorage();
         try {
-            for (String name : dir.list()) {
+            for (String name : StorageUtils.getSharedStorage().list()) {
                 boolean send = false;
-                for (String prefix : FILE_PREFIXES)
+                for (String prefix : FILE_PREFIXES) {
                     if (name.startsWith(prefix)) {
                         send = true;
                         break;
                     }
-                if (send)
+                }
+                if (send) {
                     files.add(name);
+                }
             }
 
             // Build the attachment list

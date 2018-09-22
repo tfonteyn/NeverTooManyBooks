@@ -541,27 +541,24 @@ public class AdministrationFunctions extends ActivityWithTasks {
             return;
         }
 
-        AlertDialog alertDialog = new AlertDialog.Builder(AdministrationFunctions.this)
+        AlertDialog dialog = new AlertDialog.Builder(AdministrationFunctions.this)
                 .setTitle(R.string.email_export)
                 .setIcon(android.R.drawable.ic_menu_send)
                 .create();
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                 getResources().getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         // setup the mail message
+                        String subject = "[" + getString(R.string.app_name) + "] " + getString(R.string.export_to_csv);
+
                         final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
                         emailIntent.setType("plain/text");
-                        //emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, context.getString(R.string.debug_email).split(";"));
-                        String subject = "[" + getString(R.string.app_name) + "] " + getString(R.string.export_to_csv);
                         emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
-                        //emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, context.getString(R.string.debug_body));
-                        //has to be an ArrayList
+
                         ArrayList<Uri> uris = new ArrayList<>();
-                        // Find all files of interest to send
                         try {
-                            uris.add(Uri.fromFile(StorageUtils.getFile("export.csv")));
-                            // Send it, if there are any files to send.
+                            uris.add(Uri.fromFile(StorageUtils.getExportFile()));
                             emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
                             startActivity(Intent.createChooser(emailIntent, "Send mail..."));
                         } catch (NullPointerException e) {
@@ -572,7 +569,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
                         dialog.dismiss();
                     }
                 });
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
+        dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                 getResources().getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
@@ -581,7 +578,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
                     }
                 });
 
-        alertDialog.setOnDismissListener(new OnDismissListener() {
+        dialog.setOnDismissListener(new OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
                 if (finish_after)
@@ -596,7 +593,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
                 // before the dialog can be shown.
                 // See http://code.google.com/p/android/issues/detail?id=3953
                 //
-                alertDialog.show();
+                dialog.show();
             } catch (Exception e) {
                 Logger.logError(e);
             }

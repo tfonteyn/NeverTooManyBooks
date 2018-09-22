@@ -68,6 +68,14 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      */
     protected CatalogueDBAdapter mDb;
 
+//    /** Kludge to quiet lint without having to suppress it everywhere, shame getActivity() is final */
+//    @SuppressWarnings("ConstantConditions")
+//    @NonNull
+//    @Override
+//    public Context getContext() {
+//        return super.getContext();
+//    }
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

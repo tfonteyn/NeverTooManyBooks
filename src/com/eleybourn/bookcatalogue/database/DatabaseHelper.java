@@ -9,8 +9,12 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
+import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+
+import java.io.File;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_ANTHOLOGY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_AUTHORS;
@@ -22,40 +26,40 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_LOAN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_SERIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_MASK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ISBN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIST_PRICE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_END;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_START;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ISBN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
 
@@ -63,7 +67,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE
  * This is a specific version of {@link SQLiteOpenHelper}. It handles {@link #onCreate} and {@link #onUpgrade}
  *
  * This used to be an inner class of {@link CatalogueDBAdapter}
- * Externalised ONLY because of the size of the class
+ * Externalised ONLY because of the size of the class.
  * ONLY used by {@link CatalogueDBAdapter}
  *
  * @author evan
@@ -71,7 +75,9 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     //TODO: Update database version RELEASE: Update database version
-    private static final int DATABASE_VERSION = 82;
+    private static final int DATABASE_VERSION = 83; // last official version was 82
+
+    private static final String DATABASE_NAME = "book_catalogue";
 
     // We tried 'Collate UNICODE' but it seemed to be case sensitive. We ended
     // up with 'Ursula Le Guin' and 'Ursula le Guin'.
@@ -88,41 +94,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //<editor-fold desc="Create statements">
     /* Database creation sql statement */
     static final String DATABASE_CREATE_AUTHORS =
-            "create table " + DB_TB_AUTHORS +
-                    " (_id integer primary key autoincrement, " +
+            "create table " + DB_TB_AUTHORS + " (_id integer primary key autoincrement, " +
                     DOM_AUTHOR_FAMILY_NAME + " text not null, " +
                     DOM_AUTHOR_GIVEN_NAMES + " text not null" +
                     ")";
+
     static final String DATABASE_CREATE_BOOKSHELF =
-            "create table " + DB_TB_BOOKSHELF +
-                    " (_id integer primary key autoincrement, " +
+            "create table " + DB_TB_BOOKSHELF + " (_id integer primary key autoincrement, " +
                     DOM_BOOKSHELF_ID + " text not null " +
                     ")";
     static final String DATABASE_CREATE_BOOKSHELF_DATA =
-            "INSERT INTO " + DB_TB_BOOKSHELF +
-                    " (" + DOM_BOOKSHELF_ID + ") VALUES ('" + BookCatalogueApp.getResourceString(R.string.initial_bookshelf) + "')";
+            "insert INTO " + DB_TB_BOOKSHELF + " (" + DOM_BOOKSHELF_ID + ") VALUES ('" + BookCatalogueApp.getResourceString(R.string.initial_bookshelf) + "')";
+
     static final String DATABASE_CREATE_LOAN =
-            "create table " + DB_TB_LOAN +
-                    " (_id integer primary key autoincrement, " +
+            "create table " + DB_TB_LOAN + " (_id integer primary key autoincrement, " +
                     DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
                     DOM_LOANED_TO + " text " +
                     ")";
+
     static final String DATABASE_CREATE_ANTHOLOGY =
-            "create table " + DB_TB_ANTHOLOGY +
-                    " (_id integer primary key autoincrement, " +
+            "create table " + DB_TB_ANTHOLOGY + " (_id integer primary key autoincrement, " +
                     DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
                     DOM_AUTHOR_ID + " integer not null REFERENCES " + DB_TB_AUTHORS + ", " +
                     DOM_TITLE + " text not null, " +
                     DOM_ANTHOLOGY_POSITION + " int" +
                     ")";
+
     static final String DATABASE_CREATE_BOOK_BOOKSHELF_WEAK =
             "create table " + DB_TB_BOOK_BOOKSHELF_WEAK + "(" +
                     DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
                     DOM_BOOKSHELF_ID + " integer REFERENCES " + DB_TB_BOOKSHELF + " ON DELETE SET NULL ON UPDATE SET NULL" +
                     ")";
+
     static final String DATABASE_CREATE_SERIES =
-            "create table " + DB_TB_SERIES +
-                    " (_id integer primary key autoincrement, " +
+            "create table " + DB_TB_SERIES + " (_id integer primary key autoincrement, " +
                     DOM_SERIES_NAME + " text not null " +
                     ")";
 
@@ -134,6 +139,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DOM_SERIES_POSITION + " integer," +
                     "PRIMARY KEY(" + DOM_BOOK_ID + ", " + DOM_SERIES_POSITION + ")" +
                     ")";
+
     static final String DATABASE_CREATE_BOOK_AUTHOR =
             "create table " + DB_TB_BOOK_AUTHOR + "(" +
                     DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
@@ -143,92 +149,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     ")";
 
     /**
-     * NOTE: **NEVER** change this. Rename it and move it to {@link UpgradeDatabase#doUpgrade},
-     * and create a new one. Unless you know what you are doing.
+     * NOTE: ***BEFORE*** changing this: Copy/move it to {@link UpgradeDatabase#doUpgrade},
+     * and rename it there. Unless you know what you are doing.
+     *
+     * Reminder: do NOT use {@link DomainDefinition} here ! Those can change in newer versions.
+     *
+     * Making changes:
+     * 1. copy the below to a renamed version in {@link UpgradeDatabase#doUpgrade}
+     * 2. modify the current
+     * 3. modify {@link DomainDefinition} if needed to reflect the new version
      */
     private static final String DATABASE_CREATE_BOOKS =
             "create table " + DB_TB_BOOKS + " (_id integer primary key autoincrement, " +
-
-                    DOM_TITLE.getDefinition(true) + ", " +
-                    DOM_ISBN.getDefinition(true) + ", " +
-                    DOM_PUBLISHER.getDefinition(true) + ", " +
-                    DOM_BOOK_DATE_PUBLISHED.getDefinition(true) + ", " +
-                    DOM_BOOK_RATING.getDefinition(true) + ", " +
-                    DOM_BOOK_READ.getDefinition(true) + ", " +
-                    DOM_BOOK_PAGES.getDefinition(true) + ", " +
-                    DOM_NOTES.getDefinition(true) + ", " +
-                    DOM_BOOK_LIST_PRICE.getDefinition(true) + ", " +
-                    DOM_ANTHOLOGY_MASK.getDefinition(true) + ", " +
-                    DOM_BOOK_LOCATION.getDefinition(true) + ", " +
-                    DOM_BOOK_READ_START.getDefinition(true) + ", " +
-                    DOM_BOOK_READ_END.getDefinition(true) + ", " +
-                    DOM_BOOK_FORMAT.getDefinition(true) + ", " +
-                    DOM_BOOK_SIGNED.getDefinition(true) + ", " +
-                    DOM_DESCRIPTION.getDefinition(true) + ", " +
-                    DOM_BOOK_GENRE.getDefinition(true) + ", " +
-                    DOM_BOOK_LANGUAGE.getDefinition(true) + ", " + // Added in version 82
-                    DOM_BOOK_DATE_ADDED.getDefinition(true) + ", " +
-                    DOM_GOODREADS_BOOK_ID.getDefinition(true) + ", " +
-                    DOM_GOODREADS_LAST_SYNC_DATE.getDefinition(true) + ", " +
-                    DOM_BOOK_UUID.getDefinition(true) + ", " +
-                    DOM_LAST_UPDATE_DATE.getDefinition(true) +
+                    DOM_TITLE + " text not null, " +
+                    DOM_ISBN + " text, " +
+                    DOM_PUBLISHER + " text, " +
+                    DOM_BOOK_DATE_PUBLISHED + " date, " +
+                    DOM_BOOK_RATING + " float not null default 0, " +
+                    DOM_BOOK_READ + " boolean not null default 0, " +
+                    DOM_BOOK_PAGES + " int, " +
+                    DOM_NOTES + " text, " +
+                    DOM_BOOK_LIST_PRICE + " text, " +
+                    DOM_ANTHOLOGY_MASK + " int not null default " + TableInfo.ColumnInfo.ANTHOLOGY_NO + ", " +
+                    DOM_BOOK_LOCATION + " text, " +
+                    DOM_BOOK_READ_START + " date, " +
+                    DOM_BOOK_READ_END + " date, " +
+                    DOM_BOOK_FORMAT + " text, " +
+                    DOM_BOOK_SIGNED + " boolean not null default 0, " +
+                    DOM_DESCRIPTION + " text, " +
+                    DOM_BOOK_GENRE + " text, " +
+                    DOM_BOOK_LANGUAGE + " text default '', " +
+                    DOM_BOOK_DATE_ADDED + " datetime default current_timestamp, " +
+                    DOM_GOODREADS_BOOK_ID + " int, " +
+                    DOM_GOODREADS_LAST_SYNC_DATE + " date default '0000-00-00', " +
+                    DOM_BOOK_UUID + " text not null default (lower(hex(randomblob(16)))), " +
+                    DOM_LAST_UPDATE_DATE + " date not null default current_timestamp " +
                     ")";
+
+
+
     // ^^^^ NOTE: **NEVER** change this. Rename it, and create a new one. Unless you know what you are doing.
 
-    //private static final String DATABASE_CREATE_BOOKS_70 =
-    //		"create table " + DB_TB_BOOKS +
-    //		" (_id integer primary key autoincrement, " +
-    //		/* KEY_AUTHOR + " integer not null REFERENCES " + DB_TB_AUTHORS + ", " + */
-    //		KEY_TITLE + " text not null, " +
-    //		KEY_ISBN + " text, " +
-    //		KEY_PUBLISHER + " text, " +
-    //		KEY_BOOK_DATE_PUBLISHED + " date, " +
-    //		KEY_BOOK_RATING + " float not null default 0, " +
-    //		KEY_BOOK_READ + " boolean not null default 0, " +
-    //		/* KEY_SERIES + " text, " + */
-    //		KEY_BOOK_PAGES + " int, " +
-    //		/* KEY_SERIES_NUM + " text, " + */
-    //		KEY_NOTES + " text, " +
-    //		KEY_BOOK_LIST_PRICE + " text, " +
-    //		KEY_IS_ANTHOLOGY + " int not null default " + ANTHOLOGY_NO + ", " +
-    //		KEY_BOOK_LOCATION + " text, " +
-    //		KEY_BOOK_READ_START + " date, " +
-    //		KEY_BOOK_READ_END + " date, " +
-    //		KEY_BOOK_FORMAT + " text, " +
-    //		KEY_BOOK_SIGNED + " boolean not null default 0, " +
-    //		KEY_DESCRIPTION + " text, " +
-    //		KEY_BOOK_GENRE + " text, " +
-    //		KEY_BOOK_DATE_ADDED + " datetime default current_timestamp, " +
-    //		DOM_GOODREADS_BOOK_ID.getDefinition(true) + ", " +
-    //		DOM_BOOK_UUID.getDefinition(true) +
-    //		")";
-    //
-    //private static final String DATABASE_CREATE_BOOKS_69 =
-    //		"create table " + DB_TB_BOOKS +
-    //		" (_id integer primary key autoincrement, " +
-    //		/* KEY_AUTHOR + " integer not null REFERENCES " + DB_TB_AUTHORS + ", " + */
-    //		KEY_TITLE + " text not null, " +
-    //		KEY_ISBN + " text, " +
-    //		KEY_PUBLISHER + " text, " +
-    //		KEY_BOOK_DATE_PUBLISHED + " date, " +
-    //		KEY_BOOK_RATING + " float not null default 0, " +
-    //		KEY_BOOK_READ + " boolean not null default 0, " +
-    //		/* KEY_SERIES + " text, " + */
-    //		KEY_BOOK_PAGES + " int, " +
-    //		/* KEY_SERIES_NUM + " text, " + */
-    //		KEY_NOTES + " text, " +
-    //		KEY_BOOK_LIST_PRICE + " text, " +
-    //		KEY_IS_ANTHOLOGY + " int not null default " + ANTHOLOGY_NO + ", " +
-    //		KEY_BOOK_LOCATION + " text, " +
-    //		KEY_BOOK_READ_START + " date, " +
-    //		KEY_BOOK_READ_END + " date, " +
-    //		KEY_BOOK_FORMAT + " text, " +
-    //		KEY_BOOK_SIGNED + " boolean not null default 0, " +
-    //		KEY_DESCRIPTION + " text, " +
-    //		KEY_BOOK_GENRE + " text, " +
-    //		KEY_BOOK_DATE_ADDED + " datetime default current_timestamp, " +
-    //		DOM_GOODREADS_BOOK_ID.getDefinition(true) +
-    //		")";
     private static final String[] DATABASE_CREATE_INDICES = {
             "CREATE INDEX IF NOT EXISTS authors_given_names ON " + DB_TB_AUTHORS + " (" + DOM_AUTHOR_GIVEN_NAMES + ");",
             "CREATE INDEX IF NOT EXISTS authors_given_names_ci ON " + DB_TB_AUTHORS + " (" + DOM_AUTHOR_GIVEN_NAMES + " " + COLLATION + ");",
@@ -257,6 +218,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "CREATE UNIQUE INDEX IF NOT EXISTS book_author_book ON " + DB_TB_BOOK_AUTHOR + " (" + DOM_BOOK_ID + ", " + DOM_AUTHOR_ID + ");",
             "CREATE UNIQUE INDEX IF NOT EXISTS anthology_pk_idx ON " + DB_TB_ANTHOLOGY + " (" + DOM_BOOK_ID + ", " + DOM_AUTHOR_ID + ", " + DOM_TITLE + ")"
     };
+
     //</editor-fold>
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -268,7 +230,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     DatabaseHelper(@NonNull final Context context,
                    @NonNull final SQLiteDatabase.CursorFactory mTrackedCursorFactory,
                    @NonNull final DbSync.Synchronizer synchronizer) {
-        super(context, StorageUtils.getDatabaseName(), mTrackedCursorFactory, DATABASE_VERSION);
+        super(context, DATABASE_NAME, mTrackedCursorFactory, DATABASE_VERSION);
         mSynchronizer = synchronizer;
     }
 
@@ -337,36 +299,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             while (current.moveToNext()) {
                 String index_name = current.getString(0);
                 String delete_sql = "DROP INDEX " + index_name;
-                //db.beginTransaction();
                 try {
                     db.execSQL(delete_sql);
-                    //db.setTransactionSuccessful();
                 } catch (Exception ignore) {
                     Logger.logError(ignore, "Index deletion failed (probably not a problem)");
-                } //finally {
-                //db.endTransaction();
-                //}
+                }
             }
         }
 
         for (String index : DATABASE_CREATE_INDICES) {
-            // Avoid index creation killing an upgrade because this
-            // method may be called by any upgrade script and some tables
-            // may not yet exist. We probably still want indexes.
+            // Avoid index creation killing an upgrade because this method may be called by any
+            // upgrade script and some tables may not yet exist. We probably still want indexes.
             //
             // Ideally, whenever an upgrade script is written, the 'createIndices()' call
             // from prior upgrades should be removed saved and used and a new version of this
             // script written for the new DB.
-            //db.beginTransaction();
             try {
                 db.execSQL(index);
-                //db.setTransactionSuccessful();
             } catch (Exception e) {
                 // Expected on multi-version upgrades.
                 Logger.logError(e, "Index creation failed (probably not a problem), definition was: " + index);
-            } //finally {
-            //db.endTransaction();
-            //}
+            }
         }
         db.execSQL("analyze");
     }
@@ -417,7 +370,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             curVersion++;
             UpgradeDatabase.recreateAndReloadTable(syncedDb, DB_TB_BOOKS, DATABASE_CREATE_BOOKS);
         }
+        // future/test update
+        if (curVersion < newVersion && curVersion == 82) {
+            curVersion++;
+            moveCoversToDedicatedDirectory(syncedDb);
 
+        }
 
         // Rebuild all indices
         createIndices(db);
@@ -425,5 +383,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         createTriggers(syncedDb);
 
         //TODO: NOTE: END OF UPDATE
+    }
+
+    /**
+     * For the upgrade to version 83, all cover files were moved to a sub directory.
+     *
+     * This routine renames all files, if they exist.
+     */
+    private static void moveCoversToDedicatedDirectory(@NonNull final DbSync.SynchronizedDb db) {
+        String sql = "select " + DOM_BOOK_UUID + " from " + DB_TB_BOOKS;
+
+        try (Cursor cur = db.rawQuery(sql)) {
+            while (cur.moveToNext()) {
+                final String uuid = cur.getString(0);
+                File file = StorageUtils.getFile(uuid + ".jpg");
+                if (!file.exists()) {
+                    file = StorageUtils.getFile(uuid + ".png");
+                    if (!file.exists()) {
+                        continue;
+                    }
+                }
+                File newFile = StorageUtils.getCoverFile(uuid);
+                StorageUtils.renameFile(file, newFile);
+            }
+        }
     }
 }

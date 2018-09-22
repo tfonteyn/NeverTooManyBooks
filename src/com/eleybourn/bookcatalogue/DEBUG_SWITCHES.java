@@ -23,6 +23,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean DB_ADAPTER = false;
 
     public static final boolean DB_SYNC = false;
+    public static final boolean DB_SYNC_QUERY_FOR_LONG = false;
 
     public static final boolean TRACKED_CURSER = false;
 

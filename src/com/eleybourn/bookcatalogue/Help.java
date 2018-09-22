@@ -106,12 +106,12 @@ public class Help extends BookCatalogueActivity {
 			cleanupBtn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					StorageUtils.cleanupFiles(true);
+					StorageUtils.purgeFiles(true);
 					setupCleanupButton();
 				}
 			});
 
-			final float space = StorageUtils.cleanupFiles(false);
+			final float space = StorageUtils.purgeFiles(false);
 			if (space == 0) {
 				cleanupBtn.setVisibility(View.GONE);
 				cleanupTxt.setVisibility(View.GONE);

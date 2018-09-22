@@ -25,6 +25,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
@@ -80,19 +81,42 @@ class UpgradeDatabase {
     //<editor-fold desc="CREATE TABLE definitions">
 
     // Renamed to the LAST version in which it was used
-    private static final String DATABASE_CREATE_BOOKS_81 =
-            "create table " + DB_TB_BOOKS +
-                    " (_id integer primary key autoincrement, " +
-                    /* KEY_AUTHOR + " integer not null REFERENCES " + DB_TB_AUTHORS + ", " + */
+    private static final String DATABASE_CREATE_BOOKS_82 =
+            "create table " + DB_TB_BOOKS + " (_id integer primary key autoincrement, " +
                     DOM_TITLE + " text not null, " +
                     DOM_ISBN + " text, " +
                     DOM_PUBLISHER + " text, " +
                     DOM_BOOK_DATE_PUBLISHED + " date, " +
                     DOM_BOOK_RATING + " float not null default 0, " +
                     DOM_BOOK_READ + " boolean not null default 0, " +
-                    /* KEY_SERIES + " text, " + */
                     DOM_BOOK_PAGES + " int, " +
-                    /* KEY_SERIES_NUM + " text, " + */
+                    DOM_NOTES + " text, " +
+                    DOM_BOOK_LIST_PRICE + " text, " +
+                    DOM_ANTHOLOGY_MASK + " int not null default " + TableInfo.ColumnInfo.ANTHOLOGY_NO + ", " +
+                    DOM_BOOK_LOCATION + " text, " +
+                    DOM_BOOK_READ_START + " date, " +
+                    DOM_BOOK_READ_END + " date, " +
+                    DOM_BOOK_FORMAT + " text, " +
+                    DOM_BOOK_SIGNED + " boolean not null default 0, " +
+                    DOM_DESCRIPTION + " text, " +
+                    DOM_BOOK_GENRE + " text, " +
+                    DOM_BOOK_LANGUAGE + " text default '', " + // Added in version 82
+                    DOM_BOOK_DATE_ADDED + " datetime default current_timestamp, " +
+                    DOM_GOODREADS_BOOK_ID + " int, " +
+                    DOM_GOODREADS_LAST_SYNC_DATE + " date default '0000-00-00', " +
+                    DOM_BOOK_UUID + " text not null default (lower(hex(randomblob(16)))), " +
+                    DOM_LAST_UPDATE_DATE + " date not null default current_timestamp " +
+                    ")";
+
+    private static final String DATABASE_CREATE_BOOKS_81 =
+            "create table " + DB_TB_BOOKS + " (_id integer primary key autoincrement, " +
+                    DOM_TITLE + " text not null, " +
+                    DOM_ISBN + " text, " +
+                    DOM_PUBLISHER + " text, " +
+                    DOM_BOOK_DATE_PUBLISHED + " date, " +
+                    DOM_BOOK_RATING + " float not null default 0, " +
+                    DOM_BOOK_READ + " boolean not null default 0, " +
+                    DOM_BOOK_PAGES + " int, " +
                     DOM_NOTES + " text, " +
                     DOM_BOOK_LIST_PRICE + " text, " +
                     DOM_ANTHOLOGY_MASK + " int not null default " + TableInfo.ColumnInfo.ANTHOLOGY_NO + ", " +
@@ -104,11 +128,66 @@ class UpgradeDatabase {
                     DOM_DESCRIPTION + " text, " +
                     DOM_BOOK_GENRE + " text, " +
                     DOM_BOOK_DATE_ADDED + " datetime default current_timestamp, " +
-                    DOM_GOODREADS_BOOK_ID.getDefinition(true) + ", " +
-                    DOM_GOODREADS_LAST_SYNC_DATE.getDefinition(true) + ", " +
-                    DOM_BOOK_UUID.getDefinition(true) + ", " +
-                    DOM_LAST_UPDATE_DATE.getDefinition(true) +
+                    DOM_GOODREADS_BOOK_ID + " int, " +
+                    DOM_GOODREADS_LAST_SYNC_DATE + " date default '0000-00-00', " +
+                    DOM_BOOK_UUID + " text not null default (lower(hex(randomblob(16)))), " +
+                    DOM_LAST_UPDATE_DATE + " date not null default current_timestamp " +
                     ")";
+
+    //private static final String DATABASE_CREATE_BOOKS_70 =
+    //		"create table " + DB_TB_BOOKS +
+    //		" (_id integer primary key autoincrement, " +
+    //		/* KEY_AUTHOR + " integer not null REFERENCES " + DB_TB_AUTHORS + ", " + */
+    //		KEY_TITLE + " text not null, " +
+    //		KEY_ISBN + " text, " +
+    //		KEY_PUBLISHER + " text, " +
+    //		KEY_BOOK_DATE_PUBLISHED + " date, " +
+    //		KEY_BOOK_RATING + " float not null default 0, " +
+    //		KEY_BOOK_READ + " boolean not null default 0, " +
+    //		/* KEY_SERIES + " text, " + */
+    //		KEY_BOOK_PAGES + " int, " +
+    //		/* KEY_SERIES_NUM + " text, " + */
+    //		KEY_NOTES + " text, " +
+    //		KEY_BOOK_LIST_PRICE + " text, " +
+    //		KEY_IS_ANTHOLOGY + " int not null default " + ANTHOLOGY_NO + ", " +
+    //		KEY_BOOK_LOCATION + " text, " +
+    //		KEY_BOOK_READ_START + " date, " +
+    //		KEY_BOOK_READ_END + " date, " +
+    //		KEY_BOOK_FORMAT + " text, " +
+    //		KEY_BOOK_SIGNED + " boolean not null default 0, " +
+    //		KEY_DESCRIPTION + " text, " +
+    //		KEY_BOOK_GENRE + " text, " +
+    //		KEY_BOOK_DATE_ADDED + " datetime default current_timestamp, " +
+    //		DOM_GOODREADS_BOOK_ID.getDefinition(true) + ", " +
+    //		DOM_BOOK_UUID.getDefinition(true) +
+    //		")";
+    //
+    //private static final String DATABASE_CREATE_BOOKS_69 =
+    //		"create table " + DB_TB_BOOKS +
+    //		" (_id integer primary key autoincrement, " +
+    //		/* KEY_AUTHOR + " integer not null REFERENCES " + DB_TB_AUTHORS + ", " + */
+    //		KEY_TITLE + " text not null, " +
+    //		KEY_ISBN + " text, " +
+    //		KEY_PUBLISHER + " text, " +
+    //		KEY_BOOK_DATE_PUBLISHED + " date, " +
+    //		KEY_BOOK_RATING + " float not null default 0, " +
+    //		KEY_BOOK_READ + " boolean not null default 0, " +
+    //		/* KEY_SERIES + " text, " + */
+    //		KEY_BOOK_PAGES + " int, " +
+    //		/* KEY_SERIES_NUM + " text, " + */
+    //		KEY_NOTES + " text, " +
+    //		KEY_BOOK_LIST_PRICE + " text, " +
+    //		KEY_IS_ANTHOLOGY + " int not null default " + ANTHOLOGY_NO + ", " +
+    //		KEY_BOOK_LOCATION + " text, " +
+    //		KEY_BOOK_READ_START + " date, " +
+    //		KEY_BOOK_READ_END + " date, " +
+    //		KEY_BOOK_FORMAT + " text, " +
+    //		KEY_BOOK_SIGNED + " boolean not null default 0, " +
+    //		KEY_DESCRIPTION + " text, " +
+    //		KEY_BOOK_GENRE + " text, " +
+    //		KEY_BOOK_DATE_ADDED + " datetime default current_timestamp, " +
+    //		DOM_GOODREADS_BOOK_ID.getDefinition(true) +
+    //		")";
 
     private static final String DATABASE_CREATE_BOOKS_68 =
             "create table " + DB_TB_BOOKS +
@@ -210,7 +289,10 @@ class UpgradeDatabase {
      * @param to        to table
      * @param toRemove	List of fields to be removed from the source table (ignored in copy)
      */
-    private static void copyTableSafely(DbSync.SynchronizedDb sdb, String from, String to, String... toRemove) {
+    private static void copyTableSafely(@NonNull final DbSync.SynchronizedDb sdb,
+                                        @NonNull final String from,
+                                        @NonNull final String to,
+                                        @NonNull final String... toRemove) {
         // Get the source info
         TableInfo src = new TableInfo(sdb, from);
         // Build the column list
@@ -238,7 +320,10 @@ class UpgradeDatabase {
         sdb.execSQL(sql);
     }
 
-    static void recreateAndReloadTable(DbSync.SynchronizedDb db, String tableName, String createStatement, String... toRemove) {
+    static void recreateAndReloadTable(@NonNull final DbSync.SynchronizedDb db,
+                                       @NonNull final String tableName,
+                                       @NonNull final String createStatement,
+                                       @NonNull final String... toRemove) {
         final String tempName = "recreate_tmp";
         db.execSQL("ALTER TABLE " + tableName + " RENAME TO " + tempName);
         db.execSQL(createStatement);
@@ -253,15 +338,15 @@ class UpgradeDatabase {
      *
      * This routine renames all files, if they exist.
      */
-    private static void renameIdFilesToHash(DbSync.SynchronizedDb db) {
+    private static void renameIdFilesToHash(@NonNull final DbSync.SynchronizedDb db) {
         String sql = "select " + DOM_ID + ", " + DOM_BOOK_UUID + " from " + DB_TB_BOOKS + " Order by " + DOM_ID;
         try (Cursor c = db.rawQuery(sql)) {
             while (c.moveToNext()) {
                 final long id = c.getLong(0);
                 final String hash = c.getString(1);
-                File f = StorageUtils.getThumbnailByName(Long.toString(id),"");
+                File f = StorageUtils.getCoverFile(Long.toString(id));
                 if ( f.exists() ) {
-                    File newFile = StorageUtils.getThumbnailByUuid(hash);
+                    File newFile = StorageUtils.getCoverFile(hash);
                     //noinspection ResultOfMethodCallIgnored
                     f.renameTo(newFile);
                 }
@@ -269,7 +354,9 @@ class UpgradeDatabase {
         }
     }
 
-    public static int doUpgrade(@NonNull final SQLiteDatabase db, @NonNull final DbSync.SynchronizedDb syncedDb, final int oldVersion) {
+    public static int doUpgrade(@NonNull final SQLiteDatabase db,
+                                @NonNull final DbSync.SynchronizedDb syncedDb,
+                                final int oldVersion) {
         int curVersion = oldVersion;
 
         if (curVersion == 11) {

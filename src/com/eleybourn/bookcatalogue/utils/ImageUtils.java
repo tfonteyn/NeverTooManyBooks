@@ -191,7 +191,7 @@ public class ImageUtils {
                                                      final boolean checkCache, final boolean allowBackground) {
 
         //* Get the original file so we can use the modification date, path etc */
-        final File coverFile = StorageUtils.getThumbnailByUuid(coverUUID);
+        final File coverFile = StorageUtils.getCoverFile(coverUUID);
 
         boolean cacheWasChecked = false;
 
@@ -254,9 +254,9 @@ public class ImageUtils {
         }
 
         // Get the output file
-        final File file = StorageUtils.getTempThumbnail(filenameSuffix);
+        final File file = StorageUtils.getTempCoverFile(filenameSuffix);
         // Save to file
-        Utils.saveInputToFile(in, file);
+        StorageUtils.saveInputStreamToFile(in, file);
         // Return new file path
         return file.getAbsolutePath();
     }
@@ -333,7 +333,7 @@ public class ImageUtils {
         // Get the best file (if present) and rename it.
         if (bestFile >= 0) {
             //noinspection ResultOfMethodCallIgnored
-            new File(files.get(bestFile)).renameTo(StorageUtils.getTempThumbnail());
+            new File(files.get(bestFile)).renameTo(StorageUtils.getTempCoverFile());
         }
         // Finally, cleanup the data
         result.remove(UniqueId.BKEY_THUMBNAIL_USCORE);
@@ -372,14 +372,14 @@ public class ImageUtils {
             }
 
             // Save the output to a byte output stream
-            final ByteArrayOutputStream f = new ByteArrayOutputStream();
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
             byte[] buffer = new byte[65536];
             int len;
             while ((len = in.read(buffer)) >= 0) {
-                f.write(buffer, 0, len);
+                out.write(buffer, 0, len);
             }
-            f.close();
-            return f.toByteArray();
+            out.close();
+            return out.toByteArray();
 
         } catch (IOException e) {
             Logger.logError(e);
@@ -472,7 +472,7 @@ public class ImageUtils {
 //    public static Bitmap fetchThumbnailIntoImageView(@Nullable final ImageView destView, @NonNull final String uuid,
 //                                                     final int maxWidth, final int maxHeight, final boolean exact) {
 //        try {
-//            return fetchFileIntoImageView(destView, StorageUtils.getThumbnailByUuid(uuid), maxWidth, maxHeight, exact);
+//            return fetchFileIntoImageView(destView, StorageUtils.getCoverFile(uuid), maxWidth, maxHeight, exact);
 //        } catch (IllegalArgumentException e) {
 //            Logger.logError(e);
 //            return null;

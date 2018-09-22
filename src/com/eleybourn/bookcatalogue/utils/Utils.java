@@ -80,49 +80,6 @@ public class Utils {
     //public static final boolean USE_LT = true;
     //public static final boolean USE_BARCODE = false;
 
-    /**
-     * Given a InputStream, save it to a file.
-     *
-     * @param in  InputStream to read
-     * @param out File to save
-     *
-     * @return true if successful
-     */
-    static public boolean saveInputToFile(@NonNull final InputStream in, @NonNull final File out) {
-        File temp = null;
-        boolean isOk = false;
-
-        try {
-            // Get a temp file to avoid overwriting output unless copy works
-            temp = File.createTempFile("temp_", null, StorageUtils.getSharedStorage());
-            FileOutputStream f = new FileOutputStream(temp);
-
-            // Copy from input to temp file
-            byte[] buffer = new byte[65536];
-            int len1;
-            while ((len1 = in.read(buffer)) >= 0) {
-                f.write(buffer, 0, len1);
-            }
-            f.close();
-            // All OK, so rename to real output file
-            //noinspection ResultOfMethodCallIgnored
-            temp.renameTo(out);
-            isOk = true;
-        } catch (IOException e) {
-            Logger.logError(e);
-        } finally {
-            // Delete temp file if it still exists
-            if (temp != null && temp.exists()) {
-                try {
-                    //noinspection ResultOfMethodCallIgnored
-                    temp.delete();
-                } catch (Exception ignored) {
-                }
-            }
-        }
-        return isOk;
-    }
-
     private static final Object lock = new Object();
     /**
      * Utility routine to get the data from a URL. Makes sure timeout is set to avoid application

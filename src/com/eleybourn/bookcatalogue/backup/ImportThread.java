@@ -58,7 +58,9 @@ public class ImportThread extends ManagedTask {
         //mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         //mDb.open();
 
-        mCoverFinder = new LocalCoverFinder(file.getParent(),
+        mCoverFinder = new LocalCoverFinder(
+                file.getParent(),
+                /* TOMF StorageUtils.getSharedStorage() or StorageUtils.getCoverStorage() */
                 StorageUtils.getSharedStorage().getAbsolutePath());
 
         //getMessageSwitch().addListener(getSenderId(), taskHandler, false);
@@ -476,13 +478,13 @@ public class ImportThread extends ManagedTask {
 //	private File getNewCoverFile(File orig, String newUuid) {
 //		File newFile;
 //		// Check for ANY current image; delete empty ones and retry
-//		newFile = CatalogueDBAdapter.getThumbnailByUuid(newUuid);
+//		newFile = CatalogueDBAdapter.getCoverFile(newUuid);
 //		while (newFile.exists()) {
 //			if (newFile.length() > 0)
 //				return newFile;
 //			else
 //				newFile.delete();
-//			newFile = CatalogueDBAdapter.getThumbnailByUuid(newUuid);
+//			newFile = CatalogueDBAdapter.getCoverFile(newUuid);
 //		}
 //		
 //		// Get the new path based on the input file type.

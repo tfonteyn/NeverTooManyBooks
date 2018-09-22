@@ -335,8 +335,8 @@ class ImportAllTask extends GenericTask {
         //FIXME: ignoring failure
         if (book.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
             String uuid = db.getBookUuid(id);
-            File thumb = StorageUtils.getTempThumbnail();
-            File real = StorageUtils.getThumbnailByUuid(uuid);
+            File thumb = StorageUtils.getTempCoverFile();
+            File real = StorageUtils.getCoverFile(uuid);
             //noinspection ResultOfMethodCallIgnored
             thumb.renameTo(real);
         }

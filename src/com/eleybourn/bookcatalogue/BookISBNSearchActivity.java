@@ -667,7 +667,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     private void doSearchBook() {
         /* Delete any hanging around temporary thumbs */
         try {
-            File thumb = StorageUtils.getTempThumbnail();
+            File thumb = StorageUtils.getTempCoverFile();
             //noinspection ResultOfMethodCallIgnored
             thumb.delete();
         } catch (Exception ignore) {

@@ -28,8 +28,8 @@ import com.eleybourn.bookcatalogue.BooksRow;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
@@ -156,143 +156,149 @@ public class CsvExporter implements Exporter {
         final BooksCursor bookCursor = db.exportBooks(since);
         final BooksRow rv = bookCursor.getRowView();
 
+        BufferedWriter out = null;
         try {
             final int totalBooks = bookCursor.getCount();
 
-            if (!listener.isCancelled()) {
+            if (listener.isCancelled()) {
+                return false;
+            }
 
-                listener.setMax(totalBooks);
+            listener.setMax(totalBooks);
 
-                /* write to the SDCard */
-                final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream, UTF8), BUFFER_SIZE);
-                out.write(export.toString());
-                if (bookCursor.moveToFirst()) {
-                    do {
-                        num++;
-                        long id = bookCursor.getLong(bookCursor.getColumnIndexOrThrow(DOM_ID.name));
-                        // Just get the string from the database and save it. It should be in standard SQL form already.
-                        String dateString = "";
-                        try {
-                            dateString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_DATE_PUBLISHED.name));
-                        } catch (Exception e) {
-                            //do nothing
-                        }
-                        // Just get the string from the database and save it. It should be in standard SQL form already.
-                        String dateReadStartString = "";
-                        try {
-                            dateReadStartString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_READ_START.name));
-                        } catch (Exception e) {
-                            Logger.logError(e);
-                            //do nothing
-                        }
-                        // Just get the string from the database and save it. It should be in standard SQL form already.
-                        String dateReadEndString = "";
-                        try {
-                            dateReadEndString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_READ_END.name));
-                        } catch (Exception e) {
-                            Logger.logError(e);
-                            //do nothing
-                        }
-                        // Just get the string from the database and save it. It should be in standard SQL form already.
-                        String dateAddedString = "";
-                        try {
-                            dateAddedString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_DATE_ADDED.name));
-                        } catch (Exception e) {
-                            //do nothing
-                        }
+            out = new BufferedWriter(new OutputStreamWriter(outputStream, UTF8), BUFFER_SIZE);
+            out.write(export.toString());
+            if (!bookCursor.moveToFirst()) {
+                return false;
+            }
 
-                        int anthology = bookCursor.getInt(bookCursor.getColumnIndexOrThrow(DOM_ANTHOLOGY_MASK.name));
-                        StringBuilder anthology_titles = new StringBuilder();
-                        if (anthology != 0) {
-                            try (Cursor titles = db.fetchAnthologyTitlesByBookId(id)) {
-                                if (titles.moveToFirst()) {
-                                    do {
-                                        anthology_titles
-                                                .append(titles.getString(titles.getColumnIndexOrThrow(DOM_TITLE.name)))
-                                                .append(" " + AnthologyTitle.TITLE_AUTHOR_DELIM + " ")
-                                                .append(titles.getString(titles.getColumnIndexOrThrow(DOM_AUTHOR_NAME.name)))
-                                                .append(ArrayUtils.MULTI_STRING_SEPARATOR);
-                                    } while (titles.moveToNext());
-                                }
-                            }
-                        }
-                        String title = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_TITLE.name));
-                        // Sanity check: ensure title is non-blank. This has not happened yet, but we
-                        // know if does for author, so completeness suggests making sure all 'required'
-                        // fields are non-blank.
-                        if (title == null || title.trim().isEmpty())
-                            title = UNKNOWN;
+            do {
+                num++;
+                long id = bookCursor.getLong(bookCursor.getColumnIndexOrThrow(DOM_ID.name));
 
-                        //Display the selected bookshelves
-                        StringBuilder bookshelves_id_text = new StringBuilder();
-                        StringBuilder bookshelves_name_text = new StringBuilder();
-                        try (Cursor bookshelves = db.fetchAllBookshelvesByBook(id)) {
-                            while (bookshelves.moveToNext()) {
-                                bookshelves_id_text
-                                        .append(bookshelves.getString(bookshelves.getColumnIndex(DOM_ID.name)))
-                                        .append(Bookshelf.SEPARATOR);
-                                bookshelves_name_text
-                                        .append(ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, bookshelves.getString(bookshelves.getColumnIndex(DOM_BOOKSHELF_ID.name))))
-                                        .append(Bookshelf.SEPARATOR);
-                            }
-                        }
-
-                        String authorDetails = ArrayUtils.getAuthorUtils().encodeList('|', db.getBookAuthorList(id));
-                        // Sanity check: ensure author is non-blank. This HAPPENS. Probably due to constraint failures.
-                        if (authorDetails.trim().isEmpty())
-                            authorDetails = AUTHOR + ", " + UNKNOWN;
-
-                        String seriesDetails = ArrayUtils.getSeriesUtils().encodeList('|', db.getBookSeriesList(id));
-
-                        row.setLength(0);
-                        row.append("\"").append(formatCell(id)).append("\",");
-                        row.append("\"").append(formatCell(authorDetails)).append("\",");
-                        row.append("\"").append(formatCell(title)).append("\",");
-                        row.append("\"").append(formatCell(rv.getIsbn())).append("\",");
-                        row.append("\"").append(formatCell(rv.getPublisher())).append("\",");
-                        row.append("\"").append(formatCell(dateString)).append("\",");
-                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_RATING.name)))).append("\",");
-                        row.append("\"").append(formatCell(bookshelves_id_text)).append("\",");
-                        row.append("\"").append(formatCell(bookshelves_name_text)).append("\",");
-                        row.append("\"").append(formatCell(rv.getRead())).append("\",");
-                        row.append("\"").append(formatCell(seriesDetails)).append("\",");
-                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_PAGES.name)))).append("\",");
-                        row.append("\"").append(formatCell(rv.getNotes())).append("\",");
-                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_LIST_PRICE.name)))).append("\",");
-                        row.append("\"").append(formatCell(anthology)).append("\",");
-                        row.append("\"").append(formatCell(rv.getLocation())).append("\",");
-                        row.append("\"").append(formatCell(dateReadStartString)).append("\",");
-                        row.append("\"").append(formatCell(dateReadEndString)).append("\",");
-                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_FORMAT.name)))).append("\",");
-                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_SIGNED.name)))).append("\",");
-                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_LOANED_TO.name)) + "")).append("\",");
-                        row.append("\"").append(formatCell(anthology_titles.toString())).append("\",");
-                        row.append("\"").append(formatCell(rv.getDescription())).append("\",");
-                        row.append("\"").append(formatCell(rv.getGenre())).append("\",");
-                        row.append("\"").append(formatCell(rv.getLanguage())).append("\",");
-                        row.append("\"").append(formatCell(dateAddedString)).append("\",");
-                        row.append("\"").append(formatCell(rv.getGoodreadsBookId())).append("\",");
-                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_GOODREADS_LAST_SYNC_DATE.name)))).append("\",");
-                        row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_LAST_UPDATE_DATE.name)))).append("\",");
-                        row.append("\"").append(formatCell(rv.getBookUuid())).append("\",");
-                        row.append("\n");
-                        out.write(row.toString());
-
-                        long now = System.currentTimeMillis();
-                        if ((now - lastUpdate) > 200) {
-                            if (displayingStartupMessage) {
-                                listener.onProgress("", 0);
-                                displayingStartupMessage = false;
-                            }
-                            listener.onProgress(title, num);
-                            lastUpdate = now;
-                        }
-                    }
-                    while (bookCursor.moveToNext() && !listener.isCancelled());
+                // Just get the string from the database and save it. It should be in standard SQL form already.
+                String dateString = "";
+                try {
+                    dateString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_DATE_PUBLISHED.name));
+                } catch (Exception e) {
+                    //do nothing
+                }
+                // Just get the string from the database and save it. It should be in standard SQL form already.
+                String dateReadStartString = "";
+                try {
+                    dateReadStartString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_READ_START.name));
+                } catch (Exception e) {
+                    Logger.logError(e);
+                    //do nothing
+                }
+                // Just get the string from the database and save it. It should be in standard SQL form already.
+                String dateReadEndString = "";
+                try {
+                    dateReadEndString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_READ_END.name));
+                } catch (Exception e) {
+                    Logger.logError(e);
+                    //do nothing
+                }
+                // Just get the string from the database and save it. It should be in standard SQL form already.
+                String dateAddedString = "";
+                try {
+                    dateAddedString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_DATE_ADDED.name));
+                } catch (Exception e) {
+                    //do nothing
                 }
 
-                out.close();
+                int anthology = bookCursor.getInt(bookCursor.getColumnIndexOrThrow(DOM_ANTHOLOGY_MASK.name));
+                StringBuilder anthology_titles = new StringBuilder();
+                if (anthology != 0) {
+                    //TODO : refactor this into ArrayUtils
+                    try (Cursor titles = db.fetchAnthologyTitlesByBookId(id)) {
+                        if (titles.moveToFirst()) {
+                            do {
+                                anthology_titles
+                                        .append(titles.getString(titles.getColumnIndexOrThrow(DOM_TITLE.name)))
+                                        .append(" " + AnthologyTitle.TITLE_AUTHOR_DELIM + " ")
+                                        .append(titles.getString(titles.getColumnIndexOrThrow(DOM_AUTHOR_NAME.name)))
+                                        .append(ArrayUtils.MULTI_STRING_SEPARATOR);
+                            } while (titles.moveToNext());
+                        }
+                    }
+                }
+
+                String title = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_TITLE.name));
+                // Sanity check: ensure title is non-blank. This has not happened yet, but we
+                // know if does for author, so completeness suggests making sure all 'required'
+                // fields are non-blank.
+                if (title == null || title.trim().isEmpty()) {
+                    title = UNKNOWN;
+                }
+
+                //Display the selected bookshelves
+                StringBuilder bookshelves_id_text = new StringBuilder();
+                StringBuilder bookshelves_name_text = new StringBuilder();
+                try (Cursor bookshelves = db.fetchAllBookshelvesByBook(id)) {
+                    while (bookshelves.moveToNext()) {
+                        bookshelves_id_text
+                                .append(bookshelves.getString(bookshelves.getColumnIndex(DOM_ID.name)))
+                                .append(Bookshelf.SEPARATOR);
+                        bookshelves_name_text
+                                .append(ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, bookshelves.getString(bookshelves.getColumnIndex(DOM_BOOKSHELF_ID.name))))
+                                .append(Bookshelf.SEPARATOR);
+                    }
+                }
+
+                String authorDetails = ArrayUtils.getAuthorUtils().encodeList(ArrayUtils.MULTI_STRING_SEPARATOR, db.getBookAuthorList(id));
+                // Sanity check: ensure author is non-blank. This HAPPENS. Probably due to constraint failures.
+                if (authorDetails.trim().isEmpty()) {
+                    authorDetails = AUTHOR + ", " + UNKNOWN;
+                }
+
+                String seriesDetails = ArrayUtils.getSeriesUtils().encodeList(ArrayUtils.MULTI_STRING_SEPARATOR, db.getBookSeriesList(id));
+
+                row.setLength(0);
+                row.append("\"").append(formatCell(id)).append("\",");
+                row.append("\"").append(formatCell(authorDetails)).append("\",");
+                row.append("\"").append(formatCell(title)).append("\",");
+                row.append("\"").append(formatCell(rv.getIsbn())).append("\",");
+                row.append("\"").append(formatCell(rv.getPublisher())).append("\",");
+                row.append("\"").append(formatCell(dateString)).append("\",");
+                row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_RATING.name)))).append("\",");
+                row.append("\"").append(formatCell(bookshelves_id_text)).append("\",");
+                row.append("\"").append(formatCell(bookshelves_name_text)).append("\",");
+                row.append("\"").append(formatCell(rv.getRead())).append("\",");
+                row.append("\"").append(formatCell(seriesDetails)).append("\",");
+                row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_PAGES.name)))).append("\",");
+                row.append("\"").append(formatCell(rv.getNotes())).append("\",");
+                row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_LIST_PRICE.name)))).append("\",");
+                row.append("\"").append(formatCell(anthology)).append("\",");
+                row.append("\"").append(formatCell(rv.getLocation())).append("\",");
+                row.append("\"").append(formatCell(dateReadStartString)).append("\",");
+                row.append("\"").append(formatCell(dateReadEndString)).append("\",");
+                row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_FORMAT.name)))).append("\",");
+                row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_SIGNED.name)))).append("\",");
+                row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_LOANED_TO.name)) + "")).append("\",");
+                row.append("\"").append(formatCell(anthology_titles.toString())).append("\",");
+                row.append("\"").append(formatCell(rv.getDescription())).append("\",");
+                row.append("\"").append(formatCell(rv.getGenre())).append("\",");
+                row.append("\"").append(formatCell(rv.getLanguage())).append("\",");
+                row.append("\"").append(formatCell(dateAddedString)).append("\",");
+                row.append("\"").append(formatCell(rv.getGoodreadsBookId())).append("\",");
+                row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_GOODREADS_LAST_SYNC_DATE.name)))).append("\",");
+                row.append("\"").append(formatCell(bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_LAST_UPDATE_DATE.name)))).append("\",");
+                row.append("\"").append(formatCell(rv.getBookUuid())).append("\",");
+                row.append("\n");
+                out.write(row.toString());
+
+                long now = System.currentTimeMillis();
+                if ((now - lastUpdate) > 200) {
+                    if (displayingStartupMessage) {
+                        listener.onProgress("", 0);
+                        displayingStartupMessage = false;
+                    }
+                    listener.onProgress(title, num);
+                    lastUpdate = now;
+                }
             }
+            while (bookCursor.moveToNext() && !listener.isCancelled());
 
         } finally {
             if (BuildConfig.DEBUG) {
@@ -301,6 +307,12 @@ public class CsvExporter implements Exporter {
             if (displayingStartupMessage) {
                 try {
                     listener.onProgress("", 0);
+                } catch (Exception ignored) {
+                }
+            }
+            if (out != null) {
+                try {
+                    out.close();
                 } catch (Exception ignored) {
                 }
             }

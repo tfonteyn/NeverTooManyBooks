@@ -687,10 +687,9 @@ public class EditBookActivity extends BookCatalogueActivity implements EditBookA
 
             if (id > 0) {
                 setRowId(id);
-                File thumb = StorageUtils.getTempThumbnail();
-                File real = StorageUtils.getThumbnailByUuid(mDb.getBookUuid(mRowId));
-                //noinspection ResultOfMethodCallIgnored
-                thumb.renameTo(real);
+                File thumb = StorageUtils.getTempCoverFile();
+                File real = StorageUtils.getCoverFile(mDb.getBookUuid(mRowId));
+                StorageUtils.renameFile(thumb, real);
             }
         } else {
             mDb.updateBook(mRowId, mBookData, 0);

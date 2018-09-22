@@ -7,8 +7,8 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,8 +21,8 @@ import java.io.IOException;
  */
 public class ExportThread extends ManagedTask {
 
-    private static final String EXPORT_FILE_NAME = "export.csv";
-    private static final String EXPORT_TEMP_FILE_NAME = "export.tmp";
+    /** backup copies to keep */
+    private static final int COPIES = 5;
 
     private final Exporter.ExportListener mOnExportListener = new Exporter.ExportListener() {
         @Override
@@ -60,7 +60,7 @@ public class ExportThread extends ManagedTask {
             return;
         }
         try {
-            final FileOutputStream out = new FileOutputStream(StorageUtils.getFile(EXPORT_TEMP_FILE_NAME));
+            final FileOutputStream out = new FileOutputStream(StorageUtils.getTempExportFile());
             new CsvExporter().export(out, mOnExportListener, Exporter.EXPORT_ALL, null);
 
             if (out.getChannel().isOpen()) {
@@ -102,33 +102,22 @@ public class ExportThread extends ManagedTask {
      * Backup the current file
      */
     private void renameFiles() {
-        final File temp = StorageUtils.getFile(EXPORT_TEMP_FILE_NAME);
+        final File temp = StorageUtils.getTempExportFile();
         if (isCancelled()) {
-            if (temp.exists())
-                //noinspection ResultOfMethodCallIgnored
-                temp.delete();
+            StorageUtils.deleteFile(temp);
         } else {
             String fmt = "export.%s.csv";
-            File fLast = StorageUtils.getFile(String.format(fmt, 5));
-            if (fLast.exists())
-                // noinspection ResultOfMethodCallIgnored
-                fLast.delete();
-            for (int i = 4; i > 0; i--) {
+            File fLast = StorageUtils.getFile(String.format(fmt, COPIES));
+             StorageUtils.deleteFile(fLast);
+
+            for (int i = COPIES - 1; i > 0; i--) {
                 final File fCurr = StorageUtils.getFile(String.format(fmt, i));
-                if (fCurr.exists())
-                    //noinspection ResultOfMethodCallIgnored
-                    fCurr.renameTo(fLast);
+                StorageUtils.renameFile(fCurr, fLast);
                 fLast = fCurr;
             }
-            final File export = StorageUtils.getFile(EXPORT_FILE_NAME);
-            if (export.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                export.renameTo(fLast);
-            }
-            if (temp.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                temp.renameTo(export);
-            }
+            final File export = StorageUtils.getExportFile();
+            StorageUtils.renameFile(export, fLast);
+            StorageUtils.renameFile(temp, export);
         }
     }
 

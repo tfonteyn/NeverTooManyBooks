@@ -83,7 +83,6 @@ public class EditAuthorDialog {
 	}
 	
 	private void confirmEdit(@NonNull final Author from, @NonNull final Author to) {
-
 		if (to.equals(from)) {
 			return;
 		}

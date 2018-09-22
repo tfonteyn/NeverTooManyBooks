@@ -56,7 +56,8 @@ public abstract class BackupReaderAbstract implements BackupReader {
      * Do a full restore, sending progress to the listener
      */
     @Override
-    public void restore(@NonNull final BackupReaderListener listener, final int importFlags) throws IOException {
+    public void restore(@NonNull final BackupReaderListener listener,
+                        final int importFlags) throws IOException {
         // Just a stat for progress
         int coverCount = 0;
 
@@ -108,7 +109,9 @@ public abstract class BackupReaderAbstract implements BackupReader {
     /**
      * Restore the books from the export file.
      */
-    private void restoreBooks(@NonNull final BackupReaderListener listener, @NonNull final ReaderEntity entity, final int importFlags) throws IOException {
+    private void restoreBooks(@NonNull final BackupReaderListener listener,
+                              @NonNull final ReaderEntity entity,
+                              final int importFlags) throws IOException {
         // Make a listener for the 'export' function that just passes on the progress to out listener
         Importer.OnImporterListener importListener = new Importer.OnImporterListener() {
             private int mLastPos = 0;
@@ -140,27 +143,32 @@ public abstract class BackupReaderAbstract implements BackupReader {
     /**
      * Restore a cover file.
      */
-    private void restoreCover(@NonNull final BackupReaderListener listener, @NonNull final ReaderEntity cover, final int flags) throws IOException {
+    private void restoreCover(@NonNull final BackupReaderListener listener,
+                              @NonNull final ReaderEntity cover,
+                              final int flags) throws IOException {
         listener.step("Processing Covers...", 1);
-        final File curr = StorageUtils.getFile(cover.getName());
+
+        final File currentCover = StorageUtils.getCoverFile(cover.getName());
         final Date covDate = cover.getDateModified();
         if ((flags & Importer.IMPORT_NEW_OR_UPDATED) != 0) {
-            if (curr.exists()) {
-                Date currFileDate = new Date(curr.lastModified());
+            if (currentCover.exists()) {
+                Date currFileDate = new Date(currentCover.lastModified());
                 if (currFileDate.compareTo(covDate) >= 0) {
                     return;
                 }
             }
         }
-        cover.saveToDirectory(StorageUtils.getSharedStorage());
+        // save (and overwrite)
+        cover.saveToDirectory(StorageUtils.getCoverStorage());
         //noinspection ResultOfMethodCallIgnored
-        curr.setLastModified(covDate.getTime());
+        currentCover.setLastModified(covDate.getTime());
     }
 
     /**
      * Restore the app preferences
      */
-    private void restorePreferences(@NonNull final BackupReaderListener listener, @NonNull final ReaderEntity entity) throws IOException {
+    private void restorePreferences(@NonNull final BackupReaderListener listener,
+                                    @NonNull final ReaderEntity entity) throws IOException {
         listener.step("Preferences...", 1);
         SharedPreferences prefs = BookCatalogueApp.getSharedPreferences();
         entity.getPreferences(prefs);
@@ -169,7 +177,8 @@ public abstract class BackupReaderAbstract implements BackupReader {
     /**
      * Restore a booklist style
      */
-    private void restoreStyle(@NonNull final BackupReaderListener listener, @NonNull final ReaderEntity entity) throws IOException {
+    private void restoreStyle(@NonNull final BackupReaderListener listener,
+                              @NonNull final ReaderEntity entity) throws IOException {
         listener.step("Booklist Styles...", 1);
         BooklistStyle s = null;
         try {

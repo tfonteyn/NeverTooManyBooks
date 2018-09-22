@@ -170,7 +170,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
                                 // - If it's a thumbnail, then see if it's missing or empty.
                                 switch (usage.fieldName) {
                                     case UniqueId.BKEY_THUMBNAIL:
-                                        File file = StorageUtils.getThumbnailByUuid(mCurrUuid);
+                                        File file = StorageUtils.getCoverFile(mCurrUuid);
                                         if (!file.exists() || file.length() == 0)
                                             mCurrFieldUsages.put(usage);
                                         break;
@@ -209,7 +209,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
                     // delete any temporary thumbnails //
                     try {
                         //noinspection ResultOfMethodCallIgnored
-                        StorageUtils.getTempThumbnail().delete();
+                        StorageUtils.getTempCoverFile().delete();
                     } catch (Exception e) {
                         // do nothing - this is the expected behaviour
                     }
@@ -318,16 +318,16 @@ public class UpdateThumbnailsThread extends ManagedTask {
             if (newData.containsKey(usage.fieldName)) {
                 // Handle thumbnail specially
                 if (usage.fieldName.equals(UniqueId.BKEY_THUMBNAIL)) {
-                    File downloadedFile = StorageUtils.getTempThumbnail();
+                    File downloadedFile = StorageUtils.getTempCoverFile();
                     boolean copyThumb = false;
                     if (usage.usage == FieldUsages.Usages.COPY_IF_BLANK) {
-                        File file = StorageUtils.getThumbnailByUuid(bookUuid);
+                        File file = StorageUtils.getCoverFile(bookUuid);
                         copyThumb = (!file.exists() || file.length() == 0);
                     } else if (usage.usage == FieldUsages.Usages.OVERWRITE) {
                         copyThumb = true;
                     }
                     if (copyThumb) {
-                        File file = StorageUtils.getThumbnailByUuid(bookUuid);
+                        File file = StorageUtils.getCoverFile(bookUuid);
                         //noinspection ResultOfMethodCallIgnored
                         downloadedFile.renameTo(file);
                     } else {

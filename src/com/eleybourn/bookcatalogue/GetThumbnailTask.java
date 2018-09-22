@@ -187,7 +187,7 @@ public class GetThumbnailTask implements SimpleTask {
             return;
         }
 
-        File originalFile = StorageUtils.getThumbnailByUuid(mBookHash);
+        File originalFile = StorageUtils.getCoverFile(mBookHash);
 
         if (!mCacheWasChecked) {
             try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(mContext)) {

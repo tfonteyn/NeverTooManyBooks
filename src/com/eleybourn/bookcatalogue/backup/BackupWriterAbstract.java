@@ -287,7 +287,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
         try (Cursor c = mDb.getBookUuidList()) {
             final int uuidCol = c.getColumnIndex(DatabaseDefinitions.DOM_BOOK_UUID.toString());
             while (c.moveToNext() && !listener.isCancelled()) {
-                File cover = StorageUtils.getThumbnailByUuid(c.getString(uuidCol));
+                File cover = StorageUtils.getCoverFile(c.getString(uuidCol));
                 if (cover.exists()) {
                     if (cover.exists()
                             && (since == null || sinceTime < cover.lastModified())) {

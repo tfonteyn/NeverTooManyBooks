@@ -145,7 +145,7 @@ public class BookUtils {
             series = cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_SERIES_FORMATTED.name));
         }
 
-        File image = StorageUtils.getThumbnailByUuid(db.getBookUuid(rowId));
+        File image = StorageUtils.getCoverFile(db.getBookUuid(rowId));
 
         if (!series.isEmpty()) {
             series = " (" + series.replace("#", "%23") + ")";

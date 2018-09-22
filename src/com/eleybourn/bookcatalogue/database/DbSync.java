@@ -34,7 +34,9 @@ import android.database.sqlite.SQLiteQuery;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.eleybourn.bookcatalogue.BookDetailsFragment;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.LockTypes;
@@ -48,6 +50,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static com.eleybourn.bookcatalogue.DEBUG_SWITCHES.DB_SYNC_QUERY_FOR_LONG;
 
 /**
  * Classes used to help synchronize database access across threads.
@@ -778,6 +782,9 @@ public class DbSync {
          */
         public void bindString(final int index, final String value) {
             if (value == null) {
+                if (BuildConfig.DEBUG) {
+                    Logger.printStackTrace("binding NULL");
+                }
                 mStatement.bindNull(index);
             } else {
                 mStatement.bindString(index, value);
@@ -832,7 +839,7 @@ public class DbSync {
             SyncLock l = mSync.getSharedLock();
             try {
                 long result =  mStatement.simpleQueryForLong();
-                if (BuildConfig.DEBUG && result <= 0 ) {
+                if (DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG && result <= 0 ) {
                     Logger.printStackTrace("simpleQueryForLong got: " + result);
                 }
                 return result;
@@ -854,7 +861,7 @@ public class DbSync {
             SyncLock l = mSync.getSharedLock();
             try {
                 long result =  mStatement.simpleQueryForLong();
-                if (BuildConfig.DEBUG && result <= 0 ) {
+                if (DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG && result <= 0 ) {
                     Logger.printStackTrace("simpleQueryForLongOrZero got: " + result);
                 }
                 return result;
@@ -878,7 +885,7 @@ public class DbSync {
          * @throws android.database.sqlite.SQLiteDoneException if the query returns zero rows
          */
         public long count() throws SQLiteDoneException {
-            if (BuildConfig.DEBUG) {
+            if (DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG) {
                 if (!mSql.toLowerCase().startsWith("select count(")) {
                     Logger.printStackTrace("count statement not a count?");
                 }

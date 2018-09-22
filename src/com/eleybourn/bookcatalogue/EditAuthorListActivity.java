@@ -213,33 +213,33 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
 
     @Override
     protected boolean onSave(@NonNull final Intent intent) {
-        final AutoCompleteTextView t = EditAuthorListActivity.this.findViewById(R.id.author);
+        final AutoCompleteTextView textView = findViewById(R.id.author);
         Resources res = this.getResources();
-        String s = t.getText().toString().trim();
-        if (!s.isEmpty()) {
-            final AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setMessage(res.getText(R.string.unsaved_edits))
-                    .setTitle(res.getText(R.string.unsaved_edits_title))
-                    .setIcon(android.R.drawable.ic_menu_info_details)
-                    .create();
-
-            dialog.setButton(DialogInterface.BUTTON_POSITIVE, res.getText(R.string.yes), new DialogInterface.OnClickListener() {
-                public void onClick(final DialogInterface dialog, final int which) {
-                    t.setText("");
-                    findViewById(R.id.confirm).performClick();
-                }
-            });
-
-            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, res.getText(R.string.no), new DialogInterface.OnClickListener() {
-                public void onClick(final DialogInterface dialog, final int which) {
-                    //do nothing
-                }
-            });
-
-            dialog.show();
-            return false;
-        } else {
+        String str = textView.getText().toString().trim();
+        if (str.isEmpty()) {
             return true;
         }
+
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setMessage(res.getText(R.string.unsaved_edits))
+                .setTitle(res.getText(R.string.unsaved_edits_title))
+                .setIcon(android.R.drawable.ic_menu_info_details)
+                .create();
+
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, res.getText(R.string.yes), new DialogInterface.OnClickListener() {
+            public void onClick(final DialogInterface dialog, final int which) {
+                textView.setText("");
+                findViewById(R.id.confirm).performClick();
+            }
+        });
+
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, res.getText(R.string.no), new DialogInterface.OnClickListener() {
+            public void onClick(final DialogInterface dialog, final int which) {
+                //do nothing
+            }
+        });
+
+        dialog.show();
+        return false;
     }
 }

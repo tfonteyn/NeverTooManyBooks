@@ -40,6 +40,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
@@ -900,6 +901,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     ed.putString(PREF_LIST_STYLE_FOR_BOOKSHELF + mCurrentBookshelf, mCurrentStyle.getCanonicalName());
                     ed.commit();
 
+                    // apply
                     setupBookList(true);
                 }
             }
@@ -1072,12 +1074,11 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     /**
      * Add a radio box to the sort options dialogue.
      */
-    private void makeRadio(@NonNull final AlertDialog sortDialog,
+    private void makeRadio(@NonNull final AlertDialog dialog,
                            @NonNull final LayoutInflater inf,
                            @NonNull final RadioGroup group,
                            @NonNull final BooklistStyle style) {
-        View v = inf.inflate(R.layout.booklist_style_menu_radio, sortDialog.getListView());
-        RadioButton btn = (RadioButton) v;
+        RadioButton btn = (RadioButton) inf.inflate(R.layout.booklist_style_menu_radio, dialog.getListView());
         btn.setText(style.getDisplayName());
 
         if (mCurrentStyle.getCanonicalName().equalsIgnoreCase(style.getCanonicalName())) {
@@ -1091,11 +1092,25 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             @Override
             public void onClick(View v) {
                 handleSelectedStyle(style.getCanonicalName());
-                sortDialog.dismiss();
+                dialog.dismiss();
             }
         });
     }
 
+    /**
+     * Add a text box to the sort options dialogue.
+     */
+    private void makeText(@NonNull final ViewGroup parent,
+                          @NonNull final LayoutInflater inf,
+                          final int stringId,
+                          @NonNull final OnClickListener listener) {
+        TextView view = (TextView) inf.inflate(R.layout.booklist_style_menu_text, null);
+        Typeface tf = view.getTypeface();
+        view.setTypeface(tf, Typeface.ITALIC);
+        view.setText(stringId);
+        view.setOnClickListener(listener);
+        parent.addView(view);
+    }
     /**
      * Handle the style that a user has selected.
      *
@@ -1129,20 +1144,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         setupBookList(true);
     }
 
-    /**
-     * Add a text box to the sort options dialogue.
-     */
-    private void makeText(@NonNull final LinearLayout parent,
-                          @NonNull final LayoutInflater inf,
-                          final int stringId,
-                          @NonNull final OnClickListener listener) {
-        TextView view = (TextView) inf.inflate(R.layout.booklist_style_menu_text, parent);
-        Typeface tf = view.getTypeface();
-        view.setTypeface(tf, Typeface.ITALIC);
-        view.setText(stringId);
-        view.setOnClickListener(listener);
-        parent.addView(view);
-    }
 
     /**
      * Build the underlying flattened list of books.

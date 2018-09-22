@@ -1239,11 +1239,11 @@ public class CatalogueDBAdapter {
         // Delete thumbnail(s)
         if (uuid != null) {
             try {
-                File f = StorageUtils.getThumbnailByUuid(uuid);
+                File f = StorageUtils.getCoverFile(uuid);
                 while (f.exists()) {
                     //noinspection ResultOfMethodCallIgnored
                     f.delete();
-                    f = StorageUtils.getThumbnailByUuid(uuid);
+                    f = StorageUtils.getCoverFile(uuid);
                 }
             } catch (Exception e) {
                 Logger.logError(e, "Failed to delete cover thumbnail");
@@ -3975,6 +3975,7 @@ public class CatalogueDBAdapter {
 	 * Send the book details from the cursor to the passed fts query.
 	 *
 	 * NOTE: This assumes a specific order for query parameters.
+     * If modified, then update {@link #insertFts} , {@link #updateFts} and {@link #rebuildFts}
 	 *
 	 * @param books		Cursor of books to update
 	 * @param stmt		Statement to execute
@@ -4079,21 +4080,41 @@ public class CatalogueDBAdapter {
 			stmt.execute();
 		}
 	}
+    /**
+     * Utility function to bind a string or NULL value to a parameter since binding a NULL
+     * in bindString produces an error.
+     *
+     * NOTE: We specifically want to use the default locale for this.
+     */
+    private void bindStringOrNull(@NonNull final SynchronizedStatement stmt, final int position, @Nullable final String s) {
+        if (s == null) {
+            stmt.bindNull(position);
+        } else {
+            //
+            // Because FTS does not understand locales in all android up to 4.2,
+            // we do case folding here using the default locale. TODO: check if still so.
+            //
+            stmt.bindString(position, s.toLowerCase(Locale.getDefault()));
+        }
+    }
 
 	/** {@link #insertFts} */
     private SynchronizedStatement mInsertFtsStmt = null;
 
 	/**
 	 * Insert a book into the FTS. Assumes book does not already exist in FTS.
+     *
 	 */
 	private void insertFts(final long bookId) {
 		long t0 = System.currentTimeMillis();
 
 		if (mInsertFtsStmt == null) {
-			// Build the FTS insert statement base. The parameter order MUST match the order expected in ftsSendBooks().
-			String sql = TBL_BOOKS_FTS.getInsert(DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION, DOM_NOTES,
-												DOM_PUBLISHER, DOM_BOOK_GENRE, DOM_BOOK_LOCATION, DOM_ISBN, DOM_DOCID)
-												+ " Values (?,?,?,?,?,?,?,?,?)";
+			// Build the FTS insert statement base. The parameter order MUST match the order expected in {@link #ftsSendBooks}.
+			String sql = TBL_BOOKS_FTS.getInsert(
+			        DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION,
+                    DOM_NOTES, DOM_PUBLISHER, DOM_BOOK_GENRE,
+                    DOM_BOOK_LOCATION, DOM_ISBN, DOM_DOCID)
+                    + " Values (?,?,?,?,?,?,?,?,?)";
 			mInsertFtsStmt = mStatements.add("mInsertFtsStmt", sql);
 		}
 
@@ -4106,7 +4127,7 @@ public class CatalogueDBAdapter {
         }
 		try {
 			// Compile statement and get books cursor
-			books = fetchBooks("SELECT * FROM " + TBL_BOOKS + " where " + DOM_ID + " = " + bookId, new String[]{});
+			books = fetchBooks("SELECT * FROM " + TBL_BOOKS + " WHERE " + DOM_ID + " = " + bookId, new String[]{});
 			// Send the book
 			ftsSendBooks(books, mInsertFtsStmt);
 			if (l != null) {
@@ -4137,9 +4158,10 @@ public class CatalogueDBAdapter {
 
 		if (mUpdateFtsStmt == null) {
 			// Build the FTS update statement base. The parameter order MUST match the order expected in ftsSendBooks().
-			String sql = TBL_BOOKS_FTS.getUpdate(DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION, DOM_NOTES,
-												DOM_PUBLISHER, DOM_BOOK_GENRE, DOM_BOOK_LOCATION, DOM_ISBN)
-												+ " WHERE " + DOM_DOCID + " = ?";
+			String sql = TBL_BOOKS_FTS.getUpdate(
+			        DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION,
+                    DOM_NOTES, DOM_PUBLISHER, DOM_BOOK_GENRE,
+                    DOM_BOOK_LOCATION, DOM_ISBN) + " WHERE " + DOM_DOCID + " = ?";
 			mUpdateFtsStmt = mStatements.add("mUpdateFtsStmt", sql);
 		}
 		BooksCursor books = null;
@@ -4217,8 +4239,11 @@ public class CatalogueDBAdapter {
 			ftsTemp.create(mSyncedDb, false);
 
 			// Build the FTS update statement base. The parameter order MUST match the order expected in ftsSendBooks().
-			final String sql = ftsTemp.getInsert(DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION, DOM_NOTES, DOM_PUBLISHER, DOM_BOOK_GENRE, DOM_BOOK_LOCATION, DOM_ISBN, DOM_DOCID)
-							+ " values (?,?,?,?,?,?,?,?,?)";
+			final String sql = ftsTemp.getInsert(
+			        DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION,
+                    DOM_NOTES, DOM_PUBLISHER, DOM_BOOK_GENRE,
+                    DOM_BOOK_LOCATION, DOM_ISBN, DOM_DOCID)
+                    + " values (?,?,?,?,?,?,?,?,?)";
 
 			// Compile an INSERT statement
 			insert = mSyncedDb.compileStatement(sql);
@@ -4267,23 +4292,7 @@ public class CatalogueDBAdapter {
 		}
 	}
 
-    /**
-     * Utility function to bind a string or NULL value to a parameter since binding a NULL
-     * in bindString produces an error.
-     *
-     * NOTE: We specifically want to use the default locale for this.
-     */
-    private void bindStringOrNull(@NonNull final SynchronizedStatement stmt, final int position, @Nullable final String s) {
-        if (s == null) {
-            stmt.bindNull(position);
-        } else {
-            //
-            // Because FTS does not understand locales in all android up to 4.2,
-            // we do case folding here using the default locale. TODO: check if still so.
-            //
-            stmt.bindString(position, s.toLowerCase(Locale.getDefault()));
-        }
-    }
+
 
     /**
      * Cleanup a search string to remove all quotes etc.
@@ -4399,8 +4408,8 @@ public class CatalogueDBAdapter {
     /**
      * Backup database file to the specified filename
      */
-    public void backupDbFile(@NonNull final String suffix) {
-        StorageUtils.backupDbFile(mSyncedDb.getUnderlyingDatabase(), suffix);
+    public void backupDbFile(@NonNull final String toFile) {
+        StorageUtils.backupDbFile(mSyncedDb.getUnderlyingDatabase(), toFile);
     }
 
     /**
