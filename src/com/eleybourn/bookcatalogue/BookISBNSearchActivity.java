@@ -570,7 +570,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     /**
      * This function takes the isbn and search google books (and soon amazon)
      * to extract the details of the book. The details will then get sent to the
-     * EditBookActivity activity
+     * BookDetailsActivity activity
      *
      * @param isbn The ISBN to search
      */
@@ -634,7 +634,8 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getResources().getString(R.string.edit_book),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(final DialogInterface dialog, final int which) {
-                                        EditBookActivity.editBook(BookISBNSearchActivity.this, existingId, EditBookActivity.TAB_EDIT);
+                                        BookDetailsActivity.startEditMode(BookISBNSearchActivity.this,
+                                                existingId, BookDetailsActivity.TAB_EDIT);
                                     }
                                 });
                         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getResources().getString(android.R.string.cancel),
@@ -752,12 +753,12 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     }
 
     /*
-     * Load the EditBookActivity Activity
+     * Load the BookDetailsActivity Activity
      *
      * return void
      */
     private void createBook(@NonNull final Bundle book) {
-        Intent i = new Intent(this, EditBookActivity.class);
+        Intent i = new Intent(this, BookDetailsActivity.class);
         i.putExtra(UniqueId.BKEY_BOOK_DATA, book);
         startActivityForResult(i, UniqueId.ACTIVITY_EDIT_BOOK);
         //dismissProgress();

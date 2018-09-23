@@ -31,6 +31,7 @@ import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Class for representing read-only book details.
@@ -164,7 +165,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     }
 
     /**
-     * Gets the total number of rows from the adapter, then uses that to set the ListView to the
+     * Gets the total number of rows from the adapter, then use that to set the ListView to the
      * full height so all rows are visible (no scrolling)
      */
     private void justifyListViewHeightBasedOnChildren(final ListView listView) {
@@ -258,6 +259,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING, null);
         mFields.add(R.id.notes, UniqueId.KEY_NOTES, null)
                 .setShowHtml(true);
+
         mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START, null, new Fields.DateFieldFormatter());
         mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END, null, new Fields.DateFieldFormatter());
         mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION, null);
@@ -453,14 +455,19 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
 
     protected class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle> {
 
-        AnthologyTitleListAdapter(@NonNull final Context context, final int rowViewId, @NonNull final ArrayList<AnthologyTitle> items) {
+        AnthologyTitleListAdapter(@NonNull final Context context,
+                                  final int rowViewId,
+                                  @NonNull final ArrayList<AnthologyTitle> items) {
             super(context, rowViewId, items);
         }
 
         @Override
-        protected void onSetupView(@NonNull final View convertView, @NonNull final AnthologyTitle item, final int position) {
-            TextView author = convertView.findViewById(R.id.row_author);
-            author.setText(item.getAuthor().getDisplayName());
+        protected void onSetupView(@NonNull final View convertView,
+                                   @NonNull final AnthologyTitle item,
+                                   final int position) {
+
+            TextView authorView = convertView.findViewById(R.id.row_author);
+            authorView.setText(item.getAuthor().getDisplayName());
             TextView title = convertView.findViewById(R.id.row_title);
             title.setText(item.getTitle());
         }

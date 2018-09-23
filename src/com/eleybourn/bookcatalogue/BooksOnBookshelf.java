@@ -28,7 +28,6 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -76,6 +75,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogMenuItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickListener;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.searches.SearchCatalogue;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
@@ -85,8 +85,6 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
-
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_NAME;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
@@ -822,7 +820,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 // If it's a book, edit it.
                 int rowKind = mList.getRowView().getKind();
                 if (rowKind == RowKinds.ROW_KIND_BOOK) {
-                    EditBookActivity.openBook(BooksOnBookshelf.this, mList.getRowView().getBookId(), mList.getBuilder(), position);
+                    BookDetailsActivity.openBook(BooksOnBookshelf.this, mList.getRowView().getBookId(), mList.getBuilder(), position);
                 } else {
                     // If it's level, expand/collapse. Technically, TODO: we could expand/collapse any level
                     // but storing and recovering the view becomes unmanageable.
@@ -949,16 +947,12 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         int currentPos = 0;
         int position = 1;
 
-        try (Cursor cursor = mDb.fetchBookshelves()) {
-            int bsCol = cursor.getColumnIndex(DOM_BOOKSHELF_NAME.name);
-            while (cursor.moveToNext()) {
-                String bookshelfName = cursor.getString(bsCol);
-                if (bookshelfName.equals(mCurrentBookshelf)) {
-                    currentPos = position;
-                }
-                position++;
-                mBookshelfAdapter.add(bookshelfName);
+        for (Bookshelf b : mDb.getBookshelves()) {
+            if (b.name.equals(mCurrentBookshelf)) {
+                currentPos = position;
             }
+            position++;
+            mBookshelfAdapter.add(b.name);
         }
         // Set the current bookshelf. We use this to force the correct bookshelf after
         // the state has been restored.

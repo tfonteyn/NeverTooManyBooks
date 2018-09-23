@@ -50,6 +50,7 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
     private static int m_dateCol = -1;
     /** Column number of Exception column. */
     private static int m_eventCol = -1;
+
     private final Map<Long, Boolean> m_selections = new Hashtable<>();
 
 

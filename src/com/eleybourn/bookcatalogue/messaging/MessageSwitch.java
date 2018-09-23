@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -273,7 +274,7 @@ public class MessageSwitch<T, U> {
     /** Class used to hold a list of listener objects */
     private class MessageListeners implements Iterable<T> {
         /** Weak refs to all listeners */
-        private final ArrayList<WeakReference<T>> mList = new ArrayList<>();
+        private final List<WeakReference<T>> mList = new ArrayList<>();
         /** Last message sent */
         private MessageRoutingSlip mLastMessage = null;
 
@@ -300,7 +301,7 @@ public class MessageSwitch<T, U> {
         public void remove(@NonNull final T listener) {
             synchronized (mList) {
                 // List of refs to be removed
-                ArrayList<WeakReference<T>> toRemove = new ArrayList<>();
+                List<WeakReference<T>> toRemove = new ArrayList<>();
                 // Scan the list for matches or dead refs
                 for (WeakReference<T> w : mList) {
                     T l = w.get();
@@ -324,8 +325,8 @@ public class MessageSwitch<T, U> {
         @NonNull
         @Override
         public Iterator<T> iterator() {
-            ArrayList<T> list = new ArrayList<>();
-            ArrayList<WeakReference<T>> toRemove = null;
+            List<T> list = new ArrayList<>();
+            List<WeakReference<T>> toRemove = null;
             synchronized (mList) {
                 for (WeakReference<T> w : mList) {
                     T l = w.get();

@@ -68,6 +68,7 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -640,7 +641,7 @@ public class GoodreadsManager {
             int page = 1;
             while (true) {
                 Bundle result = h.run(page);
-                ArrayList<Bundle> shelves = result.getParcelableArrayList(BookshelfListFieldNames.SHELVES);
+                List<Bundle> shelves = result.getParcelableArrayList(BookshelfListFieldNames.SHELVES);
                 if (shelves == null || shelves.isEmpty()) {
                     break;
                 }
@@ -771,8 +772,8 @@ public class GoodreadsManager {
             }
 
             // Lists of shelf names and our best guess at the goodreads canonical name
-            ArrayList<String> shelves = new ArrayList<>();
-            ArrayList<String> canonicalShelves = new ArrayList<>();
+            List<String> shelves = new ArrayList<>();
+            List<String> canonicalShelves = new ArrayList<>();
 
             // Build the list of shelves that we have in the local database for the book
             int exclusiveCount = 0;
@@ -807,7 +808,7 @@ public class GoodreadsManager {
             }
 
             // Get the names of the shelves the book is currently on AT GODREADS
-            ArrayList<String> grShelves = null;
+            List<String> grShelves = null;
             if (!isNew && grBookInfo.containsKey(ShowBookFieldNames.SHELVES)) {
                 grShelves = grBookInfo.getStringArrayList(ShowBookFieldNames.SHELVES);
             }
@@ -882,7 +883,7 @@ public class GoodreadsManager {
      *
      * @return Array of GoodreadsWork objects
      */
-    public ArrayList<GoodreadsWork> search(@NonNull final String query) throws
+    public List<GoodreadsWork> search(@NonNull final String query) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 

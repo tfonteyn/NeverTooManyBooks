@@ -338,7 +338,7 @@ class UpgradeDatabase {
      *
      * This routine renames all files, if they exist.
      */
-    private static void renameIdFilesToHash(@NonNull final DbSync.SynchronizedDb db) {
+    private static void v72_renameIdFilesToHash(@NonNull final DbSync.SynchronizedDb db) {
         String sql = "select " + DOM_ID + ", " + DOM_BOOK_UUID + " from " + DB_TB_BOOKS + " Order by " + DOM_ID;
         try (Cursor c = db.rawQuery(sql)) {
             while (c.moveToNext()) {
@@ -1152,7 +1152,7 @@ class UpgradeDatabase {
         }
         if (curVersion == 71) {
             curVersion++;
-            renameIdFilesToHash(syncedDb);
+            v72_renameIdFilesToHash(syncedDb);
             // A bit of presumption here...
             mMessage += "New in v4.0 - Updates courtesy of (mainly) Philip Warner (a.k.a Grunthos) -- blame him, politely, if it toasts your data\n\n";
             mMessage += "* New look, new startup page\n\n";

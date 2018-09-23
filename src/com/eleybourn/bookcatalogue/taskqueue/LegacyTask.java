@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.taskqueue;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class LegacyTask extends Task {
     private static final long serialVersionUID = 3596858518802582316L;
@@ -53,7 +55,10 @@ public class LegacyTask extends Task {
         return CAT_LEGACY;
     }
     @Override
-    public View newListItemView(@NonNull LayoutInflater inflater, @NonNull Context context, @NonNull BindableItemCursor cursor, @NonNull ViewGroup parent) {
+    public View newListItemView(@NonNull final LayoutInflater inflater,
+                                @NonNull final Context context,
+                                @NonNull final BindableItemCursor cursor,
+                                @NonNull final ViewGroup parent) {
         LinearLayout root = new LinearLayout(context);
         root.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams margins = new LinearLayout.LayoutParams(
@@ -69,7 +74,10 @@ public class LegacyTask extends Task {
     }
 
     @Override
-    public void bindView(@NonNull View view, @NonNull Context context, @NonNull BindableItemCursor cursor, @NonNull Object appInfo) {
+    public void bindView(@NonNull final View view,
+                         @NonNull final Context context,
+                         @NonNull final BindableItemCursor cursor,
+                         @NonNull final Object appInfo) {
         ((TextView) view.findViewById(TEXT_FIELD_1))
                 .setText("Legacy Task Placeholder for Task #" + this.getId());
         ((TextView) view.findViewById(TEXT_FIELD_2))
@@ -81,9 +89,10 @@ public class LegacyTask extends Task {
     }
 
     @Override
-    public void addContextMenuItems(@NonNull final Context ctx, @NonNull final AdapterView<?> parent,
+    public void addContextMenuItems(@NonNull final Context ctx,
+                                    @NonNull final AdapterView<?> parent,
                                     @NonNull final View v, final int position, final long id,
-                                    @NonNull final  ArrayList<ContextDialogItem> items,
+                                    @NonNull final List<ContextDialogItem> items,
                                     @NonNull final Object appInfo) {
 
         items.add(new ContextDialogItem(ctx.getString(R.string.delete_task), new Runnable() {

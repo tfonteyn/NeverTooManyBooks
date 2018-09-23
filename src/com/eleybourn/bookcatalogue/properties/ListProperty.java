@@ -39,6 +39,7 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -235,7 +236,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         Object[] textArgs;
 
         /** Constructor. Instantiates string. */
-        ItemEntry(@NonNull final T value, final int resourceId, final Object... args) {
+        ItemEntry(@Nullable final T value, final int resourceId, final Object... args) {
             this.value = value;
             this.textId = resourceId;
             this.textArgs = args;
@@ -269,7 +270,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
      * @author Philip Warner
      */
     public static class ItemEntries<T> implements Iterable<ItemEntry<T>> {
-        final ArrayList<ItemEntry<T>> mList = new ArrayList<>();
+        final List<ItemEntry<T>> mList = new ArrayList<>();
 
         /**
          * Utility to make adding items easier.
@@ -279,7 +280,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
          *
          * @return this for chaining
          */
-        public ItemEntries<T> add(@NonNull final T value, final int stringId, @NonNull final Object... args) {
+        public ItemEntries<T> add(@Nullable final T value, final int stringId, @NonNull final Object... args) {
             mList.add(new ItemEntry<>(value, stringId, args));
             return this;
         }

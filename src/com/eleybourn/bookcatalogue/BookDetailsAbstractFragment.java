@@ -54,12 +54,15 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     private static final int CONTEXT_SUBMENU_REPLACE_THUMB = 2;
     private static final int CONTEXT_ID_SUBMENU_ROTATE_THUMB = 3;
     private static final int CONTEXT_ID_CROP_THUMB = 6;
+
     private static final int CODE_ADD_PHOTO = 21;
     private static final int CODE_ADD_GALLERY = 22;
+
     private static final int CONTEXT_ID_SHOW_ALT_COVERS = 23;
     private static final int CONTEXT_ID_ROTATE_THUMB_CW = 31;
     private static final int CONTEXT_ID_ROTATE_THUMB_CCW = 32;
     private static final int CONTEXT_ID_ROTATE_THUMB_180 = 33;
+
     private static final int CODE_CROP_RESULT_EXTERNAL = 42;
     private static final int CODE_CROP_RESULT_INTERNAL = 43;
 
@@ -71,13 +74,9 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     private static final String BKEY_NO_FACE_DETECTION = "noFaceDetection";
     private static final String BKEY_RETURN_DATA = "return-data";
     private static final String BKEY_DATA = "data";
+
     private static final String BOOKSHELF_TEXT = "bookshelf_text";
     private static final String THUMBNAIL = "thumbnail";
-
-    protected ImageUtils.ThumbSize mThumper;
-
-    private CoverBrowser mCoverBrowser = null;
-
     /**
      * Counter used to prevent images being reused accidentally
      */
@@ -117,9 +116,8 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             crop_thumb.setIcon(android.R.drawable.ic_menu_crop);
         }
     };
-
-
-
+    protected ImageUtils.ThumbSize mThumper;
+    private CoverBrowser mCoverBrowser = null;
     /**
      * Handler to process a cover selected from the CoverBrowser.
      */
@@ -150,7 +148,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
-        Tracker.enterOnActivityResult(this, requestCode,resultCode);
+        Tracker.enterOnActivityResult(this, requestCode, resultCode);
         try {
             super.onActivityResult(requestCode, resultCode, intent);
             switch (requestCode) {
@@ -194,7 +192,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                 }
             }
         } finally {
-            Tracker.exitOnActivityResult(this,requestCode,resultCode);
+            Tracker.exitOnActivityResult(this, requestCode, resultCode);
         }
     }
 
@@ -424,7 +422,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             // Save output image in uri
             File cropped = this.getCroppedTempCoverFile();
             if (cropped.exists())
-                //noinspection ResultOfMethodCallIgnored
+            //noinspection ResultOfMethodCallIgnored
             {
                 cropped.delete();
             }
@@ -449,7 +447,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         try {
             File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
             if (thumbFile != null && thumbFile.exists())
-                //noinspection ResultOfMethodCallIgnored
+            //noinspection ResultOfMethodCallIgnored
             {
                 thumbFile.delete();
             }
@@ -476,7 +474,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      * Get a temp file for camera images
      */
     private File getCameraTempCoverFile() {
-        return StorageUtils.getTempCoverFile("camera", "" +mTempImageCounter);
+        return StorageUtils.getTempCoverFile("camera", "" + mTempImageCounter);
     }
 
     /**

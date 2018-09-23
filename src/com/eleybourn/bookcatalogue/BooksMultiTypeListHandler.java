@@ -408,17 +408,17 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
             case R.id.MENU_BOOK_EDIT:
                 // Start the activity in the correct tab
-                EditBookActivity.editBook(context, rowView.getBookId(), EditBookActivity.TAB_EDIT);
+                BookDetailsActivity.startEditMode(context, rowView.getBookId(), BookDetailsActivity.TAB_EDIT);
                 return true;
 
             case R.id.MENU_BOOK_EDIT_NOTES:
                 // Start the activity in the correct tab
-                EditBookActivity.editBook(context, rowView.getBookId(), EditBookActivity.TAB_EDIT_NOTES);
+                BookDetailsActivity.startEditMode(context, rowView.getBookId(), BookDetailsActivity.TAB_EDIT_NOTES);
                 return true;
 
             case R.id.MENU_BOOK_EDIT_LOANS:
                 // Start the activity in the correct tab
-                EditBookActivity.editBook(context, rowView.getBookId(), EditBookActivity.TAB_EDIT_FRIENDS);
+                BookDetailsActivity.startEditMode(context, rowView.getBookId(), BookDetailsActivity.TAB_EDIT_FRIENDS);
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
@@ -1100,7 +1100,10 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
          * The actual book entry
          */
         @Override
-        public View newView(@NonNull final BooklistRowView rowView, @NonNull final LayoutInflater inflater, @NonNull final ViewGroup parent, final int level) {
+        public View newView(@NonNull final BooklistRowView rowView,
+                            @NonNull final LayoutInflater inflater,
+                            @NonNull final ViewGroup parent,
+                            final int level) {
             // All book rows have the same type of view.
             return inflater.inflate(R.layout.booksonbookshelf_row_book, parent, false);
         }

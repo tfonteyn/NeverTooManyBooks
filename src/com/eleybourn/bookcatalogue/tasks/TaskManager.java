@@ -32,6 +32,7 @@ import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch.Message;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -63,7 +64,7 @@ public class TaskManager implements AutoCloseable {
     private final Context mContext;
 
     /** List of tasks being managed by this object */
-    private final ArrayList<TaskInfo> mTasks = new ArrayList<>();
+    private final List<TaskInfo> mTasks = new ArrayList<>();
 
     /** Current progress message to display, even if no tasks running.
      *  Setting to blank will remove the ProgressDialog

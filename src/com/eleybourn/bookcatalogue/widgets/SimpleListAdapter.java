@@ -36,6 +36,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TODO: RecyclerView
@@ -75,7 +76,7 @@ import java.util.ArrayList;
  */
 public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     private final int mRowViewId;
-    private final ArrayList<T> mItems;
+    private final List<T> mItems;
 
     private final View.OnLongClickListener mRowLongClickListener = new View.OnLongClickListener() {
         @Override
@@ -177,7 +178,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     private boolean mHasDown = false;
     private boolean mHasDelete = false;
 
-    protected SimpleListAdapter(@NonNull final Context context, final int rowViewId, @NonNull final ArrayList<T> items) {
+    protected SimpleListAdapter(@NonNull final Context context, final int rowViewId, @NonNull final List<T> items) {
         super(context, rowViewId, items);
         mRowViewId = rowViewId;
         mItems = items;

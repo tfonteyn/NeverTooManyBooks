@@ -15,6 +15,8 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
     // how to concat bookshelf names
     public static final Character SEPARATOR = ',';
 
+    // the 'first' bookshelf created at install time. We allow renaming it, but not deleting.
+    public static final int DEFAULT_ID = 1;
     /**
      * Support for creation via Parcelable.
      * This is primarily useful for passing ArrayList<Bookshelf> in Bundles to activities.

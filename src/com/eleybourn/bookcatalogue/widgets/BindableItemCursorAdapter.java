@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.widgets;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +33,8 @@ import android.widget.CursorAdapter;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 public class BindableItemCursorAdapter extends CursorAdapter {
@@ -149,7 +150,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
     }
 
     @Override
-    public View getView(final int position, View convertView, final ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
         BindableItemCursor cursor = (BindableItemCursor) this.getCursor();
         cursor.moveToPosition(position);
         BindableItem bindable;
@@ -248,7 +249,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
                                  @NonNull final View v,
                                  final int position,
                                  final long id,
-                                 @NonNull final ArrayList<ContextDialogItem> items,
+                                 @NonNull final List<ContextDialogItem> items,
                                  @NonNull final Object appInfo);
     }
 }

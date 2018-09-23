@@ -41,12 +41,12 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
-import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
+import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -69,6 +69,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -84,6 +85,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_LOAN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_SERIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_MASK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
@@ -91,39 +93,38 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_NAME;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DOCID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ISBN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIST_PRICE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_END;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_START;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DOCID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ISBN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_STYLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_ANTHOLOGY;
@@ -1303,7 +1304,7 @@ public class CatalogueDBAdapter {
             }
 
             // Make sure we have an author
-            ArrayList<Author> authors = bookData.getAuthors();
+            List<Author> authors = bookData.getAuthors();
             if (authors.size() == 0) {
                 throw new IllegalArgumentException();
             }
@@ -1667,7 +1668,7 @@ public class CatalogueDBAdapter {
      * @param dirtyBookIfNecessary      flag to set book dirty or not (for now, always false...)
      */
     private void insertBookAuthors(final long  bookId,
-                                   @Nullable final ArrayList<Author> authors,
+                                   @Nullable final List<Author> authors,
                                    @SuppressWarnings("SameParameterValue") final boolean dirtyBookIfNecessary) {
         if (dirtyBookIfNecessary) {
             setBookDirty(bookId);
@@ -1762,7 +1763,7 @@ public class CatalogueDBAdapter {
             }
 
             if (bookshelfId == INSERT_FAILED) {
-                bookshelfId = 1; //TOMF: figure out the obsession with hardcoded. Bookshelf "1"
+                bookshelfId = Bookshelf.DEFAULT_ID;
             }
 
             try {
@@ -2520,29 +2521,15 @@ public class CatalogueDBAdapter {
     }
 
     /**
-     * Return a Cursor over the list of all bookshelves
-     * TODO: simplyfy the sql ? or.. perhaps refactor and use {@link #getBookshelves} instead
-     * @return Cursor over all bookshelves
-     */
-    @NonNull
-    public Cursor fetchBookshelves() {
-        String sql = "SELECT DISTINCT bs." + DOM_ID + " AS " + DOM_ID + "," +
-                " bs." + DOM_BOOKSHELF_NAME + " AS " + DOM_BOOKSHELF_NAME + "," +
-                " 0 as " + DOM_BOOK_ID +
-                " FROM " + DB_TB_BOOKSHELF + " bs" +
-                " ORDER BY Upper(bs." + DOM_BOOKSHELF_NAME + ") " + COLLATION ;
-        return mSyncedDb.rawQuery(sql, new String[]{});
-    }
-
-    /**
      * Returns a list of all bookshelves in the database.
      *
      * @return The list
      */
     @NonNull
     public ArrayList<Bookshelf> getBookshelves() {
-        String sql = "SELECT DISTINCT " + DOM_ID + "," + DOM_BOOKSHELF_NAME + " FROM " + DB_TB_BOOKSHELF
-                + " ORDER BY lower(" + DOM_BOOKSHELF_NAME + ") " + COLLATION;
+        String sql = "SELECT DISTINCT " + DOM_ID + "," + DOM_BOOKSHELF_NAME +
+                " FROM " + DB_TB_BOOKSHELF +
+                " ORDER BY Upper(" + DOM_BOOKSHELF_NAME + ") " + COLLATION;
 
         ArrayList<Bookshelf> list = new ArrayList<>();
         try (Cursor cursor = mSyncedDb.rawQuery(sql)) {
@@ -2575,28 +2562,7 @@ public class CatalogueDBAdapter {
         }
     }
 
-    /**
-     * Return a Cursor over the list of all bookshelves in the database
-     *
-     * @param bookId the book, which in turn adds a new field on each row as to the active state of that bookshelf for the book
-     * @return Cursor over all bookshelves
-     */
-    @NonNull
-    public Cursor fetchBookshelvesByBookId(final long bookId) {
-        String sql = "SELECT DISTINCT bs." + DOM_ID + " AS " + DOM_ID + "," +
-                " bs." + DOM_BOOKSHELF_NAME + " AS " + DOM_BOOKSHELF_NAME + "," +
-                " CASE WHEN w." + DOM_BOOK_ID + " IS NULL THEN 0 ELSE 1 END as " + DOM_BOOK_ID +
 
-                " FROM " + DB_TB_BOOKSHELF + " bs LEFT OUTER JOIN " + DB_TB_BOOK_BOOKSHELF_WEAK + " w" +
-                " ON (w." + DOM_BOOKSHELF_NAME + "=bs." + DOM_ID + " AND w." + DOM_BOOK_ID + "=" + bookId + ") " +
-                " ORDER BY Upper(bs." + DOM_BOOKSHELF_NAME + ") " + COLLATION;
-        try {
-            return mSyncedDb.rawQuery(sql, new String[]{});
-        } catch (NullPointerException ignore) {
-            // there is no bookId
-            return fetchBookshelves();
-        }
-    }
 
     /**
      * Return a Cursor over the list of all bookshelves in the database for the given book

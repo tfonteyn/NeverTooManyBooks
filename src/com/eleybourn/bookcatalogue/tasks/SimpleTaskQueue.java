@@ -30,6 +30,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.BlockingStack;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -69,7 +70,7 @@ public class SimpleTaskQueue {
 	// Name for this queue
 	private final String mName;
 	// Threads associate with this queue
-	private final ArrayList<SimpleTaskQueueThread> mThreads = new ArrayList<>();
+	private final List<SimpleTaskQueueThread> mThreads = new ArrayList<>();
 	/** Max number of threads to create */
 	private final int mMaxTasks;
 	/** Number of currently queued, executing (or starting/finishing) tasks */

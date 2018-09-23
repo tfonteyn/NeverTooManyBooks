@@ -54,11 +54,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement.INSERT_FAILED;
 import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.UPDATED;
 
 /**
@@ -88,7 +92,7 @@ class ImportAllTask extends GenericTask {
     /** Date at which this job started downloading first page */
     private Date mStartDate = null;
     /** Lookup table of bookshelves defined currently and their goodreads canonical names */
-    private transient Hashtable<String, String> mBookshelfLookup = null;
+    private transient Map<String, String> mBookshelfLookup = null;
 
     /**
      * Constructor
@@ -269,20 +273,13 @@ class ImportAllTask extends GenericTask {
      */
     private String translateBookshelf(@NonNull final CatalogueDBAdapter db, @NonNull final String grShelfName) {
         if (mBookshelfLookup == null) {
-            mBookshelfLookup = new Hashtable<>();
-            try (Cursor cursor = db.fetchBookshelves()) {
-                int bsCol = cursor.getColumnIndex(DOM_BOOKSHELF_NAME.name);
-                while (cursor.moveToNext()) {
-                    String name = cursor.getString(bsCol);
-                    mBookshelfLookup.put(GoodreadsManager.canonicalizeBookshelfName(name), name);
-                }
+            mBookshelfLookup = new HashMap<>();
+            for (Bookshelf b : db.getBookshelves()) {
+                mBookshelfLookup.put(GoodreadsManager.canonicalizeBookshelfName(b.name), b.name);
             }
         }
-        if (mBookshelfLookup.containsKey(grShelfName.toLowerCase())) {
-            return mBookshelfLookup.get(grShelfName.toLowerCase());
-        } else {
-            return grShelfName;
-        }
+
+        return mBookshelfLookup.containsKey(grShelfName.toLowerCase()) ? mBookshelfLookup.get(grShelfName.toLowerCase()) : grShelfName;
     }
 
     /**
@@ -332,15 +329,16 @@ class ImportAllTask extends GenericTask {
     private void createBook(@NonNull final CatalogueDBAdapter db, @NonNull final Bundle review) {
         BookData book = buildBundle(db, null, review);
         long id = db.insertBook(book, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
-        //FIXME: ignoring failure
-        if (book.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
-            String uuid = db.getBookUuid(id);
-            File thumb = StorageUtils.getTempCoverFile();
-            File real = StorageUtils.getCoverFile(uuid);
-            //noinspection ResultOfMethodCallIgnored
-            thumb.renameTo(real);
+        if (id != INSERT_FAILED) {
+            if (book.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
+                String uuid = db.getBookUuid(id);
+                File thumb = StorageUtils.getTempCoverFile();
+                File real = StorageUtils.getCoverFile(uuid);
+                //noinspection ResultOfMethodCallIgnored
+                thumb.renameTo(real);
+            }
+            //db.setGoodreadsSyncDate(id);
         }
-        //db.setGoodreadsSyncDate(id);
     }
 
     /**

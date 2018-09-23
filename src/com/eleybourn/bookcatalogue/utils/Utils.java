@@ -55,6 +55,7 @@ import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -239,7 +240,7 @@ public class Utils {
      * @param list List to clean up
      */
     public static <T extends ItemWithIdFixup> boolean pruneList(@NonNull final CatalogueDBAdapter db,
-                                                                @NonNull final ArrayList<T> list) {
+                                                                @NonNull final List<T> list) {
         Map<String, Boolean> names = new HashMap<>();
         @SuppressLint("UseSparseArrays")
         Map<Long, Boolean> ids = new HashMap<>();
@@ -360,8 +361,8 @@ public class Utils {
      * bill <-- delete
      * bill(1)
      */
-    public static boolean pruneSeriesList(ArrayList<Series> list) {
-        ArrayList<Series> toDelete = new ArrayList<>();
+    public static boolean pruneSeriesList(List<Series> list) {
+        List<Series> toDelete = new ArrayList<>();
         Map<String, Series> index = new HashMap<>();
 
         for (Series s : list) {

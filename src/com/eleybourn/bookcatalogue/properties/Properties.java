@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class to manage a set of properties.
@@ -40,8 +42,8 @@ import java.util.Iterator;
  * @author Philip Warner
  */
 public class Properties implements Iterable<Property> {
-    private final ArrayList<Property> mList = new ArrayList<>();
-    private final HashMap<String, Property> mHash = new HashMap<>();
+    private final List<Property> mList = new ArrayList<>();
+    private final Map<String, Property> mHash = new HashMap<>();
 
     /** Sort the properties based on their group weight, group name, weight and name. */
     private void sort() {

@@ -12,6 +12,7 @@ import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
@@ -103,6 +104,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "create table " + DB_TB_BOOKSHELF + " (_id integer primary key autoincrement, " +
                     DOM_BOOKSHELF_ID + " text not null " +
                     ")";
+
+    /** this inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf} */
     static final String DATABASE_CREATE_BOOKSHELF_DATA =
             "insert INTO " + DB_TB_BOOKSHELF + " (" + DOM_BOOKSHELF_ID + ") VALUES ('" + BookCatalogueApp.getResourceString(R.string.initial_bookshelf) + "')";
 
@@ -370,10 +373,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             curVersion++;
             UpgradeDatabase.recreateAndReloadTable(syncedDb, DB_TB_BOOKS, DATABASE_CREATE_BOOKS);
         }
-        // future/test update
+
         if (curVersion < newVersion && curVersion == 82) {
             curVersion++;
-            moveCoversToDedicatedDirectory(syncedDb);
+            v83_moveCoversToDedicatedDirectory(syncedDb);
 
         }
 
@@ -390,7 +393,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *
      * This routine renames all files, if they exist.
      */
-    private static void moveCoversToDedicatedDirectory(@NonNull final DbSync.SynchronizedDb db) {
+    private static void v83_moveCoversToDedicatedDirectory(@NonNull final DbSync.SynchronizedDb db) {
         String sql = "select " + DOM_BOOK_UUID + " from " + DB_TB_BOOKS;
 
         try (Cursor cur = db.rawQuery(sql)) {

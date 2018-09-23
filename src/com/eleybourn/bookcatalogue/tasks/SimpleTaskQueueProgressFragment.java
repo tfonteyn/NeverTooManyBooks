@@ -41,6 +41,7 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Fragment Class to wrap a trivial progress dialog around (generally) a single task.
@@ -58,9 +59,9 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     /** Handler so we can detect UI thread */
     private final Handler mHandler = new Handler();
     /** List of messages to be sent to the underlying activity, but not yet sent */
-    private final ArrayList<TaskMessage> mTaskMessages = new ArrayList<>();
+    private final List<TaskMessage> mTaskMessages = new ArrayList<>();
     /** List of messages queued; only used if activity not present when showToast() is called */
-    private ArrayList<String> mMessages = null;
+    private List<String> mMessages = null;
     /** Flag indicating dialog was cancelled */
     private boolean mWasCancelled = false;
     /** Max value of progress (for determinate progress) */
@@ -174,7 +175,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     private void deliverMessages() {
         Activity a = getActivity();
         if (a != null) {
-            ArrayList<TaskMessage> toDeliver = new ArrayList<>();
+            List<TaskMessage> toDeliver = new ArrayList<>();
             int count;
             do {
                 synchronized (mTaskMessages) {

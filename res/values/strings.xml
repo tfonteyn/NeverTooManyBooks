@@ -95,7 +95,6 @@
     <string name="same_author">All stories in this anthology are written by the same author</string>
     <string name="menu_delete_anthology">Delete Title from Anthology</string>
     <string name="is_anthology">Is this book an Anthology?</string>
-    <string name="populate_anthology_titles">Automatically Populate Titles (EXPERIMENTAL)</string>
     <string name="automatic_population_failed">Automatic Population of Titles Failed</string>
     <string name="anthology">Anthology</string>
     <string name="anthology_confirm">Please confirm that these anthology titles are (mostly) correct</string>
@@ -1014,6 +1013,8 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
     <string name="a_bracket_b_bracket" translatable="false">%1$s (%2$s)</string>
     <string name="single_string" translatable="false">%1s</string>
+    <string name="google_books" translatable="false">Google Books</string>
+    <string name="ISFDB" translatable="false">http://www.isfdb.org</string>
 
     <!-- task/event... could set these to translatable="false" I suppose -->
     <string name="generic_task_info">Task ID %1$d, Queued at %2$s</string>
@@ -1100,7 +1101,6 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="done">Done</string>
     <string name="search_hosts">Search Sites</string>
     <string name="search_site_order">Search Site Order</string>
-    <string name="google_books" translatable="false">Google Books</string>
     <string name="starting">Starting</string>
     <string name="send_mail">Send mail…</string>
 
@@ -1114,6 +1114,9 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="select_loaned_yes">Select loaned books only</string>
     <string name="select_loaned_no">Select non-loaned only</string>
     <string name="initial_bookshelf">Default</string>
+    <string name="try_another">Try again</string>
+    <string name="table_of_content">Content</string>
+    <string name="populate_anthology_titles">Automatically Populate (ISFDB only)</string>
     <!-- End: Added/Updated in  [Next Version]  -->
 
 </resources>

@@ -25,6 +25,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utilities related to building an AlertDialog that is just a list of clickable options.
@@ -41,7 +42,9 @@ public class AlertDialogUtils {
      * @param title Title of Alert
      * @param items Items to display
      */
-    public static void showContextDialogue(@NonNull final Context context, @NonNull final String title, @NonNull final ArrayList<AlertDialogItem> items) {
+    public static void showContextDialogue(@NonNull final Context context,
+                                           @NonNull final String title,
+                                           @NonNull final List<AlertDialogItem> items) {
         if (items.size() > 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle(title);

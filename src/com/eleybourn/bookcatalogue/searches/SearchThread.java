@@ -31,6 +31,7 @@ import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 abstract public class SearchThread extends ManagedTask {
     protected static boolean mFetchThumbnail;
@@ -81,7 +82,7 @@ abstract public class SearchThread extends ManagedTask {
                 if (thisTitle != null) {
                     SeriesDetails details = Series.findSeries(thisTitle);
                     if (details != null && !details.name.isEmpty()) {
-                        ArrayList<Series> sl;
+                        List<Series> sl;
                         if (mBookData.containsKey(UniqueId.BKEY_SERIES_DETAILS)) {
                             sl = ArrayUtils.getSeriesUtils().decodeList('|', mBookData.getString(UniqueId.BKEY_SERIES_DETAILS), false);
                         } else {

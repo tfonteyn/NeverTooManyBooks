@@ -50,6 +50,7 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class to define all book-related events that may be stored in the QueueManager.
@@ -79,9 +80,9 @@ public class BookEvents {
      * Method to edit a book details.
      */
     private static void editBook(@NonNull final Context ctx, final long bookId) {
-        Intent i = new Intent(ctx, EditBookActivity.class);
+        Intent i = new Intent(ctx, BookDetailsActivity.class);
         i.putExtra(UniqueId.KEY_ID, bookId);
-        i.putExtra(EditBookActivity.TAB, EditBookActivity.TAB_EDIT);
+        i.putExtra(BookDetailsActivity.TAB, BookDetailsActivity.TAB_EDIT);
         ctx.startActivity(i);
     }
 
@@ -227,7 +228,7 @@ public class BookEvents {
                                         @NonNull final AdapterView<?> parent,
                                         @NonNull final View v,
                                         final int position, final long id,
-                                        @NonNull final ArrayList<ContextDialogItem> items,
+                                        @NonNull final List<ContextDialogItem> items,
                                         @NonNull final Object appInfo) {
 
             // EDIT BOOK
@@ -342,7 +343,12 @@ public class BookEvents {
          * Override to allow a new context menu item.
          */
         @Override
-        public void addContextMenuItems(@NonNull final Context ctx, @NonNull final AdapterView<?> parent, @NonNull final View v, final int position, final long id, @NonNull ArrayList<ContextDialogItem> items, @NonNull Object appInfo) {
+        public void addContextMenuItems(@NonNull final Context ctx,
+                                        @NonNull final AdapterView<?> parent,
+                                        @NonNull final View v,
+                                        final int position, final long id,
+                                        @NonNull List<ContextDialogItem> items,
+                                        @NonNull Object appInfo) {
             super.addContextMenuItems(ctx, parent, v, position, id, items, appInfo);
 
             final CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;

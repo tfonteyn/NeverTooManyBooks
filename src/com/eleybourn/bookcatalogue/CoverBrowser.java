@@ -51,11 +51,13 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import com.eleybourn.bookcatalogue.widgets.PagerLayout;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class to display and manage a cover image browser in a dialog.
@@ -80,7 +82,7 @@ public class CoverBrowser {
     // Task queue for images
     private SimpleTaskQueue mImageFetcher = null;
     // List of all editions for the given ISBN
-    private ArrayList<String> mEditions;
+    private List<String> mEditions;
     // Object to ensure files are cleaned up.
     private FileManager mFileManager;
     /** Indicates a 'shutdown()' has been requested */
@@ -161,8 +163,7 @@ public class CoverBrowser {
             mImageFetcher = new SimpleTaskQueue("cover-browser");
         }
 
-        SimpleTask edTask = new GetEditionsTask(mIsbn);
-        mImageFetcher.enqueue(edTask);
+        mImageFetcher.enqueue(new GetEditionsTask(mIsbn));
 
         // Setup the basic dialog
         mDialog.setContentView(R.layout.dialog_select_edition_cover);
@@ -275,8 +276,9 @@ public class CoverBrowser {
             ImageView coverImage = new ImageView(mActivity);
 
             // If we are shutdown, just return a view
-            if (mShutdown)
+            if (mShutdown) {
                 return coverImage;
+            }
 
             // Initialize the view
             //coverImage.setScaleType(ImageView.ScaleType.FIT_XY);
@@ -390,11 +392,14 @@ public class CoverBrowser {
         private String mFilename;
 
         /**
-         * @param isbn ISBN on requested cover.
-         * @param v    V   iew to update
+         * @param isbn  ISBN on requested cover.
+         * @param view  to update
          */
-        GetThumbnailTask(@NonNull final String isbn, @NonNull final ImageView v, final int maxWidth, final int maxHeight) {
-            mImageView = v;
+        GetThumbnailTask(@NonNull final String isbn,
+                         @NonNull final ImageView view,
+                         final int maxWidth,
+                         final int maxHeight) {
+            mImageView = view;
             mMaxWidth = maxWidth;
             mMaxHeight = maxHeight;
             mIsbn = isbn;
@@ -402,12 +407,14 @@ public class CoverBrowser {
 
         @Override
         public void run(@NonNull final SimpleTaskContext taskContext) {
-            // Start the download
+            // Try SMALL
             mFilename = mFileManager.download(mIsbn, ImageSizes.SMALL);
-            File file = new File(mFilename); //TOMF
-            if (file.length() < 50) {
-                mFilename = mFileManager.download(mIsbn, ImageSizes.LARGE);
+            if (mFilename != null &&  new File(mFilename).length() >= 50) {
+                return;
             }
+
+            // Try LARGE (or silently give up)
+            mFilename = mFileManager.download(mIsbn, ImageSizes.LARGE);
         }
 
         @Override
@@ -430,7 +437,7 @@ public class CoverBrowser {
         // ISBN
         private final String mIsbn;
         // Resulting file
-        private String fileSpec;
+        private String mFileSpec;
 
         /**
          * Constructor
@@ -451,22 +458,23 @@ public class CoverBrowser {
                 return;
             }
 
-            // Download the file
-            fileSpec = mFileManager.download(mIsbn, ImageSizes.LARGE);
-            File file = new File(fileSpec);
-            if (file.length() < 50) {
-                fileSpec = mFileManager.download(mIsbn, ImageSizes.SMALL);
+            // Download the file, try LARGE first
+            mFileSpec = mFileManager.download(mIsbn, ImageSizes.LARGE);
+            if (mFileSpec != null && new File(mFileSpec).length() >= 50) {
+                return; // got a large
             }
+            // Try SMALL (or silently give up)
+            mFileSpec = mFileManager.download(mIsbn, ImageSizes.SMALL);
         }
 
         @Override
         public void onFinish(@Nullable final Exception e) {
-            if (mShutdown)
+            if (mShutdown) {
                 return;
+            }
             // Update the ImageSwitcher
-            File file = new File(fileSpec);
+            File file = new File(mFileSpec);
             TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
-            // the 100 is arbitrary...
             if (file.exists() && file.length() > 100) {
                 Drawable image = new BitmapDrawable(mActivity.getResources(),
                         ImageUtils.fetchFileIntoImageView(null, file,
@@ -525,59 +533,50 @@ public class CoverBrowser {
          * Download a file if not present and keep a record of it.
          *
          * @param isbn ISBN of file
-         * @param size Size of image required.
+         * @param size Size of image required
          *
-         * @return the fileSpec
+         * @return the fileSpec, or "" when not found
          */
         @Nullable
         public String download(@NonNull final String isbn, @NonNull final ImageSizes size) {
             String fileSpec;
             String key = isbn + "_" + size;
-            boolean isPresent;
+
             synchronized (mFiles) {
-                isPresent = mFiles.containsKey(key);
+                fileSpec = mFiles.getString(key);
             }
 
-            // Do some checks on the actual file to see if a re-download may help
-            if (isPresent) {
-                synchronized (mFiles) {
-                    fileSpec = mFiles.getString(key);
-                }
-                if (fileSpec != null) {
-                    File file = new File(fileSpec);
-                    if (!isGood(file)) {
-                        mFiles.remove(key);
-                        isPresent = false;
-                    }
-                }
-            }
-
-            if (!isPresent) {
-                fileSpec = mLibraryThing.getCoverImage(isbn, null, size);
-                File file = new File(fileSpec);
-                if (isGood(file)) {
-                    synchronized (mFiles) {
-                        mFiles.putString(key, fileSpec);
-                    }
-                } else {
-                    // Try google
-                    file = GoogleBooksManager.getThumbnailFromIsbn(isbn);
-                    if (file != null && isGood(file)) {
-                        fileSpec = file.getAbsolutePath();
-                        synchronized (mFiles) {
-                            mFiles.putString(key, fileSpec);
-                        }
-                    } else {
-                        fileSpec = "";
-                        mFiles.putString(key, fileSpec);
-                    }
-                }
+            // Is the file present && good ?
+            if ((fileSpec != null) && !fileSpec.isEmpty() && isGood(new File(fileSpec))) {
+                return fileSpec;
             } else {
+                mFiles.remove(key);
+            }
+
+            //ENHANCE allow the user to prioritize the order
+
+            // Try LibraryThing
+            fileSpec = mLibraryThing.getCoverImage(isbn, null, size);
+            if (isGood(new File(fileSpec))) {
                 synchronized (mFiles) {
-                    fileSpec = mFiles.getString(key);
+                    mFiles.putString(key, fileSpec);
+                    return fileSpec;
                 }
             }
-            return fileSpec;
+
+            // Try google
+            File file = GoogleBooksManager.getThumbnailFromIsbn(isbn);
+            if (file != null && isGood(file)) {
+                fileSpec = file.getAbsolutePath();
+                synchronized (mFiles) {
+                    mFiles.putString(key, fileSpec);
+                    return fileSpec;
+                }
+            }
+
+            // give up
+            mFiles.remove(key);
+            return null;
         }
 
         /**
@@ -586,20 +585,16 @@ public class CoverBrowser {
         @Nullable
         public File getFile(@NonNull final String isbn, @NonNull final ImageSizes size) {
             String key = isbn + "_" + size;
-            boolean isPresent;
-            synchronized (mFiles) {
-                isPresent = mFiles.containsKey(key);
-            }
-
-            if (!isPresent) {
-                return null;
-            }
-
             String fileSpec;
             synchronized (mFiles) {
                 fileSpec = mFiles.getString(key);
             }
-            return (fileSpec == null ? null : new File(fileSpec));
+
+            if (fileSpec == null || fileSpec.isEmpty()) {
+                return null;
+            }
+
+            return new File(fileSpec);
         }
 
         /**
@@ -610,11 +605,7 @@ public class CoverBrowser {
                 for (String k : mFiles.keySet()) {
                     String fileSpec = mFiles.getString(k);
                     if (fileSpec != null) {
-                        File file = new File(fileSpec);
-                        if (file.exists()) {
-                            //noinspection ResultOfMethodCallIgnored
-                            file.delete();
-                        }
+                        StorageUtils.deleteFile(new File(fileSpec));
                     }
                 }
                 mFiles.clear();

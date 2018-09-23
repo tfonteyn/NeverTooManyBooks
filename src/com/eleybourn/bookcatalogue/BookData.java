@@ -106,6 +106,7 @@ public class BookData extends DataManager {
         return this;
     }
 
+    //TODO: can we simplify this ? not just a 'string' but structured data with proper ID's
     public String getBookshelfList() {
         return getString(LOCAL_BKEY_BOOKSHELF_LIST);
     }
@@ -115,7 +116,8 @@ public class BookData extends DataManager {
     }
 
     /**
-     * Accessor. Return a formatted list of books.
+     * Accessor. Return a formatted list of bookshelves
+     *
      */
     @NonNull
     public String getBookshelfText() {

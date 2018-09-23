@@ -27,6 +27,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /** 
  * An XML handler for the Wikipedia entry return 
@@ -42,7 +43,7 @@ public class SearchWikipediaEntryHandler extends DefaultHandler {
 	private int div = 0;
 	private int entrydiv = 0;
 	private String this_title = "";
-	private ArrayList<String> titles = new ArrayList<>();
+	private List<String> titles = new ArrayList<>();
 	
 	private static final String DIV = "div";
 	private static final String LIST1 = "ul";
@@ -53,7 +54,7 @@ public class SearchWikipediaEntryHandler extends DefaultHandler {
 	private static final String LINK3 = "b"; //optional
 	private static final String TOC_TABLE = "table";
 	
-	public ArrayList<String> getList(){
+	public List<String> getList(){
 		return titles;
 	}
 	

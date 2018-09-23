@@ -45,10 +45,11 @@ import com.eleybourn.bookcatalogue.utils.BookUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Based class for all fragments that appear in the {@link EditBookActivity} activity
+ * Based class for all fragments that appear in the {@link BookDetailsActivity} activity
  *
  * @author pjw
  */
@@ -59,22 +60,11 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     private static final int SHARE_ID = 4;
     private static final int EDIT_OPTIONS_ID = 6;
     protected Fields mFields;
-    /**
-     * A link to the {@link BookEditManager} for this fragment (the activity)
-     */
-    protected BookEditManager mEditManager;
-    /**
-     * Database instance
-     */
-    protected CatalogueDBAdapter mDb;
 
-//    /** Kludge to quiet lint without having to suppress it everywhere, shame getActivity() is final */
-//    @SuppressWarnings("ConstantConditions")
-//    @NonNull
-//    @Override
-//    public Context getContext() {
-//        return super.getContext();
-//    }
+    /** A link to the {@link BookEditManager} for this fragment (the activity) */
+    protected BookEditManager mEditManager;
+    /** Database instance */
+    protected CatalogueDBAdapter mDb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -176,7 +166,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
                     BookUtils.duplicateBook(getActivity(), mDb, currRow);
                     return true;
                 case EDIT_OPTIONS_ID:
-                    EditBookActivity.editBook(getActivity(), currRow, EditBookActivity.TAB_EDIT);
+                    BookDetailsActivity.startEditMode(getActivity(), currRow, BookDetailsActivity.TAB_EDIT);
                     return true;
 
                 case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
@@ -372,7 +362,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      * @author pjw
      */
     public interface BookEditManager {
-        void setShowAnthology(final boolean showAnthology);
+        void showAnthologyTab(final boolean showAnthology);
 
         boolean isDirty();
 
@@ -382,15 +372,15 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
 
         void setRowId(final long id);
 
-        ArrayList<String> getFormats();
+        List<String> getFormats();
 
-        ArrayList<String> getGenres();
+        List<String> getGenres();
 
-        ArrayList<String> getLanguages();
+        List<String> getLanguages();
 
-        ArrayList<String> getLocations();
+        List<String> getLocations();
 
-        ArrayList<String> getPublishers();
+        List<String> getPublishers();
     }
 
     public static class ViewUtils {

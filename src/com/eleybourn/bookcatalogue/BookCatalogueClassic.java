@@ -58,6 +58,7 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.scanner.Scanner;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -73,8 +74,6 @@ import com.eleybourn.bookcatalogue.widgets.FastScrollExpandableListView;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 
 import java.util.ArrayList;
-
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_NAME;
 
 /*
  * A book catalogue application that integrates with Google Books.
@@ -206,25 +205,21 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		mBookshelfText.setAdapter(mSpinnerAdapter);
 
 		// Add the default All Books bookshelf
-		int pos = 0;
-		int bspos = pos;
-		mSpinnerAdapter.add(getString(R.string.all_books));
-		pos++;
+        mSpinnerAdapter.add(getString(R.string.all_books));
+		int currentPos = 0;
+        int position = 1;
 
-		try (Cursor cursor = mDb.fetchBookshelves()) {
-			int bsCol = cursor.getColumnIndex(DOM_BOOKSHELF_NAME.name);
-            while (cursor.moveToNext()) {
-                String bookshelfName = cursor.getString(bsCol);
-                if (mBookshelf.equals(bookshelfName)) {
-                    bspos = pos;
-                }
-                pos++;
-                mSpinnerAdapter.add(bookshelfName);
+		for (Bookshelf b : mDb.getBookshelves()) {
+			if (mBookshelf.equals(b.name)) {
+				currentPos = position;
 			}
+			position++;
+			mSpinnerAdapter.add(b.name);
 		}
+
 		// Set the current bookshelf. We use this to force the correct bookshelf after
 		// the state has been restored.
-		mBookshelfText.setSelection(bspos);
+		mBookshelfText.setSelection(currentPos);
 
 		/*
 		 * This is fired whenever a bookshelf is selected. It is also fired when the
@@ -1180,15 +1175,15 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 			return true;
 
 		case EDIT_BOOK:
-			EditBookActivity.editBook(this, info.id, EditBookActivity.TAB_EDIT);
+			BookDetailsActivity.startEditMode(this, info.id, BookDetailsActivity.TAB_EDIT);
 			return true;
 
 		case EDIT_BOOK_NOTES:
-			EditBookActivity.editBook(this, info.id, EditBookActivity.TAB_EDIT_NOTES);
+			BookDetailsActivity.startEditMode(this, info.id, BookDetailsActivity.TAB_EDIT_NOTES);
 			return true;
 
 		case EDIT_BOOK_FRIENDS:
-			EditBookActivity.editBook(this, info.id, EditBookActivity.TAB_EDIT_FRIENDS);
+			BookDetailsActivity.startEditMode(this, info.id, BookDetailsActivity.TAB_EDIT_FRIENDS);
 			return true;
 
 		case EDIT_BOOK_SEND_TO_GR:
@@ -1279,7 +1274,7 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 	public boolean onChildClick(ExpandableListView l, View v, int position, int childPosition, long id) {
 		boolean result = super.onChildClick(l, v, position, childPosition, id);
 		adjustCurrentGroup(position, 1, true);
-		EditBookActivity.openBook(this, id);
+		BookDetailsActivity.openBook(this, id, null, null);
 		return result;
 	}
 
@@ -1315,38 +1310,38 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		case UniqueId.ACTIVITY_ADMIN:
 			try {
 				// Use the ADDED_* fields if present.
-				if (intent != null && intent.hasExtra(EditBookActivity.ADDED_HAS_INFO)) {
+				if (intent != null && intent.hasExtra(BookDetailsActivity.ADDED_HAS_INFO)) {
 					String justAdded;
 					switch (sort) {
 						case SORT_TITLE:
                         {
-							justAdded = intent.getStringExtra(EditBookActivity.ADDED_TITLE);
+							justAdded = intent.getStringExtra(BookDetailsActivity.ADDED_TITLE);
 							int position = mDb.classicFetchBookPositionByTitle(justAdded, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}
 						case SORT_AUTHOR: {
-							justAdded = intent.getStringExtra(EditBookActivity.ADDED_AUTHOR);
+							justAdded = intent.getStringExtra(BookDetailsActivity.ADDED_AUTHOR);
                             Author author = Author.toAuthor(justAdded);
 							int position = mDb.classicGetAuthorPositionByName(author, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}
 						case SORT_AUTHOR_GIVEN: {
-							justAdded = intent.getStringExtra(EditBookActivity.ADDED_AUTHOR);
+							justAdded = intent.getStringExtra(BookDetailsActivity.ADDED_AUTHOR);
                             Author author = Author.toAuthor(justAdded);
 							int position = mDb.classicGetAuthorPositionByGivenName(author, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}
 						case SORT_SERIES: {
-							justAdded = intent.getStringExtra(EditBookActivity.ADDED_SERIES);
+							justAdded = intent.getStringExtra(BookDetailsActivity.ADDED_SERIES);
 							int position = mDb.classicGetSeriesPositionBySeries(justAdded, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;
 						}
 						case SORT_GENRE: {
-							justAdded = intent.getStringExtra(EditBookActivity.ADDED_GENRE);
+							justAdded = intent.getStringExtra(BookDetailsActivity.ADDED_GENRE);
 							int position = mDb.classicGetGenrePositionByGenre(justAdded, mBookshelf);
 							adjustCurrentGroup(position, 1, true);
 							break;

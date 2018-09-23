@@ -34,6 +34,7 @@ import java.io.Closeable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -123,7 +124,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
         long count = 0;
 
         if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
-            ArrayList<WeakReference<TrackedCursor>> list = new ArrayList<>();
+            List<WeakReference<TrackedCursor>> list = new ArrayList<>();
             synchronized (mCursors) {
                 for (WeakReference<TrackedCursor> r : mCursors) {
                     TrackedCursor c = r.get();
@@ -162,9 +163,9 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
      */
     @SuppressWarnings("UnusedAssignment")
     @Nullable
-    private static ArrayList<TrackedCursor> getCursors() {
+    private static List<TrackedCursor> getCursors() {
         if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
-            ArrayList<TrackedCursor> list = new ArrayList<>();
+            List<TrackedCursor> list = new ArrayList<>();
             synchronized (mCursors) {
                 for (WeakReference<TrackedCursor> r : mCursors) {
                     TrackedCursor c = r.get();

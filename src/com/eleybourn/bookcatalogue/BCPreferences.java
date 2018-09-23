@@ -8,6 +8,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -194,7 +195,7 @@ public class BCPreferences {
         if (BuildConfig.DEBUG) {
             StringBuilder sb = new StringBuilder("\n\nSharedPreferences: ");
             Map<String, ?> map = BookCatalogueApp.getSharedPreferences().getAll();
-            ArrayList<String> keyList = new ArrayList<>(map.keySet());
+            List<String> keyList = new ArrayList<>(map.keySet());
             String[] keys = keyList.toArray(new String[]{});
             Arrays.sort(keys);
 

@@ -315,6 +315,10 @@ public class CropCropImage extends CropMonitoredActivity {
             }
 
             String imagePath = extras.getString(BKEY_IMAGE_PATH);
+            if (imagePath == null) {
+                throw new RuntimeException("imagePath was null");
+            }
+            mBitmap = getBitmap(imagePath);
 
             // Use the "output" parameter if present, otherwise overwrite
             // existing file
@@ -322,10 +326,7 @@ public class CropCropImage extends CropMonitoredActivity {
             if (imgUri == null) {
                 imgUri = imagePath;
             }
-//TOMF
             mSaveUri = getImageUri(imgUri);
-
-            mBitmap = getBitmap(imagePath);
 
             mAspectX = extras.getInt(BKEY_ASPECT_X);
             mAspectY = extras.getInt(BKEY_ASPECT_Y);

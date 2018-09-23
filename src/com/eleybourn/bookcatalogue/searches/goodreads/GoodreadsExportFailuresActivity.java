@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -49,6 +50,7 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Activity to display all Events in the QueueManager.
@@ -180,7 +182,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
 
     private void doContextMenu(@NonNull final AdapterView<?> parent, final View v, final int position, final long id) {
         final Event event = ViewTagger.getTag(v, R.id.TAG_EVENT);
-        final ArrayList<ContextDialogItem> items = new ArrayList<>();
+        final List<ContextDialogItem> items = new ArrayList<>();
 
         if (event == null) {
             Logger.logError("event was null");
@@ -238,7 +240,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
      */
     @Override
     public void bindViewToItem(@NonNull final Context context,
-                               @Nullable final View view,
+                               @NonNull final View view,
                                @NonNull final BindableItemCursor cursor,
                                @NonNull final BindableItemCursorAdapter.BindableItem item) {
         ViewTagger.setTag(view, R.id.TAG_EVENT, item);

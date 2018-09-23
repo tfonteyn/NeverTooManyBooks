@@ -163,7 +163,7 @@ public class BookCatalogueApp extends Application {
     }
 
     /** List of supported locales */
-    private static ArrayList<String> mSupportedLocales = null;
+    private static List<String> mSupportedLocales = null;
     /**
      * Shared Preferences Listener
      * <p>
@@ -242,7 +242,7 @@ public class BookCatalogueApp extends Application {
      * Add a new OnLocaleChangedListener, and cleanup any dead references.
      */
     public static void registerOnLocaleChangedListener(OnLocaleChangedListener listener) {
-        ArrayList<WeakReference<OnLocaleChangedListener>> toRemove = new ArrayList<>();
+        List<WeakReference<OnLocaleChangedListener>> toRemove = new ArrayList<>();
 
         boolean alreadyAdded = false;
 
@@ -265,7 +265,7 @@ public class BookCatalogueApp extends Application {
      * Remove the passed OnLocaleChangedListener, and cleanup any dead references.
      */
     public static void unregisterOnLocaleChangedListener(OnLocaleChangedListener listener) {
-        ArrayList<WeakReference<OnLocaleChangedListener>> toRemove = new ArrayList<>();
+        List<WeakReference<OnLocaleChangedListener>> toRemove = new ArrayList<>();
 
         for (WeakReference<OnLocaleChangedListener> ref : mOnLocaleChangedListeners) {
             OnLocaleChangedListener l = ref.get();
@@ -478,7 +478,7 @@ public class BookCatalogueApp extends Application {
      * @return ArrayList of locale names
      */
     @NonNull
-    public static ArrayList<String> getSupportedLocales() {
+    public static List<String> getSupportedLocales() {
         if (mSupportedLocales == null) {
             mSupportedLocales = new ArrayList<>();
             mSupportedLocales.add("de_DE");

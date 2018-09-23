@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +43,7 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base class for tasks in BookCatalogue. This builds and populates simple
@@ -161,9 +163,13 @@ public abstract class GenericTask extends RunnableTask {
      * - Allow task deletion
      */
     @Override
-    public void addContextMenuItems(@NonNull Context ctx, @NonNull AdapterView<?> parent, @NonNull View v,
-                                    int position, final long id, @NonNull ArrayList<ContextDialogItem> items,
-                                    @NonNull Object appInfo) {
+    public void addContextMenuItems(@NonNull final Context ctx,
+                                    @NonNull final AdapterView<?> parent,
+                                    @NonNull final View v,
+                                    final int position,
+                                    final long id,
+                                    @NonNull final List<ContextDialogItem> items,
+                                    @NonNull final Object appInfo) {
 
         items.add(new ContextDialogItem(ctx.getString(R.string.delete_task), new Runnable() {
                     @Override

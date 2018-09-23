@@ -52,11 +52,19 @@ import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaEntryHandler;
 import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaHandler;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -64,7 +72,8 @@ import javax.xml.parsers.SAXParserFactory;
 public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 
     private static final int DELETE_ID = Menu.FIRST;
-    private static final int POPULATE = Menu.FIRST + 1;
+    private static final int POPULATE_ISFDB = Menu.FIRST + 1;
+    private static final int POPULATE_WIKIPEDIA = Menu.FIRST + 2;
 
     /**
      * Trim extraneous punctuation and whitespace from the titles and authors
@@ -77,11 +86,19 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
      * change in meaning. Note that inside the square brackets of a character class, many
      * escapes are unnecessary that would be necessary outside of a character class.
      * For example the regex [\.] is identical to [.]
+     *
+     * So that became:
+     *    private static final String CLEANUP_REGEX = "[,.':;`~@#$%^&*()\\-=_+]*$";
+     *
+     * But given a title like "Introduction (The Father-Thing)"
+     * you loose the ")" at the end, so remove that from the regex, see below
      */
-    private static final String CLEANUP_REGEX = "[,.':;`~@#$%^&*()\\-=_+]*$";
+    private static final String CLEANUP_REGEX = "[,.':;`~@#$%^&*(\\-=_+]*$";
 
     private EditText mTitleText;
     private AutoCompleteTextView mAuthorText;
+    private long mBookId;
+    private String mIsbn;
     private String mBookAuthor;
     private String mBookTitle;
     private Button mAdd;
@@ -90,7 +107,9 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     private ArrayList<AnthologyTitle> mList;
 
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_edit_book_anthology, container, false);
     }
 
@@ -114,6 +133,8 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         final BookData book = mEditManager.getBookData();
         mBookAuthor = book.getString(UniqueId.KEY_AUTHOR_FORMATTED);
         mBookTitle = book.getString(UniqueId.KEY_TITLE);
+        mIsbn = book.getString(UniqueId.KEY_ISBN);
+        mBookId = book.getRowId();
 
         // Setup the same author field
         mSame = getView().findViewById(R.id.same_author);
@@ -208,114 +229,179 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 //        return;
 //    }
 
+    //<editor-fold desc="ISFDB content fetching">
+    private SimpleTaskQueue mAntFetcher = null;
+
+    //TODO: if we don't like the first one, allow the user to get the second ... etc
+    private List<String> mISFDBUrls;
+
     /**
-     * FIXME: android.os.NetworkOnMainThreadException, use a task...
+     * First step, get all editions for the ISBN (or maybe just the one)
      */
-    private void searchWikipedia() {
-        String host = "https://en.wikipedia.org";
-        String pathAuthor = mBookAuthor.replace(" ", "+");
-        pathAuthor = pathAuthor.replace(",", "");
-        // Strip everything past the , from the title
-        String pathTitle = mBookTitle;
-        int comma = pathTitle.indexOf(",");
-        if (comma > 0) {
-            pathTitle = pathTitle.substring(0, comma);
+    private void searchISFDB() {
+        // Setup the background fetcher
+        if (mAntFetcher == null) {
+            mAntFetcher = new SimpleTaskQueue("isfdb-editions");
         }
-        pathTitle = pathTitle.replace(" ", "+");
-        String path = host + "/w/index.php?title=Special:Search&search=%22" + pathTitle + "%22+" + pathAuthor + "";
 
-
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        SAXParser parser;
-        SearchWikipediaHandler handler = new SearchWikipediaHandler();
-        SearchWikipediaEntryHandler entryHandler = new SearchWikipediaEntryHandler();
-
-        boolean found = false;
-        try {
-            parser = factory.newSAXParser();
-            parser.parse(Utils.getInputStream(new URL(path)), handler);
-
-            String[] links = handler.getLinks();
-            for (String link : links) {
-                if (link.isEmpty() || found) {
-                    break;
-                }
-                parser = factory.newSAXParser();
-                try {
-                    parser.parse(Utils.getInputStream(new URL(host + link)), entryHandler);
-                    ArrayList<String> titles = entryHandler.getList();
-                    /* Display the confirm dialog */
-                    if (titles.size() > 0) {
-                        showAnthologyConfirm(titles);
-                        found = true;
-                    }
-                } catch (RuntimeException e) {
-                    Logger.logError(e);
-                    Toast.makeText(getActivity(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();
-                }
-            }
-            if (!found) {
-                Toast.makeText(getActivity(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();
-                return;
-            }
-        } catch (Exception e) {
-            Toast.makeText(getActivity(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();
-            Logger.logError(e);
-        }
-        fillAnthology();
+        mAntFetcher.enqueue(new ISFDBEditionsTask(mIsbn));
     }
 
-    private void showAnthologyConfirm(final ArrayList<String> titles) {
-        final BookData book = mEditManager.getBookData();
-        StringBuilder anthology_title = new StringBuilder();
-        for (int j = 0; j < titles.size(); j++) {
-            anthology_title.append("* ").append(titles.get(j)).append("\n");
+    private class ISFDBEditionsTask implements SimpleTaskQueue.SimpleTask {
+
+        private static final String EDITIONS_URL = "http://www.isfdb.org/cgi-bin/se.cgi?arg=%s&type=ISBN";
+
+        private String isbn;
+        private List<String> editions = new ArrayList<>();
+
+        ISFDBEditionsTask(@NonNull final String isbn) {
+            if (isbn.isEmpty()) {
+                throw new RuntimeException("Can not get editions without an ISBN");
+            }
+            this.isbn = isbn;
         }
 
-        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setMessage(anthology_title).create();
-        alertDialog.setTitle(R.string.anthology_confirm);
-        alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
+        @Override
+        public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) {
+            String path = String.format(EDITIONS_URL, isbn);
+            try {
+                Document doc = Jsoup.connect(path).get();
+                getEntries(doc,"tr.table0");
+                getEntries(doc,"tr.table1");
+                // if no editions, we were redirected to the book itself
+                if (editions.size() == 0) {
+                    editions.add(doc.location());
+                }
+            } catch (IOException e) {
+                Logger.logError(e);
+            }
+        }
+
+        private void getEntries(@NonNull final Document doc, @NonNull final String selector) {
+            Elements entries = doc.select(selector);
+            for (Element entry : entries) {
+                Element edLink = entry.select("a").first(); // first column has the book link
+                if (edLink != null) {
+                    String url = edLink.attr("href");
+                    if (url != null) {
+                        editions.add(url);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onFinish(@Nullable final Exception e) {
+            mISFDBUrls = editions;
+            if (editions.size() > 0) {
+                handleISFDBBook(editions.get(0));
+            }
+        }
+    }
+
+    /**
+     * We now have all editions, see which one to use
+     *
+     */
+    private void handleISFDBBook(@NonNull final String bookUrl) {
+        // Setup the background fetcher
+        if (mAntFetcher == null) {
+            mAntFetcher = new SimpleTaskQueue("isfdb-book");
+        }
+
+        mAntFetcher.enqueue(new ISFDBBookTask(bookUrl));
+    }
+
+    private class ISFDBBookTask implements SimpleTaskQueue.SimpleTask {
+        private String bookUrl;
+        private List<AnthologyTitle> results = new ArrayList<>();
+
+        ISFDBBookTask(@NonNull final String bookUrl) {
+            this.bookUrl = bookUrl;
+        }
+
+        @Override
+        public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) {
+            try {
+                Document doc = Jsoup.connect(bookUrl).get();
+                // <div class="ContentBox"> but there are two, so get last one
+                Element contentbox = doc.select("div.contentbox").last();
+                Elements lis = contentbox.select("li");
+                System.out.println(lis.size());
+                for (Element li : lis) {
+                    Elements a = li.select("a");
+                    // 2 or 3 'a' attributes, we want first and last + clean them up a bit
+                    String title = cleanUpName(a.get(0).text());
+                    String author = cleanUpName(a.get(a.size() - 1).text());
+                    results.add(new AnthologyTitle(mBookId, new Author(author), title));
+                }
+            } catch (IOException e) {
+                Logger.logError(e);
+            }
+        }
+
+        @Override
+        public void onFinish(@Nullable final Exception e) {
+            for (AnthologyTitle t : results) {
+                System.out.println(t);
+            }
+            showAnthologyConfirm(results);
+        }
+    }
+
+    private String cleanUpName(@NonNull final String s) {
+        return s.trim()
+                .replace("\n", " ")
+                .replaceAll(CLEANUP_REGEX, "")
+                .trim();
+
+    }
+
+    private void showAnthologyConfirm(@NonNull final List<AnthologyTitle> results) {
+        //FIXME: this is usually to much to display as a Message in the dialog
+        StringBuilder titles = new StringBuilder();
+        for (AnthologyTitle t : results) {
+            titles.append(t.getTitle()).append(", ");
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(getActivity()).setMessage(titles)
+                .setTitle(R.string.anthology_confirm)
+                .setIcon(android.R.drawable.ic_menu_info_details)
+                .create();
+
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                 this.getResources().getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
-                        for (int j = 0; j < titles.size(); j++) {
-                            String anthology_title = titles.get(j);
-                            anthology_title = anthology_title + ", ";
-                            String anthology_author = mBookAuthor;
-                            // Does the string look like "Hindsight by Jack Williamson"
-                            int pos = anthology_title.indexOf(" by ");
-                            if (pos > 0) {
-                                anthology_author = anthology_title.substring(pos + 4);
-                                anthology_title = anthology_title.substring(0, pos);
-                            }
-                            // Trim extraneous punctuation and whitespace from the titles and authors
-                            anthology_author = anthology_author.trim()
-                                    .replace("\n", " ")
-                                    .replaceAll(CLEANUP_REGEX, "")
-                                    .trim();
-                            anthology_title = anthology_title.trim()
-                                    .replace("\n", " ")
-                                    .replaceAll(CLEANUP_REGEX, "")
-                                    .trim();
-                            AnthologyTitle anthology = new AnthologyTitle(book.getRowId(), new Author(anthology_author), anthology_title);
-                            mList.add(anthology);
-                        }
+                         mList.addAll(results);
                         AnthologyTitleListAdapter adapter = ((AnthologyTitleListAdapter) EditBookAnthologyFragment.this.getListView().getAdapter());
                         adapter.notifyDataSetChanged();
                     }
                 });
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
+
+        // if we found multiple editions, allow a re-try with the next inline
+        if (mISFDBUrls.size() > 1) {
+            dialog.setButton(AlertDialog.BUTTON_NEUTRAL,
+                    this.getResources().getString(R.string.try_another),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, final int which) {
+                            mISFDBUrls.remove(0);
+                            handleISFDBBook(mISFDBUrls.get(0));
+                        }
+                    });
+        }
+
+        dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                 this.getResources().getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    @SuppressWarnings("EmptyMethod")
                     public void onClick(final DialogInterface dialog, final int which) {
-                        //do nothing
+                        dialog.dismiss();
                     }
                 });
-        alertDialog.show();
+        dialog.show();
 
     }
+    //</editor-fold>
 
     /**
      * Run each time the menu button is pressed. This will setup the options menu
@@ -323,8 +409,12 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.clear();
-        MenuItem populate = menu.add(0, POPULATE, 0, R.string.populate_anthology_titles);
-        populate.setIcon(android.R.drawable.ic_menu_add);
+        menu.add(0, POPULATE_ISFDB, 0, R.string.populate_anthology_titles)
+                .setIcon(android.R.drawable.ic_menu_add);
+
+//        menu.add(0, POPULATE_WIKIPEDIA, 0, R.string.populate_anthology_titles)
+//                .setIcon(android.R.drawable.ic_menu_add);
+//
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -335,8 +425,12 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case POPULATE:
+            case POPULATE_ISFDB:
+                searchISFDB();
+                return true;
+            case POPULATE_WIKIPEDIA:
                 searchWikipedia();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -371,6 +465,10 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     @Override
     public void onPause() {
         super.onPause();
+        if (mAntFetcher != null) {
+            mAntFetcher.finish();
+            mAntFetcher = null;
+        }
         saveState(mEditManager.getBookData());
     }
 
@@ -398,10 +496,11 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         protected void onSetupView(@NonNull final View convertView,
                                    @NonNull final AnthologyTitle item,
                                    final int position) {
-            TextView author = convertView.findViewById(R.id.row_author);
-            author.setText(item.getAuthor().getDisplayName());
             TextView title = convertView.findViewById(R.id.row_title);
             title.setText(item.getTitle());
+
+            TextView author = convertView.findViewById(R.id.row_author);
+            author.setText(item.getAuthor().getDisplayName());
         }
 
         @Override
@@ -417,4 +516,139 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
             mEditManager.setDirty(true);
         }
     }
+
+    /**
+     * it works now as a background task, but the results are not good. Doesn't seem Wikipedia
+     * is a good (e.g. structured) source
+     */
+    private void searchWikipedia() {
+        // Setup the background fetcher
+        if (mAntFetcher == null) {
+            mAntFetcher = new SimpleTaskQueue("wikipedia-anthology");
+        }
+
+        mAntFetcher.enqueue(new GetFromWikipediaTask(mBookAuthor, mBookTitle));
+    }
+
+    private class GetFromWikipediaTask implements SimpleTaskQueue.SimpleTask {
+
+        final String mWikiHost = "https://en.wikipedia.org";
+        String mWikiURL;
+
+        boolean mFound = false;
+
+        GetFromWikipediaTask(@NonNull final String author, @NonNull final String title) {
+
+            String pathAuthor = author.replace(" ", "+").replace(",", "");
+            // Strip everything past the , from the title
+            String pathTitle = title;
+            int comma = pathTitle.indexOf(",");
+            if (comma > 0) {
+                pathTitle = pathTitle.substring(0, comma);
+            }
+            pathTitle = pathTitle.replace(" ", "+");
+            mWikiURL = mWikiHost + "/w/index.php?title=Special:Search&search=%22" + pathTitle + "%22+" + pathAuthor + "";
+            if (BuildConfig.DEBUG) {
+                System.out.println("GetFromWikipediaTask.url = " + mWikiURL);
+            }
+        }
+
+        @Override
+        public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) {
+            try {
+                SAXParserFactory factory = SAXParserFactory.newInstance();
+                SAXParser parser;
+                SearchWikipediaHandler handler = new SearchWikipediaHandler();
+                SearchWikipediaEntryHandler entryHandler = new SearchWikipediaEntryHandler();
+
+                parser = factory.newSAXParser();
+                parser.parse(Utils.getInputStream(new URL(mWikiURL)), handler);
+
+                String[] links = handler.getLinks();
+                for (String link : links) {
+                    if (link.isEmpty() || mFound) {
+                        break;
+                    }
+                    parser = factory.newSAXParser();
+                    try {
+                        parser.parse(Utils.getInputStream(new URL(mWikiHost + link)), entryHandler);
+                        List<String> titles = entryHandler.getList();
+                        /* Display the confirm dialog */
+                        if (titles.size() > 0) {
+                            showAnthologyConfirmWikipedia(titles);
+                            mFound = true;
+                        }
+                    } catch (RuntimeException e) {
+                        Logger.logError(e);
+                    }
+                }
+            } catch (Exception e) {
+                Logger.logError(e);
+            }
+        }
+
+        @Override
+        public void onFinish(@Nullable final Exception e) {
+            if (!mFound) {
+                // can't Toast.makeText(getActivity(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();
+                return;
+            }
+            fillAnthology();
+        }
+    }
+
+    private void showAnthologyConfirmWikipedia(final List<String> titles) {
+        final BookData book = mEditManager.getBookData();
+        StringBuilder anthology_title = new StringBuilder();
+        for (int j = 0; j < titles.size(); j++) {
+            anthology_title.append("* ").append(titles.get(j)).append("\n");
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(getActivity()).setMessage(anthology_title)
+                .setTitle(R.string.anthology_confirm)
+                .setIcon(android.R.drawable.ic_menu_info_details)
+                .create();
+
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE,
+                this.getResources().getString(android.R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        for (int j = 0; j < titles.size(); j++) {
+                            String anthology_title = titles.get(j);
+                            anthology_title = anthology_title + ", ";
+                            String anthology_author = mBookAuthor;
+                            // Does the string look like "Hindsight by Jack Williamson"
+                            int pos = anthology_title.indexOf(" by ");
+                            if (pos > 0) {
+                                anthology_author = anthology_title.substring(pos + 4);
+                                anthology_title = anthology_title.substring(0, pos);
+                            }
+                            // Trim extraneous punctuation and whitespace from the titles and authors
+                            anthology_author = anthology_author.trim()
+                                    .replace("\n", " ")
+                                    .replaceAll(CLEANUP_REGEX, "")
+                                    .trim();
+                            anthology_title = anthology_title.trim()
+                                    .replace("\n", " ")
+                                    .replaceAll(CLEANUP_REGEX, "")
+                                    .trim();
+                            AnthologyTitle anthology = new AnthologyTitle(book.getRowId(), new Author(anthology_author), anthology_title);
+                            mList.add(anthology);
+                        }
+                        AnthologyTitleListAdapter adapter = ((AnthologyTitleListAdapter) EditBookAnthologyFragment.this.getListView().getAdapter());
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+        dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
+                this.getResources().getString(android.R.string.cancel),
+                new DialogInterface.OnClickListener() {
+                    @SuppressWarnings("EmptyMethod")
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        //do nothing
+                    }
+                });
+        dialog.show();
+
+    }
+
 }

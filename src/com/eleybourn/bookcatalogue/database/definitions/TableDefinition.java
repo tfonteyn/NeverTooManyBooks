@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,13 +27,13 @@ public class TableDefinition implements AutoCloseable {
     /** List of index definitions for this table */
     private final Map<String, IndexDefinition> mIndexes = Collections.synchronizedMap(new HashMap<String, IndexDefinition>());
     /** List of domains in this table */
-    private final ArrayList<DomainDefinition> mDomains;
+    private final List<DomainDefinition> mDomains;
     /** Used for checking if a domain has already been added */
     private final Set<DomainDefinition> mDomainCheck = new HashSet<>();
     /** Used for checking if a domain NAME has already been added */
     private final Map<String, DomainDefinition> mDomainNameCheck = Collections.synchronizedMap(new HashMap<String, DomainDefinition>());
     /** List of domains forming primary key */
-    private final ArrayList<DomainDefinition> mPrimaryKey = new ArrayList<>();
+    private final List<DomainDefinition> mPrimaryKey = new ArrayList<>();
     /** List of parent tables (tables referred to by foreign keys on this table) */
     private final Map<TableDefinition, FkReference> mParents = Collections.synchronizedMap(new HashMap<TableDefinition, FkReference>());
     /** List of child tables (tables referring to by foreign keys to this table) */
@@ -78,7 +79,7 @@ public class TableDefinition implements AutoCloseable {
     /**
      * @return list of domains.
      */
-    public ArrayList<DomainDefinition> getDomains() {
+    public List<DomainDefinition> getDomains() {
         return mDomains;
     }
 
@@ -94,7 +95,7 @@ public class TableDefinition implements AutoCloseable {
         mIndexes.clear();
 
         // Need to make local copies to avoid 'collection modified' errors
-        ArrayList<TableDefinition> tmpParents = new ArrayList<>();
+        List<TableDefinition> tmpParents = new ArrayList<>();
         for (Map.Entry<TableDefinition, FkReference> fkEntry : mParents.entrySet()) {
             FkReference fk = fkEntry.getValue();
             tmpParents.add(fk.parent);
@@ -104,7 +105,7 @@ public class TableDefinition implements AutoCloseable {
         }
 
         // Need to make local copies to avoid 'collection modified' errors
-        ArrayList<TableDefinition> tmpChildren = new ArrayList<>();
+        List<TableDefinition> tmpChildren = new ArrayList<>();
         for (Map.Entry<TableDefinition, FkReference> fkEntry : mChildren.entrySet()) {
             FkReference fk = fkEntry.getValue();
             tmpChildren.add(fk.child);
@@ -292,7 +293,7 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    private TableDefinition addReference(TableDefinition parent, ArrayList<DomainDefinition> domains) {
+    private TableDefinition addReference(TableDefinition parent, List<DomainDefinition> domains) {
         FkReference fk = new FkReference(parent, this, domains);
         return addReference(fk);
     }
@@ -382,7 +383,7 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    private TableDefinition addDomains(ArrayList<DomainDefinition> domains) {
+    private TableDefinition addDomains(List<DomainDefinition> domains) {
         for (DomainDefinition d : domains)
             addDomain(d);
         return this;
@@ -668,7 +669,7 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return Domain List
      */
-    private ArrayList<DomainDefinition> getPrimaryKey() {
+    private List<DomainDefinition> getPrimaryKey() {
         return mPrimaryKey;
     }
 
@@ -680,7 +681,7 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    private TableDefinition setPrimaryKey(ArrayList<DomainDefinition> domains) {
+    private TableDefinition setPrimaryKey(List<DomainDefinition> domains) {
         mPrimaryKey.clear();
         mPrimaryKey.addAll(domains);
         return this;
@@ -735,7 +736,7 @@ public class TableDefinition implements AutoCloseable {
         /** Table owning FK */
         final TableDefinition child;
         /** Domains in the FK that reference the parent PK */
-        final ArrayList<DomainDefinition> domains;
+        final List<DomainDefinition> domains;
 
         /**
          * Constructor.
@@ -758,7 +759,7 @@ public class TableDefinition implements AutoCloseable {
          * @param child   Child table (owner of the FK)
          * @param domains Domains in child table that reference PK in parent
          */
-        FkReference(TableDefinition parent, TableDefinition child, ArrayList<DomainDefinition> domains) {
+        FkReference(TableDefinition parent, TableDefinition child, List<DomainDefinition> domains) {
             this.domains = new ArrayList<>();
             this.domains.addAll(domains);
             this.parent = parent;
@@ -772,7 +773,7 @@ public class TableDefinition implements AutoCloseable {
          * @return SQL fragment
          */
         String getPredicate() {
-            ArrayList<DomainDefinition> pk = parent.getPrimaryKey();
+            List<DomainDefinition> pk = parent.getPrimaryKey();
             StringBuilder sql = new StringBuilder();
             for (int i = 0; i < pk.size(); i++) {
                 if (i > 0)

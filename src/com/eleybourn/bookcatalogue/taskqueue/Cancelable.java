@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.eleybourn.bookcatalogue.tasks;
+package com.eleybourn.bookcatalogue.taskqueue;
 
 import java.util.concurrent.ExecutionException;
 

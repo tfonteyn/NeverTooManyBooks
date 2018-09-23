@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.eleybourn.bookcatalogue.tasks;
+package com.eleybourn.bookcatalogue.taskqueue;
 
 import android.support.annotation.NonNull;
 
@@ -22,7 +22,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
 /**
- * An abstract class for the interface <code>Cancelable</code>. Subclass can
+ * An abstract class for the interface {@link Cancelable}. Subclass can
  * simply override the <code>execute()</code> function to provide an
  * implementation of <code>Cancelable</code>.
  */
@@ -157,7 +157,7 @@ public abstract class BaseCancelable<T> implements Cancelable<T> {
 	}
 
 	/**
-	 * Runs a <code>Cancelable</code> subtask. This method is helpful, if the
+	 * Runs a <code>Cancelable</code> sub task. This method is helpful, if the
 	 * task can be composed of several cancelable tasks. By using this function,
 	 * it will pass <code>requestCancel</code> message to those sub-tasks.
 	 * 

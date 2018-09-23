@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.booklist;
 import android.database.sqlite.SQLiteDoneException;
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
@@ -55,11 +56,11 @@ public class FlattenedBooklist implements AutoCloseable {
      * @param db        Database connection
      * @param tableName Name of underlying table
      */
-    public FlattenedBooklist(@NonNull final SynchronizedDb db, @NonNull final String tableName) {
+    public FlattenedBooklist(@NonNull final CatalogueDBAdapter db, @NonNull final String tableName) {
         TableDefinition flat = DatabaseDefinitions.TBL_ROW_NAVIGATOR_FLATTENED_DEFN.clone();
         flat.setName(tableName);
         flat.setType(TableTypes.Temporary); //RELEASE Make sure is TEMPORARY
-        init(db, flat);
+        init(db.getDbIfYouAreSureWhatYouAreDoing(), flat);
     }
 
     /**

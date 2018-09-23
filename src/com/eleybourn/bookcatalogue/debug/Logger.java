@@ -66,9 +66,7 @@ public class Logger {
         PrintWriter pw = new PrintWriter(sw);
 
         if (e != null) {
-            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
             e.printStackTrace(pw);
-            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         } else {
             printStackTrace(null);
         }
@@ -113,7 +111,6 @@ public class Logger {
     }
 
     public static void printStackTrace(@Nullable final String msg) {
-        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         if (msg != null) {
             System.out.println(msg);
         }
@@ -121,6 +118,5 @@ public class Logger {
         for (StackTraceElement element : all) {
             System.out.println(element);
         }
-        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
     }
 }

@@ -37,6 +37,7 @@ import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
 import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter.BindableItemBinder;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author pjw
@@ -123,7 +124,7 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
      * @param title Title of Alert
      * @param items Items to display
      */
-    protected void showContextDialogue(@NonNull final String title, @NonNull final ArrayList<ContextDialogItem> items) {
+    protected void showContextDialogue(@NonNull final String title, @NonNull final List<ContextDialogItem> items) {
         if (items.size() > 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(title);

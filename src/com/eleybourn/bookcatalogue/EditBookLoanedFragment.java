@@ -45,7 +45,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import java.util.ArrayList;
 
 /**
- * This class is called by the EditBookActivity activity and displays the Loaned Tab
+ * This class is called by the BookDetailsActivity activity and displays the Loaned Tab
  *
  * Users can select a book and, from this activity, select a friend to "loan" the book to.
  * This will then be saved in the database for reference.

@@ -176,7 +176,7 @@
                 style="@style/bookDetailLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/anthology_titles" />
+                android:text="@string/table_of_content" />
 
             <Switch
                 android:id="@+id/anthology_button"
@@ -202,6 +202,8 @@
             android:visibility="gone"
             tools:visibility="visible"
             tools:ignore="NestedScrolling" />
+
+        <View style="@style/listDividerHorizontal" />
 
         <!-- Publishing -->
         <TextView
@@ -260,7 +262,6 @@
             tools:text="Quenya"
             android:textIsSelectable="true" />
 
-        <View style="@style/listDividerHorizontal" />
 
         <TableLayout
             android:layout_width="match_parent"
@@ -284,6 +285,7 @@
                     android:textIsSelectable="true" />
             </TableRow>
         </TableLayout>
+
 
         <!-- Notes section starts here -->
 

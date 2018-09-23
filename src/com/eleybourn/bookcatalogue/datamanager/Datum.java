@@ -26,6 +26,7 @@ import android.support.annotation.Nullable;
 import com.eleybourn.bookcatalogue.datamanager.validators.DataValidator;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Class to manage storage and retrieval of a piece of data from a bundle as well as
@@ -523,6 +524,45 @@ public class Datum {
             bundle.putSerializable(mKey, value);
         } else {
             throw new RuntimeException("Accessor not supported for serializable objects");
+        }
+        return this;
+    }
+
+    /**
+     * Get the ArrayList<String> object from the collection.
+     * We currently do not use a Datum for special access.
+     * TODO: Consider how to use an accessor
+     *
+     * @param data   Parent DataManager
+     * @param bundle Raw data Bundle
+     *
+     * @return The data
+     */
+    @Nullable
+    public ArrayList<String> getStringArrayList(@SuppressWarnings("unused") @NonNull final DataManager data, @NonNull final Bundle bundle) {
+        if (mAccessor == null) {
+            return bundle.getStringArrayList(mKey);
+        } else {
+            throw new RuntimeException("Accessor not supported for ArrayList<String> objects");
+        }
+    }
+
+    /**
+     * Set the ArrayList<String> object in the collection.
+     * We currently do not use a Datum for special access.
+     * TODO: Consider how to use an accessor
+     *
+     * @param bundle Raw data Bundle
+     * @param value  The ArrayList<String> object
+     *
+     * @return The data manager for chaining
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public Datum putStringArrayList(@NonNull final Bundle bundle, @NonNull final ArrayList<String> value) {
+        if (mAccessor == null) {
+            bundle.putStringArrayList(mKey, value);
+        } else {
+            throw new RuntimeException("Accessor not supported for ArrayList<String> objects");
         }
         return this;
     }

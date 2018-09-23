@@ -34,9 +34,7 @@ import android.database.sqlite.SQLiteQuery;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
-import com.eleybourn.bookcatalogue.BookDetailsFragment;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.LockTypes;
@@ -757,7 +755,7 @@ public class DbSync {
             mIsReadOnly = sql.trim().toLowerCase().startsWith("select");
             mStatement = db.getUnderlyingDatabase().compileStatement(sql);
 
-            if (DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.SQL && BuildConfig.DEBUG) {
                 System.out.println("SynchronizedStatement(new): " + sql + "\n\n");
             }
         }
@@ -987,7 +985,11 @@ public class DbSync {
 
         public void finalize() {
             if (!mIsClosed && DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
-                Logger.logError(new RuntimeException("DbSync.SynchronizedStatement: Finalizing non-closed statement (potential error/normal)" + (DEBUG_SWITCHES.DB_SYNC ? ": " + mSql : "")));
+                Logger.logError(new RuntimeException("DbSync.SynchronizedStatement: Finalizing non-closed statement" +
+                        " (potential error/normal)"));
+                if (DEBUG_SWITCHES.SQL) {
+                    System.out.println(mSql);
+                }
             }
 
             // Try to close the underlying statement.

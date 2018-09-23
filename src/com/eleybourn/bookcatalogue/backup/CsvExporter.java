@@ -210,7 +210,6 @@ public class CsvExporter implements Exporter {
                 int anthology = bookCursor.getInt(bookCursor.getColumnIndexOrThrow(DOM_ANTHOLOGY_MASK.name));
                 StringBuilder anthology_titles = new StringBuilder();
                 if (anthology != 0) {
-                    //TODO : refactor this into ArrayUtils
                     try (Cursor titles = db.fetchAnthologyTitlesByBookId(id)) {
                         if (titles.moveToFirst()) {
                             do {

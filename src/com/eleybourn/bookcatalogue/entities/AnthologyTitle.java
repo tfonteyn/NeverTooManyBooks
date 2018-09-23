@@ -27,6 +27,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Class to represent a single title within an anthology
@@ -51,7 +52,7 @@ import java.util.ArrayList;
  * @author pjw
  */
 public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
-    //TODO: see if this matters
+    //TODO: see if this matters, I don't think we serialise this to external/blob
     //private static final long serialVersionUID = -8715364898312204329L;
     private static final long serialVersionUID = 2L;
 
@@ -76,6 +77,10 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         id = 0;
         mBookId = 0;
         mPosition = 0;
+        authorFromName(name);
+    }
+
+    private void authorFromName(String name) {
         ArrayList<String> data = ArrayUtils.decodeList(TITLE_AUTHOR_DELIM, name);
         mTitle = data.get(0);
         mAuthor = new Author(data.get(1));
@@ -90,7 +95,6 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     public AnthologyTitle(final long bookId, @NonNull final Author author, @NonNull final String title) {
         this(0, bookId, author, title, 0);
     }
-
 
     /**
      * Constructor
@@ -169,4 +173,24 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         return true;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AnthologyTitle that = (AnthologyTitle) o;
+        if ( id == 0 || that.id == 0) {
+            return Objects.equals(mAuthor, that.mAuthor) && Objects.equals(mTitle, that.mTitle);
+        }
+        return (id == that.id);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, mAuthor, mTitle);
+    }
 }

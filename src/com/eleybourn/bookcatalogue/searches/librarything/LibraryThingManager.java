@@ -42,6 +42,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -135,14 +136,14 @@ public class LibraryThingManager {
      * Search for edition data.
      * *
      */
-    public static ArrayList<String> searchEditions(String isbn) {
+    public static List<String> searchEditions(String isbn) {
         // Base path for an ISBN search
         String path = String.format(EDITIONS_URL, isbn);
         if (isbn.isEmpty()) {
             throw new RuntimeException("Can not get editions without an ISBN");
         }
 
-        ArrayList<String> editions = new ArrayList<>();
+        List<String> editions = new ArrayList<>();
 
         // Setup the parser
         SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -484,7 +485,7 @@ public class LibraryThingManager {
             // Make sure we follow LibraryThing ToS (no more than 1 request/second).
             waitUntilRequestAllowed();
             parser.parse(Utils.getInputStream(url), entryHandler);
-            // Dont bother catching general exceptions, they will be caught by the caller.
+            // Don't bother catching general exceptions, they will be caught by the caller.
         } catch (ParserConfigurationException | SAXException | java.io.IOException e) {
             String s = "unknown";
             try {
@@ -592,9 +593,9 @@ public class LibraryThingManager {
      */
     static private class SearchLibraryThingEditionHandler extends DefaultHandler {
         private final StringBuilder mBuilder = new StringBuilder();
-        private final ArrayList<String> mEditions;
+        private final List<String> mEditions;
 
-        SearchLibraryThingEditionHandler(ArrayList<String> editions) {
+        SearchLibraryThingEditionHandler(List<String> editions) {
             mEditions = editions;
         }
 
@@ -649,7 +650,7 @@ public class LibraryThingManager {
          *
          * @param key Key for data to add
          */
-        private void addIfNotPresent(String key) {
+        private void addIfNotPresent(@NonNull final String key) {
             if (!mBookData.containsKey(key) || mBookData.getString(key).isEmpty()) {
                 mBookData.putString(key, mBuilder.toString());
             }
@@ -661,7 +662,7 @@ public class LibraryThingManager {
          *
          * @param key Key for data to add
          */
-        private void appendOrAdd(String key) {
+        private void appendOrAdd(@NonNull final String key) {
             ArrayUtils.appendOrAdd(mBookData, key, mBuilder.toString());
         }
 

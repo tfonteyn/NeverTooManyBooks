@@ -53,6 +53,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -1844,7 +1845,7 @@ public class BooklistBuilder implements AutoCloseable {
      */
     public String[] getListColumnNames() {
         // Get the domains
-        ArrayList<DomainDefinition> domains = mListTable.getDomains();
+        List<DomainDefinition> domains = mListTable.getDomains();
         // Make the array and allow for ABSOLUTE_POSITION
         String[] names = new String[domains.size() + 1];
         // Copy domains

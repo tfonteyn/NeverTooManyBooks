@@ -47,6 +47,7 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Activity to display the available QueueManager Task object subclasses to the user.
@@ -117,7 +118,7 @@ public class TaskListActivity extends BindableItemListActivity {
     @Override
     public void onListItemClick(@NonNull AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
         Task task = ViewTagger.getTag(v, R.id.TAG_TASK);
-        ArrayList<ContextDialogItem> items = new ArrayList<>();
+        List<ContextDialogItem> items = new ArrayList<>();
 
         items.add(new ContextDialogItem(getString(R.string.show_events_ellipsis), new Runnable() {
             @Override
@@ -150,7 +151,10 @@ public class TaskListActivity extends BindableItemListActivity {
      * Pass binding off to the task object.
      */
     @Override
-    public void bindViewToItem(@NonNull Context context, @Nullable View view, @NonNull BindableItemCursor cursor, @NonNull BindableItemCursorAdapter.BindableItem bindable) {
+    public void bindViewToItem(@NonNull final Context context,
+                               @NonNull final View view,
+                               @NonNull final BindableItemCursor cursor,
+                               @NonNull final BindableItemCursorAdapter.BindableItem bindable) {
         ViewTagger.setTag(view, R.id.TAG_TASK, bindable);
         bindable.bindView(view, context, cursor, mDb);
     }
@@ -159,7 +163,7 @@ public class TaskListActivity extends BindableItemListActivity {
      * Get a cursor returning the tasks we are interested in (in this case all tasks)
      */
     @Override
-    protected BindableItemCursor getBindableItemCursor(Bundle savedInstanceState) {
+    protected BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState) {
         mCursor = QueueManager.getQueueManager().getTasks(TaskCursorSubtype.all);
         return mCursor;
     }

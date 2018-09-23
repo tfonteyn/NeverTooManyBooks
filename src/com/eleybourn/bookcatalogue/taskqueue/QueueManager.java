@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.EventActions;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnEventChangeListener;
@@ -65,17 +66,12 @@ public abstract class QueueManager {
     /** Handle inter-thread messages */
     private final MessageHandler m_messageHandler;
     /** Objects listening for Event operations */
-    private final ArrayList<WeakReference<OnEventChangeListener>> m_eventChangeListeners = new ArrayList<>();
+    private final List<WeakReference<OnEventChangeListener>> m_eventChangeListeners = new ArrayList<>();
     /** Objects listening for Task operations */
-    private final ArrayList<WeakReference<OnTaskChangeListener>> m_taskChangeListeners;
+    private final List<WeakReference<OnTaskChangeListener>> m_taskChangeListeners;
 
-    /**
-     * Create the queue we need, if they do not already exist.
-     *
-     * main: long-running tasks, or tasks that can just wait
-     * small_jobs: trivial background tasks that will only take a few seconds.
-     */
-    public QueueManager(Context context) {
+
+    public QueueManager(@NonNull final Context context) {
         super();
         if (m_queueManager != null) {
             // This is an essential requirement because (a) synchronization will not work with more than one
@@ -101,7 +97,7 @@ public abstract class QueueManager {
         return m_queueManager;
     }
 
-    public void registerEventListener(OnEventChangeListener listener) {
+    public void registerEventListener(@NonNull final OnEventChangeListener listener) {
         synchronized (m_eventChangeListeners) {
             for (WeakReference<OnEventChangeListener> lr : m_eventChangeListeners) {
                 OnEventChangeListener l = lr.get();
@@ -112,9 +108,9 @@ public abstract class QueueManager {
         }
     }
 
-    public void unregisterEventListener(OnEventChangeListener listener) {
+    public void unregisterEventListener(@NonNull final OnEventChangeListener listener) {
         synchronized (m_eventChangeListeners) {
-            ArrayList<WeakReference<OnEventChangeListener>> ll = new ArrayList<>();
+            List<WeakReference<OnEventChangeListener>> ll = new ArrayList<>();
             for (WeakReference<OnEventChangeListener> l : m_eventChangeListeners) {
                 if (l.get().equals(listener))
                     ll.add(l);
@@ -125,7 +121,7 @@ public abstract class QueueManager {
         }
     }
 
-    public void registerTaskListener(OnTaskChangeListener listener) {
+    public void registerTaskListener(@NonNull final OnTaskChangeListener listener) {
         synchronized (m_taskChangeListeners) {
             for (WeakReference<OnTaskChangeListener> lr : m_taskChangeListeners) {
                 OnTaskChangeListener l = lr.get();
@@ -136,7 +132,7 @@ public abstract class QueueManager {
         }
     }
 
-    public void unregisterTaskListener(OnTaskChangeListener listener) {
+    public void unregisterTaskListener(@NonNull final OnTaskChangeListener listener) {
         synchronized (m_taskChangeListeners) {
             List<WeakReference<OnTaskChangeListener>> ll = new ArrayList<>();
             for (WeakReference<OnTaskChangeListener> l : m_taskChangeListeners) {
@@ -149,7 +145,7 @@ public abstract class QueueManager {
         }
     }
 
-    protected void notifyTaskChange(final Task task, final TaskActions action) {
+    protected void notifyTaskChange(@Nullable final  Task task, @NonNull final  TaskActions action) {
         // Make a copy of the list so we can cull dead elements from the original
         List<WeakReference<OnTaskChangeListener>> list;
         synchronized (m_taskChangeListeners) {
@@ -178,7 +174,7 @@ public abstract class QueueManager {
         }
     }
 
-    private void notifyEventChange(final Event event, final EventActions action) {
+    private void notifyEventChange(@Nullable final Event event, @NonNull final EventActions action) {
         // Make a copy of the list so we can cull dead elements from the original
         List<WeakReference<OnEventChangeListener>> list;
         synchronized (m_eventChangeListeners) {
@@ -212,7 +208,7 @@ public abstract class QueueManager {
      * @param task      task to queue
      * @param queueName Name of queue
      */
-    public void enqueueTask(Task task, String queueName) {
+    public void enqueueTask(@NonNull final Task task, @NonNull final String queueName) {
         synchronized (this) {
             // Save it
             m_dba.enqueueTask(task, queueName);
@@ -234,7 +230,7 @@ public abstract class QueueManager {
      *
      * @param name Name of the queue
      */
-    protected void initializeQueue(String name) {
+    protected void initializeQueue(@NonNull final String name) {
         m_dba.createQueue(name);
     }
 
@@ -243,7 +239,7 @@ public abstract class QueueManager {
      *
      * @param queue New queue object
      */
-    public void queueStarting(Queue queue) {
+    public void queueStarting(@NonNull final Queue queue) {
         synchronized (this) {
             m_activeQueues.put(queue.getQueueName(), queue);
         }
@@ -254,7 +250,7 @@ public abstract class QueueManager {
      *
      * @param queue Queue that is stopping
      */
-    public void queueTerminating(Queue queue) {
+    public void queueTerminating(@NonNull final Queue queue) {
         synchronized (this) {
             try {
                 // It's possible that a queue terminated and another started; make sure we are removing
@@ -276,7 +272,7 @@ public abstract class QueueManager {
      *
      * @return Result from run(...) method
      */
-    protected boolean runOneTask(Task task) {
+    protected boolean runOneTask(@NonNull final Task task) {
         if (task instanceof RunnableTask) {
             return ((RunnableTask) task).run(this, this.getApplicationContext());
         } else {
@@ -290,7 +286,7 @@ public abstract class QueueManager {
      *
      * @param task The task to be saved. Must exist in database.
      */
-    public void saveTask(Task task) {
+    public void saveTask(@NonNull final Task task) {
         m_dba.updateTask(task);
         this.notifyTaskChange(task, TaskActions.updated);
     }
@@ -321,7 +317,7 @@ public abstract class QueueManager {
      * @param t Related task
      * @param e Exception (usually subclassed)
      */
-    public void storeTaskEvent(Task t, Event e) {
+    public void storeTaskEvent(@NonNull final Task t, @NonNull final Event e) {
         m_dba.storeTaskEvent(t, e);
         this.notifyEventChange(e, EventActions.created);
     }
@@ -342,7 +338,7 @@ public abstract class QueueManager {
      *
      * @return Cursor of exceptions
      */
-    public EventsCursor getTaskEvents(long taskId) {
+    public EventsCursor getTaskEvents(final long taskId) {
         return m_dba.getTaskEvents(taskId);
     }
 
@@ -353,7 +349,7 @@ public abstract class QueueManager {
      *
      * @return Cursor of exceptions
      */
-    public TasksCursor getTasks(TaskCursorSubtype type) {
+    public TasksCursor getTasks(@NonNull final TaskCursorSubtype type) {
         return m_dba.getTasks(type);
     }
 
@@ -364,7 +360,7 @@ public abstract class QueueManager {
      *
      * @return Cursor of exceptions
      */
-    public boolean hasActiveTasks(long category) {
+    public boolean hasActiveTasks(final long category) {
         try (TasksCursor c = m_dba.getTasks(category, TaskCursorSubtype.active)) {
             return c.moveToFirst();
         }
@@ -375,7 +371,7 @@ public abstract class QueueManager {
      *
      * @param id ID of TaskException to delete.
      */
-    public void deleteTask(long id) {
+    public void deleteTask(final long id) {
         boolean isActive = false;
         // Check if the task is running in a queue.
         synchronized (this) {
@@ -409,7 +405,7 @@ public abstract class QueueManager {
      *
      * @param id ID of TaskException to delete.
      */
-    public void deleteEvent(long id) {
+    public void deleteEvent(final long id) {
         m_dba.deleteEvent(id);
         this.notifyEventChange(null, EventActions.deleted);
         // This is non-optimal, but ... it's easy and clear.
@@ -422,7 +418,7 @@ public abstract class QueueManager {
      *
      * @param ageInDays Age in days for stale records
      */
-    public void cleanupOldEvents(int ageInDays) {
+    public void cleanupOldEvents(final int ageInDays) {
         m_dba.cleanupOldEvents(ageInDays);
         m_dba.cleanupOrphans();
         // This is non-optimal, but ... it's easy and clear.
@@ -435,7 +431,7 @@ public abstract class QueueManager {
      *
      * @param ageInDays Age in days for stale records
      */
-    public void cleanupOldTasks(int ageInDays) {
+    public void cleanupOldTasks(final int ageInDays) {
         m_dba.cleanupOldTasks(ageInDays);
         m_dba.cleanupOrphans();
         // This is non-optimal, but ... it's easy and clear.

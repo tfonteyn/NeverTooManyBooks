@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -39,450 +39,490 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
  * Class to manage a version of a set of related data.
- * 
- * @author pjw
  *
+ * @author pjw
  */
 @SuppressWarnings("ALL")
 public class DataManager {
-	// Generic validators; if field-specific defaults are needed, create a new one.
-	protected static final DataValidator integerValidator = new IntegerValidator("0");
+    // Generic validators; if field-specific defaults are needed, create a new one.
+    protected static final DataValidator integerValidator = new IntegerValidator("0");
 
-	protected static final DataValidator nonBlankValidator = new NonBlankValidator();
+    protected static final DataValidator nonBlankValidator = new NonBlankValidator();
 
-	protected static final DataValidator blankOrIntegerValidator = new OrValidator(new BlankValidator(),
-			new IntegerValidator("0"));
+    protected static final DataValidator blankOrIntegerValidator = new OrValidator(new BlankValidator(),
+            new IntegerValidator("0"));
 
-	protected static final DataValidator blankOrFloatValidator = new OrValidator(new BlankValidator(),
-			new FloatValidator("0.00"));
+    protected static final DataValidator blankOrFloatValidator = new OrValidator(new BlankValidator(),
+            new FloatValidator("0.00"));
 
-	// DataValidator blankOrDateValidator = new OrValidator(new BlankValidator(), new DateValidator());
+    // DataValidator blankOrDateValidator = new OrValidator(new BlankValidator(), new DateValidator());
 
-	/** Raw data storage */
-	protected final Bundle mBundle = new Bundle();
-	/** Storage for the data-related code */
-	private final DatumHash mData = new DatumHash();
-	
-	/** The last validator exception caught by this object */
-	private final ArrayList<ValidatorException> mValidationExceptions = new ArrayList<>();
-	/** A list of cross-validators to apply if all fields pass simple validation. */
-	private final ArrayList<DataCrossValidator> mCrossValidators = new ArrayList<>();
+    /** Raw data storage */
+    protected final Bundle mBundle = new Bundle();
+    /** Storage for the data-related code */
+    private final DatumHash mData = new DatumHash();
 
-	/**
-	 * Erase everything in this instance
-	 * 
-	 * @return	self, for chaining
-	 */
-	@SuppressWarnings("UnusedReturnValue")
-	public DataManager clear() {
-		mBundle.clear();
-		mData.clear();
-		mValidationExceptions.clear();
-		mCrossValidators.clear();
-		return this;
-	}
+    /** The last validator exception caught by this object */
+    private final List<ValidatorException> mValidationExceptions = new ArrayList<>();
+    /** A list of cross-validators to apply if all fields pass simple validation. */
+    private final List<DataCrossValidator> mCrossValidators = new ArrayList<>();
 
-	/**
-	 * Class to manage the collection of Datum objects for this DataManager
-	 *
-	 * @author pjw
-	 */
-	private static class DatumHash extends Hashtable<String,Datum> {
-		private static final long serialVersionUID = -650159534364183779L;
+    /**
+     * Erase everything in this instance
+     *
+     * @return self, for chaining
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public DataManager clear() {
+        mBundle.clear();
+        mData.clear();
+        mValidationExceptions.clear();
+        mCrossValidators.clear();
+        return this;
+    }
 
-		/**
-		 * Get the specified Datum, and create a stub if not present
-		 */
-		@Override 
-		public Datum get(@NonNull final Object key) {
-			Datum datum = super.get(key);
-			if (datum == null) {
-				datum = new Datum(key.toString(), null, true);
-				this.put(key.toString(), datum);
-			}
-			return datum;			
-		}
-	}
+    /**
+     * Add a validator for the specified Datum
+     *
+     * @param key       Key to the Datum
+     * @param validator Validator
+     *
+     * @return the DataManager, for chaining
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    protected DataManager addValidator(@NonNull final String key, @NonNull final DataValidator validator) {
+        mData.get(key).setValidator(validator);
+        return this;
+    }
 
-	/**
-	 * Add a validator for the specified Datum
-	 * 
-	 * @param key			Key to the Datum
-	 * @param validator		Validator
-	 * 
-	 * @return				the DataManager, for chaining
-	 */
-	@SuppressWarnings("UnusedReturnValue")
-	protected DataManager addValidator(@NonNull final String key, @NonNull final DataValidator validator) {
-		mData.get(key).setValidator(validator);
-		return this;
-	}
+    /**
+     * Add an Accessor for the specified Datum
+     *
+     * @param key      Key to the Datum
+     * @param accessor Accessor
+     *
+     * @return the DataManager, for chaining
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    protected DataManager addAccessor(@NonNull final String key, @NonNull final DataAccessor accessor) {
+        mData.get(key).setAccessor(accessor);
+        return this;
+    }
 
-	/**
-	 * Add an Accessor for the specified Datum
-	 * 
-	 * @param key			Key to the Datum
-	 * @param accessor		Accessor
-	 * 
-	 * @return				the DataManager, for chaining
-	 */
-	@SuppressWarnings("UnusedReturnValue")
-	protected DataManager addAccessor(@NonNull final String key, @NonNull final DataAccessor accessor) {
-		mData.get(key).setAccessor(accessor);
-		return this;
-	}
+    /**
+     * Get the data object specified by the passed key
+     *
+     * @param key Key of data object
+     *
+     * @return Data object
+     */
+    public Object get(@NonNull final String key) {
+        return get(mData.get(key));
+    }
 
-	/**
-	 * Get the data object specified by the passed key
-	 * 
-	 * @param key	Key of data object
-	 * 
-	 * @return		Data object
-	 */
-	public Object get(@NonNull final String key) {
-		return get(mData.get(key));
-	}
+    /**
+     * Get the data object specified by the passed Datum
+     *
+     * @param datum Datum
+     *
+     * @return Data object
+     */
+    public Object get(@NonNull final Datum datum) {
+        return datum.get(this, mBundle);
+    }
 
-	/**
-	 * Get the data object specified by the passed Datum
-	 * 
-	 * @param datum	Datum
-	 * 
-	 * @return		Data object
-	 */
-	public Object get(@NonNull final Datum datum) {
-		return datum.get(this, mBundle);
-	}
-	
-	/** Retrieve a boolean value */
-	public boolean getBoolean(@NonNull final String key) {
-		return mData.get(key).getBoolean(this, mBundle);
-	}
-	/** Store a boolean value */
-	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putBoolean(@NonNull final String key, final boolean value) {
-		mData.get(key).putBoolean(this, mBundle, value);
-		return this;
-	}
-	/** Store a boolean value */
-	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putBoolean(@NonNull final Datum datum, final boolean value) {
-		datum.putBoolean(this, mBundle, value);
-		return this;
-	}
+    /** Retrieve a boolean value */
+    public boolean getBoolean(@NonNull final String key) {
+        return mData.get(key).getBoolean(this, mBundle);
+    }
 
-	/** Get a double value */
-	@SuppressWarnings("unused")
-	public double getDouble(@NonNull final String key) {
-		return mData.get(key).getDouble(this, mBundle);
-	}
-	/** Store a double value */
-	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putDouble(@NonNull final String key, final double value) {
-		mData.get(key).putDouble(this, mBundle, value);
-		return this;
-	}
-	/** Store a double value */
-	@SuppressWarnings("unused")
-	public DataManager putDouble(@NonNull final Datum datum, final double value) {
-		datum.putDouble(this, mBundle, value);
-		return this;
-	}
+    /** Store a boolean value */
+    @SuppressWarnings("UnusedReturnValue")
+    public DataManager putBoolean(@NonNull final String key, final boolean value) {
+        mData.get(key).putBoolean(this, mBundle, value);
+        return this;
+    }
 
-	/** Get a float value */
-	@SuppressWarnings("unused")
-	public float getFloat(@NonNull final String key) {
-		return mData.get(key).getFloat(this, mBundle);
-	}
-	/** Store a float value */
-	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putFloat(@NonNull final String key, final float value) {
-		mData.get(key).putFloat(this, mBundle, value);
-		return this;
-	}
-	/** Store a float value */
-	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putFloat(@NonNull final Datum datum, final float value) {
-		datum.putFloat(this, mBundle, value);
-		return this;
-	}
+    /** Store a boolean value */
+    @SuppressWarnings("UnusedReturnValue")
+    public DataManager putBoolean(@NonNull final Datum datum, final boolean value) {
+        datum.putBoolean(this, mBundle, value);
+        return this;
+    }
 
-	/** Get an int value */
-	public int getInt(@NonNull final String key) {
-		return mData.get(key).getInt(this, mBundle);
-	}
-	/** Store an int value */
-	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putInt(@NonNull final String key, final int value) {
-		mData.get(key).putInt(this, mBundle, value);
-		return this;
-	}
-	/** Store an int value */
-	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putInt(@NonNull final Datum datum, final int value) {
-		datum.putInt(this, mBundle, value);
-		return this;
-	}
+    /** Get a double value */
+    @SuppressWarnings("unused")
+    public double getDouble(@NonNull final String key) {
+        return mData.get(key).getDouble(this, mBundle);
+    }
 
-	/** Get a long value */
-	public long getLong(@NonNull final String key) {
-		return mData.get(key).getLong(this, mBundle);
-	}
-	/** Store a long value */
-	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putLong(@NonNull final String key, final long value) {
-		mData.get(key).putLong(this, mBundle, value);
-		return this;
-	}
-	/** Store a long value */
-	public DataManager putLong(@NonNull final Datum datum, final long value) {
-		datum.putLong(this, mBundle, value);
-		return this;
-	}
+    /** Store a double value */
+    @SuppressWarnings("UnusedReturnValue")
+    public DataManager putDouble(@NonNull final String key, final double value) {
+        mData.get(key).putDouble(this, mBundle, value);
+        return this;
+    }
 
-	/** Get a String value */
-	public String getString(@NonNull final String key) {
-		return mData.get(key).getString(this, mBundle);
-	}
-	/** Get a String value */
-	public String getString(@NonNull final Datum datum) {
-		return datum.getString(this, mBundle);
-	}
-	/** Store a String value */
-	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putString(@NonNull final String key, @NonNull final String value) {
-		mData.get(key).putString(this, mBundle, value);
-		return this;
-	}
-	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putString(@NonNull final Datum datum, @NonNull final String value) {
-		datum.putString(this, mBundle, value);
-		return this;
-	}
+    /** Store a double value */
+    @SuppressWarnings("unused")
+    public DataManager putDouble(@NonNull final Datum datum, final double value) {
+        datum.putDouble(this, mBundle, value);
+        return this;
+    }
 
-	/**
-	 * Store all passed values in our collection.
-	 * We do the laborious method here to allow Accessors to do their thing.
-	 */
-	@SuppressWarnings("UnusedReturnValue")
-	protected DataManager putAll(@NonNull final Bundle src) {
-		for(String key: src.keySet()) {
-			Object o = src.get(key);
-			if (o instanceof String) {
-				putString(key, (String)o);
-			} else if (o instanceof Integer) {
-				putInt(key, (Integer)o);
-			} else if (o instanceof Long) {
-				putLong(key, (Long)o);
-			} else if (o instanceof Double) {
-				putDouble(key, (Double)o);
-			} else if (o instanceof Float) {
-				putFloat(key, (Float)o);
-			} else if (o instanceof Serializable) {
-				this.putSerializable(key, (Serializable)o);
-			} else {
-				// THIS IS NOT IDEAL!
-				if (o != null) {
-					putString(key, o.toString());					
-				} else {
-					System.out.println("NULL value for key '" + key + "'");
-				}
-			}
-		}
-		return this;
-	}
+    /** Get a float value */
+    @SuppressWarnings("unused")
+    public float getFloat(@NonNull final String key) {
+        return mData.get(key).getFloat(this, mBundle);
+    }
 
-	/**
-	 * Store the contents of the passed cursor
-	 */
-	protected void putAll(@NonNull final Cursor cursor) {
+    /** Store a float value */
+    @SuppressWarnings("UnusedReturnValue")
+    public DataManager putFloat(@NonNull final String key, final float value) {
+        mData.get(key).putFloat(this, mBundle, value);
+        return this;
+    }
 
-		cursor.moveToFirst();
+    /** Store a float value */
+    @SuppressWarnings("UnusedReturnValue")
+    public DataManager putFloat(@NonNull final Datum datum, final float value) {
+        datum.putFloat(this, mBundle, value);
+        return this;
+    }
 
-		for(int i = 0; i < cursor.getColumnCount(); i++) {
-			final String name = cursor.getColumnName(i);
-			switch(cursor.getType(i)) {
-			case SQLiteCursor.FIELD_TYPE_STRING:
-				putString(name, cursor.getString(i));
-				break;
-			case SQLiteCursor.FIELD_TYPE_INTEGER:
-				putLong(name, cursor.getLong(i));
-				break;
-			case SQLiteCursor.FIELD_TYPE_FLOAT:
-				putDouble(name, cursor.getDouble(i));
-				break;
-			case SQLiteCursor.FIELD_TYPE_NULL:
-				break;
-			case SQLiteCursor.FIELD_TYPE_BLOB:
-				throw new RuntimeException("Unsupported column type: 'blob'");
-			default:
-				throw new RuntimeException("Unsupported column type: " + cursor.getType(i));
-			}
-		}
-	}
+    /** Get an int value */
+    public int getInt(@NonNull final String key) {
+        return mData.get(key).getInt(this, mBundle);
+    }
 
-	/**
-	 * Get the serializable object from the collection.
-	 * We currently do not use a Datum for special access.
-	 * 
-	 * @param key	Key of object
-	 * 
-	 * @return		The data
-	 */
-	protected Object getSerializable(@NonNull final String key) {
-		return mData.get(key).getSerializable(this, mBundle);
-	}
+    /** Store an int value */
+    @SuppressWarnings("UnusedReturnValue")
+    public DataManager putInt(@NonNull final String key, final int value) {
+        mData.get(key).putInt(this, mBundle, value);
+        return this;
+    }
 
-	/**
-	 * Get the serializable object from the collection.
-	 * We currently do not use a Datum for special access.
-	 * 
-	 * @param key	Key of object
-	 * @param value	The serializable object
-	 * 
-	 * @return		The data manager for chaining
-	 */
-	@SuppressWarnings("UnusedReturnValue")
-	public DataManager putSerializable(@NonNull final String key, @NonNull final Serializable value) {
-		mData.get(key).putSerializable(mBundle, value);
-		return this;
-	}
+    /** Store an int value */
+    @SuppressWarnings("UnusedReturnValue")
+    public DataManager putInt(@NonNull final Datum datum, final int value) {
+        datum.putInt(this, mBundle, value);
+        return this;
+    }
 
-	/**
-	 * Loop through and apply validators, generating a Bundle collection as a by-product.
-	 * The Bundle collection is then used in cross-validation as a second pass, and finally
-	 * passed to each defined cross-validator.
-	 * 
-	 * @return boolean True if all validation passed.
-	 */
-	public boolean validate() {
+    /** Get a long value */
+    public long getLong(@NonNull final String key) {
+        return mData.get(key).getLong(this, mBundle);
+    }
 
-		boolean isOk = true;
-		mValidationExceptions.clear();
+    /** Store a long value */
+    @SuppressWarnings("UnusedReturnValue")
+    public DataManager putLong(@NonNull final String key, final long value) {
+        mData.get(key).putLong(this, mBundle, value);
+        return this;
+    }
 
-		// First, just validate individual fields with the cross-val flag set false
-		if (!validate(false))
-			isOk = false;
-		
-		// Now re-run with cross-val set to true.
-		if (!validate(true))
-			isOk = false;
+    /** Store a long value */
+    public DataManager putLong(@NonNull final Datum datum, final long value) {
+        datum.putLong(this, mBundle, value);
+        return this;
+    }
 
-		// Finally run the local cross-validation
-		for (DataCrossValidator v : mCrossValidators) {
-			try {
-				v.validate(this);
-			} catch (ValidatorException e) {
-				mValidationExceptions.add(e);
-				isOk = false;
-			}
-		}
-		return isOk;
-	}
+    /** Get a String value */
+    public String getString(@NonNull final String key) {
+        return mData.get(key).getString(this, mBundle);
+    }
 
-	/**
-	 * Internal utility routine to perform one loop validating all fields.
-	 * 
-	 * @param crossValidating 	Flag indicating if this is a cross validation pass.
-	 */
-	private boolean validate(final boolean crossValidating) {
-		boolean isOk = true;
+    /** Get a String value */
+    public String getString(@NonNull final Datum datum) {
+        return datum.getString(this, mBundle);
+    }
 
-		for(String key: mData.keySet()) {
-			Datum datum = mData.get(key); 
-			if (datum.hasValidator()) {
-				try {
-					datum.getValidator().validate(this, datum, crossValidating);
-				} catch(ValidatorException e) {
-					mValidationExceptions.add(e);
-					isOk = false;
-				}
-			}
-		}
-		return isOk;
-	}
+    /** Store a String value */
+    @SuppressWarnings("UnusedReturnValue")
+    public DataManager putString(@NonNull final String key, @NonNull final String value) {
+        mData.get(key).putString(this, mBundle, value);
+        return this;
+    }
 
-	/**
-	 * Check if the underlying data contains the specified key.
-	 */
-	public boolean containsKey(@NonNull final String key) {
-		Datum datum = mData.get(key);
-		if (datum.getAccessor() == null) {
-			return mBundle.containsKey(key);
-		} else {
-			return datum.getAccessor().isPresent(this, datum, mBundle);
-		}
-	}
+    @SuppressWarnings("UnusedReturnValue")
+    public DataManager putString(@NonNull final Datum datum, @NonNull final String value) {
+        datum.putString(this, mBundle, value);
+        return this;
+    }
 
-	/** 
-	 * Remove the specified key from this collection
-	 *
-	 * @param key		Key of data to remove.
-	 *
-	 * @return  the old datum
-	 */
-	@SuppressWarnings("UnusedReturnValue")
-	public Datum remove(@NonNull final String key) {
-		Datum datum = mData.remove(key);
-		mBundle.remove(key);
-		return datum;
-	}
+    /**
+     * Store all passed values in our collection.
+     * We do the laborious method here to allow Accessors to do their thing.
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    protected DataManager putAll(@NonNull final Bundle src) {
+        for (String key : src.keySet()) {
+            Object o = src.get(key);
+            if (o instanceof String) {
+                putString(key, (String) o);
+            } else if (o instanceof Integer) {
+                putInt(key, (Integer) o);
+            } else if (o instanceof Long) {
+                putLong(key, (Long) o);
+            } else if (o instanceof Double) {
+                putDouble(key, (Double) o);
+            } else if (o instanceof Float) {
+                putFloat(key, (Float) o);
+            } else if (o instanceof Serializable) {
+                this.putSerializable(key, (Serializable) o);
+            } else {
+                // THIS IS NOT IDEAL!
+                if (o != null) {
+                    putString(key, o.toString());
+                } else {
+                    System.out.println("NULL value for key '" + key + "'");
+                }
+            }
+        }
+        return this;
+    }
 
-	/**
-	 * @return the current set of data
-	 */
-	public Set<String> keySet() {
-		return mData.keySet();
-	}
+    /**
+     * Store the contents of the passed cursor
+     */
+    protected void putAll(@NonNull final Cursor cursor) {
 
-	/**
-	 * Retrieve the text message associated with the last validation exception to occur.
-	 * 
-	 * @return res The resource manager to use when looking up strings.
-	 */
-	@NonNull
-	public String getValidationExceptionMessage(@NonNull final Resources res) {
-		if (mValidationExceptions.size() == 0)
-			return "No error";
-		else {
-			StringBuilder message = new StringBuilder();
-			Iterator<ValidatorException> i = mValidationExceptions.iterator();
-			int cnt = 1;
-			if (i.hasNext())
-				message.append("(").append(cnt).append(") ").append(i.next().getFormattedMessage(res));
-			while (i.hasNext()) {
-				cnt ++;
-				message.append(" (").append(cnt).append(") ").append(i.next().getFormattedMessage(res)).append("\n");
-			}
-			return message.toString();
-		}
-	}
+        cursor.moveToFirst();
 
-	/**
-	 * Format the passed bundle in a way that is convenient for display
-	 * 
-	 * @return		Formatted string
-	 */
-	@NonNull
-	@Override
-	public String toString() {
-		return Datum.toString(mBundle);
-	}
-	
-	/**
-	 * Append a string to a list value in this collection
-	 */
-	public void appendOrAdd(@NonNull final String key, String value) {
-		String s = ArrayUtils.encodeListItem('|', value);
-		if (!containsKey(key) || getString(key).isEmpty()) {
-			putString(key, s);
-		} else {
-			String curr = getString(key);
-			putString(key, curr + ArrayUtils.MULTI_STRING_SEPARATOR + s);
-		}
-	}
+        for (int i = 0; i < cursor.getColumnCount(); i++) {
+            final String name = cursor.getColumnName(i);
+            switch (cursor.getType(i)) {
+                case SQLiteCursor.FIELD_TYPE_STRING:
+                    putString(name, cursor.getString(i));
+                    break;
+                case SQLiteCursor.FIELD_TYPE_INTEGER:
+                    putLong(name, cursor.getLong(i));
+                    break;
+                case SQLiteCursor.FIELD_TYPE_FLOAT:
+                    putDouble(name, cursor.getDouble(i));
+                    break;
+                case SQLiteCursor.FIELD_TYPE_NULL:
+                    break;
+                case SQLiteCursor.FIELD_TYPE_BLOB:
+                    throw new RuntimeException("Unsupported column type: 'blob'");
+                default:
+                    throw new RuntimeException("Unsupported column type: " + cursor.getType(i));
+            }
+        }
+    }
+
+    /**
+     * Get the serializable object from the collection.
+     * We currently do not use a Datum for special access.
+     *
+     * @param key Key of object
+     *
+     * @return The data
+     */
+    protected Object getSerializable(@NonNull final String key) {
+        return mData.get(key).getSerializable(this, mBundle);
+    }
+
+    /**
+     * Get the ArrayList<String> object from the collection.
+     * We currently do not use a Datum for special access.
+     *
+     * @param bundle Raw data Bundle
+     *
+     * @return The data
+     */
+    protected Object getStringArrayList(@NonNull final String key) {
+        return mData.get(key).getStringArrayList(this, mBundle);
+    }
+
+    /**
+     * Get the serializable object from the collection.
+     * We currently do not use a Datum for special access.
+     *
+     * @param key   Key of object
+     * @param value The serializable object
+     *
+     * @return The data manager for chaining
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public DataManager putSerializable(@NonNull final String key, @NonNull final Serializable value) {
+        mData.get(key).putSerializable(mBundle, value);
+        return this;
+    }
+
+    /**
+     * Set the ArrayList<String> object in the collection.
+     * We currently do not use a Datum for special access.
+     *
+     * @param bundle Raw data Bundle
+     * @param value  The ArrayList<String> object
+     *
+     * @return The data manager for chaining
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public DataManager putStringArrayList(@NonNull final String key, @NonNull final ArrayList<String> value) {
+        mData.get(key).putStringArrayList(mBundle, value);
+        return this;
+    }
+
+    /**
+     * Loop through and apply validators, generating a Bundle collection as a by-product.
+     * The Bundle collection is then used in cross-validation as a second pass, and finally
+     * passed to each defined cross-validator.
+     *
+     * @return boolean True if all validation passed.
+     */
+    public boolean validate() {
+
+        boolean isOk = true;
+        mValidationExceptions.clear();
+
+        // First, just validate individual fields with the cross-val flag set false
+        if (!validate(false))
+            isOk = false;
+
+        // Now re-run with cross-val set to true.
+        if (!validate(true))
+            isOk = false;
+
+        // Finally run the local cross-validation
+        for (DataCrossValidator v : mCrossValidators) {
+            try {
+                v.validate(this);
+            } catch (ValidatorException e) {
+                mValidationExceptions.add(e);
+                isOk = false;
+            }
+        }
+        return isOk;
+    }
+
+    /**
+     * Internal utility routine to perform one loop validating all fields.
+     *
+     * @param crossValidating Flag indicating if this is a cross validation pass.
+     */
+    private boolean validate(final boolean crossValidating) {
+        boolean isOk = true;
+
+        for (String key : mData.keySet()) {
+            Datum datum = mData.get(key);
+            if (datum.hasValidator()) {
+                try {
+                    datum.getValidator().validate(this, datum, crossValidating);
+                } catch (ValidatorException e) {
+                    mValidationExceptions.add(e);
+                    isOk = false;
+                }
+            }
+        }
+        return isOk;
+    }
+
+    /**
+     * Check if the underlying data contains the specified key.
+     */
+    public boolean containsKey(@NonNull final String key) {
+        Datum datum = mData.get(key);
+        if (datum.getAccessor() == null) {
+            return mBundle.containsKey(key);
+        } else {
+            return datum.getAccessor().isPresent(this, datum, mBundle);
+        }
+    }
+
+    /**
+     * Remove the specified key from this collection
+     *
+     * @param key Key of data to remove.
+     *
+     * @return the old datum
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public Datum remove(@NonNull final String key) {
+        Datum datum = mData.remove(key);
+        mBundle.remove(key);
+        return datum;
+    }
+
+    /**
+     * @return the current set of data
+     */
+    public Set<String> keySet() {
+        return mData.keySet();
+    }
+
+    /**
+     * Retrieve the text message associated with the last validation exception to occur.
+     *
+     * @return res The resource manager to use when looking up strings.
+     */
+    @NonNull
+    public String getValidationExceptionMessage(@NonNull final Resources res) {
+        if (mValidationExceptions.size() == 0)
+            return "No error";
+        else {
+            StringBuilder message = new StringBuilder();
+            Iterator<ValidatorException> i = mValidationExceptions.iterator();
+            int cnt = 1;
+            if (i.hasNext())
+                message.append("(").append(cnt).append(") ").append(i.next().getFormattedMessage(res));
+            while (i.hasNext()) {
+                cnt++;
+                message.append(" (").append(cnt).append(") ").append(i.next().getFormattedMessage(res)).append("\n");
+            }
+            return message.toString();
+        }
+    }
+
+    /**
+     * Format the passed bundle in a way that is convenient for display
+     *
+     * @return Formatted string
+     */
+    @NonNull
+    @Override
+    public String toString() {
+        return Datum.toString(mBundle);
+    }
+
+    /**
+     * Append a string to a list value in this collection
+     */
+    public void appendOrAdd(@NonNull final String key, String value) {
+        String s = ArrayUtils.encodeListItem('|', value);
+        if (!containsKey(key) || getString(key).isEmpty()) {
+            putString(key, s);
+        } else {
+            String curr = getString(key);
+            putString(key, curr + ArrayUtils.MULTI_STRING_SEPARATOR + s);
+        }
+    }
+
+    /**
+     * Class to manage the collection of Datum objects for this DataManager
+     *
+     * @author pjw
+     */
+    private static class DatumHash extends Hashtable<String, Datum> {
+        private static final long serialVersionUID = -650159534364183779L;
+
+        /**
+         * Get the specified Datum, and create a stub if not present
+         */
+        @Override
+        public Datum get(@NonNull final Object key) {
+            Datum datum = super.get(key);
+            if (datum == null) {
+                datum = new Datum(key.toString(), null, true);
+                this.put(key.toString(), datum);
+            }
+            return datum;
+        }
+    }
 }

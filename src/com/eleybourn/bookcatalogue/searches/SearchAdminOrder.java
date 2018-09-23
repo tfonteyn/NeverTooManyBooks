@@ -15,6 +15,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueListActivity;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Should use {@link com.eleybourn.bookcatalogue.Fields.Field}
@@ -25,7 +26,7 @@ import java.util.ArrayList;
  */
 public class SearchAdminOrder extends BookCatalogueListActivity {
 
-    private ArrayList<SearchManager.SearchSite> mList;
+    private List<SearchManager.SearchSite> mList;
 
     @Override
     protected int getLayoutId() {
@@ -37,14 +38,14 @@ public class SearchAdminOrder extends BookCatalogueListActivity {
         super.onCreate(savedInstanceState);
         setTitle(R.string.search_internet);
         mList = SearchManager.getSiteSearchOrder();
-        final SearchSiteListAdapter adapter = new SearchSiteListAdapter(this, R.layout.row_edit_searchsite,mList);
+        final SearchSiteListAdapter adapter = new SearchSiteListAdapter(this, R.layout.row_edit_searchsite, mList);
         setListAdapter(adapter);
 
         Button confirmBtn = findViewById(R.id.confirm);
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                ArrayList<SearchManager.SearchSite> newList = new ArrayList<>(mList);
+                List<SearchManager.SearchSite> newList = new ArrayList<>(mList);
                 ListView list = getListView();
                 for (int i=0; i < list.getChildCount(); i++) {
                     // get the current position of each site, and store that back into the site object.
@@ -72,7 +73,9 @@ public class SearchAdminOrder extends BookCatalogueListActivity {
 
     private class SearchSiteListAdapter extends SimpleListAdapter<SearchManager.SearchSite> {
 
-        SearchSiteListAdapter(@NonNull final Context context, final int rowViewId, @NonNull final ArrayList<SearchManager.SearchSite> list) {
+        SearchSiteListAdapter(@NonNull final Context context,
+                              final int rowViewId,
+                              @NonNull final List<SearchManager.SearchSite> list) {
             super(context, rowViewId, list);
         }
 

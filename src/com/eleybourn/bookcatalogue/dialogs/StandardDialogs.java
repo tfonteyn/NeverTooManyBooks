@@ -55,6 +55,7 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class StandardDialogs {
 
@@ -187,7 +188,7 @@ public class StandardDialogs {
                                       final long id,
                                       final Runnable onDeleted) {
 
-        ArrayList<Author> authorList = dba.getBookAuthorList(id);
+        List<Author> authorList = dba.getBookAuthorList(id);
 
         String title;
         try (Cursor cur = dba.fetchBookById(id)) {
@@ -287,7 +288,7 @@ public class StandardDialogs {
      */
     public static void selectItemDialog(@NonNull final LayoutInflater inflater,
                                         @Nullable final String message,
-                                        @NonNull final ArrayList<SimpleDialogItem> items,
+                                        @NonNull final List<SimpleDialogItem> items,
                                         @Nullable final SimpleDialogItem selectedItem,
                                         @NonNull final SimpleDialogOnClickListener handler) {
         // Get the view and the radio group
@@ -364,9 +365,9 @@ public class StandardDialogs {
      */
     public static void selectFileDialog(@NonNull final LayoutInflater inflater,
                                         @Nullable final String title,
-                                        @NonNull final ArrayList<File> files,
+                                        @NonNull final List<File> files,
                                         @NonNull final SimpleDialogOnClickListener handler) {
-        ArrayList<SimpleDialogItem> items = new ArrayList<>();
+        List<SimpleDialogItem> items = new ArrayList<>();
         for (File file : files) {
             items.add(new SimpleDialogFileItem(file));
         }
@@ -379,10 +380,10 @@ public class StandardDialogs {
      */
     public static <T> void selectStringDialog(@NonNull final LayoutInflater inflater,
                                               @Nullable final String title,
-                                              @NonNull final ArrayList<T> objects,
+                                              @NonNull final List<T> objects,
                                               @Nullable final String current,
                                               @NonNull final SimpleDialogOnClickListener handler) {
-        ArrayList<SimpleDialogItem> items = new ArrayList<>();
+        List<SimpleDialogItem> items = new ArrayList<>();
         SimpleDialogItem selectedItem = null;
         for (T o : objects) {
             SimpleDialogObjectItem item = new SimpleDialogObjectItem(o);

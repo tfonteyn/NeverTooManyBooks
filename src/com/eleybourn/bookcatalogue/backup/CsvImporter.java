@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement.INSERT_FAILED;
 
@@ -219,7 +220,7 @@ public class CsvImporter implements Importer {
                         doUpdate = true;
                         // Always import empty IDs...even if they are duplicates.
                         long id = db.insertBook(bookData, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
-                        //FIXME: insert might have failed... what to do ?
+                        //FIXME: ignoring failure
                         bookData.putLong(UniqueId.KEY_ID, id);
                         // Would be nice to import a cover, but with no ID/UUID that is not possible
                         //mImportCreated++;

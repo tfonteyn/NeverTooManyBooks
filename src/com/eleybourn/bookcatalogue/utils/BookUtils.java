@@ -32,7 +32,7 @@ import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookData;
-import com.eleybourn.bookcatalogue.EditBookActivity;
+import com.eleybourn.bookcatalogue.BookDetailsActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -61,7 +61,7 @@ public class BookUtils {
     public static void duplicateBook(@NonNull final Activity activity,
                                      @NonNull final CatalogueDBAdapter db,
                                      final long rowId) {
-        Intent intent = new Intent(activity, EditBookActivity.class);
+        Intent intent = new Intent(activity, BookDetailsActivity.class);
         final Bundle book = new Bundle();
         try (Cursor cursor = db.fetchBookById(rowId)) {
             cursor.moveToFirst();

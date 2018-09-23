@@ -57,6 +57,7 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         implements OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
@@ -94,7 +95,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
             final CheckBox cb = getView().findViewById(R.id.anthology);
             cb.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    mEditManager.setShowAnthology(cb.isChecked());
+                    mEditManager.showAnthologyTab(cb.isChecked());
                 }
             });
 
@@ -121,7 +122,6 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
             mFields.setListener(R.id.bookshelf, new View.OnClickListener() {
                 public void onClick(View v) {
                     BookshelfDialogFragment frag = BookshelfDialogFragment.newInstance(
-                            R.id.bookshelf,
                             mEditManager.getBookData().getRowId(),
                             mEditManager.getBookData().getBookshelfText(),
                             mEditManager.getBookData().getBookshelfList()
@@ -186,7 +186,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
     }
 
     //TODO: if field not visible, skip
-    public void setupMenuMoreButton(final int resId, final int buttonResId, final ArrayList<String> list, final int dialogTitleResId) {
+    public void setupMenuMoreButton(final int resId, final int buttonResId, final List<String> list, final int dialogTitleResId) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_dropdown_item_1line, list);
         mFields.setAdapter(resId, adapter);
@@ -237,10 +237,9 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                 if (values != null) {
                     for (Field field : mFields) {
                         if (!field.column.isEmpty() && values.containsKey(field.column)) {
-                            try {
-                                field.setValue(values.getString(field.column));
-                            } catch (Exception ignore) {
-                                Logger.logError(ignore, "Populate field " + field.column + " failed: " + ignore.getMessage());
+                            String val = values.getString(field.column);
+                            if (val != null) {
+                                field.setValue(val);
                             }
                         }
                     }
@@ -273,7 +272,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         if (list == null || list.isEmpty()) {
             String currentShelf = BCPreferences.getStringOrEmpty(BooksOnBookshelf.PREF_BOOKSHELF);
             if (currentShelf.isEmpty()) {
-                currentShelf = mDb.getBookshelfName(1); //FIXME: the hardcoded one again
+                currentShelf = mDb.getBookshelfName(Bookshelf.DEFAULT_ID);
             }
             Field fe = mFields.getField(R.id.bookshelf);
             fe.setValue(currentShelf);
@@ -406,11 +405,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
     }
 
     @Override
-    public void onBookshelfCheckChanged(final int dialogId,
-                                        @NonNull final BookshelfDialogFragment dialog,
-                                        final boolean checked,
-                                        @NonNull final String shelf,
-                                        @NonNull final String textList,
+    public void onBookshelfCheckChanged(@NonNull final String textList,
                                         @NonNull final String encodedList) {
 
         mFields.getField(R.id.bookshelf).setValue(textList);

@@ -29,6 +29,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exception
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
@@ -55,7 +56,7 @@ public class SearchGoodreadsThread extends SearchThread {
 			if (mIsbn != null && mIsbn.trim().length() > 0) {
 				mBookData = grMgr.getBookByIsbn(mIsbn);
 			} else {
-				ArrayList<GoodreadsWork> list = grMgr.search(mAuthor + " " + mTitle);
+				List<GoodreadsWork> list = grMgr.search(mAuthor + " " + mTitle);
 				if (list != null && list.size() > 0) {
 					GoodreadsWork w = list.get(0);
 					mBookData = grMgr.getBookById(w.bookId);
