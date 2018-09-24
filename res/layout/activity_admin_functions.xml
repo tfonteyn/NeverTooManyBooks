@@ -50,13 +50,13 @@
             <TextView
                 android:id="@+id/backup_catalogue_label"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_save"
+                android:drawableStart="?attr/ic_archive"
                 android:text="@string/backup_to_archive" />
 
             <TextView
                 android:id="@+id/restore_catalogue_label"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_upload"
+                android:drawableStart="?attr/ic_unarchive"
                 android:text="@string/import_from_archive" />
 
             <TextView
@@ -80,7 +80,7 @@
             <TextView
                 android:id="@+id/update_internet_label"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_gallery"
+                android:drawableStart="?attr/ic_refresh"
                 android:text="@string/update_fields" />
 
             <TextView
@@ -98,7 +98,7 @@
             <TextView
                 android:id="@+id/send_books_to_goodreads_label"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_send"
+                android:drawableStart="?attr/ic_send"
                 android:text="@string/send_books_to_goodreads" />
 
             <!-- CREDENTIALS -->
@@ -163,7 +163,7 @@
             <TextView
                 android:id="@+id/backup_label"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_send"
+                android:drawableStart="?attr/ic_archive"
                 android:text="@string/copy_database" />
         </LinearLayout>
 

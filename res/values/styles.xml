@@ -200,7 +200,7 @@
     -->
 
     <style name="error_message">
-        <item name="android:textColor">@color/error_msg</item>
+        <item name="android:textColor">?attr/colorError</item>
         <item name="android:textStyle">bold</item>
     </style>
     <!--
@@ -213,7 +213,7 @@
         <item name="android:paddingStart">@dimen/padding_border_triple</item>
         <item name="android:paddingEnd">@dimen/padding_border_triple</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textColor">@color/link_blue</item>
+        <item name="android:textColor">?attr/colorAccent</item>
     </style>
     <!--
     **************************************************************************************
@@ -224,7 +224,7 @@
         <item name="android:gravity">center</item>
         <item name="android:paddingBottom">@dimen/padding_border_quad</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-        <item name="android:textColor">@color/link_donate</item>
+        <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
     <!--
@@ -251,6 +251,7 @@
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_alignParentEnd">true</item>
+
     </style>
     <!--
     **************************************************************************************
@@ -291,10 +292,7 @@
         <item name="android:paddingStart">@dimen/padding_border</item>
     </style>
 
-    <!-- experimenting with colours -->
-
     <style name="booksonbookshelf_header">
-        <item name="android:backgroundTint">#d7ccc8</item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -303,11 +301,11 @@
 
     <style name="booksonbookshelf_nav_view_header">
         <item name="android:padding">@dimen/padding_border_triple</item>
-        <item name="android:background">#FF304ffe</item>
+        <item name="android:background">?attr/color_background_nav_header</item>
     </style>
 
     <style name="booksonbookshelf_nav_view">
-        <item name="android:background">#661a237e</item>
+        <item name="android:background">?attr/color_background_nav_panel</item>
     </style>
 
     <style name="booklist_book_row_minor_fields">
@@ -333,5 +331,16 @@
         <item name="android:paddingStart">@dimen/padding_border</item>
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>
+    </style>
+
+    <style name="thumbnail">
+        <item name="android:layout_gravity">top</item>
+        <item name="android:layout_weight">0</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:padding">@dimen/padding_border</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:background">?attr/color_background_thumbnail</item>
     </style>
 </resources>

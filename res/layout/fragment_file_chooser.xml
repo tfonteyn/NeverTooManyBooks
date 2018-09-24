@@ -24,7 +24,7 @@
             android:layout_alignParentTop="true"
             android:contentDescription="@string/up_folder"
             android:text="@string/up_folder"
-            app:srcCompat="@drawable/ic_closed_folder_back" />
+            app:srcCompat="?attr/ic_folder_open" />
 
         <ImageView
             android:id="@+id/create"

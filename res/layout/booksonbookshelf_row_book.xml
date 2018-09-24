@@ -10,17 +10,15 @@
     <!-- NOTE: layout width/height will be set to a specific value at runtime -->
     <ImageView
         android:id="@+id/cover"
+        style="@style/thumbnail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_weight="0"
-        android:adjustViewBounds="true"
         android:contentDescription="@string/thumbnail"
         tools:src="@android:drawable/ic_menu_help" />
 
     <LinearLayout
         android:id="@+id/row_info"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="start"

@@ -135,16 +135,11 @@
 
                 <ImageView
                     android:id="@+id/row_img"
+                    style="@style/thumbnail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:adjustViewBounds="true"
-                    android:background="@color/background_thumb"
-                    android:padding="@dimen/padding_border"
-                    android:scaleType="centerInside"
-                    app:srcCompat="@android:drawable/ic_menu_help"
-                    tools:ignore="ContentDescription" />
+                    android:contentDescription="@string/thumbnail"
+                    tools:src="@android:drawable/ic_menu_help"/>
             </RelativeLayout>
         </LinearLayout>
 

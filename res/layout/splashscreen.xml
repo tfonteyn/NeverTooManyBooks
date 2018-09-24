@@ -11,5 +11,5 @@
         android:text=""
         android:textAllCaps="false"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="@color/error_msg" />
+        android:textColor="?attr/colorError" />
 </LinearLayout>

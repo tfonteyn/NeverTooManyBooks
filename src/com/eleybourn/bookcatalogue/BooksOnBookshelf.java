@@ -372,9 +372,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 android.R.drawable.ic_menu_sort_alphabetically)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
-        mMenuHandler.addItem(menu, MENU_EXPAND, R.string.menu_expand_all, R.drawable.ic_menu_expand);
+        mMenuHandler.addItem(menu, MENU_EXPAND, R.string.menu_expand_all, BookCatalogueApp.getAttr(R.attr.ic_expand_more));
 
-        mMenuHandler.addItem(menu, MENU_COLLAPSE, R.string.menu_collapse_all, R.drawable.ic_menu_collapse);
+        mMenuHandler.addItem(menu, MENU_COLLAPSE, R.string.menu_collapse_all, BookCatalogueApp.getAttr(R.attr.ic_expand_less));
 
         return super.onPrepareOptionsMenu(menu);
     }

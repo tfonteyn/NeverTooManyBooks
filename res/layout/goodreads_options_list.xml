@@ -14,7 +14,7 @@
         <TextView
             android:id="@+id/sync_with_goodreads_label"
             style="@style/prefsItem"
-            android:drawableStart="@drawable/ic_menu_refresh"
+            android:drawableStart="?attr/ic_refresh"
             android:text="@string/sync_with_goodreads" />
 
         <TextView
@@ -26,7 +26,7 @@
         <TextView
             android:id="@+id/send_books_to_goodreads_label"
             style="@style/prefsItem"
-            android:drawableStart="@drawable/ic_menu_archive"
+            android:drawableStart="?attr/ic_archive"
             android:text="@string/send_books_to_goodreads" />
     </LinearLayout>
 

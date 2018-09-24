@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/padding_border_quad"
-        app:srcCompat="@drawable/ic_launcher4"
+        app:srcCompat="@drawable/ic_bc_launcher4"
         tools:ignore="ContentDescription" />
     <TextView
         android:layout_width="match_parent"

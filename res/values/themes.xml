@@ -3,7 +3,7 @@
     <!-- generic name for use in manifest only -->
     <style name="ThemeDefault" parent="@style/AppThemeDark" />
 
-    <style name="ThemeInvisible"  parent="@style/Theme.AppCompat">
+    <style name="ThemeInvisible"  parent="@style/Theme.AppCompat.NoActionBar">
         <item  name="android:windowBackground">@android:color/transparent</item>
         <item name="background">@android:color/transparent</item>
         <item name="android:windowIsFloating">true</item>
@@ -11,8 +11,76 @@
     </style>
 
     <!-- System wide theme customizing goes into these -->
-    <style name="AppThemeDark" parent="@style/Theme.AppCompat.NoActionBar" />
-    <style name="AppThemeLight" parent="@style/Theme.AppCompat.Light.NoActionBar" />
+    <style name="AppThemeDark" parent="@style/Theme.AppCompat.NoActionBar" >
+
+        <item name="color_background_nav_header">@color/dark_background_nav_header</item>
+        <item name="color_background_nav_panel">@color/dark_background_nav_panel</item>
+        <item name="color_background_thumbnail">@color/dark_background_thumbnail</item>
+        <item name="color_background_toolbar">@color/dark_background_toolbar</item>
+
+        <item name="ic_add_a_photo">@drawable/ic_add_a_photo_black_24dp</item>
+        <item name="ic_add_circle_outline">@drawable/ic_add_circle_outline_black_24dp</item>
+        <item name="ic_adjust">@drawable/ic_adjust_black_24dp</item>
+        <item name="ic_archive">@drawable/ic_archive_black_24dp</item>
+        <item name="ic_arrow_drop_down">@drawable/ic_arrow_drop_down_black_24dp</item>
+        <item name="ic_arrow_drop_up">@drawable/ic_arrow_drop_up_black_24dp</item>
+        <item name="ic_attach_money">@drawable/ic_attach_money_black_24dp</item>
+        <item name="ic_backspace">@drawable/ic_backspace_black_24dp</item>
+        <item name="ic_content_copy">@drawable/ic_content_copy_black_24dp</item>
+        <item name="ic_crop">@drawable/ic_crop_black_24dp</item>
+        <item name="ic_drag_handle">@drawable/ic_drag_handle_black_24dp</item>
+        <item name="ic_expand_less">@drawable/ic_expand_less_black_24dp</item>
+        <item name="ic_expand_more">@drawable/ic_expand_more_black_24dp</item>
+        <item name="ic_folder">@drawable/ic_folder_black_24dp</item>
+        <item name="ic_folder_open">@drawable/ic_folder_open_black_24dp</item>
+        <item name="ic_help_outline">@drawable/ic_help_outline_black_24dp</item>
+        <item name="ic_info_outline">@drawable/ic_info_outline_black_24dp</item>
+        <item name="ic_menu">@drawable/ic_menu_black_24dp</item>
+        <item name="ic_note">@drawable/ic_note_black_24dp</item>
+        <item name="ic_people">@drawable/ic_people_black_24dp</item>
+        <item name="ic_refresh">@drawable/ic_refresh_black_24dp</item>
+        <item name="ic_rotate_left">@drawable/ic_rotate_left_black_24dp</item>
+        <item name="ic_rotate_right">@drawable/ic_rotate_right_black_24dp</item>
+        <item name="ic_search">@drawable/ic_search_black_24dp</item>
+        <item name="ic_send">@drawable/ic_send_black_24dp</item>
+        <item name="ic_unarchive">@drawable/ic_unarchive_black_24dp</item>
+        <item name="ic_zoom_in">@drawable/ic_zoom_in_black_24dp</item>
+    </style>
+    <style name="AppThemeLight" parent="@style/Theme.AppCompat.Light.NoActionBar">
+
+        <item name="color_background_nav_header">@color/light_background_nav_header</item>
+        <item name="color_background_nav_panel">@color/light_background_nav_panel</item>
+        <item name="color_background_thumbnail">@color/light_background_thumbnail</item>
+        <item name="color_background_toolbar">@color/light_background_toolbar</item>
+
+        <item name="ic_add_a_photo">@drawable/ic_add_a_photo_black_24dp</item>
+        <item name="ic_add_circle_outline">@drawable/ic_add_circle_outline_black_24dp</item>
+        <item name="ic_adjust">@drawable/ic_adjust_black_24dp</item>
+        <item name="ic_archive">@drawable/ic_archive_black_24dp</item>
+        <item name="ic_arrow_drop_down">@drawable/ic_arrow_drop_down_black_24dp</item>
+        <item name="ic_arrow_drop_up">@drawable/ic_arrow_drop_up_black_24dp</item>
+        <item name="ic_attach_money">@drawable/ic_attach_money_black_24dp</item>
+        <item name="ic_backspace">@drawable/ic_backspace_black_24dp</item>
+        <item name="ic_content_copy">@drawable/ic_content_copy_black_24dp</item>
+        <item name="ic_crop">@drawable/ic_crop_black_24dp</item>
+        <item name="ic_drag_handle">@drawable/ic_drag_handle_black_24dp</item>
+        <item name="ic_expand_less">@drawable/ic_expand_less_black_24dp</item>
+        <item name="ic_expand_more">@drawable/ic_expand_more_black_24dp</item>
+        <item name="ic_folder">@drawable/ic_folder_black_24dp</item>
+        <item name="ic_folder_open">@drawable/ic_folder_open_black_24dp</item>
+        <item name="ic_help_outline">@drawable/ic_help_outline_black_24dp</item>
+        <item name="ic_info_outline">@drawable/ic_info_outline_black_24dp</item>
+        <item name="ic_menu">@drawable/ic_menu_black_24dp</item>
+        <item name="ic_note">@drawable/ic_note_black_24dp</item>
+        <item name="ic_people">@drawable/ic_people_black_24dp</item>
+        <item name="ic_refresh">@drawable/ic_refresh_black_24dp</item>
+        <item name="ic_rotate_left">@drawable/ic_rotate_left_black_24dp</item>
+        <item name="ic_rotate_right">@drawable/ic_rotate_right_black_24dp</item>
+        <item name="ic_search">@drawable/ic_search_black_24dp</item>
+        <item name="ic_send">@drawable/ic_send_black_24dp</item>
+        <item name="ic_unarchive">@drawable/ic_unarchive_black_24dp</item>
+        <item name="ic_zoom_in">@drawable/ic_zoom_in_black_24dp</item>
+    </style>
 
     <style name="DialogThemeDark" parent="@style/Theme.AppCompat.Dialog" />
     <style name="DialogThemeLight" parent="@style/Theme.AppCompat.Light.Dialog" />

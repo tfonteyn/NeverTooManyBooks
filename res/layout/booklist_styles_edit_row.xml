@@ -80,7 +80,7 @@
         <ImageView
             android:id="@+id/grabber"
             style="@style/touch_list_view_row_ic_grabber"
-            app:srcCompat="@drawable/ic_grabber"
+            app:srcCompat="?attr/ic_drag_handle"
             tools:ignore="ContentDescription" />
 
     </RelativeLayout>

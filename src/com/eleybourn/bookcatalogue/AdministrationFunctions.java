@@ -544,7 +544,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
         AlertDialog dialog = new AlertDialog.Builder(AdministrationFunctions.this)
                 .setTitle(R.string.email_export)
-                .setIcon(android.R.drawable.ic_menu_send)
+                .setIcon(BookCatalogueApp.getAttr(R.attr.ic_send))
                 .create();
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                 getResources().getString(android.R.string.ok),

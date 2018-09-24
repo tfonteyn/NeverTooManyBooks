@@ -103,7 +103,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
                     .setIcon(android.R.drawable.ic_menu_delete);
 
             menu.add(0, DUPLICATE_ID, 0, R.string.menu_duplicate)
-                    .setIcon(android.R.drawable.ic_menu_add);
+                    .setIcon(BookCatalogueApp.getAttr(R.attr.ic_content_copy));
 
             // TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books.
             menu.add(0, SHARE_ID, 0, R.string.menu_share_this)
@@ -121,16 +121,16 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         boolean hasAuthor = mEditManager.getBookData().getAuthors().size() > 0;
         if (hasAuthor) {
             menu.add(0, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0, R.string.amazon_books_by_author)
-                    .setIcon(R.drawable.ic_www_search_2_holo_dark);
+                    .setIcon(BookCatalogueApp.getAttr(R.attr.ic_search));
         }
 
         if (mEditManager.getBookData().getSeries().size() > 0) {
             if (hasAuthor) {
                 menu.add(0, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0, R.string.amazon_books_by_author_in_series)
-                        .setIcon(R.drawable.ic_www_search_2_holo_dark);
+                        .setIcon(BookCatalogueApp.getAttr(R.attr.ic_search));
             }
              menu.add(0, R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0, R.string.amazon_books_in_series)
-                        .setIcon(R.drawable.ic_www_search_2_holo_dark);
+                        .setIcon(BookCatalogueApp.getAttr(R.attr.ic_search));
         }
     }
 

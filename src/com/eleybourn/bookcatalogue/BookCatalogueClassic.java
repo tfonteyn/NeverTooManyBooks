@@ -525,9 +525,9 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 						read = 0;
 					}
 					if (read == 1) {
-						holder.read.view.setImageResource(R.drawable.btn_check_buttonless_on);
+						holder.read.view.setImageResource(R.drawable.btn_check_clipped);
 					} else {
-						holder.read.view.setImageResource(R.drawable.btn_check_buttonless_off);
+						holder.read.view.setImageResource(R.drawable.btn_uncheck_clipped);
 					}
 				}
 
@@ -1113,7 +1113,6 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 		}
 	}
 
-
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
@@ -1126,12 +1125,12 @@ public class BookCatalogueClassic extends ExpandableListActivity {
 				MenuItem edit_book = menu.add(0, EDIT_BOOK, 0, R.string.edit_book);
 				edit_book.setIcon(android.R.drawable.ic_menu_edit);
 				MenuItem edit_book_notes = menu.add(0, EDIT_BOOK_NOTES, 0, R.string.edit_book_notes);
-				edit_book_notes.setIcon(R.drawable.ic_menu_compose);
+				edit_book_notes.setIcon(BookCatalogueApp.getAttr(R.attr.ic_note));
 				MenuItem edit_book_friends = menu.add(0, EDIT_BOOK_FRIENDS, 0, R.string.edit_book_friends);
-				edit_book_friends.setIcon(R.drawable.ic_menu_cc);
+				edit_book_friends.setIcon(BookCatalogueApp.getAttr(R.attr.ic_people));
 				// Send book to goodreads
 				MenuItem edit_book_send_to_gr = menu.add(0, EDIT_BOOK_SEND_TO_GR, 0, R.string.edit_book_send_to_gr);
-				edit_book_send_to_gr.setIcon(R.drawable.ic_menu_cc);
+				edit_book_send_to_gr.setIcon(BookCatalogueApp.getAttr(R.attr.ic_people));
 			} else if (ExpandableListView.getPackedPositionType(info.packedPosition) == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
 				switch(sort) {
 				case SORT_AUTHOR:

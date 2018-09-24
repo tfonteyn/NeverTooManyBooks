@@ -33,6 +33,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.TypedValue;
 
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -82,6 +83,7 @@ import java.util.Set;
         resDialogIcon = android.R.drawable.ic_dialog_info,
         // optional. default is your application name
         resDialogTitle = R.string.crash_dialog_title,
+
         // optional. when defined, adds a user text field input with this text resource as a label
         resDialogCommentPrompt = R.string.crash_dialog_comment_prompt,
         // optional. displays a Toast message when the user accepts to send a report.
@@ -397,7 +399,7 @@ public class BookCatalogueApp extends Application {
                                         @NonNull final Intent intent) {
 
         Notification notification = new Notification.Builder(getAppContext())
-                .setSmallIcon(R.drawable.ic_stat_logo)
+                .setSmallIcon(getAttr(R.attr.ic_info_outline))
                 .setContentTitle(title)
                 .setContentText(message)
                 .setWhen(System.currentTimeMillis())
@@ -507,6 +509,21 @@ public class BookCatalogueApp extends Application {
         return mInstance.getApplicationContext().getSharedPreferences(APP_SHARED_PREFERENCES, MODE_PRIVATE);
     }
 
+    public static int getAttr(final int attr){
+        return getAttr(mInstance.getApplicationContext().getTheme(), attr);
+    }
+
+    /**
+     *
+     * @param theme for example from an Activity, pass the them in.
+     * @param resId to get
+     * @return resolved attribute
+     */
+    public static int getAttr(@NonNull final Resources.Theme theme, final int resId){
+        TypedValue tv = new TypedValue();
+        theme.resolveAttribute(resId, tv, true);
+        return tv.resourceId;
+    }
     /**
      * Most real initialization should go here, since before this point, the App is still
      * 'Under Construction'.

@@ -351,7 +351,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
         if (FieldVisibilityActivity.isVisible(UniqueId.BKEY_THUMBNAIL)) {
             menu.add(0, EditBookAbstractFragment.THUMBNAIL_OPTIONS_ID, 0, R.string.cover_options_cc_ellipsis)
-                    .setIcon(android.R.drawable.ic_menu_camera)
+                    .setIcon(BookCatalogueApp.getAttr(R.attr.ic_add_a_photo))
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
         super.onCreateOptionsMenu(menu, inflater);

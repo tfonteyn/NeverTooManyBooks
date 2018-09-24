@@ -70,7 +70,7 @@
             android:id="@+id/row_read_image_view"
             android:layout_width="30dp"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/btn_check_buttonless_off"
+            app:srcCompat="@drawable/btn_uncheck_clipped"
             android:visibility="gone"
             tools:ignore="ContentDescription" />
 

@@ -30,6 +30,9 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
 
+    protected int getAttr(final int attr) {
+        return BookCatalogueApp.getAttr(getTheme(), attr);
+    }
     /**
      * when a locale or theme is changed, a restart of the activity is needed
      */
@@ -38,7 +41,6 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
     protected int getLayoutId(){
         return 0;
     }
-
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -62,7 +64,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
-            toolbar.setBackgroundColor(getResources().getColor(R.color.toolbar_background));
+            toolbar.setBackgroundColor(getResources().getColor(getAttr(R.attr.color_background_toolbar)));
             setSupportActionBar(toolbar);
         }
 
@@ -77,11 +79,8 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
             boolean isTaskRoot = isTaskRoot() || getIntent().getBooleanExtra(StartupActivity.BKEY_IS_TASK_ROOT, false);
             if (isTaskRoot) {
                 bar.setDisplayShowHomeEnabled(true);
-                //FIXME: find out why Vector icons don't work.... for now abusing the collapse icon
-                bar.setHomeAsUpIndicator(R.drawable.ic_menu_collapse);
-            } //else {
-            // we get the default 'arrow back'
-            //}
+                bar.setHomeAsUpIndicator(getAttr(R.attr.ic_menu));
+            }
         }
     }
 

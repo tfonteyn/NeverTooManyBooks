@@ -878,7 +878,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
                 AlertDialog dialog = new AlertDialog.Builder(this)
                         .setMessage(getResources().getString(R.string.duplicate_book_message))
                         .setTitle(R.string.duplicate_book_title)
-                        .setIcon(android.R.drawable.ic_menu_info_details)
+                        .setIcon(BookCatalogueApp.getAttr(R.attr.ic_content_copy))
                         .create();
 
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE,

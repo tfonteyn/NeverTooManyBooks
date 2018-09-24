@@ -289,13 +289,13 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 case RowKinds.ROW_KIND_BOOK: {
                     addMenuItem(menu, R.id.MENU_BOOK_DELETE, R.string.menu_delete, android.R.drawable.ic_menu_delete);
                     addMenuItem(menu, R.id.MENU_BOOK_EDIT, R.string.edit_book, android.R.drawable.ic_menu_edit);
-                    addMenuItem(menu, R.id.MENU_BOOK_EDIT_NOTES, R.string.edit_book_notes, R.drawable.ic_menu_compose_holo_dark);
+                    addMenuItem(menu, R.id.MENU_BOOK_EDIT_NOTES, R.string.edit_book_notes, BookCatalogueApp.getAttr(R.attr.ic_note));
                     if (rowView.isRead()) {
                         addMenuItem(menu, R.id.MENU_MARK_AS_UNREAD, R.string.menu_mark_as_unread, R.drawable.btn_uncheck_clipped);
                     } else {
                         addMenuItem(menu, R.id.MENU_MARK_AS_READ, R.string.menu_mark_as_read, R.drawable.btn_check_clipped);
                     }
-                    addMenuItem(menu, R.id.MENU_BOOK_EDIT_LOANS, R.string.edit_book_friends, R.drawable.ic_menu_cc_holo_dark);
+                    addMenuItem(menu, R.id.MENU_BOOK_EDIT_LOANS, R.string.edit_book_friends, BookCatalogueApp.getAttr(R.attr.ic_people));
                     addMenuItem(menu, R.id.MENU_BOOK_SEND_TO_GOODREADS, R.string.edit_book_send_to_gr, R.drawable.ic_menu_goodreads_holo_dark);
                     break;
                 }
@@ -352,16 +352,19 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             // add search by author ?
             boolean hasAuthor = (rowView.hasAuthorId() && rowView.getAuthorId() > 0);
             if (hasAuthor) {
-                addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.string.amazon_books_by_author, R.drawable.ic_www_search_2_holo_dark);
+                addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.string.amazon_books_by_author,
+                        BookCatalogueApp.getAttr(R.attr.ic_search));
             }
 
             // add search by series ?
             boolean hasSeries = (rowView.hasSeriesId() && rowView.getSeriesId() > 0);
             if (hasSeries) {
                 if (hasAuthor) {
-                    addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, R.string.amazon_books_by_author_in_series, R.drawable.ic_www_search_2_holo_dark);
+                    addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, R.string.amazon_books_by_author_in_series,
+                            BookCatalogueApp.getAttr(R.attr.ic_search));
                 }
-                addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.string.amazon_books_in_series, R.drawable.ic_www_search_2_holo_dark);
+                addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.string.amazon_books_in_series,
+                        BookCatalogueApp.getAttr(R.attr.ic_search));
             }
         } catch (Exception e) {
             Logger.logError(e);

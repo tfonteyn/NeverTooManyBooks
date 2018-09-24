@@ -27,7 +27,9 @@
             android:hint="@string/isbn"
             android:inputType="text"
             android:padding="@dimen/padding_border_double"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceLarge" >
+            <requestFocus/>
+        </EditText>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -111,7 +113,7 @@
             <ImageButton
                 android:id="@+id/isbn_del"
                 style="@style/isbnSearchKey"
-                app:srcCompat="@android:drawable/ic_input_delete"
+                app:srcCompat="?attr/ic_backspace"
                 tools:ignore="ContentDescription" />
         </LinearLayout>
 

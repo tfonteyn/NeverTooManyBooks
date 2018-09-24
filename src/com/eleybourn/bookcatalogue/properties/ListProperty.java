@@ -86,7 +86,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         root.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                handleClick(root, view, inflater);
+                handleClick(view, inflater);
             }
         });
 
@@ -113,17 +113,17 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         return root;
     }
 
-    private void handleClick(@NonNull final ViewGroup root, @NonNull final View base, @NonNull final LayoutInflater inflater) {
+    private void handleClick(@NonNull final View base, @NonNull final LayoutInflater inflater) {
         final ItemEntries<T> items = getListItems();
         if (this.hasHint()) {
             HintManager.displayHint(base.getContext(), this.getHint(), new Runnable() {
                 @Override
                 public void run() {
-                    displayList(root, base, inflater, items);
+                    displayList(base, inflater, items);
                 }
             });
         } else {
-            displayList(root, base, inflater, items);
+            displayList(base, inflater, items);
         }
     }
 
@@ -145,20 +145,18 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 
     /**
      * Called to display a list of values for this property.
-     *
-     * @param baseView Specific view that was clicked
+     *  @param baseView Specific view that was clicked
      * @param inflater LayoutInflater
      * @param items    All list items
      */
-    private void displayList(@NonNull final ViewGroup rootViewGroup,
-                             @NonNull final View baseView,
+    private void displayList(@NonNull final View baseView,
                              @NonNull final LayoutInflater inflater,
                              @NonNull final ItemEntries<T> items) {
 
         T currentValue = this.get();
 
         // Get the view and the radio group
-        View root = inflater.inflate(R.layout.property_value_list_list, rootViewGroup);
+        View root = inflater.inflate(R.layout.property_value_list_list, null);
         final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext())
                 .setView(root)
                 .create();
@@ -188,7 +186,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
                     selected = true;
 
                 // Make the view for this item
-                View line = inflater.inflate(R.layout.property_value_list_item, rootViewGroup);
+                View line = inflater.inflate(R.layout.property_value_list_item, null);
                 RadioButton sel = line.findViewById(R.id.selector);
 
                 //Set the various values

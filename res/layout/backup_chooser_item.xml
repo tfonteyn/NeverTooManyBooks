@@ -15,7 +15,7 @@
         android:layout_gravity="center_vertical"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        app:srcCompat="@drawable/ic_archive"
+        app:srcCompat="@drawable/ic_bc_archive"
         tools:ignore="ContentDescription" />
 
     <TextView

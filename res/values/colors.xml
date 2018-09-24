@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- the book cover thumbnail -->
-    <color name="background_thumb">#80808080</color>
+    <color name="dark_background_nav_header">#ffc5cae9</color>
+    <color name="dark_background_nav_panel">#aac5cae9</color>
+    <color name="dark_background_thumbnail">#80808080</color>
+    <color name="dark_background_toolbar">#03a9f4</color>
 
-    <!-- used in the error pages (seldom) -->
-    <color name="error_msg">#ffff30</color>
-
-    <!-- for about/donate pages only -->
-    <color name="link_blue">#006699</color>
-    <color name="link_donate">#11D2EF</color>
-
-    <color name="toolbar_background">#03a9f4</color>
+    <color name="light_background_nav_header">#ff304ffe</color>
+    <color name="light_background_nav_panel">#aa304ffe</color>
+    <color name="light_background_thumbnail">#80808080</color>
+    <color name="light_background_toolbar">#03a9f4</color>
 
 </resources>

@@ -35,9 +35,9 @@
     <application
         android:name=".BookCatalogueApp"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher4"
+        android:icon="@drawable/ic_bc_launcher4"
         android:label="@string/app_name"
-        android:logo="@drawable/ic_launcher4"
+        android:logo="@drawable/ic_bc_launcher4"
         android:supportsRtl="false"
         android:theme="@style/ThemeDefault">
 
