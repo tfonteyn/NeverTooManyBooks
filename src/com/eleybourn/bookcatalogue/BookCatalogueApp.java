@@ -36,6 +36,7 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.tasks.Terminator;
 
@@ -43,8 +44,6 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
-import org.acra.collector.CrashReportData;
-import org.acra.sender.ReportSenderException;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -54,13 +53,12 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * BookCatalogue Application implementation. Useful for making globals available
- * and for being a central location for logically application-specific objects such
- * as preferences.
+ * BookCatalogue Application implementation. Useful for making globals available and for being a
+ * central location for logically application-specific objects such as preferences.
  *
  * @author Philip Warner
  */
-@ReportsCrashes(formKey = "", // will not be used
+@ReportsCrashes(
         mailTo = "philip.warner@rhyme.com.au,eleybourn@gmail.com",
         mode = ReportingInteractionMode.DIALOG,
         customReportContent = {
@@ -80,10 +78,14 @@ import java.util.Set;
         resNotifText = R.string.crash_notif_text,
         //resNotifIcon = android.R.drawable.stat_notify_error, // optional. default is a warning sign
         resDialogText = R.string.crash_dialog_text,
-        resDialogIcon = android.R.drawable.ic_dialog_info, //optional. default is a warning sign
-        resDialogTitle = R.string.crash_dialog_title, // optional. default is your application name
-        resDialogCommentPrompt = R.string.crash_dialog_comment_prompt, // optional. when defined, adds a user text field input with this text resource as a label
-        resDialogOkToast = R.string.crash_dialog_ok_toast // optional. displays a Toast message when the user accepts to send a report.
+        //optional. default is a warning sign
+        resDialogIcon = android.R.drawable.ic_dialog_info,
+        // optional. default is your application name
+        resDialogTitle = R.string.crash_dialog_title,
+        // optional. when defined, adds a user text field input with this text resource as a label
+        resDialogCommentPrompt = R.string.crash_dialog_comment_prompt,
+        // optional. displays a Toast message when the user accepts to send a report.
+        resDialogOkToast = R.string.crash_dialog_ok_toast
 )
 
 public class BookCatalogueApp extends Application {
@@ -530,12 +532,8 @@ public class BookCatalogueApp extends Application {
 
         Terminator.init();
 
-        // Setup ACRA
         ACRA.init(this);
-        BcReportSender bcSender = new BcReportSender(this);
-        ACRA.getErrorReporter().setReportSender(bcSender);
-
-        // Save the app signer
+        ACRA.getErrorReporter().putCustomData("TrackerEventsInfo", Tracker.getEventsInfo());
         ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
 
         // Create the notifier
@@ -592,19 +590,4 @@ public class BookCatalogueApp extends Application {
     public interface OnLocaleChangedListener {
         void onLocaleChanged();
     }
-
-    public class BcReportSender extends org.acra.sender.EmailIntentSender {
-
-        BcReportSender(@NonNull final Context ctx) {
-            super(ctx);
-        }
-
-        @SuppressWarnings("EmptyMethod")
-        @Override
-        public void send(CrashReportData report) throws ReportSenderException {
-            //report.put(USER_COMMENT, report.get(USER_COMMENT) + "\n\n" + Tracker.getEventsInfo());
-            super.send(report);
-        }
-    }
-
 }

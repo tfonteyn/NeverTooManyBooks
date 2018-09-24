@@ -24,13 +24,22 @@ allprojects {
 }
 
 dependencies {
-    // Use all libraries from 'libs' folder
-    implementation fileTree(include: '*.jar', dir: 'libs')
+    // Can't get the Amazon one online.
+    implementation fileTree(include: 'amazon-mobile-associates-1.0.64.0.jar', dir: 'libs')
+
+    // standard Android support libs
     implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
+    implementation 'ch.acra:acra:4.11'
     // jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.11.3'
+    implementation 'org.apache.httpcomponents:httpcore:4.4.10'
+    implementation 'org.apache.httpcomponents:httpmime:4.5.6'
+    implementation 'org.apache.commons:commons-compress:1.18'
+    implementation 'commons-codec:commons-codec:1.11'
+    implementation 'oauth.signpost:signpost-core:1.2.1.2'
+    implementation 'oauth.signpost:signpost-commonshttp4:1.2.1.2'
 }
 
 android {
@@ -48,8 +57,14 @@ android {
     //     }
 
     packagingOptions {
-        exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
     }
     sourceSets {
         main {
