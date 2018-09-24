@@ -62,7 +62,7 @@ import java.util.List;
 public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         implements OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
 
-    public static final String TAG_BOOKSHELVES_DIALOG = "bookshelves_dialog";
+    private static final String TAG_BOOKSHELVES_DIALOG = "bookshelves_dialog";
     private static final int ACTIVITY_EDIT_AUTHORS = 1000;
     private static final int ACTIVITY_EDIT_SERIES = 1001;
 
@@ -186,7 +186,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
     }
 
     //TODO: if field not visible, skip
-    public void setupMenuMoreButton(final int resId, final int buttonResId, final List<String> list, final int dialogTitleResId) {
+    private void setupMenuMoreButton(final int resId, final int buttonResId, final List<String> list, final int dialogTitleResId) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_dropdown_item_1line, list);
         mFields.setAdapter(resId, adapter);

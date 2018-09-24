@@ -228,7 +228,6 @@
     <string name="retry">Opakovat</string>
     <string name="retry_task">Opakovat</string>
     <string name="my_books">Moje knihy</string>
-    <string name="my_books_classic">Moje knihy (klasik)</string>
     <string name="loan_return_book">Půjčit, vrátit nebo upravit knihu</string>
     <string name="admin_and_prefs">Administrace a možnosti</string>
     <string name="edit_book_send_to_gr">Poslat do Goodreads</string>
@@ -249,7 +248,6 @@
     <string name="other_preferences">Další možnosti</string>
     <string name="user_interface">Uživatelské rozhraní</string>
     <string name="start_in_my_books">Začínat v \'Moje knihy\'</string>
-    <string name="include_classic_catalogue_view">Používat klasickou podobu katalogu</string>
     <string name="background_tasks">Úlohy na pozadí</string>
     <string name="cleanup_old_tasks">Smazat staré úlohy</string>
     <string name="cleanup_old_events">Smazat staré události</string>

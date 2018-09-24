@@ -65,7 +65,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 
     /** Create a new chooser fragment */
     @NonNull
-    public static FileChooserFragment newInstance(@NonNull final File root, final String fileName) {
+    private static FileChooserFragment newInstance(@NonNull final File root, final String fileName) {
         String path;
         // Turn the passed File into a directory
         if (root.isDirectory()) {

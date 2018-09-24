@@ -32,7 +32,7 @@ import android.support.annotation.NonNull;
  */
 public abstract class RunnableTask extends Task {
 
-	public RunnableTask(@NonNull final String description) {
+	protected RunnableTask(@NonNull final String description) {
 		super(description);
 	}
 

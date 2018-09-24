@@ -550,10 +550,6 @@ public class StorageUtils {
 
     /**
      * Channels are FAST... TODO: replace old method with this one.
-     *
-     * @param src
-     * @param dst
-     * @throws IOException
      */
     @SuppressWarnings("unused")
     private static void copyFile2(@NonNull final File src, @NonNull final File dst) throws IOException {

@@ -240,7 +240,6 @@
     <string name="delete_task">Delete Task</string>
 
     <string name="my_books">My Books</string>
-    <string name="my_books_classic">My Books (Classic)</string>
     <string name="loan_return_book">Loan, Return or Edit Book</string>
     <string name="admin_and_prefs">Admin and Preferences</string>
     <string name="edit_book_send_to_gr">Send to goodreads</string>
@@ -263,7 +262,6 @@
     <string name="other_preferences">Other Preferences</string>
     <string name="user_interface">User Interface</string>
     <string name="start_in_my_books">Start in \'My Books\'</string>
-    <string name="include_classic_catalogue_view">Include Classic catalogue view</string>
     <string name="background_tasks">Background Tasks</string>
     <string name="cleanup_old_tasks">Cleanup Old Tasks</string>
     <string name="cleanup_old_events">Cleanup Old Events</string>
@@ -295,7 +293,6 @@
     <string name="send_all_to_goodreads_result">%1$d books processed: %2$d sent successfully, %3$d with no ISBN and %4$d with ISBN but not found in goodreads</string>
     <string name="x_of_y">%1$d of %2$d</string>
     <string name="send_book_to_goodreads">Send book %1$s to goodreads</string>
-
     <string name="erase_cover_cache">Erase cover cache</string>
     <string name="crash_toast_text">BookCatalogue has crashed unexpectedly. Please help us to make the application better by reporting this crash.</string>
     <string name="crash_notif_ticker_text">BookCatalogue has crashed</string>
@@ -325,7 +322,6 @@
     <string name="sort_added_date">Added date</string>
     <string name="sort_author_year">Author and Year</string>
     <string name="empty_with_brackets">(empty)</string>
-
     <string name="booklist_preferences">Book List Preferences</string>
     <string name="extra_book_details">Extra Book Details</string>
     <string name="general">General</string>

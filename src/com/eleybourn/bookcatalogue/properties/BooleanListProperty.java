@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.properties;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.properties.Property.BooleanValue;
@@ -104,13 +103,6 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
     public boolean isTrue() {
         Boolean b =  super.getResolvedValue();
         return (b != null ? b: false);
-    }
-
-    @Nullable
-    @Override
-    @Deprecated
-    public Boolean getResolvedValue() {
-        return super.getResolvedValue();
     }
 }
 

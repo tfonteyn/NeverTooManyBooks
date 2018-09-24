@@ -110,7 +110,7 @@ public class ViewTagger {
     public static <T> T getTag(@NonNull final View v, final int key) {
         ViewTagger tagger = getTagger(v, false);
         if (tagger == null) {
-            return null;
+            throw new NullPointerException("view has no tagger");
         }
 
         return (T) tagger.get(key);

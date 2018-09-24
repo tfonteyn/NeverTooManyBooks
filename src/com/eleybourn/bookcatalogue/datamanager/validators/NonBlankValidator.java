@@ -42,13 +42,8 @@ public class NonBlankValidator implements DataValidator {
         if (crossValidating)
             return;
 
-        try {
-            String v = data.getString(datum).trim();
-            if (!v.isEmpty()) {
-            } else {
-                throw new ValidatorException(R.string.vldt_nonblank_required, new Object[]{datum.getKey()});
-            }
-        } catch (Exception e) {
+        String v = data.getString(datum).trim();
+        if (v.isEmpty()) {
             throw new ValidatorException(R.string.vldt_nonblank_required, new Object[]{datum.getKey()});
         }
     }

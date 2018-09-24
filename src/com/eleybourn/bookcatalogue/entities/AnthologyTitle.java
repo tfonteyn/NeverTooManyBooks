@@ -63,7 +63,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
      */
     public static final char TITLE_AUTHOR_DELIM = '*';
 
-    public long id;
+    private long id;
     private Author mAuthor;
     private String mTitle;
 

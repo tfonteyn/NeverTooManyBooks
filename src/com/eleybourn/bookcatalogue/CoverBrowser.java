@@ -56,7 +56,6 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import com.eleybourn.bookcatalogue.widgets.PagerLayout;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

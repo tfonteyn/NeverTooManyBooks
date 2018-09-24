@@ -197,9 +197,7 @@ public class BookCatalogueApp extends Application {
         }
     };
 
-    /**
-     * Constructor.
-     */
+    @SuppressWarnings("unused")
     public BookCatalogueApp() {
         super();
         mInstance = this;

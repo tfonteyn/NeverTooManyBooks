@@ -51,23 +51,19 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected void onSetupView(@NonNull final View target, @NonNull final Series object, final int position) {
+    protected void onSetupView(@NonNull final View target, @NonNull final Series series, final int position) {
         TextView dt = target.findViewById(R.id.row_series);
         if (dt != null) {
-            dt.setText(object.getDisplayName());
+            dt.setText(series.getDisplayName());
         }
         TextView st = target.findViewById(R.id.row_series_sort);
         if (st != null) {
-            if (object.getDisplayName().equals(object.getSortName())) {
+            if (series.getDisplayName().equals(series.getSortName())) {
                 st.setVisibility(View.GONE);
             } else {
                 st.setVisibility(View.VISIBLE);
-                st.setText(object.getSortName());
+                st.setText(series.getSortName());
             }
-        }
-        TextView et = target.findViewById(R.id.row_series_num);
-        if (et != null) {
-            et.setText(object.number);
         }
     }
 

@@ -31,7 +31,6 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
 import com.eleybourn.bookcatalogue.widgets.FastScroller;
 
 /**

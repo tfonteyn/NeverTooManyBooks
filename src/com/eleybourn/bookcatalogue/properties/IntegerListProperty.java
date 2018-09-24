@@ -97,13 +97,6 @@ public class IntegerListProperty extends ListProperty<Integer> implements Intege
         return this;
     }
 
-    @Nullable
-    @Override
-    @Deprecated
-    public Integer getResolvedValue() {
-        return super.getResolvedValue();
-    }
-
     /**
      *
      * @return value itself, or 0 when null

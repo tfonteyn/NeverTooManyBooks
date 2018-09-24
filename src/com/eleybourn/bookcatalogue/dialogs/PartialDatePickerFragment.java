@@ -37,7 +37,7 @@ public class PartialDatePickerFragment extends DialogFragment {
     private static final String BKEY_YEAR = "year";
     private static final String BKEY_MONTH = "month";
     private static final String BKEY_DAY = "day";
-    public static final String BKEY_TITLE = "title";
+    private static final String BKEY_TITLE = "title";
 
     /**
      * Currently displayed year; null if empty/invalid

@@ -252,7 +252,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         private static final String EDITIONS_URL = "http://www.isfdb.org/cgi-bin/se.cgi?arg=%s&type=ISBN";
 
         private String isbn;
-        private List<String> editions = new ArrayList<>();
+        private final List<String> editions = new ArrayList<>();
 
         ISFDBEditionsTask(@NonNull final String isbn) {
             if (isbn.isEmpty()) {
@@ -313,8 +313,8 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     }
 
     private class ISFDBBookTask implements SimpleTaskQueue.SimpleTask {
-        private String bookUrl;
-        private List<AnthologyTitle> results = new ArrayList<>();
+        private final String bookUrl;
+        private final List<AnthologyTitle> results = new ArrayList<>();
 
         ISFDBBookTask(@NonNull final String bookUrl) {
             this.bookUrl = bookUrl;
@@ -533,7 +533,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     private class GetFromWikipediaTask implements SimpleTaskQueue.SimpleTask {
 
         final String mWikiHost = "https://en.wikipedia.org";
-        String mWikiURL;
+        final String mWikiURL;
 
         boolean mFound = false;
 

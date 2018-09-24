@@ -28,7 +28,6 @@ import com.eleybourn.bookcatalogue.searches.SearchThread;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import oauth.signpost.exception.OAuthCommunicationException;

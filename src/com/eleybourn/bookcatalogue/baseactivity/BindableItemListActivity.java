@@ -36,7 +36,6 @@ import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
 import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
 import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter.BindableItemBinder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

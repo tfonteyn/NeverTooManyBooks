@@ -226,7 +226,6 @@ public class ArrayUtils<T> {
     /**
      * Decode a text list separated by '|' and encoded by encodeListItem.
      *
-     * @param delim delimiter used in string s
      * @param s     String representing the list
      *
      * @return Array of strings resulting from list

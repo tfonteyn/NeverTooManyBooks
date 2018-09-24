@@ -318,7 +318,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @Nullable
+    @NonNull
     public String getBookUuid() {
         if (mBookUuidCol < 0) {
             mBookUuidCol = mCursor.getColumnIndex(DOM_BOOK_UUID.name);

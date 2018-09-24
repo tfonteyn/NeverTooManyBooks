@@ -92,7 +92,7 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
      *
      * @return TaskException object
      */
-    public Event getEvent() {
+    private Event getEvent() {
         if (m_eventCol == -1)
             m_eventCol = this.getColumnIndex(DOM_EVENT);
         byte[] blob = getBlob(m_eventCol);

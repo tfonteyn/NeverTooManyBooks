@@ -31,7 +31,6 @@ import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Class for representing read-only book details.

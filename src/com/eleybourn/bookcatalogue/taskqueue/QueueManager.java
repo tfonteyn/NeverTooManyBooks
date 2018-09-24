@@ -71,7 +71,7 @@ public abstract class QueueManager {
     private final List<WeakReference<OnTaskChangeListener>> m_taskChangeListeners;
 
 
-    public QueueManager(@NonNull final Context context) {
+    protected QueueManager(@NonNull final Context context) {
         super();
         if (m_queueManager != null) {
             // This is an essential requirement because (a) synchronization will not work with more than one

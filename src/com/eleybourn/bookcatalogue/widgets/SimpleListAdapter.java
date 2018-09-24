@@ -35,7 +35,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

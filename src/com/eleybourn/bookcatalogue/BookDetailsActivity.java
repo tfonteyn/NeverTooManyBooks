@@ -51,8 +51,6 @@ import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment.OnPartialDa
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEditorListener;
-import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
@@ -80,17 +78,6 @@ public class BookDetailsActivity extends BookCatalogueActivity
     public static final int TAB_EDIT_NOTES = 1;
     public static final int TAB_EDIT_FRIENDS = 2;
     public static final int TAB_EDIT_ANTHOLOGY = 3;
-
-    // used in Classic mode only, new fields added here for completeness of THIS class, but not added there.... maybe later
-    public static final String ADDED_HAS_INFO = "ADDED_HAS_INFO";
-    public static final String ADDED_FORMAT = "ADDED_FORMAT";
-    public static final String ADDED_GENRE = "ADDED_GENRE";
-    public static final String ADDED_LANGUAGE = "ADDED_LANGUAGE";
-    public static final String ADDED_LOCATION = "ADDED_LOCATION";
-    public static final String ADDED_PUBLISHER = "ADDED_PUBLISHER";
-    public static final String ADDED_SERIES = "ADDED_SERIES";
-    public static final String ADDED_TITLE = "ADDED_TITLE";
-    public static final String ADDED_AUTHOR = "ADDED_AUTHOR";
 
     private static final String FLATTENED_BOOKLIST_POSITION = "FlattenedBooklistPosition";
     private static final String BKEY_FLATTENED_BOOKLIST = "FlattenedBooklist";
@@ -144,15 +131,6 @@ public class BookDetailsActivity extends BookCatalogueActivity
             }
         }
     };
-    // used in Classic mode only, new fields added here for completeness of THIS class, but not added there.... maybe later
-    private String added_format = "";
-    private String added_genre = "";
-    private String added_language = "";
-    private String added_location = "";
-    private String added_publisher = "";
-    private String added_series = "";
-    private String added_title = "";
-    private String added_author = "";
 
     private TabLayout mTabLayout;
     private TabLayout.Tab mAnthologyTab;
@@ -922,33 +900,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         } else {
             mDb.updateBook(mRowId, mBookData, 0);
         }
-
-        /*
-         * Global variables that will be sent back via intent to the list view, if added/created
-         */
-        try {
-            ArrayList<Author> authors = mBookData.getAuthors();
-            added_author = authors.size() > 0 ? authors.get(0).getSortName() : "";
-        } catch (Exception ignore) {
-            Logger.logError(ignore);
-        }
-
-        try {
-            ArrayList<Series> series = mBookData.getSeries();
-            added_series = series.size() > 0 ? series.get(0).name : "";
-        } catch (Exception ignore) {
-            Logger.logError(ignore);
-        }
-
-        added_title = mBookData.getString(UniqueId.KEY_TITLE);
-        added_format = mBookData.getString(UniqueId.KEY_BOOK_FORMAT);
-        added_genre = mBookData.getString(UniqueId.KEY_BOOK_GENRE);
-        added_language = mBookData.getString(UniqueId.KEY_BOOK_LANGUAGE);
-        added_location = mBookData.getString(UniqueId.KEY_BOOK_LOCATION);
-        added_publisher = mBookData.getString(UniqueId.KEY_PUBLISHER);
     }
-
-
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -982,16 +934,6 @@ public class BookDetailsActivity extends BookCatalogueActivity
         public void success() {
             Intent intent = new Intent();
             intent.putExtra(UniqueId.KEY_ID, mBookData.getRowId());
-            intent.putExtra(ADDED_HAS_INFO, true);
-            intent.putExtra(ADDED_GENRE, added_genre);
-            intent.putExtra(ADDED_FORMAT, added_format);
-            intent.putExtra(ADDED_LANGUAGE, added_language);
-            intent.putExtra(ADDED_LOCATION, added_location);
-            intent.putExtra(ADDED_PUBLISHER, added_publisher);
-            intent.putExtra(ADDED_SERIES, added_series);
-            intent.putExtra(ADDED_TITLE, added_title);
-            intent.putExtra(ADDED_AUTHOR, added_author);
-
             setResult(Activity.RESULT_OK, intent);
             finish();
         }

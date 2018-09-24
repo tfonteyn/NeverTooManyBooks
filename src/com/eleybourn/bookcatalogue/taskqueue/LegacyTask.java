@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.taskqueue;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,7 +32,6 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class LegacyTask extends Task {

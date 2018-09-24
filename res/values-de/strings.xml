@@ -228,7 +228,6 @@
     <string name="delete_event">Ereignis löschen</string>
     <string name="delete_task">Aufgabe löschen</string>
     <string name="my_books">Meine Bücher</string>
-    <string name="my_books_classic">Meine Bücher (Klassisch)</string>
     <string name="loan_return_book">Buch verleihen, zurückgeben oder bearbeiten</string>
     <string name="admin_and_prefs">Verwaltung und Einstellungen</string>
     <string name="edit_book_send_to_gr">Zu Goodreads senden</string>
@@ -250,7 +249,6 @@ anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den "Zurück
     <string name="other_preferences">Weitere Einstellungen</string>
     <string name="user_interface">Benutzeroberfläche</string>
     <string name="start_in_my_books">Start in \'Meine Bücher\'</string>
-    <string name="include_classic_catalogue_view">Klassische Katalogansicht einschließen</string>
     <string name="background_tasks">Aufgaben im Hintergrund</string>
     <string name="cleanup_old_tasks">Alte Aufgaben bereinigen</string>
     <string name="cleanup_old_events">Alte Ereignisse bereinigen</string>

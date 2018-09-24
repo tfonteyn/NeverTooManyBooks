@@ -20,13 +20,11 @@
 
 package com.eleybourn.bookcatalogue.searches;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
@@ -52,8 +50,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-
-import static com.eleybourn.bookcatalogue.BookCatalogueApp.APP_SHARED_PREFERENCES;
 
 /**
  * Class to co-ordinate multiple SearchThread objects using an existing TaskManager.

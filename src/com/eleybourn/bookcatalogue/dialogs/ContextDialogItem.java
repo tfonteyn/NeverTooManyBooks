@@ -30,8 +30,8 @@ import android.support.annotation.NonNull;
  *
  */
 public class ContextDialogItem implements CharSequence {
-	public String name;
-	public Runnable handler;
+	private final String name;
+	public final Runnable handler;
 	public ContextDialogItem(@NonNull final String name, @NonNull final Runnable handler ) {
 		this.name = name;
 		this.handler = handler;

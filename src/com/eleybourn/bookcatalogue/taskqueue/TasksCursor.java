@@ -255,7 +255,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
      *
      * @return TaskException object
      */
-    public Task getTask() {
+    private Task getTask() {
         if (m_taskCol == -2) {
             m_taskCol = this.getColumnIndex(DOM_TASK);
         }

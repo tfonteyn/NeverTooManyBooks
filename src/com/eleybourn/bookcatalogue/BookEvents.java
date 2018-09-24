@@ -109,18 +109,6 @@ public class BookEvents {
         }
 
         /**
-         * Constructor
-         *
-         * @param bookId      ID of related book.
-         * @param description Description of this event.
-         * @param e           Exception related to this event.
-         */
-        BookEvent(final long bookId, @NonNull final String description, @NonNull final Exception e) {
-            super(description, e);
-            mBookId = bookId;
-        }
-
-        /**
          * Get the related Book ID.
          *
          * @return ID of related book.
@@ -237,8 +225,10 @@ public class BookEvents {
                 public void run() {
                     try {
                         GrSendBookEvent event = ViewTagger.getTag(v, R.id.TAG_EVENT);
-                        editBook(ctx, event.getBookId());
-                    } catch (Exception e) {
+                        if (event != null) {
+                            editBook(ctx, event.getBookId());
+                        }
+                    } catch (Exception ignore) {
                         // not a book event?
                     }
                 }
@@ -361,8 +351,10 @@ public class BookEvents {
                             public void run() {
                                 try {
                                     GrSendBookEvent event = ViewTagger.getTag(v, R.id.TAG_EVENT);
-                                    event.retry();
-                                    QueueManager.getQueueManager().deleteEvent(id);
+                                    if (event != null) {
+                                        event.retry();
+                                        QueueManager.getQueueManager().deleteEvent(id);
+                                    }
                                 } catch (Exception ignore) {
                                     // not a book event?
                                 }

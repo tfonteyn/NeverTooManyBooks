@@ -233,7 +233,6 @@
     <string name="delete_task">Delete Task</string>
 
     <string name="my_books">My Books</string>
-    <string name="my_books_classic">My Books (Classic)</string>
     <string name="loan_return_book">Loan, Return or Edit Book</string>
     <string name="admin_and_prefs">Administration and Preferences</string>
     <string name="edit_book_send_to_gr">Send to goodreads</string>
@@ -254,7 +253,6 @@
     <string name="other_preferences">Other Preferences</string>
     <string name="user_interface">User Interface</string>
     <string name="start_in_my_books">Start in \'My Books\'</string>
-    <string name="include_classic_catalogue_view">Include Classic catalogue view</string>
     <string name="background_tasks">Background Tasks</string>
     <string name="cleanup_old_tasks">Cleanup Old Tasks</string>
     <string name="cleanup_old_events">Cleanup Old Events</string>

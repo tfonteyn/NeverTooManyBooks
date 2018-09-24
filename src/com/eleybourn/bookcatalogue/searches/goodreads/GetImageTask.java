@@ -57,13 +57,6 @@ public class GetImageTask implements SimpleTask {
 	}
 
 	/**
-	 * @return the resulting image byte[]
-	 */
-	public byte[] getBytes() {
-		return mBytes;
-	}
-
-	/**
 	 * Just get the URL
 	 */
 	@Override

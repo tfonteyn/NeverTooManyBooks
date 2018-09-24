@@ -228,7 +228,6 @@
     <string name="delete_event">Olayı sil</string>
     <string name="delete_task">Görevi sil</string>
     <string name="my_books">Kitaplarım</string>
-    <string name="my_books_classic">Kitaplarım (Klasik)</string>
     <string name="loan_return_book">Ödünç ver, geri al veya kitabı düzenle</string>
     <string name="admin_and_prefs">Yönetim ve Seçenekler</string>
     <string name="edit_book_send_to_gr">Goodreads\'e gönder</string>
@@ -247,7 +246,6 @@
     <string name="other_preferences">Diğer seçenekler</string>
     <string name="user_interface">Kullanıcı arayüzü</string>
     <string name="start_in_my_books">\'Kitaplarım\' içinde aç</string>
-    <string name="include_classic_catalogue_view">Klasik katalog görünümünü içer</string>
     <string name="background_tasks">Ardalan görevleri</string>
     <string name="cleanup_old_tasks">Eski görevleri temizle</string>
     <string name="cleanup_old_events">Eski olayları temizle</string>

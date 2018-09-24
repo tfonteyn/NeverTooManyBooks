@@ -234,7 +234,6 @@
     <string name="delete_task">Eliminar Tarea</string>
 
     <string name="my_books">Mis Libros</string>
-    <string name="my_books_classic">Mis Libros (Clásico)</string>
     <string name="loan_return_book">Prestar, Devolver o Editar Libro</string>
     <string name="admin_and_prefs">Administración y Preferencias</string>
     <string name="edit_book_send_to_gr">Enviar a goodreads</string>
@@ -255,7 +254,6 @@
     <string name="other_preferences">Otras preferencias</string>
     <string name="user_interface">Interfaz de usuario</string>
     <string name="start_in_my_books">Empezar en \'Mis libros\'</string>
-    <string name="include_classic_catalogue_view">Incluir vista clásica del Catálogo</string>
     <string name="background_tasks">Tareas en segundo plano</string>
     <string name="cleanup_old_tasks">Eliminar tareas antiguas</string>
     <string name="cleanup_old_events">Eliminar eventos antiguos</string>

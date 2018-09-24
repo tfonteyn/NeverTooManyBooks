@@ -912,20 +912,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 
         // actual shelves
         populateBookShelfSpinner();
-
-        /* {@link BookCatalogueClassic} only */
-        TextView bookshelfNum = findViewById(R.id.bookshelf_num);
-        if (bookshelfNum != null) {
-            bookshelfNum.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mBookshelfSpinner.performClick();
-                }
-            });
-        }
     }
 
-    public void setupHints() {
+    private void setupHints() {
         HintManager.displayHint(this, R.string.hint_view_only_book_details, null);
         HintManager.displayHint(this, R.string.hint_book_list, null);
         if (StartupActivity.getShowAmazonHint() && HintManager.shouldBeShown(R.string.hint_amazon_links_blurb)) {

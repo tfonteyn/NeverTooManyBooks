@@ -420,11 +420,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             intent.putExtra(BKEY_RETURN_DATA, false);
             // Save output image in uri
             File cropped = this.getCroppedTempCoverFile();
-            if (cropped.exists())
-            //noinspection ResultOfMethodCallIgnored
-            {
-                cropped.delete();
-            }
+            StorageUtils.deleteFile(cropped);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(cropped.getAbsolutePath())));
 
             List<ResolveInfo> list = getActivity().getPackageManager().queryIntentActivities(intent, 0);
@@ -445,11 +441,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     private void deleteThumbnail() {
         try {
             File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
-            if (thumbFile != null && thumbFile.exists())
-            //noinspection ResultOfMethodCallIgnored
-            {
-                thumbFile.delete();
-            }
+            StorageUtils.deleteFile(thumbFile);
         } catch (Exception e) {
             Logger.logError(e);
         }

@@ -1010,10 +1010,10 @@ public class DbSync {
         private final Synchronizer mSync;
         private int mCount = -1;
 
-        public SynchronizedCursor(@NonNull final SQLiteCursorDriver driver,
-                                  @NonNull final String editTable,
-                                  @NonNull final SQLiteQuery query,
-                                  @NonNull final Synchronizer sync) {
+        protected SynchronizedCursor(@NonNull final SQLiteCursorDriver driver,
+                                     @NonNull final String editTable,
+                                     @NonNull final SQLiteQuery query,
+                                     @NonNull final Synchronizer sync) {
             super(driver, editTable, query);
             mSync = sync;
         }

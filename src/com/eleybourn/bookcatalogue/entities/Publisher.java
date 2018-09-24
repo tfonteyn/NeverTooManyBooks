@@ -63,15 +63,6 @@ public class Publisher implements Serializable {
         name = in.readString().trim();
     }
 
-    /**
-     * Return the 'human readable' version of the name
-     *
-     * @return name
-     */
-    public String getDisplayName() {
-        return name;
-    }
-
     // Support for encoding to a text file
     @Override
     public String toString() {

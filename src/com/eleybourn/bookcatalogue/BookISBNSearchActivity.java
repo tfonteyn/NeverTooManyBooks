@@ -222,8 +222,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
             } else if (BY_NAME.equals(mBy)) {
                 onCreateByName();
             } else if (BY_SCAN.equals(mBy)) {
-                if (onCreateByScan(savedInstanceState)) {
-                }
+                onCreateByScan(savedInstanceState);
             }
         } finally {
             Tracker.exitOnCreate(this);
@@ -240,7 +239,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
         go(mIsbn, "", "");
     }
 
-    private boolean onCreateByScan(@Nullable final Bundle savedInstanceState) {
+    private void onCreateByScan(@Nullable final Bundle savedInstanceState) {
         mMode = MODE_SCAN;
         mIsbnText = findViewById(R.id.isbn);
 
@@ -288,7 +287,6 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
             // Prevent the activity result from closing this activity.
             mDisplayingAlert = true;
             dialog.show();
-            return true;
         } catch (ActivityNotFoundException e) {
             // Verify - this can be a dangerous operation
             // -> yes, it threw another ActivityNotFoundException if Cancel is used
@@ -336,9 +334,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
             } catch (ActivityNotFoundException ignore) {
                 // give up....
             }
-            return true;
         }
-        return false;
     }
 
     private void onCreateByName() {

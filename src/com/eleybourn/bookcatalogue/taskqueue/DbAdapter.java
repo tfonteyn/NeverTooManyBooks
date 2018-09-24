@@ -565,13 +565,13 @@ public class DbAdapter {
      */
     protected class ScheduledTask {
         /** Time, in milliseconds, until Task needs to be executed. */
-        long timeUntilRunnable;
+        final long timeUntilRunnable;
         /** Blob for TAsk retrieved from DB. We do not deserialize until necessary. */
-        byte[] m_blob;
+        final byte[] m_blob;
         /** Retry count retrieved from DB. */
-        int m_retries;
+        final int m_retries;
         /** ID of Task. */
-        int id;
+        final int id;
 
         /**
          * Constructor

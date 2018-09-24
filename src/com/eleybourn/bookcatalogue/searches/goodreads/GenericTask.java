@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,7 +41,6 @@ import com.eleybourn.bookcatalogue.taskqueue.TasksCursor;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

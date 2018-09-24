@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="dark_background_nav_header">#ffc5cae9</color>
-    <color name="dark_background_nav_panel">#aac5cae9</color>
+    <color name="dark_background_nav_panel">#283593</color>
     <color name="dark_background_thumbnail">#80808080</color>
     <color name="dark_background_toolbar">#03a9f4</color>
 
     <color name="light_background_nav_header">#ff304ffe</color>
-    <color name="light_background_nav_panel">#aa304ffe</color>
+    <color name="light_background_nav_panel">#ffffffff</color>
     <color name="light_background_thumbnail">#80808080</color>
     <color name="light_background_toolbar">#03a9f4</color>
 

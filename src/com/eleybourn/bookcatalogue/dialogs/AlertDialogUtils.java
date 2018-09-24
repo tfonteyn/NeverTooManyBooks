@@ -24,7 +24,6 @@ import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

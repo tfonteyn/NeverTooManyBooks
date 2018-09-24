@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.database.definitions;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DbSync;
 
 import java.util.ArrayList;
@@ -69,9 +70,9 @@ public class TableDefinition implements AutoCloseable {
     /**
      * Static method to drop the passed table, if it exists.
      */
-    public static void drop(DbSync.SynchronizedDb db, String name) {
+    private static void drop(DbSync.SynchronizedDb db, String name) {
         if (BuildConfig.DEBUG) {
-            System.out.println("Drop Table If Exists " + name);
+            System.out.println("Dropping Table " + name);
         }
         db.execSQL("Drop Table If Exists " + name);
     }
@@ -428,7 +429,12 @@ public class TableDefinition implements AutoCloseable {
     @SuppressWarnings("UnusedReturnValue")
     public TableDefinition create(DbSync.SynchronizedDb db, boolean withConstraints) {
         if (BuildConfig.DEBUG) {
-            System.out.println(this.getSql(mName, withConstraints, false));
+            String s = this.getSql(mName, withConstraints, false);
+            if (DEBUG_SWITCHES.SQL) {
+                System.out.println(s);
+            } else {
+                System.out.println("Creating table " + s.substring(0, 30));
+            }
         }
         db.execSQL(this.getSql(mName, withConstraints, false));
         return this;

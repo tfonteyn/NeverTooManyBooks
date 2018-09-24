@@ -311,7 +311,6 @@
     <string name="delete_event">Supprimer l\'événement</string>
     <string name="delete_task">Supprimer la tâche</string>
     <string name="my_books">Mes livres</string>
-    <string name="my_books_classic">Mes livres (classique)</string>
     <string name="loan_return_book">Prêter, retourner ou modifier le livre</string>
     <string name="admin_and_prefs">Administration et préférences</string>
     <string name="edit_book_send_to_gr">Envoyer à Goodreads</string>
@@ -336,7 +335,6 @@
     <string name="other_preferences">Autres préférences</string>
     <string name="user_interface">Interface utilisateur</string>
     <string name="start_in_my_books">Commencer dans « mes livres »</string>
-    <string name="include_classic_catalogue_view">Inclure la vue catalogue classique</string>
     <string name="background_tasks">Tâches en arrière plan</string>
     <string name="cleanup_old_tasks">Nettoyer les anciennes tâches</string>
     <string name="cleanup_old_events">Nettoyer les anciens événements</string>

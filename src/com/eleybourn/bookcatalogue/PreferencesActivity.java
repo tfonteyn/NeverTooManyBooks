@@ -80,12 +80,6 @@ public class PreferencesActivity extends PreferencesBaseActivity {
             /* *****************************************************************************
              * GRP_USER_INTERFACE:
              ******************************************************************************/
-            .add(new BooleanProperty(BCPreferences.PREF_CLASSIC_MY_BOOKS, PropertyGroup.GRP_USER_INTERFACE, R.string.include_classic_catalogue_view)
-                    .setDefaultValue(false)
-                    .setPreferenceKey(BCPreferences.PREF_CLASSIC_MY_BOOKS)
-                    .setGlobal(true)
-                    .setWeight(100))
-
             /*
              * Enabling/disabling read-only mode when opening book. If enabled book
              * is opened in read-only mode (editing through menu), else in edit mode.

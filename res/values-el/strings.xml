@@ -233,7 +233,6 @@
     <string name="delete_task">Διαγραφή Εργασίας</string>
 
     <string name="my_books">Τα βιβλία μου</string>
-    <string name="my_books_classic">Τα βιβλία μου (Κλασική προβολή)</string>
     <string name="loan_return_book">Δανεισμός, Επιστροφή ή Επεξεργασία Βιβλίου</string>
     <string name="admin_and_prefs">Διαχείριση και προτιμήσεις</string>
     <string name="edit_book_send_to_gr">Αποστολή στο goodreads</string>
@@ -254,7 +253,6 @@
     <string name="other_preferences">Άλλες Προτιμήσεις</string>
     <string name="user_interface">Περιβάλλον Χρήστη</string>
     <string name="start_in_my_books">Εκκίνηση σε \'Τα βιβλία μου\'</string>
-    <string name="include_classic_catalogue_view">Συμπεριέλαβε την κλασική προβολή καταλόγου</string>
     <string name="background_tasks">Εργασίες Παρασκηνίου</string>
     <string name="cleanup_old_tasks">Εκκαθάριση παλιών εργασιών</string>
     <string name="cleanup_old_events">Εκκαθάριση παλιών events</string>

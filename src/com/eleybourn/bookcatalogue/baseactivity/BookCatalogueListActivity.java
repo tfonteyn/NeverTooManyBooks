@@ -100,7 +100,6 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
      */
     @Override
     protected void onRestoreInstanceState(final Bundle state) {
-        ensureList();
         super.onRestoreInstanceState(state);
     }
 
@@ -167,7 +166,6 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
      * Get the activity's list view widget.
      */
     protected ListView getListView() {
-        ensureList();
         return mList;
     }
 
@@ -182,17 +180,10 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
     /**
      * Provide the cursor for the list view.
      */
-    public void setListAdapter(@NonNull final ListAdapter adapter) {
+    protected void setListAdapter(@NonNull final ListAdapter adapter) {
         synchronized (this) {
-            ensureList();
             mAdapter = adapter;
             mList.setAdapter(adapter);
-        }
-    }
-
-    private void ensureList() {
-        if (mList != null) {
-            // do nothing
         }
     }
 }

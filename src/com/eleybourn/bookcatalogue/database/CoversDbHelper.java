@@ -224,7 +224,7 @@ public class CoversDbHelper implements AutoCloseable {
      *  @param db     Blank database
      * @param tables Table list
      */
-    static void createTables(@NonNull final SynchronizedDb db, @NonNull final TableDefinition[] tables) {
+    private static void createTables(@NonNull final SynchronizedDb db, @NonNull final TableDefinition[] tables) {
         for (TableDefinition t : tables) {
             t.create(db, true);
             for (IndexDefinition i : t.getIndexes()) {

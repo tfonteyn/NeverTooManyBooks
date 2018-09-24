@@ -46,10 +46,10 @@ public abstract class Event implements Serializable, BindableItemCursorAdapter.B
 	private long m_id = 0;
 	private Exception m_exception = null;
 
-	public Event(String description) {
+	protected Event(String description) {
 		m_description = description;
 	}
-	public Event(String description, Exception e) {
+	protected Event(String description, Exception e) {
 		m_description = description;
 		m_exception = e;
 	}
