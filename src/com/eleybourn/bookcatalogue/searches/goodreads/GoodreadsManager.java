@@ -32,6 +32,7 @@ import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BooksRow;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -373,7 +374,7 @@ public class GoodreadsManager {
     public void requestAuthorization(@NonNull final Context ctx) throws NetworkException {
         String authUrl;
 
-        // Dont do this; this is just part of OAuth and not the API
+        // Don't do this; this is just part of OAuth and not the API
         //waitUntilRequestAllowed();
 
         // Get the URL
@@ -951,38 +952,46 @@ public class GoodreadsManager {
             GeneralException(@Nullable final Throwable inner) {
                 mInner = inner;
             }
+
+            GeneralException(final String message, final Throwable inner) {
+                super(message, inner);
+                this.mInner = inner;
+            }
         }
 
         public static class NotAuthorizedException extends GeneralException {
             private static final long serialVersionUID = 5589234170614368111L;
 
             public NotAuthorizedException() {
-                super(null);
+                super(BookCatalogueApp.getResourceString(R.string.goodreads_auth_failed),null);
             }
 
-            public NotAuthorizedException(@Nullable final Throwable inner) {
-                super(inner);
+            public NotAuthorizedException(final Throwable inner) {
+                super(BookCatalogueApp.getResourceString(R.string.goodreads_auth_failed), inner);
             }
         }
 
         public static class BookNotFoundException extends GeneralException {
             private static final long serialVersionUID = 872113355903361212L;
 
-            BookNotFoundException() {
+            public BookNotFoundException() {
                 super(null);
             }
 
-            @SuppressWarnings("unused")
-            BookNotFoundException(@Nullable final Throwable inner) {
-                super(inner);
-            }
+//            public BookNotFoundException(@Nullable final Throwable inner) {
+//                super(inner);
+//            }
+//
+//            public BookNotFoundException(final String message, final Throwable inner) {
+//                super(message, inner);
+//            }
         }
 
         public static class NetworkException extends GeneralException {
             private static final long serialVersionUID = -4233137984910957925L;
 
-            NetworkException(@Nullable final Throwable inner) {
-                super(inner);
+            public NetworkException(@Nullable final Throwable inner) {
+                super(BookCatalogueApp.getResourceString(R.string.goodreads_access_error), inner);
             }
         }
     }

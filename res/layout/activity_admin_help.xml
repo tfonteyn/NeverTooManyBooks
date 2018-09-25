@@ -53,7 +53,7 @@
 
             <Button
                 android:id="@+id/send_info"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/send_info" />
 
@@ -68,7 +68,7 @@
 
             <Button
                 android:id="@+id/cleanup_button"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/cleanup_files" />
         </LinearLayout>

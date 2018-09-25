@@ -49,12 +49,12 @@
 
                 <CheckedTextView
                     android:id="@+id/read"
+                    style="@style/read_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentTop="true"
-                    style="@style/read_checkbox"
-                    tools:checked="true"/>
+                    tools:checked="true" />
 
                 <LinearLayout
                     android:id="@+id/rating_wrapper"
@@ -93,8 +93,8 @@
                         style="@style/bookMinorDetailText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        tools:text="97834579862"
-                        android:textIsSelectable="true" />
+                        android:textIsSelectable="true"
+                        tools:text="97834579862" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -111,16 +111,16 @@
                         android:layout_height="wrap_content"
                         android:paddingEnd="@dimen/padding_border"
                         android:paddingStart="@dimen/padding_border"
-                        tools:text="573 pages"
-                        android:textIsSelectable="true" />
+                        android:textIsSelectable="true"
+                        tools:text="573 pages" />
 
                     <TextView
                         android:id="@+id/format"
                         style="@style/bookMinorDetailText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        tools:text="(Hardcover)"
-                        android:textIsSelectable="true" />
+                        android:textIsSelectable="true"
+                        tools:text="(Hardcover)" />
                 </LinearLayout>
             </RelativeLayout>
 
@@ -138,7 +138,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/thumbnail"
-                    tools:src="@android:drawable/ic_menu_help"/>
+                    tools:src="@android:drawable/ic_menu_help" />
             </RelativeLayout>
         </LinearLayout>
 
@@ -154,8 +154,8 @@
             android:id="@+id/series"
             style="@style/bookDetailText"
             android:singleLine="false"
-            tools:text="Series name (1)\nSeries name (2)"
-            android:textIsSelectable="true" />
+            android:textIsSelectable="true"
+            tools:text="Series name (1)\nSeries name (2)" />
 
         <!-- Anthology -->
         <LinearLayout
@@ -194,8 +194,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone"
-            tools:visibility="visible"
-            tools:ignore="NestedScrolling" />
+            tools:ignore="NestedScrolling"
+            tools:visibility="visible" />
 
         <View style="@style/listDividerHorizontal" />
 
@@ -215,8 +215,8 @@
                 style="@style/bookDetailText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Publisher name, Jan 25, 2012"
-                android:textIsSelectable="true" />
+                android:textIsSelectable="true"
+                tools:text="Publisher name, Jan 25, 2012" />
 
         </LinearLayout>
 
@@ -229,8 +229,8 @@
         <TextView
             android:id="@+id/bookshelf"
             style="@style/bookDetailText"
-            tools:text="The best books, Wanted"
-            android:textIsSelectable="true" />
+            android:textIsSelectable="true"
+            tools:text="The best books, Wanted" />
 
         <!-- Genre -->
         <TextView
@@ -241,8 +241,8 @@
         <TextView
             android:id="@+id/genre"
             style="@style/bookDetailText"
-            tools:text="Science Fiction"
-            android:textIsSelectable="true" />
+            android:textIsSelectable="true"
+            tools:text="Science Fiction" />
 
         <!-- Language -->
         <TextView
@@ -253,8 +253,8 @@
         <TextView
             android:id="@+id/language"
             style="@style/bookDetailText"
-            tools:text="Quenya"
-            android:textIsSelectable="true" />
+            android:textIsSelectable="true"
+            tools:text="Quenya" />
 
 
         <TableLayout
@@ -275,8 +275,8 @@
                     android:id="@+id/list_price"
                     style="@style/bookDetailText"
                     android:layout_weight="1"
-                    tools:text="45"
-                    android:textIsSelectable="true" />
+                    android:textIsSelectable="true"
+                    tools:text="45" />
             </TableRow>
         </TableLayout>
 
@@ -302,8 +302,8 @@
         <TextView
             android:id="@+id/notes"
             style="@style/bookDetailText"
-            tools:text="The best book of all times"
-            android:textIsSelectable="true" />
+            android:textIsSelectable="true"
+            tools:text="The best book of all times" />
 
         <TableLayout
             android:layout_width="match_parent"
@@ -342,8 +342,8 @@
                     android:id="@+id/read_start"
                     style="@style/bookDetailText"
                     android:layout_weight="1"
-                    tools:text="Nov 10, 2011"
-                    android:textIsSelectable="true" />
+                    android:textIsSelectable="true"
+                    tools:text="Nov 10, 2011" />
             </TableRow>
 
             <TableRow
@@ -359,8 +359,8 @@
                     android:id="@+id/read_end"
                     style="@style/bookDetailText"
                     android:layout_weight="1"
-                    tools:text="Dec 15, 2011"
-                    android:textIsSelectable="true" />
+                    android:textIsSelectable="true"
+                    tools:text="Dec 15, 2011" />
             </TableRow>
 
             <!-- Location of the book -->
@@ -378,8 +378,8 @@
                     android:id="@+id/location"
                     style="@style/bookDetailText"
                     android:layout_weight="1"
-                    tools:text="Library"
-                    android:textIsSelectable="true" />
+                    android:textIsSelectable="true"
+                    tools:text="Library" />
             </TableRow>
         </TableLayout>
 
@@ -408,8 +408,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            tools:text="I hereby nominate Lizard the humongous football player and Sylphide the mysterious ballerina as two of my favorite characters of 2012. Rarely have such elite and outsize personalities felt so true on the page--a joy to be with, worth rooting for."
-            tools:ignore="SelectableText" />
+            tools:ignore="SelectableText"
+            tools:text="I hereby nominate Lizard the humongous football player and Sylphide the mysterious ballerina as two of my favorite characters of 2012. Rarely have such elite and outsize personalities felt so true on the page--a joy to be with, worth rooting for." />
     </LinearLayout>
 
 </ScrollView>

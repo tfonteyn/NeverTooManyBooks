@@ -22,7 +22,8 @@
             android:layout_width="@dimen/padding_border_double"
             android:layout_height="@dimen/padding_border_double"
             android:layout_gravity="center_vertical"
-            app:srcCompat="@drawable/btn_circle_normal"
+            android:backgroundTint="?android:attr/colorForeground"
+            android:background="?attr/ic_lens"
             tools:ignore="ContentDescription" />
 
         <TextView
@@ -41,12 +42,12 @@
             android:layout_width="@dimen/padding_border_double"
             android:layout_height="@dimen/padding_border_double"
             android:layout_gravity="center_vertical"
-            app:srcCompat="@drawable/btn_circle_normal"
+            android:backgroundTint="?android:attr/colorForeground"
+            android:background="?attr/ic_lens"
             tools:ignore="ContentDescription" />
 
         <View
-            style="@style/listDividerHorizontal"
-            android:background="@android:drawable/divider_horizontal_bright" />
+            style="@style/listDividerHorizontal" />
     </LinearLayout>
 
 </RelativeLayout>

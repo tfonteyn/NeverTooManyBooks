@@ -34,6 +34,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Checkable;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
@@ -585,7 +586,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
         try {
             if (!mIsbn.isEmpty()) {
                 // If the layout has an 'Allow ASIN' checkbox, see if it is checked.
-                final CheckBox allowAsinCb = BookISBNSearchActivity.this.findViewById(R.id.asinCheckbox);
+                final Checkable allowAsinCb = BookISBNSearchActivity.this.findViewById(R.id.asinCheckbox);
                 final boolean allowAsin = allowAsinCb != null && allowAsinCb.isChecked();
 
                 if (!IsbnUtils.isValid(mIsbn) && (!allowAsin || !AsinUtils.isValid(mIsbn))) {

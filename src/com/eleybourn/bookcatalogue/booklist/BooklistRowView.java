@@ -387,7 +387,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @Nullable
+    @NonNull
     public String getTitle() {
         if (mTitleCol < 0) {
             mTitleCol = mCursor.getColumnIndex(DOM_TITLE.name);
@@ -401,7 +401,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @Nullable
+    @NonNull
     public String getPublisherName() {
         if (mPublisherCol < 0) {
             mPublisherCol = mCursor.getColumnIndex(DOM_PUBLISHER.name);
@@ -415,7 +415,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @Nullable
+    @NonNull
     public String getLanguage() {
         if (mLanguageCol < 0) {
             mLanguageCol = mCursor.getColumnIndex(DOM_BOOK_LANGUAGE.name);
@@ -442,7 +442,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @Nullable
+    @NonNull
     public String getFormat() {
         if (mFormatCol < 0) {
             mFormatCol = mCursor.getColumnIndex(DOM_BOOK_FORMAT.name);
@@ -456,7 +456,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @Nullable
+    @NonNull
     public String getGenre() {
         if (mGenreCol < 0) {
             mGenreCol = mCursor.getColumnIndex(DOM_BOOK_GENRE.name);
@@ -470,7 +470,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @Nullable
+    @NonNull
     public String getLocation() {
         if (mLocationCol < 0) {
             mLocationCol = mCursor.getColumnIndex(DOM_BOOK_LOCATION.name);
@@ -484,7 +484,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @Nullable
+    @NonNull
     public String getSeriesName() {
         if (mSeriesNameCol < 0) {
             mSeriesNameCol = mCursor.getColumnIndex(DOM_SERIES_NAME.name);
@@ -498,7 +498,7 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
-    @Nullable
+    @NonNull
     public String getSeriesNumber() {
         if (mSeriesNumberCol < 0) {
             mSeriesNumberCol = mCursor.getColumnIndex(DOM_SERIES_NUM.name);

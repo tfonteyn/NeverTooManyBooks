@@ -148,9 +148,6 @@
     **************************************************************************************
     -->
 
-
-
-
     <!-- Style for item in preferences lists -->
     <style name="prefsItem">
         <item name="android:layout_width">match_parent</item>

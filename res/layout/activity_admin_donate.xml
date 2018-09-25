@@ -54,7 +54,7 @@
                 android:id="@+id/donate_url_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_paypal"
+                app:srcCompat="@drawable/ic_donate"
                 tools:ignore="ContentDescription" />
         </LinearLayout>
 

@@ -107,7 +107,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
 
             // TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books.
             menu.add(0, SHARE_ID, 0, R.string.menu_share_this)
-                    .setIcon(R.drawable.ic_menu_twitter);
+                    .setIcon(android.R.drawable.ic_menu_share);
             // Very rarely used, and easy to miss-click, so do not add as action_if_room!
             //tweet.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }

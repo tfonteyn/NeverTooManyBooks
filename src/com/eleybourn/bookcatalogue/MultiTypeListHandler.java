@@ -60,8 +60,10 @@ public interface MultiTypeListHandler {
      *
      * @return Filled-in view to use.
      */
-    View getView(@NonNull final Cursor cursor, @NonNull final LayoutInflater inflater,
-                 @Nullable final View convertView, @NonNull final ViewGroup parent);
+    View getView(@NonNull final Cursor cursor,
+                 @NonNull final LayoutInflater inflater,
+                 @Nullable final View convertView,
+                 @NonNull final ViewGroup parent);
 
     /**
      * Get the text to display in ListView for row at current cursor position
@@ -99,6 +101,7 @@ public interface MultiTypeListHandler {
          */
         public abstract View newView(@NonNull final T rowContext,
                                      @NonNull final LayoutInflater inflater,
-                                     @NonNull final ViewGroup parent, final int level);
+                                     @NonNull final ViewGroup parent,
+                                     final int level);
     }
 }

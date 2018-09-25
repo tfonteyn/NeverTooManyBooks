@@ -84,6 +84,7 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -234,7 +235,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         }
     }
 
-
     @Override
     public void onResume() {
         Tracker.enterOnResume(this);
@@ -315,7 +315,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         Tracker.exitOnDestroy(this);
     }
 
-
     @Override
     public boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
         getDrawerLayout().closeDrawers();
@@ -356,8 +355,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         mList.moveToPosition(info.position);
-        return mListHandler.onContextItemSelected(mDb,
-                mList.getRowView(), this, item.getItemId()) || super.onContextItemSelected(item);
+        return
+                mListHandler.onContextItemSelected(mDb, info.targetView, mList.getRowView(), this, item.getItemId())
+                || super.onContextItemSelected(item);
     }
 
     /**
@@ -407,7 +407,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                         BooklistPseudoCursor newList = mList.getBuilder().getList();
                         displayList(newList, null);
                     }
-                    break;
+                    return true;
                 }
                 case MENU_COLLAPSE: {
                     // It is possible that the list will be empty, if so, ignore
@@ -418,7 +418,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                         mTopRow = mList.getBuilder().getPosition(oldAbsPos);
                         displayList(mList.getBuilder().getList(), null);
                     }
-                    break;
+                    return true;
                 }
             }
         }
@@ -498,14 +498,12 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         Tracker.exitOnActivityResult(this, requestCode, resultCode);
     }
 
-
     /**
      * Support routine now that this activity is no longer a ListActivity
      */
     private ListView getListView() {
         return (ListView) findViewById(android.R.id.list);
     }
-
 
     /**
      * Display the passed cursor in the ListView, and change the position to targetRow.
@@ -514,25 +512,15 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      * @param targetRows if set, change the position to targetRow.
      */
     private void displayList(@NonNull final BooklistPseudoCursor newList, @Nullable final ArrayList<BookRowInfo> targetRows) {
-        Objects.requireNonNull(newList, "Unexpected empty list");
 
         final int showHeaderFlags = (mCurrentStyle == null ? BooklistStyle.SUMMARY_SHOW_ALL : mCurrentStyle.getShowHeaderInfo());
 
-        final TextView bookCounts = findViewById(R.id.bookshelf_count);
-        if ((showHeaderFlags & BooklistStyle.SUMMARY_SHOW_COUNT) != 0) {
-            if (mUniqueBooks != mTotalBooks) {
-                bookCounts.setText(BookCatalogueApp.getResourceString(R.string.brackets,
-                        this.getString(R.string.displaying_n_books_in_m_entries, mUniqueBooks, mTotalBooks)));
-            } else {
-                bookCounts.setText(BookCatalogueApp.getResourceString(R.string.brackets,
-                        this.getString(R.string.displaying_n_books, mUniqueBooks)));
-            }
-            bookCounts.setVisibility(View.VISIBLE);
-        } else {
-            bookCounts.setVisibility(View.GONE);
-        }
+        populateBookCountField(showHeaderFlags);
 
-        long t0 = System.currentTimeMillis();
+        long t0;
+        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+            t0 = System.currentTimeMillis();
+        }
 
         // Save the old list so we can close it later, and set the new list locally
         BooklistPseudoCursor oldList = mList;
@@ -543,25 +531,25 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         mAdapter = new MultiTypeListCursorAdapter(this, mList, mListHandler);
 
         // Get the ListView and set it up
-        final ListView lv = getListView();
+        final ListView listView = getListView();
         final ListViewHolder lvHolder = new ListViewHolder();
-        ViewTagger.setTag(lv, R.id.TAG_HOLDER, lvHolder);
+        ViewTagger.setTag(listView, R.id.TAG_HOLDER, lvHolder);
 
-        lv.setAdapter(mAdapter);
+        listView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
 
         // Force a rebuild of ListView
-        lv.setFastScrollEnabled(false);
-        lv.setFastScrollEnabled(true);
+        listView.setFastScrollEnabled(false);
+        listView.setFastScrollEnabled(true);
 
         // Restore saved position
         final int count = mList.getCount();
         try {
             if (mTopRow >= count) {
                 mTopRow = count - 1;
-                lv.setSelection(mTopRow);
+                listView.setSelection(mTopRow);
             } else {
-                lv.setSelectionFromTop(mTopRow, mTopRowTop);
+                listView.setSelectionFromTop(mTopRow, mTopRowTop);
             }
         } catch (Exception ignored) {
         }
@@ -570,7 +558,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         // once we know how many items appear in a typical view and once we can tell
         // if it is already in the view.
         if (targetRows != null) {
-            postRunnableToFixPositionOnceControlDrawn(lv, targetRows);
+            postRunnableToFixPositionOnceControlDrawn(listView, targetRows);
         }
 
         final boolean hasLevel1 = (mList.numLevels() > 1);
@@ -596,7 +584,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         }
 
         // Define a scroller to update header detail when top row changes
-        lv.setOnScrollListener(
+        listView.setOnScrollListener(
                 new OnScrollListener() {
                     @Override
                     public void onScroll(final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
@@ -631,6 +619,22 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         }
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
             System.out.println("displayList: " + (System.currentTimeMillis() - t0));
+        }
+    }
+
+    private void populateBookCountField(final int showHeaderFlags) {
+        final TextView bookCounts = findViewById(R.id.bookshelf_count);
+        if ((showHeaderFlags & BooklistStyle.SUMMARY_SHOW_COUNT) != 0) {
+            if (mUniqueBooks != mTotalBooks) {
+                bookCounts.setText(BookCatalogueApp.getResourceString(R.string.brackets,
+                        this.getString(R.string.displaying_n_books_in_m_entries, mUniqueBooks, mTotalBooks)));
+            } else {
+                bookCounts.setText(BookCatalogueApp.getResourceString(R.string.brackets,
+                        this.getString(R.string.displaying_n_books, mUniqueBooks)));
+            }
+            bookCounts.setVisibility(View.VISIBLE);
+        } else {
+            bookCounts.setVisibility(View.GONE);
         }
     }
 
@@ -731,13 +735,12 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 
     /**
      * Save current position information, including view nodes that are expanded.
-     * <p>
+     *
      * ENHANCE: Handle positions a little better when books are deleted.
-     * <p>
-     * Deleting a book by 'n' authors from the last author in list results
-     * in the list decreasing in length by, potentially, n*2 items. The
-     * current 'savePosition()' code will return to the old position in the
-     * list after such an operation...which will be too far down.
+     *
+     * Deleting a book by 'n' authors from the last author in list results in the list decreasing
+     * in length by, potentially, n*2 items. The current code will return to the old position
+     * in the list after such an operation...which will be too far down.
      */
     private void savePosition() {
         if (mIsDead) {
@@ -837,22 +840,19 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             @Override
             public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 mList.moveToPosition(position);
-                ArrayList<SimpleDialogItem> menu = new ArrayList<>();
+                List<SimpleDialogItem> menu = new ArrayList<>();
                 mListHandler.buildContextMenu(mList.getRowView(), menu);
 
                 if (menu.size() > 0) {
-                    StandardDialogs.selectItemDialog(getLayoutInflater(), null,
-                            menu, null, new SimpleDialogOnClickListener() {
+                    StandardDialogs.selectItemDialog(getLayoutInflater(),
+                            null, menu, null,
+                            new SimpleDialogOnClickListener() {
                                 @Override
                                 public void onClick(@NonNull final SimpleDialogItem item) {
                                     mList.moveToPosition(position);
                                     int id = ((SimpleDialogMenuItem) item).getItemId();
-                                    mListHandler.onContextItemSelected(mDb, mList.getRowView(), BooksOnBookshelf.this, id);
 
-                                    // If data changed, we need to update display
-                                    if (id == R.id.MENU_MARK_AS_UNREAD || id == R.id.MENU_MARK_AS_READ) {
-                                        setupBookList(true);
-                                    }
+                                    mListHandler.onContextItemSelected(mDb, view, mList.getRowView(), BooksOnBookshelf.this, id);
                                 }
                             });
                 }
@@ -948,7 +948,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         mBookshelfSpinner.setSelection(currentPos);
     }
 
-
     /**
      * Update and/or create the current style definition.
      */
@@ -998,10 +997,14 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         return style;
     }
 
+    /**
+     *
+     * @param flags  bitmask
+     */
     @Override
     public void onBooklistChange(final int flags) {
         if (flags != 0) {
-            // Something changed. Just regenerate.
+            //FIXME: rather brutal :(    Something changed. Just regenerate.
             savePosition();
             this.setupBookList(true);
         }
@@ -1087,6 +1090,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                           @NonNull final LayoutInflater inf,
                           final int stringId,
                           @NonNull final OnClickListener listener) {
+        @SuppressLint("InflateParams") // it's a dialog -> root==null
         TextView view = (TextView) inf.inflate(R.layout.booklist_style_menu_text, null);
         Typeface tf = view.getTypeface();
         view.setTypeface(tf, Typeface.ITALIC);
@@ -1126,7 +1130,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         mCurrentStyle = style;
         setupBookList(true);
     }
-
 
     /**
      * Build the underlying flattened list of books.
@@ -1195,10 +1198,16 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         @Override
         public void run(@NonNull final SimpleTaskContext taskContext) {
             try {
-                long t0 = System.currentTimeMillis();
+                long t0;
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                    t0 = System.currentTimeMillis();
+                }
                 // Build the underlying data
                 BooklistBuilder bookListBuilder = buildBooklist(mIsFullRebuild);
-                long t1 = System.currentTimeMillis();
+                long t1;
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                    t1 = System.currentTimeMillis();
+                }
                 // Try to sync the previously selected book ID
                 if (mMarkBookId != 0) {
                     // get all positions of the book
@@ -1244,7 +1253,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 } else {
                     mTargetRows = null;
                 }
-                long t2 = System.currentTimeMillis();
+                long t2;
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                    t2 = System.currentTimeMillis();
+                }
 
                 // Now we have expanded groups as needed, get the list cursor
                 mTempList = bookListBuilder.getList();
@@ -1252,7 +1264,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 // Clear it so it won't be reused.
                 mMarkBookId = 0;
 
-                long t3 = System.currentTimeMillis();
+                long t3;
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                    t3 = System.currentTimeMillis();
+                }
 
                 // get a count() from the cursor in background task because the setAdapter() call
                 // will do a count() and potentially block the UI thread while it pages through the
@@ -1260,13 +1275,22 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 @SuppressWarnings("UnusedAssignment")
                 int count = mTempList.getCount();
 
-                long t4 = System.currentTimeMillis();
+                long t4;
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                    t4 = System.currentTimeMillis();
+                }
 
                 mUniqueBooks = mTempList.getUniqueBookCount();
-                long t5 = System.currentTimeMillis();
+                long t5;
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                    t5 = System.currentTimeMillis();
+                }
 
                 mTotalBooks = mTempList.getBookCount();
-                long t6 = System.currentTimeMillis();
+                long t6;
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                    t6 = System.currentTimeMillis();
+                }
 
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
                     System.out.println("Build: " + (t1 - t0));
