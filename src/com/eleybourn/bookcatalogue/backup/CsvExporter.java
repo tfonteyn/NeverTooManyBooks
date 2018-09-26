@@ -63,10 +63,10 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCR
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ISBN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISBN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
@@ -117,7 +117,7 @@ public class CsvExporter implements Exporter {
                 '"' + DOM_ID.name + "\"," +            //0
                         '"' + UniqueId.BKEY_AUTHOR_DETAILS + "\"," +    //2
                         '"' + DOM_TITLE + "\"," +            //4
-                        '"' + DOM_ISBN + "\"," +            //5
+                        '"' + DOM_BOOK_ISBN + "\"," +            //5
                         '"' + DOM_PUBLISHER + "\"," +        //6
                         '"' + DOM_BOOK_DATE_PUBLISHED + "\"," +    //7
                         '"' + DOM_BOOK_RATING + "\"," +            //8
@@ -126,7 +126,7 @@ public class CsvExporter implements Exporter {
                         '"' + DOM_BOOK_READ + "\"," +                //11
                         '"' + UniqueId.BKEY_SERIES_DETAILS + "\"," +    //12
                         '"' + DOM_BOOK_PAGES + "\"," +            //14
-                        '"' + DOM_NOTES + "\"," +            //15
+                        '"' + DOM_BOOK_NOTES + "\"," +            //15
                         '"' + DOM_BOOK_LIST_PRICE + "\"," +        //16
                         '"' + DOM_ANTHOLOGY_MASK + "\"," +        //17
                         '"' + DOM_BOOK_LOCATION + "\"," +            //18

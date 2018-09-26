@@ -146,9 +146,9 @@ public class BooksRow {
 
     public final String getIsbn() {
         if (mIsbnCol < 0) {
-            mIsbnCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ISBN.name);
+            mIsbnCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_ISBN.name);
             if (mIsbnCol < 0)
-                throw new RuntimeException("DOM_ISBN column not in result set");
+                throw new RuntimeException("DOM_BOOK_ISBN column not in result set");
         }
         return mCursor.getString(mIsbnCol);
     }
@@ -173,9 +173,9 @@ public class BooksRow {
 
     public final String getNotes() {
         if (mNotesCol < 0) {
-            mNotesCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_NOTES.name);
+            mNotesCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_NOTES.name);
             if (mNotesCol < 0)
-                throw new RuntimeException("DOM_NOTES column not in result set");
+                throw new RuntimeException("DOM_BOOK_NOTES column not in result set");
         }
         return mCursor.getString(mNotesCol);
     }

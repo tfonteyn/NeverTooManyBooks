@@ -66,7 +66,7 @@ public class DatabaseDefinitions {
     static final String DB_TB_BOOKSHELF = "bookshelf";
     static final String DB_TB_LOAN = "loan";
     static final String DB_TB_SERIES = "series";
-    static final String DB_TB_BOOKLIST_STYLES = "book_list_styles";
+    private static final String DB_TB_BOOKLIST_STYLES = "book_list_styles";
 
     private static final String NOT_NULL = "not null";
     /*
@@ -97,6 +97,7 @@ public class DatabaseDefinitions {
     public static final DomainDefinition DOM_AUTHOR_POSITION = new DomainDefinition("author_position", TableInfo.TYPE_INTEGER, NOT_NULL, "");
 
     public static final DomainDefinition DOM_BOOK_ID = new DomainDefinition("book", TableInfo.TYPE_INTEGER);
+    public static final DomainDefinition DOM_BOOK_ISBN = new DomainDefinition("isbn", TableInfo.TYPE_TEXT);
     public static final DomainDefinition DOM_BOOK_COUNT = new DomainDefinition("book_count", TableInfo.TYPE_INTEGER);
     public static final DomainDefinition DOM_BOOK_DATE_PUBLISHED = new DomainDefinition("date_published", TableInfo.TYPE_DATE);
     public static final DomainDefinition DOM_BOOK_DATE_ADDED = new DomainDefinition("date_added", TableInfo.TYPE_DATETIME,"", "default current_timestamp" );
@@ -112,6 +113,8 @@ public class DatabaseDefinitions {
     public static final DomainDefinition DOM_BOOK_SIGNED = new DomainDefinition("signed", TableInfo.TYPE_BOOLEAN, NOT_NULL, "default 0");
     public static final DomainDefinition DOM_BOOK_READ_START = new DomainDefinition("read_start", TableInfo.TYPE_DATE);
     public static final DomainDefinition DOM_BOOK_READ_END = new DomainDefinition("read_end", TableInfo.TYPE_DATE);
+    public static final DomainDefinition DOM_BOOK_NOTES = new DomainDefinition("notes", TableInfo.TYPE_TEXT);
+
 
     /** bookshelf ID in {@link #DB_TB_BOOK_BOOKSHELF_WEAK}*/
     public static final DomainDefinition DOM_BOOKSHELF_ID = new DomainDefinition("bookshelf", TableInfo.TYPE_INTEGER, NOT_NULL, "");
@@ -123,8 +126,10 @@ public class DatabaseDefinitions {
     public static final DomainDefinition DOM_SERIES_NAME = new DomainDefinition("series_name", TableInfo.TYPE_TEXT);
     public static final DomainDefinition DOM_SERIES_NUM_FLOAT = new DomainDefinition("series_num_float", TableInfo.TYPE_FLOAT);
     public static final DomainDefinition DOM_SERIES_NUM = new DomainDefinition("series_num", TableInfo.TYPE_TEXT);
-    public static final DomainDefinition DOM_SERIES_POSITION = new DomainDefinition("series_position", TableInfo.TYPE_INTEGER);
 
+    /** the Series position is the order the series show up in a book. Particularly important for "primary series"
+     * and in lists where 'all' series are shown. */
+    public static final DomainDefinition DOM_BOOK_SERIES_POSITION = new DomainDefinition("series_position", TableInfo.TYPE_INTEGER);
 
 
     public static final DomainDefinition DOM_TITLE_LETTER = new DomainDefinition("title_letter", TableInfo.TYPE_TEXT);
@@ -136,6 +141,8 @@ public class DatabaseDefinitions {
 
 
     public static final DomainDefinition DOM_ABSOLUTE_POSITION = new DomainDefinition("absolute_position", TableInfo.TYPE_INTEGER, NOT_NULL, "");
+    public static final DomainDefinition DOM_PRIMARY_SERIES_COUNT = new DomainDefinition("primary_series_count", TableInfo.TYPE_INTEGER);
+
     public static final DomainDefinition DOM_ROOT_KEY = new DomainDefinition("root_key", TableInfo.TYPE_TEXT);
 
     public static final DomainDefinition DOM_ADDED_DAY = new DomainDefinition("added_day", TableInfo.TYPE_INT);
@@ -153,6 +160,9 @@ public class DatabaseDefinitions {
     public static final DomainDefinition DOM_READ_YEAR = new DomainDefinition("read_year", TableInfo.TYPE_INT);
     public static final DomainDefinition DOM_REAL_ROW_ID = new DomainDefinition("real_row_id", TableInfo.TYPE_INT);
 
+    public static final DomainDefinition DOM_PUBLICATION_YEAR = new DomainDefinition("publication_year", TableInfo.TYPE_INT);
+    public static final DomainDefinition DOM_PUBLICATION_MONTH = new DomainDefinition("publication_month", TableInfo.TYPE_INT);
+
 
 
     public static final DomainDefinition DOM_GOODREADS_BOOK_ID = new DomainDefinition("goodreads_book_id", TableInfo.TYPE_INT);
@@ -161,16 +171,10 @@ public class DatabaseDefinitions {
 
     public static final DomainDefinition DOM_ROW_KIND = new DomainDefinition("kind", TableInfo.TYPE_INTEGER, NOT_NULL, "");
 
-    public static final DomainDefinition DOM_ISBN = new DomainDefinition("isbn", TableInfo.TYPE_TEXT);
-
     public static final DomainDefinition DOM_LOANED_TO = new DomainDefinition("loaned_to", TableInfo.TYPE_TEXT, NOT_NULL, "");
     public static final DomainDefinition DOM_LOANED_TO_SORT = new DomainDefinition("loaned_to_sort", TableInfo.TYPE_INT, NOT_NULL, "");
 
     public static final DomainDefinition DOM_MARK = new DomainDefinition("mark", "boolean", "default 0");
-    public static final DomainDefinition DOM_NOTES = new DomainDefinition("notes", TableInfo.TYPE_TEXT);
-    public static final DomainDefinition DOM_PRIMARY_SERIES_COUNT = new DomainDefinition("primary_series_count", TableInfo.TYPE_INTEGER);
-    public static final DomainDefinition DOM_PUBLICATION_YEAR = new DomainDefinition("publication_year", TableInfo.TYPE_INT);
-    public static final DomainDefinition DOM_PUBLICATION_MONTH = new DomainDefinition("publication_month", TableInfo.TYPE_INT);
 
     public static final DomainDefinition DOM_LEVEL = new DomainDefinition("level", TableInfo.TYPE_INTEGER, NOT_NULL, "");
     public static final DomainDefinition DOM_STYLE = new DomainDefinition("style", TableInfo.TYPE_BLOB, NOT_NULL, "");
@@ -181,8 +185,8 @@ public class DatabaseDefinitions {
      * FTS Table
      */
     public static final TableDefinition TBL_BOOKS_FTS = new TableDefinition("books_fts")
-            .addDomains(DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION, DOM_NOTES,
-                    DOM_PUBLISHER, DOM_BOOK_GENRE, DOM_BOOK_LOCATION, DOM_ISBN)
+            .addDomains(DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION, DOM_BOOK_NOTES,
+                    DOM_PUBLISHER, DOM_BOOK_GENRE, DOM_BOOK_LOCATION, DOM_BOOK_ISBN)
             .setType(TableTypes.FTS3);
     /**
      * Partial representation of BOOKSHELF table
@@ -243,9 +247,9 @@ public class DatabaseDefinitions {
      * Partial representation of BOOK_SERIES table
      */
     public static final TableDefinition TBL_BOOK_SERIES = new TableDefinition(DB_TB_BOOK_SERIES)
-            .addDomains(DOM_BOOK_ID, DOM_SERIES_ID, DOM_SERIES_NUM, DOM_SERIES_POSITION)
+            .addDomains(DOM_BOOK_ID, DOM_SERIES_ID, DOM_SERIES_NUM, DOM_BOOK_SERIES_POSITION)
             .setAlias(ALIAS_BOOK_SERIES)
-            .setPrimaryKey(DOM_BOOK_ID, DOM_SERIES_POSITION)
+            .setPrimaryKey(DOM_BOOK_ID, DOM_BOOK_SERIES_POSITION)
             .addReference(TBL_BOOKS, DOM_BOOK_ID)
             .addReference(TBL_SERIES, DOM_SERIES_ID);
     /**

@@ -25,10 +25,10 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ISBN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISBN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
@@ -125,13 +125,13 @@ public class UniqueId {
     public static final String KEY_SERIES_NUM = DOM_SERIES_NUM.name;
 
     // decide.... book only ? or ?
-    public static final String KEY_NOTES = DOM_NOTES.name;
+    public static final String KEY_NOTES = DOM_BOOK_NOTES.name;
     public static final String KEY_LOANED_TO = DOM_LOANED_TO.name;
     public static final String KEY_PUBLISHER = DOM_PUBLISHER.name;
     public static final String KEY_DESCRIPTION = DOM_DESCRIPTION.name;
 
 
-    public static final String KEY_ISBN = DOM_ISBN.name;
+    public static final String KEY_ISBN = DOM_BOOK_ISBN.name;
     public static final String KEY_GOODREADS_LAST_SYNC_DATE = DOM_GOODREADS_LAST_SYNC_DATE.name;
     public static final String KEY_LAST_UPDATE_DATE = DOM_LAST_UPDATE_DATE.name;
     /** If GoodReads returns a (numeric) if indicating it's an eBook, we store it as KEY_BOOK_FORMAT with "EBook" */

@@ -70,11 +70,11 @@ public class BookUtils {
             book.putString(UniqueId.KEY_DESCRIPTION, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_DESCRIPTION.name)));
             book.putString(UniqueId.KEY_BOOK_FORMAT, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_FORMAT.name)));
             book.putString(UniqueId.KEY_BOOK_GENRE, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GENRE.name)));
-            book.putString(UniqueId.KEY_ISBN, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_ISBN.name)));
+            book.putString(UniqueId.KEY_ISBN, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_ISBN.name)));
             book.putString(UniqueId.KEY_BOOK_LIST_PRICE, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LIST_PRICE.name)));
             book.putString(UniqueId.KEY_BOOK_LANGUAGE, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LANGUAGE.name)));
             book.putString(UniqueId.KEY_BOOK_LOCATION, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LOCATION.name)));
-            book.putString(UniqueId.KEY_NOTES, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_NOTES.name)));
+            book.putString(UniqueId.KEY_NOTES, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_NOTES.name)));
             book.putString(UniqueId.KEY_BOOK_PAGES, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PAGES.name)));
             book.putString(UniqueId.KEY_PUBLISHER, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_PUBLISHER.name)));
             book.putString(UniqueId.KEY_BOOK_RATING, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_RATING.name)));

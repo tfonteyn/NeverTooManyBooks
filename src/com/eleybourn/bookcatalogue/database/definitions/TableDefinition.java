@@ -694,7 +694,7 @@ public class TableDefinition implements AutoCloseable {
     }
 
     /**
-     * Utility routine to return an SQL fragment of the form '<table-name> <table-alias>', eg. 'employees e'.
+     * Utility routine to return an SQL fragment of the form '<table-name> <table-alias>', eg. 'books b'.
      *
      * @return SQL Fragment
      */

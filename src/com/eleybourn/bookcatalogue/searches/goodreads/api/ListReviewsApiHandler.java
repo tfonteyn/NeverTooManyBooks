@@ -120,9 +120,9 @@ public class ListReviewsApiHandler extends ApiHandler {
 		public static final String SHELF = "__shelf";
 		public static final String SHELVES = "__shelves";
 		public static final String DB_PAGES = DatabaseDefinitions.DOM_BOOK_PAGES.name;
-		public static final String DB_ISBN = DatabaseDefinitions.DOM_ISBN.name;
+		public static final String DB_ISBN = DatabaseDefinitions.DOM_BOOK_ISBN.name;
 		public static final String DB_TITLE = DatabaseDefinitions.DOM_TITLE.name;
-		public static final String DB_NOTES = DatabaseDefinitions.DOM_NOTES.name;
+		public static final String DB_NOTES = DatabaseDefinitions.DOM_BOOK_NOTES.name;
 		public static final String DB_FORMAT = DatabaseDefinitions.DOM_BOOK_FORMAT.name;
 		public static final String DB_PUBLISHER = DatabaseDefinitions.DOM_PUBLISHER.name;
 		public static final String DB_DESCRIPTION = DatabaseDefinitions.DOM_DESCRIPTION.name;

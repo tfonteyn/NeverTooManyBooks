@@ -52,15 +52,15 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCR
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ISBN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISBN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_POSITION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
 
@@ -93,6 +93,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     //<editor-fold desc="Create statements">
+
+    /**
+     * NOTE: ***BEFORE*** changing any CREATE TABLE statement:
+     *
+     * Making changes:
+     * 1. copy the below to a renamed version in {@link UpgradeDatabase#doUpgrade}
+     * 2. Find all uses in {@link UpgradeDatabase} and make sure upgrades use the 'old' version of the statement
+     * 3. modify the current
+     * 4. modify {@link DomainDefinition} if needed to reflect the new version
+     *
+     * Reminder: do NOT use {@link DomainDefinition} here ! Those can change in newer versions.
+     */
+
     /* Database creation sql statement */
     static final String DATABASE_CREATE_AUTHORS =
             "create table " + DB_TB_AUTHORS + " (_id integer primary key autoincrement, " +
@@ -139,8 +152,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
                     DOM_SERIES_ID + " integer REFERENCES " + DB_TB_SERIES + " ON DELETE SET NULL ON UPDATE CASCADE, " +
                     DOM_SERIES_NUM + " text, " +
-                    DOM_SERIES_POSITION + " integer," +
-                    "PRIMARY KEY(" + DOM_BOOK_ID + ", " + DOM_SERIES_POSITION + ")" +
+                    DOM_BOOK_SERIES_POSITION + " integer," +
+                    "PRIMARY KEY(" + DOM_BOOK_ID + ", " + DOM_BOOK_SERIES_POSITION + ")" +
                     ")";
 
     static final String DATABASE_CREATE_BOOK_AUTHOR =
@@ -151,27 +164,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "PRIMARY KEY(" + DOM_BOOK_ID + ", " + DOM_AUTHOR_POSITION + ")" +
                     ")";
 
-    /**
-     * NOTE: ***BEFORE*** changing this: Copy/move it to {@link UpgradeDatabase#doUpgrade},
-     * and rename it there. Unless you know what you are doing.
-     *
-     * Reminder: do NOT use {@link DomainDefinition} here ! Those can change in newer versions.
-     *
-     * Making changes:
-     * 1. copy the below to a renamed version in {@link UpgradeDatabase#doUpgrade}
-     * 2. modify the current
-     * 3. modify {@link DomainDefinition} if needed to reflect the new version
-     */
+
     private static final String DATABASE_CREATE_BOOKS =
             "create table " + DB_TB_BOOKS + " (_id integer primary key autoincrement, " +
                     DOM_TITLE + " text not null, " +
-                    DOM_ISBN + " text, " +
+                    DOM_BOOK_ISBN + " text, " +
                     DOM_PUBLISHER + " text, " +
                     DOM_BOOK_DATE_PUBLISHED + " date, " +
                     DOM_BOOK_RATING + " float not null default 0, " +
                     DOM_BOOK_READ + " boolean not null default 0, " +
                     DOM_BOOK_PAGES + " int, " +
-                    DOM_NOTES + " text, " +
+                    DOM_BOOK_NOTES + " text, " +
                     DOM_BOOK_LIST_PRICE + " text, " +
                     DOM_ANTHOLOGY_MASK + " int not null default " + TableInfo.ColumnInfo.ANTHOLOGY_NO + ", " +
                     DOM_BOOK_LOCATION + " text, " +
@@ -203,7 +206,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             /*"CREATE INDEX IF NOT EXISTS books_author_ci ON "+DB_TB_BOOKS+" ("+KEY_AUTHOR+" " + COLLATION + ");",*/
             "CREATE INDEX IF NOT EXISTS books_title ON " + DB_TB_BOOKS + " (" + DOM_TITLE + ");",
             "CREATE INDEX IF NOT EXISTS books_title_ci ON " + DB_TB_BOOKS + " (" + DOM_TITLE + " " + COLLATION + ");",
-            "CREATE INDEX IF NOT EXISTS books_isbn ON " + DB_TB_BOOKS + " (" + DOM_ISBN + ");",
+            "CREATE INDEX IF NOT EXISTS books_isbn ON " + DB_TB_BOOKS + " (" + DOM_BOOK_ISBN + ");",
             /* "CREATE INDEX IF NOT EXISTS books_series ON "+DB_TB_BOOKS+" ("+KEY_SERIES+");",*/
             "CREATE INDEX IF NOT EXISTS books_publisher ON " + DB_TB_BOOKS + " (" + DOM_PUBLISHER + ");",
             "CREATE UNIQUE INDEX IF NOT EXISTS books_uuid ON " + DB_TB_BOOKS + " (" + DOM_BOOK_UUID + ");",
@@ -283,7 +286,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private void createTriggers(DbSync.SynchronizedDb db) {
         String name = "books_tg_reset_goodreads";
         String body = " after update of isbn on books for each row\n" +
-                " When New." + DOM_ISBN + " <> Old." + DOM_ISBN + "\n" +
+                " When New." + DOM_BOOK_ISBN + " <> Old." + DOM_BOOK_ISBN + "\n" +
                 "	Begin \n" +
                 "		Update books Set \n" +
                 "		    goodreads_book_id = 0,\n" +

@@ -115,16 +115,16 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DOCID
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ISBN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISBN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_NOTES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_POSITION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_STYLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_ANTHOLOGY;
@@ -377,11 +377,11 @@ public class CatalogueDBAdapter {
                 // Find FIRST series ID.
                 "(SELECT " + DOM_SERIES_ID + " FROM " + DB_TB_BOOK_SERIES + " bs" +
                 " WHERE bs." + DOM_BOOK_ID + " = " + tableAlias + "." + DOM_ID +
-                " ORDER BY " + DOM_SERIES_POSITION + " ASC  Limit 1) AS " + DOM_SERIES_ID + ", " +
+                " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC  Limit 1) AS " + DOM_SERIES_ID + ", " +
                 // Find FIRST series NUM.
                 "(SELECT " + DOM_SERIES_NUM + " FROM " + DB_TB_BOOK_SERIES + " bs" +
                 " WHERE bs." + DOM_BOOK_ID + " = " + tableAlias + "." + DOM_ID +
-                " ORDER BY " + DOM_SERIES_POSITION + " ASC  Limit 1) AS " + DOM_SERIES_NUM + ", " +
+                " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC  Limit 1) AS " + DOM_SERIES_NUM + ", " +
                 // Get the total series count
                 "(SELECT Count(*) FROM " + DB_TB_BOOK_SERIES + " bs" +
                 " WHERE bs." + DOM_BOOK_ID + " = " + tableAlias + "." + DOM_ID + ") AS _num_series," +
@@ -393,13 +393,13 @@ public class CatalogueDBAdapter {
                 "(SELECT Count(*) FROM " + DB_TB_BOOK_AUTHOR + " ba" +
                 " WHERE ba." + DOM_BOOK_ID + " = " + tableAlias + "." + DOM_ID + ") AS _num_authors," +
 
-                tableAlias + "." + DOM_ISBN + " AS " + DOM_ISBN + ", " +
+                tableAlias + "." + DOM_BOOK_ISBN + " AS " + DOM_BOOK_ISBN + ", " +
                 tableAlias + "." + DOM_PUBLISHER + " AS " + DOM_PUBLISHER + ", " +
                 tableAlias + "." + DOM_BOOK_DATE_PUBLISHED + " AS " + DOM_BOOK_DATE_PUBLISHED + ", " +
                 tableAlias + "." + DOM_BOOK_RATING + " AS " + DOM_BOOK_RATING + ", " +
                 tableAlias + "." + DOM_BOOK_READ + " AS " + DOM_BOOK_READ + ", " +
                 tableAlias + "." + DOM_BOOK_PAGES + " AS " + DOM_BOOK_PAGES + ", " +
-                tableAlias + "." + DOM_NOTES + " AS " + DOM_NOTES + ", " +
+                tableAlias + "." + DOM_BOOK_NOTES + " AS " + DOM_BOOK_NOTES + ", " +
                 tableAlias + "." + DOM_BOOK_LIST_PRICE + " AS " + DOM_BOOK_LIST_PRICE + ", " +
                 tableAlias + "." + DOM_ANTHOLOGY_MASK + " AS " + DOM_ANTHOLOGY_MASK + ", " +
                 tableAlias + "." + DOM_BOOK_LOCATION + " AS " + DOM_BOOK_LOCATION + ", " +
@@ -1468,7 +1468,7 @@ public class CatalogueDBAdapter {
             if (mGetIdFromIsbn2Stmt == null) {
                 mGetIdFromIsbn2Stmt = mStatements.add("mGetIdFromIsbn2Stmt",
                         "SELECT Coalesce(max(" + DOM_ID + "), 0) FROM " + DB_TB_BOOKS +
-                                " WHERE Upper(" + DOM_ISBN + ") in (Upper(?), Upper(?))");
+                                " WHERE Upper(" + DOM_BOOK_ISBN + ") in (Upper(?), Upper(?))");
             }
             stmt = mGetIdFromIsbn2Stmt;
             stmt.bindString(2, IsbnUtils.isbn2isbn(isbn));
@@ -1476,7 +1476,7 @@ public class CatalogueDBAdapter {
             if (mGetIdFromIsbn1Stmt == null) {
                 mGetIdFromIsbn1Stmt = mStatements.add("mGetIdFromIsbn1Stmt",
                         "SELECT Coalesce(max(" + DOM_ID + "), 0) FROM " + DB_TB_BOOKS +
-                                " WHERE Upper(" + DOM_ISBN + ") = Upper(?)");
+                                " WHERE Upper(" + DOM_BOOK_ISBN + ") = Upper(?)");
             }
             stmt = mGetIdFromIsbn1Stmt;
         }
@@ -1581,7 +1581,7 @@ public class CatalogueDBAdapter {
             if (mAddBookSeriesStmt == null) {
                 mAddBookSeriesStmt = mStatements.add("mAddBookSeriesStmt",
                         "Insert Into " + DB_TB_BOOK_SERIES
-                                + "(" + DOM_BOOK_ID + "," + DOM_SERIES_ID + "," + DOM_SERIES_NUM + "," + DOM_SERIES_POSITION + ")"
+                                + "(" + DOM_BOOK_ID + "," + DOM_SERIES_ID + "," + DOM_SERIES_NUM + "," + DOM_BOOK_SERIES_POSITION + ")"
                                 + " Values(?,?,?,?)");
             }
 
@@ -1996,7 +1996,7 @@ public class CatalogueDBAdapter {
             throw new RuntimeException("No ISBNs specified in lookup");
         }
 
-        StringBuilder where = new StringBuilder(TBL_BOOKS.dot(DOM_ISBN));
+        StringBuilder where = new StringBuilder(TBL_BOOKS.dot(DOM_BOOK_ISBN));
         if (isbnList.size() == 1) {
             where.append(" = '").append(encodeString(isbnList.get(0))).append("'");
         } else {
@@ -2251,10 +2251,10 @@ public class CatalogueDBAdapter {
                 " WHERE a." + DOM_AUTHOR_GIVEN_NAMES + " LIKE '" + query + "%'" +
                 " UNION " +
                 " SELECT \"BK\" || b." + DOM_ID + " AS " + BaseColumns._ID
-                + ", b." + DOM_ISBN + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1
-                + ", b." + DOM_ISBN + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
+                + ", b." + DOM_BOOK_ISBN + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1
+                + ", b." + DOM_BOOK_ISBN + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
                 " FROM " + DB_TB_BOOKS + " b" +
-                " WHERE b." + DOM_ISBN + " LIKE '" + query + "%'" +
+                " WHERE b." + DOM_BOOK_ISBN + " LIKE '" + query + "%'" +
                 " ) as zzz " +
                 " ORDER BY Upper(" + SearchManager.SUGGEST_COLUMN_TEXT_1 + ") " + COLLATION;
         return mSyncedDb.rawQuery(sql, null);
@@ -2648,7 +2648,7 @@ public class CatalogueDBAdapter {
                     "   and bs." + DOM_SERIES_ID + " = " + to.id + ")";
             mSyncedDb.execSQL(sql);
 
-            globalReplacePositionedBookItem(DB_TB_BOOK_SERIES, DOM_SERIES_ID.name, DOM_SERIES_POSITION.name, from.id, to.id);
+            globalReplacePositionedBookItem(DB_TB_BOOK_SERIES, DOM_SERIES_ID.name, DOM_BOOK_SERIES_POSITION.name, from.id, to.id);
 
             mSyncedDb.setTransactionSuccessful();
         } finally {
@@ -2749,12 +2749,12 @@ public class CatalogueDBAdapter {
         String sql = "SELECT DISTINCT s." + DOM_ID + " AS " + DOM_ID
                 + ", s." + DOM_SERIES_NAME + " AS " + DOM_SERIES_NAME
                 + ", bs." + DOM_SERIES_NUM + " AS " + DOM_SERIES_NUM
-                + ", bs." + DOM_SERIES_POSITION + " AS " + DOM_SERIES_POSITION
+                + ", bs." + DOM_BOOK_SERIES_POSITION + " AS " + DOM_BOOK_SERIES_POSITION
                 + ", " + DOM_SERIES_NAME + "||' ('||" + DOM_SERIES_NUM + "||')' as " + DOM_SERIES_FORMATTED
                 + " FROM " + DB_TB_BOOK_SERIES + " bs Join " + DB_TB_SERIES + " s "
                 + "       On s." + DOM_ID + " = bs." + DOM_SERIES_ID
                 + " WHERE bs." + DOM_BOOK_ID + "=" + rowId + " "
-                + " ORDER BY bs." + DOM_SERIES_POSITION + ", Upper(s." + DOM_SERIES_NAME + ") " + COLLATION + " ASC";
+                + " ORDER BY bs." + DOM_BOOK_SERIES_POSITION + ", Upper(s." + DOM_SERIES_NAME + ") " + COLLATION + " ASC";
         return mSyncedDb.rawQuery(sql, new String[]{});
     }
 
@@ -2973,8 +2973,8 @@ public class CatalogueDBAdapter {
      */
     @NonNull
     public BooksCursor getAllBooksForGoodreadsCursor(final long startId, final boolean updatesOnly) {
-        String sql = "SELECT " + DOM_ISBN + ", " + DOM_ID + ", " + DOM_GOODREADS_BOOK_ID + "," +
-                " " + DOM_NOTES + ", " + DOM_BOOK_READ + ", " + DOM_BOOK_READ_END + ", " + DOM_BOOK_RATING +
+        String sql = "SELECT " + DOM_BOOK_ISBN + ", " + DOM_ID + ", " + DOM_GOODREADS_BOOK_ID + "," +
+                " " + DOM_BOOK_NOTES + ", " + DOM_BOOK_READ + ", " + DOM_BOOK_READ_END + ", " + DOM_BOOK_RATING +
                 " FROM " + DB_TB_BOOKS + " WHERE " + DOM_ID + " > " + startId;
         if (updatesOnly) {
             sql += " and " + DOM_LAST_UPDATE_DATE + " > " + DOM_GOODREADS_LAST_SYNC_DATE;
@@ -2989,8 +2989,8 @@ public class CatalogueDBAdapter {
      */
     @NonNull
     public BooksCursor getBookForGoodreadsCursor(final long bookId) {
-        String sql = "SELECT " + DOM_ID + ", " + DOM_ISBN + ", " + DOM_GOODREADS_BOOK_ID +
-                ", " + DOM_NOTES + ", " + DOM_BOOK_READ + ", " + DOM_BOOK_READ_END + ", " + DOM_BOOK_RATING +
+        String sql = "SELECT " + DOM_ID + ", " + DOM_BOOK_ISBN + ", " + DOM_GOODREADS_BOOK_ID +
+                ", " + DOM_BOOK_NOTES + ", " + DOM_BOOK_READ + ", " + DOM_BOOK_READ_END + ", " + DOM_BOOK_RATING +
                 " FROM " + DB_TB_BOOKS + " WHERE " + DOM_ID + " = " + bookId + " Order by " + DOM_ID;
         return fetchBooks(sql, new String[]{});
     }
@@ -3247,8 +3247,8 @@ public class CatalogueDBAdapter {
             // Build the FTS insert statement base. The parameter order MUST match the order expected in {@link #ftsSendBooks}.
             String sql = TBL_BOOKS_FTS.getInsert(
                     DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION,
-                    DOM_NOTES, DOM_PUBLISHER, DOM_BOOK_GENRE,
-                    DOM_BOOK_LOCATION, DOM_ISBN, DOM_DOCID)
+                    DOM_BOOK_NOTES, DOM_PUBLISHER, DOM_BOOK_GENRE,
+                    DOM_BOOK_LOCATION, DOM_BOOK_ISBN, DOM_DOCID)
                     + " Values (?,?,?,?,?,?,?,?,?)";
             mInsertFtsStmt = mStatements.add("mInsertFtsStmt", sql);
         }
@@ -3286,8 +3286,8 @@ public class CatalogueDBAdapter {
             // Build the FTS update statement base. The parameter order MUST match the order expected in ftsSendBooks().
             String sql = TBL_BOOKS_FTS.getUpdate(
                     DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION,
-                    DOM_NOTES, DOM_PUBLISHER, DOM_BOOK_GENRE,
-                    DOM_BOOK_LOCATION, DOM_ISBN) + " WHERE " + DOM_DOCID + " = ?";
+                    DOM_BOOK_NOTES, DOM_PUBLISHER, DOM_BOOK_GENRE,
+                    DOM_BOOK_LOCATION, DOM_BOOK_ISBN) + " WHERE " + DOM_DOCID + " = ?";
             mUpdateFtsStmt = mStatements.add("mUpdateFtsStmt", sql);
         }
 
@@ -3350,8 +3350,8 @@ public class CatalogueDBAdapter {
         // Build the FTS update statement base. The parameter order MUST match the order expected in ftsSendBooks().
         final String sql = ftsTemp.getInsert(
                 DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION,
-                DOM_NOTES, DOM_PUBLISHER, DOM_BOOK_GENRE,
-                DOM_BOOK_LOCATION, DOM_ISBN, DOM_DOCID)
+                DOM_BOOK_NOTES, DOM_PUBLISHER, DOM_BOOK_GENRE,
+                DOM_BOOK_LOCATION, DOM_BOOK_ISBN, DOM_DOCID)
                 + " values (?,?,?,?,?,?,?,?,?)";
         // Drop and recreate our temp copy
         ftsTemp.create(mSyncedDb, false);
@@ -3478,7 +3478,7 @@ public class CatalogueDBAdapter {
         SyncLock l = mSyncedDb.beginTransaction(true);
         try {
             fixupPositionedBookItems(DB_TB_BOOK_AUTHOR, DOM_AUTHOR_POSITION.name);
-            fixupPositionedBookItems(DB_TB_BOOK_SERIES, DOM_SERIES_POSITION.name);
+            fixupPositionedBookItems(DB_TB_BOOK_SERIES, DOM_BOOK_SERIES_POSITION.name);
             mSyncedDb.setTransactionSuccessful();
         } finally {
             mSyncedDb.endTransaction(l);

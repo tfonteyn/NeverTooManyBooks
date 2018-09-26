@@ -129,7 +129,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIE
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM_FLOAT;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_POSITION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE_LETTER;
@@ -597,13 +597,13 @@ public class BooklistBuilder implements AutoCloseable {
                                 SummaryBuilder.FLAG_GROUPED);
 
                         // We want the series position in the base data
-                        summary.addDomain(DOM_SERIES_POSITION,
-                                TBL_BOOK_SERIES.dot(DOM_SERIES_POSITION),
+                        summary.addDomain(DOM_BOOK_SERIES_POSITION,
+                                TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION),
                                 SummaryBuilder.FLAG_NONE);
 
                         // We want a counter of how many books use the series as a primary series, so we can skip some series
                         summary.addDomain(DOM_PRIMARY_SERIES_COUNT,
-                                "case when Coalesce(" + TBL_BOOK_SERIES.dot(DOM_SERIES_POSITION) + ",1) == 1 then 1 else 0 end",
+                                "case when Coalesce(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ",1) == 1 then 1 else 0 end",
                                 SummaryBuilder.FLAG_NONE);
 
                         // This group can be given a name of the form 's/<n>' where <n> is the series id, eg. 's/18'.
@@ -911,7 +911,7 @@ public class BooklistBuilder implements AutoCloseable {
 
             // If there was no series group, or user requests primary series only, then just get primary series.
             if (seriesGroup == null || !seriesGroup.getAllSeries()) {
-                join.append("		and " + TBL_BOOK_SERIES.dot(DOM_SERIES_POSITION) + " == 1\n");
+                join.append("		and " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + " == 1\n");
             }
             // Join with series to get name
             join.leftOuterJoin(TBL_SERIES);
@@ -2501,8 +2501,8 @@ public class BooklistBuilder implements AutoCloseable {
 //				summary.addDomain(DOM_SERIES_NAME, TBL_SERIES.dot(DOM_SERIES_NAME), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
 //				summary.addDomain(DOM_SERIES_ID, TBL_BOOK_SERIES.dot(DOM_SERIES_ID), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_KEY);
 //				summary.addDomain(DOM_SERIES_NUM, TBL_BOOK_SERIES.dot(DOM_SERIES_NUM), SummaryBuilder.FLAG_NONE);
-//				summary.addDomain(DOM_SERIES_POSITION, TBL_BOOK_SERIES.dot(DOM_SERIES_POSITION), SummaryBuilder.FLAG_NONE);
-//				summary.addDomain(DOM_PRIMARY_SERIES_COUNT,"case when Coalesce(" + TBL_BOOK_SERIES.dot(DOM_SERIES_POSITION) + ",1) == 1 then 1 else 0 end", SummaryBuilder.FLAG_NONE);
+//				summary.addDomain(DOM_BOOK_SERIES_POSITION, TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION), SummaryBuilder.FLAG_NONE);
+//				summary.addDomain(DOM_PRIMARY_SERIES_COUNT,"case when Coalesce(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ",1) == 1 then 1 else 0 end", SummaryBuilder.FLAG_NONE);
 //				summary.addDomain(DOM_SERIES_NUM, TBL_BOOK_SERIES.dot(DOM_SERIES_NUM), SummaryBuilder.FLAG_SORTED);
 //				//summary.addKeyComponents("'s'", TBL_BOOK_SERIES.dot(DOM_SERIES_ID));
 //				l.setKeyComponents("s", DOM_SERIES_ID);
@@ -2645,7 +2645,7 @@ public class BooklistBuilder implements AutoCloseable {
 //			*/
 //
 //		if (seriesLevel == null || !seriesLevel.allSeries) {
-//			join.append( "		and " + TBL_BOOK_SERIES.dot(DOM_SERIES_POSITION) + " == 1\n");
+//			join.append( "		and " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + " == 1\n");
 //		}
 //		join.leftOuterJoin(TBL_SERIES);
 //			/*
