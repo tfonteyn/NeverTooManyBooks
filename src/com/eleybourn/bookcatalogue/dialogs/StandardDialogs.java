@@ -115,7 +115,7 @@ public class StandardDialogs {
 
         final AlertDialog dialog = new AlertDialog.Builder(context).setMessage(msgId)
                 .setTitle(R.string.reg_library_thing_title)
-                .setIcon(android.R.drawable.ic_menu_info_details)
+                .setIcon(R.drawable.ic_info_outline)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(R.string.more_info),
@@ -158,7 +158,7 @@ public class StandardDialogs {
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setMessage(String.format(context.getResources().getString(R.string.really_delete_series), series.name))
                 .setTitle(R.string.delete_series)
-                .setIcon(android.R.drawable.ic_menu_info_details)
+                .setIcon(R.drawable.ic_info_outline)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(android.R.string.ok),
@@ -219,7 +219,7 @@ public class StandardDialogs {
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setMessage((context.getResources().getString(R.string.really_delete_book, title, authors)))
                 .setTitle(R.string.menu_delete)
-                .setIcon(android.R.drawable.ic_menu_info_details)
+                .setIcon(R.drawable.ic_info_outline)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(android.R.string.ok),
@@ -252,7 +252,7 @@ public class StandardDialogs {
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle(R.string.authorize_access)
                 .setMessage(R.string.goodreads_action_cannot_blah_blah)
-                .setIcon(android.R.drawable.ic_menu_info_details)
+                .setIcon(R.drawable.ic_info_outline)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(android.R.string.ok),
@@ -539,7 +539,7 @@ public class StandardDialogs {
          * @param enableActionBar flag
          */
         public BasicDialog(@NonNull final Context context, final boolean enableActionBar) {
-            super(context, enableActionBar ? BookCatalogueApp.getDialogThemeResId() : 0);
+            super(context, BookCatalogueApp.getDialogThemeResId(enableActionBar));
 
             Button closeButton = findViewById(android.R.id.closeButton);
             if (closeButton != null) {

@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupInfo;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
@@ -109,7 +108,7 @@ public class BackupFileDetails implements FileDetails {
         if (mFile.isDirectory()) {
             date.setVisibility(View.GONE);
             details.setVisibility(View.GONE);
-            image.setImageDrawable(res.getDrawable(BookCatalogueApp.getAttr(R.attr.ic_folder)));
+            image.setImageDrawable(res.getDrawable(R.drawable.ic_folder));
         } else {
             // Display date and backup details
             image.setImageDrawable(res.getDrawable(R.drawable.ic_bc_archive));

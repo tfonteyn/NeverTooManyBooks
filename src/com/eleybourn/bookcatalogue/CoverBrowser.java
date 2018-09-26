@@ -227,7 +227,7 @@ public class CoverBrowser {
                 i.setLayoutParams(new ImageSwitcher.LayoutParams(
                         ImageSwitcher.LayoutParams.WRAP_CONTENT,
                         ImageSwitcher.LayoutParams.WRAP_CONTENT));
-                i.setImageResource(android.R.drawable.ic_menu_help);
+                i.setImageResource(R.drawable.ic_help_outline);
                 return i;
             }
         });
@@ -298,7 +298,7 @@ public class CoverBrowser {
                 // Not present; request it
                 mImageFetcher.enqueue(new GetThumbnailTask(isbn, coverImage, mPreviewSizeWidth, mPreviewSizeHeight));
                 //  and use a placeholder.
-                coverImage.setImageResource(android.R.drawable.ic_menu_help);
+                coverImage.setImageResource(R.drawable.ic_help_outline);
             } else {
                 // Present, so use it.
                 ImageUtils.fetchFileIntoImageView(coverImage, file, mPreviewSizeWidth, mPreviewSizeHeight, true);

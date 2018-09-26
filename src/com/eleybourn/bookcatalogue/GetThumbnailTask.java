@@ -240,7 +240,7 @@ public class GetThumbnailTask implements SimpleTask {
             }
         } else {
             if (v != null) {
-                v.setImageResource(android.R.drawable.ic_dialog_alert);
+                v.setImageResource(R.drawable.ic_warning);
             }
         }
 

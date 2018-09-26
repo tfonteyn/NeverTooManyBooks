@@ -84,7 +84,7 @@ public class EditBookshelfListActivity extends BookCatalogueListActivity
         super.onCreateOptionsMenu(menu);
         menu.add(0, MENU_INSERT_ID, 0,
                 R.string.menu_insert_bs)
-                .setIcon(android.R.drawable.ic_menu_add)
+                .setIcon(R.drawable.ic_add_circle_outline)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         return true;
     }
@@ -104,7 +104,7 @@ public class EditBookshelfListActivity extends BookCatalogueListActivity
     public void onCreateContextMenu(final ContextMenu menu, final View v, final ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(0, MENU_DELETE_ID, 0, R.string.menu_delete_bs)
-                .setIcon(android.R.drawable.ic_menu_delete);
+                .setIcon(R.drawable.ic_mode_edit);
     }
 
     @Override

@@ -27,7 +27,7 @@
 
         <View
             style="@style/listDividerHorizontal"
-            android:background="@android:drawable/divider_horizontal_bright"
+            android:background="?attr/dividerHorizontal"
             android:paddingBottom="@dimen/padding_border" />
     </LinearLayout>
 

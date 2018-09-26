@@ -9,14 +9,14 @@
             add 'bottom' settings to the include tag, depending on layout used in
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="?android:attr/buttonBarStyle"
+    style="?attr/buttonBarStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
     <Button
         android:id="@+id/cancel"
-        style="?android:attr/buttonBarNegativeButtonStyle"
+        style="?attr/buttonBarNegativeButtonStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|start"
@@ -25,7 +25,7 @@
 
     <Button
         android:id="@+id/confirm"
-        style="?android:attr/buttonBarPositiveButtonStyle"
+        style="?attr/buttonBarPositiveButtonStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"

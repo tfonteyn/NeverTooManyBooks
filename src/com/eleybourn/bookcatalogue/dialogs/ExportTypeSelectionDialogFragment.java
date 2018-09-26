@@ -86,7 +86,7 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
 
         View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_export_type_selection, null);
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(v).setTitle(R.string.backup_to_archive).create();
-        alertDialog.setIcon(android.R.drawable.ic_menu_help);
+        alertDialog.setIcon(R.drawable.ic_help_outline);
         alertDialog.setCanceledOnTouchOutside(false);
 
         setOnClickListener(v, R.id.all_books_row);

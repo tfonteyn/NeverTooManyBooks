@@ -100,37 +100,37 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         final long currRow = mEditManager.getBookData().getRowId();
         if (currRow != 0) {
             menu.add(0, DELETE_ID, 0, R.string.menu_delete)
-                    .setIcon(android.R.drawable.ic_menu_delete);
+                    .setIcon(R.drawable.ic_mode_edit);
 
             menu.add(0, DUPLICATE_ID, 0, R.string.menu_duplicate)
-                    .setIcon(BookCatalogueApp.getAttr(R.attr.ic_content_copy));
+                    .setIcon(R.drawable.ic_content_copy);
 
             // TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books.
             menu.add(0, SHARE_ID, 0, R.string.menu_share_this)
-                    .setIcon(android.R.drawable.ic_menu_share);
+                    .setIcon(R.drawable.ic_share);
             // Very rarely used, and easy to miss-click, so do not add as action_if_room!
             //tweet.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
         if (this instanceof BookDetailsFragment) {
             MenuItem item = menu.add(0, EDIT_OPTIONS_ID, 0, R.string.edit_book)
-                    .setIcon(android.R.drawable.ic_menu_edit);
+                    .setIcon(R.drawable.ic_mode_edit);
             item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
         boolean hasAuthor = mEditManager.getBookData().getAuthors().size() > 0;
         if (hasAuthor) {
             menu.add(0, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0, R.string.amazon_books_by_author)
-                    .setIcon(BookCatalogueApp.getAttr(R.attr.ic_search));
+                    .setIcon(R.drawable.ic_search);
         }
 
         if (mEditManager.getBookData().getSeries().size() > 0) {
             if (hasAuthor) {
                 menu.add(0, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0, R.string.amazon_books_by_author_in_series)
-                        .setIcon(BookCatalogueApp.getAttr(R.attr.ic_search));
+                        .setIcon(R.drawable.ic_search);
             }
              menu.add(0, R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0, R.string.amazon_books_in_series)
-                        .setIcon(BookCatalogueApp.getAttr(R.attr.ic_search));
+                        .setIcon(R.drawable.ic_search);
         }
     }
 

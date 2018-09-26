@@ -263,7 +263,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
             AlertDialog dialog = new AlertDialog.Builder(BookISBNSearchActivity.this)
                     .setMessage(R.string.bad_scanner)
                     .setTitle(R.string.install_scan_title)
-                    .setIcon(android.R.drawable.ic_menu_info_details)
+                    .setIcon(R.drawable.ic_info_outline)
                     .create();
 
             dialog.setButton(AlertDialog.BUTTON_POSITIVE,
@@ -296,7 +296,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                 AlertDialog dialog = new AlertDialog.Builder(BookISBNSearchActivity.this)
                         .setMessage(R.string.install_scan)
                         .setTitle(R.string.install_scan_title)
-                        .setIcon(android.R.drawable.ic_menu_info_details)
+                        .setIcon(R.drawable.ic_info_outline)
                         .create();
 
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE,
@@ -515,7 +515,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
 
 					AlertDialog alertDialog = new AlertDialog.Builder(this).setMessage(R.string.duplicate_alert).create();
 					alertDialog.setTitle(R.string.duplicate_title);
-					alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
+					alertDialog.setIcon(R.drawable.ic_info_outline);
 					alertDialog.setButton(this.getResources().getString(android.R.string.ok), new DialogInterface.OnClickListener() {
 						public void onClick(final DialogInterface dialog, final int which) {
 							go(isbn);
@@ -619,7 +619,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                         AlertDialog dialog = new AlertDialog.Builder(this)
                                 .setMessage(R.string.duplicate_book_message)
                                 .setTitle(R.string.duplicate_book_title)
-                                .setIcon(BookCatalogueApp.getAttr(R.attr.ic_content_copy))
+                                .setIcon(R.drawable.ic_content_copy)
                                 .create();
 
                         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getResources().getString(R.string.add),

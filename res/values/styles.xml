@@ -21,14 +21,14 @@
     <style name="prefsHeader" parent="header_base" />
 
     <style name="propertyGroupHeading" parent="header_base">
-        <item name="android:drawableBottom">?android:attr/dividerHorizontal</item>
+        <item name="android:drawableBottom">?attr/dividerHorizontal</item>
     </style>
 
     <!-- your basic horizontal divider line -->
     <style name="listDividerHorizontal">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
-        <item name="android:background">?android:attr/dividerHorizontal</item>
+        <item name="android:background">?attr/dividerHorizontal</item>
         <item name="android:paddingBottom">2dp</item>
         <item name="android:paddingTop">2dp</item>
     </style>
@@ -169,19 +169,6 @@
         <item name="android:paddingEnd">@dimen/padding_border_double</item>
     </style>
 
-
-    <!--
-    **************************************************************************************
-    -->
-    <style name="DialogTitleTheme">
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <!--
-    **************************************************************************************
-    -->
-
-
     <!--
     **************************************************************************************
     -->
@@ -190,7 +177,6 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="android:background">?attr/colorPrimary</item>
-        <item name="android:theme">@style/ThemeOverlay.AppCompat.ActionBar</item>
     </style>
     <!--
     **************************************************************************************
@@ -210,7 +196,7 @@
         <item name="android:paddingStart">@dimen/padding_border_triple</item>
         <item name="android:paddingEnd">@dimen/padding_border_triple</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:textColor">?android:attr/textColorPrimaryNoDisable</item>
     </style>
     <!--
     **************************************************************************************
@@ -221,7 +207,7 @@
         <item name="android:gravity">center</item>
         <item name="android:paddingBottom">@dimen/padding_border_quad</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:textColor">?android:attr/textColorPrimaryNoDisable</item>
     </style>
 
     <!--

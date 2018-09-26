@@ -122,7 +122,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setView(v)
                 .setTitle(R.string.advanced_options)
-                .setIcon(android.R.drawable.ic_menu_help)
+                .setIcon(R.drawable.ic_help_outline)
                 .create();
 
         dialog.setCanceledOnTouchOutside(false);

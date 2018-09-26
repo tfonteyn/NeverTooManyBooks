@@ -81,7 +81,7 @@
 
     <LinearLayout
         android:id="@+id/buttonbar"
-        style="?android:attr/buttonBarStyle"
+        style="?attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -89,7 +89,7 @@
 
         <Button
             android:id="@+id/rebuild"
-            style="?android:attr/buttonBarNeutralButtonStyle"
+            style="?attr/buttonBarNeutralButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|start"
@@ -100,7 +100,7 @@
 
         <Button
             android:id="@+id/search"
-            style="?android:attr/buttonBarPositiveButtonStyle"
+            style="?attr/buttonBarPositiveButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"

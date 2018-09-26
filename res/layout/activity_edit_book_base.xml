@@ -33,7 +33,7 @@
 
         <LinearLayout
             android:id="@+id/buttonbar_cancel_save"
-            style="?android:attr/buttonBarStyle"
+            style="?attr/buttonBarStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -41,7 +41,7 @@
 
             <Button
                 android:id="@+id/cancel"
-                style="?android:attr/buttonBarNegativeButtonStyle"
+                style="?attr/buttonBarNegativeButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -49,7 +49,7 @@
 
             <Button
                 android:id="@+id/confirm"
-                style="?android:attr/buttonBarPositiveButtonStyle"
+                style="?attr/buttonBarPositiveButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

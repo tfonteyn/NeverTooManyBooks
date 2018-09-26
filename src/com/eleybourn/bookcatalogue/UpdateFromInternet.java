@@ -205,7 +205,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                     // Verify - this can be a dangerous operation
                     AlertDialog alertDialog = new AlertDialog.Builder(UpdateFromInternet.this).setMessage(R.string.overwrite_thumbnail).create();
                     alertDialog.setTitle(R.string.update_fields);
-                    alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
+                    alertDialog.setIcon(R.drawable.ic_info_outline);
                     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternet.this.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
                             mFieldUsages.get(UniqueId.BKEY_THUMBNAIL).usage = FieldUsages.Usages.OVERWRITE;

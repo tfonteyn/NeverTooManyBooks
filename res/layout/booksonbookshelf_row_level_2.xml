@@ -23,7 +23,7 @@
             android:layout_height="@dimen/padding_border_double"
             android:layout_gravity="center_vertical"
             android:backgroundTint="?android:attr/colorForeground"
-            android:background="?attr/ic_lens"
+            android:background="@drawable/ic_lens"
             tools:ignore="ContentDescription" />
 
         <TextView
@@ -43,7 +43,7 @@
             android:layout_height="@dimen/padding_border_double"
             android:layout_gravity="center_vertical"
             android:backgroundTint="?android:attr/colorForeground"
-            android:background="?attr/ic_lens"
+            android:background="@drawable/ic_lens"
             tools:ignore="ContentDescription" />
 
         <View

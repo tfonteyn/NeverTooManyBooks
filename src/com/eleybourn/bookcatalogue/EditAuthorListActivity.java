@@ -186,7 +186,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(message)
                 .setTitle(getResources().getString(R.string.scope_of_change))
-                .setIcon(android.R.drawable.ic_menu_info_details)
+                .setIcon(R.drawable.ic_info_outline)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, thisBook, new DialogInterface.OnClickListener() {
@@ -223,7 +223,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(res.getText(R.string.unsaved_edits))
                 .setTitle(res.getText(R.string.unsaved_edits_title))
-                .setIcon(android.R.drawable.ic_menu_info_details)
+                .setIcon(R.drawable.ic_info_outline)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, res.getText(R.string.yes), new DialogInterface.OnClickListener() {

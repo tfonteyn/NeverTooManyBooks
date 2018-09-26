@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/thumbnail"
-        tools:src="@android:drawable/ic_menu_help" />
+        tools:src="@drawable/ic_help_outline" />
 
     <LinearLayout
         android:id="@+id/row_info"

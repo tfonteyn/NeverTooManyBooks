@@ -59,7 +59,7 @@ public class ImageUtils {
         // Get the file, if it exists. Otherwise set 'help' icon and exit.
         if (!file.exists()) {
             if (destView != null)
-                destView.setImageResource(android.R.drawable.ic_menu_help);
+                destView.setImageResource(R.drawable.ic_help_outline);
             return null;
         }
 
@@ -84,7 +84,7 @@ public class ImageUtils {
         // If no size info, or a single pixel, assume file bad and set the 'alert' icon
         if (opt.outHeight <= 0 || opt.outWidth <= 0 || (opt.outHeight == 1 && opt.outWidth == 1)) {
             if (destView != null) {
-                destView.setImageResource(android.R.drawable.ic_dialog_alert);
+                destView.setImageResource(R.drawable.ic_warning);
             }
             return null;
         }

@@ -44,6 +44,7 @@
                     android:layout_below="@id/title"
                     android:layout_marginTop="@dimen/padding_border"
                     android:paddingBottom="8dp"
+
                     android:textIsSelectable="true"
                     tools:text="by Lev Tolstoy" />
 
@@ -64,7 +65,7 @@
 
                     <RatingBar
                         android:id="@+id/rating"
-                        style="?android:attr/ratingBarStyleIndicator"
+                        style="?attr/ratingBarStyleIndicator"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/padding_book_details_text"
@@ -138,7 +139,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/thumbnail"
-                    tools:src="@android:drawable/ic_menu_help" />
+                    tools:src="@drawable/ic_help_outline" />
             </RelativeLayout>
         </LinearLayout>
 
@@ -172,12 +173,14 @@
                 android:layout_height="wrap_content"
                 android:text="@string/table_of_content" />
 
-            <Switch
+            <CheckBox
                 android:id="@+id/anthology_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingEnd="40dp"
-                android:paddingStart="40dp"
+                android:background="@drawable/expander"
+                android:buttonTint="@android:color/transparent"
+                android:textOn=""
+                android:textOff=""
                 tools:ignore="ContentDescription" />
 
             <!-- Checkbox below is used only for compatibility with edit_book -->

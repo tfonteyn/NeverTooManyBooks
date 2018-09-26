@@ -113,7 +113,7 @@
             <ImageButton
                 android:id="@+id/isbn_del"
                 style="@style/isbnSearchKey"
-                app:srcCompat="?attr/ic_backspace"
+                app:srcCompat="@drawable/ic_backspace"
                 tools:ignore="ContentDescription" />
         </LinearLayout>
 

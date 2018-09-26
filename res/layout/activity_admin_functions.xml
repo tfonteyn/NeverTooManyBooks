@@ -32,13 +32,13 @@
             <TextView
                 android:id="@+id/fields_label"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_view"
+                android:drawableStart="@drawable/ic_visibility"
                 android:text="@string/menu_manage_fields" />
 
             <TextView
                 android:id="@+id/edit_styles_label"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_edit"
+                android:drawableStart="@drawable/ic_style"
                 android:text="@string/edit_book_list_styles" />
 
             <!-- DATA IMPORT/EXPORT -->
@@ -50,25 +50,25 @@
             <TextView
                 android:id="@+id/backup_catalogue_label"
                 style="@style/prefsItem"
-                android:drawableStart="?attr/ic_archive"
+                android:drawableStart="@drawable/ic_file_upload"
                 android:text="@string/backup_to_archive" />
 
             <TextView
                 android:id="@+id/restore_catalogue_label"
                 style="@style/prefsItem"
-                android:drawableStart="?attr/ic_unarchive"
+                android:drawableStart="@drawable/ic_file_download"
                 android:text="@string/import_from_archive" />
 
             <TextView
                 android:id="@+id/export_label"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_save"
+                android:drawableStart="@drawable/ic_file_upload"
                 android:text="@string/export_to_csv" />
 
             <TextView
                 android:id="@+id/import_label"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_upload"
+                android:drawableStart="@drawable/ic_file_download"
                 android:text="@string/import_from_csv" />
 
             <!-- FIELD UPDATES -->
@@ -80,25 +80,25 @@
             <TextView
                 android:id="@+id/update_internet_label"
                 style="@style/prefsItem"
-                android:drawableStart="?attr/ic_refresh"
+                android:drawableStart="@drawable/ic_autorenew"
                 android:text="@string/update_fields" />
 
             <TextView
                 android:id="@+id/sync_with_goodreads_label"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_rotate"
+                android:drawableStart="@drawable/ic_refresh"
                 android:text="@string/sync_with_goodreads" />
 
             <TextView
                 android:id="@+id/import_all_from_goodreads_label"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_upload"
+                android:drawableStart="@drawable/ic_file_download"
                 android:text="@string/import_all_from_goodreads" />
 
             <TextView
                 android:id="@+id/send_books_to_goodreads_label"
                 style="@style/prefsItem"
-                android:drawableStart="?attr/ic_send"
+                android:drawableStart="@drawable/ic_send"
                 android:text="@string/send_books_to_goodreads" />
 
             <!-- CREDENTIALS -->
@@ -110,13 +110,13 @@
             <TextView
                 android:id="@+id/goodreads_auth"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_manage"
+                android:drawableStart="@drawable/ic_security"
                 android:text="@string/goodreads" />
 
             <TextView
                 android:id="@+id/librarything_auth"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_manage"
+                android:drawableStart="@drawable/ic_security"
                 android:text="@string/library_thing" />
 
             <!-- Search options -->
@@ -127,13 +127,13 @@
             <TextView
                 android:id="@+id/local_websites_urls"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_manage"
+                android:drawableStart="@drawable/ic_search"
                 android:text="@string/search_hosts" />
 
             <TextView
                 android:id="@+id/search_order"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_manage"
+                android:drawableStart="@drawable/ic_search"
                 android:text="@string/search_site_order" />
 
             <!-- ADVANCED OPTIONS Header -->
@@ -145,25 +145,25 @@
             <TextView
                 android:id="@+id/background_tasks_label"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_recent_history"
+                android:drawableStart="@drawable/ic_format_list_bulleted"
                 android:text="@string/background_tasks" />
 
             <TextView
                 android:id="@+id/reset_hints_label"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_agenda"
+                android:drawableStart="@drawable/ic_undo"
                 android:text="@string/reset_hints" />
 
             <TextView
                 android:id="@+id/erase_cover_cache_label"
                 style="@style/prefsItem"
-                android:drawableStart="@android:drawable/ic_menu_close_clear_cancel"
+                android:drawableStart="@drawable/ic_close"
                 android:text="@string/erase_cover_cache" />
 
             <TextView
                 android:id="@+id/backup_label"
                 style="@style/prefsItem"
-                android:drawableStart="?attr/ic_archive"
+                android:drawableStart="@drawable/ic_file_upload"
                 android:text="@string/copy_database" />
         </LinearLayout>
 

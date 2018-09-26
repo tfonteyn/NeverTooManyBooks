@@ -323,7 +323,12 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         @Override
         public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) {
             try {
-                Document doc = Jsoup.connect(bookUrl).get();
+                Document doc = Jsoup
+                        .connect(bookUrl)
+                        .userAgent("Mozilla")
+                        .followRedirects(true)
+                        .get();
+
                 // <div class="ContentBox"> but there are two, so get last one
                 Element contentbox = doc.select("div.contentbox").last();
                 Elements lis = contentbox.select("li");
@@ -366,7 +371,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 
         AlertDialog dialog = new AlertDialog.Builder(getActivity()).setMessage(titles)
                 .setTitle(R.string.anthology_confirm)
-                .setIcon(android.R.drawable.ic_menu_info_details)
+                .setIcon(R.drawable.ic_info_outline)
                 .create();
 
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,
@@ -410,10 +415,10 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     public void onPrepareOptionsMenu(Menu menu) {
         menu.clear();
         menu.add(0, POPULATE_ISFDB, 0, R.string.populate_anthology_titles)
-                .setIcon(android.R.drawable.ic_menu_add);
+                .setIcon(R.drawable.ic_autorenew);
 
 //        menu.add(0, POPULATE_WIKIPEDIA, 0, R.string.populate_anthology_titles)
-//                .setIcon(android.R.drawable.ic_menu_add);
+//                .setIcon(R.drawable.ic_autorenew);
 //
         super.onPrepareOptionsMenu(menu);
     }
@@ -606,7 +611,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 
         AlertDialog dialog = new AlertDialog.Builder(getActivity()).setMessage(anthology_title)
                 .setTitle(R.string.anthology_confirm)
-                .setIcon(android.R.drawable.ic_menu_info_details)
+                .setIcon(R.drawable.ic_info_outline)
                 .create();
 
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,

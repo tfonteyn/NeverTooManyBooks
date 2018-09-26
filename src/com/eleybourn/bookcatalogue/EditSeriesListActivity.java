@@ -197,7 +197,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         final AlertDialog alertDialog = new AlertDialog.Builder(this).setMessage(message).create();
 
         alertDialog.setTitle(getResources().getString(R.string.scope_of_change));
-        alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
+        alertDialog.setIcon(R.drawable.ic_info_outline);
         alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, thisBook, new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, final int which) {
                 from.copyFrom(to);
@@ -231,7 +231,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             final AlertDialog alertDialog = new AlertDialog.Builder(this).setMessage(res.getText(R.string.unsaved_edits)).create();
 
             alertDialog.setTitle(res.getText(R.string.unsaved_edits_title));
-            alertDialog.setIcon(android.R.drawable.ic_menu_info_details);
+            alertDialog.setIcon(R.drawable.ic_info_outline);
             alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, res.getText(R.string.yes), new DialogInterface.OnClickListener() {
                 public void onClick(final DialogInterface dialog, final int which) {
                     t.setText("");

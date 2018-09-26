@@ -64,7 +64,7 @@
             android:layout_alignParentTop="true"
             android:layout_centerVertical="true"
             style="@style/touch_list_view_row_ic_grabber"
-            app:srcCompat="?attr/ic_drag_handle"
+            app:srcCompat="@drawable/ic_drag_handle"
             tools:ignore="ContentDescription" />
     </RelativeLayout>
 

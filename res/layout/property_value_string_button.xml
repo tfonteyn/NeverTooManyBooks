@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:focusable="true"
             android:hint="@string/edit"
-            app:srcCompat="@android:drawable/ic_menu_edit"
+            app:srcCompat="@drawable/ic_mode_edit"
             tools:ignore="ContentDescription" />
     </FrameLayout>
 

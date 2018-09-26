@@ -1,7 +1,7 @@
 /*
  * @copyright 2010 Evan Leybourn
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -40,108 +40,95 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
- * 
- * This is the Administration page. It contains details about the app, links
- * to my website and email, functions to export and import books and functions to 
- * manage bookshelves.
- * 
+ * This is the About page. It contains details about the app, links to my website and email.
+ *
  * @author Evan Leybourn
  */
 public class AdministrationAbout extends BookCatalogueActivity {
 
-	@Override
-	protected int getLayoutId(){
-		return R.layout.activity_admin_about;
-	}
-	/**
-	 * Called when the activity is first created. 
-	 */
-	@Override
-	public void onCreate(@Nullable final Bundle savedInstanceState) {
-		try {
-			super.onCreate(savedInstanceState);
- 			setTitle(R.string.app_name);
-			setupPage();
-		} catch (Exception e) {
-			Logger.logError(e);
-		}
-	}
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_admin_about;
+    }
 
-	/**
-	 * This function builds the Admin page in 4 sections. 
-	 * 1. The button to goto the manage bookshelves activity
-	 * 2. The button to export the database
-	 * 3. The button to import the exported file into the database
-	 * 4. The application version and link details
-	 * 5. The link to paypal for donation
-	 */
-	private void setupPage() {
-		/* Version Number */
-		TextView release = findViewById(R.id.version);
-		PackageManager manager = this.getPackageManager();
-		PackageInfo info;
-		try {
-			info = manager.getPackageInfo(this.getPackageName(), 0);
-			String versionName = info.versionName;
-			release.setText(versionName);
-		} catch (NameNotFoundException e) {
-			Logger.logError(e);
-		}
-		final Resources res = this.getResources();
-		TextView webpage = findViewById(R.id.webpage);
-		webpage.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.webpage)));
-				startActivity(loadweb);
-            }
-		});
-		TextView sourcecode = findViewById(R.id.sourcecode);
-		sourcecode.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.sourcecode)));
-				startActivity(loadweb);
-            }
-		});
-		TextView contact1 = findViewById(R.id.contact1);
-		contact1.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				sendContactEmail(R.string.contact1);
-            }
-		});
-		TextView contact2 = findViewById(R.id.contact2);
-		contact2.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				sendContactEmail(R.string.contact2);
-            }
-		});
-		
-		{
-			TextView tv = findViewById(R.id.amazon_links_info);
-			// Setup the linked HTML
-			String text = getString(R.string.hint_amazon_links_blurb, 
-					getString(R.string.amazon_books_by_author),
-					getString(R.string.amazon_books_in_series),
-					getString(R.string.amazon_books_by_author_in_series),
-					getString(R.string.app_name));
-			tv.setText(Utils.linkifyHtml(text, Linkify.ALL));			
-			tv.setMovementMethod(LinkMovementMethod.getInstance());
-		}
-	}
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        try {
+            super.onCreate(savedInstanceState);
+            setTitle(R.string.app_name);
+            setupPage();
+        } catch (Exception e) {
+            Logger.logError(e);
+        }
+    }
 
-	private void sendContactEmail(int stringId) {
-		try {
-			Intent msg = new Intent(Intent.ACTION_SEND);
-			msg.setType("text/plain");
-			msg.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(stringId)});
-			String subject = "[" + getString(R.string.app_name) + "] ";
-			msg.putExtra(Intent.EXTRA_SUBJECT, subject);
-			AdministrationAbout.this.startActivity(Intent.createChooser(msg, "Send email..."));
-		} catch (ActivityNotFoundException e) {
-			Logger.logError(e);
-		}		
-	}
+    private void setupPage() {
+        /* Version Number */
+        TextView release = findViewById(R.id.version);
+        PackageManager manager = this.getPackageManager();
+        PackageInfo info;
+        try {
+            info = manager.getPackageInfo(this.getPackageName(), 0);
+            String versionName = info.versionName;
+            release.setText(versionName);
+        } catch (NameNotFoundException e) {
+            Logger.logError(e);
+        }
+        final Resources res = this.getResources();
+        TextView webpage = findViewById(R.id.webpage);
+        webpage.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.webpage)));
+                startActivity(loadweb);
+            }
+        });
+        TextView sourcecode = findViewById(R.id.sourcecode);
+        sourcecode.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.sourcecode)));
+                startActivity(loadweb);
+            }
+        });
+        TextView contact1 = findViewById(R.id.contact1);
+        contact1.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendContactEmail(R.string.contact1);
+            }
+        });
+        TextView contact2 = findViewById(R.id.contact2);
+        contact2.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendContactEmail(R.string.contact2);
+            }
+        });
+
+        {
+            TextView tv = findViewById(R.id.amazon_links_info);
+            // Setup the linked HTML
+            String text = getString(R.string.hint_amazon_links_blurb,
+                    getString(R.string.amazon_books_by_author),
+                    getString(R.string.amazon_books_in_series),
+                    getString(R.string.amazon_books_by_author_in_series),
+                    getString(R.string.app_name));
+            tv.setText(Utils.linkifyHtml(text, Linkify.ALL));
+            tv.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+    }
+
+    private void sendContactEmail(int stringId) {
+        try {
+            Intent msg = new Intent(Intent.ACTION_SEND);
+            msg.setType("text/plain");
+            msg.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(stringId)});
+            String subject = "[" + getString(R.string.app_name) + "] ";
+            msg.putExtra(Intent.EXTRA_SUBJECT, subject);
+            AdministrationAbout.this.startActivity(Intent.createChooser(msg, "Send email..."));
+        } catch (ActivityNotFoundException e) {
+            Logger.logError(e);
+        }
+    }
 }

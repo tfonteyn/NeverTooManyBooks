@@ -159,7 +159,7 @@
                 android:id="@+id/location_button"
                 style="@style/ImageViewButton"
                 android:layout_alignBottom="@id/location"
-                app:srcCompat="@android:drawable/ic_menu_more"
+                app:srcCompat="@drawable/ic_expand_more"
                 tools:ignore="ContentDescription" />
 
         </RelativeLayout>

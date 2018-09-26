@@ -30,9 +30,6 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
 
-    protected int getAttr(final int attr) {
-        return BookCatalogueApp.getAttr(getTheme(), attr);
-    }
     /**
      * when a locale or theme is changed, a restart of the activity is needed
      */
@@ -64,7 +61,6 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
-            toolbar.setBackgroundColor(getResources().getColor(getAttr(R.attr.color_background_toolbar)));
             setSupportActionBar(toolbar);
         }
 
@@ -79,7 +75,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
             boolean isTaskRoot = isTaskRoot() || getIntent().getBooleanExtra(StartupActivity.BKEY_IS_TASK_ROOT, false);
             if (isTaskRoot) {
                 bar.setDisplayShowHomeEnabled(true);
-                bar.setHomeAsUpIndicator(getAttr(R.attr.ic_menu));
+                bar.setHomeAsUpIndicator(R.drawable.ic_menu);
             }
         }
     }

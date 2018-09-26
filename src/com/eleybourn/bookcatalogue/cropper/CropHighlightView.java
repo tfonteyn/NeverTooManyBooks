@@ -72,9 +72,9 @@ class CropHighlightView {
 
     private void init() {
         android.content.res.Resources resources = mContext.getResources();
-        mResizeDrawableWidth = resources.getDrawable(BookCatalogueApp.getAttr(R.attr.ic_adjust));
-        mResizeDrawableHeight = resources.getDrawable(BookCatalogueApp.getAttr(R.attr.ic_adjust));
-        mResizeDrawableDiagonal = resources.getDrawable(BookCatalogueApp.getAttr(R.attr.ic_crop));
+        mResizeDrawableWidth = resources.getDrawable(R.drawable.ic_adjust);
+        mResizeDrawableHeight = resources.getDrawable(R.drawable.ic_adjust);
+        mResizeDrawableDiagonal = resources.getDrawable(R.drawable.ic_crop);
     }
 
     public boolean hasFocus() {

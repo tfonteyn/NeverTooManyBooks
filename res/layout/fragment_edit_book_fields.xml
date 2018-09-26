@@ -27,7 +27,7 @@
             android:gravity="center_horizontal"
             android:padding="@dimen/padding_border"
             tools:ignore="ContentDescription"
-            tools:src="@android:drawable/ic_menu_help" />
+            tools:src="@drawable/ic_help_outline" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -140,7 +140,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_alignBottom="@id/publisher"
-                app:srcCompat="@android:drawable/ic_menu_more"
+                app:srcCompat="@drawable/ic_expand_more"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
 
@@ -246,7 +246,7 @@
                 android:id="@+id/format_button"
                 style="@style/ImageViewButton"
                 android:layout_alignBottom="@id/format"
-                app:srcCompat="@android:drawable/ic_menu_more"
+                app:srcCompat="@drawable/ic_expand_more"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
 
@@ -274,7 +274,7 @@
                 android:id="@+id/genre_button"
                 style="@style/ImageViewButton"
                 android:layout_alignBottom="@id/genre"
-                app:srcCompat="@android:drawable/ic_menu_more"
+                app:srcCompat="@drawable/ic_expand_more"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
 
@@ -303,7 +303,7 @@
                 android:id="@+id/language_button"
                 style="@style/ImageViewButton"
                 android:layout_alignBottom="@id/language"
-                app:srcCompat="@android:drawable/ic_menu_more"
+                app:srcCompat="@drawable/ic_expand_more"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
 
@@ -324,7 +324,7 @@
                 android:id="@+id/description_edit_button"
                 style="@style/ImageViewButton"
                 android:layout_alignBottom="@id/heading"
-                app:srcCompat="@android:drawable/ic_menu_edit"
+                app:srcCompat="@drawable/ic_mode_edit"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
 

@@ -312,7 +312,7 @@ public class StartupActivity extends AppCompatActivity {
             AlertDialog dialog = new AlertDialog.Builder(this)
                     .setMessage(R.string.backup_request)
                     .setTitle(R.string.backup_title)
-                    .setIcon(android.R.drawable.ic_menu_info_details)
+                    .setIcon(R.drawable.ic_info_outline)
                     .create();
 
             dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
@@ -379,7 +379,7 @@ public class StartupActivity extends AppCompatActivity {
     private void upgradePopup(String message) {
         AlertDialog dialog = new AlertDialog.Builder(this).setMessage(Html.fromHtml(message))
                 .setTitle(R.string.upgrade_title)
-                .setIcon(android.R.drawable.ic_menu_info_details)
+                .setIcon(R.drawable.ic_info_outline)
                 .create();
 
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),

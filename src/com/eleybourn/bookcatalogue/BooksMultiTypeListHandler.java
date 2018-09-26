@@ -27,10 +27,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.Checkable;
 import android.widget.CheckedTextView;
 import android.widget.ImageView;
@@ -291,27 +289,27 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         try {
             switch (rowView.getKind()) {
                 case RowKinds.ROW_KIND_BOOK: {
-                    addMenuItem(menu, R.id.MENU_BOOK_DELETE, R.string.menu_delete, android.R.drawable.ic_menu_delete);
-                    addMenuItem(menu, R.id.MENU_BOOK_EDIT, R.string.edit_book, android.R.drawable.ic_menu_edit);
-                    addMenuItem(menu, R.id.MENU_BOOK_EDIT_NOTES, R.string.edit_book_notes, BookCatalogueApp.getAttr(R.attr.ic_note));
+                    addMenuItem(menu, R.id.MENU_BOOK_DELETE, R.string.menu_delete, R.drawable.ic_delete);
+                    addMenuItem(menu, R.id.MENU_BOOK_EDIT, R.string.edit_book, R.drawable.ic_mode_edit);
+                    addMenuItem(menu, R.id.MENU_BOOK_EDIT_NOTES, R.string.edit_book_notes,R.drawable.ic_note);
                     if (rowView.isRead()) {
                         addMenuItem(menu, R.id.MENU_MARK_AS_UNREAD, R.string.menu_mark_as_unread, R.drawable.btn_check_buttonless_off);
                     } else {
                         addMenuItem(menu, R.id.MENU_MARK_AS_READ, R.string.menu_mark_as_read, R.drawable.btn_check_buttonless_on);
                     }
-                    addMenuItem(menu, R.id.MENU_BOOK_EDIT_LOANS, R.string.edit_book_friends, BookCatalogueApp.getAttr(R.attr.ic_people));
+                    addMenuItem(menu, R.id.MENU_BOOK_EDIT_LOANS, R.string.edit_book_friends, R.drawable.ic_people);
                     addMenuItem(menu, R.id.MENU_BOOK_SEND_TO_GOODREADS, R.string.edit_book_send_to_gr, R.drawable.ic_menu_goodreads_holo_dark);
                     break;
                 }
                 case RowKinds.ROW_KIND_AUTHOR: {
-                    addMenuItem(menu, R.id.MENU_AUTHOR_EDIT, R.string.menu_edit_author, android.R.drawable.ic_menu_edit);
+                    addMenuItem(menu, R.id.MENU_AUTHOR_EDIT, R.string.menu_edit_author, R.drawable.ic_mode_edit);
                     break;
                 }
                 case RowKinds.ROW_KIND_SERIES: {
                     long id = rowView.getSeriesId();
                     if (id != 0) {
-                        addMenuItem(menu, R.id.MENU_SERIES_DELETE, R.string.menu_delete_series, android.R.drawable.ic_menu_delete);
-                        addMenuItem(menu, R.id.MENU_SERIES_EDIT, R.string.menu_edit_series, android.R.drawable.ic_menu_edit);
+                        addMenuItem(menu, R.id.MENU_SERIES_DELETE, R.string.menu_delete_series, R.drawable.ic_delete);
+                        addMenuItem(menu, R.id.MENU_SERIES_EDIT, R.string.menu_edit_series,  R.drawable.ic_mode_edit);
                     }
                     break;
                 }
@@ -319,35 +317,35 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 case RowKinds.ROW_KIND_PUBLISHER: {
                     String s = rowView.getPublisherName();
                     if (!s.isEmpty()) {
-                        addMenuItem(menu, R.id.MENU_PUBLISHER_EDIT, R.string.menu_edit_publisher, android.R.drawable.ic_menu_edit);
+                        addMenuItem(menu, R.id.MENU_PUBLISHER_EDIT, R.string.menu_edit_publisher, R.drawable.ic_mode_edit);
                     }
                     break;
                 }
                 case RowKinds.ROW_KIND_LANGUAGE: {
                     String s = rowView.getLanguage();
                     if (!s.isEmpty()) {
-                        addMenuItem(menu, R.id.MENU_LANGUAGE_EDIT, R.string.menu_edit_language, android.R.drawable.ic_menu_edit);
+                        addMenuItem(menu, R.id.MENU_LANGUAGE_EDIT, R.string.menu_edit_language, R.drawable.ic_mode_edit);
                     }
                     break;
                 }
                 case RowKinds.ROW_KIND_LOCATION: {
                     String s = rowView.getLocation();
                     if (!s.isEmpty()) {
-                        addMenuItem(menu, R.id.MENU_LOCATION_EDIT, R.string.menu_edit_location, android.R.drawable.ic_menu_edit);
+                        addMenuItem(menu, R.id.MENU_LOCATION_EDIT, R.string.menu_edit_location, R.drawable.ic_mode_edit);
                     }
                     break;
                 }
                 case RowKinds.ROW_KIND_GENRE: {
                     String s = rowView.getGenre();
                     if (!s.isEmpty()) {
-                        addMenuItem(menu, R.id.MENU_GENRE_EDIT, R.string.menu_edit_genre, android.R.drawable.ic_menu_edit);
+                        addMenuItem(menu, R.id.MENU_GENRE_EDIT, R.string.menu_edit_genre, R.drawable.ic_mode_edit);
                     }
                     break;
                 }
                 case RowKinds.ROW_KIND_FORMAT: {
                     String s = rowView.getFormat();
                     if (!s.isEmpty()) {
-                        addMenuItem(menu, R.id.MENU_FORMAT_EDIT, R.string.menu_edit_format, android.R.drawable.ic_menu_edit);
+                        addMenuItem(menu, R.id.MENU_FORMAT_EDIT, R.string.menu_edit_format, R.drawable.ic_mode_edit);
                     }
                     break;
                 }
@@ -356,19 +354,16 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             // add search by author ?
             boolean hasAuthor = (rowView.hasAuthorId() && rowView.getAuthorId() > 0);
             if (hasAuthor) {
-                addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.string.amazon_books_by_author,
-                        BookCatalogueApp.getAttr(R.attr.ic_search));
+                addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.string.amazon_books_by_author, R.drawable.ic_search);
             }
 
             // add search by series ?
             boolean hasSeries = (rowView.hasSeriesId() && rowView.getSeriesId() > 0);
             if (hasSeries) {
                 if (hasAuthor) {
-                    addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, R.string.amazon_books_by_author_in_series,
-                            BookCatalogueApp.getAttr(R.attr.ic_search));
+                    addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, R.string.amazon_books_by_author_in_series,R.drawable.ic_search);
                 }
-                addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.string.amazon_books_in_series,
-                        BookCatalogueApp.getAttr(R.attr.ic_search));
+                addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.string.amazon_books_in_series,R.drawable.ic_search);
             }
         } catch (Exception e) {
             Logger.logError(e);
@@ -1044,21 +1039,24 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
             // Series details
             if (rowView.hasSeries()) {
-                final String seriesNumber = rowView.getSeriesNumber();
-                if (rowView.getSeriesName().isEmpty()) {
+                final String number = rowView.getSeriesNumber();
+                String name = rowView.getSeriesName();
+                if (name != null && name.isEmpty()) {
                     // Hide it.
                     seriesNum.setVisibility(View.GONE);
                     seriesNumLong.setVisibility(View.GONE);
                 } else {
-                    // Display it in one of the views, based on the size of the text.
-                    if (seriesNumber.length() > 4) {
-                        seriesNum.setVisibility(View.GONE);
-                        seriesNumLong.setVisibility(View.VISIBLE);
-                        seriesNumLong.setText(seriesNumber);
-                    } else {
-                        seriesNum.setVisibility(View.VISIBLE);
-                        seriesNum.setText(seriesNumber);
-                        seriesNumLong.setVisibility(View.GONE);
+                    if (number != null) {
+                        // Display it in one of the views, based on the size of the text.
+                        if (number.length() > 4) {
+                            seriesNum.setVisibility(View.GONE);
+                            seriesNumLong.setVisibility(View.VISIBLE);
+                            seriesNumLong.setText(number);
+                        } else {
+                            seriesNum.setVisibility(View.VISIBLE);
+                            seriesNum.setText(number);
+                            seriesNumLong.setVisibility(View.GONE);
+                        }
                     }
                 }
             }

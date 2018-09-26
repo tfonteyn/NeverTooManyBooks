@@ -33,13 +33,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
+import com.eleybourn.bookcatalogue.backup.ExportThread;
+import com.eleybourn.bookcatalogue.backup.ImportThread;
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
 import com.eleybourn.bookcatalogue.booklist.BooklistStylesListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
-import com.eleybourn.bookcatalogue.backup.ExportThread;
-import com.eleybourn.bookcatalogue.backup.ImportThread;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogFileItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
@@ -50,7 +51,6 @@ import com.eleybourn.bookcatalogue.searches.SearchAdminOrder;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegister;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.searches.librarything.AdministrationLibraryThing;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskListActivity;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -60,9 +60,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is the Administration page. It contains details about the app, links
- * to my website and email, functions to export and import books and functions to
- * manage bookshelves.
+ * This is the Administration page.
  *
  * @author Evan Leybourn
  */
@@ -91,9 +89,6 @@ public class AdministrationFunctions extends ActivityWithTasks {
         return R.layout.activity_admin_functions;
     }
 
-    /**
-     * Called when the activity is first created.
-     */
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         try {
@@ -119,8 +114,8 @@ public class AdministrationFunctions extends ActivityWithTasks {
                 }
             }
             setupAdminPage();
-        } catch (Exception ignore) {
-            Logger.logError(ignore);
+        } catch (Exception e) {
+            Logger.logError(e);
         }
     }
 
@@ -378,35 +373,27 @@ public class AdministrationFunctions extends ActivityWithTasks {
         }
     }
 
-    ///**
-    // * Show the activity that displays all Event objects created by the QueueManager.
-    // */
-    //private void showEvents() {
-    //	Intent i = new Intent(this, GoodreadsExportFailuresActivity.class);
-    //	startActivity(i);
-    //}
-
     private void confirmToImportFromCSV() {
-        AlertDialog alertDialog = new AlertDialog.Builder(AdministrationFunctions.this)
+        AlertDialog dialog = new AlertDialog.Builder(AdministrationFunctions.this)
                 .setMessage(R.string.import_alert)
                 .setTitle(R.string.import_data)
-                .setIcon(android.R.drawable.ic_menu_info_details)
+                .setIcon(R.drawable.ic_info_outline)
                 .create();
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                 AdministrationFunctions.this.getResources().getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         importFromCSV();
                     }
                 });
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
+        dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                 AdministrationFunctions.this.getResources().getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         //do nothing
                     }
                 });
-        alertDialog.show();
+        dialog.show();
     }
 
     /**
@@ -435,8 +422,6 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
     /**
      * Export all data to a CSV file
-     * <p>
-     * return void
      */
     private void exportToCSV() {
         new ExportThread(getTaskManager()).start();
@@ -444,8 +429,6 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
     /**
      * Import all data from somewhere on shared storage; ask user to disambiguate if necessary
-     * <p>
-     * return void
      */
     private void importFromCSV() {
         // Find all possible files (CSV in bookCatalogue directory)
@@ -482,9 +465,8 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
     /**
      * Update blank Fields from internet
-     * <p>
-     * There is a current limitation that restricts the search to only books
-     * with an ISBN
+     *
+     * There is a current limitation that restricts the search to only books with an ISBN
      */
     private void updateFieldsFromInternet() {
         Intent i = new Intent(this, UpdateFromInternet.class);
@@ -497,17 +479,6 @@ public class AdministrationFunctions extends ActivityWithTasks {
     private void showBackgroundTasks() {
         Intent i = new Intent(this, TaskListActivity.class);
         startActivity(i);
-    }
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
-        switch (requestCode) {
-            case ACTIVITY_BOOKSHELF:
-            case ACTIVITY_FIELD_VISIBILITY:
-                //do nothing (yet)
-                break;
-        }
     }
 
     @Override
@@ -529,7 +500,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
      */
     @Override
     public void onTaskEnded(ManagedTask task) {
-        // If it's an export, then handle it
+        // If it's an export, handle it
         if (task instanceof ExportThread) {
             onExportFinished((ExportThread) task);
         }
@@ -544,7 +515,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
         AlertDialog dialog = new AlertDialog.Builder(AdministrationFunctions.this)
                 .setTitle(R.string.email_export)
-                .setIcon(BookCatalogueApp.getAttr(R.attr.ic_send))
+                .setIcon(R.drawable.ic_send)
                 .create();
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                 getResources().getString(android.R.string.ok),

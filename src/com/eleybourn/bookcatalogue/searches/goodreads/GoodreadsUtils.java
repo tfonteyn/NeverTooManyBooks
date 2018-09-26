@@ -223,7 +223,7 @@ public class GoodreadsUtils {
                             final AlertDialog dialog = new AlertDialog.Builder(context)
                                     .setTitle(R.string.send_books_to_goodreads)
                                     .setMessage(R.string.send_books_to_goodreads_blurb)
-                                    .setIcon(android.R.drawable.ic_menu_info_details)
+                                    .setIcon(R.drawable.ic_info_outline)
                                     .create();
 
                             dialog.setButton(DialogInterface.BUTTON_POSITIVE,

@@ -39,6 +39,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Checkable;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -56,6 +57,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -129,32 +131,32 @@ public class Fields extends ArrayList<Fields.Field> {
     private final FieldsContext mContext;
     private final SharedPreferences mPrefs;
     // The last validator exception caught by this object
-    private final ArrayList<ValidatorException> mValidationExceptions = new ArrayList<>();
+    private final List<ValidatorException> mValidationExceptions = new ArrayList<>();
     // A list of cross-validators to apply if all fields pass simple validation.
-    private final ArrayList<FieldCrossValidator> mCrossValidators = new ArrayList<>();
+    private final List<FieldCrossValidator> mCrossValidators = new ArrayList<>();
     private AfterFieldChangeListener mAfterFieldChangeListener = null;
 
     /**
      * Constructor
      *
-     * @param a The parent activity which contains all Views this object will manage.
+     * @param activity The parent activity which contains all Views this object will manage.
      */
     @SuppressWarnings("unused")
-    Fields(@NonNull final Activity a) {
+    Fields(@NonNull final Activity activity) {
         super();
-        mContext = new ActivityContext(a);
-        mPrefs = a.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
+        mContext = new ActivityContext(activity);
+        mPrefs = activity.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
     }
 
     /**
      * Constructor
      *
-     * @param f The parent fragment which contains all Views this object will manage.
+     * @param fragment The parent fragment which contains all Views this object will manage.
      */
-    Fields(@NonNull final Fragment f) {
+    Fields(@NonNull final Fragment fragment) {
         super();
-        mContext = new FragmentContext(f);
-        mPrefs = f.getActivity().getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
+        mContext = new FragmentContext(fragment);
+        mPrefs = fragment.getActivity().getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
     }
 
     /**
@@ -172,20 +174,20 @@ public class Fields extends ArrayList<Fields.Field> {
         if (s == null) {
             throw new ParseException("Can't parse null", 0);
         }
-        Date d;
+        Date date;
         try {
             // Parse as SQL/ANSI date
-            d = mDateSqlSdf.parse(s);
+            date = mDateSqlSdf.parse(s);
         } catch (Exception e) {
             try {
-                d = mDateDisplaySdf.parse(s);
+                date = mDateDisplaySdf.parse(s);
             } catch (Exception e1) {
                 java.text.DateFormat df = java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT);
-                d = df.parse(s);
+                date = df.parse(s);
             }
 
         }
-        return d;
+        return date;
     }
 
     /**
@@ -858,7 +860,7 @@ public class Fields extends ArrayList<Fields.Field> {
                     if (newVal == null && oldVal == null) {
                         return;
                     }
-                    if (newVal != null && oldVal != null && newVal.equals(oldVal)) {
+                    if (newVal != null && newVal.equals(oldVal)) {
                         return;
                     }
                     v.setText(newVal);
@@ -1228,7 +1230,8 @@ public class Fields extends ArrayList<Fields.Field> {
          * @param fieldValidator      Validator. Can be null.
          * @param fieldFormatter      Formatter. Can be null.
          */
-        Field(@NonNull final Fields fields, final int fieldId,
+        Field(@NonNull final Fields fields,
+              final int fieldId,
               @NonNull final String sourceColumn,
               @NonNull final String visibilityGroupName,
               @Nullable final FieldValidator fieldValidator,
@@ -1299,15 +1302,11 @@ public class Fields extends ArrayList<Fields.Field> {
             }
         }
 
-//        public Field setFormatter(@Nullable final FieldFormatter formatter) {
-//            this.formatter = formatter;
-//            return this;
-//        }
-
         /**
          * If a text field, set the TextViewAccessor to support HTML.
          * Call this before loading the field.
          */
+        @NonNull
         public Field setShowHtml(final boolean showHtml) {
             if (mAccessor instanceof TextViewAccessor) {
                 ((TextViewAccessor) mAccessor).setShowHtml(showHtml);

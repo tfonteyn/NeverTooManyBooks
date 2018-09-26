@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <group
         android:id="@+id/g1"
         android:checkableBehavior="none">
         <item
             android:id="@+id/nav_search"
-            android:icon="?attr/ic_search"
+            android:icon="@drawable/ic_search"
             android:title="@string/search" />
     </group>
     <group
@@ -13,22 +14,22 @@
         android:checkableBehavior="none">
         <item
             android:id="@+id/nav_manage_bookshelves"
-            android:icon="@android:drawable/ic_menu_manage"
+            android:icon="@drawable/ic_library_books"
             android:title="@string/menu_bookshelf" />
 
         <item
             android:id="@+id/nav_booklist_prefs"
-            android:icon="@android:drawable/ic_menu_manage"
+            android:icon="@drawable/ic_settings"
             android:title="@string/booklist_preferences" />
 
         <item
             android:id="@+id/nav_other_prefs"
-            android:icon="@android:drawable/ic_menu_manage"
+            android:icon="@drawable/ic_settings"
             android:title="@string/preferences" />
 
         <item
             android:id="@+id/nav_admin"
-            android:icon="@android:drawable/ic_menu_preferences"
+            android:icon="@drawable/ic_build"
             android:title="@string/menu_administration" />
     </group>
     <group
@@ -37,17 +38,17 @@
 
         <item
             android:id="@+id/nav_donate"
-            android:icon="?attr/ic_attach_money"
+            android:icon="@drawable/ic_attach_money"
             android:title="@string/donate_label" />
 
         <item
             android:id="@+id/nav_help"
-            android:icon="?attr/ic_help_outline"
+            android:icon="@drawable/ic_help_outline"
             android:title="@string/help" />
 
         <item
             android:id="@+id/nav_about"
-            android:icon="@android:drawable/ic_menu_info_details"
+            android:icon="@drawable/ic_info_outline"
             android:title="@string/about_label" />
     </group>
 </menu>

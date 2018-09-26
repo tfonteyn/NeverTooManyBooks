@@ -77,13 +77,9 @@ import java.util.Set;
         resNotifTickerText = R.string.crash_notif_ticker_text,
         resNotifTitle = R.string.crash_notif_title,
         resNotifText = R.string.crash_notif_text,
-        //resNotifIcon = android.R.drawable.stat_notify_error, // optional. default is a warning sign
         resDialogText = R.string.crash_dialog_text,
-        //optional. default is a warning sign
-        resDialogIcon = android.R.drawable.ic_dialog_info,
         // optional. default is your application name
         resDialogTitle = R.string.crash_dialog_title,
-
         // optional. when defined, adds a user text field input with this text resource as a label
         resDialogCommentPrompt = R.string.crash_dialog_comment_prompt,
         // optional. displays a Toast message when the user accepts to send a report.
@@ -102,12 +98,24 @@ public class BookCatalogueApp extends Application {
     public static final int DEFAULT_THEME = 0;
 
     private static final int[] APP_THEMES = {
-            R.style.AppThemeDark,
-            R.style.AppThemeLight
+            R.style.AppTheme,
+            R.style.AppTheme_Light
     };
     private static final int[] DIALOG_THEMES = {
-            R.style.DialogThemeDark,
-            R.style.DialogThemeLight
+            R.style.AppTheme_Dialog,
+            R.style.AppTheme_Dialog_Light
+    };
+    private static final int[] DIALOG_NOACTIONBAR_THEMES = {
+            R.style.AppTheme_Dialog_NoActionBar,
+            R.style.AppTheme_Dialog_NoActionBar_Light
+    };
+    private static final int[] DIALOG_ALERT_THEMES = {
+            R.style.AppTheme_Dialog_Alert,
+            R.style.AppTheme_Dialog_Alert_Light
+
+    };   private static final int[] DIALOG_ALERT_NOACTIONBAR_THEMES = {
+            R.style.AppTheme_Dialog_Alert_NoActionBar,
+            R.style.AppTheme_Dialog_Alert_NoActionBar_Light
     };
     private static final String BKEY_BRING_FG = "bringFg";
 
@@ -131,8 +139,11 @@ public class BookCatalogueApp extends Application {
         return APP_THEMES[mLastTheme];
     }
 
-    public static int getDialogThemeResId() {
-        return DIALOG_THEMES[mLastTheme];
+    public static int getDialogThemeResId(final boolean actionbar) {
+        return actionbar ? DIALOG_THEMES[mLastTheme] : DIALOG_NOACTIONBAR_THEMES[mLastTheme] ;
+    }
+    public static int getDialogAlertThemeResId(final boolean actionbar) {
+        return actionbar ? DIALOG_ALERT_THEMES[mLastTheme] : DIALOG_ALERT_NOACTIONBAR_THEMES[mLastTheme] ;
     }
 
     /** Set of OnLocaleChangedListeners */
@@ -144,7 +155,7 @@ public class BookCatalogueApp extends Application {
 
     private static BCQueueManager mQueueManager = null;
     /** The locale used at startup; so that we can revert to system locale if we want to */
-    private static Locale mInitialLocale = null;
+    private static Locale mInitialLocale = Locale.getDefault();;
     /** User-specified default locale */
     private static Locale mPreferredLocale = null;
     /** Last locale used so; cached so we can check if it has genuinely changed */
@@ -170,7 +181,7 @@ public class BookCatalogueApp extends Application {
     private static List<String> mSupportedLocales = null;
     /**
      * Shared Preferences Listener
-     * <p>
+     *
      * Currently it just handles Locale changes and propagates it to any listeners.
      */
     private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
@@ -201,7 +212,6 @@ public class BookCatalogueApp extends Application {
     public BookCatalogueApp() {
         super();
         mInstance = this;
-        mInitialLocale = Locale.getDefault();
     }
 
     /**
@@ -289,27 +299,7 @@ public class BookCatalogueApp extends Application {
     }
 
 
-    /**
-     * Wrapper to reduce explicit use of the 'context' member.
-     *
-     * @param resId Resource ID
-     *
-     * @return Localized resource string
-     */
-    public static String getResourceString(final int resId) {
-        return getAppContext().getString(resId);
-    }
 
-    /**
-     * Wrapper to reduce explicit use of the 'context' member.
-     *
-     * @param resId Resource ID
-     *
-     * @return Localized resource string[]
-     */
-    public static String[] getResourceStringArray(final int resId) {
-        return getAppContext().getResources().getStringArray(resId);
-    }
 
 //	/**
 //	 * Currently the QueueManager is implemented as a service. This is not clearly necessary
@@ -337,6 +327,27 @@ public class BookCatalogueApp extends Application {
 //	public static BCQueueManager getQueueManager() {
 //		return mBoundService;
 //	}
+    /**
+     * Wrapper to reduce explicit use of the 'context' member.
+     *
+     * @param resId Resource ID
+     *
+     * @return Localized resource string
+     */
+    public static String getResourceString(final int resId) {
+        return getAppContext().getString(resId);
+    }
+
+    /**
+     * Wrapper to reduce explicit use of the 'context' member.
+     *
+     * @param resId Resource ID
+     *
+     * @return Localized resource string[]
+     */
+    public static String[] getResourceStringArray(final int resId) {
+        return getAppContext().getResources().getStringArray(resId);
+    }
 
     /**
      * Wrapper to reduce explicit use of the 'context' member.
@@ -397,7 +408,7 @@ public class BookCatalogueApp extends Application {
                                         @NonNull final Intent intent) {
 
         Notification notification = new Notification.Builder(getAppContext())
-                .setSmallIcon(getAttr(R.attr.ic_info_outline))
+                .setSmallIcon(R.drawable.ic_info_outline)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setWhen(System.currentTimeMillis())
@@ -530,12 +541,8 @@ public class BookCatalogueApp extends Application {
     public void onCreate() {
         // Get the preferred locale as soon as possible
         try {
-            // Save the original locale
             mInitialLocale = Locale.getDefault();
-            // See if user has set a preference
             String prefLocale = BCPreferences.getLocale();
-            //prefLocale = "ru";
-            // If we have a preference, set it
             if (prefLocale != null && !prefLocale.isEmpty()) {
                 mPreferredLocale = localeFromName(prefLocale);
                 applyPreferredLocaleIfNecessary(getBaseContext().getResources());

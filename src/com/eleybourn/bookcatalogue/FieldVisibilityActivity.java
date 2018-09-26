@@ -34,6 +34,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the Field Visibility page. It contains a list of all fields and a
@@ -45,7 +46,7 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
 
     /** Prefix for all preferences */
     public final static String TAG = "field_visibility_";
-    private static final ArrayList<FieldInfo> allFields = new ArrayList<>();
+    private static final List<FieldInfo> allFields = new ArrayList<>();
     static {
         allFields.add(new FieldInfo(UniqueId.KEY_AUTHOR_ID, R.string.author, true));
         allFields.add(new FieldInfo(UniqueId.KEY_TITLE, R.string.title, true));
@@ -101,9 +102,6 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
     private void setupFields() {
 
         SharedPreferences mPrefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, MODE_PRIVATE);
-        //SharedPreferences.Editor ed = mPrefs.edit();
-        //ed.putString(STATE_BOOKSHELF, bookshelf);
-        //ed.commit();
 
         // Display the list of fields
         LinearLayout parent = findViewById(R.id.manage_fields_scrollview);
@@ -147,7 +145,7 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
         final int resId;
         final boolean compulsory;
 
-         FieldInfo(final String name, final int resId, final boolean compulsory) {
+         FieldInfo(@NonNull final String name, final int resId, final boolean compulsory) {
             this.name = name;
             this.resId = resId;
             this.compulsory = compulsory;

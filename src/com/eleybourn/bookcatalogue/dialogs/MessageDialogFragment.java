@@ -9,6 +9,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -83,7 +84,7 @@ public class MessageDialogFragment extends DialogFragment {
 
         AlertDialog dialog = new AlertDialog.Builder(getActivity()).setMessage(msg)
                 .setTitle(title)
-                .setIcon(android.R.drawable.ic_menu_info_details)
+                .setIcon(R.drawable.ic_info_outline)
                 .create();
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                 getString(btnPos),

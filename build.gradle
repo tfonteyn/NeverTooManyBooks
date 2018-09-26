@@ -12,7 +12,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.android.tools.build:gradle:3.2.0'
     }
 }
 
@@ -28,9 +28,9 @@ dependencies {
     implementation fileTree(include: 'amazon-mobile-associates-1.0.64.0.jar', dir: 'libs')
 
     // standard Android support libs
-    implementation 'com.android.support:support-v4:27.1.1'
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
     implementation 'ch.acra:acra:4.11'
     // jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.11.3'
@@ -43,18 +43,10 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     lintOptions {
         disable 'MissingTranslation'
     }
-    //defaultConfig {
-    //    vectorDrawables.useSupportLibrary = true
-
-    // !!! Commented to use values from the manifest
-    // minSdkVersion 7
-    // targetSdkVersion 16
-    // versionCode 169
-    //     }
 
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
@@ -76,5 +68,15 @@ android {
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
         }
+    }
+
+//    2018-08-20: https://developer.android.com/about/dashboards/
+//    6+      23  ->  66.5%
+//    5.1+    22  ->  82.6%
+//    5.0+    21  ->  86.8%
+//    4.4+    19  ->  95.9%   but 5.0 has has so many new things....
+    defaultConfig {
+        minSdkVersion 21        // Android 5.0
+        targetSdkVersion 28     // Android 9
     }
 }

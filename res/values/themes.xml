@@ -1,98 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- generic name for use in manifest only -->
-    <style name="ThemeDefault" parent="@style/AppThemeDark" />
 
-    <style name="ThemeInvisible"  parent="@style/Theme.AppCompat.NoActionBar">
+    <!--
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <style name="Invisible"  parent="AppTheme">
         <item  name="android:windowBackground">@android:color/transparent</item>
         <item name="background">@android:color/transparent</item>
         <item name="android:windowIsFloating">true</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-    <!-- System wide theme customizing goes into these -->
-    <style name="AppThemeDark" parent="@style/Theme.AppCompat.NoActionBar" >
-
-        <item name="fillColorVectorIcons">?android:attr/textColorPrimary</item>
-
-        <item name="color_background_nav_header">@color/dark_background_nav_header</item>
-        <item name="color_background_nav_panel">@color/dark_background_nav_panel</item>
-        <item name="color_background_thumbnail">@color/dark_background_thumbnail</item>
-        <item name="color_background_toolbar">@color/dark_background_toolbar</item>
-
-        <item name="ic_add_a_photo">@drawable/ic_add_a_photo</item>
-        <item name="ic_add_circle_outline">@drawable/ic_add_circle_outline</item>
-        <item name="ic_adjust">@drawable/ic_adjust</item>
-        <item name="ic_archive">@drawable/ic_archive</item>
-        <item name="ic_arrow_drop_down">@drawable/ic_arrow_drop_down</item>
-        <item name="ic_arrow_drop_up">@drawable/ic_arrow_drop_up</item>
-        <item name="ic_attach_money">@drawable/ic_attach_money</item>
-        <item name="ic_backspace">@drawable/ic_backspace</item>
-        <item name="ic_content_copy">@drawable/ic_content_copy</item>
-        <item name="ic_crop">@drawable/ic_crop</item>
-        <item name="ic_drag_handle">@drawable/ic_drag_handle</item>
-        <item name="ic_expand_less">@drawable/ic_expand_less</item>
-        <item name="ic_expand_more">@drawable/ic_expand_more</item>
-        <item name="ic_folder">@drawable/ic_folder</item>
-        <item name="ic_folder_open">@drawable/ic_folder_open</item>
-        <item name="ic_help_outline">@drawable/ic_help_outline</item>
-        <item name="ic_info_outline">@drawable/ic_info_outline</item>
-        <item name="ic_lens">@drawable/ic_lens</item>
-        <item name="ic_menu">@drawable/ic_menu</item>
-        <item name="ic_note">@drawable/ic_note</item>
-        <item name="ic_people">@drawable/ic_people</item>
-        <item name="ic_refresh">@drawable/ic_refresh</item>
-        <item name="ic_rotate_left">@drawable/ic_rotate_left</item>
-        <item name="ic_rotate_right">@drawable/ic_rotate_right</item>
-        <item name="ic_search">@drawable/ic_search</item>
-        <item name="ic_send">@drawable/ic_send</item>
-        <item name="ic_unarchive">@drawable/ic_unarchive</item>
-        <item name="ic_zoom_in">@drawable/ic_zoom_in</item>
-    </style>
-    <style name="AppThemeLight" parent="@style/Theme.AppCompat.Light.NoActionBar">
-
-        <item name="fillColorVectorIcons">?android:attr/textColorPrimary</item>
-
-        <item name="color_background_nav_header">@color/light_background_nav_header</item>
-        <item name="color_background_nav_panel">@color/light_background_nav_panel</item>
-        <item name="color_background_thumbnail">@color/light_background_thumbnail</item>
-        <item name="color_background_toolbar">@color/light_background_toolbar</item>
-
-        <item name="ic_add_a_photo">@drawable/ic_add_a_photo</item>
-        <item name="ic_add_circle_outline">@drawable/ic_add_circle_outline</item>
-        <item name="ic_adjust">@drawable/ic_adjust</item>
-        <item name="ic_archive">@drawable/ic_archive</item>
-        <item name="ic_arrow_drop_down">@drawable/ic_arrow_drop_down</item>
-        <item name="ic_arrow_drop_up">@drawable/ic_arrow_drop_up</item>
-        <item name="ic_attach_money">@drawable/ic_attach_money</item>
-        <item name="ic_backspace">@drawable/ic_backspace</item>
-        <item name="ic_content_copy">@drawable/ic_content_copy</item>
-        <item name="ic_crop">@drawable/ic_crop</item>
-        <item name="ic_drag_handle">@drawable/ic_drag_handle</item>
-        <item name="ic_expand_less">@drawable/ic_expand_less</item>
-        <item name="ic_expand_more">@drawable/ic_expand_more</item>
-        <item name="ic_folder">@drawable/ic_folder</item>
-        <item name="ic_folder_open">@drawable/ic_folder_open</item>
-        <item name="ic_help_outline">@drawable/ic_help_outline</item>
-        <item name="ic_info_outline">@drawable/ic_info_outline</item>
-        <item name="ic_lens">@drawable/ic_lens</item>
-        <item name="ic_menu">@drawable/ic_menu</item>
-        <item name="ic_note">@drawable/ic_note</item>
-        <item name="ic_people">@drawable/ic_people</item>
-        <item name="ic_refresh">@drawable/ic_refresh</item>
-        <item name="ic_rotate_left">@drawable/ic_rotate_left</item>
-        <item name="ic_rotate_right">@drawable/ic_rotate_right</item>
-        <item name="ic_search">@drawable/ic_search</item>
-        <item name="ic_send">@drawable/ic_send</item>
-        <item name="ic_unarchive">@drawable/ic_unarchive</item>
-        <item name="ic_zoom_in">@drawable/ic_zoom_in</item>
-    </style>
-
-    <style name="DialogThemeDark" parent="@style/Theme.AppCompat.Dialog" />
-    <style name="DialogThemeLight" parent="@style/Theme.AppCompat.Light.Dialog" />
-
-    <!--
-    <style name="AppThemeDark" parent="@android:style/Theme.Material.NoActionBar" />
-    <style name="ThemeLight" parent="@android:style/Theme.Material.Light.NoActionBar" />
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     -->
+    <!-- System wide theme customizing goes into these -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar" >
+
+        <item name="fillColorVectorIcons">?android:attr/textColorSecondary</item>
+
+        <item name="color_background_nav_header">@color/blue_400</item>
+        <item name="color_background_nav_panel">@color/black</item>
+        <item name="color_background_thumbnail">@color/blue_400</item>
+        <item name="color_background_toolbar">@color/blue_600</item>
+
+        <!-- AppCompat Dialog Attributes -->
+        <item name="dialogTheme">@style/AppTheme.Dialog</item>
+        <item name="alertDialogTheme">@style/AppTheme.Dialog.Alert</item>
+
+        <!-- AppCompat Attributes -->
+        <item name="colorPrimary">@color/red_600</item>
+        <item name="colorPrimaryDark">@color/red_900</item>
+        <item name="colorAccent">@color/red_a700</item>
+
+        <!-- AppCompat Control Attributes -->
+        <item name="colorButtonNormal">@color/red_500</item>
+        <item name="colorControlNormal">@color/red_500</item>
+        <item name="colorControlActivated">@color/red_500</item>
+        <item name="colorControlHighlight">@color/red_500</item>
+    </style>
+
+    <!-- Dark Dialog Theme -->
+    <style name="AppTheme.Dialog" parent="Theme.AppCompat.Dialog">
+        <item name="colorPrimary">@color/red_500</item>
+        <item name="colorPrimaryDark">@color/red_700</item>
+        <item name="colorAccent">@color/red_a700</item>
+    </style>
+    <style name="AppTheme.Dialog.NoActionBar" parent="AppTheme.Dialog">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <!-- Dark Alert Dialog Theme -->
+    <style name="AppTheme.Dialog.Alert" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorPrimary">@color/red_500</item>
+        <item name="colorPrimaryDark">@color/red_700</item>
+        <item name="colorAccent">@color/red_a700</item>
+    </style>
+    <style name="AppTheme.Dialog.Alert.NoActionBar" parent="AppTheme.Dialog.Alert">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+    <!--
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <style name="AppTheme.Light" parent="Theme.AppCompat.Light.NoActionBar">
+
+        <item name="fillColorVectorIcons">?android:attr/textColorSecondary</item>
+
+        <item name="color_background_nav_header">@color/light_blue_400</item>
+        <item name="color_background_nav_panel">@color/white</item>
+        <item name="color_background_thumbnail">@color/light_blue_400</item>
+        <item name="color_background_toolbar">@color/light_blue_600</item>
+
+        <!-- AppCompat Dialog Attributes -->
+        <item name="dialogTheme">@style/AppTheme.Dialog.Light</item>
+        <item name="alertDialogTheme">@style/AppTheme.Dialog.Alert.Light</item>
+
+        <!-- AppCompat Attributes -->
+        <item name="colorPrimary">@color/red_500</item>
+        <item name="colorPrimaryDark">@color/red_700</item>
+        <item name="colorAccent">@color/red_a700</item>
+
+        <!-- AppCompat Control Attributes -->
+        <item name="colorButtonNormal">@color/red_500</item>
+        <item name="colorControlNormal">@color/red_500</item>
+        <item name="colorControlActivated">@color/red_500</item>
+        <item name="colorControlHighlight">@color/red_500</item>
+    </style>
+
+    <!-- Light Dialog Theme -->
+    <style name="AppTheme.Dialog.Light" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimary">@color/red_500</item>
+        <item name="colorPrimaryDark">@color/red_700</item>
+        <item name="colorAccent">@color/red_a700</item>
+    </style>
+    <style name="AppTheme.Dialog.NoActionBar.Light" parent="AppTheme.Dialog.Light">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <!-- Light Alert Dialog Theme -->
+    <style name="AppTheme.Dialog.Alert.Light" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorPrimary">@color/red_500</item>
+        <item name="colorPrimaryDark">@color/red_700</item>
+        <item name="colorAccent">@color/red_a700</item>
+    </style>
+    <style name="AppTheme.Dialog.Alert.NoActionBar.Light" parent="AppTheme.Dialog.Alert.Light">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
 </resources>

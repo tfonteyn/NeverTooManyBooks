@@ -94,21 +94,21 @@ public class MenuHandler {
                 mSort++,
                 BookCatalogueApp.getResourceString(R.string.menu_insert) + "&hellip;");
 
-        addMenu.setIcon(android.R.drawable.ic_menu_add);
+        addMenu.setIcon(R.drawable.ic_add_circle_outline);
         addMenu.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         {
             if (Utils.USE_BARCODE) {
                 addMenu.add(0, MENU_ITEM_ADD_BOOK_BARCODE, mSort++, R.string.scan_barcode_isbn)
-                        .setIcon(BookCatalogueApp.getAttr(R.attr.ic_add_a_photo));
+                        .setIcon(R.drawable.ic_add_a_photo);
             }
             addMenu.add(0, MENU_ITEM_ADD_BOOK_ISBN, mSort++, R.string.enter_isbn)
-                    .setIcon(BookCatalogueApp.getAttr(R.attr.ic_zoom_in));
+                    .setIcon(R.drawable.ic_zoom_in);
 
             addMenu.add(0, MENU_ITEM_ADD_BOOK_NAMES, mSort++, R.string.search_internet)
-                    .setIcon(BookCatalogueApp.getAttr(R.attr.ic_zoom_in));
+                    .setIcon(R.drawable.ic_zoom_in);
 
             addMenu.add(0, MENU_ITEM_ADD_BOOK_MANUAL, mSort++, R.string.add_manually)
-                    .setIcon(android.R.drawable.ic_menu_add);
+                    .setIcon(R.drawable.ic_add_circle_outline);
         }
     }
 

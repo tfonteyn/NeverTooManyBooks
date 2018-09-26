@@ -12,8 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class to manage application preferences rather than rely on each activity
- * knowing how to access them.
+ * Class to manage application preferences.
  *
  * @author Philip Warner
  */

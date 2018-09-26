@@ -27,15 +27,10 @@ import java.util.LinkedHashMap;
  * Class to manage a collection of fields and the rules for importing them.
  * Inherits from {@link LinkedHashMap} to guarantee iteration order.
  *
- * FIXME: Android Studio 3.1.4 failed to compile this, had to make a standalone
- * class instead of internal to {@link UpdateFromInternet}
- *
  * @author Philip Warner
  */
-public class FieldUsages extends LinkedHashMap<String,FieldUsages.FieldUsage> {
+public class FieldUsages extends LinkedHashMap<String, FieldUsages.FieldUsage> {
     private static final long serialVersionUID = 1L;
-
-    public enum Usages { COPY_IF_BLANK, ADD_EXTRA, OVERWRITE }
 
     @SuppressWarnings("UnusedReturnValue")
     public FieldUsage put(@NonNull final FieldUsage usage) {
@@ -43,12 +38,14 @@ public class FieldUsages extends LinkedHashMap<String,FieldUsages.FieldUsage> {
         return usage;
     }
 
+    public enum Usages {COPY_IF_BLANK, ADD_EXTRA, OVERWRITE}
+
     public static class FieldUsage {
         public final String fieldName;
         public final int stringId;
+        public final boolean canAppend;
         public Usages usage;
         public boolean selected;
-        public final boolean canAppend;
 
         public FieldUsage(@NonNull final String name, final int id, @NonNull final Usages usage, final boolean canAppend) {
             this.fieldName = name;

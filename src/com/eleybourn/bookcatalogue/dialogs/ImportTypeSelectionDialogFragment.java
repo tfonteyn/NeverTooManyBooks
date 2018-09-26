@@ -110,7 +110,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
         }
 
         AlertDialog dialog = new AlertDialog.Builder(getActivity()).setView(view).setTitle(R.string.import_from_archive)
-                .setIcon(android.R.drawable.ic_menu_help)
+                .setIcon(R.drawable.ic_help_outline)
                 .create();
         dialog.setCanceledOnTouchOutside(false);
         return dialog;
