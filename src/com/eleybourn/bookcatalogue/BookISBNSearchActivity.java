@@ -55,7 +55,6 @@ import com.eleybourn.bookcatalogue.utils.SoundManager;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -556,12 +555,15 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
      * Used when a book has been successfully added as we want to get ready for another.
      */
     private void clearFields() {
-        if (mIsbnText != null)
+        if (mIsbnText != null) {
             mIsbnText.setText("");
-        if (mAuthorText != null)
+        }
+        if (mAuthorText != null) {
             mAuthorText.setText("");
-        if (mTitleText != null)
+        }
+        if (mTitleText != null) {
             mTitleText.setText("");
+        }
     }
 
     /**
@@ -653,8 +655,8 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                     }
                 }
             }
-        } catch (Exception ignore) {
-            Logger.logError(ignore);
+        } catch (Exception e) {
+            Logger.logError(e);
         }
 
         if (mSearchManagerId == 0) {
@@ -663,21 +665,13 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     }
 
     private void doSearchBook() {
-        /* Delete any hanging around temporary thumbs */
-        try {
-            File thumb = StorageUtils.getTempCoverFile();
-            //noinspection ResultOfMethodCallIgnored
-            thumb.delete();
-        } catch (Exception ignore) {
-            // do nothing - this is the expected behaviour
-        }
+        // Delete any hanging around temporary thumbs
+        StorageUtils.deleteFile(StorageUtils.getTempCoverFile());
 
         if ((mAuthor != null && !mAuthor.isEmpty()) || (mTitle != null && !mTitle.isEmpty()) || (mIsbn != null && !mIsbn.isEmpty())) {
-            //System.out.println(mId + " doSearchBook searching");
             /* Get the book */
             try {
                 // Start the lookup in background.
-                //mTaskManager.doProgress("Searching");
                 final SearchManager sm = new SearchManager(getTaskManager(), mSearchHandler);
                 mSearchManagerId = sm.getSenderId();
                 Tracker.handleEvent(this, "Searching" + mSearchManagerId, Tracker.States.Running);
@@ -694,9 +688,9 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                 finish();
             }
         } else {
-            // System.out.println(mId + " doSearchBook no criteria");
-            if (mMode == MODE_SCAN)
+            if (mMode == MODE_SCAN) {
                 startScannerActivity();
+            }
         }
     }
 
@@ -705,8 +699,9 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
         Tracker.handleEvent(this, "onSearchFinished" + mSearchManagerId, Tracker.States.Running);
         try {
             if (cancelled || bookData == null) {
-                if (mMode == MODE_SCAN)
+                if (mMode == MODE_SCAN) {
                     startScannerActivity();
+                }
             } else {
                 getTaskManager().doProgress(getString(R.string.adding_book_elipsis));
                 createBook(bookData);
@@ -726,8 +721,9 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     protected void onPause() {
         Tracker.enterOnPause(this);
         super.onPause();
-        if (mSearchManagerId != 0)
+        if (mSearchManagerId != 0) {
             SearchManager.getMessageSwitch().removeListener(mSearchManagerId, mSearchHandler);
+        }
         Tracker.exitOnPause(this);
     }
 
@@ -735,8 +731,9 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     protected void onResume() {
         Tracker.enterOnResume(this);
         super.onResume();
-        if (mSearchManagerId != 0)
+        if (mSearchManagerId != 0) {
             SearchManager.getMessageSwitch().addListener(mSearchManagerId, mSearchHandler, true);
+        }
         Tracker.exitOnResume(this);
     }
 
@@ -744,8 +741,9 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     protected void onDestroy() {
         Tracker.enterOnDestroy(this);
         super.onDestroy();
-        if (mDb != null)
+        if (mDb != null) {
             mDb.close();
+        }
         Tracker.exitOnDestroy(this);
     }
 
@@ -757,7 +755,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     private void createBook(@NonNull final Bundle book) {
         Intent i = new Intent(this, BookDetailsActivity.class);
         i.putExtra(UniqueId.BKEY_BOOK_DATA, book);
-        startActivityForResult(i, UniqueId.ACTIVITY_EDIT_BOOK);
+        startActivityForResult(i, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK);
         //dismissProgress();
     }
 
@@ -766,10 +764,9 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
      */
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
-        //System.out.println("BookISBNSearchActivity onActivityResult " + resultCode);
         super.onActivityResult(requestCode, resultCode, intent);
         switch (requestCode) {
-            case UniqueId.ACTIVITY_SCAN:
+            case UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_SCAN: {
                 mScannerStarted = false;
                 try {
                     if (resultCode == RESULT_OK) {
@@ -781,27 +778,29 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                         // Scanner Cancelled/failed. Exit if no dialog present.
                         this.setResult(mLastBookIntent != null ? RESULT_OK : RESULT_CANCELED, mLastBookIntent);
 
-                        if (!mDisplayingAlert)
+                        if (!mDisplayingAlert) {
                             finish();
+                        }
                     }
                 } catch (NullPointerException e) {
                     Logger.logError(e);
                     finish();
                 }
                 break;
-
-            case UniqueId.ACTIVITY_EDIT_BOOK:
-                if (intent != null)
+            }
+            case UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK: {
+                if (intent != null) {
                     mLastBookIntent = intent;
-
-                // Created a book; save the intent and restart scanner if necessary.
-                if (mMode == MODE_SCAN)
+                }
+                if (mMode == MODE_SCAN) {
+                    // Created a book; save the intent and restart scanner if necessary.
                     startScannerActivity();
-                else
+                } else {
                     // If the 'Back' button is pressed on a normal activity, set the default result to cancelled by setting it here.
                     this.setResult(RESULT_CANCELED, mLastBookIntent);
-
+                }
                 break;
+            }
         }
 
         // No matter what the activity was, rebuild the author list in case a new author was added.
@@ -816,19 +815,19 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
             // Get all known authors and build a hash of the names
             final ArrayList<String> authors = mDb.getAuthors();
             final HashSet<String> uniqueNames = new HashSet<>();
-            for (String s : authors)
+            for (String s : authors) {
                 uniqueNames.add(s.toUpperCase());
+            }
 
             // Add the names the user has already tried (to handle errors and mistakes)
             for (String s : mAuthorNames) {
-                if (!uniqueNames.contains(s.toUpperCase()))
+                if (!uniqueNames.contains(s.toUpperCase())) {
                     authors.add(s);
+                }
             }
 
             // Now get an adapter based on the combined names
             mAuthorAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, authors);
-
-            // Set it
             mAuthorText.setAdapter(mAuthorAdapter);
         }
     }
@@ -837,17 +836,13 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
      * Start scanner activity.
      */
     private void startScannerActivity() {
-        //System.out.println(mId + " startScannerActivity");
         if (mScanner == null) {
             mScanner = ScannerManager.getScanner();
         }
         if (!mScannerStarted) {
-            //System.out.println(mId + " startScannerActivity STARTING");
             mScannerStarted = true;
-            mScanner.startActivityForResult(this, UniqueId.ACTIVITY_SCAN);
-        } //else {
-        //System.out.println(mId + " startScannerActivity SKIPPED");
-        //}
+            mScanner.startActivityForResult(this, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_SCAN);
+        }
     }
 
     /**

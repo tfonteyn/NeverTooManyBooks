@@ -53,7 +53,7 @@ import java.util.ArrayList;
  * - confirm
  * - add (OPTIONAL)
  * <p>
- * Row View must have layout ID set to "@+id/row_details" (defined in ids.xml)
+ * Row View must have layout ID set to "@id/ROW_DETAILS" (defined in ids.xml)
  * <p>
  * The row view is tagged using TAG_POSITION,, to save the rows position for
  * use when moving the row up/down or deleting it.
@@ -66,17 +66,17 @@ import java.util.ArrayList;
  * for TouchInterceptor which was (reputedly) removed in Android 2.2.
  * <p>
  * For this code to work, the  main view must contain:
- * - a {@link TouchListViewWithDropListener} with id = @id/android:list
+ * - a {@link TouchListViewWithDropListener} with id = @android:id/list
  * - the {@link TouchListViewWithDropListener} must have the following attributes:
  * tlv:ic_grabber="@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
  * tlv:remove_mode="none"
  * tlv:normal_height="64dip" ---- or some similar value
  * <p>
  * Each row view must have:
- * - an ID of @+id/row
+ * - an ID of @id/ROW
  * - an {@link ImageView} with an ID of "@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
- * - (OPTIONAL) a subview with an ID of "@+d/row_details"; when clicked, this will result
- * in the {@link #onRowClick} event. If not present, then the {@link #onRowClick} is set on the "@id/row"
+ * - (OPTIONAL) a subview with an ID of "@+d/ROW_DETAILS"; when clicked, this will result
+ * in the {@link #onRowClick} event. If not present, then the {@link #onRowClick} is set on the "@id/ROW"
  *
  * @param <T>
  *
@@ -306,8 +306,8 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
                 setTextOrHideView(R.id.title, mBookTitle);
             }
 
-        } catch (Exception ignore) {
-            Logger.logError(ignore);
+        } catch (Exception e) {
+            Logger.logError(e);
         }
     }
 

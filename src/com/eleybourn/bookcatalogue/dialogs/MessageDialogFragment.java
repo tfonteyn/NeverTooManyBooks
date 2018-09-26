@@ -121,8 +121,8 @@ public class MessageDialogFragment extends DialogFragment {
             OnMessageDialogResultListener a = (OnMessageDialogResultListener) getActivity();
             if (a != null)
                 a.onMessageDialogResult(mDialogId, this, button);
-        } catch (Exception ignore) {
-            Logger.logError(ignore);
+        } catch (Exception e) {
+            Logger.logError(e);
         }
         dismiss();
     }

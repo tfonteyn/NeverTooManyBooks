@@ -99,12 +99,12 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_UPDAT
  * Handles all views in a multi-type ListView showing books, authors, series etc.
  *
  * Each row(level) needs to have a layout like:
- * <layout id="@id/row_info">
+ * <layout id="@id/ROW_INFO">
  * <TextView id="@id/name" />
  * ... more fields...
  * </layout>
  *
- * row_info is important, as it's that one that gets shown/hidden when needed.
+ * ROW_INFO is important, as it's that one that gets shown/hidden when needed.
  *
  * @author Philip Warner
  */
@@ -293,9 +293,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                     addMenuItem(menu, R.id.MENU_BOOK_EDIT, R.string.edit_book, R.drawable.ic_mode_edit);
                     addMenuItem(menu, R.id.MENU_BOOK_EDIT_NOTES, R.string.edit_book_notes,R.drawable.ic_note);
                     if (rowView.isRead()) {
-                        addMenuItem(menu, R.id.MENU_MARK_AS_UNREAD, R.string.menu_mark_as_unread, R.drawable.btn_check_buttonless_off);
+                        addMenuItem(menu, R.id.MENU_BOOK_UNREAD, R.string.menu_mark_as_unread, R.drawable.btn_check_buttonless_off);
                     } else {
-                        addMenuItem(menu, R.id.MENU_MARK_AS_READ, R.string.menu_mark_as_read, R.drawable.btn_check_buttonless_on);
+                        addMenuItem(menu, R.id.MENU_BOOK_READ, R.string.menu_mark_as_read, R.drawable.btn_check_buttonless_on);
                     }
                     addMenuItem(menu, R.id.MENU_BOOK_EDIT_LOANS, R.string.edit_book_friends, R.drawable.ic_people);
                     addMenuItem(menu, R.id.MENU_BOOK_SEND_TO_GOODREADS, R.string.edit_book_send_to_gr, R.drawable.ic_menu_goodreads_holo_dark);
@@ -590,14 +590,14 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 d.edit(s);
                 return true;
             }
-            case R.id.MENU_MARK_AS_READ: {
+            case R.id.MENU_BOOK_READ: {
                 BookUtils.setRead(db, rowView.getBookId(), true);
                 // maybe not elegant, but avoids a list rebuild
                 Checkable readView = bookView.findViewById(R.id.read);
                 readView.toggle();
                 return true;
             }
-            case R.id.MENU_MARK_AS_UNREAD: {
+            case R.id.MENU_BOOK_UNREAD: {
                 BookUtils.setRead(db, rowView.getBookId(), false);
                 // maybe not elegant, but avoids a list rebuild
                 Checkable readView = bookView.findViewById(R.id.read);
@@ -1141,7 +1141,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
         @Override
         public void map(@NonNull final BooklistRowView rowView, @NonNull final View v) {
-            rowInfo = v.findViewById(R.id.row_info);
+            rowInfo = v.findViewById(R.id.ROW_INFO);
             text = v.findViewById(R.id.name);
         }
 
@@ -1193,7 +1193,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
         @Override
         public void map(@NonNull final BooklistRowView rowView, @NonNull final View v) {
-            rowInfo = v.findViewById(R.id.row_info);
+            rowInfo = v.findViewById(R.id.ROW_INFO);
             text = v.findViewById(R.id.name);
         }
 
@@ -1227,7 +1227,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
     /**
      * Holder to handle any field that can be displayed as a simple string.
      * Assumes there is a 'name' TextView and an optional enclosing ViewGroup
-     * called row_info.
+     * called ROW_INFO.
      *
      * @author Philip Warner
      */
@@ -1257,7 +1257,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
         @Override
         public void map(@NonNull final BooklistRowView rowView, @NonNull final View v) {
-            rowInfo = v.findViewById(R.id.row_info);
+            rowInfo = v.findViewById(R.id.ROW_INFO);
             text = v.findViewById(R.id.name);
         }
 

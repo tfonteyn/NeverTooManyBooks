@@ -43,7 +43,7 @@ import java.util.Map;
 public class XmlFilter {
     /** The tag for this specific filter */
     private final String mTagName;
-    /** A hashtable to ensure that there are no more than one sub-filter per tag at a given level */
+    /** A HashMap to ensure that there are no more than one sub-filter per tag at a given level */
     private final Map<String, XmlFilter> mSubFilterHash = new HashMap<>();
     /** List of sub-filters for this filter */
     private final ArrayList<XmlFilter> mSubFilters = new ArrayList<>();
@@ -100,28 +100,28 @@ public class XmlFilter {
      * Internal implementation of method to add a filter to a passed tree and return the matching XmlFilter.
      * This is called recursively to process the filter list.
      *
-     * @param root  Root XmlFilter object.
-     * @param depth Recursion depth
-     * @param iter  Names of tags to add to tree, if not present.
+     * @param root      Root XmlFilter object.
+     * @param depth     Recursion depth
+     * @param iterator  Names of tags to add to tree, if not present.
      *
      * @return The filter matching the final tag name passed.
      */
     @NonNull
-    private static XmlFilter buildFilter(@NonNull final XmlFilter root, final int depth, @NonNull final Iterator<String> iter) {
+    private static XmlFilter buildFilter(@NonNull final XmlFilter root, final int depth, @NonNull final Iterator<String> iterator) {
         //if (!root.matches(filters[depth]))
         //	throw new RuntimeException("Filter at depth=" + depth + " does not match first filter parameter");
-        final String curr = iter.next();
+        final String curr = iterator.next();
         XmlFilter sub = root.getSubFilter(curr);
         if (sub == null) {
             sub = new XmlFilter(curr);
             root.addFilter(sub);
         }
-        if (!iter.hasNext()) {
+        if (!iterator.hasNext()) {
             // At end
             return sub;
         } else {
             // We are still finding leaf
-            return buildFilter(sub, depth + 1, iter);
+            return buildFilter(sub, depth + 1, iterator);
         }
     }
 

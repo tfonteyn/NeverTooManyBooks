@@ -11,7 +11,10 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <!--
     ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    yes, red is joke... needs to change
     -->
     <!-- System wide theme customizing goes into these -->
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar" >
@@ -20,7 +23,7 @@
 
         <item name="color_background_nav_header">@color/blue_400</item>
         <item name="color_background_nav_panel">@color/black</item>
-        <item name="color_background_thumbnail">@color/blue_400</item>
+        <item name="color_background_thumbnail">@color/grey_400</item>
         <item name="color_background_toolbar">@color/blue_600</item>
 
         <!-- AppCompat Dialog Attributes -->
@@ -69,7 +72,7 @@
 
         <item name="color_background_nav_header">@color/light_blue_400</item>
         <item name="color_background_nav_panel">@color/white</item>
-        <item name="color_background_thumbnail">@color/light_blue_400</item>
+        <item name="color_background_thumbnail">@color/grey_400</item>
         <item name="color_background_toolbar">@color/light_blue_600</item>
 
         <!-- AppCompat Dialog Attributes -->

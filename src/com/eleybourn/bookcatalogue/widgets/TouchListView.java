@@ -178,12 +178,12 @@ public class TouchListView extends ListView {
                 case MotionEvent.ACTION_DOWN:
                     int x = (int) ev.getX();
                     int y = (int) ev.getY();
-                    int itemnum = pointToPosition(x, y);
-                    if (itemnum == AdapterView.INVALID_POSITION) {
+                    int itemNumber = pointToPosition(x, y);
+                    if (itemNumber == AdapterView.INVALID_POSITION) {
                         break;
                     }
 
-                    View item = getChildAt(itemnum - getFirstVisiblePosition());
+                    View item = getChildAt(itemNumber - getFirstVisiblePosition());
 
                     if (isDraggableRow(item)) {
                         mDragPoint = y - item.getTop();
@@ -209,7 +209,7 @@ public class TouchListView extends ListView {
                             getGlobalVisibleRect(listBounds, null);
 
                             startDragging(bitmap, listBounds.left, y);
-                            mDragPos = itemnum;
+                            mDragPos = itemNumber;
                             mFirstDragPos = mDragPos;
                             mWasFirstExpansion = true;
                             mHeight = getHeight();
@@ -340,7 +340,7 @@ public class TouchListView extends ListView {
                 break;
             }
 
-            // If this is a 'dragable' row, process it
+            // If this is a 'draggable' row, process it
             if (isDraggableRow(vv)) {
                 // Set the default padding at top/bot (we may have previously changed it)
                 vv.setPadding(vv.getPaddingLeft(), 0, vv.getPaddingRight(), 0);
@@ -348,7 +348,7 @@ public class TouchListView extends ListView {
                 // Get the height of the current view, and save it if not saved already
                 ViewGroup.LayoutParams params = vv.getLayoutParams();
                 if (mSavedHeight == null) {
-                    // Save the hight the first time we get it. We make the assumption that
+                    // Save the height the first time we get it. We make the assumption that
                     // all rows will be the same height, whether that is a fixed value
                     // or 'wrap-contents'/'fill-parent'.
                     mSavedHeight = params.height;

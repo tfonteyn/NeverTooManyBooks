@@ -109,8 +109,8 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
                     a.onExportTypeSelectionDialogResult(mDialogId, this, settings);
                 }
             }
-        } catch (Exception ignore) {
-            Logger.logError(ignore);
+        } catch (Exception e) {
+            Logger.logError(e);
         }
         dismiss();
     }

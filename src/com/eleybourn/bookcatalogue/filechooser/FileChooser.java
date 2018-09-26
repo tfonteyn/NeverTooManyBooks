@@ -180,7 +180,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
     @Override
     public void onGotFileList(@NonNull final File root, @NonNull final ArrayList<FileDetails> list) {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.browser_fragment);
-        if (frag != null && frag instanceof FileListerListener) {
+        if (frag instanceof FileListerListener) {
             ((FileListerListener) frag).onGotFileList(root, list);
         }
     }

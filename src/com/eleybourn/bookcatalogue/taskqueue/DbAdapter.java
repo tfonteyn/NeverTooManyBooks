@@ -28,6 +28,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteQuery;
 import android.database.sqlite.SQLiteStatement;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.taskqueue.Task.TaskState;
 import com.eleybourn.bookcatalogue.taskqueue.TasksCursor.TaskCursorSubtype;
@@ -59,7 +61,7 @@ import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.TBL_QUEUE;
 import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.TBL_TASK;
 
 /**
- * Database later. Implements all direct database access.
+ * Database layer. Implements all direct database access.
  *
  * @author Philip Warner
  */
@@ -85,7 +87,7 @@ public class DbAdapter {
     /**
      * Constructor
      */
-    DbAdapter(Context context) {
+    DbAdapter(@NonNull final Context context) {
         m_appContext = context.getApplicationContext();
         m_dbHelper = new DbHelper(m_appContext);
     }
@@ -95,6 +97,7 @@ public class DbAdapter {
      *
      * @return The database
      */
+    @NonNull
     protected SQLiteDatabase getDb() {
         return m_dbHelper.getWritableDatabase();
     }
@@ -106,7 +109,7 @@ public class DbAdapter {
      *
      * @return The ID of the queue, 0 if no match
      */
-    private long getQueueId(String name) {
+    private long getQueueId(@NonNull final String name) {
         final String sql = "select " + DOM_ID + " from " + TBL_QUEUE + " Where " + DOM_NAME + " = ?";
         SQLiteDatabase db = getDb();
 
@@ -122,17 +125,16 @@ public class DbAdapter {
     /**
      * Retrieve all queues and instantiate them for the passed QueueManager.
      * ENHANCE: Change this to only return queues with jobs of status 'Q'
-     * So that queues will not be started if no jobs. Problems arise
-     * working out how to handle 'waiting' jobs (if we want to allow
-     * for a 'waiting' status -- eg. waiting for network).
+     * So that queues will not be started if no jobs. Problems arise working out how to handle
+     * 'waiting' jobs (if we want to allow for a 'waiting' status -- eg. waiting for network).
      *
      * @param manager Owner of the created Queue objects
      */
-    protected void getAllQueues(QueueManager manager) {
+    void getAllQueues(@NonNull final QueueManager manager) {
         String sql = "select " + DOM_NAME + " from " + TBL_QUEUE + " Order by " + DOM_NAME;
         SQLiteDatabase db = getDb();
 
-        try ( Cursor cursor = db.rawQuery(sql, new String[]{})) {
+        try (Cursor cursor = db.rawQuery(sql, new String[]{})) {
             while (cursor.moveToNext()) {
                 String name = cursor.getString(0);
                 // Create the Queue. It will register itself with its QueueManager.
@@ -152,12 +154,12 @@ public class DbAdapter {
      *
      * @return ScheduledTask object containing details of task
      */
-    protected ScheduledTask getNextTask(String queueName) {
-        // Get current time
-        Date currTime = new Date();
+    @Nullable
+    ScheduledTask getNextTask(@NonNull final String queueName) {
+        Date currentTime = new Date();
         long timeToNext;
 
-        String currTimeStr = DateUtils.toSqlDateTime(currTime);
+        String currTimeStr = DateUtils.toSqlDateTime(currentTime);
         SQLiteDatabase db = getDb();
 
         String baseSql = "Select j.* from " + TBL_QUEUE + " q"
@@ -187,8 +189,9 @@ public class DbAdapter {
 
         try {
             // If no matching row, return NULL
-            if (!c.moveToFirst())
+            if (!c.moveToFirst()) {
                 return null;
+            }
 
             // Find task details and create ScheduledTask object
             int dateCol = c.getColumnIndex(DOM_RETRY_DATE);
@@ -196,9 +199,9 @@ public class DbAdapter {
             if (retryDate == null) {
                 retryDate = new Date();
             }
-            if (retryDate.after(currTime)) {
+            if (retryDate.after(currentTime)) {
                 // set timeToNext to let called know queue is not empty
-                timeToNext = (retryDate.getTime() - currTime.getTime());
+                timeToNext = (retryDate.getTime() - currentTime.getTime());
             } else {
                 // No need to wait
                 timeToNext = 0;
@@ -207,8 +210,9 @@ public class DbAdapter {
             return new ScheduledTask(timeToNext, c);
 
         } finally {
-            if (c != null)
+            if (c != null) {
                 c.close();
+            }
         }
     }
 
@@ -216,9 +220,8 @@ public class DbAdapter {
      * Create the specified queue if it does not exist.
      *
      * @param queueName Name of the queue
-     *
      */
-    protected void createQueue(String queueName) {
+    void createQueue(@NonNull final String queueName) {
         long id = getQueueId(queueName);
         if (id == 0) {
             ContentValues cv = new ContentValues();
@@ -235,7 +238,7 @@ public class DbAdapter {
      *
      * @param task The task to be saved. Must exist in database.
      */
-    protected void updateTask(Task task) {
+    void updateTask(@NonNull final Task task) {
         ContentValues cv = new ContentValues();
         cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
         cv.put(DOM_CATEGORY, task.getCategory());
@@ -248,12 +251,12 @@ public class DbAdapter {
      *
      * @param task      Task instance to save and run
      * @param queueName Queue name
-     *
      */
-    protected void enqueueTask(Task task, String queueName) {
+    void enqueueTask(@NonNull final Task task, @NonNull final String queueName) {
         long queueId = getQueueId(queueName);
-        if (queueId == 0)
+        if (queueId == 0) {
             throw new RuntimeException("Queue '" + queueName + "' does not exist; unable to queue request");
+        }
 
         ContentValues cv = new ContentValues();
         cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
@@ -272,7 +275,7 @@ public class DbAdapter {
      *
      * @param task Task object
      */
-    protected void setTaskOk(Task task) {
+    void setTaskOk(@NonNull final Task task) {
         SQLiteDatabase db = getDb();
         String sql;
 
@@ -290,7 +293,7 @@ public class DbAdapter {
         }
     }
 
-    protected void cleanupOldTasks(int ageInDays) {
+    void cleanupOldTasks(final int ageInDays) {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -ageInDays);
         String oneWeekAgo = DateUtils.toSqlDateTime(cal.getTime());
@@ -315,7 +318,7 @@ public class DbAdapter {
         cleanupOrphans();
     }
 
-    protected void cleanupOldEvents(int ageInDays) {
+    void cleanupOldEvents(final int ageInDays) {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -ageInDays);
         String oneWeekAgo = DateUtils.toSqlDateTime(cal.getTime());
@@ -332,7 +335,7 @@ public class DbAdapter {
         cleanupOrphans();
     }
 
-    protected void cleanupOrphans() {
+    void cleanupOrphans() {
         SQLiteDatabase db = getDb();
         db.beginTransaction();
         String sql;
@@ -359,7 +362,7 @@ public class DbAdapter {
      *
      * @param task task object to requeue.
      */
-    protected void setTaskRequeue(Task task) {
+    void setTaskRequeue(@NonNull final Task task) {
         int waitSecs;
         if (!task.canRetry()) {
             // We have waited a lot already; just give up.
@@ -389,7 +392,7 @@ public class DbAdapter {
      * @param task    Task that failed.
      * @param message Final message to store. Task can also contain an Exception object.
      */
-    protected void setTaskFail(Task task, String message) {
+    void setTaskFail(@NonNull final Task task, @NonNull final String message) {
         task.setState(TaskState.failed);
 
         ContentValues cv = new ContentValues();
@@ -410,7 +413,7 @@ public class DbAdapter {
      * @param t Related task
      * @param e Event (usually subclassed)
      */
-    protected void storeTaskEvent(Task t, Event e) {
+    void storeTaskEvent(@NonNull final Task t, @NonNull final Event e) {
         SQLiteDatabase db = getDb();
 
         // Setup parameters for insert
@@ -448,7 +451,7 @@ public class DbAdapter {
      *
      * @return A new TaskExceptionsCursor
      */
-    private EventsCursor fetchTaskEvents(SQLiteDatabase db, long taskId) {
+    private EventsCursor fetchTaskEvents(@NonNull final SQLiteDatabase db, final long taskId) {
         String m_taskEventsQuery = "Select e.* From " + TBL_EVENT + " e "
                 + " Where e." + DOM_TASK_ID + " = ? "
                 + " Order by e." + DOM_ID + " asc";
@@ -460,7 +463,7 @@ public class DbAdapter {
      *
      * @return A new TaskExceptionsCursor
      */
-    private EventsCursor fetchAllEvents(SQLiteDatabase db) {
+    private EventsCursor fetchAllEvents(@NonNull final SQLiteDatabase db) {
         String m_eventsQuery = "Select * From " + TBL_EVENT + " Order by " + DOM_ID + " asc";
         return (EventsCursor) db.rawQueryWithFactory(m_EventsCursorFactory, m_eventsQuery, new String[]{}, "");
     }
@@ -472,7 +475,7 @@ public class DbAdapter {
      *
      * @return Cursor of exceptions
      */
-    protected EventsCursor getTaskEvents(long taskId) {
+    EventsCursor getTaskEvents(final long taskId) {
         return fetchTaskEvents(getDb(), taskId);
     }
 
@@ -481,7 +484,7 @@ public class DbAdapter {
      *
      * @return Cursor of exceptions
      */
-    protected EventsCursor getAllEvents() {
+    EventsCursor getAllEvents() {
         return fetchAllEvents(getDb());
     }
 
@@ -492,7 +495,7 @@ public class DbAdapter {
      *
      * @return Cursor of exceptions
      */
-    protected TasksCursor getTasks(TaskCursorSubtype type) {
+    TasksCursor getTasks(@NonNull final TaskCursorSubtype type) {
         return TasksCursor.fetchTasks(getDb(), type);
     }
 
@@ -504,7 +507,8 @@ public class DbAdapter {
      *
      * @return Cursor of exceptions
      */
-    protected TasksCursor getTasks(long category, TaskCursorSubtype type) {
+    TasksCursor getTasks(final long category,
+                         @SuppressWarnings("SameParameterValue") @NonNull final TaskCursorSubtype type) {
         return TasksCursor.fetchTasks(getDb(), category, type);
     }
 
@@ -513,7 +517,7 @@ public class DbAdapter {
      *
      * @param id ID of Event to delete.
      */
-    protected void deleteEvent(long id) {
+    void deleteEvent(final long id) {
         //String sql = "Delete from " + TBL_TASK_EXCEPTIONS + " Where " + DOM_ID + " = ?";
         //ContentValues cv = new ContentValues();
         //cv.put(DOM_EVENT_ID, id);
@@ -526,7 +530,7 @@ public class DbAdapter {
      *
      * @param id ID of Task to delete.
      */
-    protected void deleteTask(long id) {
+    void deleteTask(final long id) {
         SQLiteDatabase db = getDb();
         db.beginTransaction();
         try {
@@ -577,14 +581,14 @@ public class DbAdapter {
          * Constructor
          *
          * @param timeUntilRunnable Milliseconds until task should be run
-         * @param c                 Cursor positioned at task details
+         * @param cursor            Cursor positioned at task details
          */
-        ScheduledTask(long timeUntilRunnable, Cursor c) {
+        ScheduledTask(final long timeUntilRunnable, @NonNull final Cursor cursor) {
             this.timeUntilRunnable = timeUntilRunnable;
-            int taskCol = c.getColumnIndex(DOM_TASK);
-            m_retries = c.getInt(c.getColumnIndex(DOM_RETRY_COUNT));
-            this.id = c.getInt(c.getColumnIndex(DOM_ID));
-            m_blob = c.getBlob(taskCol);
+            int taskCol = cursor.getColumnIndex(DOM_TASK);
+            m_retries = cursor.getInt(cursor.getColumnIndex(DOM_RETRY_COUNT));
+            this.id = cursor.getInt(cursor.getColumnIndex(DOM_ID));
+            m_blob = cursor.getBlob(taskCol);
         }
 
         /**
@@ -613,7 +617,5 @@ public class DbAdapter {
 
             return task;
         }
-
     }
-
 }

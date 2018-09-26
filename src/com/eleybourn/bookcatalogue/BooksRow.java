@@ -219,6 +219,7 @@ public class BooksRow {
     public final boolean isRead() {
         return getRead() != 0;
     }
+
     public final int getRead() {
         if (mReadCol < 0) {
             mReadCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_READ.name);
@@ -240,6 +241,7 @@ public class BooksRow {
     public final boolean isSigned() {
         return getSigned() != 0;
     }
+
     private int getSigned() {
         if (mSignedCol < 0) {
             mSignedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_SIGNED.name);

@@ -118,8 +118,6 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         dialog.setContentView(R.layout.dialog_edit_author);
         dialog.setTitle(R.string.edit_author_details);
 
-        setTextOrHideView(R.id.booktitle, mBookTitle);
-
         EditText familyView = dialog.findViewById(R.id.family_name);
         familyView.setText(author.familyName);
         EditText givenView = dialog.findViewById(R.id.given_names);

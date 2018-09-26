@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.Manifest;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 public class StartupWithSplashActivity extends SplashPermissionsActivity {
@@ -30,6 +31,7 @@ public class StartupWithSplashActivity extends SplashPermissionsActivity {
      * Other permissions fail gracefully.
      * - READ_CONTACTS
      */
+    @NonNull
     @Override
     protected String[] getRequiredPermissions() {
         return new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};

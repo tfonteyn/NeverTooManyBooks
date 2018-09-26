@@ -517,13 +517,8 @@ public class CoverBrowser {
                 }
             }
 
-            try {
-                if (!ok && file.exists()) {
-                    //noinspection ResultOfMethodCallIgnored
-                    file.delete();
-                }
-            } catch (Exception e) {
-                Logger.logError(e, "Unable to delete bad thumbnail");
+            if (!ok) {
+                StorageUtils.deleteFile(file);
             }
             return ok;
         }

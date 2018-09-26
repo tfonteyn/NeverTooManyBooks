@@ -96,8 +96,7 @@ public class Logger {
                 File orig = new File(StorageUtils.getErrorLog());
                 if (orig.exists() && orig.length() > 0) {
                     File backup = new File(StorageUtils.getErrorLog() + ".bak");
-                    //noinspection ResultOfMethodCallIgnored
-                    orig.renameTo(backup);
+                    StorageUtils.renameFile(orig, backup);
                 }
             } catch (Exception ignore) {
                 // Ignore backup failure...

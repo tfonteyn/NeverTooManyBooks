@@ -50,31 +50,31 @@ class GoodreadsAuthorizationResultCheck extends GenericTask {
 	}
 
 	@Override
-	public boolean run(@NonNull QueueManager manager, @NonNull Context c) {
+	public boolean run(@NonNull QueueManager manager, @NonNull Context context) {
 		GoodreadsManager grMgr = new GoodreadsManager();
 		// Bring the app to the front using the launcher intent
-		Intent i = new Intent(c, StartupActivity.class);
-		i.setAction("android.intent.action.MAIN");
-		i.addCategory(Intent.CATEGORY_LAUNCHER);
+		Intent intent = new Intent(context, StartupActivity.class);
+		intent.setAction("android.intent.action.MAIN");
+		intent.addCategory(Intent.CATEGORY_LAUNCHER);
 	    try {
 		    grMgr.handleAuthentication();		    	
 		    if (grMgr.hasValidCredentials())
 				BookCatalogueApp.showNotification(R.id.NOTIFICATION,
-						c.getString(R.string.authorized),
-						c.getString(R.string.goodreads_auth_successful), i);
+						context.getString(R.string.authorized),
+						context.getString(R.string.goodreads_auth_successful), intent);
 			else
 				BookCatalogueApp.showNotification(R.id.NOTIFICATION, 
-						c.getString(R.string.not_authorized),
-						c.getString(R.string.goodreads_auth_failed), i);
+						context.getString(R.string.not_authorized),
+						context.getString(R.string.goodreads_auth_failed), intent);
 	    } catch (NotAuthorizedException e) {
 	    	BookCatalogueApp.showNotification(R.id.NOTIFICATION, 
-						c.getString(R.string.not_authorized),
-						c.getString(R.string.goodreads_auth_failed), i);
+						context.getString(R.string.not_authorized),
+						context.getString(R.string.goodreads_auth_failed), intent);
 	    } catch (Exception e) {
 	    	BookCatalogueApp.showNotification(R.id.NOTIFICATION, 
-						c.getString(R.string.not_authorized),
-						c.getString(R.string.goodreads_auth_error)
-						+ " " + c.getString(R.string.if_the_problem_persists), i);
+						context.getString(R.string.not_authorized),
+						context.getString(R.string.goodreads_auth_error)
+						+ " " + context.getString(R.string.if_the_problem_persists), intent);
 	    }
 
 		return true;

@@ -33,9 +33,9 @@ import android.widget.CheckedTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
@@ -62,7 +62,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
 
     public static void startActivity(Activity from) {
         Intent i = new Intent(from, BooklistStylesListActivity.class);
-        from.startActivityForResult(i, UniqueId.ACTIVITY_BOOKLIST_STYLES);
+        from.startActivityForResult(i, UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLES);
     }
 
     @Override
@@ -77,8 +77,8 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
             if (savedInstanceState == null) {
                 HintManager.displayHint(this, R.string.hint_booklist_styles_editor, null);
             }
-        } catch (Exception ignore) {
-            Logger.logError(ignore);
+        } catch (Exception e) {
+            Logger.logError(e);
         }
     }
 
@@ -138,10 +138,11 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
         holder.groups.setText(style.getGroupListDisplayNames());
         holder.preferred.setChecked(style.isPreferred());
 
-        if (style.isUserDefined())
+        if (style.isUserDefined()) {
             holder.kind.setText(R.string.user_defined);
-        else
+        } else {
             holder.kind.setText(R.string.builtin);
+        }
     }
 
 //    @Override
@@ -164,7 +165,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
         items.add(new ContextItem(R.string.clone_style, R.id.MENU_STYLE_CLONE));
 
         // Turn the list into an array
-        CharSequence[] csa = items.toArray(new CharSequence[items.size()]);
+        CharSequence[] csa = items.toArray(new CharSequence[0]);
 
         // Show the dialog
         final AlertDialog dialog = new AlertDialog.Builder(getLayoutInflater().getContext())
@@ -219,7 +220,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
 
         Intent intent = new Intent(this, BooklistStylePropertiesActivity.class);
         intent.putExtra(BooklistStylePropertiesActivity.BKEY_STYLE, style);
-        startActivityForResult(intent, UniqueId.ACTIVITY_BOOKLIST_STYLE);
+        startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE);
     }
 
     @Override
@@ -232,7 +233,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
-            case UniqueId.ACTIVITY_BOOKLIST_STYLE:
+            case UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE:
                 handleStyleResult(data);
                 break;
         }
@@ -245,8 +246,9 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
      */
     private void handleStyleResult(@Nullable final Intent data) {
         // Make sure we have a style. If not, the user must have cancelled.
-        if (data == null || !data.hasExtra(BooklistStylePropertiesActivity.BKEY_STYLE))
+        if (data == null || !data.hasExtra(BooklistStylePropertiesActivity.BKEY_STYLE)) {
             return;
+        }
 
         try {
             BooklistStyle result = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.BKEY_STYLE);
@@ -277,8 +279,9 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
                         // A clone of an original. Put it directly after the original
                         mList.add(mEditedRow, result);
                     }
-                    if (result.isPreferred())
+                    if (result.isPreferred()) {
                         BooklistStyles.saveMenuOrder(mList);
+                    }
                 } else {
                     mList.set(mEditedRow, result);
                 }

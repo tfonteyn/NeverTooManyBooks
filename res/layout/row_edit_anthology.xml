@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/row"
+    android:id="@id/ROW"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
@@ -35,7 +35,7 @@
             tools:ignore="ContentDescription" />
 
         <include
-            android:id="@id/row_details"
+            android:id="@id/ROW_DETAILS"
             layout="@layout/row_anthology"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

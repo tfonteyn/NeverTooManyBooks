@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
@@ -50,22 +51,6 @@ import java.util.List;
  */
 public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragment {
 
-    private static final int CONTEXT_ID_DELETE = 1;
-    private static final int CONTEXT_SUBMENU_REPLACE_THUMB = 2;
-    private static final int CONTEXT_ID_SUBMENU_ROTATE_THUMB = 3;
-    private static final int CONTEXT_ID_CROP_THUMB = 6;
-
-    private static final int CODE_ADD_PHOTO = 21;
-    private static final int CODE_ADD_GALLERY = 22;
-
-    private static final int CONTEXT_ID_SHOW_ALT_COVERS = 23;
-    private static final int CONTEXT_ID_ROTATE_THUMB_CW = 31;
-    private static final int CONTEXT_ID_ROTATE_THUMB_CCW = 32;
-    private static final int CONTEXT_ID_ROTATE_THUMB_180 = 33;
-
-    private static final int CODE_CROP_RESULT_EXTERNAL = 42;
-    private static final int CODE_CROP_RESULT_INTERNAL = 43;
-
     private static final String BKEY_IMAGE_PATH = "image-path";
     private static final String BKEY_SCALE = "scale";
     private static final String BKEY_WHOLE_IMAGE = "whole-image";
@@ -87,31 +72,31 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     private final OnCreateContextMenuListener mCreateBookThumbContextMenuListener = new OnCreateContextMenuListener() {
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-            MenuItem delete = menu.add(0, CONTEXT_ID_DELETE, 0, R.string.menu_delete_thumb);
+            MenuItem delete = menu.add(Menu.NONE, R.id.MENU_DELETE_THUMB, 0, R.string.menu_delete_thumb);
             delete.setIcon(R.drawable.ic_mode_edit);
 
             // Creating submenu item for rotate
-            SubMenu replaceSubmenu = menu.addSubMenu(0, CONTEXT_SUBMENU_REPLACE_THUMB, 2, R.string.menu_replace_thumb);
+            SubMenu replaceSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_REPLACE_THUMB, 2, R.string.menu_replace_thumb);
             replaceSubmenu.setIcon(R.drawable.ic_find_replace);
-            MenuItem add_photo = replaceSubmenu.add(0, CODE_ADD_PHOTO, 1, R.string.menu_add_thumb_photo);
+            MenuItem add_photo = replaceSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_CAMERA, 1, R.string.menu_add_thumb_photo);
             add_photo.setIcon(R.drawable.ic_add_a_photo);
-            MenuItem add_gallery = replaceSubmenu.add(0, CODE_ADD_GALLERY, 2, R.string.menu_add_thumb_gallery);
+            MenuItem add_gallery = replaceSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_GALLERY, 2, R.string.menu_add_thumb_gallery);
             add_gallery.setIcon(R.drawable.ic_image);
-            MenuItem alt_covers = replaceSubmenu.add(0, CONTEXT_ID_SHOW_ALT_COVERS, 3, R.string.menu_thumb_alt_editions);
+            MenuItem alt_covers = replaceSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_ALT_EDITIONS, 3, R.string.menu_thumb_alt_editions);
             alt_covers.setIcon(R.drawable.ic_find_replace);
 
             // Implementing submenu for rotate
-            SubMenu submenu = menu.addSubMenu(0, CONTEXT_ID_SUBMENU_ROTATE_THUMB, 3, R.string.menu_rotate_thumb);
+            SubMenu submenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_ROTATE_THUMB, 3, R.string.menu_rotate_thumb);
             add_gallery.setIcon(R.drawable.ic_rotate_right);
 
-            MenuItem rotate_photo_cw = submenu.add(0, CONTEXT_ID_ROTATE_THUMB_CW, 1, R.string.menu_rotate_thumb_cw);
+            MenuItem rotate_photo_cw = submenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CW, 1, R.string.menu_rotate_thumb_cw);
             rotate_photo_cw.setIcon(R.drawable.ic_rotate_right);
-            MenuItem rotate_photo_ccw = submenu.add(0, CONTEXT_ID_ROTATE_THUMB_CCW, 2, R.string.menu_rotate_thumb_ccw);
+            MenuItem rotate_photo_ccw = submenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CCW, 2, R.string.menu_rotate_thumb_ccw);
             rotate_photo_ccw.setIcon(R.drawable.ic_rotate_left);
-            MenuItem rotate_photo_180 = submenu.add(0, CONTEXT_ID_ROTATE_THUMB_180, 3, R.string.menu_rotate_thumb_180);
+            MenuItem rotate_photo_180 = submenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_180, 3, R.string.menu_rotate_thumb_180);
             rotate_photo_180.setIcon(R.drawable.ic_swap_vert);
 
-            MenuItem crop_thumb = menu.add(0, CONTEXT_ID_CROP_THUMB, 4, R.string.menu_crop_thumb);
+            MenuItem crop_thumb = menu.add(Menu.NONE, R.id.MENU_CROP_THUMB, 4, R.string.menu_crop_thumb);
             crop_thumb.setIcon(R.drawable.ic_crop);
         }
     };
@@ -129,8 +114,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                 // Get the new file
                 File newFile = new File(fileSpec);
                 // Overwrite with new file
-                //noinspection ResultOfMethodCallIgnored
-                newFile.renameTo(bookFile);
+                StorageUtils.renameFile(newFile, bookFile);
                 // update current activity
                 setCoverImage();
             }
@@ -151,17 +135,17 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         try {
             super.onActivityResult(requestCode, resultCode, intent);
             switch (requestCode) {
-                case CODE_ADD_PHOTO:
+                case UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_CAMERA:
                     if (resultCode == Activity.RESULT_OK && intent != null && intent.getExtras() != null) {
                         addFromCamera(requestCode, resultCode, intent);
                     }
                     return;
-                case CODE_ADD_GALLERY:
+                case UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_GALLERY:
                     if (resultCode == Activity.RESULT_OK) {
                         addFromGallery(intent);
                     }
                     return;
-                case CODE_CROP_RESULT_EXTERNAL: {
+                case UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_EXTERNAL: {
                     File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
                     File cropped = this.getCroppedTempCoverFile();
                     if (resultCode == Activity.RESULT_OK) {
@@ -178,7 +162,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                     }
                     return;
                 }
-                case CODE_CROP_RESULT_INTERNAL: {
+                case UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_INTERNAL: {
                     File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
                     File cropped = this.getCroppedTempCoverFile();
                     if (resultCode == Activity.RESULT_OK) {
@@ -305,34 +289,34 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         Tracker.handleEvent(this, "Context Menu Item " + item.getItemId(), Tracker.States.Enter);
 
         try {
-            ImageView iv = getView().findViewById(R.id.row_img);
+            ImageView thumbView = getView().findViewById(R.id.row_img);
             File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
 
             switch (item.getItemId()) {
-                case CONTEXT_ID_DELETE:
+                case R.id.MENU_DELETE_THUMB:
                     deleteThumbnail();
-                    ImageUtils.fetchFileIntoImageView(iv, thumbFile, mThumper.normal, mThumper.normal, true);
+                    ImageUtils.fetchFileIntoImageView(thumbView, thumbFile, mThumper.normal, mThumper.normal, true);
                     return true;
-                case CONTEXT_ID_SUBMENU_ROTATE_THUMB:
+                case R.id.SUBMENU_ROTATE_THUMB:
                     // Just a submenu; skip, but display a hint if user is rotating a camera image
                     if (mGotCameraImage) {
                         HintManager.displayHint(getActivity(), R.string.hint_autorotate_camera_images, null);
                         mGotCameraImage = false;
                     }
                     return true;
-                case CONTEXT_ID_ROTATE_THUMB_CW:
+                case R.id.MENU_ROTATE_THUMB_CW:
                     rotateThumbnail(90);
-                    ImageUtils.fetchFileIntoImageView(iv, thumbFile, mThumper.normal, mThumper.normal, true);
+                    ImageUtils.fetchFileIntoImageView(thumbView, thumbFile, mThumper.normal, mThumper.normal, true);
                     return true;
-                case CONTEXT_ID_ROTATE_THUMB_CCW:
+                case R.id.MENU_ROTATE_THUMB_CCW:
                     rotateThumbnail(-90);
-                    ImageUtils.fetchFileIntoImageView(iv, thumbFile, mThumper.normal, mThumper.normal, true);
+                    ImageUtils.fetchFileIntoImageView(thumbView, thumbFile, mThumper.normal, mThumper.normal, true);
                     return true;
-                case CONTEXT_ID_ROTATE_THUMB_180:
+                case R.id.MENU_ROTATE_THUMB_180:
                     rotateThumbnail(180);
-                    ImageUtils.fetchFileIntoImageView(iv, thumbFile, mThumper.normal, mThumper.normal, true);
+                    ImageUtils.fetchFileIntoImageView(thumbView, thumbFile, mThumper.normal, mThumper.normal, true);
                     return true;
-                case CODE_ADD_PHOTO:
+                case R.id.MENU_ADD_THUMB_FROM_CAMERA:
                     // Increment the temp counter and cleanup the temp directory
                     mTempImageCounter++;
                     StorageUtils.cleanupTempDirectory();
@@ -342,21 +326,21 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
 //				without producing memory exhaustion; Android does not include a file-based
 //				image rotation.
 //				File f = this.getCameraTempCoverFile();
-//				if (f.exists())
-//					f.delete();
+//	            StorageUtils.deleteFile(f);
 //				pIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                    startActivityForResult(pIntent, CODE_ADD_PHOTO);
+                    startActivityForResult(pIntent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_CAMERA);
                     return true;
-                case CODE_ADD_GALLERY:
+                case R.id.MENU_ADD_THUMB_FROM_GALLERY:
                     Intent gIntent = new Intent();
                     gIntent.setType("image/*");
                     gIntent.setAction(Intent.ACTION_GET_CONTENT);
-                    startActivityForResult(Intent.createChooser(gIntent, getResources().getString(R.string.select_picture)), CODE_ADD_GALLERY);
+                    startActivityForResult(Intent.createChooser(gIntent, getResources().getString(R.string.select_picture)),
+                            UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_GALLERY);
                     return true;
-                case CONTEXT_ID_CROP_THUMB:
+                case R.id.MENU_CROP_THUMB:
                     cropCoverImage(thumbFile);
                     return true;
-                case CONTEXT_ID_SHOW_ALT_COVERS:
+                case R.id.MENU_ADD_THUMB_ALT_EDITIONS:
                     String isbn = mFields.getField(R.id.isbn).getValue().toString();
                     if (isbn == null || isbn.trim().isEmpty()) {
                         Toast.makeText(getActivity(), getResources().getString(R.string.editions_require_isbn), Toast.LENGTH_LONG).show();
@@ -388,12 +372,10 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         crop_intent.putExtra(BKEY_WHOLE_IMAGE, BCPreferences.getCropFrameWholeImage());
         // Get and set the output file spec, and make sure it does not already exist.
         File cropped = this.getCroppedTempCoverFile();
-        if (cropped.exists()) {
-            //noinspection ResultOfMethodCallIgnored
-            cropped.delete();
-        }
+        StorageUtils.deleteFile(cropped);
+
         crop_intent.putExtra(BKEY_OUTPUT, cropped.getAbsolutePath());
-        startActivityForResult(crop_intent, CODE_CROP_RESULT_INTERNAL);
+        startActivityForResult(crop_intent, UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_INTERNAL);
     }
 
     private void cropCoverImageExternal(@NonNull final File thumbFile) {
@@ -428,7 +410,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             if (size == 0) {
                 Toast.makeText(getActivity(), "Can not find image crop app", Toast.LENGTH_SHORT).show();
             } else {
-                startActivityForResult(intent, CODE_CROP_RESULT_EXTERNAL);
+                startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_EXTERNAL);
             }
         } finally {
             Tracker.handleEvent(this, "cropCoverImageExternal", Tracker.States.Exit);
@@ -596,7 +578,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
          * We also store it in the tag field so that it is automatically serialized with the
          * activity.
          */
-        mFields.add(R.id.anthology, BookData.KEY_IS_ANTHOLOGY, null);
+        mFields.add(R.id.anthology, BookData.IS_ANTHOLOGY, null);
 
         mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED, null);
         mFields.add(R.id.isbn, UniqueId.KEY_ISBN, null);
@@ -655,7 +637,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      */
     protected void populateBookDetailsFields(@NonNull final BookData book) {
         //Set anthology field
-        Integer ant = book.getInt(BookData.KEY_IS_ANTHOLOGY);
+        Integer ant = book.getInt(BookData.IS_ANTHOLOGY);
         mFields.getField(R.id.anthology).setValue(ant.toString()); // Set checked if ant != 0
     }
 

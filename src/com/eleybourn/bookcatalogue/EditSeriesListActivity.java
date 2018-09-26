@@ -117,8 +117,6 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         dialog.setContentView(R.layout.dialog_edit_book_series);
         dialog.setTitle(R.string.edit_book_series);
 
-        setTextOrHideView(R.id.booktitle, mBookTitle);
-
         AutoCompleteTextView seriesNameField = dialog.findViewById(R.id.series);
         seriesNameField.setText(series.name);
         seriesNameField.setAdapter(mSeriesAdapter);

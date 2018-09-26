@@ -100,7 +100,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         // Handle the 'up' item; go to the next directory up
@@ -178,7 +178,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      * @param list List of FileDetails
      */
     @Override
-    public void onGotFileList(@NonNull File root, @Nullable final ArrayList<FileDetails> list) {
+    public void onGotFileList(@NonNull final File root, @Nullable final ArrayList<FileDetails> list) {
         mRootPath = root;
         ((TextView) getView().findViewById(R.id.path)).setText(mRootPath.getAbsolutePath());
 

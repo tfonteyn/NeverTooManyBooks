@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
@@ -41,8 +42,7 @@ public class GoogleBooksManager {
                     && bookData.getString(UniqueId.BKEY_THUMBNAIL_USCORE) != null) {
                 File f = new File(Objects.requireNonNull(bookData.getString(UniqueId.BKEY_THUMBNAIL_USCORE)));
                 File newName = new File(f.getAbsolutePath() + "_" + isbn);
-                //noinspection ResultOfMethodCallIgnored
-                f.renameTo(newName);
+                StorageUtils.renameFile(f, newName);
                 return newName;
             } else {
                 return null;

@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.taskqueue;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -68,6 +69,7 @@ public class LegacyEvent extends Event {
         return root;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void bindView(@NonNull final View view,
                          @NonNull final Context context,

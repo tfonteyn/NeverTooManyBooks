@@ -18,10 +18,10 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 public class Pic2ShopScanner implements Scanner {
     public static final String ACTION = Free.PACKAGE + ".SCAN";
     /**
-     * When a barcode is read, pic2shop returns Activity.RESULT_OK in
-     * onActivityResult() of the activity which requested the scan using
-     * startActivityForResult(). The read barcode can be retrieved with
-     * intent.getStringExtra(BARCODE).
+     * When a barcode is read, pic2shop returns Activity.RESULT_OK in onActivityResult()
+     * of the activity which requested the scan using startActivityForResult().
+     * The read barcode can be retrieved with intent.getStringExtra(BARCODE).
+     *
      * If the user exits pic2shop by pressing Back before a barcode is read, the
      * result code will be Activity.RESULT_CANCELED in onActivityResult().
      */

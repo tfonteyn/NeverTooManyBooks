@@ -61,8 +61,8 @@ public class GoodreadsRegister extends BookCatalogueActivity {
 			super.onCreate(savedInstanceState);
 			setTitle(R.string.goodreads);
 			setupViews();
-		} catch (Exception ignore) {
-			Logger.logError(ignore);
+		} catch (Exception e) {
+			Logger.logError(e);
 		}
 	}
 

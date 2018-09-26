@@ -84,7 +84,7 @@ public class TextFieldEditorFragment extends DialogFragment {
 	 */
     @NonNull
 	@Override
-    public Dialog onCreateDialog(@NonNull final Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
     	mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
         int title = getArguments().getInt(BKEY_TITLE);
         String text = getArguments().getString(BKEY_TEXT);

@@ -26,7 +26,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean SQL = false;
     public static final boolean DB_SYNC_QUERY_FOR_LONG = false;
 
-    public static final boolean TRACKED_CURSER = false;
+    public static final boolean TRACKED_CURSOR = false;
 
     public static final boolean LIBRARYTHING = false;
 

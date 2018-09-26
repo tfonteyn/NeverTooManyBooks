@@ -35,6 +35,7 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTaskAbstract;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -88,14 +89,12 @@ public class BackupManager {
 
             @Override
             public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {
-                BackupWriter wrt = null;
 
-                try {
-                    if (BuildConfig.DEBUG) {
-                        System.out.println("Starting " + tempFile.getAbsolutePath());
-                    }
-                    TarBackupContainer bkp = new TarBackupContainer(tempFile);
-                    wrt = bkp.newWriter();
+                TarBackupContainer bkp = new TarBackupContainer(tempFile);
+                if (BuildConfig.DEBUG) {
+                    System.out.println("Starting " + tempFile.getAbsolutePath());
+                }
+                try (BackupWriter wrt = bkp.newWriter()) {
 
                     wrt.backup(new BackupWriterListener() {
                         private int mTotalBooks = 0;
@@ -130,18 +129,10 @@ public class BackupManager {
                         if (BuildConfig.DEBUG) {
                             System.out.println("Cancelled " + resultingFile.getAbsolutePath());
                         }
-                        if (tempFile.exists())
-                        {
-                            //noinspection ResultOfMethodCallIgnored
-                            tempFile.delete();
-                        }
+                        StorageUtils.deleteFile(tempFile);
                     } else {
-                        if (resultingFile.exists()) {
-                            //noinspection ResultOfMethodCallIgnored
-                            resultingFile.delete();
-                        }
-                        //noinspection ResultOfMethodCallIgnored
-                        tempFile.renameTo(resultingFile);
+                        StorageUtils.deleteFile(resultingFile);
+                        StorageUtils.renameFile(tempFile, resultingFile);
                         mBackupOk = true;
                         if (BuildConfig.DEBUG) {
                             System.out.println("Finished " + resultingFile.getAbsolutePath() + ", size = " + resultingFile.length());
@@ -149,18 +140,8 @@ public class BackupManager {
                     }
                 } catch (Exception e) {
                     Logger.logError(e);
-                    if (tempFile.exists()) {
-                        //noinspection ResultOfMethodCallIgnored
-                        tempFile.delete();
-                    }
+                    StorageUtils.deleteFile(tempFile);
                     throw new RuntimeException("Error during backup", e);
-                } finally {
-                    if (wrt != null) {
-                        try {
-                            wrt.close();
-                        } catch (Exception ignore) {
-                        }
-                    }
                 }
             }
 
@@ -168,10 +149,7 @@ public class BackupManager {
             public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception exception) {
                 super.onFinish(fragment, exception);
                 if (exception != null) {
-                    if (tempFile.exists()) {
-                        //noinspection ResultOfMethodCallIgnored
-                        tempFile.delete();
-                    }
+                    StorageUtils.deleteFile(tempFile);
                 }
                 fragment.setSuccess(mBackupOk);
                 if (mBackupOk) {

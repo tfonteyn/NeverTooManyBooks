@@ -58,9 +58,9 @@ public abstract class FileLister implements FragmentTask {
 	@Override
 	public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception exception) {
 		// Display it in UI thread.
-		Activity a = fragment.getActivity();
-		if (a != null && a instanceof FileListerListener) {
-			((FileListerListener)a).onGotFileList(mRoot, mDirs);
+		Activity activity = fragment.getActivity();
+		if (activity instanceof FileListerListener) {
+			((FileListerListener)activity).onGotFileList(mRoot, mDirs);
 		}
 	}
 

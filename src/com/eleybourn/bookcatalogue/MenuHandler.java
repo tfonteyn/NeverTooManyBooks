@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -37,20 +38,6 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  */
 public class MenuHandler {
 
-    private static final int MENU_ADD_BOOK = Menu.FIRST + 1;
-    private static final int MENU_ITEM_ADD_BOOK_MANUAL = Menu.FIRST + 2;
-    private static final int MENU_ITEM_ADD_BOOK_BARCODE = Menu.FIRST + 3;
-    private static final int MENU_ITEM_ADD_BOOK_ISBN = Menu.FIRST + 4;
-    private static final int MENU_ITEM_ADD_BOOK_NAMES = Menu.FIRST + 5;
-
-    private static final int MENU_ITEM_SEARCH = Menu.FIRST + 6;
-
-    // must have a higher offset then the last one listed above
-    public static final int FIRST = Menu.FIRST + 13;
-
-    /**
-     * Construct & init.
-     */
     public MenuHandler(@NonNull final Menu menu) {
         init(menu);
     }
@@ -69,15 +56,15 @@ public class MenuHandler {
     /**
      * Add a custom menu item.
      *
-     * @param menu     Root menu
-     * @param id       Menu item ID
-     * @param stringId String ID to display
-     * @param icon     (Optional) Icon for menu item, 0 for none
+     * @param menu      Root menu
+     * @param id        Menu item ID
+     * @param resId     String ID to display
+     * @param icon      (Optional) Icon for menu item, 0 for none
      *
      * @return The new item
      */
-    public MenuItem addItem(@NonNull final Menu menu, final int id, final int stringId, final int icon) {
-        MenuItem item = menu.add(0, id, mSort++, stringId);
+    public MenuItem addItem(@NonNull final Menu menu, final int id, @StringRes final int resId, final int icon) {
+        MenuItem item = menu.add(Menu.NONE, id, mSort++, resId);
         if (icon != 0) {
             item.setIcon(icon);
         }
@@ -90,52 +77,53 @@ public class MenuHandler {
      * @param menu Root menu
      */
     public void addCreateBookSubMenu(@NonNull final Menu menu) {
-        SubMenu addMenu = menu.addSubMenu(0, MENU_ADD_BOOK,
+        SubMenu subMenu = menu.addSubMenu(0, R.id.SUBMENU_ADD_BOOK,
                 mSort++,
                 BookCatalogueApp.getResourceString(R.string.menu_insert) + "&hellip;");
 
-        addMenu.setIcon(R.drawable.ic_add_circle_outline);
-        addMenu.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        subMenu.setIcon(R.drawable.ic_add);
+        subMenu.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         {
             if (Utils.USE_BARCODE) {
-                addMenu.add(0, MENU_ITEM_ADD_BOOK_BARCODE, mSort++, R.string.scan_barcode_isbn)
+                subMenu.add(Menu.NONE, R.id.MENU_ADD_BOOK_BARCODE, mSort++, R.string.scan_barcode_isbn)
                         .setIcon(R.drawable.ic_add_a_photo);
             }
-            addMenu.add(0, MENU_ITEM_ADD_BOOK_ISBN, mSort++, R.string.enter_isbn)
+            subMenu.add(Menu.NONE, R.id.MENU_ADD_BOOK_ISBN, mSort++, R.string.enter_isbn)
                     .setIcon(R.drawable.ic_zoom_in);
 
-            addMenu.add(0, MENU_ITEM_ADD_BOOK_NAMES, mSort++, R.string.search_internet)
+            subMenu.add(Menu.NONE, R.id.MENU_ADD_BOOK_NAMES, mSort++, R.string.search_internet)
                     .setIcon(R.drawable.ic_zoom_in);
 
-            addMenu.add(0, MENU_ITEM_ADD_BOOK_MANUAL, mSort++, R.string.add_manually)
-                    .setIcon(R.drawable.ic_add_circle_outline);
+            subMenu.add(Menu.NONE, R.id.MENU_ADD_BOOK_MANUALLY, mSort++, R.string.add_manually)
+                    .setIcon(R.drawable.ic_add);
         }
     }
 
     /**
      * Handle the default menu items
      *
-     * @param a    Calling activity
+     * @param activity    Calling activity
      * @param item The item selected
      *
      * @return True, if handled
      */
-    public boolean onOptionsItemSelected(@NonNull final Activity a, @NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final Activity activity, @NonNull final MenuItem item) {
         switch (item.getItemId()) {
-            case MENU_ITEM_ADD_BOOK_BARCODE:
-                createBookScan(a);
+            case R.id.MENU_ADD_BOOK_BARCODE:
+                createBookScan(activity);
                 return true;
-            case MENU_ITEM_ADD_BOOK_ISBN:
-                createBookISBN(a, BookISBNSearchActivity.BY_ISBN);
+            case R.id.MENU_ADD_BOOK_ISBN:
+                createBookISBN(activity, BookISBNSearchActivity.BY_ISBN);
                 return true;
-            case MENU_ITEM_ADD_BOOK_NAMES:
-                createBookISBN(a, BookISBNSearchActivity.BY_NAME);
+            case R.id.MENU_ADD_BOOK_NAMES:
+                createBookISBN(activity, BookISBNSearchActivity.BY_NAME);
                 return true;
-            case MENU_ITEM_ADD_BOOK_MANUAL:
-                createBook(a);
+            case R.id.MENU_ADD_BOOK_MANUALLY:
+                createBook(activity);
                 return true;
-            case MENU_ITEM_SEARCH:
-                a.onSearchRequested();
+            // not used for now, calls activity.onSearchRequested(); but not implemented (yet?)
+            case R.id.MENU_SEARCH:
+                activity.onSearchRequested();
                 return true;
         }
         return false;
@@ -144,27 +132,27 @@ public class MenuHandler {
     /**
      * Load the Search by ISBN Activity to begin scanning.
      */
-    private void createBookScan(@NonNull final Activity a) {
-        Intent i = new Intent(a, BookISBNSearchActivity.class);
-        i.putExtra(BookISBNSearchActivity.BKEY_BY, BookISBNSearchActivity.BY_SCAN);
-        a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_SCAN);
+    private void createBookScan(@NonNull final Activity activity) {
+        Intent intent = new Intent(activity, BookISBNSearchActivity.class);
+        intent.putExtra(BookISBNSearchActivity.BKEY_BY, BookISBNSearchActivity.BY_SCAN);
+        activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_SCAN);
     }
 
     /**
      * Load the Search by ISBN Activity
      */
-    private void createBookISBN(@NonNull final Activity a, String by) {
-        Intent i = new Intent(a, BookISBNSearchActivity.class);
-        i.putExtra(BookISBNSearchActivity.BKEY_BY, by);
-        a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_ISBN);
+    private void createBookISBN(@NonNull final Activity activity, String by) {
+        Intent intent = new Intent(activity, BookISBNSearchActivity.class);
+        intent.putExtra(BookISBNSearchActivity.BKEY_BY, by);
+        activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_ISBN);
     }
 
     /**
      * Load the BookDetailsActivity Activity
      */
-    private void createBook(@NonNull final Activity a) {
-        Intent i = new Intent(a, BookDetailsActivity.class);
-        a.startActivityForResult(i, UniqueId.ACTIVITY_CREATE_BOOK_MANUALLY);
+    private void createBook(@NonNull final Activity activity) {
+        Intent intent = new Intent(activity, BookDetailsActivity.class);
+        activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY);
     }
 
 //    /**
@@ -177,7 +165,7 @@ public class MenuHandler {
 //        Intent i = new Intent(a, BookDetailsActivity.class);
 //        i.putExtra(DatabaseDefinitions.KEY_ID, id);
 //        i.putExtra(BookDetailsActivity.TAB, tab);
-//        a.startActivityForResult(i, UniqueId.ACTIVITY_EDIT_BOOK);
+//        a.startActivityForResult(i, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK);
 //        return;
 //    }
 }

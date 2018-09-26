@@ -274,11 +274,9 @@ public class SimpleTaskQueue {
 					if (mQueue.remove(w))
 						mManagedTaskCount--;					
 				}
-				//System.out.println("SimpleTaskQueue(removeok): " + mQueue.size());			
 				return true;
 			}
 		}			
-		//System.out.println("SimpleTaskQueue(removefail): " + mQueue.size());			
 		return false;
 	}
 	
@@ -293,12 +291,10 @@ public class SimpleTaskQueue {
 					if (mQueue.remove(w))
 						mManagedTaskCount--;					
 				}
-				//System.out.println("SimpleTaskQueue(removeok): " + mQueue.size());			
 				return true;
 			}
 		}
-		//System.out.println("SimpleTaskQueue(removefail): " + mQueue.size());			
-		return false;			
+		return false;
 	}
 	
 	/**

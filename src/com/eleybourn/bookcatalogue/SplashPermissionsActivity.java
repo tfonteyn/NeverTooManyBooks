@@ -63,9 +63,8 @@ abstract public class SplashPermissionsActivity extends AppCompatActivity {
     private long startTimeMillis = 0;
 
     /**
-     * Get the time (in milliseconds) that the splash screen will be on the
-     * screen before starting the {@link Activity} who's class is returned by
-     * {@link #getNextActivityClass()}.
+     * Get the time (in milliseconds) that the splash screen will be on the screen before
+     * starting the {@link Activity} who's class is returned by {@link #getNextActivityClass()}.
      */
     protected int getTimeoutMillis() {
         return 5000;
@@ -94,12 +93,13 @@ abstract public class SplashPermissionsActivity extends AppCompatActivity {
     }
 
     /**
-     * See if we now have all of the required dangerous permissions. Otherwise,
-     * tell the user that they cannot continue without granting the permissions,
-     * and then request the permissions again.
+     * See if we now have all of the required dangerous permissions. Otherwise, tell the user that
+     * they can't continue without granting the permissions, and then request the permissions again.
      */
     @Override
-    public void onRequestPermissionsResult(final int requestCode, @NonNull final String permissions[], @NonNull final int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode,
+                                           @NonNull final String permissions[],
+                                           @NonNull final int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST) {
             checkPermissions();
         }
@@ -130,9 +130,8 @@ abstract public class SplashPermissionsActivity extends AppCompatActivity {
     }
 
     /**
-     * Get the list of required permissions by searching the manifest. If you
-     * don't think the default behavior is working, then you could try
-     * overriding this function to return something like:
+     * Get the list of required permissions by searching the manifest. If you don't think the
+     * default behavior is working, then you could override this function to return something like:
      * <p>
      * <pre>
      * <code>
@@ -140,6 +139,7 @@ abstract public class SplashPermissionsActivity extends AppCompatActivity {
      * </code>
      * </pre>
      */
+    @NonNull
     protected String[] getRequiredPermissions() {
         String[] permissions = null;
         try {
@@ -170,9 +170,8 @@ abstract public class SplashPermissionsActivity extends AppCompatActivity {
     }
 
     /**
-     * Convert the array of required permissions to a {@link Set} to remove
-     * redundant elements. Then remove already granted permissions, and return
-     * an array of missing permissions.
+     * Convert the array of required permissions to a {@link Set} to remove redundant elements.
+     * Then remove already granted permissions, and return an array of missing permissions.
      */
     private String[] requiredPermissionsStillNeeded() {
 
@@ -185,6 +184,6 @@ abstract public class SplashPermissionsActivity extends AppCompatActivity {
                 i.remove();
             }
         }
-        return permissions.toArray(new String[permissions.size()]);
+        return permissions.toArray(new String[0]);
     }
 }

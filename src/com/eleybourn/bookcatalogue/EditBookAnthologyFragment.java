@@ -414,10 +414,10 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.clear();
-        menu.add(0, POPULATE_ISFDB, 0, R.string.populate_anthology_titles)
+        menu.add(Menu.NONE, POPULATE_ISFDB, 0, R.string.populate_anthology_titles)
                 .setIcon(R.drawable.ic_autorenew);
 
-//        menu.add(0, POPULATE_WIKIPEDIA, 0, R.string.populate_anthology_titles)
+//        menu.add(Menu.NONE, POPULATE_WIKIPEDIA, 0, R.string.populate_anthology_titles)
 //                .setIcon(R.drawable.ic_autorenew);
 //
         super.onPrepareOptionsMenu(menu);
@@ -443,7 +443,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, DELETE_ID, 0, R.string.menu_delete_anthology);
+        menu.add(Menu.NONE, DELETE_ID, 0, R.string.menu_delete_anthology);
     }
 
     @Override

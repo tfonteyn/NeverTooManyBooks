@@ -304,8 +304,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String delete_sql = "DROP INDEX " + index_name;
                 try {
                     db.execSQL(delete_sql);
-                } catch (Exception ignore) {
-                    Logger.logError(ignore, "Index deletion failed (probably not a problem)");
+                } catch (Exception e) {
+                    Logger.logError(e, "Index deletion failed (probably not a problem)");
                 }
             }
         }

@@ -135,14 +135,14 @@ public class SearchWikipediaEntryHandler extends DefaultHandler {
 		if (localName.equalsIgnoreCase(DIV)) {
 			div++;
 			String idName = attributes.getValue("id");
-			if (idName != null && "bodyContent".equals(idName)) {
+			if ("bodyContent".equals(idName)) {
 				entrydiv = div;
 				entry1 = true;
 			}
 		}
 		if (entry1 && localName.equalsIgnoreCase(TOC_TABLE)) {
 			String idName = attributes.getValue("id");
-			if (idName != null && "toc".equals(idName)) {
+			if ("toc".equals(idName)) {
 				intoc = true;
 			}
 		}

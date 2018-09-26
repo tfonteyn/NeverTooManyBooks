@@ -164,7 +164,7 @@ public class PartialDatePickerFragment extends DialogFragment {
     }
 
     @Override
-    public void onSaveInstanceState(final Bundle state) {
+    public void onSaveInstanceState(@NonNull final Bundle state) {
         state.putInt(BKEY_TITLE, mTitleId);
         state.putInt(UniqueId.BKEY_DIALOG_ID, mDialogId);
         if (mYear != null) {

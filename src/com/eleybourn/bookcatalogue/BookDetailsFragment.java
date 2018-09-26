@@ -48,9 +48,9 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreateView(this);
-        final View v = inflater.inflate(R.layout.book_details, null);
+        final View view = inflater.inflate(R.layout.book_details, container);
         Tracker.exitOnCreateView(this);
-        return v;
+        return view;
     }
 
     @Override
@@ -83,7 +83,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         switch (requestCode) {
-            case UniqueId.ACTIVITY_EDIT_BOOK:
+            case UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK:
                 // Update fields of read-only book after editing
                 // --- onResume() calls through to restoreBookData() which will do this now
                 //if (resultCode == Activity.RESULT_OK) {
@@ -110,7 +110,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
             showSignedStatus(book);
             formatFormatSection(book);
             formatPublishingSection(book);
-            if (0 != book.getInt(BookData.KEY_IS_ANTHOLOGY)) {
+            if (0 != book.getInt(BookData.IS_ANTHOLOGY)) {
                 showAnthologySection(book);
             }
 

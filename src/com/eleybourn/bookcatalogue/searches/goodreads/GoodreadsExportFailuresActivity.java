@@ -84,20 +84,12 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
     }
 
     /**
-     * @return the unique ID associated with this activity. Used in activity results.
-     */
-    @SuppressWarnings("SameReturnValue")
-    private static int getActivityId() {
-        return UniqueId.ACTIVITY_GOODREADS_EXPORT_FAILURES;
-    }
-
-    /**
      * Utility routine to start this activity on behalf of the passed activity.
      */
     public static void start(@NonNull final Activity from, final long taskId) {
-        Intent i = new Intent(from, GoodreadsExportFailuresActivity.class);
-        i.putExtra(LOCAL_BKEY_TASK_ID, taskId);
-        from.startActivityForResult(i, getActivityId());
+        Intent intent = new Intent(from, GoodreadsExportFailuresActivity.class);
+        intent.putExtra(LOCAL_BKEY_TASK_ID, taskId);
+        from.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_GOODREADS_EXPORT_FAILURES);
     }
 
     @Override
@@ -106,9 +98,9 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         mDb = new CatalogueDBAdapter(this);
         mDb.open();
 
-        Intent i = getIntent();
-        if (i != null && i.hasExtra(LOCAL_BKEY_TASK_ID)) {
-            mTaskId = i.getLongExtra(LOCAL_BKEY_TASK_ID, 0);
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra(LOCAL_BKEY_TASK_ID)) {
+            mTaskId = intent.getLongExtra(LOCAL_BKEY_TASK_ID, 0);
         } else {
             mTaskId = 0;
         }
@@ -218,8 +210,9 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
             }
         } catch (Exception ignore) {}
         try {
-            if (mDb != null)
+            if (mDb != null) {
                 mDb.close();
+            }
         } catch (Exception ignore) {}
         try {
             BookCatalogueApp.getQueueManager().unregisterEventListener(m_OnEventChangeListener);
@@ -251,10 +244,11 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
      */
     @Override
     protected BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState) {
-        if (mTaskId == 0)
+        if (mTaskId == 0) {
             mCursor = BookCatalogueApp.getQueueManager().getAllEvents();
-        else
+        } else {
             mCursor = BookCatalogueApp.getQueueManager().getTaskEvents(mTaskId);
+        }
 
         return mCursor;
     }

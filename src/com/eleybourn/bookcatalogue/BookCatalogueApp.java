@@ -154,8 +154,10 @@ public class BookCatalogueApp extends Application {
     private static NotificationManager mNotifier;
 
     private static BCQueueManager mQueueManager = null;
+    /** List of supported locales */
+    private static List<String> mSupportedLocales = null;
     /** The locale used at startup; so that we can revert to system locale if we want to */
-    private static Locale mInitialLocale = Locale.getDefault();;
+    private static Locale mInitialLocale = Locale.getDefault();
     /** User-specified default locale */
     private static Locale mPreferredLocale = null;
     /** Last locale used so; cached so we can check if it has genuinely changed */
@@ -177,8 +179,7 @@ public class BookCatalogueApp extends Application {
         return false;
     }
 
-    /** List of supported locales */
-    private static List<String> mSupportedLocales = null;
+
     /**
      * Shared Preferences Listener
      *
@@ -200,7 +201,7 @@ public class BookCatalogueApp extends Application {
                     notifyLocaleChanged();
                     break;
                 case BCPreferences.PREF_APP_THEME:
-                    //TODO: implement global them change ?
+                    //TODO: implement global theme change ?
                     break;
                 default:
                     break;
@@ -253,20 +254,22 @@ public class BookCatalogueApp extends Application {
     /**
      * Add a new OnLocaleChangedListener, and cleanup any dead references.
      */
-    public static void registerOnLocaleChangedListener(OnLocaleChangedListener listener) {
+    public static void registerOnLocaleChangedListener(@NonNull final OnLocaleChangedListener listener) {
         List<WeakReference<OnLocaleChangedListener>> toRemove = new ArrayList<>();
 
         boolean alreadyAdded = false;
 
         for (WeakReference<OnLocaleChangedListener> ref : mOnLocaleChangedListeners) {
             OnLocaleChangedListener l = ref.get();
-            if (l == null)
+            if (l == null) {
                 toRemove.add(ref);
-            else if (l == listener)
+            } else if (l == listener) {
                 alreadyAdded = true;
+            }
         }
-        if (!alreadyAdded)
+        if (!alreadyAdded) {
             mOnLocaleChangedListeners.add(new WeakReference<>(listener));
+        }
 
         for (WeakReference<OnLocaleChangedListener> ref : toRemove) {
             mOnLocaleChangedListeners.remove(ref);
@@ -276,13 +279,14 @@ public class BookCatalogueApp extends Application {
     /**
      * Remove the passed OnLocaleChangedListener, and cleanup any dead references.
      */
-    public static void unregisterOnLocaleChangedListener(OnLocaleChangedListener listener) {
+    public static void unregisterOnLocaleChangedListener(@NonNull final OnLocaleChangedListener listener) {
         List<WeakReference<OnLocaleChangedListener>> toRemove = new ArrayList<>();
 
         for (WeakReference<OnLocaleChangedListener> ref : mOnLocaleChangedListeners) {
             OnLocaleChangedListener l = ref.get();
-            if ((l == null) || (l == listener))
+            if ((l == null) || (l == listener)) {
                 toRemove.add(ref);
+            }
         }
         for (WeakReference<OnLocaleChangedListener> ref : toRemove) {
             mOnLocaleChangedListeners.remove(ref);
@@ -390,7 +394,7 @@ public class BookCatalogueApp extends Application {
      * is clicked; should bring the app to the foreground.
      */
     @NonNull
-    public static Intent getAppToForegroundIntent(Context context) {
+    public static Intent getAppToForegroundIntent(@NonNull final Context context) {
         Intent intent = new Intent(context, StartupActivity.class);
         intent.setAction("android.intent.action.MAIN");
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -407,14 +411,14 @@ public class BookCatalogueApp extends Application {
                                         @NonNull final String message,
                                         @NonNull final Intent intent) {
 
-        Notification notification = new Notification.Builder(getAppContext())
+        Notification notification = new Notification.Builder(mInstance.getApplicationContext())
                 .setSmallIcon(R.drawable.ic_info_outline)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)
                 // The PendingIntent to launch our activity if the user selects this notification
-                .setContentIntent(PendingIntent.getActivity(getAppContext(), 0, intent, 0))
+                .setContentIntent(PendingIntent.getActivity(mInstance.getApplicationContext(), 0, intent, 0))
                 .build();
 
         mNotifier.notify(id, notification);
@@ -562,8 +566,9 @@ public class BookCatalogueApp extends Application {
         mNotifier = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         // Start the queue manager
-        if (mQueueManager == null)
+        if (mQueueManager == null) {
             mQueueManager = new BCQueueManager(this.getApplicationContext());
+        }
 
         // Initialise the Theme
         mLastTheme = BCPreferences.getTheme(DEFAULT_THEME);
@@ -583,12 +588,14 @@ public class BookCatalogueApp extends Application {
 
         for (WeakReference<OnLocaleChangedListener> ref : mOnLocaleChangedListeners) {
             OnLocaleChangedListener l = ref.get();
-            if (l == null)
+            if (l == null) {
                 toRemove.add(ref);
-            else
+            } else {
                 try {
                     l.onLocaleChanged();
-                } catch (Exception e) { /* Ignore */ }
+                } catch (Exception ignore) {
+                }
+            }
         }
         for (WeakReference<OnLocaleChangedListener> ref : toRemove) {
             mOnLocaleChangedListeners.remove(ref);
@@ -599,7 +606,7 @@ public class BookCatalogueApp extends Application {
      * Monitor configuration changes (like rotation) to make sure we reset the locale.
      */
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull final Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (mPreferredLocale != null) {
             applyPreferredLocaleIfNecessary(getBaseContext().getResources());

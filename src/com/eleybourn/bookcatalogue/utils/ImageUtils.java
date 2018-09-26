@@ -149,8 +149,8 @@ public class ImageUtils {
                 }
                 bm = BitmapFactory.decodeFile(fileSpec, opt);
             }
-        } catch (OutOfMemoryError ignore) {
-            Logger.logError(ignore);
+        } catch (OutOfMemoryError e) {
+            Logger.logError(e);
             return null;
         }
 
@@ -248,8 +248,8 @@ public class ImageUtils {
             //c.setDoOutput(true);
             //c.connect();
             //in = c.getInputStream();
-        } catch (IOException | URISyntaxException ignore) {
-            Logger.logError(ignore);
+        } catch (IOException | URISyntaxException e) {
+            Logger.logError(e);
             return "";
         }
 
@@ -326,14 +326,12 @@ public class ImageUtils {
         // contains a file with the same name as the target of our rename.
         for (int i = 0; i < files.size(); i++) {
             if (i != bestFile) {
-                //noinspection ResultOfMethodCallIgnored
-                new File(files.get(i)).delete();
+                StorageUtils.deleteFile(new File(files.get(i)));
             }
         }
         // Get the best file (if present) and rename it.
         if (bestFile >= 0) {
-            //noinspection ResultOfMethodCallIgnored
-            new File(files.get(bestFile)).renameTo(StorageUtils.getTempCoverFile());
+            StorageUtils.renameFile(new File(files.get(bestFile)), StorageUtils.getTempCoverFile());
         }
         // Finally, cleanup the data
         result.remove(UniqueId.BKEY_THUMBNAIL_USCORE);

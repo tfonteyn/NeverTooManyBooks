@@ -393,8 +393,8 @@ public class ArrayUtils<T> {
     }
 
     /**
-     * Encode a list of strings by 'escaping' all instances of: delim, '\', \r, \n. The
-     * escape char is '\'.
+     * Encode a list of strings by 'escaping' all instances of: delim, '\', \r, \n.
+     * The escape char is '\'.
      *
      * This is used to build text lists separated by 'delim'.
      *
@@ -407,8 +407,7 @@ public class ArrayUtils<T> {
         StringBuilder ns = new StringBuilder();
         Iterator<T> si = sa.iterator();
         if (si.hasNext()) {
-            ns.append(
-                    encodeListItem(delim, si.next().toString()));
+            ns.append(encodeListItem(delim, si.next().toString()));
             while (si.hasNext()) {
                 ns.append(delim);
                 ns.append(encodeListItem(delim, si.next().toString()));

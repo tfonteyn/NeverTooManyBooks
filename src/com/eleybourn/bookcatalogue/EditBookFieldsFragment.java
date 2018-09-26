@@ -63,8 +63,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         implements OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
 
     private static final String TAG_BOOKSHELVES_DIALOG = "bookshelves_dialog";
-    private static final int ACTIVITY_EDIT_AUTHORS = 1000;
-    private static final int ACTIVITY_EDIT_SERIES = 1001;
+
 
     /**
      * Display the edit fields page
@@ -137,7 +136,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                     i.putExtra(UniqueId.BKEY_AUTHOR_ARRAY, mEditManager.getBookData().getAuthors());
                     i.putExtra(UniqueId.KEY_ID, mEditManager.getBookData().getRowId());
                     i.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
-                    startActivityForResult(i, ACTIVITY_EDIT_AUTHORS);
+                    startActivityForResult(i, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_AUTHORS);
                 }
             });
 
@@ -148,7 +147,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                     i.putExtra(UniqueId.BKEY_SERIES_ARRAY, mEditManager.getBookData().getSeries());
                     i.putExtra(UniqueId.KEY_ID, mEditManager.getBookData().getRowId());
                     i.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
-                    startActivityForResult(i, ACTIVITY_EDIT_SERIES);
+                    startActivityForResult(i, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_SERIES);
                 }
             });
 
@@ -161,10 +160,10 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
 
             try {
                 ViewUtils.fixFocusSettings(getView());
-            } catch (Exception ignore) {
+            } catch (Exception e) {
                 // Log, but ignore. This is a non-critical feature that prevents crashes when the
                 // 'next' key is pressed and some views have been hidden.
-                Logger.logError(ignore);
+                Logger.logError(e);
             }
 
             if (savedInstanceState != null) {
@@ -173,8 +172,8 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                 mEditManager.setDirty(false);
             }
 
-        } catch (IndexOutOfBoundsException | SQLException ignore) {
-            Logger.logError(ignore);
+        } catch (IndexOutOfBoundsException | SQLException e) {
+            Logger.logError(e);
         } finally {
             Tracker.exitOnActivityCreated(this);
         }
@@ -295,7 +294,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
             super.onActivityResult(requestCode, resultCode, intent);
 
             switch (requestCode) {
-                case ACTIVITY_EDIT_AUTHORS:
+                case UniqueId.ACTIVITY_REQUEST_CODE_EDIT_AUTHORS: {
                     if (resultCode == Activity.RESULT_OK && intent != null && intent.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
                         mEditManager.getBookData().setAuthorList(ArrayUtils.getAuthorFromIntentExtras(intent));
                         mEditManager.setDirty(true);
@@ -309,12 +308,16 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                     boolean oldDirty = mEditManager.isDirty();
                     populateAuthorListField();
                     mEditManager.setDirty(oldDirty);
-                case ACTIVITY_EDIT_SERIES:
+                    break;
+                }
+                case UniqueId.ACTIVITY_REQUEST_CODE_EDIT_SERIES: {
                     if (resultCode == Activity.RESULT_OK && intent != null && intent.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
                         mEditManager.getBookData().setSeriesList(ArrayUtils.getSeriesFromIntentExtras(intent));
                         populateSeriesListField();
                         mEditManager.setDirty(true);
                     }
+                    break;
+                }
             }
         } finally {
             Tracker.exitOnActivityResult(this, requestCode, resultCode);
@@ -350,7 +353,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
         if (FieldVisibilityActivity.isVisible(UniqueId.BKEY_THUMBNAIL)) {
-            menu.add(0, EditBookAbstractFragment.THUMBNAIL_OPTIONS_ID, 0, R.string.cover_options_cc_ellipsis)
+            menu.add(Menu.NONE, EditBookAbstractFragment.THUMBNAIL_OPTIONS_ID, 0, R.string.cover_options_cc_ellipsis)
                     .setIcon(R.drawable.ic_add_a_photo)
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }

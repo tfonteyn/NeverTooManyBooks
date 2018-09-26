@@ -37,6 +37,7 @@ import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationExcep
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_AUTHOR;
@@ -91,9 +92,9 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
     private static void getPreferredStyleNames(@NonNull final Set<String> names) {
         String itemStr = BCPreferences.getString(PREF_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.isEmpty()) {
-            ArrayList<String> list = ArrayUtils.decodeList(ArrayUtils.MULTI_STRING_SEPARATOR, itemStr);
+            List<String> list = ArrayUtils.decodeList(ArrayUtils.MULTI_STRING_SEPARATOR, itemStr);
             for (String name : list) {
-                if (name != null && !name.isEmpty() && !names.contains(name)) {
+                if (name != null && !name.isEmpty()) {
                     names.add(name);
                 }
             }

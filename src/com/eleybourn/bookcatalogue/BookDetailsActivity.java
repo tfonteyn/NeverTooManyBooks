@@ -178,7 +178,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         Intent intent = new Intent(activity, BookDetailsActivity.class);
         intent.putExtra(UniqueId.KEY_ID, id);
         intent.putExtra(BookDetailsActivity.TAB, tab);
-        activity.startActivityForResult(intent, UniqueId.ACTIVITY_EDIT_BOOK);
+        activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK);
     }
 
     /**
@@ -201,7 +201,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         intent.putExtra(UniqueId.KEY_ID, id);
         intent.putExtra(BookDetailsActivity.TAB, BookDetailsActivity.TAB_EDIT); // needed extra for creating BookDetailsActivity
         intent.putExtra(BookDetailsActivity.LOCAL_BKEY_READ_ONLY, true);
-        activity.startActivityForResult(intent, UniqueId.ACTIVITY_VIEW_BOOK);
+        activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_VIEW_BOOK);
     }
 
 
@@ -291,7 +291,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
                 mTabLayout.addTab(tab);
                 mAllTabs.add(tab);
 
-                boolean isAnthology = (mBookData.getRowId() > 0) && (mBookData.getInt(BookData.KEY_IS_ANTHOLOGY) != 0);
+                boolean isAnthology = (mBookData.getRowId() > 0) && (mBookData.getInt(BookData.IS_ANTHOLOGY) != 0);
                 showAnthologyTab(isAnthology);
             }
         } catch (InstantiationException | IllegalAccessException e) {

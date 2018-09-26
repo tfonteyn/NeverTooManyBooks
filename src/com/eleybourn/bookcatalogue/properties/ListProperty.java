@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import android.annotation.SuppressLint;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -156,6 +157,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         T currentValue = this.get();
 
         // Get the view and the radio group
+        @SuppressLint("InflateParams") // dialog, no root
         View root = inflater.inflate(R.layout.property_value_list_list, null);
         final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext())
                 .setView(root)
@@ -182,11 +184,11 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
                 boolean selected = false;
                 if (entry.value == null && currentValue == null)
                     selected = true;
-                else if (entry.value != null && currentValue != null && entry.value.equals(currentValue))
+                else if (entry.value != null && entry.value.equals(currentValue))
                     selected = true;
 
                 // Make the view for this item
-                View line = inflater.inflate(R.layout.property_value_list_item, null);
+                View line = inflater.inflate(R.layout.property_value_list_item, radioGroup);
                 RadioButton sel = line.findViewById(R.id.selector);
 
                 //Set the various values

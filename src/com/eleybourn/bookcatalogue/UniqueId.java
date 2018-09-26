@@ -35,34 +35,38 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIE
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
 /**
- * Global constants
+ * Global String constants
  */
 public class UniqueId {
-    // Codes used for startActivityForResult / onActivityResult
-    public static final int ACTIVITY_CREATE_BOOK_MANUALLY = 1;
-    public static final int ACTIVITY_CREATE_BOOK_ISBN = 2;
-    public static final int ACTIVITY_CREATE_BOOK_SCAN = 3;
-    public static final int ACTIVITY_EDIT_BOOK = 4;
-    public static final int ACTIVITY_ADMIN = 5;
-    public static final int ACTIVITY_HELP = 6;
-    public static final int ACTIVITY_PREFERENCES = 7;
-    public static final int ACTIVITY_BOOKLIST_STYLE = 8;
-    public static final int ACTIVITY_BOOKLIST_STYLE_PROPERTIES = 9;
-    public static final int ACTIVITY_BOOKLIST_STYLE_GROUPS = 10;
-    public static final int ACTIVITY_BOOKLIST_STYLES = 11;
-    public static final int ACTIVITY_GOODREADS_EXPORT_FAILURES = 12;
-    public static final int ACTIVITY_ADMIN_FINISH = 13;
-    public static final int ACTIVITY_SORT = 14;
-    public static final int ACTIVITY_SCAN = 15;
-    public static final int ACTIVITY_ABOUT = 16;
-    public static final int ACTIVITY_DONATE = 17;
-    public static final int ACTIVITY_BOOKSHELF = 18;
-    public static final int ACTIVITY_VIEW_BOOK = 19;
-    public static final int ACTIVITY_DUPLICATE_BOOK = 20;
 
-    public static final int DIALOG_PROGRESS_DETERMINATE = 101;
-    public static final int DIALOG_PROGRESS_INDETERMINATE = 102;
+    // can't move these to res/values/ids.xml, as they need to be 16 bit values
+    // BEGIN Codes used for startActivityForResult / onActivityResult
+    public static final int ACTIVITY_REQUEST_CODE_EDIT_BOOK = 101;
+    public static final int ACTIVITY_REQUEST_CODE_EDIT_AUTHORS = 102;
+    public static final int ACTIVITY_REQUEST_CODE_EDIT_SERIES = 103;
+    public static final int ACTIVITY_REQUEST_CODE_VIEW_BOOK = 104;
 
+    public static final int ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_CAMERA = 201;
+    public static final int ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_GALLERY = 202;
+
+    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY = 301;
+    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_SCAN = 302;
+    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_ISBN = 303;
+    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_BARCODE = 304;
+
+    public static final int ACTIVITY_REQUEST_CODE_CROP_RESULT_EXTERNAL = 401;
+    public static final int ACTIVITY_REQUEST_CODE_CROP_RESULT_INTERNAL = 402;
+
+    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLES = 501;
+    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE = 502;
+    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_PROPERTIES = 503;
+    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_GROUPS = 504;
+
+    public static final int ACTIVITY_REQUEST_CODE_GOODREADS_EXPORT_FAILURES = 601;
+
+    // END Codes used for startActivityForResult / onActivityResult
+    
+    
     /* other global constants */
     public static final String GOODREADS_FILENAME_SUFFIX = "_GR";
 
@@ -119,7 +123,6 @@ public class UniqueId {
 
     public static final String KEY_SERIES_NAME = DOM_SERIES_NAME.name;
     public static final String KEY_SERIES_NUM = DOM_SERIES_NUM.name;
-
 
     // decide.... book only ? or ?
     public static final String KEY_NOTES = DOM_NOTES.name;

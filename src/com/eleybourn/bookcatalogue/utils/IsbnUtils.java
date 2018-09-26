@@ -193,9 +193,9 @@ public class IsbnUtils {
                     mDigits = digits;
                     return;
                 }
-            } catch (NumberFormatException ignore) {
+            } catch (NumberFormatException e) {
                 if (BuildConfig.DEBUG) {
-                    Logger.logError(ignore);
+                    Logger.logError(e);
                 }
             }
 
@@ -206,9 +206,9 @@ public class IsbnUtils {
                     mDigits = digits;
                     return;
                 }
-            } catch (NumberFormatException ignore) {
+            } catch (NumberFormatException e) {
                 if (BuildConfig.DEBUG) {
-                    Logger.logError(ignore);
+                    Logger.logError(e);
                 }
             }
             throw new NumberFormatException();

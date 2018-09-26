@@ -2092,9 +2092,8 @@ public class BooklistBuilder implements AutoCloseable {
         String[] info;
         try {
             info = mGetNodeLevelStmt.simpleQueryForString().split("/");
-        } catch (SQLiteDoneException ignore) {
-            // query returned zero rows
-            Logger.logError(ignore, "mGetNodeLevelStmt returned zero rows? ");
+        } catch (SQLiteDoneException e) {
+            Logger.logError(e, "mGetNodeLevelStmt returned zero rows? ");
             return;
         }
         long level = Long.parseLong(info[0]);
@@ -2147,8 +2146,8 @@ public class BooklistBuilder implements AutoCloseable {
             }
             try {
                 mStatements.close();
-            } catch (Exception ignore) {
-                Logger.logError(ignore);
+            } catch (Exception e) {
+                Logger.logError(e);
             }
         }
 
@@ -2159,8 +2158,8 @@ public class BooklistBuilder implements AutoCloseable {
             try {
                 mNavTable.close();
                 mNavTable.drop(mSyncedDb);
-            } catch (Exception ignore) {
-                Logger.logError(ignore);
+            } catch (Exception e) {
+                Logger.logError(e);
             }
         }
         if (mListTable != null) {
@@ -2170,8 +2169,8 @@ public class BooklistBuilder implements AutoCloseable {
             try {
                 mListTable.close();
                 mListTable.drop(mSyncedDb);
-            } catch (Exception ignore) {
-                Logger.logError(ignore);
+            } catch (Exception e) {
+                Logger.logError(e);
             }
         }
 

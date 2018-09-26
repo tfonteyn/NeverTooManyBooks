@@ -75,7 +75,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
                          @NonNull final SQLiteQuery query, @NonNull final Synchronizer sync) {
         super(driver, editTable, query, sync);
 
-        if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
             synchronized (mInstanceCount) {
                 mInstanceCount++;
                 System.out.println("Cursor instances: " + mInstanceCount);
@@ -103,7 +103,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
      */
     @SuppressWarnings("unused")
     public static long getCursorCountApproximate() {
-        if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
             synchronized (mCursors) {
                 return mCursors.size();
             }
@@ -123,7 +123,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
     public static long getCursorCount() {
         long count = 0;
 
-        if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
             List<WeakReference<TrackedCursor>> list = new ArrayList<>();
             synchronized (mCursors) {
                 for (WeakReference<TrackedCursor> r : mCursors) {
@@ -146,7 +146,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
      * DEBUG Dump all open cursors to System.out.
      */
     public static void dumpCursors() {
-        if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
             for (TrackedCursor c : getCursors()) {
                 System.out.println("Cursor " + c.getCursorId());
                 for (StackTraceElement s : c.getStackTrace()) {
@@ -164,7 +164,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
     @SuppressWarnings("UnusedAssignment")
     @Nullable
     private static List<TrackedCursor> getCursors() {
-        if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
             List<TrackedCursor> list = new ArrayList<>();
             synchronized (mCursors) {
                 for (WeakReference<TrackedCursor> r : mCursors) {
@@ -185,7 +185,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
     @Override
     public void close() {
         super.close();
-        if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
             if (!mIsClosedFlg) {
                 synchronized (mInstanceCount) {
                     mInstanceCount--;
@@ -210,7 +210,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
      */
     @Override
     public void finalize() {
-        if (DEBUG_SWITCHES.TRACKED_CURSER && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
             if (mWeakRef != null) {
                 // This is a cursor that is being deleted before it is closed.
                 // Setting a break here is sometimes useful.

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="TAG_ORIGINAL_VALUE" type="id" />
     <item name="TAG_EVENT" type="id" />
     <item name="TAG_HOLDER" type="id" />
     <item name="TAG_BOOK_EVENT_HOLDER" type="id" />
@@ -8,12 +7,16 @@
     <item name="TAG_DIALOG_ITEM" type="id" />
     <item name="TAG_GOODREADS_WORK" type="id" />
     <item name="TAG_GET_THUMBNAIL_TASK" type="id" />
-
     <item name="TAG_TASK" type="id" />
-    <item name="TAG_TASK_ID" type="id" />
     <item name="TAG_TASK_HOLDER" type="id" />
 
-    <!-- BEGIN predefined menu items, for context menus -->
+    <!-- BEGIN predefined menu items -->
+    <item name="SUBMENU_ADD_BOOK" type="id"/>
+    <item name="MENU_ADD_BOOK_MANUALLY" type="id"/>
+    <item name="MENU_ADD_BOOK_BARCODE" type="id"/>
+    <item name="MENU_ADD_BOOK_ISBN" type="id"/>
+    <item name="MENU_ADD_BOOK_NAMES" type="id"/>
+    
     <item name="MENU_BOOK_DELETE" type="id"/>
     <item name="MENU_BOOK_EDIT" type="id"/>
     <item name="MENU_BOOK_EDIT_NOTES" type="id"/>
@@ -21,7 +24,6 @@
     <item name="MENU_BOOK_SEND_TO_GOODREADS" type="id"/>
 
     <item name="MENU_AUTHOR_EDIT" type="id"/>
-
     <item name="MENU_FORMAT_EDIT" type="id"/>
     <item name="MENU_GENRE_EDIT" type="id"/>
     <item name="MENU_LANGUAGE_EDIT" type="id"/>
@@ -35,27 +37,50 @@
     <item name="MENU_STYLE_EDIT" type="id"/>
     <item name="MENU_STYLE_CLONE" type="id"/>
 
-    <item name="MENU_MARK_AS_READ" type="id"/>
-    <item name="MENU_MARK_AS_UNREAD" type="id"/>
+    <item name="MENU_BOOK_READ" type="id"/>
+    <item name="MENU_BOOK_UNREAD" type="id"/>
 
+    <item name="MENU_SEARCH" type="id"/>
+    
+    <item name="MENU_INSERT" type="id"/>
+    <item name="MENU_DELETE" type="id"/>
+    
+    <item name="MENU_SORT" type="id"/>
+    <item name="MENU_EXPAND" type="id"/>
+    <item name="MENU_COLLAPSE" type="id"/>
+    
     <item name="MENU_AMAZON_BOOKS_IN_SERIES" type="id"/>
     <item name="MENU_AMAZON_BOOKS_BY_AUTHOR" type="id"/>
     <item name="MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES" type="id"/>
-    <!-- BEGIN predefined menu items, for context menus -->
+
+    <!-- Thumbnail context menu -->
+    <item name="MENU_DELETE_THUMB" type="id"/>
+
+    <item name="SUBMENU_REPLACE_THUMB" type="id"/>
+    <item name="MENU_ADD_THUMB_FROM_CAMERA" type="id"/>
+    <item name="MENU_ADD_THUMB_FROM_GALLERY" type="id"/>
+    <item name="MENU_ADD_THUMB_ALT_EDITIONS" type="id"/>
+
+    <item name="SUBMENU_ROTATE_THUMB" type="id"/>
+    <item name="MENU_ROTATE_THUMB_CW" type="id"/>
+    <item name="MENU_ROTATE_THUMB_CCW" type="id"/>
+    <item name="MENU_ROTATE_THUMB_180" type="id"/>
+
+    <item name="MENU_CROP_THUMB" type="id"/>
+
+    <!-- END predefined menu items -->
 
     <!-- BEGIN used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
-    <item name="row_details" type="id"/>
-    <item name="row" type="id"/>
+    <item name="ROW" type="id" />
+    <item name="ROW_INFO" type="id" />  <!-- used by {@link BooksMultiTypeListHandler} to hide/show rows -->
+    <item name="ROW_DETAILS" type="id" /> <!-- TODO: isn't this the same as ROW_INFO ? -->
     <item name="ROW_UP" type="id"/>
     <item name="ROW_DOWN" type="id"/>
     <item name="ROW_DELETE" type="id"/>
     <item name="ROW_POSITION" type="id"/>
+
     <item name="TAG_POSITION" type="id" />
     <!-- END used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
-
-    <!-- referenced but not used -->
-    <item name="booktitle" type="id" />
-    <item name="row_info" type="id" />
 
     <!-- other -->
     <item name="UPDATE_FROM_INTERNET_FIELD_CHECKBOX" type="id" />

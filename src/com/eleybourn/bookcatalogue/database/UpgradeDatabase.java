@@ -344,12 +344,7 @@ class UpgradeDatabase {
             while (c.moveToNext()) {
                 final long id = c.getLong(0);
                 final String hash = c.getString(1);
-                File f = StorageUtils.getCoverFile(Long.toString(id));
-                if ( f.exists() ) {
-                    File newFile = StorageUtils.getCoverFile(hash);
-                    //noinspection ResultOfMethodCallIgnored
-                    f.renameTo(newFile);
-                }
+                StorageUtils.renameFile(StorageUtils.getCoverFile(Long.toString(id)), StorageUtils.getCoverFile(hash));
             }
         }
     }
@@ -565,9 +560,9 @@ class UpgradeDatabase {
             //do nothing
             curVersion++;
             mMessage += "* Fixed several crashing defects when adding books\n\n";
-            mMessage += "* Added Autocompleting Location Field (For Cam)\n\n";
+            mMessage += "* Added Autocompletion Location Field (For Cam)\n\n";
             mMessage += "* Added Read Start & Read End Fields (For Robert)\n\n";
-            mMessage += "* Added an Audiobook Checkbox Field (For Ted)\n\n";
+            mMessage += "* Added an Audio Book Checkbox Field (For Ted)\n\n";
             mMessage += "* Added a Book Signed Checkbox Field (For me)\n\n";
             mMessage += "*** Don't forget you can hide any of the new fields that you do not want to see.\n\n";
             mMessage += "* Series Number now support decimal figures (Requested by Beth)\n\n";
@@ -804,7 +799,7 @@ class UpgradeDatabase {
         }
         if (curVersion == 53) {
             curVersion++;
-            //There is a conflict between eleybourn released branch (3.3.1) and grunthos HEAD (3.4).
+            //There is a conflict between eleybourn released branch (3.3.1) and Grunthos HEAD (3.4).
             // This is to check and skip as required
             boolean go = false;
             String checkSQL = "SELECT * FROM " + DB_TB_BOOKS;
@@ -891,7 +886,7 @@ class UpgradeDatabase {
                 curVersion++;
             }
             if (curVersion == 55) {
-                //There is a conflict between eleybourn released branch (3.3.1) and grunthos HEAD (3.4).
+                //There is a conflict between eleybourn released branch (3.3.1) and Grunthos HEAD (3.4).
                 // This is to check and skip as required
                 boolean go2 = false;
                 String checkSQL2 = "SELECT * FROM " + DB_TB_BOOKS;
@@ -1201,7 +1196,7 @@ class UpgradeDatabase {
             mMessage += "New in v4.0.4\n\n";
             mMessage += "* Search now searches series and anthology data\n\n";
             mMessage += "* Allows non-numeric data entry in series position\n\n";
-            mMessage += "* Better sorting of leading numerics in series position\n\n";
+            mMessage += "* Better sorting of leading numerical in series position\n\n";
             mMessage += "* Several bug fixes\n\n";
         }
 

@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/row"
+    android:id="@id/ROW"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingBottom="2dp"
     android:paddingTop="3dp">
 
-    <!-- the "row_info" level is used by {@link BooksMultitypeListHandler} to hide/show rows -->
     <LinearLayout
-        android:id="@+id/row_info"
+        android:id="@id/ROW_INFO"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"

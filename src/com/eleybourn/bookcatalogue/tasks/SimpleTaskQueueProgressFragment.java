@@ -298,16 +298,16 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         if (msg != 0) {
             dialog.setMessage(getActivity().getString(msg));
         }
-        final boolean isIndet = getArguments().getBoolean(BKEY_IS_INDETERMINATE);
-        dialog.setIndeterminate(isIndet);
-        if (isIndet) {
+        final boolean isIndeterminate = getArguments().getBoolean(BKEY_IS_INDETERMINATE);
+        dialog.setIndeterminate(isIndeterminate);
+        if (isIndeterminate) {
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         } else {
             dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         }
 
         // We can't use "this.requestUpdateProgress()" because getDialog() will still return null
-        if (!isIndet) {
+        if (!isIndeterminate) {
             dialog.setMax(mMax);
             dialog.setProgress(mProgress);
             if (mMessage != null) {

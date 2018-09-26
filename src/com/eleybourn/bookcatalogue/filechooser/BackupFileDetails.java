@@ -94,7 +94,7 @@ public class BackupFileDetails implements FileDetails {
      * Fill in the details for the view we returned above.
      */
     @Override
-    public void onSetupView(@NonNull final Context c, final int position, @NonNull final View target) {
+    public void onSetupView(@NonNull final Context context, final int position, @NonNull final View target) {
 
         // Set the basic data
         TextView name = target.findViewById(R.id.name);
@@ -103,17 +103,18 @@ public class BackupFileDetails implements FileDetails {
         ImageView image = target.findViewById(R.id.icon);
         TextView details = target.findViewById(R.id.details);
 
-        Resources res = c.getResources();
+
         // For directories, hide the extra data
         if (mFile.isDirectory()) {
             date.setVisibility(View.GONE);
             details.setVisibility(View.GONE);
-            image.setImageDrawable(res.getDrawable(R.drawable.ic_folder));
+            image.setImageDrawable(context.getDrawable(R.drawable.ic_folder));
         } else {
             // Display date and backup details
-            image.setImageDrawable(res.getDrawable(R.drawable.ic_bc_archive));
+            image.setImageDrawable(context.getDrawable(R.drawable.ic_bc_archive));
             date.setVisibility(View.VISIBLE);
             String formattedFleSize = Utils.formatFileSize(mFile.length());
+            Resources res = context.getResources();
             if (mInfo != null) {
                 String books = res.getQuantityString(R.plurals.n_books, mInfo.getBookCount(), mInfo.getBookCount());
                 if (mInfo.hasCoverCount()) {

@@ -330,8 +330,7 @@ class ImportAllTask extends GenericTask {
                 String uuid = db.getBookUuid(id);
                 File thumb = StorageUtils.getTempCoverFile();
                 File real = StorageUtils.getCoverFile(uuid);
-                //noinspection ResultOfMethodCallIgnored
-                thumb.renameTo(real);
+                StorageUtils.renameFile(thumb, real);
             }
             //db.setGoodreadsSyncDate(id);
         }

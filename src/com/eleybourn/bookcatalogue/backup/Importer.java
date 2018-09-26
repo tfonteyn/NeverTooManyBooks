@@ -55,7 +55,7 @@ public interface Importer {
     interface OnImporterListener {
         void onProgress(@NonNull final String message, final int position);
 
-        boolean isCancelled();
+        boolean isActive();
 
         void setMax(int max);
     }

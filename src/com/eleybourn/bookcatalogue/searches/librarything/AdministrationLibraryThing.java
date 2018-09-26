@@ -40,6 +40,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 
@@ -64,8 +65,8 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 			super.onCreate(savedInstanceState);
 			setTitle(R.string.library_thing);
 			setupPage();
-		} catch (Exception ignore) {
-			Logger.logError(ignore);
+		} catch (Exception e) {
+			Logger.logError(e);
 		}
 	}
 	
@@ -127,8 +128,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 								// Queue a toast message
 								fragment.showToast(getString(R.string.correct_key));
 							}
-							//noinspection ResultOfMethodCallIgnored
-							tmpFile.delete();
+							StorageUtils.deleteFile(tmpFile);
 						}
 
 						@Override

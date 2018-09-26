@@ -152,12 +152,11 @@ public class CoversDbHelper implements AutoCloseable {
             } catch (Exception e) {
                 // Assume exception means DB corrupt. Log, rename, and retry
                 Logger.logError(e, "Failed to open covers db");
-                File f = StorageUtils.getFile(COVERS_DATABASE_NAME);
-                if (!f.renameTo(StorageUtils.getFile(COVERS_DATABASE_NAME + ".dead"))) {
+                if (!StorageUtils.renameFile(StorageUtils.getFile(COVERS_DATABASE_NAME), StorageUtils.getFile(COVERS_DATABASE_NAME + ".dead"))) {
                     Logger.logError("Failed to rename dead covers database: ");
                 }
 
-                // Connect again...
+                // reconnect
                 try {
                     mSyncedDb = new SynchronizedDb(mHelper, mSynchronizer);
                 } catch (Exception e2) {

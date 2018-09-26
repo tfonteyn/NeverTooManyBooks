@@ -144,7 +144,7 @@ public class CsvImporter implements Importer {
         /* Iterate through each imported row */
         SyncLock txLock = null;
         try {
-            while (row < export.size() && !listener.isCancelled()) {
+            while (row < export.size() && listener.isActive()) {
                 if (inTransaction && txRowCount > 10) {
                     db.setTransactionSuccessful();
                     db.endTransaction(txLock);
@@ -289,7 +289,7 @@ public class CsvImporter implements Importer {
                 }
 
                 long now = System.currentTimeMillis();
-                if ((now - lastUpdate) > 200 && !listener.isCancelled()) {
+                if ((now - lastUpdate) > 200 && listener.isActive()) {
                     listener.onProgress(title + "\n(" + BookCatalogueApp.getResourceString(R.string.n_created_m_updated, nCreated, nUpdated) + ")", row);
                     lastUpdate = now;
                 }
@@ -309,15 +309,15 @@ public class CsvImporter implements Importer {
                 db.purgeAuthors();
                 db.purgeSeries();
                 db.analyzeDb();
-            } catch (Exception ignore) {
+            } catch (Exception e) {
                 // Do nothing. Not a critical step.
-                Logger.logError(ignore);
+                Logger.logError(e);
             }
             try {
                 db.close();
-            } catch (Exception ignore) {
+            } catch (Exception e) {
                 // Do nothing. Not a critical step.
-                Logger.logError(ignore);
+                Logger.logError(e);
             }
         }
 

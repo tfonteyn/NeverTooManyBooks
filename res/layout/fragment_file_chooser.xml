@@ -37,7 +37,7 @@
             android:gravity="center_vertical"
             android:text="@string/add"
             android:visibility="gone"
-            app:srcCompat="@drawable/ic_add_circle_outline" />
+            app:srcCompat="@drawable/ic_add" />
 
         <TextView
             android:id="@+id/path"
@@ -60,7 +60,7 @@
         android:layout_below="@id/path_details" />
 
     <com.eleybourn.bookcatalogue.widgets.FastScrollListView
-        android:id="@id/android:list"
+        android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/footer_divider"
@@ -83,7 +83,8 @@
         android:paddingBottom="@dimen/padding_border_double"
         android:paddingTop="@dimen/padding_border_double"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:ignore="LabelFor"
-        tools:text="fred.bcbk" />
+        tools:ignore="LabelFor,UnusedAttribute"
+        tools:text="fred.bcbk"
+        android:importantForAutofill="no" />
 
 </RelativeLayout>

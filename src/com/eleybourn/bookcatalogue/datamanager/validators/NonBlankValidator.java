@@ -35,7 +35,7 @@ public class NonBlankValidator implements DataValidator {
     @Override
     public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
             throws ValidatorException {
-        if (!datum.isVisible()) {
+        if (datum.isHidden()) {
             // No validation required for invisible fields
             return;
         }

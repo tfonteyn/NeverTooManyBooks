@@ -90,7 +90,7 @@ public class BookUtils {
 
             intent.putExtra(UniqueId.BKEY_BOOK_DATA, book);
 
-            activity.startActivityForResult(intent, UniqueId.ACTIVITY_CREATE_BOOK_MANUALLY);
+            activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY);
         } catch (CursorIndexOutOfBoundsException e) {
             Toast.makeText(activity, R.string.unknown_error, Toast.LENGTH_LONG).show();
             Logger.logError(e);

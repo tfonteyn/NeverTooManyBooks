@@ -38,8 +38,8 @@ public class ImportThread extends ManagedTask {
         }
 
         @Override
-        public boolean isCancelled() {
-            return ImportThread.this.isCancelled();
+        public boolean isActive() {
+            return !ImportThread.this.isCancelled();
         }
 
         @Override
@@ -483,7 +483,7 @@ public class ImportThread extends ManagedTask {
 //			if (newFile.length() > 0)
 //				return newFile;
 //			else
-//				newFile.delete();
+//				 StorageUtils.deleteFile(newFile);
 //			newFile = CatalogueDBAdapter.getCoverFile(newUuid);
 //		}
 //		
@@ -563,7 +563,7 @@ public class ImportThread extends ManagedTask {
 //		if (newFile.exists())
 //			return;
 //
-//		orig.renameTo(newFile);
+//		StorageUtils.renameFile(orig, newFile);
 //	}
 //
 //	/**

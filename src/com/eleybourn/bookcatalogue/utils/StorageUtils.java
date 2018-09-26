@@ -271,12 +271,8 @@ public class StorageUtils {
         try {
             final String fileName = DIRECTORY_NAME + toFile;
 
-            //check if it exists
             final File existing = getFile(fileName);
-            if (existing.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                existing.renameTo(getFile(fileName + ".bak"));
-            }
+            StorageUtils.renameFile(existing, getFile(fileName + ".bak"));
 
             final InputStream dbOrig = new FileInputStream(db.getPath());
             final OutputStream dbCopy = new FileOutputStream(getFile(fileName));
@@ -315,10 +311,8 @@ public class StorageUtils {
 
         // Scan all mounted file systems
         final ArrayList<File> dirs = new ArrayList<>();
-        BufferedReader in = null;
 
-        try {
-            in = new BufferedReader(new InputStreamReader(new FileInputStream("/proc/mounts")), 1024);
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("/proc/mounts")), 1024)) {
             String line;
             while ((line = in.readLine()) != null) {
                 if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
@@ -341,13 +335,6 @@ public class StorageUtils {
             }
         } catch (IOException e) {
             Logger.logError(e, "Failed to open/scan/read /proc/mounts");
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (Exception ignored) {
-                }
-            }
         }
 
         // Sometimes (Android 6?) the /proc/mount search seems to fail, so we revert to environment vars

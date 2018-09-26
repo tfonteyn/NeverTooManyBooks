@@ -94,8 +94,8 @@ abstract public class SearchThread extends ManagedTask {
                     }
                 }
             }
-        } catch (Exception ignore) {
-            Logger.logError(ignore);
+        } catch (Exception e) {
+            Logger.logError(e);
         }
     }
 

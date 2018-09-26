@@ -103,13 +103,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     private final static String PREF_TOP_ROW_TOP = TAG + ".TOP_ROW_TOP";
     /** Preference name for the style to use */
     private final static String PREF_LIST_STYLE = TAG + ".LIST_STYLE";
-
+    /** Preference name for the style to use specific to a bookshelf */
     private final static String PREF_LIST_STYLE_FOR_BOOKSHELF = TAG + ".LIST_STYLE.BOOKSHELF." /* + name of shelf */;
-
-    /** Menu id */
-    private static final int MENU_SORT = MenuHandler.FIRST + 1;
-    private static final int MENU_EXPAND = MenuHandler.FIRST + 2;
-    private static final int MENU_COLLAPSE = MenuHandler.FIRST + 3;
 
     /** Counter for com.eleybourn.bookcatalogue.debug purposes */
     private static Integer mInstanceCount = 0;
@@ -368,12 +363,12 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         mMenuHandler = new MenuHandler(menu);
         mMenuHandler.addCreateBookSubMenu(menu);
 
-        mMenuHandler.addItem(menu, MENU_SORT, R.string.sort_and_style_ellipsis, R.drawable.ic_sort_by_alpha)
+        mMenuHandler.addItem(menu, R.id.MENU_SORT, R.string.sort_and_style_ellipsis, R.drawable.ic_sort_by_alpha)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
-        mMenuHandler.addItem(menu, MENU_EXPAND, R.string.menu_expand_all, R.drawable.ic_expand_more);
+        mMenuHandler.addItem(menu, R.id.MENU_EXPAND, R.string.menu_expand_all, R.drawable.ic_expand_more);
 
-        mMenuHandler.addItem(menu, MENU_COLLAPSE, R.string.menu_collapse_all, R.drawable.ic_expand_less);
+        mMenuHandler.addItem(menu, R.id.MENU_COLLAPSE, R.string.menu_collapse_all, R.drawable.ic_expand_less);
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -387,7 +382,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         if (mMenuHandler != null && !mMenuHandler.onOptionsItemSelected(this, item)) {
             switch (item.getItemId()) {
 
-                case MENU_SORT:
+                case R.id.MENU_SORT:
                     HintManager.displayHint(this, R.string.hint_booklist_style_menu, new Runnable() {
                         @Override
                         public void run() {
@@ -396,7 +391,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     });
                     return true;
 
-                case MENU_EXPAND: {
+                case R.id.MENU_EXPAND: {
                     // It is possible that the list will be empty, if so, ignore
                     if (getListView().getChildCount() != 0) {
                         int oldAbsPos = mListHandler.getAbsolutePosition(getListView().getChildAt(0));
@@ -408,7 +403,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     }
                     return true;
                 }
-                case MENU_COLLAPSE: {
+                case R.id.MENU_COLLAPSE: {
                     // It is possible that the list will be empty, if so, ignore
                     if (getListView().getChildCount() != 0) {
                         int oldAbsPos = mListHandler.getAbsolutePosition(getListView().getChildAt(0));
@@ -437,7 +432,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         mMarkBookId = 0;
 
         switch (requestCode) {
-            case UniqueId.ACTIVITY_CREATE_BOOK_SCAN:
+            case UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_BARCODE:
                 try {
                     if (intent != null && intent.hasExtra(UniqueId.KEY_ID)) {
                         long newId = intent.getLongExtra(UniqueId.KEY_ID, 0);
@@ -453,10 +448,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     //fillData();
                 }
                 break;
-            case UniqueId.ACTIVITY_CREATE_BOOK_ISBN:
-            case UniqueId.ACTIVITY_CREATE_BOOK_MANUALLY:
-            case UniqueId.ACTIVITY_VIEW_BOOK:
-            case UniqueId.ACTIVITY_EDIT_BOOK:
+            case UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_ISBN:
+            case UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY:
+            case UniqueId.ACTIVITY_REQUEST_CODE_VIEW_BOOK:
+            case UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK:
                 try {
                     if (intent != null && intent.hasExtra(UniqueId.KEY_ID)) {
                         long id = intent.getLongExtra(UniqueId.KEY_ID, 0);
@@ -471,7 +466,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     Logger.logError(e);
                 }
                 break;
-            case UniqueId.ACTIVITY_BOOKLIST_STYLE_PROPERTIES:
+                // not in use
+            case UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_PROPERTIES:
                 try {
                     if (intent != null && intent.hasExtra(BooklistStylePropertiesActivity.BKEY_STYLE)) {
                         BooklistStyle style = (BooklistStyle) intent.getSerializableExtra(BooklistStylePropertiesActivity.BKEY_STYLE);
@@ -485,9 +481,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 this.savePosition();
                 this.setupBookList(true);
                 break;
-            case UniqueId.ACTIVITY_BOOKLIST_STYLES:
-            case UniqueId.ACTIVITY_ADMIN:
-            case UniqueId.ACTIVITY_PREFERENCES:
+            case UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLES:
                 // Refresh the style because prefs may have changed
                 refreshStyle();
                 this.savePosition();

@@ -69,18 +69,21 @@ public abstract class BackupWriterAbstract implements BackupWriter {
             final int maxBooks = mDb.countBooks();
 
             int coverCount;
-            if ((backupFlags & Exporter.EXPORT_COVERS) != 0)
+            if ((backupFlags & Exporter.EXPORT_COVERS) != 0) {
                 coverCount = writeCovers(listener, backupFlags, since, true);
-            else
+            } else {
                 coverCount = 0;
+            }
 
             // If we are doing books, add them
-            if ((backupFlags & Exporter.EXPORT_DETAILS) != 0)
+            if ((backupFlags & Exporter.EXPORT_DETAILS) != 0) {
                 estTotal += maxBooks;
+            }
 
             // If we are doing covers, add them
-            if (!listener.isCancelled() && (backupFlags & Exporter.EXPORT_COVERS) != 0)
+            if (!listener.isCancelled() && (backupFlags & Exporter.EXPORT_COVERS) != 0) {
                 estTotal += coverCount;
+            }
 
             listener.setMax(estTotal);
 
@@ -90,16 +93,21 @@ public abstract class BackupWriterAbstract implements BackupWriter {
             listener.setMax(coverCount + listener.getTotalBooks() + 1);
 
             // Process each component of the Archive, unless we are cancelled, as in Nikita
-            if (!listener.isCancelled())
+            if (!listener.isCancelled()) {
                 writeInfo(listener, listener.getTotalBooks(), coverCount);
-            if (!listener.isCancelled() && (backupFlags & Exporter.EXPORT_DETAILS) != 0)
+            }
+            if (!listener.isCancelled() && (backupFlags & Exporter.EXPORT_DETAILS) != 0) {
                 writeBooks(temp);
-            if (!listener.isCancelled() && (backupFlags & Exporter.EXPORT_COVERS) != 0)
+            }
+            if (!listener.isCancelled() && (backupFlags & Exporter.EXPORT_COVERS) != 0) {
                 writeCovers(listener, backupFlags, since, false);
-            if (!listener.isCancelled() && (backupFlags & Exporter.EXPORT_PREFERENCES) != 0)
+            }
+            if (!listener.isCancelled() && (backupFlags & Exporter.EXPORT_PREFERENCES) != 0) {
                 writePreferences(listener);
-            if (!listener.isCancelled() && (backupFlags & Exporter.EXPORT_STYLES) != 0)
+            }
+            if (!listener.isCancelled() && (backupFlags & Exporter.EXPORT_STYLES) != 0) {
                 writeStyles(listener);
+            }
         } finally {
             try {
                 close();
@@ -178,8 +186,9 @@ public abstract class BackupWriterAbstract implements BackupWriter {
             exporter.export(output, exportListener, backupFlags, since);
             output.close();
         } finally {
-            if (output != null && output.getChannel().isOpen())
+            if (output != null && output.getChannel().isOpen()) {
                 output.close();
+            }
         }
 
         return temp;
@@ -195,9 +204,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
             }
             putBooks(exportFile);
         } finally {
-            if (exportFile.exists())
-                //noinspection ResultOfMethodCallIgnored
-                exportFile.delete();
+            StorageUtils.deleteFile(exportFile);
         }
     }
 
@@ -254,8 +261,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 //		} finally {
 //			if (output != null && output.getChannel().isOpen())
 //				output.close();
-//			if (temp.exists())
-//				temp.delete();
+//			 StorageUtils.deleteFile(temp);
 //		}
 //	}
 
@@ -291,8 +297,9 @@ public abstract class BackupWriterAbstract implements BackupWriter {
                 if (cover.exists()) {
                     if (cover.exists()
                             && (since == null || sinceTime < cover.lastModified())) {
-                        if (!dryRun)
+                        if (!dryRun) {
                             putCoverFile(cover);
+                        }
                         ok++;
                     } else {
                         skipped++;
@@ -311,8 +318,9 @@ public abstract class BackupWriterAbstract implements BackupWriter {
                 }
             }
         }
-        if (!dryRun)
+        if (!dryRun) {
             System.out.println("Wrote " + ok + " Images, " + missing + " missing, and " + skipped + " skipped");
+        }
 
         return ok;
     }

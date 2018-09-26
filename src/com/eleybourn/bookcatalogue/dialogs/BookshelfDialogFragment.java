@@ -99,7 +99,7 @@ public class BookshelfDialogFragment extends DialogFragment {
      * Save instance variables that we need
      */
     @Override
-    public void onSaveInstanceState(final Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         outState.putString(BKEY_LIST, mCurrList);
         outState.putString(BKEY_TEXT, mCurrText);
     }

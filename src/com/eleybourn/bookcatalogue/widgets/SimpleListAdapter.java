@@ -54,16 +54,16 @@ import java.util.List;
  *
  * The layout can optionally contain these "@+id/" :
  *
- * - row_details         onRowClick
- * - if no 'id/row_details' found, then 'id/row' is tried instead
+ * - ROW_DETAILS         onRowClick
+ * - if no 'id/ROW_DETAILS' found, then 'id/ROW' is tried instead
  * - ROW_UP              onRowUp
  * - ROW_DOWN            onRowDown
  * - ROW_DELETE          onRowDelete
  *
  * ids.xml has these predefined:
  * <pre>
- * 		<item name="row_details" type="id"/>
- * 		<item name="row" type="id"/>
+ * 		<item name="ROW_DETAILS" type="id"/>
+ * 		<item name="ROW" type="id"/>
  *     	<item name="ROW_UP" type="id"/>
  * 		<item name="ROW_DOWN" type="id"/>
  * 		<item name="ROW_DELETE" type="id"/>
@@ -236,7 +236,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         if (convertView == null) {
             LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             // If possible, ask the object for the view ID
-            if (item != null && item instanceof ViewProvider) {
+            if (item instanceof ViewProvider) {
                 //noinspection ConstantConditions
                 convertView = vi.inflate(((ViewProvider) item).getViewId(), null);
             } else {
@@ -249,15 +249,15 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         ViewTagger.setTag(convertView, R.id.TAG_POSITION, position);
 
         // If we use a TouchListView, then don't enable the whole row, so grabber/del buttons keep working
-        View row = convertView.findViewById(R.id.row_details);
+        View row = convertView.findViewById(R.id.ROW_DETAILS);
         if (row == null) {
             if (BuildConfig.DEBUG) {
-                System.out.println("R.id.row_details NOT found in " + this);
+                System.out.println("R.id.ROW_DETAILS NOT found in " + this);
             }
             // but if we did not define a details row, try row anyhow
-            row = convertView.findViewById(R.id.row);
+            row = convertView.findViewById(R.id.ROW);
             if (BuildConfig.DEBUG) {
-                System.out.println("Using R.id.row instead");
+                System.out.println("Using R.id.ROW instead");
             }
         }
 
@@ -320,7 +320,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     }
 
     /**
-     * Find the first ancestor that has the ID R.id.row. This
+     * Find the first ancestor that has the ID R.id.ROW. This
      * will be the complete row View. Use the TAG on that to get
      * the physical row number.
      *
@@ -329,7 +329,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      * @return The row view.
      */
     public Integer getViewRow(@NonNull View view) {
-        while (view.getId() != R.id.row) {
+        while (view.getId() != R.id.ROW) {
             ViewParent parent = view.getParent();
             if (!(parent instanceof View)) {
                 throw new RuntimeException("Could not find row view in view ancestors");
@@ -338,7 +338,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         }
         Object o = ViewTagger.getTag(view, R.id.TAG_POSITION);
         if (o == null)
-            throw new RuntimeException("A view with the tag R.id.row was found, but it is not the view for the row");
+            throw new RuntimeException("A view with the tag R.id.ROW was found, but it is not the view for the row");
         return (Integer) o;
     }
 

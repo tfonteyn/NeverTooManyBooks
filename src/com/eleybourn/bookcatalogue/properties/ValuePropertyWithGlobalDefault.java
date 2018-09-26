@@ -191,7 +191,6 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
         // We have a default value, and no global prefs
         return value == null
                 && mDefaultValue == null || value != null
-                && mDefaultValue != null
                 && value.equals(mDefaultValue);
     }
 }

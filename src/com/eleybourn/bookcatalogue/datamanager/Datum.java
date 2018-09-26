@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.validators.DataValidator;
 
 import java.io.Serializable;
@@ -121,7 +122,7 @@ public class Datum {
                     sb.append(o);
                 }
             } catch (Exception e) {
-                sb.append("<<Unknown>>");
+                sb.append("<<").append(R.string.unknown).append(">>");
             }
             sb.append("\n");
         }
@@ -204,12 +205,11 @@ public class Datum {
         return mKey;
     }
 
-    /** Accessor */
-    public boolean isVisible() {
-        return mIsVisible;
+    public boolean isHidden() {
+        return !mIsVisible;
     }
 
-    /** Accessor */
+    @NonNull
     public Datum setVisible(boolean isVisible) {
         mIsVisible = isVisible;
         return this;
@@ -230,7 +230,7 @@ public class Datum {
         return this;
     }
 
-    public boolean hasValidator() {
+    boolean hasValidator() {
         return mValidator != null;
     }
 
@@ -388,7 +388,7 @@ public class Datum {
      *
      * @return Value of the data
      */
-    public double getDouble(@NonNull final DataManager data, @NonNull final Bundle bundle) {
+    double getDouble(@NonNull final DataManager data, @NonNull final Bundle bundle) {
         Object o;
         if (mAccessor == null) {
             o = bundle.get(mKey);
@@ -407,7 +407,7 @@ public class Datum {
      * @return This Datum, for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Datum putDouble(@NonNull final DataManager data, @NonNull final Bundle bundle, final double value) {
+    Datum putDouble(@NonNull final DataManager data, @NonNull final Bundle bundle, final double value) {
         if (mAccessor == null) {
             bundle.putDouble(mKey, value);
         } else {
@@ -424,7 +424,7 @@ public class Datum {
      *
      * @return Value of the data
      */
-    public float getFloat(@NonNull final DataManager data, @NonNull final Bundle bundle) {
+    float getFloat(@NonNull final DataManager data, @NonNull final Bundle bundle) {
         Object o;
         if (mAccessor == null) {
             o = bundle.get(mKey);
@@ -443,7 +443,7 @@ public class Datum {
      * @return This Datum, for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Datum putFloat(@NonNull final DataManager data, @NonNull final Bundle bundle, final float value) {
+    Datum putFloat(@NonNull final DataManager data, @NonNull final Bundle bundle, final float value) {
         if (mAccessor == null) {
             bundle.putFloat(mKey, value);
         } else {
@@ -500,7 +500,7 @@ public class Datum {
      * @return The data
      */
     @Nullable
-    public Serializable getSerializable(@SuppressWarnings("unused") @NonNull final DataManager data, @NonNull final Bundle bundle) {
+    Serializable getSerializable(@SuppressWarnings("unused") @NonNull final DataManager data, @NonNull final Bundle bundle) {
         if (mAccessor == null) {
             return bundle.getSerializable(mKey);
         } else {
@@ -539,7 +539,7 @@ public class Datum {
      * @return The data
      */
     @Nullable
-    public ArrayList<String> getStringArrayList(@SuppressWarnings("unused") @NonNull final DataManager data, @NonNull final Bundle bundle) {
+    ArrayList<String> getStringArrayList(@SuppressWarnings("unused") @NonNull final DataManager data, @NonNull final Bundle bundle) {
         if (mAccessor == null) {
             return bundle.getStringArrayList(mKey);
         } else {
@@ -558,7 +558,7 @@ public class Datum {
      * @return The data manager for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Datum putStringArrayList(@NonNull final Bundle bundle, @NonNull final ArrayList<String> value) {
+    Datum putStringArrayList(@NonNull final Bundle bundle, @NonNull final ArrayList<String> value) {
         if (mAccessor == null) {
             bundle.putStringArrayList(mKey, value);
         } else {

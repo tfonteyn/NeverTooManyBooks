@@ -31,7 +31,9 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
-import com.eleybourn.bookcatalogue.utils.*;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
 import java.io.Serializable;
@@ -100,15 +102,17 @@ public class UpdateThumbnailsThread extends ManagedTask {
             origList = ArrayUtils.getListFromBundle(origData, key);
         }
         // Otherwise an empty list
-        if (origList == null)
+        if (origList == null) {
             origList = new ArrayList<>();
+        }
 
         // Get from the new data
         if (newData.containsKey(key)) {
             newList = ArrayUtils.getListFromBundle(newData, key);
         }
-        if (newList == null)
+        if (newList == null) {
             newList = new ArrayList<>();
+        }
         origList.addAll(newList);
         // Save combined version to the new data
         newData.putSerializable(key, origList);
@@ -147,8 +151,9 @@ public class UpdateThumbnailsThread extends ManagedTask {
                 // Grab the searchable fields. Ideally we will have an ISBN but we may not.
                 String isbn = mOrigData.getString(UniqueId.KEY_ISBN);
                 // Make sure ISBN is not NULL (legacy data, and possibly set to null when adding new book)
-                if (isbn == null)
+                if (isbn == null) {
                     isbn = "";
+                }
                 String author = mOrigData.getString(UniqueId.KEY_AUTHOR_FORMATTED);
                 String title = mOrigData.getString(UniqueId.KEY_TITLE);
 
@@ -171,30 +176,34 @@ public class UpdateThumbnailsThread extends ManagedTask {
                                 switch (usage.fieldName) {
                                     case UniqueId.BKEY_THUMBNAIL:
                                         File file = StorageUtils.getCoverFile(mCurrUuid);
-                                        if (!file.exists() || file.length() == 0)
+                                        if (!file.exists() || file.length() == 0) {
                                             mCurrFieldUsages.put(usage);
+                                        }
                                         break;
                                     case UniqueId.BKEY_AUTHOR_ARRAY:
                                         // We should never have a book with no authors, but lets be paranoid
                                         if (mOrigData.containsKey(usage.fieldName)) {
                                             ArrayList<Author> origAuthors = ArrayUtils.getAuthorsFromBundle(mOrigData);
-                                            if (origAuthors == null || origAuthors.size() == 0)
+                                            if (origAuthors == null || origAuthors.size() == 0) {
                                                 mCurrFieldUsages.put(usage);
+                                            }
                                         }
                                         break;
                                     case UniqueId.BKEY_SERIES_ARRAY:
                                         if (mOrigData.containsKey(usage.fieldName)) {
                                             ArrayList<Series> origSeries = ArrayUtils.getSeriesFromBundle(mOrigData);
-                                            if (origSeries == null || origSeries.size() == 0)
+                                            if (origSeries == null || origSeries.size() == 0) {
                                                 mCurrFieldUsages.put(usage);
+                                            }
                                         }
                                         break;
                                     default:
                                         // If the original was blank, add to list
                                         if (!mOrigData.containsKey(usage.fieldName)
                                                 || mOrigData.getString(usage.fieldName) == null
-                                                || mOrigData.getString(usage.fieldName).isEmpty())
+                                                || mOrigData.getString(usage.fieldName).isEmpty()) {
                                             mCurrFieldUsages.put(usage);
+                                        }
                                         break;
                                 }
                                 break;
@@ -207,12 +216,7 @@ public class UpdateThumbnailsThread extends ManagedTask {
 
                 if (tmpThumbWanted) {
                     // delete any temporary thumbnails //
-                    try {
-                        //noinspection ResultOfMethodCallIgnored
-                        StorageUtils.getTempCoverFile().delete();
-                    } catch (Exception e) {
-                        // do nothing - this is the expected behaviour
-                    }
+                    StorageUtils.deleteFile(StorageUtils.getTempCoverFile());
                 }
 
                 // Use this to flag if we actually need a search.
@@ -222,10 +226,11 @@ public class UpdateThumbnailsThread extends ManagedTask {
                     mManager.doProgress(String.format(getString(R.string.skip_title), title));
                 } else {
                     wantSearch = true;
-                    if (!title.isEmpty())
+                    if (!title.isEmpty()) {
                         mManager.doProgress(title);
-                    else
+                    } else {
                         mManager.doProgress(isbn);
+                    }
                 }
                 mManager.doProgress(this, null, counter);
 
@@ -285,8 +290,9 @@ public class UpdateThumbnailsThread extends ManagedTask {
         Bundle origData = mOrigData;
         FieldUsages requestedFields = mCurrFieldUsages;
 
-        if (!isCancelled() && bookData != null)
+        if (!isCancelled() && bookData != null) {
             processSearchResults(rowId, mCurrUuid, requestedFields, bookData, origData);
+        }
 
         // Done! This need to go after processSearchResults() because doSearchDone() frees
         // main thread which may disconnect database connection if on last book.
@@ -306,8 +312,9 @@ public class UpdateThumbnailsThread extends ManagedTask {
         // First, filter the data to remove keys we don't care about
         ArrayList<String> toRemove = new ArrayList<>();
         for (String key : newData.keySet()) {
-            if (!requestedFields.containsKey(key) || !requestedFields.get(key).selected)
+            if (!requestedFields.containsKey(key) || !requestedFields.get(key).selected) {
                 toRemove.add(key);
+            }
         }
         for (String key : toRemove) {
             newData.remove(key);
@@ -328,11 +335,9 @@ public class UpdateThumbnailsThread extends ManagedTask {
                     }
                     if (copyThumb) {
                         File file = StorageUtils.getCoverFile(bookUuid);
-                        //noinspection ResultOfMethodCallIgnored
-                        downloadedFile.renameTo(file);
+                        StorageUtils.renameFile(downloadedFile, file);
                     } else {
-                        //noinspection ResultOfMethodCallIgnored
-                        downloadedFile.delete();
+                        StorageUtils.deleteFile(downloadedFile);
                     }
                 } else {
                     switch (usage.usage) {
@@ -345,15 +350,17 @@ public class UpdateThumbnailsThread extends ManagedTask {
                                 case UniqueId.BKEY_AUTHOR_ARRAY:
                                     if (origData.containsKey(usage.fieldName)) {
                                         ArrayList<Author> origAuthors = ArrayUtils.getAuthorsFromBundle(origData);
-                                        if (origAuthors != null && origAuthors.size() > 0)
+                                        if (origAuthors != null && origAuthors.size() > 0) {
                                             newData.remove(usage.fieldName);
+                                        }
                                     }
                                     break;
                                 case UniqueId.BKEY_SERIES_ARRAY:
                                     if (origData.containsKey(usage.fieldName)) {
                                         ArrayList<Series> origSeries = ArrayUtils.getSeriesFromBundle(origData);
-                                        if (origSeries != null && origSeries.size() > 0)
+                                        if (origSeries != null && origSeries.size() > 0) {
                                             newData.remove(usage.fieldName);
+                                        }
                                     }
                                     break;
                                 default:

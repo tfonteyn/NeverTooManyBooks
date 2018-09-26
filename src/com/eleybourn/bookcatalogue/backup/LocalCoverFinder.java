@@ -142,8 +142,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
             return;
         }
 
-        //noinspection ResultOfMethodCallIgnored
-        orig.renameTo(newFile);
+        StorageUtils.renameFile(orig, newFile);
     }
 
     /**
