@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,7 +26,6 @@ import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
-import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,7 +46,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreateView(this);
-        final View view = inflater.inflate(R.layout.book_details, container);
+        final View view = inflater.inflate(R.layout.book_details, container, false);
         Tracker.exitOnCreateView(this);
         return view;
     }
@@ -449,26 +447,6 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
             } catch (Exception e) {
                 return source;
             }
-        }
-    }
-
-    protected class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle> {
-
-        AnthologyTitleListAdapter(@NonNull final Context context,
-                                  final int rowViewId,
-                                  @NonNull final ArrayList<AnthologyTitle> items) {
-            super(context, rowViewId, items);
-        }
-
-        @Override
-        protected void onSetupView(@NonNull final View convertView,
-                                   @NonNull final AnthologyTitle item,
-                                   final int position) {
-
-            TextView authorView = convertView.findViewById(R.id.row_author);
-            authorView.setText(item.getAuthor().getDisplayName());
-            TextView title = convertView.findViewById(R.id.row_title);
-            title.setText(item.getTitle());
         }
     }
 

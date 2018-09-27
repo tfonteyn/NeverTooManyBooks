@@ -66,7 +66,7 @@ public class BookUtils {
         try (Cursor cursor = db.fetchBookById(rowId)) {
             cursor.moveToFirst();
             book.putLong(UniqueId.KEY_ANTHOLOGY_MASK, cursor.getLong(cursor.getColumnIndex(DatabaseDefinitions.DOM_ANTHOLOGY_MASK.name)));
-            book.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED.name)));
+            book.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_DATE_PUBLISHED.name)));
             book.putString(UniqueId.KEY_DESCRIPTION, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_DESCRIPTION.name)));
             book.putString(UniqueId.KEY_BOOK_FORMAT, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_FORMAT.name)));
             book.putString(UniqueId.KEY_BOOK_GENRE, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GENRE.name)));

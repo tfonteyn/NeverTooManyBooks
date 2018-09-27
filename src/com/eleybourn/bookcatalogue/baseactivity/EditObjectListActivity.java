@@ -159,7 +159,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * @param target The target row view object
      * @param object The object (or type T) from which to draw values.
      */
-    abstract protected void onSetupView(@NonNull final View target, @NonNull final T object, final int position);
+    abstract protected void onSetupView(@NonNull final View target, @NonNull final T object);
 
     protected void onListChanged() {
     }
@@ -389,8 +389,8 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
         }
 
         @Override
-        protected void onSetupView(@NonNull final View convertView, @NonNull final T item, final int position) {
-            EditObjectListActivity.this.onSetupView(convertView, item, position);
+        protected void onSetupView(@NonNull final View convertView, @NonNull final T item) {
+            EditObjectListActivity.this.onSetupView(convertView, item);
         }
 
         @Override

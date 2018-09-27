@@ -51,7 +51,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected void onSetupView(@NonNull final View target, @NonNull final Series series, final int position) {
+    protected void onSetupView(@NonNull final View target, @NonNull final Series series) {
         TextView dt = target.findViewById(R.id.row_series);
         if (dt != null) {
             dt.setText(series.getDisplayName());

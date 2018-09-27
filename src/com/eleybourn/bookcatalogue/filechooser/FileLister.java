@@ -43,7 +43,7 @@ public abstract class FileLister implements FragmentTask {
 	/** Return a FileFilter appropriate to the types of files being listed */
 	protected abstract FileFilter getFilter();
 	/** Turn an array of Files into an ArrayList of FileDetails. */
-	protected abstract ArrayList<FileDetails> processList(@NonNull final File[] files);
+	protected abstract ArrayList<FileDetails> processList(@Nullable final File[] files);
 
 	@Override
 	public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {

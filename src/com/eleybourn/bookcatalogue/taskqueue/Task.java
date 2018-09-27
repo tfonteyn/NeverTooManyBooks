@@ -68,14 +68,11 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
 		return m_description;
 	}
 
-	public Task(String description) {
+	Task(String description) {
 		m_state = TaskState.created;
 		m_description = description;
 	}
 
-	public TaskState getState() {
-		return m_state;
-	}
 	public void setState(TaskState state) {
 		m_state = state;
 	}

@@ -338,7 +338,7 @@ public class DbSync {
          * @param db  Database object
          **/
         @SuppressWarnings({"JavaReflectionMemberAccess", "UnusedAssignment"})
-        public static void printRefCount(@Nullable final String msg, @NonNull final SQLiteDatabase db) {
+        static void printRefCount(@Nullable final String msg, @NonNull final SQLiteDatabase db) {
             if (DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
                 System.gc();
                 try {
@@ -416,7 +416,7 @@ public class DbSync {
         /**
          * Locking-aware wrapper for underlying database method.
          */
-        public SynchronizedCursor rawQuery(String sql) {
+        SynchronizedCursor rawQuery(String sql) {
             return rawQuery(sql, new String[]{});
         }
 
@@ -697,7 +697,7 @@ public class DbSync {
         /**
          * @return the underlying synchronizer object.
          */
-        public Synchronizer getSynchronizer() {
+        Synchronizer getSynchronizer() {
             return mSync;
         }
 
@@ -729,6 +729,10 @@ public class DbSync {
 
     /**
      * Wrapper for statements that ensures locking is used.
+     *
+     * Represents a statement that can be executed against a database.  The statement
+     * cannot return multiple rows or columns, but single value (1 x 1) result sets
+     * are supported.
      *
      * @author Philip Warner
      */

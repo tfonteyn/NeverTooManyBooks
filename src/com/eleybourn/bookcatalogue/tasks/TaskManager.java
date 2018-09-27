@@ -336,17 +336,6 @@ public class TaskManager implements AutoCloseable {
     }
 
     /**
-     * Set the count value for progress for the passed task.
-     */
-    public void setCount(@NonNull final ManagedTask task, final int count) {
-        TaskInfo taskInfo = getTaskInfo(task);
-        if (taskInfo != null) {
-            taskInfo.progressCurrent = count;
-            updateProgressDialog();
-        }
-    }
-
-    /**
      * Cancel all tasks and close dialogs then cleanup; if no tasks running, just close dialogs and cleanup
      */
     @Override

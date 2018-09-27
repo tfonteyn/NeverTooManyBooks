@@ -27,7 +27,6 @@ public class BCPreferences {
 
     // All new prefs should start with TAG
     private static final String TAG = "App";
-    public static final String PREF_CLASSIC_MY_BOOKS = TAG + ".includeClassicView";
     public static final String PREF_USE_EXTERNAL_IMAGE_CROPPER = TAG + ".UseExternalImageCropper";
     public static final String PREF_CROP_FRAME_WHOLE_IMAGE = TAG + ".CropFrameWholeImage";
     /** Degrees by which to rotate images automatically */

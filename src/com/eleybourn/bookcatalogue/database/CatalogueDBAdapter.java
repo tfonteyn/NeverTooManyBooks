@@ -79,13 +79,14 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_ANT
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOKS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOK_ANTHOLOGY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOK_AUTHOR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOK_BOOKSHELF_WEAK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOK_SERIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_LOAN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_SERIES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_MASK;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
@@ -95,42 +96,45 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_NAME;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISBN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIST_PRICE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_END;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_START;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DOCID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISBN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_STYLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_ANTHOLOGY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS_FTS;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_ANTHOLOGY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_AUTHOR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_LIST_STYLES;
@@ -138,8 +142,41 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseHelper.COLLATION;
 import static com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement.INSERT_FAILED;
+import static com.eleybourn.bookcatalogue.database.definitions.TableInfo.ColumnInfo.ANTHOLOGY_IS_ANTHOLOGY;
+import static com.eleybourn.bookcatalogue.database.definitions.TableInfo.ColumnInfo.ANTHOLOGY_MULTIPLE_AUTHORS;
 
 /**
+ * New anthology stuff:
+ * 2018-09-26, step 1:
+ * - database upgrade DONE
+ * - allow 1 title == 1 book DONE
+ * AnthologyTitle has all fields DONE
+ * - delete only deletes BOOK_ANTHOLOGY, but leaves ANTHOLOGY as orphans, but new books will re-use those orphans - DONE
+ * - add publication date of ant title DONE
+ * - import ISFDB gets the year DONE
+ * - insert/update book, ANTHOLOGY_MASK gets setup automatically correct. DONE
+ *
+ *
+ *
+ * next small steps:
+ * - import/export: for now, import inserts a "" date / export does not export the date
+ * - if added, then either format needs changes, or new string encoding tricks applied ?
+ *
+ * next big step:
+ * - allow 1 title in multiple books
+ * AnthologyTitle needs splitting
+ *
+ * to think about:
+ * - when to delete entries in ANTHOLOGY ?
+ * when last book is gone or keep them, for adding to new books / wish list
+ * - consider a purge for orphan AnthologyTitle
+ *
+ * long term:
+ * - anthology titles can be in series... ouch....
+ *
+ *
+ *
+ *
  * TODO:
  * - sql statements
  *
@@ -161,11 +198,11 @@ import static com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement.
  * - table aliases hardcoded
  * - bind variables versus string concat
  *
- * - TBL_BOOKS.ref()  instead of manually concat -> make sure all tables have alias set!
- *
  * FIXME: some SQLiteDoneException , not all of the callers can deal with
  * that (but maybe they never will have to?). Those are marked with FIXME
  * All others are either ok, or the caller catches them.
+ *
+ *
  *
  * Book Catalogue database access helper class. Defines the basic CRUD operations
  * for the catalogue (based on the Notepad tutorial), and gives the
@@ -218,66 +255,70 @@ public class CatalogueDBAdapter {
     private static Integer mDebugInstanceCount = 0;
     private final Context mContext;
     private TableInfo mBooksInfo = null;
-    private SqlStatementManager mStatements;
 
     /** Flag indicating {@link #close()} has been called */
     private boolean mCloseWasCalled = false;
 
-    /** Statements used by {@link #getAnthologyTitleId } */
+    //region Statements
+    /** a cache for SQL strings, this 'should' make it more efficient, as strings will be build/concatenated only once. */
+    private final Map<String, String> mSql = new HashMap<>();
+
+    /** a cache for statements, where they are pre-compiled */
+    private SqlStatementManager mStatements;
+
+    /** {@link #getAnthologyTitleId } */
     private SynchronizedStatement mGetAnthologyTitleIdStmt = null;
-    /** Statements used by {@link #getAuthorIdByName } */
+    /** {@link #existsBookAnthologyTitle}  } */
+    private SynchronizedStatement mCountBookAnthologyTitleStmt = null;
+    /** {@link #getAuthorIdByName } */
     private SynchronizedStatement mGetAuthorIdStmt = null;
-    /** Statements for {@link #purgeAuthors} */
+    /** {@link #purgeAuthors} */
     private SynchronizedStatement mPurgeBookAuthorsStmt = null;
-    /** Statements for {@link #purgeAuthors} */
+    /** {@link #purgeAuthors} */
     private SynchronizedStatement mPurgeAuthorsStmt = null;
-    /** used in {@link #countAuthorBooks} */
+    /** {@link #countAuthorBooks} */
     private SynchronizedStatement mGetAuthorBookCountQuery = null;
-    /** used in {@link #countAuthorAnthologies} */
+    /** {@link #countAuthorAnthologies} */
     private SynchronizedStatement mGetAuthorAnthologyCountQuery = null;
-    /** Used in {@link #getBookUuid} */
+    /** {@link #getBookUuid} */
     private SynchronizedStatement mGetBookUuidQuery = null;
-    /** Used in {@link #getBookIdFromUuid} */
+    /** {@link #getBookIdFromUuid} */
     private SynchronizedStatement mGetBookIdFromUuidStmt = null;
-    /** Used in {@link #getBookUpdateDate} */
+    /** {@link #getBookUpdateDate} */
     private SynchronizedStatement mGetBookUpdateDateQuery = null;
-    /** Used in {@link #getBookTitle} */
+    /** {@link #getBookTitle} */
     private SynchronizedStatement mGetBookTitleQuery = null;
-    /** used in {@link #countBooks} */
+    /** {@link #countBooks} */
     private SynchronizedStatement mCountBooksQuery = null;
-    /** used in {@link #getIdFromIsbn} */
+    /** {@link #getIdFromIsbn} */
     private SynchronizedStatement mGetIdFromIsbn1Stmt = null;
-    /** used in {@link #getIdFromIsbn} */
+    /** {@link #getIdFromIsbn} */
     private SynchronizedStatement mGetIdFromIsbn2Stmt = null;
-    /** used in {@link #bookExists} */
+    /** {@link #bookExists} */
     private SynchronizedStatement mCheckBookExistsStmt = null;
-    /** Statement used in {@link #insertBookSeries} */
+    /** {@link #insertBookSeries} */
     private SynchronizedStatement mDeleteBookSeriesStmt = null;
-    /** Statement used in {@link #insertBookSeries} */
+    /** {@link #insertBookSeries} */
     private SynchronizedStatement mAddBookSeriesStmt = null;
-    /** Statements used by {@link #insertBookAuthors} */
+    /** {@link #insertBookAuthors} */
     private SynchronizedStatement mDeleteBookAuthorsStmt = null;
-    /** Statements used by {@link #insertBookAuthors} */
+    /** {@link #insertBookAuthors} */
     private SynchronizedStatement mAddBookAuthorsStmt = null;
-    /** Statements used by {@link #insertBookBookshelf} */
+    /** {@link #insertBookBookshelf} */
     private SynchronizedStatement mDeleteBookBookshelfStmt = null;
-    /** Statements used by {@link #insertBookBookshelf} */
+    /** {@link #insertBookBookshelf} */
     private SynchronizedStatement mInsertBookBookshelfStmt = null;
-    /** Statements used by {@link #getBookshelfName} */
+    /** {@link #getBookshelfName} */
     private SynchronizedStatement mGetBookshelfNameStmt = null;
-    /** used in {@link #getBookshelfId} */
+    /** {@link #getBookshelfId} */
     private SynchronizedStatement mGetBookshelfIdStmt = null;
-    /** used in {@link #getBookshelfIdByName} */
-    private SynchronizedStatement mFetchBookshelfIdByNameStmt = null;
+    /** {@link #getBookshelfIdByName} */
+    private SynchronizedStatement mGetBookshelfIdByNameStmt = null;
     /** {@link #insertBooklistStyle} */
     private SynchronizedStatement mInsertBooklistStyleStmt = null;
-    /**
-     * Update an existing booklist style
-     */
+    /** {@link #updateBooklistStyle} */
     private SynchronizedStatement mUpdateBooklistStyleStmt = null;
-    /**
-     * Delete an existing booklist style
-     */
+    /** {@link #deleteBooklistStyle} */
     private SynchronizedStatement mDeleteBooklistStyleStmt = null;
     /** {@link #getSeriesId} */
     private SynchronizedStatement mGetSeriesIdStmt = null;
@@ -291,7 +332,7 @@ public class CatalogueDBAdapter {
     private SynchronizedStatement mSetGoodreadsBookIdStmt = null;
     /** {@link #setGoodreadsSyncDate} */
     private SynchronizedStatement mSetGoodreadsSyncDateStmt = null;
-    /** Support statement for {@link #getGoodreadsSyncDate} */
+    /** {@link #getGoodreadsSyncDate} */
     private SynchronizedStatement mGetGoodreadsSyncDateStmt = null;
     /** {@link #insertFts} */
     private SynchronizedStatement mInsertFtsStmt = null;
@@ -299,6 +340,7 @@ public class CatalogueDBAdapter {
     private SynchronizedStatement mUpdateFtsStmt = null;
     /** {@link #deleteFts} */
     private SynchronizedStatement mDeleteFtsStmt = null;
+    //endregion
 
     /**
      * Constructor - takes the context to allow the database to be opened/created
@@ -332,89 +374,78 @@ public class CatalogueDBAdapter {
     }
 
     /**
-     * @param tableAlias alias to apply to the table
-     * @param idAlias    alias to apply to the ID column
+     * @param idAlias alias to apply to the ID column
      *
      * @return a string with all the fields concatenated, suitable for a select
      */
-    private static String getSQLFieldsForAuthor(@SuppressWarnings("SameParameterValue") @NonNull final String tableAlias,
-                                                @Nullable final String idAlias) {
+    private static String getSQLFieldsForAuthor(@NonNull final String idAlias) {
         String sql;
-        if (idAlias != null && !idAlias.isEmpty()) {
-            sql = " " + tableAlias + "." + DOM_ID + " as " + idAlias + ", ";
+        if (!idAlias.isEmpty()) {
+            sql = " " + TBL_AUTHORS.dot(DOM_ID) + " as " + idAlias + ",";
         } else {
-            sql = " ";
+            sql = "";
         }
 
-        return sql + tableAlias + "." + DOM_AUTHOR_FAMILY_NAME + " as " + DOM_AUTHOR_FAMILY_NAME + "," +
-                " " + tableAlias + "." + DOM_AUTHOR_GIVEN_NAMES + " as " + DOM_AUTHOR_GIVEN_NAMES + "," +
-                "  Case When " + tableAlias + "." + DOM_AUTHOR_GIVEN_NAMES + " = '' Then " + DOM_AUTHOR_FAMILY_NAME +
-                "        Else " + tableAlias + "." + DOM_AUTHOR_FAMILY_NAME + " || ', ' || " +
-                "             " + tableAlias + "." + DOM_AUTHOR_GIVEN_NAMES + " End as " + DOM_AUTHOR_FORMATTED +
-                ",  Case When " + tableAlias + "." + DOM_AUTHOR_GIVEN_NAMES + " = '' Then " + DOM_AUTHOR_FAMILY_NAME +
-                "        Else " + tableAlias + "." + DOM_AUTHOR_GIVEN_NAMES + " || ' ' || " +
-                tableAlias + "." + DOM_AUTHOR_FAMILY_NAME + " End as " + DOM_AUTHOR_FORMATTED_GIVEN_FIRST + " ";
+        return sql + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME) + "," +
+                " " + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES) + "," +
+                " Case When " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " = ''" +
+                "  Then " + DOM_AUTHOR_FAMILY_NAME +
+                "  Else " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " || ', ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) +
+                " End as " + DOM_AUTHOR_FORMATTED + ", " +
+                " Case When " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " = ''" +
+                "  Then " + DOM_AUTHOR_FAMILY_NAME +
+                "  Else " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " || ' ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) +
+                " End as " + DOM_AUTHOR_FORMATTED_GIVEN_FIRST + " ";
     }
 
     /**
-     * @param tableAlias table alias name to use, cannot be blank
-     * @param idAlias    alias to use fo the ID field, can be null/blank in which case the ID will *not* be included in the Select
-     *
      * @return set of fields suitable for a select
      */
     @NonNull
-    private static String getSQLFieldsForBook(@SuppressWarnings("SameParameterValue") @NonNull final String tableAlias,
-                                              @Nullable final String idAlias) {
-        String prefix;
-        if (idAlias != null && !idAlias.isEmpty()) {
-            prefix = tableAlias + "." + DOM_ID + " as " + idAlias + ", ";
-        } else {
-            prefix = "";
-        }
-
-        return prefix
-                + tableAlias + "." + DOM_TITLE + " AS " + DOM_TITLE + ", " +
+    private static String getSQLFieldsForBook() {
+        return "b." + DOM_ID + " as " + DOM_ID + ", " +
+                "b." + DOM_TITLE + " AS " + DOM_TITLE + ", " +
                 // Find FIRST series ID.
                 "(SELECT " + DOM_SERIES_ID + " FROM " + DB_TB_BOOK_SERIES + " bs" +
-                " WHERE bs." + DOM_BOOK_ID + " = " + tableAlias + "." + DOM_ID +
+                " WHERE bs." + DOM_BOOK_ID + " = b." + DOM_ID +
                 " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC  Limit 1) AS " + DOM_SERIES_ID + ", " +
                 // Find FIRST series NUM.
                 "(SELECT " + DOM_SERIES_NUM + " FROM " + DB_TB_BOOK_SERIES + " bs" +
-                " WHERE bs." + DOM_BOOK_ID + " = " + tableAlias + "." + DOM_ID +
+                " WHERE bs." + DOM_BOOK_ID + " = b." + DOM_ID +
                 " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC  Limit 1) AS " + DOM_SERIES_NUM + ", " +
                 // Get the total series count
                 "(SELECT Count(*) FROM " + DB_TB_BOOK_SERIES + " bs" +
-                " WHERE bs." + DOM_BOOK_ID + " = " + tableAlias + "." + DOM_ID + ") AS _num_series," +
+                " WHERE bs." + DOM_BOOK_ID + " = b." + DOM_ID + ") AS _num_series," +
                 // Find the first AUTHOR ID
                 "(SELECT " + DOM_AUTHOR_ID + " FROM " + DB_TB_BOOK_AUTHOR + " ba " +
-                " WHERE ba." + DOM_BOOK_ID + " = " + tableAlias + "." + DOM_ID +
+                " WHERE ba." + DOM_BOOK_ID + " = b." + DOM_ID +
                 " ORDER BY " + DOM_AUTHOR_POSITION + ", ba." + DOM_AUTHOR_ID + " Limit 1) AS " + DOM_AUTHOR_ID + ", " +
                 // Get the total author count
                 "(SELECT Count(*) FROM " + DB_TB_BOOK_AUTHOR + " ba" +
-                " WHERE ba." + DOM_BOOK_ID + " = " + tableAlias + "." + DOM_ID + ") AS _num_authors," +
+                " WHERE ba." + DOM_BOOK_ID + " = b." + DOM_ID + ") AS _num_authors," +
 
-                tableAlias + "." + DOM_BOOK_ISBN + " AS " + DOM_BOOK_ISBN + ", " +
-                tableAlias + "." + DOM_PUBLISHER + " AS " + DOM_PUBLISHER + ", " +
-                tableAlias + "." + DOM_BOOK_DATE_PUBLISHED + " AS " + DOM_BOOK_DATE_PUBLISHED + ", " +
-                tableAlias + "." + DOM_BOOK_RATING + " AS " + DOM_BOOK_RATING + ", " +
-                tableAlias + "." + DOM_BOOK_READ + " AS " + DOM_BOOK_READ + ", " +
-                tableAlias + "." + DOM_BOOK_PAGES + " AS " + DOM_BOOK_PAGES + ", " +
-                tableAlias + "." + DOM_BOOK_NOTES + " AS " + DOM_BOOK_NOTES + ", " +
-                tableAlias + "." + DOM_BOOK_LIST_PRICE + " AS " + DOM_BOOK_LIST_PRICE + ", " +
-                tableAlias + "." + DOM_ANTHOLOGY_MASK + " AS " + DOM_ANTHOLOGY_MASK + ", " +
-                tableAlias + "." + DOM_BOOK_LOCATION + " AS " + DOM_BOOK_LOCATION + ", " +
-                tableAlias + "." + DOM_BOOK_READ_START + " AS " + DOM_BOOK_READ_START + ", " +
-                tableAlias + "." + DOM_BOOK_READ_END + " AS " + DOM_BOOK_READ_END + ", " +
-                tableAlias + "." + DOM_BOOK_FORMAT + " AS " + DOM_BOOK_FORMAT + ", " +
-                tableAlias + "." + DOM_BOOK_SIGNED + " AS " + DOM_BOOK_SIGNED + ", " +
-                tableAlias + "." + DOM_DESCRIPTION + " AS " + DOM_DESCRIPTION + ", " +
-                tableAlias + "." + DOM_BOOK_GENRE + " AS " + DOM_BOOK_GENRE + ", " +
-                tableAlias + "." + DOM_BOOK_LANGUAGE + " AS " + DOM_BOOK_LANGUAGE + ", " +
-                tableAlias + "." + DOM_BOOK_DATE_ADDED + " AS " + DOM_BOOK_DATE_ADDED + ", " +
-                tableAlias + "." + DOM_GOODREADS_BOOK_ID + " AS " + DOM_GOODREADS_BOOK_ID + ", " +
-                tableAlias + "." + DOM_GOODREADS_LAST_SYNC_DATE + " AS " + DOM_GOODREADS_LAST_SYNC_DATE + ", " +
-                tableAlias + "." + DOM_LAST_UPDATE_DATE + " AS " + DOM_LAST_UPDATE_DATE + ", " +
-                tableAlias + "." + DOM_BOOK_UUID + " AS " + DOM_BOOK_UUID;
+                "b." + DOM_BOOK_ISBN + " AS " + DOM_BOOK_ISBN + ", " +
+                "b." + DOM_PUBLISHER + " AS " + DOM_PUBLISHER + ", " +
+                "b." + DOM_DATE_PUBLISHED + " AS " + DOM_DATE_PUBLISHED + ", " +
+                "b." + DOM_BOOK_RATING + " AS " + DOM_BOOK_RATING + ", " +
+                "b." + DOM_BOOK_READ + " AS " + DOM_BOOK_READ + ", " +
+                "b." + DOM_BOOK_PAGES + " AS " + DOM_BOOK_PAGES + ", " +
+                "b." + DOM_BOOK_NOTES + " AS " + DOM_BOOK_NOTES + ", " +
+                "b." + DOM_BOOK_LIST_PRICE + " AS " + DOM_BOOK_LIST_PRICE + ", " +
+                "b." + DOM_ANTHOLOGY_MASK + " AS " + DOM_ANTHOLOGY_MASK + ", " +
+                "b." + DOM_BOOK_LOCATION + " AS " + DOM_BOOK_LOCATION + ", " +
+                "b." + DOM_BOOK_READ_START + " AS " + DOM_BOOK_READ_START + ", " +
+                "b." + DOM_BOOK_READ_END + " AS " + DOM_BOOK_READ_END + ", " +
+                "b." + DOM_BOOK_FORMAT + " AS " + DOM_BOOK_FORMAT + ", " +
+                "b." + DOM_BOOK_SIGNED + " AS " + DOM_BOOK_SIGNED + ", " +
+                "b." + DOM_DESCRIPTION + " AS " + DOM_DESCRIPTION + ", " +
+                "b." + DOM_BOOK_GENRE + " AS " + DOM_BOOK_GENRE + ", " +
+                "b." + DOM_BOOK_LANGUAGE + " AS " + DOM_BOOK_LANGUAGE + ", " +
+                "b." + DOM_BOOK_DATE_ADDED + " AS " + DOM_BOOK_DATE_ADDED + ", " +
+                "b." + DOM_GOODREADS_BOOK_ID + " AS " + DOM_GOODREADS_BOOK_ID + ", " +
+                "b." + DOM_GOODREADS_LAST_SYNC_DATE + " AS " + DOM_GOODREADS_LAST_SYNC_DATE + ", " +
+                "b." + DOM_LAST_UPDATE_DATE + " AS " + DOM_LAST_UPDATE_DATE + ", " +
+                "b." + DOM_BOOK_UUID + " AS " + DOM_BOOK_UUID;
     }
 
     @NonNull
@@ -466,8 +497,7 @@ public class CatalogueDBAdapter {
                 if (!Character.isWhitespace(prev)) {
                     // If prev character was non-ws, and not negation, make wildcard
                     if (prev != '-') {
-                        // Make every token a wildcard
-                        // TODO: Make this a preference
+                        // Make every token a wildcard TODO: Make this a preference
                         out.append('*');
                     }
                     // Append a whitespace only when last char was not a whitespace
@@ -478,8 +508,7 @@ public class CatalogueDBAdapter {
             pos++;
         }
         if (!Character.isWhitespace(prev) && (prev != '-')) {
-            // Make every token a wildcard
-            // TODO: Make this a preference
+            // Make every token a wildcard TODO: Make this a preference
             out.append('*');
         }
         return out.toString();
@@ -571,50 +600,47 @@ public class CatalogueDBAdapter {
         return mDbHelper.isNewInstall();
     }
 
+    //region Anthology
+    /*
+            "create table " + DB_TB_ANTHOLOGY + " (_id integer primary key autoincrement, " +
+                    DOM_AUTHOR_ID + " integer not null REFERENCES " + DB_TB_AUTHORS + ", " +
+                    DOM_TITLE + " text not null, " +
+                    DOM_DATE_PUBLISHED + " date" +
+                    ")";
+
+            "create table " + DB_TB_BOOK_ANTHOLOGY + "(" +
+                    DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
+                    DOM_ANTHOLOGY_ID + " integer REFERENCES " + DB_TB_ANTHOLOGY + " ON DELETE SET NULL ON UPDATE CASCADE, " +
+                    DOM_BOOK_ANTHOLOGY_POSITION + " integer," +
+                    "PRIMARY KEY(" + DOM_BOOK_ID + ", " + DOM_BOOK_ANTHOLOGY_POSITION + ")" +
+                    ")";
+     */
+
     /**
      * Create an anthology title for a book.
      * It will always be added to the END OF THE LIST (using the position column)
      *
-     * @param bookId                     id of book
-     * @param author                     author
-     * @param title                      title of anthology title
-     * @param acceptAndReturnDuplicateId If title already exists then if
-     *                                   true: return existing ID
-     *                                   false: throws AnthologyTitleExistsException
+     * Inserts the actual AnthologyTitle (author, title) or fetches the id if already exists
+     * and the BookAnthologyTitle link (book, antId, position)
      *
-     * @return the row ID of the newly inserted row, or {@link SynchronizedStatement#INSERT_FAILED} if an error occurred
+     * If already existing, we return silently.
+     *
+     * @param authorId             id of author
+     * @param title                title of anthology title
+     * @param publicationDate      the very first publication date of this title
+     * @param bookId               id of book
+     * @param dirtyBookIfNecessary dirty book?
+     *
+     * @return the row ID of the newly inserted (or existing) BookAnthology
+     *
+     * V83
      */
-    public long insertAnthologyTitle(final long bookId,
-                                     @NonNull final Author author,
+    public long insertAnthologyTitle(final long authorId,
                                      @NonNull final String title,
-                                     final boolean acceptAndReturnDuplicateId,
+                                     @NonNull final String publicationDate,
+
+                                     final long bookId,
                                      final boolean dirtyBookIfNecessary) {
-        if (title.isEmpty()) {
-            return INSERT_FAILED;
-        }
-
-        long authorId = getAuthorIdOrInsert(author);
-        return insertAnthologyTitle(bookId, authorId, title, acceptAndReturnDuplicateId, dirtyBookIfNecessary);
-    }
-
-    /**
-     * Create an anthology title for a book.
-     * It will always be added to the END OF THE LIST (using the position column)
-     *
-     * @param bookId                     id of book
-     * @param authorId                   id of author
-     * @param title                      title of anthology title
-     * @param acceptAndReturnDuplicateId If title already exists then if
-     *                                   true: return existing ID
-     *                                   false: throws AnthologyTitleExistsException
-     *
-     * @return the row ID of the newly inserted row, or {@link SynchronizedStatement#INSERT_FAILED} if an error occurred
-     */
-    private long insertAnthologyTitle(final long bookId,
-                                      final long authorId,
-                                      @NonNull final String title,
-                                      final boolean acceptAndReturnDuplicateId,
-                                      final boolean dirtyBookIfNecessary) throws AnthologyTitleExistsException {
         if (title.isEmpty()) {
             return INSERT_FAILED;
         }
@@ -622,34 +648,57 @@ public class CatalogueDBAdapter {
             setBookDirty(bookId);
         }
 
-        int position = getAnthologyTitleHighestPositionByBookId(bookId) + 1;
+        long antId;
+        ContentValues values;
 
-        ContentValues values = new ContentValues();
-        values.put(DOM_BOOK_ID.name, bookId);
-        values.put(DOM_AUTHOR_ID.name, authorId);
-        values.put(DOM_TITLE.name, title);
-        values.put(DOM_ANTHOLOGY_POSITION.name, position);
-        long newId = getAnthologyTitleId(bookId, authorId, title);
-        if (newId <= 0) {
-            newId = mSyncedDb.insert(DB_TB_ANTHOLOGY, null, values);
-        } else {
-            if (!acceptAndReturnDuplicateId) {
-                throw new AnthologyTitleExistsException();
+        //SyncLock lock = mSyncedDb.beginTransaction(true);
+        try {
+            // check existence
+            antId = getAnthologyTitleId(authorId, title);
+            if (antId <= 0) {
+                // insert if needed
+                values = new ContentValues();
+                values.put(DOM_AUTHOR_ID.name, authorId);
+                values.put(DOM_TITLE.name, title);
+                values.put(DOM_DATE_PUBLISHED.name, publicationDate);
+                antId = mSyncedDb.insert(DB_TB_ANTHOLOGY, null, values);
+                if (antId < 0) {
+                    return INSERT_FAILED;
+                }
             }
+
+            boolean bookAntExists = existsBookAnthologyTitle(bookId, antId);
+            if (!bookAntExists) {
+                // insert if needed
+                values = new ContentValues();
+                values.put(DOM_ANTHOLOGY_ID.name, antId);
+                values.put(DOM_BOOK_ID.name, bookId);
+                values.put(DOM_BOOK_ANTHOLOGY_POSITION.name, getBookAnthologyTitleHighestPositionByBookId(bookId) + 1);
+                if (mSyncedDb.insert(DB_TB_BOOK_ANTHOLOGY, null, values) < 0) {
+                    return INSERT_FAILED;
+                }
+            }
+            //mSyncedDb.setTransactionSuccessful();
+        } finally {
+            //mSyncedDb.endTransaction(lock);
         }
-        return newId;
+        return antId;
     }
 
     /**
      * Delete ALL the anthology records for a given book, if any
+     * But does NOT delete the Anthology Title itself !
      *
      * @param bookId id of the book
      *
      * @return the number of rows affected
+     *
+     * V83
      */
     @SuppressWarnings("UnusedReturnValue")
     public int deleteAnthologyTitlesByBookId(final long bookId, final boolean dirtyBookIfNecessary) {
-        int rowsAffected = mSyncedDb.delete(DB_TB_ANTHOLOGY, DOM_BOOK_ID + "=" + bookId, null);
+
+        int rowsAffected = mSyncedDb.delete(DB_TB_BOOK_ANTHOLOGY, DOM_BOOK_ID + "=" + bookId, null);
         if (rowsAffected == 0) {
             return 0;
         }
@@ -663,29 +712,63 @@ public class CatalogueDBAdapter {
     }
 
     /**
-     * Return the AnthologyTitle ID for a given book/author/title
+     * Delete the Anthology title itself, and all its entries in books
      *
-     * @param bookId   id of book
+     * @param antId                AnthologyTitle
+     * @param bookId               (optional) to dirty
+     * @param dirtyBookIfNecessary only used if bookId is set
+     *
+     * @return the number of rows in DB_TB_ANTHOLOGY affected
+     */
+    public int deleteAnthologyTitle(final long antId, final long bookId, final boolean dirtyBookIfNecessary) {
+
+        // ON DELETE CASCADE will take care of DB_TB_BOOK_ANTHOLOGY
+        int rowsAffected = mSyncedDb.delete(DB_TB_ANTHOLOGY, DOM_ID + "=" + antId, null);
+        if (rowsAffected == 0) {
+            return 0;
+        }
+
+        if (bookId > 0 && dirtyBookIfNecessary) {
+            setBookDirty(bookId);
+        }
+        purgeAuthors();
+
+        return rowsAffected;
+    }
+
+
+    /**
+     * Return the AnthologyTitle ID for a given author/title
+     *
      * @param authorId id of author
      * @param title    title
      *
      * @return ID, or 0 'new' if it does not exist
+     *
+     * V83
      */
-    public long getAnthologyTitleId(final long bookId,
-                                    final long authorId,
-                                    @NonNull final String title) {
+    public long getAnthologyTitleId(final long authorId, @NonNull final String title) {
         if (mGetAnthologyTitleIdStmt == null) {
             String sql = "SELECT Coalesce( Min(" + DOM_ID + "),0) FROM " + DB_TB_ANTHOLOGY +
-                    " WHERE " + DOM_BOOK_ID + " = ?" +
-                    " and " + DOM_AUTHOR_ID + " = ?" +
+                    " WHERE " + DOM_AUTHOR_ID + " = ?" +
                     " and " + DOM_TITLE + " = ? " +
                     COLLATION;
             mGetAnthologyTitleIdStmt = mStatements.add("mGetAnthologyTitleIdStmt", sql);
         }
-        mGetAnthologyTitleIdStmt.bindLong(1, bookId);
-        mGetAnthologyTitleIdStmt.bindLong(2, authorId);
-        mGetAnthologyTitleIdStmt.bindString(3, title);
+        mGetAnthologyTitleIdStmt.bindLong(1, authorId);
+        mGetAnthologyTitleIdStmt.bindString(2, title);
         return mGetAnthologyTitleIdStmt.simpleQueryForLong();
+    }
+
+    private boolean existsBookAnthologyTitle(final long bookId, final long antId) {
+        if (mCountBookAnthologyTitleStmt == null) {
+            String sql = "SELECT COUNT(0) FROM " + DB_TB_BOOK_ANTHOLOGY +
+                    " WHERE " + DOM_BOOK_ID + " = ? AND " + DOM_ANTHOLOGY_ID + " = ? ";
+            mCountBookAnthologyTitleStmt = mStatements.add("mCountBookAnthologyTitleStmt", sql);
+        }
+        mCountBookAnthologyTitleStmt.bindLong(1, bookId);
+        mCountBookAnthologyTitleStmt.bindLong(2, antId);
+        return mCountBookAnthologyTitleStmt.count() > 0;
     }
 
     /**
@@ -694,9 +777,11 @@ public class CatalogueDBAdapter {
      * @param bookId id of book to retrieve
      *
      * @return An integer of the highest position. 0 if it is not an anthology, or no AntTits yet
+     *
+     * V83
      */
-    private int getAnthologyTitleHighestPositionByBookId(final long bookId) {
-        String sql = "SELECT max(" + DOM_ANTHOLOGY_POSITION + ") FROM " + DB_TB_ANTHOLOGY +
+    private int getBookAnthologyTitleHighestPositionByBookId(final long bookId) {
+        String sql = "SELECT max(" + DOM_BOOK_ANTHOLOGY_POSITION + ") FROM " + DB_TB_BOOK_ANTHOLOGY +
                 " WHERE " + DOM_BOOK_ID + "=" + bookId;
         try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{})) {
             return cursor.moveToFirst() ? cursor.getInt(0) : 0;
@@ -712,23 +797,24 @@ public class CatalogueDBAdapter {
      * @param title  The title of the anthology story
      *
      * @return the number of rows affected
+     *
+     * V83
      */
     @SuppressWarnings("unused")
     public int updateAnthologyTitle(final long id,
                                     final long bookId,
                                     @NonNull final Author author,
                                     @NonNull final String title,
-                                    final boolean dirtyBookIfNecessary) {
+                                    final boolean dirtyBookIfNecessary) throws NotFoundException {
 
         final long authorId = getAuthorIdOrInsert(author);
+        final long anthologyId = getAnthologyTitleId(authorId, title);
 
-        final long existingId = getAnthologyTitleId(bookId, authorId, title);
-        if (existingId > 0 && existingId != id) {
-            throw new AnthologyTitleExistsException();
+        if (anthologyId <= 0) {
+            throw new NotFoundException("Anthology: " + author + " * " + title);
         }
 
         final ContentValues values = new ContentValues();
-        values.put(DOM_BOOK_ID.name, bookId);
         values.put(DOM_AUTHOR_ID.name, authorId);
         values.put(DOM_TITLE.name, title);
         int rowsAffected = mSyncedDb.update(DB_TB_ANTHOLOGY, values, DOM_ID + "=" + id, null);
@@ -748,22 +834,38 @@ public class CatalogueDBAdapter {
      * @param bookId id of book to retrieve
      *
      * @return Cursor containing all records, if any
+     *
+     * V83
      */
     @NonNull
     public Cursor fetchAnthologyTitlesByBookId(final long bookId) {
-        String sql = "SELECT an." + DOM_ID + " as " + DOM_ID + "," +
-                " an." + DOM_TITLE + " as " + DOM_TITLE + "," +
-                " an." + DOM_ANTHOLOGY_POSITION + " as " + DOM_ANTHOLOGY_POSITION + "," +
-                " au." + DOM_AUTHOR_FAMILY_NAME + " as " + DOM_AUTHOR_FAMILY_NAME + "," +
-                " au." + DOM_AUTHOR_GIVEN_NAMES + " as " + DOM_AUTHOR_GIVEN_NAMES + "," +
-                " au." + DOM_AUTHOR_FAMILY_NAME + " || ', ' || au." + DOM_AUTHOR_GIVEN_NAMES + " as " + DOM_AUTHOR_NAME + "," +
-                " an." + DOM_BOOK_ID + " as " + DOM_BOOK_ID + "," +
-                " an." + DOM_AUTHOR_ID + " as " + DOM_AUTHOR_ID +
-                " FROM " + DB_TB_ANTHOLOGY + " an, " + DB_TB_AUTHORS + " au" +
-                " WHERE an." + DOM_AUTHOR_ID + "=au." + DOM_ID + " AND an." + DOM_BOOK_ID + "=" + bookId +
-                " ORDER BY an." + DOM_ANTHOLOGY_POSITION + "";
-        return mSyncedDb.rawQuery(sql, new String[]{});
+        String sql = mSql.get("fetchAnthologyTitlesByBookId");
+        if (sql == null) {
+            sql = "SELECT " +
+                    TBL_ANTHOLOGY.dotAs(DOM_ID) + "," +
+                    TBL_ANTHOLOGY.dotAs(DOM_TITLE) + "," +
+                    TBL_ANTHOLOGY.dotAs(DOM_AUTHOR_ID) + "," +
+                    TBL_ANTHOLOGY.dotAs(DOM_DATE_PUBLISHED) + "," +
+
+                    TBL_BOOK_ANTHOLOGY.dotAs(DOM_BOOK_ID) + "," +
+                    TBL_BOOK_ANTHOLOGY.dotAs(DOM_BOOK_ANTHOLOGY_POSITION) + "," +
+
+                    TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME) + "," +
+                    TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES) + "," +
+                    TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " || ', ' || " + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES, DOM_AUTHOR_NAME) +
+
+                    " FROM " + TBL_ANTHOLOGY.ref() + TBL_ANTHOLOGY.join(TBL_BOOK_ANTHOLOGY) + TBL_ANTHOLOGY.join(TBL_AUTHORS) +
+
+                    " WHERE " + TBL_BOOK_ANTHOLOGY.dot(DOM_BOOK_ID) + "=?" +
+
+                    " ORDER BY " + TBL_BOOK_ANTHOLOGY.dot(DOM_BOOK_ANTHOLOGY_POSITION);
+            mSql.put("fetchAnthologyTitlesByBookId", sql);
+        }
+        return mSyncedDb.rawQuery(sql, new String[]{Long.toString(bookId)});
     }
+    //endregion
+
+    //region Author
 
     /**
      * Create a new author in the database
@@ -847,7 +949,7 @@ public class CatalogueDBAdapter {
      *
      * @return the row ID of the 'found' row, the newly inserted row, or {@link SynchronizedStatement#INSERT_FAILED} if an error occurred
      */
-    private long getAuthorIdOrInsert(@NonNull final Author author) {
+    public long getAuthorIdOrInsert(@NonNull final Author author) {
         long id = getAuthorIdByName(author.familyName, author.givenNames);
         return id == 0 ? insertAuthor(author) : id;
     }
@@ -926,9 +1028,8 @@ public class CatalogueDBAdapter {
             setBooksDirtyByAuthor(from.id);
 
             // First handle anthologies; they have a single author and are easy
-            String sql = "UPDATE " + DB_TB_ANTHOLOGY + " set " + DOM_AUTHOR_ID + " = " + to.id
-                    + " WHERE " + DOM_AUTHOR_ID + " = " + from.id;
-            mSyncedDb.execSQL(sql);
+            mSyncedDb.execSQL("UPDATE " + DB_TB_ANTHOLOGY + " SET " + DOM_AUTHOR_ID + " = " + to.id
+                    + " WHERE " + DOM_AUTHOR_ID + " = " + from.id);
 
             globalReplacePositionedBookItem(DB_TB_BOOK_AUTHOR, DOM_AUTHOR_ID.name, DOM_AUTHOR_POSITION.name, from.id, to.id);
 
@@ -944,7 +1045,7 @@ public class CatalogueDBAdapter {
     @NonNull
     public ArrayList<String> getAuthors() {
         ArrayList<String> list = new ArrayList<>();
-        try (Cursor cursor = fetchAuthors(true)) {
+        try (Cursor cursor = fetchAuthors()) {
             while (cursor.moveToNext()) {
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(DOM_AUTHOR_FORMATTED.name));
                 list.add(name);
@@ -956,54 +1057,48 @@ public class CatalogueDBAdapter {
     /**
      * Return a Cursor over the list of all books in the database
      *
-     * @param sortByFamily flag     TODO: rework this after introducing pseudonyms.
-     *
      * @return Cursor over all notes
      */
     @NonNull
-    private Cursor fetchAuthors(@SuppressWarnings("SameParameterValue") final boolean sortByFamily) {
-        String order;
-        if (sortByFamily) {
-            order = " ORDER BY Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION;
-        } else {
-            order = " ORDER BY Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION;
+    private Cursor fetchAuthors() {
+        String sql = mSql.get("fetchAuthors");
+        if (sql == null) {
+            sql = "SELECT DISTINCT " +
+                    getSQLFieldsForAuthor(DOM_ID.name) +
+                    " FROM " + TBL_AUTHORS.ref() + TBL_AUTHORS.join(TBL_BOOK_AUTHOR) +
+                    " ORDER BY Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + ", Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION;
+            mSql.put("fetchAuthors", sql);
         }
-        String sql = "SELECT DISTINCT " + getSQLFieldsForAuthor("a", DOM_ID.name) +
-                " FROM " + DB_TB_AUTHORS + " a, " + DB_TB_BOOK_AUTHOR + " ab " +
-                " WHERE a." + DOM_ID + "=ab." + DOM_AUTHOR_ID + " ";
-
-        return mSyncedDb.rawQuery(sql + order, new String[]{});
+        return mSyncedDb.rawQuery(sql, new String[]{});
     }
 
     public void purgeAuthors() {
-        /* Delete {@link DatabaseDefinitions#DB_TB_BOOK_AUTHOR} with no books */
+        /* Delete {@link DatabaseDefinitions#DB_TB_BOOK_AUTHOR} for authors without books */
         if (mPurgeBookAuthorsStmt == null) {
             mPurgeBookAuthorsStmt = mStatements.add("mPurgeBookAuthorsStmt",
                     "DELETE FROM " + DB_TB_BOOK_AUTHOR +
-                            " WHERE " + DOM_BOOK_ID + " Not In" +
+                            " WHERE " + DOM_BOOK_ID + " NOT IN" +
                             " (SELECT DISTINCT " + DOM_ID + " FROM " + DB_TB_BOOKS + ") ");
         }
-
         try {
             mPurgeBookAuthorsStmt.execute();
         } catch (Exception e) {
-            Logger.logError(e, "Failed to purge DB_TB_BOOK_AUTHOR");
+            Logger.logError(e, "Failed to purge " + DB_TB_BOOK_AUTHOR);
         }
 
-        /* Delete {@link DatabaseDefinitions#DB_TB_AUTHORS} with no books */
+        /* Delete {@link DatabaseDefinitions#DB_TB_AUTHORS} for authors without books or anthology titles */
         if (mPurgeAuthorsStmt == null) {
             mPurgeAuthorsStmt = mStatements.add("mPurgeAuthorsStmt",
                     "DELETE FROM " + DB_TB_AUTHORS +
-                            " WHERE " + DOM_ID + " Not In" +
+                            " WHERE " + DOM_ID + " NOT IN" +
                             " (SELECT DISTINCT " + DOM_AUTHOR_ID + " FROM " + DB_TB_BOOK_AUTHOR + ")" +
-                            " And " + DOM_ID + " Not In" +
+                            " AND " + DOM_ID + " NOT IN" +
                             " (SELECT DISTINCT " + DOM_AUTHOR_ID + " FROM " + DB_TB_ANTHOLOGY + ")");
         }
-
         try {
             mPurgeAuthorsStmt.execute();
         } catch (Exception e) {
-            Logger.logError(e, "Failed to purge DB_TB_AUTHORS");
+            Logger.logError(e, "Failed to purge " + DB_TB_AUTHORS);
         }
     }
 
@@ -1016,33 +1111,28 @@ public class CatalogueDBAdapter {
      */
     @NonNull
     private Cursor fetchAuthorsByBookId(final long bookId) {
-        String sql = "SELECT DISTINCT" +
-                " a." + DOM_ID + " AS " + DOM_ID + "," +
-                " a." + DOM_AUTHOR_FAMILY_NAME + " AS " + DOM_AUTHOR_FAMILY_NAME + "," +
-                " a." + DOM_AUTHOR_GIVEN_NAMES + " AS " + DOM_AUTHOR_GIVEN_NAMES + "," +
-                " Case When a." + DOM_AUTHOR_GIVEN_NAMES + " = ''" +
-                " Then " + DOM_AUTHOR_FAMILY_NAME +
-                " Else " + authorFormattedSource("") +
-                " End as " + DOM_AUTHOR_FORMATTED + "," +
-                "  ba." + DOM_AUTHOR_POSITION +
-                " FROM " + DB_TB_BOOK_AUTHOR + " ba JOIN " + DB_TB_AUTHORS + " a ON a." + DOM_ID + " = ba." + DOM_AUTHOR_ID +
-                " WHERE" +
-                "    ba." + DOM_BOOK_ID + "=" + bookId + " " +
-                " ORDER BY" +
-                " ba." + DOM_AUTHOR_POSITION + " ASC," +
-                " Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + " ASC," +
-                " Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + " ASC";
-
-        return mSyncedDb.rawQuery(sql, new String[]{});
-    }
-
-    @NonNull
-    private String authorFormattedSource(@SuppressWarnings("SameParameterValue") @NonNull String alias) {
-        if (!alias.isEmpty()) {
-            alias += ".";
+        String sql = mSql.get("fetchAuthorsByBookId");
+        if (sql == null) {
+            sql = "SELECT DISTINCT " +
+                    TBL_AUTHORS.dotAs(DOM_ID) + "," +
+                    TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME) + "," +
+                    TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES) + "," +
+                    " Case When " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " = ''" +
+                    " Then " + DOM_AUTHOR_FAMILY_NAME +
+                    " Else " + DOM_AUTHOR_FAMILY_NAME + "||', '||" + DOM_AUTHOR_GIVEN_NAMES +
+                    " End as " + DOM_AUTHOR_FORMATTED + "," +
+                    TBL_BOOK_AUTHOR.dot(DOM_AUTHOR_POSITION) +
+                    " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS) +
+                    " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_ID) + "=?" +
+                    " ORDER BY " +
+                    TBL_BOOK_AUTHOR.dot(DOM_AUTHOR_POSITION) + " ASC," +
+                    " Upper(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + " ASC," +
+                    " Upper(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + " ASC";
+            mSql.put("fetchAuthorsByBookId", sql);
         }
-        return alias + DOM_AUTHOR_FAMILY_NAME + "||', '||" + DOM_AUTHOR_GIVEN_NAMES;
+        return mSyncedDb.rawQuery(sql, new String[]{Long.toString(bookId)});
     }
+
 
     public long countAuthorBooks(@NonNull final Author author) {
         if (author.id == 0) {
@@ -1088,6 +1178,9 @@ public class CatalogueDBAdapter {
         }
 
     }
+    //endregion
+
+    //region Book
 
     /**
      * Examine the values and make any changes necessary before writing the data.
@@ -1136,6 +1229,26 @@ public class CatalogueDBAdapter {
                     }
                 } catch (Exception ignore) {
                     //do nothing. Title stays the same
+                }
+            }
+        }
+
+        // Handle ANTHOLOGY_MASK
+        {
+            ArrayList<AnthologyTitle> anthologyTitles = bookData.getAnthologyTitles();
+            if (anthologyTitles.size() > 0) {
+                bookData.putInt(UniqueId.KEY_ANTHOLOGY_MASK, ANTHOLOGY_IS_ANTHOLOGY);
+            }
+            if (anthologyTitles.size() > 1) {
+                // check if its all the same author or not
+                boolean sameAuthor;
+                Author author = anthologyTitles.get(0).getAuthor();
+                for (AnthologyTitle t : anthologyTitles) { // yes, we check 0 twice.. oh well.
+                    sameAuthor = author.equals(t.getAuthor());
+                    if (!sameAuthor) {
+                        bookData.putInt(UniqueId.KEY_ANTHOLOGY_MASK, ANTHOLOGY_IS_ANTHOLOGY & ANTHOLOGY_MULTIPLE_AUTHORS);
+                        break;
+                    }
                 }
             }
         }
@@ -1371,21 +1484,21 @@ public class CatalogueDBAdapter {
      * Update the book using the details provided. The book to be updated is
      * specified using the rowId, and it is altered to use values passed in
      *
-     * @param id       of the book in the database
+     * @param bookId   of the book in the database
      * @param bookData A collection with the columns to be updated. May contain extra data.
      * @param flags    See {@link #BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT} an others for flag definitions
      *
      * @return the number of rows affected
      */
-    public int updateBook(final long id, @NonNull final BookData bookData, final int flags) {
+    public int updateBook(final long bookId, @NonNull final BookData bookData, final int flags) {
         try {
             // Make sure we have the target table details
             if (mBooksInfo == null) {
                 mBooksInfo = new TableInfo(mSyncedDb, DB_TB_BOOKS);
             }
 
-            // Cleanup fields (author, series, title and remove blank fields for which we have defaults)
-            preprocessOutput(id == 0, bookData);
+            // Cleanup fields (author, series, title, 'sameAuthor' if anthology, and remove blank fields for which we have defaults)
+            preprocessOutput(bookId == 0, bookData);
 
             ContentValues values = filterValues(bookData);
 
@@ -1403,22 +1516,22 @@ public class CatalogueDBAdapter {
             //args.put(DOM_INSTANCE_UPDATE_DATE.name, Utils.toSqlDateTime(Calendar.getInstance().getTime()));
 
             // go !
-            int rowsAffected = mSyncedDb.update(DB_TB_BOOKS, values, DOM_ID + "=" + id, null);
+            int rowsAffected = mSyncedDb.update(DB_TB_BOOKS, values, DOM_ID + "=" + bookId, null);
 
             String bookshelf = bookData.getBookshelfList();
             if (bookshelf != null && !bookshelf.trim().isEmpty()) {
-                insertBookBookshelf(id, ArrayUtils.decodeList(Bookshelf.SEPARATOR, bookshelf), false);
+                insertBookBookshelf(bookId, ArrayUtils.decodeList(Bookshelf.SEPARATOR, bookshelf), false);
             }
 
             if (bookData.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)) {
-                insertBookAuthors(id, bookData.getAuthors(), false);
+                insertBookAuthors(bookId, bookData.getAuthors(), false);
             }
             if (bookData.containsKey(UniqueId.BKEY_SERIES_ARRAY)) {
-                insertBookSeries(id, bookData.getSeries(), false);
+                insertBookSeries(bookId, bookData.getSeries(), false);
             }
 
             if (bookData.containsKey(UniqueId.BKEY_ANTHOLOGY_TITLE_ARRAY)) {
-                insertBookAnthologyTitles(id, bookData.getAnthologyTitles(), false);
+                insertBookAnthologyTitles(bookId, bookData.getAnthologyTitles(), false);
             }
 
             // Only really skip the purge if a batch update of multiple books is being done.
@@ -1428,7 +1541,7 @@ public class CatalogueDBAdapter {
             }
 
             try {
-                updateFts(id);
+                updateFts(bookId);
             } catch (Exception e) {
                 Logger.logError(e, "Failed to update FTS");
             }
@@ -1635,8 +1748,6 @@ public class CatalogueDBAdapter {
      * @param bookId               the book
      * @param list                 the list
      * @param dirtyBookIfNecessary up to now, always set to 'false'
-     *
-     *                             Failures to insert are logged but nor reported back TODO: @return ?
      */
     private void insertBookAnthologyTitles(final long bookId,
                                            @NonNull final ArrayList<AnthologyTitle> list,
@@ -1646,11 +1757,10 @@ public class CatalogueDBAdapter {
         }
 
         deleteAnthologyTitlesByBookId(bookId, false);
-
         for (AnthologyTitle anthologyTitle : list) {
             long authorId = getAuthorIdOrInsert(anthologyTitle.getAuthor());
-            long newId = insertAnthologyTitle(bookId, authorId, anthologyTitle.getTitle(), true, false);
-            if (newId == INSERT_FAILED) {
+            long newId = insertAnthologyTitle(authorId, anthologyTitle.getTitle(), anthologyTitle.getPublicationDate(), bookId, false);
+            if (newId <= 0) {
                 Logger.logError("Failed to insert: " + anthologyTitle);
             }
         }
@@ -1886,7 +1996,6 @@ public class CatalogueDBAdapter {
         }
     }
 
-
     /**
      * @param bookId id of book
      *
@@ -1904,6 +2013,7 @@ public class CatalogueDBAdapter {
             final int givenNameCol = cursor.getColumnIndex(DOM_AUTHOR_GIVEN_NAMES.name);
             final int authorIdCol = cursor.getColumnIndex(DOM_AUTHOR_ID.name);
             final int titleCol = cursor.getColumnIndex(DOM_TITLE.name);
+            final int pubDateCol = cursor.getColumnIndex(DOM_DATE_PUBLISHED.name);
 
             while (cursor.moveToNext()) {
                 Author author = new Author(
@@ -1911,7 +2021,8 @@ public class CatalogueDBAdapter {
                         cursor.getString(familyNameCol),
                         cursor.getString(givenNameCol));
 
-                list.add(new AnthologyTitle(bookId, author, cursor.getString(titleCol)));
+                list.add(new AnthologyTitle(author, cursor.getString(titleCol), cursor.getString(pubDateCol),
+                        bookId));
             }
         }
         return list;
@@ -1962,9 +2073,7 @@ public class CatalogueDBAdapter {
      * @return Cursor over all Books
      */
     public BooksCursor fetchBooks(@NonNull final String bookWhere, @Nullable final String order) {
-        // Get the SQL
-        String fullSql = getAllBooksSql(bookWhere, order);
-        return fetchBooks(fullSql, new String[]{});
+        return fetchBooks(getAllBooksSql(bookWhere, order), new String[]{});
     }
 
     /**
@@ -1977,8 +2086,7 @@ public class CatalogueDBAdapter {
      * @throws SQLException if note could not be found/retrieved
      */
     public BooksCursor fetchBookById(final long rowId) throws SQLException {
-        String where = "b." + DOM_ID + "=" + rowId;
-        return fetchBooks(where, "");
+        return fetchBooks("b." + DOM_ID + "=" + rowId, "");
     }
 
     /**
@@ -2014,6 +2122,9 @@ public class CatalogueDBAdapter {
         }
         return fetchBooks(where.toString(), "");
     }
+    //endregion
+
+    //region Bookshelf
 
     /**
      * This function will create a new bookshelf in the database
@@ -2102,20 +2213,20 @@ public class CatalogueDBAdapter {
     }
 
     /**
-     * This will return JUST the bookshelf id based on the name.
+     * This will return the bookshelf id based on the name.
      *
      * @param name bookshelf to search for
      *
      * @return bookshelf id, or 0 when not found
      */
     private long getBookshelfIdByName(@NonNull final String name) {
-        if (mFetchBookshelfIdByNameStmt == null) {
-            mFetchBookshelfIdByNameStmt = mStatements.add("mFetchBookshelfIdByNameStmt",
+        if (mGetBookshelfIdByNameStmt == null) {
+            mGetBookshelfIdByNameStmt = mStatements.add("mGetBookshelfIdByNameStmt",
                     "SELECT " + DOM_ID + " FROM " + DOM_BOOKSHELF_NAME +
                             " WHERE Upper(" + DOM_BOOKSHELF_NAME + ") = Upper(?)" + COLLATION);
         }
-        mFetchBookshelfIdByNameStmt.bindString(1, name);
-        return mFetchBookshelfIdByNameStmt.simpleQueryForLongOrZero();
+        mGetBookshelfIdByNameStmt.bindString(1, name);
+        return mGetBookshelfIdByNameStmt.simpleQueryForLongOrZero();
     }
 
     /**
@@ -2169,24 +2280,31 @@ public class CatalogueDBAdapter {
      */
     @NonNull
     public Cursor fetchAllBookshelvesByBook(final long bookId) {
-        String sql = "SELECT DISTINCT bs." + DOM_ID + " AS " + DOM_ID + "," +
-                " bs." + DOM_BOOKSHELF_NAME + " AS " + DOM_BOOKSHELF_NAME +
-
-                " FROM " + DB_TB_BOOKSHELF + " bs, " + DB_TB_BOOK_BOOKSHELF_WEAK + " w " +
-                " WHERE w." + DOM_BOOKSHELF_NAME + "=bs." + DOM_ID + " AND w." + DOM_BOOK_ID + "=" + bookId + " " +
-                " ORDER BY Upper(bs." + DOM_BOOKSHELF_NAME + ") " + COLLATION;
-        return mSyncedDb.rawQuery(sql, new String[]{});
+        String sql = mSql.get("fetchAllBookshelvesByBook");
+        if (sql == null) {
+            sql = "SELECT DISTINCT " +
+                    TBL_BOOKSHELF.dotAs(DOM_ID) + "," +
+                    TBL_BOOKSHELF.dotAs(DOM_BOOKSHELF_NAME) +
+                    //TODO: use JOIN
+                    " FROM " + TBL_BOOKSHELF.ref() + ", " + TBL_BOOK_BOOKSHELF.ref() +
+                    " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_BOOKSHELF_NAME) + "=" + TBL_BOOKSHELF.dot(DOM_ID) + " AND " + TBL_BOOK_BOOKSHELF.dot(DOM_BOOK_ID) + "=?" +
+                    " ORDER BY Upper(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF_NAME) + ") " + COLLATION;
+            mSql.put("fetchAllBookshelvesByBook", sql);
+        }
+        return mSyncedDb.rawQuery(sql, new String[]{Long.toString(bookId)});
     }
+    //endregion
+
+    //region BookListStyle
 
     /**
      * @return a list of all defined styles in the database
      */
     @NonNull
     public Cursor getBooklistStyles() {
-        final String sql = "SELECT " + TBL_BOOK_LIST_STYLES.ref(DOM_ID, DOM_STYLE) +
-                " FROM " + TBL_BOOK_LIST_STYLES.ref();
-        // + " Order By " + TBL_BOOK_LIST_STYLES.ref(DOM_ANTHOLOGY_POSITION, DOM_ID);
-        return mSyncedDb.rawQuery(sql);
+        return mSyncedDb.rawQuery(
+                "SELECT " + TBL_BOOK_LIST_STYLES.ref(DOM_ID, DOM_STYLE) +
+                        " FROM " + TBL_BOOK_LIST_STYLES.ref());
     }
 
     /**
@@ -2224,6 +2342,7 @@ public class CatalogueDBAdapter {
         mDeleteBooklistStyleStmt.bindLong(1, id);
         mDeleteBooklistStyleStmt.execute();
     }
+    //endregion
 
     /**
      * @param query The query string
@@ -2232,33 +2351,36 @@ public class CatalogueDBAdapter {
      */
     @NonNull
     public Cursor fetchSearchSuggestions(@NonNull final String query) {
-        String sql = "SELECT * FROM (SELECT \"BK\" || b." + DOM_ID + " AS " + BaseColumns._ID
-                + ", b." + DOM_TITLE + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1
-                + ", b." + DOM_TITLE + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
-                " FROM " + DB_TB_BOOKS + " b" +
-                " WHERE b." + DOM_TITLE + " LIKE '" + query + "%'" +
-                " UNION " +
-                " SELECT \"AF\" || a." + DOM_ID + " AS " + BaseColumns._ID
-                + ", a." + DOM_AUTHOR_FAMILY_NAME + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1
-                + ", a." + DOM_AUTHOR_FAMILY_NAME + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
-                " FROM " + DB_TB_AUTHORS + " a" +
-                " WHERE a." + DOM_AUTHOR_FAMILY_NAME + " LIKE '" + query + "%'" +
-                " UNION " +
-                " SELECT \"AG\" || a." + DOM_ID + " AS " + BaseColumns._ID
-                + ", a." + DOM_AUTHOR_GIVEN_NAMES + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1
-                + ", a." + DOM_AUTHOR_GIVEN_NAMES + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
-                " FROM " + DB_TB_AUTHORS + " a" +
-                " WHERE a." + DOM_AUTHOR_GIVEN_NAMES + " LIKE '" + query + "%'" +
-                " UNION " +
-                " SELECT \"BK\" || b." + DOM_ID + " AS " + BaseColumns._ID
-                + ", b." + DOM_BOOK_ISBN + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1
-                + ", b." + DOM_BOOK_ISBN + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
-                " FROM " + DB_TB_BOOKS + " b" +
-                " WHERE b." + DOM_BOOK_ISBN + " LIKE '" + query + "%'" +
-                " ) as zzz " +
-                " ORDER BY Upper(" + SearchManager.SUGGEST_COLUMN_TEXT_1 + ") " + COLLATION;
-        return mSyncedDb.rawQuery(sql, null);
+        String sql = mSql.get("fetchSearchSuggestions");
+        if (sql == null) {
+            sql = "SELECT * FROM (SELECT \"BK\" || b." + DOM_ID + " AS " + BaseColumns._ID
+                    + ", b." + DOM_TITLE + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1
+                    + ", b." + DOM_TITLE + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
+                    " FROM " + DB_TB_BOOKS + " b" + " WHERE b." + DOM_TITLE + " LIKE ?" +
+                    " UNION " +
+                    " SELECT \"AF\" || a." + DOM_ID + " AS " + BaseColumns._ID
+                    + ", a." + DOM_AUTHOR_FAMILY_NAME + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1
+                    + ", a." + DOM_AUTHOR_FAMILY_NAME + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
+                    " FROM " + DB_TB_AUTHORS + " a" + " WHERE a." + DOM_AUTHOR_FAMILY_NAME + " LIKE ?" +
+                    " UNION " +
+                    " SELECT \"AG\" || a." + DOM_ID + " AS " + BaseColumns._ID
+                    + ", a." + DOM_AUTHOR_GIVEN_NAMES + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1
+                    + ", a." + DOM_AUTHOR_GIVEN_NAMES + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
+                    " FROM " + DB_TB_AUTHORS + " a" + " WHERE a." + DOM_AUTHOR_GIVEN_NAMES + " LIKE ?" +
+                    " UNION " +
+                    " SELECT \"BK\" || b." + DOM_ID + " AS " + BaseColumns._ID
+                    + ", b." + DOM_BOOK_ISBN + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1
+                    + ", b." + DOM_BOOK_ISBN + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
+                    " FROM " + DB_TB_BOOKS + " b" + " WHERE b." + DOM_BOOK_ISBN + " LIKE ?" +
+                    " ) as zzz " +
+                    " ORDER BY Upper(" + SearchManager.SUGGEST_COLUMN_TEXT_1 + ") " + COLLATION;
+            mSql.put("fetchSearchSuggestions", sql);
+        }
+        String q = query + "%";
+        return mSyncedDb.rawQuery(sql, new String[]{q, q, q, q});
     }
+
+    //region Format
 
     /**
      * Returns a unique list of all formats in the database; uses the pre-defined ones if none.
@@ -2297,6 +2419,9 @@ public class CatalogueDBAdapter {
             mSyncedDb.endTransaction(l);
         }
     }
+    //endregion
+
+    //region Genre
 
     /**
      * Returns a unique list of all locations in the database; uses the pre-defined ones if none.
@@ -2336,6 +2461,9 @@ public class CatalogueDBAdapter {
             mSyncedDb.endTransaction(l);
         }
     }
+    //endregion
+
+    //region Language
 
     /**
      * Returns a unique list of all languages in the database; uses the pre-defined ones if none.
@@ -2374,6 +2502,9 @@ public class CatalogueDBAdapter {
             mSyncedDb.endTransaction(l);
         }
     }
+    //endregion
+
+    //region Loan
 
     /**
      * This function will create a new loan in the database
@@ -2444,6 +2575,9 @@ public class CatalogueDBAdapter {
             return cursor.moveToFirst() ? cursor.getString(1) : null;
         }
     }
+    //endregion
+
+    //region Location
 
     /**
      * Returns a unique list of all locations in the database; uses the pre-defined ones if none.
@@ -2484,6 +2618,9 @@ public class CatalogueDBAdapter {
             mSyncedDb.endTransaction(l);
         }
     }
+    //endregion
+
+    //region Publisher
 
     /**
      * Returns a unique list of all publishers in the database
@@ -2518,6 +2655,9 @@ public class CatalogueDBAdapter {
             mSyncedDb.endTransaction(l);
         }
     }
+    //endregion
+
+    //region Series
 
     /**
      * Create a new series in the database
@@ -2673,31 +2813,31 @@ public class CatalogueDBAdapter {
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean purgeSeries() {
+        boolean success = true;
+
+        /* Delete {@link DatabaseDefinitions#DB_TB_BOOK_SERIES} with no books */
         if (mPurgeBookSeriesStmt == null) {
             mPurgeBookSeriesStmt = mStatements.add("mPurgeBookSeriesStmt",
-                    "DELETE FROM " + DB_TB_BOOK_SERIES + " WHERE "
-                            + DOM_BOOK_ID + " NOT IN (SELECT DISTINCT " + DOM_ID + " FROM " + DB_TB_BOOKS + ")");
+                    "DELETE FROM " + DB_TB_BOOK_SERIES + " WHERE " + DOM_BOOK_ID +
+                            " NOT IN (SELECT DISTINCT " + DOM_ID + " FROM " + DB_TB_BOOKS + ")");
         }
-        boolean success;
-        // Delete DB_TB_BOOK_SERIES with no books
         try {
             mPurgeBookSeriesStmt.execute();
-            success = true;
         } catch (Exception e) {
-            Logger.logError(e, "Failed to purge Book Authors");
+            Logger.logError(e, "Failed to purge " + DB_TB_BOOK_SERIES);
             success = false;
         }
 
+        /* Delete {@link DatabaseDefinitions#DB_TB_SERIES} with no books */
         if (mPurgeSeriesStmt == null) {
             mPurgeSeriesStmt = mStatements.add("mPurgeSeriesStmt",
-                    "DELETE FROM " + DB_TB_SERIES + " WHERE "
-                            + DOM_ID + " NOT IN (SELECT DISTINCT " + DOM_SERIES_ID + " FROM " + DB_TB_BOOK_SERIES + ") ");
+                    "DELETE FROM " + DB_TB_SERIES + " WHERE " + DOM_ID +
+                            " NOT IN (SELECT DISTINCT " + DOM_SERIES_ID + " FROM " + DB_TB_BOOK_SERIES + ") ");
         }
-        // Delete series entries with no Book_Series
         try {
             mPurgeSeriesStmt.execute();
         } catch (Exception e) {
-            Logger.logError(e, "Failed to purge Book Authors");
+            Logger.logError(e, "Failed to purge " + DB_TB_SERIES);
             success = false;
         }
         return success;
@@ -2740,24 +2880,31 @@ public class CatalogueDBAdapter {
     /**
      * Return a Cursor over the list of all authors  in the database for the given book
      *
-     * @param rowId the rowId of the book
+     * @param bookId the id of the book
      *
      * @return Cursor over all authors
      */
     @NonNull
-    private Cursor fetchAllSeriesByBook(final long rowId) {
-        String sql = "SELECT DISTINCT s." + DOM_ID + " AS " + DOM_ID
-                + ", s." + DOM_SERIES_NAME + " AS " + DOM_SERIES_NAME
-                + ", bs." + DOM_SERIES_NUM + " AS " + DOM_SERIES_NUM
-                + ", bs." + DOM_BOOK_SERIES_POSITION + " AS " + DOM_BOOK_SERIES_POSITION
-                + ", " + DOM_SERIES_NAME + "||' ('||" + DOM_SERIES_NUM + "||')' as " + DOM_SERIES_FORMATTED
-                + " FROM " + DB_TB_BOOK_SERIES + " bs Join " + DB_TB_SERIES + " s "
-                + "       On s." + DOM_ID + " = bs." + DOM_SERIES_ID
-                + " WHERE bs." + DOM_BOOK_ID + "=" + rowId + " "
-                + " ORDER BY bs." + DOM_BOOK_SERIES_POSITION + ", Upper(s." + DOM_SERIES_NAME + ") " + COLLATION + " ASC";
-        return mSyncedDb.rawQuery(sql, new String[]{});
-    }
+    private Cursor fetchAllSeriesByBook(final long bookId) {
+        String sql = mSql.get("fetchAllSeriesByBook");
+        if (sql == null) {
+            sql = "SELECT DISTINCT " +
+                    TBL_SERIES.dotAs(DOM_ID) + ", " +
+                    TBL_SERIES.dotAs(DOM_SERIES_NAME) + ", " +
+                    TBL_BOOK_SERIES.dotAs(DOM_SERIES_NUM) + ", " +
+                    TBL_BOOK_SERIES.dotAs(DOM_BOOK_SERIES_POSITION) + ", " +
+                    DOM_SERIES_NAME + "||' ('||" + DOM_SERIES_NUM + "||')' as " + DOM_SERIES_FORMATTED +
+                    " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES) +
+                    " WHERE " + TBL_BOOK_SERIES.dot(DOM_BOOK_ID) + "=?" +
+                    " ORDER BY " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ", Upper(" + TBL_SERIES.dot(DOM_SERIES_NAME) + ") " + COLLATION + " ASC";
+            mSql.put("fetchAllSeriesByBook", sql);
+        }
 
+        return mSyncedDb.rawQuery(sql, new String[]{Long.toString(bookId)});
+    }
+    //endregion
+
+    //region Helpers
     @NonNull
     private String makeEqualFieldsTerm(@NonNull final String v1, @NonNull final String v2) {
         return "Upper(" + v1 + ") = Upper(" + v2 + ") " + COLLATION;
@@ -2773,48 +2920,55 @@ public class CatalogueDBAdapter {
      */
     private String getAllBooksSql(@NonNull final String bookWhere, @Nullable final String order) {
         // Get the basic query; we will use it as a sub-query
-        String sql = "SELECT DISTINCT " + getSQLFieldsForBook(TBL_BOOKS.getAlias(), DOM_ID.name) +
+        String sql = "SELECT DISTINCT " + getSQLFieldsForBook() +
                 " FROM " + DB_TB_BOOKS + " b" +
                 (!bookWhere.isEmpty() ? " WHERE " + " (" + bookWhere + ")" : "") +
                 " ORDER BY Upper(b." + DOM_TITLE + ") " + COLLATION + " ASC";
 
-        String fullSql = "SELECT b.*, " + getSQLFieldsForAuthor(TBL_AUTHORS.getAlias(), "") + ", " +
+        String fullSql = "SELECT b.*, " + getSQLFieldsForAuthor("") + "," +
                 "a." + DOM_AUTHOR_ID + ", " +
-                "Coalesce(s." + DOM_SERIES_ID + ", 0) AS " + DOM_SERIES_ID + ", " +
-                "Coalesce(s." + DOM_SERIES_NAME + ", '') AS " + DOM_SERIES_NAME + ", " +
-                "Coalesce(s." + DOM_SERIES_NUM + ", '') AS " + DOM_SERIES_NUM + ", " +
-                " Case When _num_series < 2 Then Coalesce(s." + DOM_SERIES_FORMATTED + ", '')" +
-                " Else " + DOM_SERIES_FORMATTED + "||' et. al.' End AS " + DOM_SERIES_FORMATTED + " " +
+                "Coalesce(s." + DOM_SERIES_ID + ", 0) AS " + DOM_SERIES_ID + "," +
+                "Coalesce(s." + DOM_SERIES_NAME + ", '') AS " + DOM_SERIES_NAME + "," +
+                "Coalesce(s." + DOM_SERIES_NUM + ", '') AS " + DOM_SERIES_NUM + "," +
+                " Case When _num_series < 2" +
+                "  Then Coalesce(s." + DOM_SERIES_FORMATTED + ", '')" +
+                "  Else " + DOM_SERIES_FORMATTED + "||' et. al.'" +
+                " End AS " + DOM_SERIES_FORMATTED +
                 " FROM (" + sql + ") b";
 
         // Get the 'default' author...defined in getSQLFieldsForBook()
-        fullSql += " Join (Select "
-                + DOM_AUTHOR_ID + ", "
-                + DOM_AUTHOR_FAMILY_NAME + ", "
-                + DOM_AUTHOR_GIVEN_NAMES + ", "
-                + "ba." + DOM_BOOK_ID + " AS " + DOM_BOOK_ID + ", "
-                + " Case When " + DOM_AUTHOR_GIVEN_NAMES + " = '' Then " + DOM_AUTHOR_FAMILY_NAME
-                + " Else " + authorFormattedSource("") + " End AS " + DOM_AUTHOR_FORMATTED
-                + " FROM " + DB_TB_BOOK_AUTHOR + " ba Join " + DB_TB_AUTHORS + " a"
-                + "    On ba." + DOM_AUTHOR_ID + " = a." + DOM_ID + ") a "
-                + " On a." + DOM_BOOK_ID + " = b." + DOM_ID + " and a." + DOM_AUTHOR_ID + " = b." + DOM_AUTHOR_ID;
+        fullSql += " JOIN (SELECT " +
+                DOM_AUTHOR_ID + "," +
+                DOM_AUTHOR_FAMILY_NAME + "," +
+                DOM_AUTHOR_GIVEN_NAMES + "," +
+                "ba." + DOM_BOOK_ID + " AS " + DOM_BOOK_ID + "," +
+                " Case When " + DOM_AUTHOR_GIVEN_NAMES + " = ''" +
+                "  Then " + DOM_AUTHOR_FAMILY_NAME +
+                "  Else " + DOM_AUTHOR_FAMILY_NAME + "||', '||" + DOM_AUTHOR_GIVEN_NAMES +
+                " End AS " + DOM_AUTHOR_FORMATTED +
+                " FROM " + DB_TB_BOOK_AUTHOR + " ba Join " + DB_TB_AUTHORS + " a ON ba." + DOM_AUTHOR_ID + " = a." + DOM_ID + ") a " +
+                " ON a." + DOM_BOOK_ID + " = b." + DOM_ID + " and a." + DOM_AUTHOR_ID + " = b." + DOM_AUTHOR_ID;
 
         // Get the 'default' series...defined in getSQLFieldsForBook()
-        fullSql += " Left Outer Join (Select "
-                + DOM_SERIES_ID + ", "
-                + DOM_SERIES_NAME + ", "
-                + DOM_SERIES_NUM + ", "
-                + "bs." + DOM_BOOK_ID + " AS " + DOM_BOOK_ID + ", "
-                + " Case When " + DOM_SERIES_NUM + " = '' Then " + DOM_SERIES_NAME
-                + " Else " + DOM_SERIES_NAME + "||' #'||" + DOM_SERIES_NUM + " End AS " + DOM_SERIES_FORMATTED
-                + " FROM " + DB_TB_BOOK_SERIES + " bs Join " + DB_TB_SERIES + " s"
-                + "    On bs." + DOM_SERIES_ID + " = s." + DOM_ID + ") s "
-                + " On s." + DOM_BOOK_ID + " = b." + DOM_ID
-                + " and s." + DOM_SERIES_ID + " = b." + DOM_SERIES_ID
-                + " and " + this.makeEqualFieldsTerm("s." + DOM_SERIES_NUM, "b." + DOM_SERIES_NUM);
+        fullSql += " Left Outer JOIN (SELECT " +
+                DOM_SERIES_ID + "," +
+                DOM_SERIES_NAME + "," +
+                DOM_SERIES_NUM + "," +
+                "bs." + DOM_BOOK_ID + " AS " + DOM_BOOK_ID + "," +
+                " Case When " + DOM_SERIES_NUM + " = ''" +
+                "  Then " + DOM_SERIES_NAME +
+                "  Else " + DOM_SERIES_NAME + "||' #'||" + DOM_SERIES_NUM +
+                " End AS " + DOM_SERIES_FORMATTED +
+                " FROM " + DB_TB_BOOK_SERIES + " bs Join " + DB_TB_SERIES + " s ON bs." + DOM_SERIES_ID + " = s." + DOM_ID + ") s " +
+                " ON s." + DOM_BOOK_ID + " = b." + DOM_ID +
+                " and s." + DOM_SERIES_ID + " = b." + DOM_SERIES_ID +
+                " and " + this.makeEqualFieldsTerm("s." + DOM_SERIES_NUM, "b." + DOM_SERIES_NUM);
 
         if (order != null && !order.isEmpty()) {
             fullSql += " ORDER BY " + order;
+        }
+        if (DEBUG_SWITCHES.SQL && DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
+            System.out.println("getAllBooksSql:\n\n" + fullSql);
         }
         return fullSql;
     }
@@ -2948,10 +3102,12 @@ public class CatalogueDBAdapter {
      *
      * @return A new BooksCursor
      */
-    private BooksCursor fetchBooks(@NonNull final String sql,
-                                   @NonNull final String[] selectionArgs) {
+    private BooksCursor fetchBooks(@NonNull final String sql, @NonNull final String[] selectionArgs) {
         return (BooksCursor) mSyncedDb.rawQueryWithFactory(mBooksFactory, sql, selectionArgs, "");
     }
+    //endregion
+
+    //region Goodreads
 
     /**
      * Return a book (Cursor) that matches the given goodreads book Id.
@@ -3050,6 +3206,7 @@ public class CatalogueDBAdapter {
         mGetGoodreadsSyncDateStmt.bindLong(1, bookId);
         return mGetGoodreadsSyncDateStmt.simpleQueryForString();
     }
+    //endregion
 
     /**
      * Open the books database. If it cannot be opened, try to create a new instance of the
@@ -3110,6 +3267,8 @@ public class CatalogueDBAdapter {
         mSyncedDb.setTransactionSuccessful();
     }
 
+    //region FTS
+
     /**
      * Send the book details from the cursor to the passed fts query.
      *
@@ -3123,16 +3282,23 @@ public class CatalogueDBAdapter {
 
         final BooksRow book = books.getRowView();
         // Build the SQL to get author details for a book.
+
         // ... all authors
-        final String authorBaseSql = "SELECT " + TBL_AUTHORS.dot("*") + " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS) +
+        final String authorBaseSql = "SELECT " + TBL_AUTHORS.dot("*") +
+                " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS) +
                 " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_ID) + " = ";
+
         // ... all series
-        final String seriesBaseSql = "SELECT " + TBL_SERIES.dot(DOM_SERIES_NAME) + " || ' ' || Coalesce(" + TBL_BOOK_SERIES.dot(DOM_SERIES_NUM) + ",'') as seriesInfo FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES) +
+        final String seriesBaseSql = "SELECT " + TBL_SERIES.dot(DOM_SERIES_NAME) + " || ' ' || Coalesce(" + TBL_BOOK_SERIES.dot(DOM_SERIES_NUM) + ",'') as seriesInfo" +
+                " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES) +
                 " WHERE " + TBL_BOOK_SERIES.dot(DOM_BOOK_ID) + " = ";
+
         // ... all anthology titles
-        final String anthologyBaseSql = "SELECT " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " || ' ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " as anthologyAuthorInfo, " + DOM_TITLE + " as anthologyTitleInfo "
-                + " FROM " + TBL_ANTHOLOGY.ref() + TBL_ANTHOLOGY.join(TBL_AUTHORS) +
-                " WHERE " + TBL_ANTHOLOGY.dot(DOM_BOOK_ID) + " = ";
+        final String anthologyBaseSql = "SELECT " +
+                TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " || ' ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " as anthologyAuthorInfo, " +
+                DOM_TITLE + " as anthologyTitleInfo " +
+                " FROM " + TBL_ANTHOLOGY.ref() + TBL_ANTHOLOGY.join(TBL_BOOK_ANTHOLOGY) + TBL_ANTHOLOGY.join(TBL_AUTHORS) +
+                " WHERE " + TBL_BOOK_ANTHOLOGY.dot(DOM_BOOK_ID) + " = ";
 
         // Accumulator for author names for each book
         StringBuilder authorText = new StringBuilder();
@@ -3430,6 +3596,7 @@ public class CatalogueDBAdapter {
 
         return mSyncedDb.rawQuery(sql.toString(), new String[]{});
     }
+    //endregion
 
     /**
      * Backup database file using default file name
@@ -3460,7 +3627,7 @@ public class CatalogueDBAdapter {
         }
 
         String sql = "SELECT DISTINCT " +
-                getSQLFieldsForBook("b", DOM_ID.name) + ", " +
+                getSQLFieldsForBook() + "," +
                 "l." + DOM_LOANED_TO + " AS " + DOM_LOANED_TO +
                 " FROM " + DB_TB_BOOKS + " b" +
                 " LEFT OUTER JOIN " + DB_TB_LOAN + " l ON (l." + DOM_BOOK_ID + "=b." + DOM_ID + ") " +
@@ -3544,6 +3711,18 @@ public class CatalogueDBAdapter {
 
         AnthologyTitleExistsException() {
             super("Anthology title already exists");
+        }
+    }
+
+    public class NotFoundException extends RuntimeException {
+        private static final long serialVersionUID = -9052087086134217566L;
+
+        NotFoundException() {
+            super();
+        }
+
+        NotFoundException(@Nullable final String msg) {
+            super(msg);
         }
     }
 }

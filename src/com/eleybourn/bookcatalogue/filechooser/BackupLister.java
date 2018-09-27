@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.filechooser;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.BackupReader;
@@ -48,15 +49,18 @@ public class BackupLister extends FileLister {
     /**
      * Process an array of Files into an ArrayList of BackupFileDetails
      */
-    protected ArrayList<FileDetails> processList(@NonNull File[] files) {
+    protected ArrayList<FileDetails> processList(@Nullable final File[] files) {
         ArrayList<FileDetails> dirs = new ArrayList<>();
-        for (File f : files) {
-            BackupFileDetails fd = new BackupFileDetails(f);
+        if (files == null) {
+            return dirs;
+        }
+        for (File entry : files) {
+            BackupFileDetails fd = new BackupFileDetails(entry);
             dirs.add(fd);
-            if (f.getName().toUpperCase().endsWith(".BCBK")) {
+            if (entry.getName().toUpperCase().endsWith(".BCBK")) {
                 BackupReader reader = null;
                 try {
-                    reader = BackupManager.readBackup(f);
+                    reader = BackupManager.readBackup(entry);
                     fd.setInfo(reader.getInfo());
                     reader.close();
                 } catch (IOException e) {

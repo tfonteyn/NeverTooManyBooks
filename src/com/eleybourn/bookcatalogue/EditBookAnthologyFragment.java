@@ -42,7 +42,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter.AnthologyTitleExistsException;
@@ -54,17 +53,20 @@ import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaEntryHandle
 import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaHandler;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.Utils;
-import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -96,6 +98,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     private static final String CLEANUP_REGEX = "[,.':;`~@#$%^&*(\\-=_+]*$";
 
     private EditText mTitleText;
+    private EditText mYearText;
     private AutoCompleteTextView mAuthorText;
     private long mBookId;
     private String mIsbn;
@@ -130,15 +133,15 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
      */
     private void loadPage() {
 
-        final BookData book = mEditManager.getBookData();
-        mBookAuthor = book.getString(UniqueId.KEY_AUTHOR_FORMATTED);
-        mBookTitle = book.getString(UniqueId.KEY_TITLE);
-        mIsbn = book.getString(UniqueId.KEY_ISBN);
-        mBookId = book.getRowId();
+        final BookData bookData = mEditManager.getBookData();
+        mBookAuthor = bookData.getString(UniqueId.KEY_AUTHOR_FORMATTED);
+        mBookTitle = bookData.getString(UniqueId.KEY_TITLE);
+        mIsbn = bookData.getString(UniqueId.KEY_ISBN);
+        mBookId = bookData.getRowId();
 
         // Setup the same author field
         mSame = getView().findViewById(R.id.same_author);
-        mSame.setChecked(((book.getInt(UniqueId.KEY_ANTHOLOGY_MASK) & TableInfo.ColumnInfo.ANTHOLOGY_MULTIPLE_AUTHORS) == TableInfo.ColumnInfo.ANTHOLOGY_NO));
+        mSame.setChecked(((bookData.getInt(UniqueId.KEY_ANTHOLOGY_MASK) & TableInfo.ColumnInfo.ANTHOLOGY_MULTIPLE_AUTHORS) == TableInfo.ColumnInfo.ANTHOLOGY_NO));
         mSame.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 saveState(mEditManager.getBookData());
@@ -146,25 +149,29 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
             }
         });
 
+        // AutoCompleteTextView
         ArrayAdapter<String> author_adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, mDb.getAuthors());
         mAuthorText = getView().findViewById(R.id.add_author);
         mAuthorText.setAdapter(author_adapter);
         mAuthorText.setVisibility(mSame.isChecked() ? View.GONE : View.VISIBLE);
 
         mTitleText = getView().findViewById(R.id.add_title);
+        mYearText = getView().findViewById(R.id.add_year);
 
-        mAdd = getView().findViewById(R.id.row_add);
+        mAdd = getView().findViewById(R.id.add_button);
         mAdd.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 try {
+                    String year = mYearText.getText().toString();
                     String title = mTitleText.getText().toString();
                     String author = mAuthorText.getText().toString();
                     if (mSame.isChecked()) {
                         author = mBookAuthor;
                     }
-                    AnthologyTitleListAdapter adapter = ((AnthologyTitleListAdapter) EditBookAnthologyFragment.this.getListView().getAdapter());
+                    AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing) EditBookAnthologyFragment.this.getListView().getAdapter());
+
                     if (mEditPosition == null) {
-                        AnthologyTitle anthology = new AnthologyTitle(book.getRowId(), new Author(author), title);
+                        AnthologyTitle anthology = new AnthologyTitle(new Author(author), title, year, bookData.getRowId());
                         adapter.add(anthology);
                     } else {
                         AnthologyTitle anthology = adapter.getItem(mEditPosition);
@@ -173,9 +180,11 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
                         mEditPosition = null;
                         mAdd.setText(R.string.anthology_add);
                     }
+
+                    mYearText.setText("");
                     mTitleText.setText("");
                     mAuthorText.setText("");
-                    //fillAnthology(currentPosition);
+                    //fillAnthology(currentPosition); don't fill here ? or do ?
                     mEditManager.setDirty(true);
                 } catch (AnthologyTitleExistsException e) {
                     Toast.makeText(getActivity(), R.string.the_title_already_exists, Toast.LENGTH_LONG).show();
@@ -195,7 +204,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         mList = mEditManager.getBookData().getAnthologyTitles();
 
         // Now create a simple cursor adapter and set it to display
-        AnthologyTitleListAdapter adapter = new AnthologyTitleListAdapter(getActivity(), R.layout.row_edit_anthology, mList);
+        AnthologyTitleListAdapterForEditing adapter = new AnthologyTitleListAdapterForEditing(getActivity(), R.layout.row_edit_anthology, mList);
         getListView().setAdapter(adapter);
 
         registerForContextMenu(getListView());
@@ -205,6 +214,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 mEditPosition = position;
                 AnthologyTitle anthology = mList.get(position);
+                mYearText.setText(anthology.getPublicationDate());
                 mTitleText.setText(anthology.getTitle());
                 mAuthorText.setText(anthology.getAuthor().getDisplayName());
                 mAdd.setText(R.string.anthology_save);
@@ -232,7 +242,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     //<editor-fold desc="ISFDB content fetching">
     private SimpleTaskQueue mAntFetcher = null;
 
-    //TODO: if we don't like the first one, allow the user to get the second ... etc
+    /** book urls for all editions found in the isbn search. We'll try them one by one if the user asks for a re-try */
     private List<String> mISFDBUrls;
 
     /**
@@ -243,7 +253,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         if (mAntFetcher == null) {
             mAntFetcher = new SimpleTaskQueue("isfdb-editions");
         }
-
+        Toast.makeText(EditBookAnthologyFragment.this.getContext(), R.string.connecting_to_web_site, Toast.LENGTH_LONG).show();
         mAntFetcher.enqueue(new ISFDBEditionsTask(mIsbn));
     }
 
@@ -265,7 +275,10 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) {
             String path = String.format(EDITIONS_URL, isbn);
             try {
-                Document doc = Jsoup.connect(path).get();
+                Document doc = Jsoup.connect(path)
+                        .userAgent("Mozilla")
+                        .followRedirects(true)
+                        .get();
                 getEntries(doc,"tr.table0");
                 getEntries(doc,"tr.table1");
                 // if no editions, we were redirected to the book itself
@@ -273,7 +286,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
                     editions.add(doc.location());
                 }
             } catch (IOException e) {
-                Logger.logError(e);
+                Logger.logError(e, path);
             }
         }
 
@@ -308,9 +321,11 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         if (mAntFetcher == null) {
             mAntFetcher = new SimpleTaskQueue("isfdb-book");
         }
-
         mAntFetcher.enqueue(new ISFDBBookTask(bookUrl));
     }
+
+    /** find (1960), group 1 will then contain the pure 1960 */
+    private static final Pattern YEAR_FROM_ISFDB_STORY_LI = Pattern.compile("\\(([1|2]\\d\\d\\d)\\)");
 
     private class ISFDBBookTask implements SimpleTaskQueue.SimpleTask {
         private final String bookUrl;
@@ -323,33 +338,65 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         @Override
         public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) {
             try {
-                Document doc = Jsoup
+                Connection isfdb = Jsoup
                         .connect(bookUrl)
                         .userAgent("Mozilla")
-                        .followRedirects(true)
-                        .get();
+                        .followRedirects(true);
+                Document doc = isfdb.get();
 
                 // <div class="ContentBox"> but there are two, so get last one
                 Element contentbox = doc.select("div.contentbox").last();
                 Elements lis = contentbox.select("li");
-                System.out.println(lis.size());
                 for (Element li : lis) {
+
+                    /* LI entries, 4 possibilities:
+
+                    7 &#8226;
+                    <a href="http://www.isfdb.org/cgi-bin/title.cgi?118799" dir="ltr">Introduction (The Days of Perky Pat)</a>
+                    &#8226; [
+                    <a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226" dir="ltr">Introductions to the Collected Stories of Philip K. Dick</a>
+                    &#8226; 4] &#8226; (1987) &#8226; essay by
+                    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?57" dir="ltr">James Tiptree, Jr.</a>
+
+
+                    11 &#8226;
+                    <a href="http://www.isfdb.org/cgi-bin/title.cgi?53646" dir="ltr">Autofac</a>
+                    &#8226; (1955) &#8226; novelette by
+                    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
+
+
+                    <a href="http://www.isfdb.org/cgi-bin/title.cgi?41613" dir="ltr">Beyond Lies the Wub</a>
+                    &#8226; (1952) &#8226; short story by
+                    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
+
+
+                    <a href="http://www.isfdb.org/cgi-bin/title.cgi?118803" dir="ltr">Introduction (Beyond Lies the Wub)</a>
+                    &#8226; [
+                    <a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226" dir="ltr">Introductions to the Collected Stories of Philip K. Dick</a>
+                    &#8226; 1] &#8226; (1987) &#8226; essay by
+                    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?69" dir="ltr">Roger Zelazny</a>
+
+                    So the year is always previous from last, but there is a non-visible 'text' node at the end, hence 'len-3'
+                     */
+                    int len = li.childNodeSize();
+                    Node y = li.childNode(len-3);
+                    Matcher matcher = YEAR_FROM_ISFDB_STORY_LI.matcher(y.toString());
+                    String  year = matcher.find() ? matcher.group(1) : "";
+                    /*
+                        See above for LI examples. The title is the first a element, the author is the last a element
+                     */
                     Elements a = li.select("a");
-                    // 2 or 3 'a' attributes, we want first and last + clean them up a bit
                     String title = cleanUpName(a.get(0).text());
                     String author = cleanUpName(a.get(a.size() - 1).text());
-                    results.add(new AnthologyTitle(mBookId, new Author(author), title));
+                    results.add(new AnthologyTitle(new Author(author), title, year, mBookId ));
                 }
             } catch (IOException e) {
-                Logger.logError(e);
+                Logger.logError(e, bookUrl);
             }
         }
 
         @Override
         public void onFinish(@Nullable final Exception e) {
-            for (AnthologyTitle t : results) {
-                System.out.println(t);
-            }
             showAnthologyConfirm(results);
         }
     }
@@ -363,26 +410,44 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     }
 
     private void showAnthologyConfirm(@NonNull final List<AnthologyTitle> results) {
-        //FIXME: this is usually to much to display as a Message in the dialog
-        StringBuilder titles = new StringBuilder();
-        for (AnthologyTitle t : results) {
-            titles.append(t.getTitle()).append(", ");
+        StringBuilder msg = new StringBuilder();
+        if (results.isEmpty()) {
+            msg.append(getString(R.string.search_fail));
+        } else {
+            //FIXME: this is usually to much to display as a Message in the dialog
+            for (AnthologyTitle t : results) {
+                msg.append(t.getTitle()).append(", ");
+            }
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(getActivity()).setMessage(titles)
+        AlertDialog dialog = new AlertDialog.Builder(getActivity()).setMessage(msg)
                 .setTitle(R.string.anthology_confirm)
                 .setIcon(R.drawable.ic_info_outline)
                 .create();
 
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                this.getResources().getString(android.R.string.ok),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
-                         mList.addAll(results);
-                        AnthologyTitleListAdapter adapter = ((AnthologyTitleListAdapter) EditBookAnthologyFragment.this.getListView().getAdapter());
-                        adapter.notifyDataSetChanged();
-                    }
-                });
+        if (!results.isEmpty()) {
+            dialog.setButton(AlertDialog.BUTTON_POSITIVE,
+                    this.getResources().getString(android.R.string.ok),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, final int which) {
+                           // check if its all the same author or not
+                            boolean sameAuthor = true;
+                            if (results.size() > 1) {
+                                Author author = results.get(0).getAuthor();
+                                for (AnthologyTitle t : results) { // yes, we check 0 twice.. oh well.
+                                    sameAuthor = author.equals(t.getAuthor());
+                                    if (!sameAuthor) {
+                                        break;
+                                    }
+                                }
+                            }
+                            mSame.setChecked(sameAuthor);
+                            mList.addAll(results);
+                            AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing) EditBookAnthologyFragment.this.getListView().getAdapter());
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+        }
 
         // if we found multiple editions, allow a re-try with the next inline
         if (mISFDBUrls.size() > 1) {
@@ -451,7 +516,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         switch (item.getItemId()) {
             case DELETE_ID:
                 AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-                AnthologyTitleListAdapter adapter = ((AnthologyTitleListAdapter) EditBookAnthologyFragment.this.getListView().getAdapter());
+                AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing) EditBookAnthologyFragment.this.getListView().getAdapter());
                 adapter.remove(adapter.getItem((int) info.id));
                 mEditManager.setDirty(true);
                 return true;
@@ -459,9 +524,9 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         return super.onContextItemSelected(item);
     }
 
-    private void saveState(BookData book) {
-        book.setAnthologyTitles(mList);
-        book.putInt(UniqueId.KEY_ANTHOLOGY_MASK,
+    private void saveState(BookData bookData) {
+        bookData.setAnthologyTitles(mList);
+        bookData.putInt(UniqueId.KEY_ANTHOLOGY_MASK,
                 mSame.isChecked() ?
                         TableInfo.ColumnInfo.ANTHOLOGY_IS_ANTHOLOGY
                         : TableInfo.ColumnInfo.ANTHOLOGY_MULTIPLE_AUTHORS ^ TableInfo.ColumnInfo.ANTHOLOGY_IS_ANTHOLOGY);
@@ -489,27 +554,17 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         saveState(bookData);
     }
 
-    protected class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle> {
+    protected class AnthologyTitleListAdapterForEditing extends AnthologyTitleListAdapter {
 
-        AnthologyTitleListAdapter(@NonNull final Context context,
-                                  final int rowViewId,
-                                  @NonNull final ArrayList<AnthologyTitle> items) {
+        AnthologyTitleListAdapterForEditing(@NonNull final Context context,
+                                            final int rowViewId,
+                                            @NonNull final ArrayList<AnthologyTitle> items) {
             super(context, rowViewId, items);
         }
 
         @Override
-        protected void onSetupView(@NonNull final View convertView,
-                                   @NonNull final AnthologyTitle item,
-                                   final int position) {
-            TextView title = convertView.findViewById(R.id.row_title);
-            title.setText(item.getTitle());
-
-            TextView author = convertView.findViewById(R.id.row_author);
-            author.setText(item.getAuthor().getDisplayName());
-        }
-
-        @Override
         protected void onRowClick(@NonNull final View v, @NonNull final AnthologyTitle item, final int position) {
+            mYearText.setText(item.getPublicationDate());
             mTitleText.setText(item.getTitle());
             mAuthorText.setText(item.getAuthor().getDisplayName());
             mEditPosition = position;
@@ -522,6 +577,8 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         }
     }
 
+
+    //<editor-fold desc="Wikipedia content fetching">
     /**
      * it works now as a background task, but the results are not good. Doesn't seem Wikipedia
      * is a good (e.g. structured) source
@@ -603,7 +660,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     }
 
     private void showAnthologyConfirmWikipedia(final List<String> titles) {
-        final BookData book = mEditManager.getBookData();
+        final BookData bookData = mEditManager.getBookData();
         StringBuilder anthology_title = new StringBuilder();
         for (int j = 0; j < titles.size(); j++) {
             anthology_title.append("* ").append(titles.get(j)).append("\n");
@@ -637,10 +694,10 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
                                     .replace("\n", " ")
                                     .replaceAll(CLEANUP_REGEX, "")
                                     .trim();
-                            AnthologyTitle anthology = new AnthologyTitle(book.getRowId(), new Author(anthology_author), anthology_title);
+                            AnthologyTitle anthology = new AnthologyTitle( new Author(anthology_author), anthology_title, "", bookData.getRowId());
                             mList.add(anthology);
                         }
-                        AnthologyTitleListAdapter adapter = ((AnthologyTitleListAdapter) EditBookAnthologyFragment.this.getListView().getAdapter());
+                        AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing) EditBookAnthologyFragment.this.getListView().getAdapter());
                         adapter.notifyDataSetChanged();
                     }
                 });
@@ -655,5 +712,6 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         dialog.show();
 
     }
+    //</editor-fold>
 
 }

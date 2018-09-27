@@ -27,7 +27,7 @@ public class GoodreadsUtils {
     public static void showGoodreadsOptions(@NonNull final BookCatalogueActivity activity) {
         LayoutInflater inf = activity.getLayoutInflater();
         @SuppressLint("InflateParams") // root==null as it's a dialog
-                View root = inf.inflate(R.layout.goodreads_options_list, null);
+        View root = inf.inflate(R.layout.goodreads_options_list, null);
 
         final AlertDialog grDialog = new AlertDialog.Builder(activity).setView(root).create();
         grDialog.setTitle(R.string.select_an_action);

@@ -128,10 +128,6 @@ public class PartialDatePickerFragment extends DialogFragment {
         return editor;
     }
 
-    public int getDialogId() {
-        return mDialogId;
-    }
-
     public PartialDatePickerFragment setDialogId(final int id) {
         mDialogId = id;
         return this;

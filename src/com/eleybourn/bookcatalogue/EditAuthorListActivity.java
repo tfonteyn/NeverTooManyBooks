@@ -59,7 +59,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     }
 
     @Override
-    protected void onSetupView(@NonNull final View target, @NonNull final Author object, final int position) {
+    protected void onSetupView(@NonNull final View target, @NonNull final Author object) {
         TextView at = target.findViewById(R.id.row_author);
         if (at != null) {
             at.setText(object.getDisplayName());

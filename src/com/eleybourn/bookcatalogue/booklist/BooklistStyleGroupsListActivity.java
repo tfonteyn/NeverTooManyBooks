@@ -118,7 +118,7 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
      * Set up the view for a passed wrapper.
      */
     @Override
-    protected void onSetupView(@NonNull final View target, @NonNull final GroupWrapper wrapper, final int position) {
+    protected void onSetupView(@NonNull final View target, @NonNull final GroupWrapper wrapper) {
         // Get a Holder
         Holder holder;
         holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);

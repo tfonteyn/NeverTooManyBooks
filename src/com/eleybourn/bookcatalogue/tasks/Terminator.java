@@ -56,7 +56,7 @@ public class Terminator {
 
 	/** Details of the runnable to run */
 	private static class Event {
-		public final long time;
+		final long time;
 		public final Runnable runnable;
 		public Event(Runnable r, long time) {
 			runnable = r;

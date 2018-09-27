@@ -79,10 +79,6 @@ public class LegacyEvent extends Event {
         ((TextView) view.findViewById(TEXT_FIELD_2)).setText("This event is obsolete and can not be recovered. It is probably advisable to delete it.");
     }
 
-    public byte[] getOriginal() {
-        return m_original;
-    }
-
     @Override
     public void addContextMenuItems(@NonNull final Context ctx,
                                     @NonNull final AdapterView<?> parent,

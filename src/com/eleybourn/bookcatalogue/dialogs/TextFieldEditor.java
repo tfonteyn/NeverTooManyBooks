@@ -39,7 +39,7 @@ import com.eleybourn.bookcatalogue.R;
  * 
  * @author pjw
  */
-public class TextFieldEditor extends AlertDialog {
+class TextFieldEditor extends AlertDialog {
     /** View which displays the text */
 	private final EditText mTextView;
 	// Listener for dialog exit/save/cancel */

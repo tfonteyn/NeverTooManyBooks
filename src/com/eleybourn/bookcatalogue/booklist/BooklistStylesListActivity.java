@@ -104,7 +104,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
     }
 
     @Override
-    protected void onSetupView(@NonNull final View target, @NonNull final BooklistStyle style, final int position) {
+    protected void onSetupView(@NonNull final View target, @NonNull final BooklistStyle style) {
         Holder holder;
         holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
         if (holder == null) {

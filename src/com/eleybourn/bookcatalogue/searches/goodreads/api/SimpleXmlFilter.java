@@ -437,7 +437,7 @@ public class SimpleXmlFilter {
             this.key = key;
         }
 
-        public abstract void put(BuilderContext context, String value);
+        protected abstract void put(BuilderContext context, String value);
     }
 
     private class StringAttrFilter extends AttrFilter {

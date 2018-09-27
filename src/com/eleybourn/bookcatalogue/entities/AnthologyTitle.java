@@ -20,70 +20,54 @@
 package com.eleybourn.bookcatalogue.entities;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
  * Class to represent a single title within an anthology
  *
  * Note:
- *   these are always insert/update'd ONLY when a book is insert/update'd
- *   Hence writes are always a List<AnthologyTitle> in one go. This circumvents the 'position' column
- *   as the update will simply insert in-order and auto increment position.
+ * these are always insert/update'd ONLY when a book is insert/update'd
+ * Hence writes are always a List<AnthologyTitle> in one go. This circumvents the 'position' column
+ * as the update will simply insert in-order and auto increment position.
  *
  * The table has some limitations right now
  * 1. can only exist in ONE book
- * -> TODO split "anthology" table into "anthology" table without bookid/position, and "anthology_book_weak"
  * 2. can only have one author
- * -> TODO? might be overkill
- *
- * "anthology_book_weak" must then have:
- * - id
- * - book_id
- * - anthology_id
- * - anthology_position_in_book
  *
  * @author pjw
  */
 public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
-    //TODO: see if this matters, I don't think we serialise this to external/blob
-    //private static final long serialVersionUID = -8715364898312204329L;
-    private static final long serialVersionUID = 2L;
-
     /**
      * import/export etc...
      *
      * "anthology title * author "
      */
     public static final char TITLE_AUTHOR_DELIM = '*';
-
+    //TODO: see if this matters, I don't think we serialise this to external/blob
+    //private static final long serialVersionUID = -8715364898312204329L;
+    private static final long serialVersionUID = 2L;
     private long id;
     private Author mAuthor;
     private String mTitle;
+    private String mPublicationDate;
 
-    private long mBookId;
-    private long mPosition;     // order in the book, [1..x]
+    private long mBookId = 0;
+    private long mPosition = 0;     // order in the book, [1..x]
 
     /**
      * Constructor that will attempt to parse a single string into an AnthologyTitle name.
      */
-    public AnthologyTitle(@NonNull final String name) {
+    public AnthologyTitle(@NonNull final String encodedString) {
         id = 0;
-        mBookId = 0;
-        mPosition = 0;
-        authorFromName(name);
-    }
-
-    private void authorFromName(String name) {
-        ArrayList<String> data = ArrayUtils.decodeList(TITLE_AUTHOR_DELIM, name);
-        mTitle = data.get(0);
-        mAuthor = new Author(data.get(1));
+        authorFromName(encodedString);
     }
 
     /**
@@ -92,8 +76,12 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
      * @param author Author of title
      * @param title  Title
      */
-    public AnthologyTitle(final long bookId, @NonNull final Author author, @NonNull final String title) {
-        this(0, bookId, author, title, 0);
+    public AnthologyTitle(@NonNull final Author author,
+                          @NonNull final String title,
+                          @Nullable final String publicationDate,
+
+                          final long bookId) {
+        this(0, author, title, publicationDate, bookId, 0);
     }
 
     /**
@@ -102,13 +90,26 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
      * @param author Author of title
      * @param title  Title
      */
-    @SuppressWarnings("WeakerAccess")
-    public AnthologyTitle(final long id, final long bookId, @NonNull final Author author, @NonNull final String title, final int position) {
+    private AnthologyTitle(final long id,
+                           @NonNull final Author author,
+                           @NonNull final String title,
+                           @Nullable final String publicationDate,
+
+                           final long bookId,
+                           final int position) {
         this.id = id;
-        mBookId = bookId;
         mAuthor = author;
         mTitle = title.trim();
+        mPublicationDate = publicationDate;
+
+        mBookId = bookId;
         mPosition = position;
+    }
+
+    private void authorFromName(@NonNull final String encodedString) {
+        List<String> data = ArrayUtils.decodeList(TITLE_AUTHOR_DELIM, encodedString);
+        mTitle = data.get(0);
+        mAuthor = new Author(data.get(1));
     }
 
     @NonNull
@@ -145,8 +146,17 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         this.mPosition = mPosition;
     }
 
+    public String getPublicationDate() {
+        return mPublicationDate;
+    }
+
+    public void setPublicationDate(final String mPublicationDate) {
+        this.mPublicationDate = mPublicationDate;
+    }
+
     /**
      * Support for encoding to a text file
+     * TODO: V83 import/export
      */
     @Override
     @NonNull
@@ -156,7 +166,8 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
 
     @Override
     public long fixupId(@NonNull final CatalogueDBAdapter db) {
-        this.id = db.getAnthologyTitleId(mBookId, mAuthor.getId(), mTitle);
+        this.mAuthor.id = db.getAuthorIdByName(mAuthor.familyName, mAuthor.givenNames);
+        this.id = db.getAnthologyTitleId(mAuthor.getId(), mTitle);
         return this.id;
     }
 
@@ -173,6 +184,11 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         return true;
     }
 
+    /**
+     * Two are the same if:
+     * - one or both are 'new' (id==0)  and author + title is the same
+     * - their id's are the same
+     */
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -182,7 +198,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
             return false;
         }
         AnthologyTitle that = (AnthologyTitle) o;
-        if ( id == 0 || that.id == 0) {
+        if (id == 0 || that.id == 0) {
             return Objects.equals(mAuthor, that.mAuthor) && Objects.equals(mTitle, that.mTitle);
         }
         return (id == that.id);

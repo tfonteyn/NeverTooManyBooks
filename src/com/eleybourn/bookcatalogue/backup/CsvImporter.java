@@ -379,12 +379,13 @@ public class CsvImporter implements Importer {
                     int j = extracted_title.indexOf(AnthologyTitle.TITLE_AUTHOR_DELIM);
                     if (j > -1) {
                         String ant_title = extracted_title.substring(0, j).trim();
-                        String ant_author = extracted_title.substring((j + 1)).trim();
-
-                        Author author = Author.toAuthor(ant_author);
-                        long newId = db.insertAnthologyTitle(id, author, ant_title, true, false);
-                        if (newId == INSERT_FAILED) {
-                            Logger.logError("Failed to insert: " + anthology_titles);
+                        if (!ant_title.isEmpty()) {
+                            String ant_author = extracted_title.substring((j + 1)).trim();
+                            long authorId = db.getAuthorIdOrInsert(Author.toAuthor(ant_author));
+                            long newId = db.insertAnthologyTitle(authorId, ant_title, "", id, false);
+                            if (newId == INSERT_FAILED) {
+                                Logger.logError("Failed to insert: " + anthology_titles);
+                            }
                         }
                     }
                     oldi = i + 1;

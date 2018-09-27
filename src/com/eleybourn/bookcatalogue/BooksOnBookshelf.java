@@ -32,6 +32,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -1081,7 +1082,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      */
     private void makeText(@NonNull final ViewGroup parent,
                           @NonNull final LayoutInflater inf,
-                          final int stringId,
+                          @StringRes final int stringId,
                           @NonNull final OnClickListener listener) {
         @SuppressLint("InflateParams") // it's a dialog -> root==null
         TextView view = (TextView) inf.inflate(R.layout.booklist_style_menu_text, null);

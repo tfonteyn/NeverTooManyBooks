@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.database.definitions;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -52,7 +53,7 @@ public class TableDefinition implements AutoCloseable {
      * @param name    Table name
      * @param domains List of domains in table
      */
-    public TableDefinition(String name, DomainDefinition... domains) {
+    public TableDefinition(@NonNull final String name, @NonNull final DomainDefinition... domains) {
         this.mName = name;
         this.mAlias = name;
         this.mDomains = new ArrayList<>();
@@ -70,7 +71,7 @@ public class TableDefinition implements AutoCloseable {
     /**
      * Static method to drop the passed table, if it exists.
      */
-    private static void drop(DbSync.SynchronizedDb db, String name) {
+    private static void drop(@NonNull final DbSync.SynchronizedDb db, @NonNull final String name) {
         if (BuildConfig.DEBUG) {
             System.out.println("Dropping Table " + name);
         }
@@ -80,6 +81,7 @@ public class TableDefinition implements AutoCloseable {
     /**
      * @return list of domains.
      */
+    @NonNull
     public List<DomainDefinition> getDomains() {
         return mDomains;
     }
@@ -119,6 +121,7 @@ public class TableDefinition implements AutoCloseable {
     /**
      * Make a copy of this table.
      */
+    @NonNull
     public TableDefinition clone() {
         TableDefinition newTbl = new TableDefinition();
         newTbl.setName(mName);
@@ -145,6 +148,7 @@ public class TableDefinition implements AutoCloseable {
     /**
      * @return indexes on this table.
      */
+    @NonNull
     public Collection<IndexDefinition> getIndexes() {
         return mIndexes.values();
     }
@@ -154,6 +158,7 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return table name.
      */
+    @NonNull
     public String getName() {
         return mName;
     }
@@ -166,7 +171,8 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    public TableDefinition setName(String newName) {
+    @NonNull
+    public TableDefinition setName(@NonNull final String newName) {
         this.mName = newName;
         return this;
     }
@@ -176,6 +182,7 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return Alias
      */
+    @NonNull
     public String getAlias() {
         if (mAlias == null || mAlias.isEmpty())
             return getName();
@@ -190,7 +197,8 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return TableDefinition (for chaining)
      */
-    public TableDefinition setAlias(String newAlias) {
+    @NonNull
+    public TableDefinition setAlias(@NonNull final String newAlias) {
         mAlias = newAlias;
         return this;
     }
@@ -202,7 +210,8 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return SQL fragment
      */
-    public String dot(DomainDefinition d) {
+    @NonNull
+    public String dot(@NonNull final DomainDefinition d) {
         return getAlias() + "." + d.name;
     }
 
@@ -216,7 +225,8 @@ public class TableDefinition implements AutoCloseable {
      * @return SQL fragment
      */
     @SuppressWarnings("unused")
-    public String dotAs(DomainDefinition d) {
+    @NonNull
+    public String dotAs(@NonNull final DomainDefinition d) {
         return getAlias() + "." + d.name + " as " + d.name;
     }
 
@@ -228,8 +238,8 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return SQL fragment
      */
-    @SuppressWarnings("unused")
-    public String dotAs(DomainDefinition d, DomainDefinition asDomain) {
+    @NonNull
+    public String dotAs(@NonNull final DomainDefinition d, @NonNull final DomainDefinition asDomain) {
         return getAlias() + "." + d.name + " as " + asDomain.name;
     }
 
@@ -240,7 +250,8 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return SQL fragment
      */
-    public String dot(String s) {
+    @NonNull
+    public String dot(@NonNull final String s) {
         return getAlias() + "." + s;
     }
 
@@ -251,7 +262,8 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return TableDefinition (for chaining)
      */
-    public TableDefinition setPrimaryKey(DomainDefinition... domains) {
+    @NonNull
+    public TableDefinition setPrimaryKey(@NonNull final DomainDefinition... domains) {
         mPrimaryKey.clear();
         Collections.addAll(mPrimaryKey, domains);
         return this;
@@ -264,7 +276,8 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return TableDefinition (for chaining)
      */
-    private TableDefinition addReference(FkReference fk) {
+    @NonNull
+    private TableDefinition addReference(@NonNull final FkReference fk) {
         if (fk.child != this)
             throw new RuntimeException("Foreign key does not include this table as child");
         mParents.put(fk.parent, fk);
@@ -280,7 +293,8 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return TableDefinition (for chaining)
      */
-    public TableDefinition addReference(TableDefinition parent, DomainDefinition... domains) {
+    @NonNull
+    public TableDefinition addReference(@NonNull final TableDefinition parent, @NonNull final DomainDefinition... domains) {
         FkReference fk = new FkReference(parent, this, domains);
         return addReference(fk);
     }
@@ -294,7 +308,8 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    private TableDefinition addReference(TableDefinition parent, List<DomainDefinition> domains) {
+    @NonNull
+    private TableDefinition addReference(@NonNull final TableDefinition parent, @NonNull final List<DomainDefinition> domains) {
         FkReference fk = new FkReference(parent, this, domains);
         return addReference(fk);
     }
@@ -307,7 +322,8 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    private TableDefinition removeReference(TableDefinition parent) {
+    @NonNull
+    private TableDefinition removeReference(@NonNull final TableDefinition parent) {
         mParents.remove(parent);
         parent.removeChild(this);
         return this;
@@ -322,7 +338,7 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    private TableDefinition addChild(TableDefinition child, FkReference fk) {
+    private TableDefinition addChild(@NonNull final TableDefinition child, @NonNull final FkReference fk) {
         if (!mChildren.containsKey(child))
             mChildren.put(child, fk);
         return this;
@@ -336,7 +352,8 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    private TableDefinition removeChild(TableDefinition child) {
+    @NonNull
+    private TableDefinition removeChild(@NonNull final TableDefinition child) {
         mChildren.remove(child);
         return this;
     }
@@ -349,7 +366,8 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    public TableDefinition addDomain(DomainDefinition domain) {
+    @NonNull
+    public TableDefinition addDomain(@NonNull final DomainDefinition domain) {
         // Make sure it's not already in the table
         if (mDomainCheck.contains(domain))
             return this;
@@ -370,7 +388,8 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return TableDefinition (for chaining)
      */
-    public TableDefinition addDomains(DomainDefinition... domains) {
+    @NonNull
+    public TableDefinition addDomains(@NonNull final DomainDefinition... domains) {
         for (DomainDefinition d : domains)
             addDomain(d);
         return this;
@@ -384,7 +403,8 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    private TableDefinition addDomains(List<DomainDefinition> domains) {
+    @NonNull
+    private TableDefinition addDomains(@NonNull final List<DomainDefinition> domains) {
         for (DomainDefinition d : domains)
             addDomain(d);
         return this;
@@ -399,7 +419,8 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return TableDefinition (for chaining)
      */
-    public TableDefinition addIndex(String localKey, boolean unique, DomainDefinition... domains) {
+    @NonNull
+    public TableDefinition addIndex(@NonNull final String localKey, final boolean unique, @NonNull final DomainDefinition... domains) {
         // Make sure not already defined
         if (mIndexes.containsKey(localKey))
             throw new RuntimeException("Index with local name '" + localKey + "' already defined");
@@ -413,7 +434,8 @@ public class TableDefinition implements AutoCloseable {
      * Drop this table from the passed DB.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public TableDefinition drop(DbSync.SynchronizedDb db) {
+    @NonNull
+    public TableDefinition drop(@NonNull final DbSync.SynchronizedDb db) {
         drop(db, mName);
         return this;
     }
@@ -427,7 +449,8 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    public TableDefinition create(DbSync.SynchronizedDb db, boolean withConstraints) {
+    @NonNull
+    public TableDefinition create(@NonNull final DbSync.SynchronizedDb db, final boolean withConstraints) {
         if (BuildConfig.DEBUG) {
             String s = this.getSql(mName, withConstraints, false);
             if (DEBUG_SWITCHES.SQL) {
@@ -449,7 +472,8 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    public TableDefinition createAll(DbSync.SynchronizedDb db, boolean withConstraints) {
+    @NonNull
+    public TableDefinition createAll(@NonNull final DbSync.SynchronizedDb db, final boolean withConstraints) {
         db.execSQL(this.getSql(mName, withConstraints, false));
         createIndices(db);
         return this;
@@ -464,7 +488,8 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @SuppressWarnings("unused")
-    public TableDefinition createIfNecessary(DbSync.SynchronizedDb db, boolean withConstraints) {
+    @NonNull
+    public TableDefinition createIfNecessary(@NonNull final DbSync.SynchronizedDb db, final boolean withConstraints) {
         db.execSQL(this.getSql(mName, withConstraints, true));
         return this;
     }
@@ -477,7 +502,8 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return SQL fragment
      */
-    public String getInsert(DomainDefinition... domains) {
+    @NonNull
+    public String getInsert(@NonNull final DomainDefinition... domains) {
         StringBuilder s = new StringBuilder("Insert Into ");
         s.append(mName);
         s.append(" (\n");
@@ -500,7 +526,8 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return SQL fragment
      */
-    public String ref(DomainDefinition... domains) {
+    @NonNull
+    public String ref(@Nullable final DomainDefinition... domains) {
         if (domains == null || domains.length == 0)
             return "";
 
@@ -524,7 +551,8 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return SQL fragment
      */
-    public String getUpdate(DomainDefinition... domains) {
+    @NonNull
+    public String getUpdate(@NonNull final DomainDefinition... domains) {
         StringBuilder s = new StringBuilder("Update ");
         s.append(mName);
         s.append(" Set\n");
@@ -549,7 +577,8 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return SQL fragment
      */
-    public String getInsertOrReplaceValues(DomainDefinition... domains) {
+    @NonNull
+    public String getInsertOrReplaceValues(@NonNull final DomainDefinition... domains) {
         StringBuilder s = new StringBuilder("Insert or Replace Into ");
         StringBuilder sPlaceholders = new StringBuilder("?");
         s.append(mName);
@@ -575,13 +604,15 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return TableDefinition (for chaining)
      */
-    public TableDefinition setType(TableTypes type) {
+    @NonNull
+    public TableDefinition setType(@NonNull final TableTypes type) {
         mType = type;
         return this;
     }
 
     /** useful for using the TableDefinition in place of a table name */
     @Override
+    @NonNull
     public String toString() {
         return mName;
     }
@@ -595,7 +626,8 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return SQL to create table
      */
-    private String getSql(String name, boolean withConstraints, boolean ifNecessary) {
+    @NonNull
+    private String getSql(@NonNull final String name, final boolean withConstraints, final boolean ifNecessary) {
         StringBuilder sql = new StringBuilder("Create ");
         switch (mType) {
             case Standard:
@@ -646,7 +678,8 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return SQL fragment (eg. 'join [to-name] [to-alias] On [pk/fk match]')
      */
-    public String join(TableDefinition to) {
+    @NonNull
+    public String join(@NonNull final TableDefinition to) {
         return " join " + to.ref() + " On (" + fkMatch(to) + ")";
     }
 
@@ -657,7 +690,8 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return SQL fragment (eg. <to-alias>.<to-pk> = <from-alias>.<from-pk>').
      */
-    public String fkMatch(TableDefinition to) {
+    @NonNull
+    public String fkMatch(@NonNull final TableDefinition to) {
         FkReference fk;
         if (mChildren.containsKey(to)) {
             fk = mChildren.get(to);
@@ -675,6 +709,7 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return Domain List
      */
+    @NonNull
     private List<DomainDefinition> getPrimaryKey() {
         return mPrimaryKey;
     }
@@ -687,7 +722,8 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    private TableDefinition setPrimaryKey(List<DomainDefinition> domains) {
+    @NonNull
+    private TableDefinition setPrimaryKey(@NonNull final List<DomainDefinition> domains) {
         mPrimaryKey.clear();
         mPrimaryKey.addAll(domains);
         return this;
@@ -698,6 +734,7 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return SQL Fragment
      */
+    @NonNull
     public String ref() {
         return mName + " " + getAlias();
     }
@@ -710,7 +747,8 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    public TableDefinition createIndices(DbSync.SynchronizedDb db) {
+    @NonNull
+    public TableDefinition createIndices(@NonNull final DbSync.SynchronizedDb db) {
         for (IndexDefinition i : getIndexes()) {
             db.execSQL(i.getSql());
         }

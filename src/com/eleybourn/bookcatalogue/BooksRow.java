@@ -101,7 +101,7 @@ public class BooksRow {
     @SuppressWarnings("unused")
     public final String getDatePublished() {
         if (mDatePublishedCol < 0) {
-            mDatePublishedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED.name);
+            mDatePublishedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_DATE_PUBLISHED.name);
             if (mDatePublishedCol < 0)
                 throw new RuntimeException("DATE_PUBLISHED column not in result set");
         }

@@ -25,6 +25,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.View;
@@ -97,7 +98,7 @@ public class HintManager {
 
     /** Display the passed hint, if the user has not disabled it */
     public static void displayHint(@NonNull final Context context,
-                                   final int stringId,
+                                   @StringRes final int stringId,
                                    @Nullable final Runnable postRun,
                                    @Nullable final Object... args) {
         // Get the hint and return if it has been disabled.

@@ -8,7 +8,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
@@ -108,7 +108,7 @@ public class UniqueId {
     public static final String KEY_BOOK_ID = DOM_BOOK_ID.name; // TODO: does not seem to be in active use
     public static final String KEY_BOOK_UUID = DOM_BOOK_UUID.name;
     public static final String KEY_BOOK_DATE_ADDED = DOM_BOOK_DATE_ADDED.name;
-    public static final String KEY_BOOK_DATE_PUBLISHED = DOM_BOOK_DATE_PUBLISHED.name;
+    public static final String KEY_BOOK_DATE_PUBLISHED = DOM_DATE_PUBLISHED.name;
     public static final String KEY_BOOK_FORMAT = DOM_BOOK_FORMAT.name;
     public static final String KEY_BOOK_GENRE = DOM_BOOK_GENRE.name;
     public static final String KEY_BOOK_LANGUAGE = DOM_BOOK_LANGUAGE.name;

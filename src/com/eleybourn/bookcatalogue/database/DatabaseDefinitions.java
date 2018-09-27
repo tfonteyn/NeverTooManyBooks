@@ -42,6 +42,7 @@ public class DatabaseDefinitions {
     private static final String ALIAS_ANTHOLOGY = "an";
     private static final String ALIAS_AUTHORS = "a";
     private static final String ALIAS_BOOKS = "b";
+    private static final String ALIAS_BOOK_ANTHOLOGY = "bat";
     private static final String ALIAS_BOOK_AUTHOR = "ba";
     private static final String ALIAS_BOOK_LIST = "bl";
     private static final String ALIAS_BOOK_LIST_ROW_POSITION = "blrp";
@@ -59,11 +60,15 @@ public class DatabaseDefinitions {
      */
     static final String DB_TB_ANTHOLOGY = "anthology";
     static final String DB_TB_AUTHORS = "authors";
+    static final String DB_TB_BOOK_ANTHOLOGY = "book_anthology";
     static final String DB_TB_BOOK_AUTHOR = "book_author";
-    static final String DB_TB_BOOK_SERIES = "book_series";
+
     static final String DB_TB_BOOK_BOOKSHELF_WEAK = "book_bookshelf_weak";
+    static final String DB_TB_BOOK_SERIES = "book_series";
+
     static final String DB_TB_BOOKS = "books";
     static final String DB_TB_BOOKSHELF = "bookshelf";
+
     static final String DB_TB_LOAN = "loan";
     static final String DB_TB_SERIES = "series";
     private static final String DB_TB_BOOKLIST_STYLES = "book_list_styles";
@@ -80,11 +85,21 @@ public class DatabaseDefinitions {
     public static final DomainDefinition DOM_ID = new DomainDefinition("_id", TableInfo.TYPE_INTEGER, NOT_NULL, "primary key autoincrement");
 
     public static final DomainDefinition DOM_TITLE = new DomainDefinition("title", TableInfo.TYPE_TEXT, NOT_NULL, "");
+    public static final DomainDefinition DOM_DATE_PUBLISHED = new DomainDefinition("date_published", TableInfo.TYPE_DATE);
 
-    /** 0 = not an ant, 1 = ant from 1 author, 2 = ant from multiple authors */
+    /**
+     * bitmask!
+     *  00 = not an ant,
+     *  01 = ant from one author)
+     *  10 = not an ant, multiple authors -> not in the wild
+     *  11 = ant from multiple authors
+     *  So fro now, the field will be 0,1,3
+     *  */
     public static final DomainDefinition DOM_ANTHOLOGY_MASK = new DomainDefinition("anthology", TableInfo.TYPE_INT, NOT_NULL, "default " + TableInfo.ColumnInfo.ANTHOLOGY_NO);
+
+    public static final DomainDefinition DOM_ANTHOLOGY_ID = new DomainDefinition("anthology", TableInfo.TYPE_INTEGER);
     /** order of the anthology titles in a book */
-    public static final DomainDefinition DOM_ANTHOLOGY_POSITION = new DomainDefinition("position", TableInfo.TYPE_INTEGER, NOT_NULL, "");
+    public static final DomainDefinition DOM_BOOK_ANTHOLOGY_POSITION = new DomainDefinition("position", TableInfo.TYPE_INTEGER, NOT_NULL, "");
 
 
     public static final DomainDefinition DOM_AUTHOR_ID = new DomainDefinition("author", TableInfo.TYPE_INTEGER, NOT_NULL, "");
@@ -99,7 +114,6 @@ public class DatabaseDefinitions {
     public static final DomainDefinition DOM_BOOK_ID = new DomainDefinition("book", TableInfo.TYPE_INTEGER);
     public static final DomainDefinition DOM_BOOK_ISBN = new DomainDefinition("isbn", TableInfo.TYPE_TEXT);
     public static final DomainDefinition DOM_BOOK_COUNT = new DomainDefinition("book_count", TableInfo.TYPE_INTEGER);
-    public static final DomainDefinition DOM_BOOK_DATE_PUBLISHED = new DomainDefinition("date_published", TableInfo.TYPE_DATE);
     public static final DomainDefinition DOM_BOOK_DATE_ADDED = new DomainDefinition("date_added", TableInfo.TYPE_DATETIME,"", "default current_timestamp" );
     public static final DomainDefinition DOM_BOOK_UUID = new DomainDefinition("book_uuid", TableInfo.TYPE_TEXT, NOT_NULL, "default (lower(hex(randomblob(16))))");
     public static final DomainDefinition DOM_BOOK_FORMAT = new DomainDefinition("format", TableInfo.TYPE_TEXT, "default ''");
@@ -227,11 +241,10 @@ public class DatabaseDefinitions {
     /**
      * Partial representation of ANTHOLOGY table
      */
-    @SuppressWarnings("WeakerAccess")
     public static final TableDefinition TBL_ANTHOLOGY = new TableDefinition(DB_TB_ANTHOLOGY)
-            .addDomains(DOM_ID, DOM_BOOK_ID, DOM_AUTHOR_ID, DOM_TITLE, DOM_ANTHOLOGY_POSITION)
+            .addDomains(DOM_ID, DOM_AUTHOR_ID, DOM_TITLE, DOM_DATE_PUBLISHED)
             .setAlias(ALIAS_ANTHOLOGY)
-            .addReference(TBL_BOOKS, DOM_BOOK_ID)
+            .setPrimaryKey(DOM_ID)
             .addReference(TBL_AUTHORS, DOM_AUTHOR_ID);
 
     /**
@@ -242,6 +255,16 @@ public class DatabaseDefinitions {
             .setAlias(ALIAS_BOOK_AUTHOR)
             .addReference(TBL_BOOKS, DOM_BOOK_ID)
             .addReference(TBL_AUTHORS, DOM_AUTHOR_ID);
+
+    /**
+     * Partial representation of BOOK_ANTHOLOGY table
+     */
+    public static final TableDefinition TBL_BOOK_ANTHOLOGY = new TableDefinition(DB_TB_BOOK_ANTHOLOGY)
+            .addDomains(DOM_BOOK_ID, DOM_ANTHOLOGY_ID, DOM_BOOK_ANTHOLOGY_POSITION)
+            .setAlias(ALIAS_BOOK_ANTHOLOGY)
+            .setPrimaryKey(DOM_BOOK_ID, DOM_ANTHOLOGY_ID)
+            .addReference(TBL_BOOKS, DOM_BOOK_ID)
+            .addReference(TBL_ANTHOLOGY, DOM_ANTHOLOGY_ID);
 
     /**
      * Partial representation of BOOK_SERIES table
@@ -270,6 +293,8 @@ public class DatabaseDefinitions {
             .setPrimaryKey(DOM_ID)
             .setAlias(ALIAS_LOAN)
             .addReference(TBL_BOOKS, DOM_BOOK_ID);
+
+
 
     // Base Name of BOOK_LIST-related tables.
     private static final String TBL_BOOK_LIST_NAME = "book_list_tmp";

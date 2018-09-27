@@ -527,7 +527,7 @@ public class FastScroller {
         String[] getSectionTextForPosition(final int position);
     }
 
-    public class ScrollFade implements Runnable {
+    class ScrollFade implements Runnable {
 
         static final int ALPHA_MAX = 208;
         static final long FADE_DURATION = 200;

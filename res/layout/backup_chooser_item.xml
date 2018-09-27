@@ -24,8 +24,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/padding_border"
         android:layout_toEndOf="@id/icon"
-        tools:text="fred.txt"
-        android:textIsSelectable="true" />
+        tools:text="fred.txt" />
 
     <TextView
         android:id="@+id/details"
@@ -35,8 +34,7 @@
         android:paddingStart="@dimen/padding_book_details_text"
         android:layout_marginTop="@dimen/padding_border"
         android:layout_toEndOf="@id/icon"
-        tools:text="1023 books"
-        android:textIsSelectable="true" />
+        tools:text="1023 books"/>
 
     <TextView
         android:id="@+id/date"
@@ -46,7 +44,6 @@
         android:paddingStart="@dimen/padding_book_details_text"
         android:layout_marginTop="@dimen/padding_border"
         android:layout_toEndOf="@id/icon"
-        tools:text="1 Jan, 2011 17:54:32"
-        android:textIsSelectable="true" />
+        tools:text="1 Jan, 2011 17:54:32"/>
 
 </RelativeLayout>

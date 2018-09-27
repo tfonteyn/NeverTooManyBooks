@@ -99,7 +99,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKS
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_COUNT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_EXPANDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
@@ -707,7 +707,7 @@ public class BooklistBuilder implements AutoCloseable {
                     case ROW_KIND_YEAR_PUBLISHED:
                         booklistGroup.displayDomain = DOM_PUBLICATION_YEAR;
                         // Use our standard glob expression
-                        String yearPubExpr = yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false);
+                        String yearPubExpr = yearGlob(TBL_BOOKS.dot(DOM_DATE_PUBLISHED), false);
                         summary.addDomain(DOM_PUBLICATION_YEAR, yearPubExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                         booklistGroup.setKeyComponents("yrp", DOM_PUBLICATION_YEAR);
                         break;
@@ -715,7 +715,7 @@ public class BooklistBuilder implements AutoCloseable {
                     case ROW_KIND_MONTH_PUBLISHED:
                         booklistGroup.displayDomain = DOM_PUBLICATION_MONTH;
                         // Use our standard glob expression
-                        String monthPubExpr = monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false);
+                        String monthPubExpr = monthGlob(TBL_BOOKS.dot(DOM_DATE_PUBLISHED), false);
                         summary.addDomain(DOM_PUBLICATION_MONTH, monthPubExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                         booklistGroup.setKeyComponents("mnp", DOM_PUBLICATION_MONTH);
                         break;

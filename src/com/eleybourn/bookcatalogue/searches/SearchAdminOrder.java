@@ -80,7 +80,7 @@ public class SearchAdminOrder extends BookCatalogueListActivity {
         }
 
         @Override
-        protected void onSetupView(@NonNull final View convertView, @NonNull final SearchManager.SearchSite item, final int position) {
+        protected void onSetupView(@NonNull final View convertView, @NonNull final SearchManager.SearchSite item) {
             final TextView name = convertView.findViewById(R.id.row_name);
             name.setText(item.name);
 

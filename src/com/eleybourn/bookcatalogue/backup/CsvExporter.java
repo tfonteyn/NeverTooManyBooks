@@ -46,7 +46,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
@@ -119,7 +119,7 @@ public class CsvExporter implements Exporter {
                         '"' + DOM_TITLE + "\"," +            //4
                         '"' + DOM_BOOK_ISBN + "\"," +            //5
                         '"' + DOM_PUBLISHER + "\"," +        //6
-                        '"' + DOM_BOOK_DATE_PUBLISHED + "\"," +    //7
+                        '"' + DOM_DATE_PUBLISHED + "\"," +    //7
                         '"' + DOM_BOOK_RATING + "\"," +            //8
                         '"' + "bookshelf_id\"," +              //9
                         '"' + DOM_BOOKSHELF_ID + "\"," +        //10
@@ -179,9 +179,8 @@ public class CsvExporter implements Exporter {
                 // Just get the string from the database and save it. It should be in standard SQL form already.
                 String dateString = "";
                 try {
-                    dateString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_DATE_PUBLISHED.name));
-                } catch (Exception e) {
-                    //do nothing
+                    dateString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_DATE_PUBLISHED.name));
+                } catch (Exception ignore) {
                 }
                 // Just get the string from the database and save it. It should be in standard SQL form already.
                 String dateReadStartString = "";
@@ -203,22 +202,25 @@ public class CsvExporter implements Exporter {
                 String dateAddedString = "";
                 try {
                     dateAddedString = bookCursor.getString(bookCursor.getColumnIndexOrThrow(DOM_BOOK_DATE_ADDED.name));
-                } catch (Exception e) {
-                    //do nothing
+                } catch (Exception ignore) {
                 }
 
                 int anthology = bookCursor.getInt(bookCursor.getColumnIndexOrThrow(DOM_ANTHOLOGY_MASK.name));
                 StringBuilder anthology_titles = new StringBuilder();
                 if (anthology != 0) {
                     try (Cursor titles = db.fetchAnthologyTitlesByBookId(id)) {
-                        if (titles.moveToFirst()) {
-                            do {
+                        final int authorCol = titles.getColumnIndexOrThrow(DOM_AUTHOR_NAME.name);
+                        final int titleCol = titles.getColumnIndexOrThrow(DOM_TITLE.name);
+                        //V83
+                        final int pubDateCol = titles.getColumnIndex(DOM_DATE_PUBLISHED.name);
+
+
+                        while (titles.moveToNext()) {
                                 anthology_titles
-                                        .append(titles.getString(titles.getColumnIndexOrThrow(DOM_TITLE.name)))
+                                        .append(titles.getString(titleCol))
                                         .append(" " + AnthologyTitle.TITLE_AUTHOR_DELIM + " ")
-                                        .append(titles.getString(titles.getColumnIndexOrThrow(DOM_AUTHOR_NAME.name)))
+                                        .append(titles.getString(authorCol))
                                         .append(ArrayUtils.MULTI_STRING_SEPARATOR);
-                            } while (titles.moveToNext());
                         }
                     }
                 }

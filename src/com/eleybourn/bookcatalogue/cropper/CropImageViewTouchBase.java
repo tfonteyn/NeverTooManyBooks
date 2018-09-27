@@ -33,7 +33,7 @@ import android.widget.ImageView;
 
 abstract class CropImageViewTouchBase extends AppCompatImageView {
 
-    static final float SCALE_RATE = 1.25F;
+    private static final float SCALE_RATE = 1.25F;
     /** Maximum upscaling for a viewed image */
     private static final float SCALE_LIMIT_MAX = Float.MAX_VALUE;
     @SuppressWarnings("unused")

@@ -205,7 +205,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
         File getFile();
 
         /** Called to fill in the details of this object in the View provided by the ViewProvider implementation */
-        void onSetupView(@NonNull final Context context, final int position, @NonNull final View target);
+        void onSetupView(@NonNull final View convertView, @NonNull final Context context);
     }
 
     /**
@@ -220,8 +220,8 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
         }
 
         @Override
-        protected void onSetupView(@NonNull final View convertView, @NonNull final FileDetails item, final int position) {
-            item.onSetupView(getActivity(), position, convertView);
+        protected void onSetupView(@NonNull final View convertView, @NonNull final FileDetails item) {
+            item.onSetupView(convertView, getActivity());
         }
 
         @Override
