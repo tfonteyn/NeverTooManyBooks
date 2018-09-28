@@ -63,21 +63,6 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
         return R.layout.list_activity;
     }
 
-    @Override
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
     /**
      * This method will be called when an item in the list is selected.
      * Subclasses should override. Subclasses can call
@@ -90,17 +75,6 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
      * @param id       The row id of the item that was clicked
      */
     protected void onListItemClick(@NonNull final ListView l, @NonNull final View v, final int position, final long id) {
-    }
-
-    /**
-     * Ensures the list view has been created before Activity restores all
-     * of the view states.
-     *
-     * @see Activity#onRestoreInstanceState(Bundle)
-     */
-    @Override
-    protected void onRestoreInstanceState(final Bundle state) {
-        super.onRestoreInstanceState(state);
     }
 
     /**

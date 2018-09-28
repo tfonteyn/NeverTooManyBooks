@@ -46,7 +46,7 @@ abstract class EditStringDialog {
         mAdapter = new ArrayAdapter<>(context, adapterResId, list);
     }
 
-    protected void edit(@NonNull final String s, final int layout, final int title, final int blankWarning) {
+    protected void edit(@NonNull final String s, final int layout, final int title) {
         mDialog = new StandardDialogs.BasicDialog(mContext);
         mDialog.setContentView(layout);
         mDialog.setTitle(title);
@@ -71,7 +71,7 @@ abstract class EditStringDialog {
             public void onClick(View v) {
                 String newName = nameView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    Toast.makeText(mContext, blankWarning, Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, R.string.name_can_not_be_blank, Toast.LENGTH_LONG).show();
                     return;
                 }
                 mDialog.dismiss();

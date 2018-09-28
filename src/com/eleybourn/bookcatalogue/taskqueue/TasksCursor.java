@@ -93,10 +93,6 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
     private static int m_retryDateCol = -1;
     /** Column number of retry count column. */
     private static int m_statusCodeCol = -1;
-    /** Column number of reason column. */
-    private static int m_reasonCol = -1;
-    /** Column number of Exception column. */
-    private static int m_exceptionCol = -1;
     /** Column number of Exception column. */
     private static int m_taskCol = -2;
     /** Column number of NoteCount column. */
@@ -141,11 +137,6 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         return (TasksCursor) db.rawQueryWithFactory(m_factory, query, new String[]{}, "");
     }
 
-    /**
-     * Static method to get a TaskExceptions Cursor.
-     *
-     * @return A new TaskExceptionsCursor
-     */
     static TasksCursor fetchTasks(SQLiteDatabase db, TaskCursorSubtype type) {
         String query;
         switch (type) {
@@ -169,11 +160,6 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         return (TasksCursor) db.rawQueryWithFactory(m_factory, query, new String[]{}, "");
     }
 
-    /**
-     * Accessor for ID field.
-     *
-     * @return row id
-     */
     @Override
     public long getId() {
         if (m_idCol == -1) {
@@ -182,11 +168,6 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         return getLong(m_idCol);
     }
 
-    /**
-     * Accessor for Exception date field.
-     *
-     * @return Exception date
-     */
     public Date getQueuedDate() {
         if (m_queuedDateCol == -1) {
             m_queuedDateCol = this.getColumnIndex(DOM_QUEUED_DATE);
@@ -199,11 +180,6 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         return date;
     }
 
-    /**
-     * Accessor for retry date field.
-     *
-     * @return retry date
-     */
     public Date getRetryDate() {
         if (m_retryDateCol == -1) {
             m_retryDateCol = this.getColumnIndex(DOM_RETRY_DATE);
@@ -218,11 +194,6 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
 
     }
 
-    /**
-     * Accessor for retry count field.
-     *
-     * @return retry count
-     */
     public String getStatusCode() {
         if (m_statusCodeCol == -1) {
             m_statusCodeCol = this.getColumnIndex(DOM_STATUS_CODE);
@@ -230,35 +201,6 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         return getString(m_statusCodeCol);
     }
 
-    /**
-     * Accessor for reason field.
-     *
-     * @return reason
-     */
-    public String getReason() {
-        if (m_reasonCol == -1) {
-            m_reasonCol = this.getColumnIndex(DOM_FAILURE_REASON);
-        }
-        return getString(m_reasonCol);
-    }
-
-    /**
-     * Accessor for Exception field.
-     *
-     * @return TaskException object
-     */
-    public Exception getException() throws SerializationUtils.DeserializationException {
-        if (m_exceptionCol == -1) {
-            m_exceptionCol = this.getColumnIndex(DOM_EXCEPTION);
-        }
-        return (Exception) deserializeObject(getBlob(m_exceptionCol));
-    }
-
-    /**
-     * Accessor for Exception field.
-     *
-     * @return TaskException object
-     */
     private Task getTask() {
         if (m_taskCol == -2) {
             m_taskCol = this.getColumnIndex(DOM_TASK);
@@ -274,11 +216,6 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         return t;
     }
 
-    /**
-     * Accessor for Exception field.
-     *
-     * @return TaskException object
-     */
     public int getNoteCount() {
         if (m_noteCountCol == -1) {
             m_noteCountCol = this.getColumnIndex(DOM_EVENT_COUNT);
@@ -292,5 +229,4 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
     }
 
     public enum TaskCursorSubtype {all, failed, active, queued}
-
 }

@@ -37,7 +37,7 @@ public class ZxingScanner implements Scanner {
      *
      * @return true if present
      */
-    public static boolean isIntentAvailable(final boolean mustBeZxing) {
+    static boolean isIntentAvailable(final boolean mustBeZxing) {
         return isIntentAvailable(BookCatalogueApp.getAppContext(), mustBeZxing ? PACKAGE : null);
     }
 
@@ -58,12 +58,12 @@ public class ZxingScanner implements Scanner {
      * Start the activity with the passed request code.
      */
     @Override
-    public void startActivityForResult(@NonNull final Activity a, final int requestCode) {
+    public void startActivityForResult(@NonNull final Activity activity, final int requestCode) {
         Intent i = new Intent(ACTION);
         if (mMustBeZxing) {
             i.setPackage(PACKAGE);
         }
-        a.startActivityForResult(i, requestCode);
+        activity.startActivityForResult(i, requestCode);
     }
 
     /**

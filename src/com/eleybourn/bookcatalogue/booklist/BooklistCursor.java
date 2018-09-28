@@ -67,13 +67,6 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
     }
 
     /**
-     * Get the ID for this cursor.
-     */
-    public long getId() {
-        return mId;
-    }
-
-    /**
      * Get the builder used to make this cursor.
      */
     @NonNull
@@ -92,17 +85,6 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
         return mRowView;
     }
 
-    /**
-     * @return Get the number of levels in the book list.
-     */
-    public int numLevels() {
-        return mBuilder.numLevels();
-    }
-
-    @Override
-    public void close() {
-        super.close();
-    }
     /*
      * no need for this yet; it may even die because table is deleted and recreated.
      */

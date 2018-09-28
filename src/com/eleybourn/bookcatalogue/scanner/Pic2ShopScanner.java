@@ -16,7 +16,6 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
  * @author pjw
  */
 public class Pic2ShopScanner implements Scanner {
-    public static final String ACTION = Free.PACKAGE + ".SCAN";
     /**
      * When a barcode is read, pic2shop returns Activity.RESULT_OK in onActivityResult()
      * of the activity which requested the scan using startActivityForResult().
@@ -25,32 +24,30 @@ public class Pic2ShopScanner implements Scanner {
      * If the user exits pic2shop by pressing Back before a barcode is read, the
      * result code will be Activity.RESULT_CANCELED in onActivityResult().
      */
-    private static final String BARCODE = "BARCODE";
     private static final String BARCODE_FORMAT = "EAN13";
     private static final String FORMATS = "formats";
-    private static final String FORMAT = "format";
 
     /**
      * Check if we have a valid intent available.
      *
      * @return true if present
      */
-    public static boolean isIntentAvailable() {
+    static boolean isIntentAvailable() {
         return isFreeScannerAppInstalled(BookCatalogueApp.getAppContext())
                 || isProScannerAppInstalled(BookCatalogueApp.getAppContext());
     }
 
-    private static boolean isIntentAvailable(@NonNull final Context ctx, @NonNull final String action) {
+    private static boolean isIntentAvailable(@NonNull final Context context, @NonNull final String action) {
         Intent test = new Intent(action);
-        return ctx.getPackageManager().resolveActivity(test, 0) != null;
+        return context.getPackageManager().resolveActivity(test, 0) != null;
     }
 
-    private static boolean isFreeScannerAppInstalled(@NonNull final Context ctx) {
-        return isIntentAvailable(ctx, ACTION);
+    private static boolean isFreeScannerAppInstalled(@NonNull final Context context) {
+        return isIntentAvailable(context, Free.ACTION);
     }
 
-    private static boolean isProScannerAppInstalled(@NonNull final Context ctx) {
-        return isIntentAvailable(ctx, ACTION);
+    private static boolean isProScannerAppInstalled(@NonNull final Context context) {
+        return isIntentAvailable(context, Pro.ACTION);
     }
 
     /**
@@ -60,16 +57,16 @@ public class Pic2ShopScanner implements Scanner {
      * one of the intents is valid, or catch the resulting errors.
      */
     @Override
-    public void startActivityForResult(@NonNull final  Activity a, final int requestCode) {
+    public void startActivityForResult(@NonNull final  Activity activity, final int requestCode) {
         Intent i;
-        if (isFreeScannerAppInstalled(a)) {
-            i = new Intent(ACTION);
-            //i.putExtra(Pro.FORMATS, BARCODE_FORMAT);
+        if (isFreeScannerAppInstalled(activity)) {
+            i = new Intent(Free.ACTION);
+            //i.putExtra(FORMATS, BARCODE_FORMAT);
         } else {
-            i = new Intent(ACTION);
+            i = new Intent(Pro.ACTION);
             i.putExtra(FORMATS, BARCODE_FORMAT);
         }
-        a.startActivityForResult(i, requestCode);
+        activity.startActivityForResult(i, requestCode);
     }
 
     /**
@@ -77,8 +74,8 @@ public class Pic2ShopScanner implements Scanner {
      */
     @Override
     public String getBarcode(@NonNull final Intent intent) {
-        String barcode = intent.getStringExtra(BARCODE);
-        String barcodeFormat = intent.getStringExtra(FORMAT);
+        String barcode = intent.getStringExtra("BARCODE");
+        String barcodeFormat = intent.getStringExtra("format");
         if (barcodeFormat != null && !barcodeFormat.equalsIgnoreCase(BARCODE_FORMAT)) {
             throw new RuntimeException("Unexpected format for barcode: " + barcodeFormat);
         }
@@ -86,19 +83,19 @@ public class Pic2ShopScanner implements Scanner {
     }
 
     public interface Free {
-        String PACKAGE = "com.visionsmarts.pic2shop";
+        String ACTION = "com.visionsmarts.pic2shop.SCAN";
     }
 
-//    public interface Pro {
-//        String PACKAGE = "com.visionsmarts.pic2shoppro";
-//    }
+    public interface Pro {
+        String ACTION = "com.visionsmarts.pic2shoppro.SCAN";
+    }
 
 //	public static void launchMarketToInstallFreeScannerApp(@NonNull final Context ctx) {
-//		launchMarketToInstallApp(ctx, PACKAGE);
+//		launchMarketToInstallApp(ctx, ACTION);
 //	}
 //
 //	public static void launchMarketToInstallProScannerApp(@NonNull final Context ctx) {
-//		launchMarketToInstallApp(ctx, Pro.PACKAGE);
+//		launchMarketToInstallApp(ctx, Pro.ACTION);
 //	}
 //
 //	public static void launchMarketToInstallApp(@NonNull final Context ctx, @NonNull final String pkgName) {

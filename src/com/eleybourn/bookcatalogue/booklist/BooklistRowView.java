@@ -58,8 +58,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE
  * @author Philip Warner
  */
 public class BooklistRowView {
-    /** ID counter */
-    private static Integer mBooklistRowViewIdCounter = 0;
     /** Underlying cursor */
     private final Cursor mCursor;
     /** Underlying builder object */
@@ -68,8 +66,6 @@ public class BooklistRowView {
     private final int mMaxThumbnailWidth;
     /** Max size of thumbnails based on preferences at object creation time */
     private final int mMaxThumbnailHeight;
-    /** Internal ID for this RowView */
-    private final long mId;
 
     private int mLevel1Col = -2;
     private int mLevel2Col = -2;
@@ -97,11 +93,6 @@ public class BooklistRowView {
      * @param builder Underlying Builder
      */
     BooklistRowView(@NonNull final BooklistCursor c, @NonNull final BooklistBuilder builder) {
-        // Allocate ID
-        synchronized (mBooklistRowViewIdCounter) {
-            mId = ++mBooklistRowViewIdCounter;
-        }
-
         // Save underlying objects.
         mCursor = c;
         mBuilder = builder;
@@ -121,11 +112,6 @@ public class BooklistRowView {
      * @param builder Underlying Builder
      */
     BooklistRowView(@NonNull final BooklistPseudoCursor c, @NonNull final BooklistBuilder builder) {
-        // Allocate ID
-        synchronized (mBooklistRowViewIdCounter) {
-            mId = ++mBooklistRowViewIdCounter;
-        }
-
         // Save underlying objects.
         mCursor = c;
 
@@ -160,16 +146,9 @@ public class BooklistRowView {
         return maxSize;
     }
 
-    /**
-     * Accessor
-     */
     @NonNull
     public BooklistStyle getStyle() {
         return mBuilder.getStyle();
-    }
-
-    public long getId() {
-        return mId;
     }
 
     public int getMaxThumbnailHeight() {
@@ -283,7 +262,7 @@ public class BooklistRowView {
     /**
      * Check if a given column is present in underlying cursor.
      */
-    private boolean hasColumn(@NonNull final String name) {
+    private boolean hasColumn(@SuppressWarnings("SameParameterValue") @NonNull final String name) {
         return mCursor.getColumnIndex(name) >= 0;
     }
 

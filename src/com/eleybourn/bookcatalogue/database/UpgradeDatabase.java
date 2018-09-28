@@ -266,10 +266,10 @@ class UpgradeDatabase {
      * @param to        to table
      * @param toRemove	List of fields to be removed from the source table (ignored in copy)
      */
-    static void copyTableSafely(@NonNull final DbSync.SynchronizedDb sdb,
-                                @NonNull final String from,
-                                @NonNull final String to,
-                                @NonNull final String... toRemove) {
+    private static void copyTableSafely(@NonNull final DbSync.SynchronizedDb sdb,
+                                        @NonNull final String from,
+                                        @NonNull final String to,
+                                        @NonNull final String... toRemove) {
         // Get the source info
         TableInfo src = new TableInfo(sdb, from);
         // Build the column list

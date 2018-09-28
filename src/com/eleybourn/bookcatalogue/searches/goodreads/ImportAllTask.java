@@ -528,7 +528,7 @@ class ImportAllTask extends GenericTask {
      * Utility to copy a Long value to the book bundle.
      */
     private void addLongIfPresent(@NonNull final Bundle source,
-                                  String sourceField,
+                                  @NonNull final String sourceField,
                                   @NonNull final BookData dest,
                                   @NonNull final String destField) {
         if (source.containsKey(sourceField)) {
@@ -542,9 +542,9 @@ class ImportAllTask extends GenericTask {
      */
     @Nullable
     private Double addDoubleIfPresent(@NonNull final Bundle source,
-                                      String sourceField,
+                                      @SuppressWarnings("SameParameterValue") @NonNull final String sourceField,
                                       @NonNull final BookData dest,
-                                      @NonNull final String destField) {
+                                      @SuppressWarnings("SameParameterValue") @NonNull final String destField) {
         if (source.containsKey(sourceField)) {
             double val = source.getDouble(sourceField);
             dest.putDouble(destField, val);
@@ -558,6 +558,7 @@ class ImportAllTask extends GenericTask {
      * Make a more informative description
      */
     @Override
+    @NonNull
     public String getDescription() {
         String base = super.getDescription();
         if (mUpdatesAfter == null)

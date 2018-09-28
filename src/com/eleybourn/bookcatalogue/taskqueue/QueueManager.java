@@ -26,7 +26,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.EventActions;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnEventChangeListener;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnTaskChangeListener;
@@ -145,7 +147,7 @@ public abstract class QueueManager {
         }
     }
 
-    protected void notifyTaskChange(@Nullable final  Task task, @NonNull final  TaskActions action) {
+    void notifyTaskChange(@Nullable final Task task, @NonNull final TaskActions action) {
         // Make a copy of the list so we can cull dead elements from the original
         List<WeakReference<OnTaskChangeListener>> list;
         synchronized (m_taskChangeListeners) {
@@ -239,7 +241,7 @@ public abstract class QueueManager {
      *
      * @param queue New queue object
      */
-    public void queueStarting(@NonNull final Queue queue) {
+    void queueStarting(@NonNull final Queue queue) {
         synchronized (this) {
             m_activeQueues.put(queue.getQueueName(), queue);
         }
@@ -250,7 +252,7 @@ public abstract class QueueManager {
      *
      * @param queue Queue that is stopping
      */
-    public void queueTerminating(@NonNull final Queue queue) {
+    void queueTerminating(@NonNull final Queue queue) {
         synchronized (this) {
             try {
                 // It's possible that a queue terminated and another started; make sure we are removing
@@ -272,7 +274,7 @@ public abstract class QueueManager {
      *
      * @return Result from run(...) method
      */
-    protected boolean runOneTask(@NonNull final Task task) {
+    boolean runOneTask(@NonNull final Task task) {
         if (task instanceof RunnableTask) {
             return ((RunnableTask) task).run(this, this.getApplicationContext());
         } else {
@@ -297,7 +299,7 @@ public abstract class QueueManager {
     private void doToast(String message) {
         if (Thread.currentThread() == m_uiThread.get()) {
             synchronized (this) {
-                android.widget.Toast.makeText(this.getApplicationContext(), message, android.widget.Toast.LENGTH_LONG).show();
+                Toast.makeText(this.getApplicationContext(), message, android.widget.Toast.LENGTH_LONG).show();
             }
         } else {
             /* Send message to the handler */
@@ -317,7 +319,7 @@ public abstract class QueueManager {
      * @param t Related task
      * @param e Exception (usually subclassed)
      */
-    public void storeTaskEvent(@NonNull final Task t, @NonNull final Event e) {
+    void storeTaskEvent(@NonNull final Task t, @NonNull final Event e) {
         m_dba.storeTaskEvent(t, e);
         this.notifyEventChange(e, EventActions.created);
     }
@@ -448,7 +450,7 @@ public abstract class QueueManager {
      * Get a new Event object capable of representing a non-deserializable Event object.
      */
     @NonNull
-    public LegacyEvent newLegacyEvent() {
+    LegacyEvent newLegacyEvent() {
         return new LegacyEvent();
     }
 
@@ -462,7 +464,7 @@ public abstract class QueueManager {
 
     /**
      * Handler for internal UI thread messages.
-     * FIXME TOMF
+     * FIXME TOMF must be static or leaks. See doToast... UI thread or not. investigate
      */
     private class MessageHandler extends Handler {
         public void handleMessage(Message msg) {
@@ -471,6 +473,7 @@ public abstract class QueueManager {
                 String kind = b.getString("__internal");
                 if ("toast".equals(kind)) {
                     doToast(b.getString("message"));
+                    //Toast.makeText(BookCatalogueApp.getAppContext(), b.getString("message"), Toast.LENGTH_LONG).show();
                 }
             } else {
                 throw new RuntimeException("Unknown message");

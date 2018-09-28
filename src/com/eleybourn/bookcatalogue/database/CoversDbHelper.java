@@ -143,8 +143,7 @@ public class CoversDbHelper implements AutoCloseable {
         if (mSyncedDb == null) {
             final SQLiteOpenHelper mHelper = new CoversHelper(context,
                     StorageUtils.getFile(COVERS_DATABASE_NAME).getAbsolutePath(),
-                    mTrackedCursorFactory,
-                    COVERS_DATABASE_VERSION);
+                    mTrackedCursorFactory);
 
             // Try to connect.
             try {
@@ -223,7 +222,7 @@ public class CoversDbHelper implements AutoCloseable {
      *  @param db     Blank database
      * @param tables Table list
      */
-    private static void createTables(@NonNull final SynchronizedDb db, @NonNull final TableDefinition[] tables) {
+    private static void createTables(@NonNull final SynchronizedDb db, @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition[] tables) {
         for (TableDefinition t : tables) {
             t.create(db, true);
             for (IndexDefinition i : t.getIndexes()) {
@@ -474,7 +473,7 @@ public class CoversDbHelper implements AutoCloseable {
      * @return the number of rows affected
      */
     @SuppressWarnings("UnusedReturnValue")
-    public int eraseCachedBookCover(@NonNull final String uuid) {
+    int eraseCachedBookCover(@NonNull final String uuid) {
         if (mSyncedDb == null) {
             return 0;
         }
@@ -500,9 +499,8 @@ public class CoversDbHelper implements AutoCloseable {
 
         CoversHelper(@NonNull final Context context,
                      @NonNull final String dbFilePath,
-                     @NonNull final CursorFactory factory,
-                     final int version) {
-            super(context, dbFilePath, factory, version);
+                     @NonNull final CursorFactory factory) {
+            super(context, dbFilePath, factory, COVERS_DATABASE_VERSION);
         }
 
         /**

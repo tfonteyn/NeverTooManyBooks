@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement.INSERT_FAILED;
 
@@ -67,36 +68,27 @@ public class CsvImporter implements Importer {
                                @Nullable final Importer.CoverFinder coverFinder,
                                @NonNull final Importer.OnImporterListener listener,
                                final int importFlags) throws IOException {
-        final ArrayList<String> importedString = new ArrayList<>();
+        final List<String> importedList = new ArrayList<>();
 
         final BufferedReader in = new BufferedReader(new InputStreamReader(exportStream, UTF8), BUFFER_SIZE);
         String line;
         while ((line = in.readLine()) != null) {
-            importedString.add(line);
+            importedList.add(line);
         }
 
-        return importBooks(importedString, coverFinder, listener, importFlags);
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    private boolean importBooks(@NonNull final ArrayList<String> export,
-                                @Nullable final Importer.CoverFinder coverFinder,
-                                @NonNull final Importer.OnImporterListener listener,
-                                final int importFlags) {
-
-        if (export == null || export.size() == 0) {
+        if (importedList == null || importedList.size() == 0) {
             return true;
         }
 
         Integer nCreated = 0;
         Integer nUpdated = 0;
 
-        listener.setMax(export.size() - 1);
+        listener.setMax(importedList.size() - 1);
 
         // Container for values.
         final BookData bookData = new BookData();
 
-        final String[] names = returnRow(export.get(0), true);
+        final String[] names = returnRow(importedList.get(0), true);
 
         // Store the names so we can check what is present
         for (int i = 0; i < names.length; i++) {
@@ -144,7 +136,7 @@ public class CsvImporter implements Importer {
         /* Iterate through each imported row */
         SyncLock txLock = null;
         try {
-            while (row < export.size() && listener.isActive()) {
+            while (row < importedList.size() && listener.isActive()) {
                 if (inTransaction && txRowCount > 10) {
                     db.setTransactionSuccessful();
                     db.endTransaction(txLock);
@@ -158,7 +150,7 @@ public class CsvImporter implements Importer {
                 txRowCount++;
 
                 // Get row
-                final String[] imported = returnRow(export.get(row), fullEscaping);
+                final String[] imported = returnRow(importedList.get(row), fullEscaping);
 
                 bookData.clear();
                 for (int i = 0; i < names.length; i++) {
@@ -590,14 +582,17 @@ public class CsvImporter implements Importer {
         throw new ImportException(BookCatalogueApp.getResourceString(R.string.file_must_contain_any_column, Utils.join(",", names)));
     }
 
-    private void requireNonBlank(@NonNull final BookData bookData, final int row, @NonNull final String name) throws ImportException {
+    private void requireNonBlank(@NonNull final BookData bookData,
+                                 final int row,
+                                 @SuppressWarnings("SameParameterValue") @NonNull final String name)
+            throws ImportException {
         if (!bookData.getString(name).isEmpty())
             return;
         throw new ImportException(BookCatalogueApp.getResourceString(R.string.column_is_blank, name, row));
     }
 
     @SuppressWarnings("unused")
-    private void requireAnyNonBlank(@NonNull final BookData bookData, final int row, String... names) throws ImportException {
+    private void requireAnyNonBlank(@NonNull final BookData bookData, final int row, @NonNull final String... names) throws ImportException {
         for (String name : names)
             if (bookData.containsKey(name) && !bookData.getString(name).isEmpty())
                 return;

@@ -31,7 +31,7 @@ public class EditGenreDialog extends EditStringDialog {
     }
 
     public void edit(@NonNull final String s) {
-        super.edit(s, R.layout.dialog_edit_genre, R.string.edit_genre_details, R.string.name_can_not_be_blank);
+        super.edit(s, R.layout.dialog_edit_genre, R.string.edit_genre_details);
     }
 
     @Override

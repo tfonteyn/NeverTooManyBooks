@@ -60,11 +60,7 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
 		mHandler = handler;
 	}
 
-    public MultiTypeListHandler getHandler() {
-        return mHandler;
-    }
-
-    /**
+     /**
 	 * NOT USED. Should never be called. Die if it is.
 	 */
 	@Override

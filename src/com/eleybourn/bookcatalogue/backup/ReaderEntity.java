@@ -48,8 +48,6 @@ public interface ReaderEntity {
 	InputStream getStream();
 	/** Save the data to a directory, using the original file name */
 	void saveToDirectory(@NonNull final File dir) throws IOException;
-	/** Save the data to a file, using the passed file name & path */
-	void saveToFile(@NonNull final File outFile) throws IOException;
 	/** Read the data into a bundle */
     Bundle getBundle() throws IOException;
 	/** Read the data into preferences */

@@ -31,7 +31,7 @@ public class EditFormatDialog extends EditStringDialog {
     }
 
     public void edit(@NonNull final String s) {
-        super.edit(s, R.layout.dialog_edit_format, R.string.edit_format_name, R.string.name_can_not_be_blank);
+        super.edit(s, R.layout.dialog_edit_format, R.string.edit_format_name);
     }
 
     @Override

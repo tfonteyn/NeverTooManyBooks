@@ -19,7 +19,7 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
     public static final int DEFAULT_ID = 1;
 
     public long id;
-    public String name;
+    public final String name;
 
     /**
      * Constructor
@@ -41,11 +41,6 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
     public long fixupId(@NonNull final CatalogueDBAdapter db) {
         this.id = db.getBookshelfId(this);
         return this.id;
-    }
-
-    @Override
-    public long getId() {
-        return id;
     }
 
     /**

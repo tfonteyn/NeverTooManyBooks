@@ -61,7 +61,7 @@ public class EditPublisherDialog {
                 EditText nameView = dialog.findViewById(R.id.name);
                 String newName = nameView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    Toast.makeText(mContext, R.string.publisher_is_blank, Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, R.string.name_can_not_be_blank, Toast.LENGTH_LONG).show();
                     return;
                 }
                 Publisher newPublisher = new Publisher(newName);

@@ -235,7 +235,8 @@ public class SearchAmazonHandler extends DefaultHandler {
      *
      * @param key Key for data to add
      */
-    private void addIfNotPresent(@NonNull final String key, @NonNull final String value) {
+    private void addIfNotPresent(@SuppressWarnings("SameParameterValue") @NonNull final String key,
+                                 @NonNull final String value) {
         if (!mBookData.containsKey(key) || mBookData.getString(key).isEmpty()) {
             mBookData.putString(key, value);
         }
@@ -247,7 +248,8 @@ public class SearchAmazonHandler extends DefaultHandler {
      * @param key   Key for data to add
      * @param value Value to compare to; if present but equal to this, it will be overwritten
      */
-    private void addIfNotPresentOrEqual(@NonNull final String key, @SuppressWarnings("SameParameterValue") @NonNull final String value) {
+    private void addIfNotPresentOrEqual(@SuppressWarnings("SameParameterValue") @NonNull final String key,
+                                        @SuppressWarnings("SameParameterValue") @NonNull final String value) {
         if (!mBookData.containsKey(key)
                 || mBookData.getString(key).isEmpty()
                 || mBookData.getString(key).equals(value)) {

@@ -130,10 +130,6 @@ public class StartupActivity extends AppCompatActivity {
         }
     }
 
-    public static boolean hasBeenCalled() {
-        return mHasBeenCalled;
-    }
-
     public static boolean getShowAmazonHint() {
         return mShowAmazonHint;
     }
@@ -343,14 +339,16 @@ public class StartupActivity extends AppCompatActivity {
     }
 
     /**
-     * Start whatever activity the user expects
+     * Last step
      */
     private void stage4Startup() {
-//        if (BCPreferences.getStartInClassic()) {
-//            doMainActivity(BookCatalogueClassic.class);
-//        } else {
-            doMainActivity(BooksOnBookshelf.class);
-//        }
+        Intent i = new Intent(this, BooksOnBookshelf.class);
+        if (mWasReallyStartup) {
+            i.putExtra(BKEY_STARTUP, true);
+        }
+
+        i.putExtra(BKEY_IS_TASK_ROOT, isTaskRoot());
+        startActivity(i);
 
         if (mExportRequired) {
             AdministrationFunctions.exportToArchive(this);
@@ -358,16 +356,6 @@ public class StartupActivity extends AppCompatActivity {
 
         // We are done
         finish();
-    }
-
-    private void doMainActivity(Class nextActivityClass) {
-        Intent i = new Intent(this, nextActivityClass);
-        if (mWasReallyStartup) {
-            i.putExtra(BKEY_STARTUP, true);
-        }
-
-        i.putExtra(BKEY_IS_TASK_ROOT, isTaskRoot());
-        startActivity(i);
     }
 
     /**

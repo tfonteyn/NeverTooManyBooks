@@ -54,7 +54,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     //TODO: see if this matters, I don't think we serialise this to external/blob
     //private static final long serialVersionUID = -8715364898312204329L;
     private static final long serialVersionUID = 2L;
-    private long id;
+    private long id = 0;
     private Author mAuthor;
     private String mTitle;
     private String mPublicationDate;
@@ -66,7 +66,6 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
      * Constructor that will attempt to parse a single string into an AnthologyTitle name.
      */
     public AnthologyTitle(@NonNull final String encodedString) {
-        id = 0;
         authorFromName(encodedString);
     }
 
@@ -81,29 +80,11 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
                           @Nullable final String publicationDate,
 
                           final long bookId) {
-        this(0, author, title, publicationDate, bookId, 0);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param author Author of title
-     * @param title  Title
-     */
-    private AnthologyTitle(final long id,
-                           @NonNull final Author author,
-                           @NonNull final String title,
-                           @Nullable final String publicationDate,
-
-                           final long bookId,
-                           final int position) {
-        this.id = id;
         mAuthor = author;
         mTitle = title.trim();
         mPublicationDate = publicationDate;
 
         mBookId = bookId;
-        mPosition = position;
     }
 
     private void authorFromName(@NonNull final String encodedString) {
@@ -150,10 +131,6 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         return mPublicationDate;
     }
 
-    public void setPublicationDate(final String mPublicationDate) {
-        this.mPublicationDate = mPublicationDate;
-    }
-
     /**
      * Support for encoding to a text file
      * TODO: V83 import/export
@@ -167,13 +144,8 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     @Override
     public long fixupId(@NonNull final CatalogueDBAdapter db) {
         this.mAuthor.id = db.getAuthorIdByName(mAuthor.familyName, mAuthor.givenNames);
-        this.id = db.getAnthologyTitleId(mAuthor.getId(), mTitle);
+        this.id = db.getAnthologyTitleId(mAuthor.id, mTitle);
         return this.id;
-    }
-
-    @Override
-    public long getId() {
-        return id;
     }
 
     /**

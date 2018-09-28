@@ -91,7 +91,6 @@ public class Queue extends Thread {
      * Main worker thread logic
      */
     public void run() {
-        System.out.println("Queue " + m_name + " starting");
         try {
             // Get a database adapter
             m_dba = new DbAdapter(m_appContext);
@@ -111,7 +110,6 @@ public class Queue extends Thread {
                     }
                     if (scheduledTask.timeUntilRunnable == 0) {
                         // Ready to run now.
-                        System.out.println("Queue " + m_name + " running task " + scheduledTask.id);
                         task = scheduledTask.getTask();
                         m_task = new WeakReference<>(task);
                     } else {
@@ -127,7 +125,6 @@ public class Queue extends Thread {
                     handleTask(task);
                 } else {
                     // Not ready, just wait. Allow for possible wake-up calls if something else gets queued.
-                    System.out.println("Queue " + m_name + " waiting " + scheduledTask.timeUntilRunnable + " for task " + scheduledTask.id);
                     synchronized (this) {
                         this.wait(scheduledTask.timeUntilRunnable);
                     }
@@ -147,9 +144,7 @@ public class Queue extends Thread {
                     m_manager.queueTerminating(this);
                 }
             } catch (Exception ignore) {
-                // Ignore
             }
-            System.out.println("Queue " + m_name + " terminating");
         }
     }
 
@@ -189,15 +184,12 @@ public class Queue extends Thread {
                 m_dba.deleteTask(task.getId());
                 message = TaskActions.completed;
             } else if (result) {
-                System.out.println("Task " + task.getId() + " succeeded");
                 m_dba.setTaskOk(task);
                 message = TaskActions.completed;
             } else if (requeue) {
-                System.out.println("Task " + task.getId() + " requeueing");
                 m_dba.setTaskRequeue(task);
                 message = TaskActions.waiting;
             } else {
-                System.out.println("Task " + task.getId() + " failed");
                 m_dba.setTaskFail(task, "Unhandled exception while running task: " + task.getException().getMessage());
                 message = TaskActions.completed;
             }

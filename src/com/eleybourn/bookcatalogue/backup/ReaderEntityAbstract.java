@@ -52,14 +52,10 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
         }
 
         // Build the new File and save
-        final File output = new File(dir.getAbsoluteFile() + File.separator + getName());
-        saveToFile(output);
-    }
-
-    @Override
-    public void saveToFile(@NonNull final File outFile) throws IOException {
+        final File outFile = new File(dir.getAbsoluteFile() + File.separator + getName());
         final byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
 
+        //FIXME: use channels, much faster
         // Open output and copy bytes.
         final FileOutputStream out = new FileOutputStream(outFile);
         try {

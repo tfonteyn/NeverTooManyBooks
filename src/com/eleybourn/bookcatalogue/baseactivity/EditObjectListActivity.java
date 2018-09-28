@@ -195,11 +195,9 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
         return true;
     }
 
-    @SuppressWarnings("unused")
     protected void onRowDown(@NonNull final View target, @NonNull final T object, final int position) {
     }
 
-    @SuppressWarnings("unused")
     protected void onRowUp(@NonNull final View target, @NonNull final T object, final int position) {
     }
     /**
@@ -330,16 +328,16 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * @param id View ID
      * @param s  String to set
      */
-    protected void setTextOrHideView(int id, @Nullable final String s) {
-        TextView v = this.findViewById(id);
-        if (v == null) {
+    protected void setTextOrHideView(@SuppressWarnings("SameParameterValue") final int id, @Nullable final String s) {
+        TextView textView = this.findViewById(id);
+        if (textView == null) {
             return;
         }
         if (s == null || s.isEmpty()) {
-            v.setVisibility(View.GONE);
+            textView.setVisibility(View.GONE);
             return;
         }
-        v.setText(s);
+        textView.setText(s);
     }
 
     /**

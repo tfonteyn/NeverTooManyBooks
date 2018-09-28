@@ -335,23 +335,10 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         }
     }
 
-    /**
-     * Accessor
-     */
     public boolean isCancelled() {
         return mWasCancelled;
     }
 
-    /**
-     * Accessor
-     */
-    public boolean getSuccess() {
-        return mSuccess;
-    }
-
-    /**
-     * Accessor
-     */
     public void setSuccess(boolean success) {
         mSuccess = success;
     }
@@ -373,13 +360,6 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
                 }
             }
         }
-    }
-
-    /**
-     * Convenience method to step the progress by 1.
-     */
-    public void step(@Nullable final String message) {
-        step(message, 1);
     }
 
     /**

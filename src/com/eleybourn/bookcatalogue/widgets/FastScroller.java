@@ -234,10 +234,6 @@ public class FastScroller {
         mThumbDrawable = null;
     }
 
-    boolean isVisible() {
-        return !(mState == STATE_NONE);
-    }
-
     public void draw(@NonNull final Canvas canvas) {
         if (mState == STATE_NONE) {
             return;

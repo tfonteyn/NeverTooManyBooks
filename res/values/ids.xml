@@ -11,12 +11,12 @@
     <item name="TAG_TASK_HOLDER" type="id" />
 
     <!-- BEGIN predefined menu items -->
-    <item name="SUBMENU_ADD_BOOK" type="id"/>
-    <item name="MENU_ADD_BOOK_MANUALLY" type="id"/>
-    <item name="MENU_ADD_BOOK_BARCODE" type="id"/>
-    <item name="MENU_ADD_BOOK_ISBN" type="id"/>
-    <item name="MENU_ADD_BOOK_NAMES" type="id"/>
-    
+    <item name="SUBMENU_BOOK_ADD" type="id"/>
+    <item name="MENU_BOOK_ADD_MANUALLY" type="id"/>
+    <item name="MENU_BOOK_ADD_BARCODE" type="id"/>
+    <item name="MENU_BOOK_ADD_ISBN" type="id"/>
+    <item name="MENU_BOOK_ADD_BY_SEARCH" type="id"/>
+
     <item name="MENU_BOOK_DELETE" type="id"/>
     <item name="MENU_BOOK_EDIT" type="id"/>
     <item name="MENU_BOOK_EDIT_NOTES" type="id"/>
@@ -32,6 +32,8 @@
 
     <item name="MENU_SERIES_DELETE" type="id"/>
     <item name="MENU_SERIES_EDIT" type="id"/>
+
+    <item name="MENU_DELETE_ANTHOLOGY" type="id"/>
 
     <item name="MENU_STYLE_DELETE" type="id"/>
     <item name="MENU_STYLE_EDIT" type="id"/>

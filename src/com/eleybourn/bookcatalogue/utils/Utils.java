@@ -438,8 +438,6 @@ public class Utils {
     public interface ItemWithIdFixup {
         long fixupId(@NonNull final CatalogueDBAdapter db);
 
-        long getId();
-
         boolean isUniqueById();
     }
 

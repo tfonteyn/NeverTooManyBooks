@@ -234,21 +234,6 @@ public class FlattenedBooklist implements AutoCloseable {
     }
 
     /**
-     * Get the total row count
-     *
-     * @return number of rows
-     */
-    public long getCount() {
-        SynchronizedStatement stmt = mStatements.get(COUNT_STMT_NAME);
-        if (stmt == null) {
-            String sql = "Select Count(*) From " + mTable.ref();
-            stmt = mStatements.add(COUNT_STMT_NAME, sql);
-        }
-        // count, so no SQLiteDoneException
-        return stmt.simpleQueryForLong();
-    }
-
-    /**
      * Get the position of the current record in the table
      *
      * @return position

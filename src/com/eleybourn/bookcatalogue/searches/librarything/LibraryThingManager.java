@@ -648,7 +648,7 @@ public class LibraryThingManager {
          *
          * @param key Key for data to add
          */
-        private void addIfNotPresent(@NonNull final String key) {
+        private void addIfNotPresent(@SuppressWarnings("SameParameterValue") @NonNull final String key) {
             if (!mBookData.containsKey(key) || mBookData.getString(key).isEmpty()) {
                 mBookData.putString(key, mBuilder.toString());
             }

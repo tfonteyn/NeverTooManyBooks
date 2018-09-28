@@ -183,11 +183,6 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
         return this.id;
     }
 
-    @Override
-    public long getId() {
-        return id;
-    }
-
     /**
      * Each author is defined exactly by a unique ID.
      */

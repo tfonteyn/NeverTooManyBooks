@@ -39,7 +39,7 @@ import java.util.List;
 public class LegacyTask extends Task {
     private static final long serialVersionUID = 3596858518802582316L;
 
-    public static final int CAT_LEGACY = 0;
+    private static final int CAT_LEGACY = 0;
 
     private static final int TEXT_FIELD_1 = 1;
     private static final int TEXT_FIELD_2 = 2;

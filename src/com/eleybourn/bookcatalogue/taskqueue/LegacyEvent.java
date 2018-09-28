@@ -36,7 +36,7 @@ import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import java.util.List;
 
 /**
- * Class to wrap events that can not be deserialized so that the EventsCursor *always* returns a valid Event.
+ * Class to wrap events that can not be de-serialized so that the EventsCursor *always* returns a valid Event.
  *
  * @author Philip Warner
  */

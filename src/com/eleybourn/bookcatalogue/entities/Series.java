@@ -209,11 +209,6 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
         return this.id;
     }
 
-    @Override
-    public long getId() {
-        return id;
-    }
-
     /**
      * Each position in a series ('Elric(1)', 'Elric(2)' etc) will have the same
      * ID, so they are not unique by ID.

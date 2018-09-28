@@ -75,20 +75,20 @@ public class MenuHandler {
      * @param menu Root menu
      */
     public void addCreateBookSubMenu(@NonNull final Menu menu) {
-        SubMenu subMenu = menu.addSubMenu(0, R.id.SUBMENU_ADD_BOOK,
+        SubMenu subMenu = menu.addSubMenu(0, R.id.SUBMENU_BOOK_ADD,
                 mSort++,
                 BookCatalogueApp.getResourceString(R.string.menu_insert) + "&hellip;");
 
         subMenu.setIcon(R.drawable.ic_add);
         subMenu.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         {
-            subMenu.add(Menu.NONE, R.id.MENU_ADD_BOOK_BARCODE, mSort++, R.string.scan_barcode_isbn)
+            subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_BARCODE, mSort++, R.string.scan_barcode_isbn)
                     .setIcon(R.drawable.ic_add_a_photo);
-            subMenu.add(Menu.NONE, R.id.MENU_ADD_BOOK_ISBN, mSort++, R.string.enter_isbn)
+            subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_ISBN, mSort++, R.string.enter_isbn)
                     .setIcon(R.drawable.ic_zoom_in);
-            subMenu.add(Menu.NONE, R.id.MENU_ADD_BOOK_NAMES, mSort++, R.string.search_internet)
+            subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_BY_SEARCH, mSort++, R.string.search_internet)
                     .setIcon(R.drawable.ic_zoom_in);
-            subMenu.add(Menu.NONE, R.id.MENU_ADD_BOOK_MANUALLY, mSort++, R.string.add_manually)
+            subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_MANUALLY, mSort++, R.string.add_manually)
                     .setIcon(R.drawable.ic_add);
         }
     }
@@ -103,16 +103,16 @@ public class MenuHandler {
      */
     public boolean onOptionsItemSelected(@NonNull final Activity activity, @NonNull final MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.MENU_ADD_BOOK_BARCODE:
+            case R.id.MENU_BOOK_ADD_BARCODE:
                 createBookScan(activity);
                 return true;
-            case R.id.MENU_ADD_BOOK_ISBN:
+            case R.id.MENU_BOOK_ADD_ISBN:
                 createBookISBN(activity, BookISBNSearchActivity.BY_ISBN);
                 return true;
-            case R.id.MENU_ADD_BOOK_NAMES:
+            case R.id.MENU_BOOK_ADD_BY_SEARCH:
                 createBookISBN(activity, BookISBNSearchActivity.BY_NAME);
                 return true;
-            case R.id.MENU_ADD_BOOK_MANUALLY:
+            case R.id.MENU_BOOK_ADD_MANUALLY:
                 createBook(activity);
                 return true;
             // not used for now, calls activity.onSearchRequested(); but not implemented (yet?)

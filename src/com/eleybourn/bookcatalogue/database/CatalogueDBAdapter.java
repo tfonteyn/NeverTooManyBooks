@@ -2099,7 +2099,7 @@ public class CatalogueDBAdapter {
      *
      * @throws SQLException if none could not be found/retrieved
      */
-    public BooksCursor fetchBooksByIsbnList(@NonNull final ArrayList<String> isbnList) {
+    public BooksCursor fetchBooksByIsbnList(@NonNull final List<String> isbnList) {
         if (isbnList.size() == 0) {
             throw new RuntimeException("No ISBNs specified in lookup");
         }

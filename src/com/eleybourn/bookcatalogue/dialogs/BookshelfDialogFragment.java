@@ -151,7 +151,7 @@ public class BookshelfDialogFragment extends DialogFragment {
         // Grab the args
         final Bundle ags = getArguments();
 
-        long bookId = ags.getLong(BKEY_ROW_ID);
+        //long bookId = ags.getLong(BKEY_ROW_ID);
 
         // Retrieve dynamic values
         if (savedInstanceState != null && savedInstanceState.containsKey(BKEY_TEXT)) {
