@@ -30,6 +30,7 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
@@ -42,11 +43,9 @@ public class LegacyTask extends Task {
 
     private static final int TEXT_FIELD_1 = 1;
     private static final int TEXT_FIELD_2 = 2;
-    private final byte[] m_original;
 
-    public LegacyTask(byte[] original, String description) {
-        super(description);
-        m_original = original;
+    public LegacyTask() {
+        super(BookCatalogueApp.getResourceString(R.string.legacy_task));
     }
 
     @Override

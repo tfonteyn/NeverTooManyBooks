@@ -176,15 +176,6 @@ public class TaskManager implements AutoCloseable {
     }
 
     /**
-     * Get the number of tasks currently managed.
-     *
-     * @return Number of tasks
-     */
-    public int count() {
-        return mTasks.size();
-    }
-
-    /**
      * Utility routine to cancel all tasks.
      */
     public void cancelAllTasks() {

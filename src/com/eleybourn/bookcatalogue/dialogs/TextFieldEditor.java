@@ -51,8 +51,8 @@ class TextFieldEditor extends AlertDialog {
 	 * @author pjw
 	 */
 	protected interface OnEditListener {
-		void onSaved(@NonNull final TextFieldEditor dialog, @NonNull final String newText);
-		void onCancel(@NonNull final TextFieldEditor dialog);
+		void onSaved(@NonNull final String newText);
+		void onCancel();
 	}
 
 	/**
@@ -77,7 +77,7 @@ class TextFieldEditor extends AlertDialog {
 		root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mListener.onSaved(TextFieldEditor.this, mTextView.getText().toString());
+				mListener.onSaved(mTextView.getText().toString());
 			}}
 		);
 
@@ -85,7 +85,7 @@ class TextFieldEditor extends AlertDialog {
 		root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mListener.onCancel(TextFieldEditor.this);				
+				mListener.onCancel();
 			}}
 		);
 
@@ -94,7 +94,7 @@ class TextFieldEditor extends AlertDialog {
 
 			@Override
 			public void onCancel(DialogInterface arg0) {
-				mListener.onCancel(TextFieldEditor.this);				
+				mListener.onCancel();
 			}});	
 		
 		// Make sure the buttons move if the keyboard appears
@@ -103,7 +103,7 @@ class TextFieldEditor extends AlertDialog {
 	}
 
 	/** Set the listener */
-	public void setOnEditListener(@NonNull final OnEditListener listener) {
+	void setOnEditListener(@NonNull final OnEditListener listener) {
 		mListener= listener;		
 	}
 

@@ -446,23 +446,18 @@ public abstract class QueueManager {
 
     /**
      * Get a new Event object capable of representing a non-deserializable Event object.
-     *
-     * @param original original serialization source
-
      */
     @NonNull
-    public LegacyEvent newLegacyEvent(byte[] original) {
-        return new LegacyEvent(original, "Legacy Event");
+    public LegacyEvent newLegacyEvent() {
+        return new LegacyEvent();
     }
 
     /**
      * Get a new Task object capable of representing a non-deserializable Task object.
-     *
-     * @param original original serialization source
      */
     @NonNull
-    public LegacyTask newLegacyTask(byte[] original) {
-        return new LegacyTask(original, "Legacy Task");
+    public LegacyTask newLegacyTask() {
+        return new LegacyTask();
     }
 
     /**

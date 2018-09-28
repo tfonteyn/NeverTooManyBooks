@@ -64,21 +64,6 @@ public class Utils {
     private Utils() {
     }
 
-    public static final String APP_NAME = "Book Catalogue";
-    public static final boolean USE_LT = true;
-    public static final boolean USE_BARCODE = true;
-
-    //public static final String APP_NAME = "DVD Catalogue";
-    //public static final String LOCATION = "dvdCatalogue";
-    //public static final String DATABASE_NAME = "dvd_catalogue";
-    //public static final boolean USE_LT = false;
-    //public static final boolean USE_BARCODE = false;
-    //public static final String APP_NAME = "CD Catalogue";
-    //public static final String LOCATION = "cdCatalogue";
-    //public static final String DATABASE_NAME = "cd_catalogue";
-    //public static final boolean USE_LT = true;
-    //public static final boolean USE_BARCODE = false;
-
     private static final Object lock = new Object();
     /**
      * Utility routine to get the data from a URL. Makes sure timeout is set to avoid application
@@ -271,88 +256,10 @@ public class Utils {
         return toDelete.size() > 0;
     }
 
-    // Code removed in order to remove the temptation to USE it; proper-casing is very locale-specific.
-//	/**
-//	 * Convert text at specified key to proper case.
-//	 * 
-//	 * @param values
-//	 * @param key
-//	 */
-//	public static void doProperCase(Bundle values, String key) {
-//		if (!values.containsKey(key))
-//			return;
-//		values.putString(key, properCase(values.getString(key)));
-//	}
-//
-//	public static String properCase(String inputString) {
-//		StringBuilder ff = new StringBuilder(); 
-//		String outputString;
-//		int wordnum = 0;
-//
-//		try {
-//			for(String f: inputString.split(" ")) {
-//				if(ff.length() > 0) { 
-//					ff.append(" "); 
-//				} 
-//				wordnum++;
-//				String word = f.toLowerCase();
-//	
-//				if (word.substring(0,1).matches("[\"\\(\\./\\\\,]")) {
-//					wordnum = 1;
-//					ff.append(word.substring(0,1));
-//					word = word.substring(1,word.length());
-//				}
-//	
-//				/* Do not convert 1st char to uppercase in the following situations */
-//				if (wordnum > 1 && word.matches("a|to|at|the|in|and|is|von|de|le")) {
-//					ff.append(word);
-//					continue;
-//				} 
-//				try {
-//					if (word.substring(0,2).equals("mc")) {
-//						ff.append(word.substring(0,1).toUpperCase());
-//						ff.append(word.substring(1,2));
-//						ff.append(word.substring(2,3).toUpperCase());
-//						ff.append(word.substring(3,word.length()));
-//						continue;
-//					}
-//				} catch (StringIndexOutOfBoundsException e) {
-//					// do nothing and continue;
-//				}
-//	
-//				try {
-//					if (word.substring(0,3).equals("mac")) {
-//						ff.append(word.substring(0,1).toUpperCase());
-//						ff.append(word.substring(1,3));
-//						ff.append(word.substring(3,4).toUpperCase());
-//						ff.append(word.substring(4,word.length()));
-//						continue;
-//					}
-//				} catch (StringIndexOutOfBoundsException e) {
-//					// do nothing and continue;
-//				}
-//	
-//				try {
-//					ff.append(word.substring(0,1).toUpperCase());
-//					ff.append(word.substring(1,word.length()));
-//				} catch (StringIndexOutOfBoundsException e) {
-//					ff.append(word);
-//				}
-//			}
-//	
-//			/* output */ 
-//			outputString = ff.toString();
-//		} catch (StringIndexOutOfBoundsException e) {
-//			//empty string - do nothing
-//			outputString = inputString;
-//		}
-//		return outputString;
-//	}
-
     /**
      * Remove series from the list where the names are the same, but one entry has a null or empty position.
      * eg. the following list should be processed as indicated:
-     * <p>
+     *
      * fred(5)
      * fred <-- delete
      * bill <-- delete
@@ -427,7 +334,7 @@ public class Utils {
     /**
      * Linkify partial HTML. Linkify methods remove all spans before building links, this
      * method preserves them.
-     * <p>
+     *
      * See: http://stackoverflow.com/questions/14538113/using-linkify-addlinks-combine-with-html-fromhtml
      *
      * @param html        Partial HTML

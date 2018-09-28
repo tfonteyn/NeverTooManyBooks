@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * TaskQueue is free software: you can redistribute it and/or modify
@@ -30,40 +30,33 @@ import java.io.Serializable;
  * do not prevent the task from completing. Examples might include a long running export job
  * in which 3 items fail, but 1000 succeed -- in this case it is useful to export the successful
  * ones and report the failures later.
- * 
+ *
  * The Task object has a 'saveException()' method that stores the exception in the database
  * for later retrieval.
- * 
- * Client applications should consider subclassing this object.
- * 
- * @author Philip Warner
  *
+ * Client applications should consider subclassing this object.
+ *
+ * @author Philip Warner
  */
 public abstract class Event implements Serializable, BindableItemCursorAdapter.BindableItem {
-	private static final long serialVersionUID = 5209097408979831308L;
+    private static final long serialVersionUID = 5209097408979831308L;
 
-	private final String m_description;
-	private long m_id = 0;
-	private Exception m_exception = null;
+    private final String m_description;
+    private long m_id = 0;
 
-	protected Event(String description) {
-		m_description = description;
-	}
-	protected Event(String description, Exception e) {
-		m_description = description;
-		m_exception = e;
-	}
-	public String getDescription() {
-		return m_description;
-	}
-	public Exception getException() {
-		return m_exception;
-	}
+    protected Event(String description) {
+        m_description = description;
+    }
 
-	public long getId() {
-		return m_id;
-	}
-	public void setId(long id) {
-		m_id = id;
-	}
+    public String getDescription() {
+        return m_description;
+    }
+
+    public long getId() {
+        return m_id;
+    }
+
+    public void setId(long id) {
+        m_id = id;
+    }
 }

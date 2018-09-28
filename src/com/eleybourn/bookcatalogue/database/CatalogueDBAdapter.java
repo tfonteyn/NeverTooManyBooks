@@ -3706,20 +3706,8 @@ public class CatalogueDBAdapter {
         }
     }
 
-    public class AnthologyTitleExistsException extends RuntimeException {
-        private static final long serialVersionUID = -9052087086134217566L;
-
-        AnthologyTitleExistsException() {
-            super("Anthology title already exists");
-        }
-    }
-
     public class NotFoundException extends RuntimeException {
         private static final long serialVersionUID = -9052087086134217566L;
-
-        NotFoundException() {
-            super();
-        }
 
         NotFoundException(@Nullable final String msg) {
             super(msg);

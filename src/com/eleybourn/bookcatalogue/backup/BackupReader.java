@@ -57,11 +57,6 @@ public interface BackupReader extends Closeable {
     void close() throws IOException;
 
     /**
-     * @return the associated BackupContainer
-     */
-    BackupContainer getContainer();
-
-    /**
      * @return the INFO object read from the backup
      */
     BackupInfo getInfo();

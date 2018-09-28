@@ -140,7 +140,9 @@ public class BackupChooser extends FileChooser implements
 
     @Override
     public void onTaskFinished(@NonNull final SimpleTaskQueueProgressFragment fragment,
-                               final int taskId, final boolean success, final boolean cancelled,
+                               final int taskId,
+                               final boolean success,
+                               final boolean cancelled,
                                @NonNull final FragmentTask task) {
 
         // Is it a task we care about?
@@ -196,12 +198,14 @@ public class BackupChooser extends FileChooser implements
 
     @Override
     public void onAllTasksFinished(@NonNull final SimpleTaskQueueProgressFragment fragment,
-                                   final int taskId, final boolean success, final boolean cancelled) {
+                                   final int taskId,
+                                   final boolean success,
+                                   final boolean cancelled) {
         // Nothing to do here; we really only care when backup tasks finish, and there's only ever one task
     }
 
     @Override
-    public void onMessageDialogResult(final int dialogId, @NonNull final MessageDialogFragment dialog, final int button) {
+    public void onMessageDialogResult(final int dialogId, final int button) {
         switch (dialogId) {
             case 0:
                 // Do nothing, our dialogs with ID 0 are only 'FYI' type;
@@ -214,7 +218,8 @@ public class BackupChooser extends FileChooser implements
     }
 
     @Override
-    public void onImportTypeSelectionDialogResult(final int dialogId, @NonNull final DialogFragment dialog,
+    public void onImportTypeSelectionDialogResult(final int dialogId,
+                                                  @NonNull final DialogFragment dialog,
                                                   @NonNull final ImportTypeSelectionDialogFragment.ImportSettings settings) {
         switch (settings.options) {
 
@@ -228,7 +233,8 @@ public class BackupChooser extends FileChooser implements
     }
 
     @Override
-    public void onExportTypeSelectionDialogResult(final int dialogId, @NonNull final DialogFragment dialog,
+    public void onExportTypeSelectionDialogResult(final int dialogId,
+                                                  @NonNull final DialogFragment dialog,
                                                   @NonNull final ExportTypeSelectionDialogFragment.ExportSettings settings) {
         switch (settings.options) {
             case Exporter.EXPORT_ALL:

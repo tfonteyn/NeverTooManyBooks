@@ -75,7 +75,7 @@ public class Queue extends Thread {
     /**
      * Return the bare queue name, as opposed to the thread name
      */
-    public String getQueueName() {
+    String getQueueName() {
         return m_name;
     }
 
@@ -139,8 +139,9 @@ public class Queue extends Thread {
         } finally {
             try {
                 // Close the DB. SQLite will complain otherwise.
-                if (m_dba != null)
+                if (m_dba != null) {
                     m_dba.getDb().close();
+                }
                 // Just in case (the queue manager does check the queue before doing the delete).
                 synchronized (m_manager) {
                     m_manager.queueTerminating(this);
@@ -166,8 +167,9 @@ public class Queue extends Thread {
             requeue = !result;
         } catch (Exception e) {
             // Don't overwrite exception set by handler
-            if (task.getException() == null)
+            if (task.getException() == null) {
                 task.setException(e);
+            }
             Log.e("Error running task " + task.getId(), e.getMessage());
         }
         handleResult(task, result, requeue);
@@ -206,10 +208,11 @@ public class Queue extends Thread {
     }
 
     public Task getTask() {
-        if (m_task == null)
+        if (m_task == null) {
             return null;
-        else
+        } else {
             return m_task.get();
+        }
     }
 
 }

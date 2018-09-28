@@ -148,7 +148,7 @@ public class GoodreadsManager {
     /**
      * Clear the credentials from the preferences and local cache
      */
-    public static void forgetCredentials() {
+    static void forgetCredentials() {
         mAccessToken = "";
         mAccessSecret = "";
         mHhasValidCredentials = false;
@@ -160,7 +160,7 @@ public class GoodreadsManager {
     /**
      * Utility method to check if the access tokens are available (not if they are valid).
      */
-    public static boolean hasCredentials() {
+    static boolean hasCredentials() {
         if (mAccessToken != null
                 && mAccessSecret != null
                 && !mAccessToken.isEmpty()
@@ -212,7 +212,7 @@ public class GoodreadsManager {
     /**
      * Create canonical representation based on the best guess as to the goodreads rules.
      */
-    public static String canonicalizeBookshelfName(String name) {
+    static String canonicalizeBookshelfName(String name) {
         StringBuilder canonical = new StringBuilder();
         name = name.toLowerCase();
         for (int i = 0; i < name.length(); i++) {
@@ -258,7 +258,7 @@ public class GoodreadsManager {
      * @return Last date
      */
     @Nullable
-    public static Date getLastSyncDate() {
+    static Date getLastSyncDate() {
         String last = BCPreferences.getString(LAST_SYNC_DATE, null);
         if (last == null || last.isEmpty()) {
             return null;
@@ -277,7 +277,7 @@ public class GoodreadsManager {
      *
      * @param d Last date
      */
-    public static void setLastSyncDate(@Nullable final Date d) {
+    static void setLastSyncDate(@Nullable final Date d) {
         if (d == null) {
             BCPreferences.setString(LAST_SYNC_DATE, null);
         } else {
@@ -410,7 +410,7 @@ public class GoodreadsManager {
      *
      * @author Philip Warner
      */
-    public void handleAuthentication() throws NotAuthorizedException {
+    void handleAuthentication() throws NotAuthorizedException {
         // Get the saved request tokens.
         String tokenString = BCPreferences.getStringOrEmpty(REQUEST_TOKEN);
         String secretString = BCPreferences.getStringOrEmpty(REQUEST_SECRET);
@@ -709,8 +709,8 @@ public class GoodreadsManager {
      *
      * @return Disposition of book
      */
-    public ExportDisposition sendOneBook(@NonNull final CatalogueDBAdapter db,
-                                         @NonNull final BooksRow books) throws
+    ExportDisposition sendOneBook(@NonNull final CatalogueDBAdapter db,
+                                  @NonNull final BooksRow books) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, IOException, NetworkException, BookNotFoundException {
         long bookId = books.getId();
@@ -903,7 +903,7 @@ public class GoodreadsManager {
      *
      * @return Array of GoodreadsWork objects
      */
-    public Bundle getBookById(final long bookId) throws
+    Bundle getBookById(final long bookId) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
         if (bookId != 0) {
@@ -921,7 +921,7 @@ public class GoodreadsManager {
      *
      * @return Array of GoodreadsWork objects
      */
-    public Bundle getBookByIsbn(@Nullable final String isbn) throws
+    Bundle getBookByIsbn(@Nullable final String isbn) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
         if (isbn != null && isbn.length() > 0) {
@@ -947,15 +947,12 @@ public class GoodreadsManager {
     public static class Exceptions {
         static class GeneralException extends Exception {
             private static final long serialVersionUID = 5762518476144652354L;
-            final Throwable mInner;
 
-            GeneralException(@Nullable final Throwable inner) {
-                mInner = inner;
+            GeneralException() {
             }
 
             GeneralException(final String message, final Throwable inner) {
                 super(message, inner);
-                this.mInner = inner;
             }
         }
 
@@ -975,7 +972,7 @@ public class GoodreadsManager {
             private static final long serialVersionUID = 872113355903361212L;
 
             public BookNotFoundException() {
-                super(null);
+                super();
             }
 
 //            public BookNotFoundException(@Nullable final Throwable inner) {

@@ -224,7 +224,7 @@ public class FastScroller {
         // this is called after Activity is stable
         final int w = mList.getWidth();
         final int h = mList.getHeight();
-        onSizeChanged(w, h, w, h);
+        onSizeChanged(w, h);
     }
 
     void stop() {
@@ -332,15 +332,11 @@ public class FastScroller {
         }
     }
 
-    void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
+    void onSizeChanged(final int w, final int h) {
         if (mThumbDrawable != null) {
             mThumbDrawable.setBounds(w - mThumbW, 0, w, mThumbH);
         }
         final RectF pos = mOverlayPos;
-        // Original: width was equal to height, controlled by mOverlaySize.
-        //    pos.left = (w - mOverlaySize) / 2;
-        //    pos.right = pos.left + mOverlaySize;
-        //
         // Now, Make it 75% of total available space
         pos.left = (w / 8);
         pos.right = pos.left + w * 3 / 4;
@@ -352,7 +348,7 @@ public class FastScroller {
         }
     }
 
-    void onScroll(@NonNull final AbsListView view, final int firstVisibleItem, final int visibleItemCount,
+    void onScroll(final int firstVisibleItem, final int visibleItemCount,
                   int totalItemCount) {
         // Are there enough pages to require fast scroll? Recompute only if total count changes
         if (mItemCount != totalItemCount && visibleItemCount > 0) {

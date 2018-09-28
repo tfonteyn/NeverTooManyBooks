@@ -180,15 +180,8 @@ public class BookEvents {
                 title = context.getString(R.string.this_book_deleted_uc);
             }
             holder.title.setText(title);
-
             holder.author.setText(String.format(context.getString(R.string.by), author));
-
-            Exception e = this.getException();
-            if (e == null) {
-                holder.error.setText(this.getDescription());
-            } else {
-                holder.error.setText(e.getMessage());
-            }
+            holder.error.setText(this.getDescription());
 
             String date = String.format("(" + context.getString(R.string.occurred_at) + ")",
                     DateFormat.getDateTimeInstance().format(cursor.getEventDate()));

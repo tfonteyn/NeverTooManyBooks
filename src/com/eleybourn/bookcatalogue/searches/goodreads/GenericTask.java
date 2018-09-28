@@ -71,9 +71,6 @@ public abstract class GenericTask extends RunnableTask {
         View view = inflater.inflate(R.layout.task_info, parent, false);
         ViewTagger.setTag(view, R.id.TAG_TASK, this);
         TaskHolder holder = new TaskHolder();
-        holder.task = this;
-        holder.rowId = cursor.getId();
-
         holder.description = view.findViewById(R.id.description);
         holder.state = view.findViewById(R.id.state);
         holder.retry_info = view.findViewById(R.id.retry_info);
@@ -105,9 +102,6 @@ public abstract class GenericTask extends RunnableTask {
         TasksCursor cursor = (TasksCursor) bindAbleCursor;
 
         // Update task info binding
-        holder.task = this;
-        holder.rowId = cursor.getId();
-
         holder.description.setText(this.getDescription());
         String statusCode = cursor.getStatusCode().toUpperCase();
         String statusText;
@@ -184,8 +178,6 @@ public abstract class GenericTask extends RunnableTask {
      * @author Philip Warner
      */
     public class TaskHolder {
-        Task task;
-        long rowId;
         TextView description;
         TextView state;
         TextView retry_info;

@@ -39,19 +39,6 @@ import java.util.Objects;
  * @author Philip Warner
  */
 public class Author implements Serializable, Utils.ItemWithIdFixup {
-    /**
-     * Support for creation via Parcelable.
-     * This is primarily useful for passing ArrayList<Author> in Bundles to activities.
-     */
-    public static final Parcelable.Creator<Author> CREATOR = new Parcelable.Creator<Author>() {
-        public Author createFromParcel(Parcel in) {
-            return new Author(in);
-        }
-
-        public Author[] newArray(final int size) {
-            return new Author[size];
-        }
-    };
     private static final long serialVersionUID = 4597779234440821872L;
     public long id;
     public String familyName;
@@ -85,15 +72,6 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
         this.id = id;
         familyName = family.trim();
         givenNames = given.trim();
-    }
-
-    /**
-     * Constructor using a Parcel.
-     */
-    private Author(@NonNull final Parcel in) {
-        familyName = in.readString().trim();
-        givenNames = in.readString().trim();
-        id = in.readLong();
     }
 
     /**

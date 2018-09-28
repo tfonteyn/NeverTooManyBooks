@@ -43,19 +43,6 @@ import java.util.regex.Pattern;
 public class Series implements Serializable, Utils.ItemWithIdFixup {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Support for creation via Parcelable
-     */
-    public static final Parcelable.Creator<Series> CREATOR = new Parcelable.Creator<Series>() {
-        public Series createFromParcel(Parcel in) {
-            return new Series(in);
-        }
-
-        public Series[] newArray(int size) {
-            return new Series[size];
-        }
-    };
-
     private static final String SERIES_REGEX_SUFFIX =
             BookCatalogueApp.getResourceString(R.string.series_number_prefixes)
                     /*
@@ -116,12 +103,6 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
         this.id = id;
         this.name = name.trim();
         this.number = cleanupSeriesPosition(number);
-    }
-
-    private Series(@NonNull final Parcel in) {
-        name = in.readString().trim();
-        number = in.readString();
-        id = in.readLong();
     }
 
     /**

@@ -37,30 +37,10 @@ import java.util.Objects;
 public class Publisher implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Support for creation via Parcelable.
-     * This is primarily useful for passing ArrayList<Publisher> in Bundles to activities.
-     */
-    public static final Parcelable.Creator<Publisher> CREATOR = new Parcelable.Creator<Publisher>() {
-        public Publisher createFromParcel(Parcel in) {
-            return new Publisher(in);
-        }
-
-        public Publisher[] newArray(int size) {
-            return new Publisher[size];
-        }
-    };
-    public String name;
+     public String name;
 
     public Publisher(@NonNull final String name) {
         this.name = name.trim();
-    }
-
-    /**
-     * Constructor using a Parcel.
-     */
-    private Publisher(@NonNull final Parcel in) {
-        name = in.readString().trim();
     }
 
     // Support for encoding to a text file

@@ -81,10 +81,10 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
 	 * There is little that can be done to abort a task; we trust the implementations to
 	 * check this flag periodically on long tasks.
 	 */
-	public boolean isAborting() {
+	protected boolean isAborting() {
 		return m_abortTask;
 	}
-	public void abortTask() {
+	void abortTask() {
 		m_abortTask = true;
 	}
 
@@ -99,24 +99,24 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
 		return m_retry_limit;
 	}
 
-	public int getRetryDelay() {
+	protected int getRetryDelay() {
 		return m_retryDelay;
 	}
 	protected void setRetryDelay(final int delay) {
 		m_retryDelay = delay;
 	}
-	public void setRetryDelay() {
+	void setRetryDelay() {
 		setRetryDelay( (int)Math.pow(2, (m_retries+1)) );
 	}
 
-	public int getRetries() {
+	protected int getRetries() {
 		return m_retries;
 	}
-	public void setRetries(final int retries) {
+	void setRetries(final int retries) {
 		m_retries = retries;
 	}
 
-	public boolean canRetry() {
+	boolean canRetry() {
 		return m_retries < m_retry_limit;
 	}
 

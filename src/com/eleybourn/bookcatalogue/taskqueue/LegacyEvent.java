@@ -45,11 +45,9 @@ public class LegacyEvent extends Event {
     private static final long serialVersionUID = -8518718598973561219L;
     private static final int TEXT_FIELD_1 = 1;
     private static final int TEXT_FIELD_2 = 2;
-    private final byte[] m_original;
 
-    LegacyEvent(byte[] original, String description) {
-        super(description);
-        m_original = original;
+    LegacyEvent() {
+        super("Legacy Event");
     }
 
     @Override

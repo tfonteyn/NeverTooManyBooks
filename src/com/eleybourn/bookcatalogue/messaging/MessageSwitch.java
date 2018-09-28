@@ -70,15 +70,6 @@ public class MessageSwitch<T, U> {
     @SuppressLint("UseSparseArrays")
     private final Map<Long, MessageListeners> mListeners = Collections.synchronizedMap(new HashMap<Long, MessageListeners>());
 
-    /**
-     * Accessor. Sometimes senders (or receivers) need to check which thread they are on and possibly post runnables.
-     *
-     * @return the Handler object
-     */
-    public static Handler getHandler() {
-        return mHandler;
-    }
-
     /** Register a new sender and it's controller object; return the unique ID for this sender */
     public Long createSender(@NonNull final U controller) {
         MessageSenderImpl s = new MessageSenderImpl(controller);
@@ -226,7 +217,7 @@ public class MessageSwitch<T, U> {
          *
          * @param listener Listener to who message must be delivered
          *
-         * @return true if message should not be delievered to any other listeners or stored for delievery as 'last message'
+         * @return true if message should not be delivered to any other listeners or stored for delivery as 'last message'
          * should only return true if the message has been handled and would break the app if delivered more than once.
          */
         boolean deliver(@NonNull final T listener);
@@ -282,7 +273,7 @@ public class MessageSwitch<T, U> {
             return mLastMessage;
         }
 
-        public void setLastMessage(@Nullable final MessageRoutingSlip m) {
+        void setLastMessage(@Nullable final MessageRoutingSlip m) {
             mLastMessage = m;
         }
 

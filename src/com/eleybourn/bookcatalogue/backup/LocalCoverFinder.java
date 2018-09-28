@@ -87,12 +87,11 @@ public class LocalCoverFinder implements Importer.CoverFinder {
     /**
      * Find the current cover file (or new file) based on the passed source and UUID.
      *
-     * @param orig    Original file to be copied/renamed if no existing file.
      * @param newUuid UUID of file
      *
      * @return Existing file (if length > 0), or new file object
      */
-    private File getNewCoverFile(@NonNull final File orig, @NonNull final String newUuid) {
+    private File getNewCoverFile(@NonNull final String newUuid) {
         // Check for ANY current image; delete empty ones and retry
         File newFile = StorageUtils.getCoverFile(newUuid);
         while (newFile.exists()) {
@@ -118,7 +117,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
         }
 
         // Check for ANY current image
-        final File newFile = getNewCoverFile(orig, newUuid);
+        final File newFile = getNewCoverFile(newUuid);
         if (newFile.exists()) {
             return;
         }
@@ -137,7 +136,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
         }
 
         // Check for ANY current image
-        final File newFile = getNewCoverFile(orig, newUuid);
+        final File newFile = getNewCoverFile(newUuid);
         if (newFile.exists()) {
             return;
         }

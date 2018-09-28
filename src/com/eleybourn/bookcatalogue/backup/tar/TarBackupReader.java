@@ -78,14 +78,6 @@ public class TarBackupReader extends BackupReaderAbstract {
     }
 
     /**
-     * Accessor
-     */
-    @Override
-    public BackupContainer getContainer() {
-        return mContainer;
-    }
-
-    /**
      * Get the next entity (allowing for peeking).
      */
     @Override

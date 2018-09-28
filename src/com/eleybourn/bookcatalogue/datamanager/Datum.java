@@ -209,12 +209,6 @@ public class Datum {
         return !mIsVisible;
     }
 
-    @NonNull
-    public Datum setVisible(boolean isVisible) {
-        mIsVisible = isVisible;
-        return this;
-    }
-
     public DataValidator getValidator() {
         return mValidator;
     }

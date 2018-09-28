@@ -338,9 +338,6 @@ public class SearchManager implements TaskManagerListener {
 
         // Save the flags
         mSearchFlags = searchFlags;
-        if (!Utils.USE_LT) {
-            mSearchFlags &= ~SEARCH_LIBRARY_THING;
-        }
 
         // Save the input and initialize
         mBookData = new Bundle();
@@ -736,7 +733,7 @@ public class SearchManager implements TaskManagerListener {
         SearchManager getSearchManager();
     }
 
-    public static class SearchSite {
+    static class SearchSite {
         final int id;
         final String name;
         boolean enabled;

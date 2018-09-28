@@ -12,24 +12,11 @@ import java.io.Serializable;
 public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
     private static final long serialVersionUID = 1L;
 
-    // how to concat bookshelf names
+    /** how to concat bookshelf names */
     public static final Character SEPARATOR = ',';
 
-    // the 'first' bookshelf created at install time. We allow renaming it, but not deleting.
+    /** the 'first' bookshelf created at install time. We allow renaming it, but not deleting. */
     public static final int DEFAULT_ID = 1;
-    /**
-     * Support for creation via Parcelable.
-     * This is primarily useful for passing ArrayList<Bookshelf> in Bundles to activities.
-     */
-    public static final Parcelable.Creator<Bookshelf> CREATOR = new Parcelable.Creator<Bookshelf>() {
-        public Bookshelf createFromParcel(Parcel in) {
-            return new Bookshelf(in);
-        }
-
-        public Bookshelf[] newArray(int size) {
-            return new Bookshelf[size];
-        }
-    };
 
     public long id;
     public String name;
@@ -44,28 +31,10 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
         this.name = name.trim();
     }
 
-    /**
-     * Constructor using a Parcel.
-     */
-    private Bookshelf(@NonNull final Parcel in) {
-        name = in.readString().trim();
-        id = in.readLong();
-    }
-
     @Override
     @NonNull
     public String toString() {
         return name;
-    }
-
-    /**
-     * Replace local details from another Bookshelf
-     *
-     * @param source Bookshelf to copy
-     */
-    public void copyFrom(@NonNull final Bookshelf source) {
-        name = source.name;
-        id = source.id;
     }
 
     @Override

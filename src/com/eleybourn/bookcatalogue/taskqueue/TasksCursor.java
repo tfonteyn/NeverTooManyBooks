@@ -26,6 +26,7 @@ import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteQuery;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
@@ -60,7 +61,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         public Cursor newCursor(SQLiteDatabase db,
                                 SQLiteCursorDriver masterQuery, String editTable,
                                 SQLiteQuery query) {
-            return new TasksCursor(db, masterQuery, editTable, query);
+            return new TasksCursor(masterQuery, editTable, query);
         }
     };
 
@@ -104,8 +105,9 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
     /**
      * Constructor, based on SQLiteCursor constructor
      */
-    private TasksCursor(SQLiteDatabase db, SQLiteCursorDriver driver,
-                        String editTable, SQLiteQuery query) {
+    private TasksCursor(@NonNull final SQLiteCursorDriver driver,
+                        @NonNull final String editTable,
+                        @NonNull final SQLiteQuery query) {
         super(driver, editTable, query);
     }
 
@@ -114,7 +116,9 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
      *
      * @return A new TaskExceptionsCursor
      */
-    public static TasksCursor fetchTasks(SQLiteDatabase db, long category, TaskCursorSubtype type) {
+    static TasksCursor fetchTasks(@NonNull final SQLiteDatabase db,
+                                  final long category,
+                                  @NonNull final TaskCursorSubtype type) {
         String query;
         switch (type) {
             case all:
@@ -142,7 +146,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
      *
      * @return A new TaskExceptionsCursor
      */
-    public static TasksCursor fetchTasks(SQLiteDatabase db, TaskCursorSubtype type) {
+    static TasksCursor fetchTasks(SQLiteDatabase db, TaskCursorSubtype type) {
         String query;
         switch (type) {
             case all:
@@ -264,7 +268,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         try {
             t = deserializeObject(blob);
         } catch (SerializationUtils.DeserializationException de) {
-            t = QueueManager.getQueueManager().newLegacyTask(blob);
+            t = QueueManager.getQueueManager().newLegacyTask();
         }
         t.setId(this.getId());
         return t;

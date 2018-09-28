@@ -159,11 +159,9 @@ public class LibraryThingManager {
     }
 
     public static void showLtAlertIfNecessary(Context context, boolean always, String suffix) {
-        if (Utils.USE_LT) {
-            LibraryThingManager ltm = new LibraryThingManager(context);
-            if (!ltm.isAvailable()) {
-                StandardDialogs.needLibraryThingAlert(context, always, suffix);
-            }
+        LibraryThingManager ltm = new LibraryThingManager(context);
+        if (!ltm.isAvailable()) {
+            StandardDialogs.needLibraryThingAlert(context, always, suffix);
         }
     }
 

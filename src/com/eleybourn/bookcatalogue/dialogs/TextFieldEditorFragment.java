@@ -101,11 +101,11 @@ public class TextFieldEditorFragment extends DialogFragment {
 	 */
 	private final TextFieldEditor.OnEditListener mEditListener = new TextFieldEditor.OnEditListener(){
 		@Override
-		public void onSaved(@NonNull final TextFieldEditor dialog, @NonNull final String newText) {
+		public void onSaved(@NonNull final String newText) {
 			((OnTextFieldEditorListener)getActivity()).onTextFieldEditorSave(mDialogId, TextFieldEditorFragment.this, newText);
 		}
 		@Override
-		public void onCancel(@NonNull final TextFieldEditor dialog) {
+		public void onCancel() {
 			((OnTextFieldEditorListener)getActivity()).onTextFieldEditorCancel(mDialogId, TextFieldEditorFragment.this);
 		}
 	};

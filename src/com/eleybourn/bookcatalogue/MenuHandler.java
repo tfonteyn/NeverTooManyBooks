@@ -28,8 +28,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 
-import com.eleybourn.bookcatalogue.utils.Utils;
-
 /**
  * Class to make building menus simpler. Implements some default menu items and allows
  * selecting which need to be added as well as the addition of custom items.
@@ -38,11 +36,11 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  */
 public class MenuHandler {
 
+    private int mSort = 0;
+
     public MenuHandler(@NonNull final Menu menu) {
         init(menu);
     }
-
-    private int mSort = 0;
 
     /**
      * Called by the constructor.
@@ -56,10 +54,10 @@ public class MenuHandler {
     /**
      * Add a custom menu item.
      *
-     * @param menu      Root menu
-     * @param id        Menu item ID
-     * @param resId     String ID to display
-     * @param icon      (Optional) Icon for menu item, 0 for none
+     * @param menu  Root menu
+     * @param id    Menu item ID
+     * @param resId String ID to display
+     * @param icon  (Optional) Icon for menu item, 0 for none
      *
      * @return The new item
      */
@@ -84,16 +82,12 @@ public class MenuHandler {
         subMenu.setIcon(R.drawable.ic_add);
         subMenu.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         {
-            if (Utils.USE_BARCODE) {
-                subMenu.add(Menu.NONE, R.id.MENU_ADD_BOOK_BARCODE, mSort++, R.string.scan_barcode_isbn)
-                        .setIcon(R.drawable.ic_add_a_photo);
-            }
+            subMenu.add(Menu.NONE, R.id.MENU_ADD_BOOK_BARCODE, mSort++, R.string.scan_barcode_isbn)
+                    .setIcon(R.drawable.ic_add_a_photo);
             subMenu.add(Menu.NONE, R.id.MENU_ADD_BOOK_ISBN, mSort++, R.string.enter_isbn)
                     .setIcon(R.drawable.ic_zoom_in);
-
             subMenu.add(Menu.NONE, R.id.MENU_ADD_BOOK_NAMES, mSort++, R.string.search_internet)
                     .setIcon(R.drawable.ic_zoom_in);
-
             subMenu.add(Menu.NONE, R.id.MENU_ADD_BOOK_MANUALLY, mSort++, R.string.add_manually)
                     .setIcon(R.drawable.ic_add);
         }
@@ -102,8 +96,8 @@ public class MenuHandler {
     /**
      * Handle the default menu items
      *
-     * @param activity    Calling activity
-     * @param item The item selected
+     * @param activity Calling activity
+     * @param item     The item selected
      *
      * @return True, if handled
      */

@@ -120,7 +120,7 @@ public class MessageDialogFragment extends DialogFragment {
         try {
             OnMessageDialogResultListener a = (OnMessageDialogResultListener) getActivity();
             if (a != null)
-                a.onMessageDialogResult(mDialogId, this, button);
+                a.onMessageDialogResult(mDialogId, button);
         } catch (Exception e) {
             Logger.logError(e);
         }
@@ -133,6 +133,6 @@ public class MessageDialogFragment extends DialogFragment {
      * @author pjw
      */
     public interface OnMessageDialogResultListener {
-        void onMessageDialogResult(final int dialogId, @NonNull final MessageDialogFragment dialog, final int button);
+        void onMessageDialogResult(final int dialogId, final int button);
     }
 }

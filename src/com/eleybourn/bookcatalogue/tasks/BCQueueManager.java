@@ -62,14 +62,12 @@ public class BCQueueManager extends QueueManager {
     /**
      * Get a new Task object capable of representing a non-deserializable Task object.
      *
-     * @param original original serialization source
-     *
      * @return a localized current LegacyTask object.
      */
     @NonNull
     @Override
-    public LegacyTask newLegacyTask(byte[] original) {
-        return new LegacyTask(original, BookCatalogueApp.getResourceString(R.string.legacy_task));
+    public LegacyTask newLegacyTask() {
+        return new LegacyTask();
     }
 
     @Override
