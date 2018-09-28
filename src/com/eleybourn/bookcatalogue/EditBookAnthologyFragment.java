@@ -48,10 +48,7 @@ import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaEntryHandler;
-import com.eleybourn.bookcatalogue.searches.wikipedia.SearchWikipediaHandler;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -61,20 +58,14 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 
-    private static final int DELETE_ID = Menu.FIRST;
     private static final int POPULATE_ISFDB = Menu.FIRST + 1;
-    private static final int POPULATE_WIKIPEDIA = Menu.FIRST + 2;
 
     /**
      * Trim extraneous punctuation and whitespace from the titles and authors
@@ -95,8 +86,13 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
      * you loose the ")" at the end, so remove that from the regex, see below
      */
     private static final String CLEANUP_REGEX = "[,.':;`~@#$%^&*(\\-=_+]*$";
-    /** find (1960), group 1 will then contain the pure 1960 */
+    /**
+     * ISFDB
+     *  find the publication year of a content entry
+     *  pattern finds (1960), group 1 will then contain the pure 1960
+     */
     private static final Pattern YEAR_FROM_ISFDB_STORY_LI = Pattern.compile("\\(([1|2]\\d\\d\\d)\\)");
+
     private EditText mTitleText;
     private EditText mYearText;
     private AutoCompleteTextView mAuthorText;
@@ -108,9 +104,16 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     private CheckBox mSame;
     private Integer mEditPosition = null;
     private ArrayList<AnthologyTitle> mList;
-    //<editor-fold desc="ISFDB content fetching">
+
+    /**
+     * task queue for the searching/parsing of content (ant titles)
+     */
     private SimpleTaskQueue mAntFetcher = null;
-    /** book urls for all editions found in the isbn search. We'll try them one by one if the user asks for a re-try */
+
+    /**
+     * ISFDB
+     *  book urls for all editions found in the isbn search. We'll try them one by one if the user asks for a re-try
+     */
     private List<String> mISFDBUrls;
 
     @Override
@@ -209,7 +212,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     }
 
     /**
-     * Populate the bookEditAnthology view
+     * Populate the view
      */
     private void fillAnthology() {
 
@@ -221,6 +224,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         getListView().setAdapter(adapter);
 
         registerForContextMenu(getListView());
+        // click on a list entry, puts it in edit fields
         getListView().setOnItemClickListener(new OnItemClickListener() {
 
             @Override
@@ -273,7 +277,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     private void showAnthologyConfirm(@NonNull final List<AnthologyTitle> results) {
         StringBuilder msg = new StringBuilder();
         if (results.isEmpty()) {
-            msg.append(getString(R.string.search_fail));
+            msg.append(getString(R.string.automatic_population_failed));
         } else {
             //FIXME: this is usually to much to display as a Message in the dialog
             for (AnthologyTitle t : results) {
@@ -341,10 +345,6 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         menu.clear();
         menu.add(Menu.NONE, POPULATE_ISFDB, 0, R.string.populate_anthology_titles)
                 .setIcon(R.drawable.ic_autorenew);
-
-//        menu.add(Menu.NONE, POPULATE_WIKIPEDIA, 0, R.string.populate_anthology_titles)
-//                .setIcon(R.drawable.ic_autorenew);
-//
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -358,24 +358,20 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
             case POPULATE_ISFDB:
                 searchISFDB();
                 return true;
-            case POPULATE_WIKIPEDIA:
-                searchWikipedia();
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }
-    //</editor-fold>
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(Menu.NONE, DELETE_ID, 0, R.string.menu_delete_anthology);
+        menu.add(Menu.NONE, R.id.MENU_DELETE_ANTHOLOGY, 0, R.string.menu_delete_anthology);
     }
 
     @Override
-    public boolean onContextItemSelected(android.view.MenuItem item) {
+    public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case DELETE_ID:
+            case R.id.MENU_DELETE_ANTHOLOGY:
                 AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
                 AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing) EditBookAnthologyFragment.this.getListView().getAdapter());
                 adapter.remove(adapter.getItem((int) info.id));
@@ -385,7 +381,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         return super.onContextItemSelected(item);
     }
 
-    private void saveState(BookData bookData) {
+    private void saveState(@NonNull final BookData bookData) {
         bookData.setAnthologyTitles(mList);
         bookData.putInt(UniqueId.KEY_ANTHOLOGY_MASK,
                 mSame.isChecked() ?
@@ -413,73 +409,6 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     protected void onSaveBookDetails(@NonNull final BookData bookData) {
         super.onSaveBookDetails(bookData);
         saveState(bookData);
-    }
-
-    /**
-     * it works now as a background task, but the results are not good. Doesn't seem Wikipedia
-     * is a good (e.g. structured) source
-     */
-    private void searchWikipedia() {
-        // Setup the background fetcher
-        if (mAntFetcher == null) {
-            mAntFetcher = new SimpleTaskQueue("wikipedia-anthology");
-        }
-
-        mAntFetcher.enqueue(new GetFromWikipediaTask(mBookAuthor, mBookTitle));
-    }
-
-    private void showAnthologyConfirmWikipedia(final List<String> titles) {
-        final BookData bookData = mEditManager.getBookData();
-        StringBuilder anthology_title = new StringBuilder();
-        for (int j = 0; j < titles.size(); j++) {
-            anthology_title.append("* ").append(titles.get(j)).append("\n");
-        }
-
-        AlertDialog dialog = new AlertDialog.Builder(getActivity()).setMessage(anthology_title)
-                .setTitle(R.string.anthology_confirm)
-                .setIcon(R.drawable.ic_info_outline)
-                .create();
-
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                this.getResources().getString(android.R.string.ok),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        for (int j = 0; j < titles.size(); j++) {
-                            String anthology_title = titles.get(j);
-                            anthology_title = anthology_title + ", ";
-                            String anthology_author = mBookAuthor;
-                            // Does the string look like "Hindsight by Jack Williamson"
-                            int pos = anthology_title.indexOf(" by ");
-                            if (pos > 0) {
-                                anthology_author = anthology_title.substring(pos + 4);
-                                anthology_title = anthology_title.substring(0, pos);
-                            }
-                            // Trim extraneous punctuation and whitespace from the titles and authors
-                            anthology_author = anthology_author.trim()
-                                    .replace("\n", " ")
-                                    .replaceAll(CLEANUP_REGEX, "")
-                                    .trim();
-                            anthology_title = anthology_title.trim()
-                                    .replace("\n", " ")
-                                    .replaceAll(CLEANUP_REGEX, "")
-                                    .trim();
-                            AnthologyTitle anthology = new AnthologyTitle(new Author(anthology_author), anthology_title, "", bookData.getRowId());
-                            mList.add(anthology);
-                        }
-                        AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing) EditBookAnthologyFragment.this.getListView().getAdapter());
-                        adapter.notifyDataSetChanged();
-                    }
-                });
-        dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                this.getResources().getString(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    @SuppressWarnings("EmptyMethod")
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        //do nothing
-                    }
-                });
-        dialog.show();
-
     }
 
     private class ISFDBEditionsTask implements SimpleTaskQueue.SimpleTask {
@@ -535,9 +464,6 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
             }
         }
     }
-
-
-    //<editor-fold desc="Wikipedia content fetching">
 
     private class ISFDBBookTask implements SimpleTaskQueue.SimpleTask {
         private final String bookUrl;
@@ -635,73 +561,4 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
             mEditManager.setDirty(true);
         }
     }
-
-    private class GetFromWikipediaTask implements SimpleTaskQueue.SimpleTask {
-
-        final String mWikiHost = "https://en.wikipedia.org";
-        final String mWikiURL;
-
-        boolean mFound = false;
-
-        GetFromWikipediaTask(@NonNull final String author, @NonNull final String title) {
-
-            String pathAuthor = author.replace(" ", "+").replace(",", "");
-            // Strip everything past the , from the title
-            String pathTitle = title;
-            int comma = pathTitle.indexOf(",");
-            if (comma > 0) {
-                pathTitle = pathTitle.substring(0, comma);
-            }
-            pathTitle = pathTitle.replace(" ", "+");
-            mWikiURL = mWikiHost + "/w/index.php?title=Special:Search&search=%22" + pathTitle + "%22+" + pathAuthor + "";
-            if (BuildConfig.DEBUG) {
-                System.out.println("GetFromWikipediaTask.url = " + mWikiURL);
-            }
-        }
-
-        @Override
-        public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) {
-            try {
-                SAXParserFactory factory = SAXParserFactory.newInstance();
-                SAXParser parser;
-                SearchWikipediaHandler handler = new SearchWikipediaHandler();
-                SearchWikipediaEntryHandler entryHandler = new SearchWikipediaEntryHandler();
-
-                parser = factory.newSAXParser();
-                parser.parse(Utils.getInputStream(new URL(mWikiURL)), handler);
-
-                String[] links = handler.getLinks();
-                for (String link : links) {
-                    if (link.isEmpty() || mFound) {
-                        break;
-                    }
-                    parser = factory.newSAXParser();
-                    try {
-                        parser.parse(Utils.getInputStream(new URL(mWikiHost + link)), entryHandler);
-                        List<String> titles = entryHandler.getList();
-                        /* Display the confirm dialog */
-                        if (titles.size() > 0) {
-                            showAnthologyConfirmWikipedia(titles);
-                            mFound = true;
-                        }
-                    } catch (RuntimeException e) {
-                        Logger.logError(e);
-                    }
-                }
-            } catch (Exception e) {
-                Logger.logError(e);
-            }
-        }
-
-        @Override
-        public void onFinish(@Nullable final Exception e) {
-            if (!mFound) {
-                // can't Toast.makeText(getActivity(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();
-                return;
-            }
-            fillAnthology();
-        }
-    }
-    //</editor-fold>
-
 }
