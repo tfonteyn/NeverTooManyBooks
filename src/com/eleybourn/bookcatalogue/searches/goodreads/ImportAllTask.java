@@ -250,7 +250,7 @@ class ImportAllTask extends GenericTask {
                 } while (c.moveToNext());
             } else {
                 // Create the book
-                createBook(db, review);
+                insertBook(db, review);
             }
         } finally {
             if (c != null)
@@ -302,7 +302,7 @@ class ImportAllTask extends GenericTask {
                             @NonNull final BooksRow booksRow,
                             @NonNull final Bundle review) {
         // Get last date book was sent to GR (may be null)
-        final String lastGrSync = booksRow.getString(UniqueId.KEY_GOODREADS_LAST_SYNC_DATE);
+        final String lastGrSync = booksRow.getDateLastSyncedWithGoodReads();
         // If the review has an 'updated' date, then see if we can compare to book
         if (lastGrSync != null && review.containsKey(UPDATED)) {
             final String lastUpdate = review.getString(ListReviewsFieldNames.UPDATED);
@@ -322,7 +322,7 @@ class ImportAllTask extends GenericTask {
     /**
      * Create a new book
      */
-    private void createBook(@NonNull final CatalogueDBAdapter db, @NonNull final Bundle review) {
+    private void insertBook(@NonNull final CatalogueDBAdapter db, @NonNull final Bundle review) {
         BookData book = buildBundle(db, null, review);
         long id = db.insertBook(book, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
         if (id != INSERT_FAILED) {

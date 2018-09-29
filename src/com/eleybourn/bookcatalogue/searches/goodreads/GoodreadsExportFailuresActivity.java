@@ -59,8 +59,8 @@ import java.util.List;
  * @author Philip Warner
  */
 public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
-    /** Key to store optional task ID hen activity is started */
-    private static final String LOCAL_BKEY_TASK_ID = "GoodreadsExportFailuresActivity.TaskId";
+    /** Key to store optional task ID when activity is started */
+    private static final String GR_TASK_ID = "GoodreadsExportFailuresActivity.TaskId";
     /** DB connection */
     private CatalogueDBAdapter mDb = null;
     private BindableItemCursor mCursor;
@@ -88,7 +88,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
      */
     public static void start(@NonNull final Activity from, final long taskId) {
         Intent intent = new Intent(from, GoodreadsExportFailuresActivity.class);
-        intent.putExtra(LOCAL_BKEY_TASK_ID, taskId);
+        intent.putExtra(GR_TASK_ID, taskId);
         from.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_GOODREADS_EXPORT_FAILURES);
     }
 
@@ -99,8 +99,8 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         mDb.open();
 
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(LOCAL_BKEY_TASK_ID)) {
-            mTaskId = intent.getLongExtra(LOCAL_BKEY_TASK_ID, 0);
+        if (intent != null && intent.hasExtra(GR_TASK_ID)) {
+            mTaskId = intent.getLongExtra(GR_TASK_ID, 0);
         } else {
             mTaskId = 0;
         }

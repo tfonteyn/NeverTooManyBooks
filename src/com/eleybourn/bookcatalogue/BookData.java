@@ -50,9 +50,9 @@ public class BookData extends DataManager {
     /** Key for special field */
     public static final String IS_ANTHOLOGY = "+IsAnthology";
     /** Key for special field */
-    private static final String LOCAL_BKEY_BOOKSHELF_LIST = "+BookshelfList";
+    private static final String BOOKSHELF_LIST = "+BookshelfList";
     /** Key for special field */
-    private static final String LOCAL_KEY_BOOKSHELF_TEXT = "+BookshelfText";
+    private static final String BOOKSHELF_TEXT = "+BookshelfText";
     /** Row ID for book */
     private long mRowId;
 
@@ -108,20 +108,19 @@ public class BookData extends DataManager {
 
     //TODO: can we simplify this ? not just a 'string' but structured data with proper ID's
     public String getBookshelfList() {
-        return getString(LOCAL_BKEY_BOOKSHELF_LIST);
+        return getString(BOOKSHELF_LIST);
     }
 
     public void setBookshelfList(@NonNull final String encodedList) {
-        putString(LOCAL_BKEY_BOOKSHELF_LIST, encodedList);
+        putString(BOOKSHELF_LIST, encodedList);
     }
 
     /**
-     * Accessor. Return a formatted list of bookshelves
-     *
+     * @return a formatted list of bookshelves
      */
     @NonNull
     public String getBookshelfText() {
-        final String list = getBookshelfList();
+        final String list = getString(BOOKSHELF_LIST);
         final ArrayList<String> items = ArrayUtils.decodeList(Bookshelf.SEPARATOR, list);
         if (items.size() == 0)
             return "";
@@ -190,7 +189,7 @@ public class BookData extends DataManager {
      * Special Accessor
      */
     public void setAnthologyTitles(@NonNull final ArrayList<AnthologyTitle> list) {
-        putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLE_ARRAY, list);
+        putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, list);
     }
     /**
      * Special Accessor.
@@ -239,7 +238,7 @@ public class BookData extends DataManager {
     @SuppressWarnings("unchecked")
     @NonNull
     public ArrayList<AnthologyTitle> getAnthologyTitles() {
-        ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) getSerializable(UniqueId.BKEY_ANTHOLOGY_TITLE_ARRAY);
+        ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) getSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
         if (list == null) {
             list = new ArrayList<>();
         }
@@ -360,7 +359,7 @@ public class BookData extends DataManager {
         });
 
         // Make a formatted list of bookshelves
-        addAccessor(LOCAL_KEY_BOOKSHELF_TEXT, new DataAccessor() {
+        addAccessor(BOOKSHELF_TEXT, new DataAccessor() {
             @Override
             public Object get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
                 return getBookshelfText();

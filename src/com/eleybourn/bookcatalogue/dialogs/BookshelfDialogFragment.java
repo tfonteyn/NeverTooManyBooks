@@ -120,7 +120,7 @@ public class BookshelfDialogFragment extends DialogFragment {
      * TODO: make strong coffee and see if the caller can present structured data using bookshelf ID's instead of two strings.
      *
      * Temporary removed from the db adapter, here is the sql that fetches a suitable dataset.
-     * Re-insert it in the db adapter, modify it to return an ArrayList<Bookshelf> and redo the below AFTER coffee is brewed.
+     * Re-insertOrThrow it in the db adapter, modify it to return an ArrayList<Bookshelf> and redo the below AFTER coffee is brewed.
      *
      * //     /**
      * //     * Return a Cursor over the list of all bookshelves in the database

@@ -57,6 +57,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
+
 public class StandardDialogs {
 
     private static final String UNKNOWN = "<" + BookCatalogueApp.getResourceString(R.string.unknown_uc) + ">";
@@ -196,7 +198,7 @@ public class StandardDialogs {
                 return R.string.unable_to_find_book;
             }
 
-            title = cur.getString(cur.getColumnIndex(UniqueId.KEY_TITLE));
+            title = cur.getString(cur.getColumnIndex(DOM_TITLE.name));
             if (title == null || title.isEmpty()) {
                 title = UNKNOWN;
             }

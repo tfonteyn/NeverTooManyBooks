@@ -61,13 +61,14 @@ public class DbSync {
     /**
      * Implementation of a Readers/Writer lock that is fully reentrant.
      *
-     * Because SQLite throws exception on locking conflicts, this class can be used to serialize WRITE
-     * access while allowing concurrent read access.
+     * Because SQLite throws exception on locking conflicts, this class can be used to serialize
+     * WRITE access while allowing concurrent read access.
      *
-     * Each logical database should have its own 'Synchronizer' and before any read, or group or reads, a call
-     * to getSharedLock() should be made. A call to getExclusiveLock() should be made before any update. Multiple
-     * calls can be made as necessary so long as an unlock() is called for all get*() calls by using the
-     * SyncLock object returned from the get*() call.
+     * Each logical database should have its own 'Synchronizer'
+     * Before any read, or group of reads, a call to getSharedLock() should be made.
+     * A call to getExclusiveLock() should be made before any update.
+     * Multiple calls can be made as necessary so long as an unlock() is called for all get*()
+     * calls by using the SyncLock object returned from the get*() call.
      *
      * These can be called in any order and locks in the current thread never block requests.
      *
@@ -95,7 +96,7 @@ public class DbSync {
          */
         private void purgeOldLocks() {
             if (!mLock.isHeldByCurrentThread()) {
-                throw new RuntimeException("Can not cleanup old locks if not locked");
+                throw new DBExceptions.LockException("Can not cleanup old locks if not locked");
             }
 
             for (Thread t : mSharedOwners.keySet()) {
@@ -108,7 +109,7 @@ public class DbSync {
         /**
          * Add a new SharedLock to the collection and return it.
          */
-        public SyncLock getSharedLock() {
+        SyncLock getSharedLock() {
             final Thread t = Thread.currentThread();
             //System.out.println(t.getName() + " requesting SHARED lock");
             mLock.lock();
@@ -143,7 +144,7 @@ public class DbSync {
                     Integer count = mSharedOwners.get(t) - 1;
                     //System.out.println(t.getName() + " now has " + count + " SHARED locks");
                     if (count < 0) {
-                        throw new RuntimeException("Release a lock count already zero");
+                        throw new DBExceptions.LockException("Release a lock count already zero");
                     }
                     if (count != 0) {
                         mSharedOwners.put(t, count);
@@ -152,7 +153,7 @@ public class DbSync {
                         mReleased.signal();
                     }
                 } else {
-                    throw new RuntimeException("Release a lock when not held");
+                    throw new DBExceptions.LockException("Release a lock when not held");
                 }
             } finally {
                 mLock.unlock();
@@ -168,7 +169,7 @@ public class DbSync {
          * - if not, return with the lock still held -- this prevents more EX or SH locks.
          * - if there are other SH locks, wait for one to be release and loop.
          */
-        public SyncLock getExclusiveLock() {
+        SyncLock getExclusiveLock() {
             final Thread ourThread = Thread.currentThread();
             long t0;
             if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
@@ -201,17 +202,15 @@ public class DbSync {
                             mLock.unlock();
                         } catch (Exception ignored) {
                         }
-                        throw new RuntimeException("Unable to get exclusive lock", e);
+                        throw new DBExceptions.LockException("Unable to get exclusive lock", e);
                     }
                 }
             } finally {
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    //noinspection UnusedAssignment
-                    long t1 = System.currentTimeMillis();
                     if (mLock.isHeldByCurrentThread()) {
-                        System.out.println(ourThread.getName() + " waited " + (t1 - t0) + "ms for EXCLUSIVE access");
+                        System.out.println(ourThread.getName() + " waited " + (System.currentTimeMillis() - t0) + "ms for EXCLUSIVE access");
                     } else {
-                        System.out.println(ourThread.getName() + " waited " + (t1 - t0) + "ms AND FAILED TO GET EXCLUSIVE access");
+                        System.out.println(ourThread.getName() + " waited " + (System.currentTimeMillis() - t0) + "ms AND FAILED TO GET EXCLUSIVE access");
                     }
                 }
             }
@@ -224,7 +223,7 @@ public class DbSync {
             //final Thread t = Thread.currentThread();
             //System.out.println(t.getName() + " releasing EXCLUSIVE lock");
             if (!mLock.isHeldByCurrentThread()) {
-                throw new RuntimeException("Exclusive Lock is not held by this thread");
+                throw new DBExceptions.LockException("Exclusive Lock is not held by this thread");
             }
             mLock.unlock();
             //System.out.println("Release lock held by " + mLock.getHoldCount());
@@ -376,14 +375,14 @@ public class DbSync {
             int retriesLeft = 10; // 2^10 * 10ms = 10.24sec (actually 2x that due to total wait time)
             SQLiteDatabase db;
             do {
-                SyncLock l = mSync.getExclusiveLock();
+                SyncLock exclusiveLock = mSync.getExclusiveLock();
                 try {
                     db = opener.open();
                     return db;
                 } catch (Exception e) {
-                    if (l != null) {
-                        l.unlock();
-                        l = null;
+                    if (exclusiveLock != null) {
+                        exclusiveLock.unlock();
+                        exclusiveLock = null;
                     }
                     if (retriesLeft == 0) {
                         throw new RuntimeException("Unable to open database, retries exhausted", e);
@@ -398,8 +397,8 @@ public class DbSync {
                         throw new RuntimeException("Unable to open database, interrupted", e1);
                     }
                 } finally {
-                    if (l != null) {
-                        l.unlock();
+                    if (exclusiveLock != null) {
+                        exclusiveLock.unlock();
                     }
                 }
             } while (true);
@@ -427,16 +426,16 @@ public class DbSync {
                                                @NonNull final String sql,
                                                @Nullable final String[] selectionArgs,
                                                @SuppressWarnings("SameParameterValue") @NonNull final String editTable) {
-            SyncLock l = null;
+            SyncLock syncLock = null;
             if (mTxLock == null) {
-                l = mSync.getSharedLock();
+                syncLock = mSync.getSharedLock();
             }
 
             try {
                 return (SynchronizedCursor) mDb.rawQueryWithFactory(factory, sql, selectionArgs, editTable);
             } finally {
-                if (l != null) {
-                    l.unlock();
+                if (syncLock != null) {
+                    syncLock.unlock();
                 }
             }
         }
@@ -445,9 +444,13 @@ public class DbSync {
          * Locking-aware wrapper for underlying database method.
          */
         public void execSQL(@NonNull final String sql) throws SQLException {
+            if (DEBUG_SWITCHES.SQL && DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
+                System.out.println(sql);
+            }
+
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive) {
-                    throw new RuntimeException("Update inside shared TX");
+                    throw new DBExceptions.TransactionException("Update inside shared TX");
                 }
                 mDb.execSQL(sql);
             } else {
@@ -470,43 +473,42 @@ public class DbSync {
                             @Nullable final String groupBy,
                             @Nullable final String having,
                             @Nullable final String orderBy) {
-            SyncLock l = null;
+            SyncLock syncLock = null;
             if (mTxLock == null) {
-                l = mSync.getSharedLock();
+                syncLock = mSync.getSharedLock();
             }
 
             try {
                 return mDb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
             } finally {
-                if (l != null) {
-                    l.unlock();
+                if (syncLock != null) {
+                    syncLock.unlock();
                 }
             }
         }
 
         /**
-         * Locking-aware wrapper for underlying database method; actually
-         * calls insertOrThrow since this method also throws exceptions
+         * Locking-aware wrapper for underlying database method
          *
          * @return the row ID of the newly inserted row, or {@link SynchronizedStatement#INSERT_FAILED} if an error occurred
          */
-        public long insert(@NonNull final String table,
-                           @Nullable final String nullColumnHack,
-                           @NonNull final ContentValues values) throws SQLException {
-            SyncLock l = null;
+        public long insertOrThrow(@NonNull final String table,
+                                  @Nullable final String nullColumnHack,
+                                  @NonNull final ContentValues values) {
+            SyncLock syncLock = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive) {
-                    throw new RuntimeException("Update inside shared TX");
+                    throw new DBExceptions.TransactionException("Update inside shared TX");
                 }
             } else {
-                l = mSync.getExclusiveLock();
+                syncLock = mSync.getExclusiveLock();
             }
 
             try {
                 return mDb.insertOrThrow(table, nullColumnHack, values);
             } finally {
-                if (l != null) {
-                    l.unlock();
+                if (syncLock != null) {
+                    syncLock.unlock();
                 }
             }
         }
@@ -520,20 +522,20 @@ public class DbSync {
                           @NonNull final ContentValues values,
                           @NonNull final String whereClause,
                           @Nullable final String[] whereArgs) throws IllegalArgumentException, SQLException {
-            SyncLock l = null;
+            SyncLock syncLock = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive) {
-                    throw new RuntimeException("Update inside shared TX");
+                    throw new DBExceptions.TransactionException("Update inside shared TX");
                 }
             } else {
-                l = mSync.getExclusiveLock();
+                syncLock = mSync.getExclusiveLock();
             }
 
             try {
                 return mDb.update(table, values, whereClause, whereArgs);
             } finally {
-                if (l != null) {
-                    l.unlock();
+                if (syncLock != null) {
+                    syncLock.unlock();
                 }
             }
         }
@@ -548,20 +550,20 @@ public class DbSync {
         public int delete(@NonNull final String table,
                           @NonNull final String whereClause,
                           @Nullable final String[] whereArgs) {
-            SyncLock l = null;
+            SyncLock syncLock = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive) {
-                    throw new RuntimeException("Update inside shared TX");
+                    throw new DBExceptions.TransactionException("Update inside shared TX");
                 }
             } else {
-                l = mSync.getExclusiveLock();
+                syncLock = mSync.getExclusiveLock();
             }
 
             try {
                 return mDb.delete(table, whereClause, whereArgs);
             } finally {
-                if (l != null) {
-                    l.unlock();
+                if (syncLock != null) {
+                    syncLock.unlock();
                 }
             }
         }
@@ -573,15 +575,15 @@ public class DbSync {
                                           @NonNull final String sql,
                                           @NonNull final String[] selectionArgs,
                                           @NonNull final String editTable) {
-            SyncLock l = null;
+            SyncLock syncLock = null;
             if (mTxLock == null) {
-                l = mSync.getSharedLock();
+                syncLock = mSync.getSharedLock();
             }
             try {
                 return mDb.rawQueryWithFactory(cursorFactory, sql, selectionArgs, editTable);
             } finally {
-                if (l != null) {
-                    l.unlock();
+                if (syncLock != null) {
+                    syncLock.unlock();
                 }
             }
         }
@@ -590,20 +592,20 @@ public class DbSync {
          * Locking-aware wrapper for underlying database method.
          */
         public SynchronizedStatement compileStatement(@NonNull final String sql) {
-            SyncLock l = null;
+            SyncLock syncLock = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive) {
-                    throw new RuntimeException("Compile inside shared TX");
+                    throw new DBExceptions.TransactionException("Compile inside shared TX");
                 }
             } else {
-                l = mSync.getExclusiveLock();
+                syncLock = mSync.getExclusiveLock();
             }
 
             try {
                 return new SynchronizedStatement(this, sql);
             } finally {
-                if (l != null) {
-                    l.unlock();
+                if (syncLock != null) {
+                    syncLock.unlock();
                 }
             }
         }
@@ -618,6 +620,7 @@ public class DbSync {
         /**
          * Wrapper.
          */
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         public boolean inTransaction() {
             return mDb.inTransaction();
         }
@@ -630,11 +633,11 @@ public class DbSync {
          * @return the lock
          */
         public SyncLock beginTransaction(final boolean isUpdate) {
-            SyncLock l;
+            SyncLock syncLock;
             if (isUpdate) {
-                l = mSync.getExclusiveLock();
+                syncLock = mSync.getExclusiveLock();
             } else {
-                l = mSync.getSharedLock();
+                syncLock = mSync.getSharedLock();
             }
             // We have the lock, but if the real beginTransaction() throws an exception, we need to release the lock
             try {
@@ -645,29 +648,29 @@ public class DbSync {
                 // ENHANCE: Consider allowing nested TXs
                 // ENHANCE: Consider returning NULL if TX active and handle null locks...
                 if (mTxLock != null) {
-                    throw new RuntimeException("Starting a transaction when one is already started");
+                    throw new DBExceptions.TransactionException("Starting a transaction when one is already started");
                 }
 
                 mDb.beginTransaction();
             } catch (Exception e) {
-                l.unlock();
-                throw new RuntimeException("Unable to start database transaction: " + e.getMessage(), e);
+                syncLock.unlock();
+                throw new DBExceptions.TransactionException("Unable to start database transaction: " + e.getMessage(), e);
             }
-            mTxLock = l;
-            return l;
+            mTxLock = syncLock;
+            return syncLock;
         }
 
         /**
          * Locking-aware wrapper for underlying database method.
          *
-         * @param l Lock returned from BeginTransaction().
+         * @param syncLock Lock returned from BeginTransaction().
          */
-        public void endTransaction(@NonNull final SyncLock l) {
+        public void endTransaction(@NonNull final SyncLock syncLock) {
             if (mTxLock == null) {
-                throw new RuntimeException("Ending a transaction when none is started");
+                throw new DBExceptions.TransactionException("Ending a transaction when none is started");
             }
-            if (!mTxLock.equals(l)) {
-                throw new RuntimeException("Ending a transaction with wrong transaction lock");
+            if (!mTxLock.equals(syncLock)) {
+                throw new DBExceptions.TransactionException("Ending a transaction with wrong transaction lock");
             }
 
             try {
@@ -676,12 +679,15 @@ public class DbSync {
                 // Clear mTxLock before unlocking so another thread does not
                 // see the old lock when it gets the lock
                 mTxLock = null;
-                l.unlock();
+                syncLock.unlock();
             }
         }
 
         /**
          * Wrapper for underlying database method.
+         *
+         * @throws IllegalStateException if the current thread is not in a transaction or the
+         * transaction is already marked as successful.
          */
         public void setTransactionSuccessful() {
             mDb.setTransactionSuccessful();
@@ -738,7 +744,7 @@ public class DbSync {
      */
     public static class SynchronizedStatement implements Closeable {
 
-        /** insert calls indicate failure by returning -1L */
+        /** insertOrThrow calls indicate failure by returning -1L */
         public static final long INSERT_FAILED = -1L;
 
         /** Synchronizer from database */
@@ -796,7 +802,7 @@ public class DbSync {
         /**
          * Wrapper for underlying method on SQLiteStatement.
          */
-        public void bindBlob(final int index, @Nullable final byte[] value) {
+        void bindBlob(final int index, @Nullable final byte[] value) {
             if (value == null) {
                 mStatement.bindNull(index);
             } else {
@@ -814,7 +820,7 @@ public class DbSync {
         /**
          * Wrapper for underlying method on SQLiteStatement.
          */
-        public void clearBindings() {
+        void clearBindings() {
             mStatement.clearBindings();
         }
 
@@ -831,14 +837,13 @@ public class DbSync {
          * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
          *
          * Execute a statement that returns a 1 by 1 table with a numeric value.
-         * For example, SELECT COUNT(*) FROM table;
          *
          * @return The result of the query.
          *
-         * @throws android.database.sqlite.SQLiteDoneException if the query returns zero rows
+         * @throws SQLiteDoneException if the query returns zero rows
          */
         public long simpleQueryForLong() throws SQLiteDoneException {
-            SyncLock l = mSync.getSharedLock();
+            SyncLock sharedLock = mSync.getSharedLock();
             try {
                 long result =  mStatement.simpleQueryForLong();
                 if (DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG && result <= 0 ) {
@@ -846,7 +851,7 @@ public class DbSync {
                 }
                 return result;
             } finally {
-                l.unlock();
+                sharedLock.unlock();
             }
         }
         /**
@@ -855,12 +860,11 @@ public class DbSync {
          * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
          *
          * Execute a statement that returns a 1 by 1 table with a numeric value.
-         * For example, SELECT COUNT(*) FROM table;
          *
          * @return The result of the query, or 0 when no rows found
          */
-        public long simpleQueryForLongOrZero() {
-            SyncLock l = mSync.getSharedLock();
+        long simpleQueryForLongOrZero() {
+            SyncLock sharedLock = mSync.getSharedLock();
             try {
                 long result =  mStatement.simpleQueryForLong();
                 if (DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG && result <= 0 ) {
@@ -870,7 +874,7 @@ public class DbSync {
             } catch (SQLiteDoneException ignore) {
                 return 0;
             } finally {
-                l.unlock();
+                sharedLock.unlock();
             }
         }
 
@@ -883,16 +887,14 @@ public class DbSync {
          * For example, SELECT COUNT(*) FROM table;
          *
          * @return The result of the query.
-         *
-         * @throws android.database.sqlite.SQLiteDoneException if the query returns zero rows
          */
-        public long count() throws SQLiteDoneException {
+        public long count() {
             if (DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG) {
                 if (!mSql.toLowerCase().startsWith("select count(")) {
                     Logger.printStackTrace("count statement not a count?");
                 }
             }
-            return this.simpleQueryForLong();
+            return this.simpleQueryForLongOrZero();
         }
 
         /**
@@ -907,11 +909,11 @@ public class DbSync {
          */
         @NonNull
         public String simpleQueryForString() throws SQLiteDoneException {
-            SyncLock l = mSync.getSharedLock();
+            SyncLock sharedLock = mSync.getSharedLock();
             try {
                 return mStatement.simpleQueryForString();
             } finally {
-                l.unlock();
+                sharedLock.unlock();
             }
         }
 
@@ -928,17 +930,17 @@ public class DbSync {
          * @throws android.database.sqlite.SQLiteDoneException if the query returns zero rows
          */
         @Nullable
-        public String simpleQueryForStringOrNull() {
-            SyncLock l = mSync.getSharedLock();
+        String simpleQueryForStringOrNull() {
+            SyncLock sharedLock = mSync.getSharedLock();
             try {
                 return mStatement.simpleQueryForString();
             } catch (SQLiteDoneException e) {
                 if (BuildConfig.DEBUG) {
-                    Logger.printStackTrace("simpleQueryForStringOrNull got NULL");
+                    Logger.logError(e, "simpleQueryForStringOrNull got NULL");
                 }
                 return null;
             } finally {
-                l.unlock();
+                sharedLock.unlock();
             }
         }
         /**
@@ -947,15 +949,14 @@ public class DbSync {
          * Execute this SQL statement, if it is not a SELECT / INSERT / DELETE / UPDATE, for example
          * CREATE / DROP table, view, trigger, index etc.
          *
-         * @throws android.database.SQLException If the SQL string is invalid for
-         *         some reason
+         * @throws android.database.SQLException If the SQL string is invalid for some reason
          */
         public void execute() throws SQLException {
-            SyncLock l;
+            SyncLock syncLock;
             if (mIsReadOnly) {
-                l = mSync.getSharedLock();
+                syncLock = mSync.getSharedLock();
             } else {
-                l = mSync.getExclusiveLock();
+                syncLock = mSync.getExclusiveLock();
             }
             try {
                 if (DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
@@ -963,7 +964,7 @@ public class DbSync {
                 }
                 mStatement.execute();
             } finally {
-                l.unlock();
+                syncLock.unlock();
             }
         }
 
@@ -973,30 +974,27 @@ public class DbSync {
          * Execute this SQL statement and return the ID of the row inserted due to this call.
          * The SQL statement should be an INSERT for this to be a useful call.
          *
-         * @return the row ID of the last row inserted, if this insert is successful. {@link #INSERT_FAILED} otherwise.
+         * @return the row ID of the last row inserted, if this insertOrThrow is successful. {@link #INSERT_FAILED} otherwise.
          *
-         * @throws android.database.SQLException If the SQL string is invalid for
-         *         some reason
+         * @throws android.database.SQLException If the SQL string is invalid for some reason
          */
-        public long executeInsert() throws SQLException {
-            SyncLock l = mSync.getExclusiveLock();
+        long executeInsert() throws SQLException {
+            SyncLock exclusiveLock = mSync.getExclusiveLock();
             try {
                 return mStatement.executeInsert();
             } finally {
-                l.unlock();
+                exclusiveLock.unlock();
             }
         }
 
         public void finalize() {
             if (!mIsClosed && DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
-                Logger.logError(new RuntimeException("DbSync.SynchronizedStatement: Finalizing non-closed statement" +
-                        " (potential error/normal)"));
+                Logger.logError("DbSync.SynchronizedStatement: Finalizing non-closed statement (potential error/normal)");
                 if (DEBUG_SWITCHES.SQL) {
                     System.out.println(mSql);
                 }
             }
 
-            // Try to close the underlying statement.
             try {
                 mStatement.close();
             } catch (Exception ignore) {
@@ -1004,6 +1002,7 @@ public class DbSync {
             }
         }
     }
+
 
     /**
      * Cursor wrapper that tries to apply locks as necessary. Unfortunately, most cursor
@@ -1029,11 +1028,11 @@ public class DbSync {
         public int getCount() {
             // Cache the count (it's what SQLiteCursor does), and we avoid locking
             if (mCount == -1) {
-                SyncLock l = mSync.getSharedLock();
+                SyncLock sharedLock = mSync.getSharedLock();
                 try {
                     mCount = super.getCount();
                 } finally {
-                    l.unlock();
+                    sharedLock.unlock();
                 }
             }
             return mCount;
@@ -1044,11 +1043,11 @@ public class DbSync {
          */
         @Override
         public boolean requery() {
-            SyncLock l = mSync.getSharedLock();
+            SyncLock sharedLock = mSync.getSharedLock();
             try {
                 return super.requery();
             } finally {
-                l.unlock();
+                sharedLock.unlock();
             }
         }
     }

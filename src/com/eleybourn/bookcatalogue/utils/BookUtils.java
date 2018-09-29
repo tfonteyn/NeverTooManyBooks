@@ -86,7 +86,7 @@ public class BookUtils {
 
             book.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, db.getBookAuthorList(rowId));
             book.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(rowId));
-            book.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLE_ARRAY, db.getBookAnthologyTitleList(rowId));
+            book.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, db.getBookAnthologyTitleList(rowId));
 
             intent.putExtra(UniqueId.BKEY_BOOK_DATA, book);
 

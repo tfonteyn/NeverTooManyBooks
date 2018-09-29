@@ -91,7 +91,7 @@
         android:id="@+id/read"
         style="@style/read_checkbox"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:checked="true" />
 
 </LinearLayout>

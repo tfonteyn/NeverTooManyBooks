@@ -78,9 +78,9 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     public static final String BY_NAME = "name";
     public static final String BY_SCAN = "scan";
 
-    private static final String BKEY_SEARCH_MANAGER_ID = "SearchManagerId";
-    private static final String LOCAL_BKEY_SCANNER_STARTED = "mScannerStarted";
-    private static final String LOCAL_BKEY_LAST_BOOK_INTENT = "LastBookIntent";
+    private static final String SEARCH_MANAGER_ID = "SearchManagerId";
+    private static final String SCANNER_STARTED = "mScannerStarted";
+    private static final String LAST_BOOK_INTENT = "LastBookIntent";
 
     /*
      *  Mode this activity is in:
@@ -173,10 +173,10 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
             mDb.open();
 
             if (savedInstanceState != null) {
-                mSearchManagerId = savedInstanceState.getLong(BKEY_SEARCH_MANAGER_ID);
+                mSearchManagerId = savedInstanceState.getLong(SEARCH_MANAGER_ID);
 
-                if (savedInstanceState.containsKey(LOCAL_BKEY_SCANNER_STARTED)) {
-                    mScannerStarted = savedInstanceState.getBoolean(LOCAL_BKEY_SCANNER_STARTED);
+                if (savedInstanceState.containsKey(SCANNER_STARTED)) {
+                    mScannerStarted = savedInstanceState.getBoolean(SCANNER_STARTED);
                 }
             }
 
@@ -851,10 +851,10 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     @Override
     protected void onRestoreInstanceState(Bundle instanceState) {
 
-        mSearchManagerId = instanceState.getLong(BKEY_SEARCH_MANAGER_ID);
+        mSearchManagerId = instanceState.getLong(SEARCH_MANAGER_ID);
 
         // Now do 'standard' stuff
-        mLastBookIntent = instanceState.getParcelable(LOCAL_BKEY_LAST_BOOK_INTENT);
+        mLastBookIntent = instanceState.getParcelable(LAST_BOOK_INTENT);
 
         // Call the super method only after we have the searchManager set up
         super.onRestoreInstanceState(instanceState);
@@ -878,10 +878,10 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
 
         // standard stuff we need
         if (mSearchManagerId != 0) {
-            instanceState.putLong(BKEY_SEARCH_MANAGER_ID, mSearchManagerId);
+            instanceState.putLong(SEARCH_MANAGER_ID, mSearchManagerId);
         }
-        instanceState.putParcelable(LOCAL_BKEY_LAST_BOOK_INTENT, mLastBookIntent);
-        instanceState.putBoolean(LOCAL_BKEY_SCANNER_STARTED, mScannerStarted);
+        instanceState.putParcelable(LAST_BOOK_INTENT, mLastBookIntent);
+        instanceState.putBoolean(SCANNER_STARTED, mScannerStarted);
 
         // Save the current search details as this may be called as a result of a rotate during an alert dialog.
         // note: these don't actually are getting read ? TODO: probably delete

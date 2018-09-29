@@ -25,7 +25,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 
@@ -39,7 +38,6 @@ public class ArrayUtils<T> {
 
     private static ArrayUtils<Author> mAuthorUtils = null;
     private static ArrayUtils<Series> mSeriesUtils = null;
-    private static ArrayUtils<AnthologyTitle> mAnthologyUtils = null;
 
     private Factory<T> mFactory;
 
@@ -146,54 +144,6 @@ public class ArrayUtils<T> {
         }
     }
     //</editor-fold>
-
-    //<editor-fold desc="<AnthologyTitle">
-    @NonNull
-    public static ArrayUtils<AnthologyTitle> getAnthologyTitleUtils() {
-        if (mAnthologyUtils == null) {
-            mAnthologyUtils = new ArrayUtils<>(new Factory<AnthologyTitle>() {
-                @Override
-                @NonNull
-                public AnthologyTitle get(@NonNull final String source) {
-                    return new AnthologyTitle(source);
-                }
-            });
-        }
-        return mAnthologyUtils;
-    }
-
-    /**
-     * Utility routine to get a anthology titles list from the intent extras
-     *
-     * @param b Bundle with anthology titles list
-     *
-     * @return List of series
-     */
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public static ArrayList<AnthologyTitle> getAnthologyTitleFromBundle(@NonNull final Bundle b) {
-        return (ArrayList<AnthologyTitle>) b.getSerializable(UniqueId.BKEY_ANTHOLOGY_TITLE_ARRAY);
-    }
-
-    /**
-     * Utility routine to get the series from the passed intent. Added to reduce lint warnings...
-     *
-     * @param i Intent containing list
-     *
-     * @return List
-     */
-    @SuppressWarnings("unchecked")
-    @NonNull
-    public static ArrayList<AnthologyTitle> getAnthologyTitleFromIntentExtras(@NonNull final Intent i) {
-        ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) i.getSerializableExtra(UniqueId.BKEY_ANTHOLOGY_TITLE_ARRAY);
-        if (list != null) {
-            return list;
-        } else {
-            return new ArrayList<>();
-        }
-    }
-    //</editor-fold>
-
 
     /**
      * Utility routine to get the list from the passed bundle. Added to reduce lint warnings...

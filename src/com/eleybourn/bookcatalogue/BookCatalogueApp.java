@@ -117,7 +117,6 @@ public class BookCatalogueApp extends Application {
             R.style.AppTheme_Dialog_Alert_NoActionBar,
             R.style.AppTheme_Dialog_Alert_NoActionBar_Light
     };
-    private static final String BKEY_BRING_FG = "bringFg";
 
     private static int mLastTheme;
 
@@ -398,8 +397,6 @@ public class BookCatalogueApp extends Application {
         Intent intent = new Intent(context, StartupActivity.class);
         intent.setAction("android.intent.action.MAIN");
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        // No idea what to do with this!
-        intent.putExtra(BKEY_BRING_FG, true);
         return intent;
     }
 

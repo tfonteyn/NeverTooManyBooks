@@ -189,7 +189,7 @@ public class StorageUtils {
     /**
      * Get the 'standard' temp file name for new books, including a suffix
      */
-    public static File getTempCoverFile(@NonNull final String name) {
+    static File getTempCoverFile(@NonNull final String name) {
         return getTempCoverFile("tmp", name);
     }
 

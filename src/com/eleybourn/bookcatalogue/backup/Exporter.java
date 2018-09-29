@@ -26,21 +26,23 @@ import java.io.OutputStream;
 import java.util.Date;
 
 /**
- * Interface definition for ant 'books' importer.
+ * Interface definition for a 'books' exporter.
  *
  * Currently (Feb 2013) there is only one, but there will probably be
  * an XML export/import one day.
+ * or JSON?
  *
  * @author pjw
  */
 public interface Exporter {
     /** Flag value to indicate new books and books with more recent update_date fields should be exported */
     int EXPORT_NOTHING = 0;
-    int EXPORT_SINCE = 2;
-    int EXPORT_PREFERENCES = 4;
-    int EXPORT_STYLES = 8;
-    int EXPORT_COVERS = 16;
-    int EXPORT_DETAILS = 32;
+    int EXPORT_SINCE = (1 << 1);
+    int EXPORT_PREFERENCES = (1 << 2);
+    int EXPORT_STYLES = (1 << 3);
+    int EXPORT_COVERS = (1 << 4);
+    int EXPORT_DETAILS = (1 << 5);
+
     /** Flag value to indicate ALL books should be exported */
     int EXPORT_ALL = EXPORT_PREFERENCES | EXPORT_STYLES | EXPORT_COVERS | EXPORT_DETAILS;
     int EXPORT_ALL_SINCE = EXPORT_PREFERENCES | EXPORT_STYLES | EXPORT_COVERS | EXPORT_DETAILS | EXPORT_SINCE;
@@ -54,8 +56,10 @@ public interface Exporter {
      *
      * @return true on success
      */
-    boolean export(@NonNull final OutputStream outputStream, @NonNull final Exporter.ExportListener listener,
-                   final int backupFlags, final Date since) throws IOException;
+    boolean export(@NonNull final OutputStream outputStream,
+                   @NonNull final ExportListener listener,
+                   final int backupFlags,
+                   final Date since) throws IOException;
 
     /**
      * Listener interface to get progress messages.

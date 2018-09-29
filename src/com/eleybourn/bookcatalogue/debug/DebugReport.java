@@ -132,7 +132,7 @@ public class DebugReport {
         // Scanners installed
         try {
             message.append("Pref. Scanner: ").append(BCPreferences.getInt(ScannerManager.PREF_PREFERRED_SCANNER, -1)).append("\n");
-            String[] scanners = new String[]{ZxingScanner.ACTION, Pic2ShopScanner.ACTION, Pic2ShopScanner.ACTION};
+            String[] scanners = new String[]{ZxingScanner.ACTION, Pic2ShopScanner.Free.ACTION, Pic2ShopScanner.Pro.ACTION};
             for (String scanner : scanners) {
                 message.append("Scanner [").append(scanner).append("]:\n");
                 final Intent mainIntent = new Intent(scanner, null);

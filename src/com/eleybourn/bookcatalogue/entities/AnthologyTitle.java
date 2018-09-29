@@ -29,14 +29,16 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class to represent a single title within an anthology
  *
  * Note:
- * these are always insert/update'd ONLY when a book is insert/update'd
+ * these are always insertOrThrow/update'd ONLY when a book is insertOrThrow/update'd
  * Hence writes are always a List<AnthologyTitle> in one go. This circumvents the 'position' column
- * as the update will simply insert in-order and auto increment position.
+ * as the update will simply insertOrThrow in-order and auto increment position.
  *
  * The table has some limitations right now
  * 1. can only exist in ONE book
@@ -54,6 +56,18 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     //TODO: see if this matters, I don't think we serialise this to external/blob
     //private static final long serialVersionUID = -8715364898312204329L;
     private static final long serialVersionUID = 2L;
+
+    /**
+     * Used by:
+     * - ISFDB import of anthology titles
+     * - export/import
+     *
+     *  find the publication year in a string like "some title (1960)"
+     *
+     *  pattern finds (1960), group 1 will then contain the pure 1960
+     */
+    public static final Pattern YEAR_FROM_STRING = Pattern.compile("\\(([1|2]\\d\\d\\d)\\)");
+
     private long id = 0;
     private Author mAuthor;
     private String mTitle;
@@ -63,10 +77,11 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     private long mPosition = 0;     // order in the book, [1..x]
 
     /**
-     * Constructor that will attempt to parse a single string into an AnthologyTitle name.
+     * Constructor that will attempt to parse a single string into an AnthologyTitle.
      */
-    public AnthologyTitle(@NonNull final String encodedString) {
-        authorFromName(encodedString);
+    public AnthologyTitle(@NonNull final String fromString,  final long bookId) {
+        fromString(fromString);
+        mBookId = bookId;
     }
 
     /**
@@ -87,10 +102,41 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         mBookId = bookId;
     }
 
-    private void authorFromName(@NonNull final String encodedString) {
+    /**
+     * Support for decoding from a text file
+     */
+    private void fromString(@NonNull final String encodedString) {
+        // V82: Giants In The Sky * Blish, James
+        // V83: Giants In The Sky (1952) * Blish, James
+
         List<String> data = ArrayUtils.decodeList(TITLE_AUTHOR_DELIM, encodedString);
-        mTitle = data.get(0);
         mAuthor = new Author(data.get(1));
+        String title = data.get(0);
+
+        Matcher matcher = AnthologyTitle.YEAR_FROM_STRING.matcher(title);
+        if (matcher.find()) {
+            mPublicationDate = matcher.group(1);
+            mTitle = title.replace(matcher.group(0), "").trim();
+        } else {
+            mPublicationDate = "";
+            mTitle = title;
+        }
+    }
+    /**
+     * Support for encoding to a text file
+     */
+    @Override
+    @NonNull
+    public String toString() {
+        String yearStr;
+        if (mPublicationDate != null && !mPublicationDate.isEmpty()) {
+            // start with a space !
+            yearStr = " (" + mPublicationDate + ")";
+        } else {
+            yearStr = "";
+        }
+        // V83: Giants In The Sky (1952) * Blish, James
+        return ArrayUtils.encodeListItem(',', mTitle) + yearStr + " " + TITLE_AUTHOR_DELIM + " " + mAuthor;
     }
 
     @NonNull
@@ -131,15 +177,11 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         return mPublicationDate;
     }
 
-    /**
-     * Support for encoding to a text file
-     * TODO: V83 import/export
-     */
-    @Override
-    @NonNull
-    public String toString() {
-        return ArrayUtils.encodeListItem(',', mTitle) + " " + TITLE_AUTHOR_DELIM + " " + mAuthor;
+    public void setPublicationDate(final String publicationDate) {
+        mPublicationDate = publicationDate;
     }
+
+
 
     @Override
     public long fixupId(@NonNull final CatalogueDBAdapter db) {

@@ -61,7 +61,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 
@@ -86,15 +85,9 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
      * you loose the ")" at the end, so remove that from the regex, see below
      */
     private static final String CLEANUP_REGEX = "[,.':;`~@#$%^&*(\\-=_+]*$";
-    /**
-     * ISFDB
-     *  find the publication year of a content entry
-     *  pattern finds (1960), group 1 will then contain the pure 1960
-     */
-    private static final Pattern YEAR_FROM_ISFDB_STORY_LI = Pattern.compile("\\(([1|2]\\d\\d\\d)\\)");
 
     private EditText mTitleText;
-    private EditText mYearText;
+    private EditText mPubDateText;
     private AutoCompleteTextView mAuthorText;
     private long mBookId;
     private String mIsbn;
@@ -112,7 +105,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 
     /**
      * ISFDB
-     *  book urls for all editions found in the isbn search. We'll try them one by one if the user asks for a re-try
+     * book urls for all editions found in the isbn search. We'll try them one by one if the user asks for a re-try
      */
     private List<String> mISFDBUrls;
 
@@ -176,12 +169,12 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         mAuthorText.setVisibility(mSame.isChecked() ? View.GONE : View.VISIBLE);
 
         mTitleText = getView().findViewById(R.id.add_title);
-        mYearText = getView().findViewById(R.id.add_year);
+        mPubDateText = getView().findViewById(R.id.add_year);
 
         mAdd = getView().findViewById(R.id.add_button);
         mAdd.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                String year = mYearText.getText().toString();
+                String pubDate = mPubDateText.getText().toString();
                 String title = mTitleText.getText().toString();
                 String author = mAuthorText.getText().toString();
                 if (mSame.isChecked()) {
@@ -190,20 +183,24 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
                 AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing) EditBookAnthologyFragment.this.getListView().getAdapter());
 
                 if (mEditPosition == null) {
-                    AnthologyTitle anthology = new AnthologyTitle(new Author(author), title, year, bookData.getRowId());
+                    AnthologyTitle anthology = new AnthologyTitle(new Author(author), title, pubDate, bookData.getRowId());
                     adapter.add(anthology);
                 } else {
                     AnthologyTitle anthology = adapter.getItem(mEditPosition);
                     anthology.setAuthor(new Author(author));
                     anthology.setTitle(title);
+                    anthology.setPublicationDate(pubDate);
+
+                    adapter.notifyDataSetChanged();
+
                     mEditPosition = null;
                     mAdd.setText(R.string.anthology_add);
                 }
 
-                mYearText.setText("");
+                mPubDateText.setText("");
                 mTitleText.setText("");
                 mAuthorText.setText("");
-                //fillAnthology(currentPosition); don't fill here ? or do ?
+                //fillAnthology();
                 mEditManager.setDirty(true);
             }
         });
@@ -231,7 +228,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 mEditPosition = position;
                 AnthologyTitle anthology = mList.get(position);
-                mYearText.setText(anthology.getPublicationDate());
+                mPubDateText.setText(anthology.getPublicationDate());
                 mTitleText.setText(anthology.getTitle());
                 mAuthorText.setText(anthology.getAuthor().getDisplayName());
                 mAdd.setText(R.string.anthology_save);
@@ -383,6 +380,10 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 
     private void saveState(@NonNull final BookData bookData) {
         bookData.setAnthologyTitles(mList);
+        // multiple authors is now automatically done during database access. The checkbox is only
+        // a visual aid for hiding/showing the author EditText.
+        // So while this command is 'correct', it does not stop (and does not bother) the user
+        // setting it wrong. insert/update into the database will correctly set it.
         bookData.putInt(UniqueId.KEY_ANTHOLOGY_MASK,
                 mSame.isChecked() ?
                         TableInfo.ColumnInfo.ANTHOLOGY_IS_ANTHOLOGY
@@ -401,8 +402,9 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 
     @Override
     protected void onLoadBookDetails(@NonNull final BookData bookData, final boolean setAllDone) {
-        if (!setAllDone)
+        if (!setAllDone) {
             mFields.setAll(bookData);
+        }
     }
 
     @Override
@@ -518,11 +520,10 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
                      */
                     int len = li.childNodeSize();
                     Node y = li.childNode(len - 3);
-                    Matcher matcher = YEAR_FROM_ISFDB_STORY_LI.matcher(y.toString());
+                    Matcher matcher = AnthologyTitle.YEAR_FROM_STRING.matcher(y.toString());
                     String year = matcher.find() ? matcher.group(1) : "";
-                    /*
-                        See above for LI examples. The title is the first a element, the author is the last a element
-                     */
+
+                    /* See above for LI examples. The title is the first a element, the author is the last a element */
                     Elements a = li.select("a");
                     String title = cleanUpName(a.get(0).text());
                     String author = cleanUpName(a.get(a.size() - 1).text());
@@ -549,7 +550,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 
         @Override
         protected void onRowClick(@NonNull final View v, @NonNull final AnthologyTitle item, final int position) {
-            mYearText.setText(item.getPublicationDate());
+            mPubDateText.setText(item.getPublicationDate());
             mTitleText.setText(item.getTitle());
             mAuthorText.setText(item.getAuthor().getDisplayName());
             mEditPosition = position;

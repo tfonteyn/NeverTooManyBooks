@@ -65,28 +65,38 @@ public class UniqueId {
     public static final int ACTIVITY_REQUEST_CODE_GOODREADS_EXPORT_FAILURES = 601;
 
     // END Codes used for startActivityForResult / onActivityResult
-    
-    
-    /* other global constants */
-    public static final String GOODREADS_FILENAME_SUFFIX = "_GR";
 
-    /* BKEY_* and BVAL_* which ae used in more then one class should be moved here */
+    /** ArrayList<Author> */
+    public static final String BKEY_AUTHOR_ARRAY = "author_array";
+    /** ArrayList<Series> */
+    public static final String BKEY_SERIES_ARRAY = "series_array";
+    /** ArrayList<AnthologyTitle> */
+    public static final String BKEY_ANTHOLOGY_TITLES_ARRAY = "anthology_titles_array";
+
+    /** string-encoded - used in import/export, never change the string! */
+    public static final String BKEY_AUTHOR_DETAILS = "author_details";
+    /**  string-encoded - used in import/export, never change the string! */
+    public static final String BKEY_SERIES_DETAILS = "series_details";
+    /**  string-encoded - used in import/export, never change the string! */
+    public static final String BKEY_ANTHOLOGY_DETAILS = "anthology_titles";
+
+
+
+    /* BKEY_* and BVAL_* which are used in more then one class should be moved here */
     public static final String BKEY_NOCOVER = "nocover";
     public static final String BKEY_DIALOG_ID = "dialogId";
     public static final String BKEY_FILE_SPEC = "fileSpec";
+    //^^^^ alll verified & used correctly
+
+
     public static final String BKEY_BOOK_DATA = "bookData";
     public static final String BKEY_DIRTY = "Dirty";
-    public static final String BKEY_ANTHOLOGY_TITLES = "anthology_titles";
-
     public static final String BKEY_THUMBNAIL = "thumbnail";
     public static final String BKEY_THUMBNAIL_USCORE = "__thumbnail";
 
-    public static final String BKEY_ANTHOLOGY_TITLE_ARRAY = "anthology_title_array";
-    public static final String BKEY_AUTHOR_ARRAY = "author_array";
-    public static final String BKEY_SERIES_ARRAY = "series_array";
+    /* other global constants */
+    public static final String GOODREADS_FILENAME_SUFFIX = "_GR";
 
-    public static final String BKEY_AUTHOR_DETAILS = "author_details";
-    public static final String BKEY_SERIES_DETAILS = "series_details";
 
     //TODO: migrate to calling these BKEY once we cleaned up the over-use of the DOM equiv
 

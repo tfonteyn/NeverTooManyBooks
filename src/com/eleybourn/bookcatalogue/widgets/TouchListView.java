@@ -315,10 +315,10 @@ public class TouchListView extends ListView {
      * same place, then make the dragged list item's size normal,
      * but make the item invisible.
      * Otherwise, if the dragged list item is still on screen, make
-     * it as small as possible and expand the item below the insert
+     * it as small as possible and expand the item below the insertOrThrow
      * point.
      * If the dragged item is not on screen, only expand the item
-     * below the current insert point.
+     * below the current insertOrThrow point.
      */
     private void doExpansion(final boolean firstTime) {
 

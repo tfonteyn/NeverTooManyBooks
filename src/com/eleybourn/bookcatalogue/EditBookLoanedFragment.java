@@ -142,7 +142,6 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
     private void saveLoan(@NonNull final String friend) {
         BookData values = mEditManager.getBookData();
         values.putString(UniqueId.KEY_LOANED_TO, friend);
-        //FIXME: ignoring failure
         mDb.insertLoan(values, true);
     }
 

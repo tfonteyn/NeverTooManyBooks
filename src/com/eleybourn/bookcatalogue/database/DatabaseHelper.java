@@ -158,11 +158,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DOM_DATE_PUBLISHED + " date" +
                     ")";
     private static final String DATABASE_CREATE_BOOK_ANTHOLOGY =
-            "create table " + DB_TB_BOOK_ANTHOLOGY + "(" +
+            "create table " + DB_TB_BOOK_ANTHOLOGY + "(_id integer primary key autoincrement, " +
                     DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
                     DOM_ANTHOLOGY_ID + " integer REFERENCES " + DB_TB_ANTHOLOGY + " ON DELETE CASCADE ON UPDATE CASCADE, " +
-                    DOM_BOOK_ANTHOLOGY_POSITION + " integer," +
-                    "PRIMARY KEY(" + DOM_BOOK_ID + ", " + DOM_BOOK_ANTHOLOGY_POSITION + ")" +
+                    DOM_BOOK_ANTHOLOGY_POSITION + " integer" +
                     ")";
     private static final String DATABASE_CREATE_BOOKS =
             "create table " + DB_TB_BOOKS + " (_id integer primary key autoincrement, " +
@@ -213,7 +212,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "CREATE INDEX IF NOT EXISTS anthology_author ON " + DB_TB_ANTHOLOGY + " (" + DOM_AUTHOR_ID + ");",
             "CREATE INDEX IF NOT EXISTS anthology_title ON " + DB_TB_ANTHOLOGY + " (" + DOM_TITLE + ");",
             "CREATE UNIQUE INDEX IF NOT EXISTS anthology_pk_idx ON " + DB_TB_ANTHOLOGY + " (" + DOM_AUTHOR_ID + ", " + DOM_TITLE + ")",
-
 
             "CREATE INDEX IF NOT EXISTS book_anthology_anthology ON " + DB_TB_BOOK_ANTHOLOGY + " (" + DOM_ANTHOLOGY_ID + ");",
             "CREATE INDEX IF NOT EXISTS book_anthology_book ON " + DB_TB_BOOK_ANTHOLOGY + " (" + DOM_BOOK_ID + ");",

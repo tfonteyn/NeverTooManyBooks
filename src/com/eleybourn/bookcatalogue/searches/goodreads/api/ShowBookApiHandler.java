@@ -379,8 +379,9 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         @Override
         public void process(ElementContext context) {
             if (mCurrAuthorName != null && mCurrAuthorName.length() > 0) {
-                if (mAuthors == null)
+                if (mAuthors == null) {
                     mAuthors = new ArrayList<>();
+                }
                 mAuthors.add(new Author(mCurrAuthorName));
                 mCurrAuthorName = null;
             }
@@ -410,8 +411,9 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         @Override
         public void process(ElementContext context) {
             if (mCurrSeriesName != null && mCurrSeriesName.length() > 0) {
-                if (mSeries == null)
+                if (mSeries == null) {
                     mSeries = new ArrayList<>();
+                }
                 if (mCurrSeriesPosition == null) {
                     mSeries.add(new Series(mCurrSeriesName, ""));
                 } else {
@@ -466,8 +468,9 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         // Use ISBN13 by preference
         if (mBook.containsKey(ISBN13)) {
             String s = mBook.getString(ISBN13);
-            if (s != null && s.length() == 13)
+            if (s != null && s.length() == 13) {
                 mBook.putString(UniqueId.KEY_ISBN, s);
+            }
         }
 
         // TODO: Evaluate if ShowBook should store GR book ID.
@@ -484,22 +487,25 @@ public abstract class ShowBookApiHandler extends ApiHandler {
                 bestImage = mBook.getString(IMAGE);
                 if (bestImage != null && bestImage.contains(UniqueId.BKEY_NOCOVER) && mBook.containsKey(SMALL_IMAGE)) {
                     bestImage = mBook.getString(SMALL_IMAGE);
-                    if (bestImage != null && bestImage.contains(UniqueId.BKEY_NOCOVER))
+                    if (bestImage != null && bestImage.contains(UniqueId.BKEY_NOCOVER)) {
                         bestImage = null;
+                    }
                 }
             }
             if (bestImage != null) {
                 String filename = ImageUtils.saveThumbnailFromUrl(bestImage, UniqueId.GOODREADS_FILENAME_SUFFIX);
-                if (filename.length() > 0)
+                if (filename.length() > 0) {
                     ArrayUtils.appendOrAdd(mBook, UniqueId.BKEY_THUMBNAIL_USCORE, filename);
+                }
             }
         }
 
         /* Build the pub date based on the components */
         GoodreadsManager.buildDate(mBook, PUBLICATION_YEAR, PUBLICATION_MONTH, PUBLICATION_DAY, UniqueId.KEY_BOOK_DATE_PUBLISHED);
 
-        if (mBook.containsKey(IS_EBOOK) && mBook.getBoolean(IS_EBOOK))
+        if (mBook.containsKey(IS_EBOOK) && mBook.getBoolean(IS_EBOOK)) {
             mBook.putString(UniqueId.KEY_BOOK_FORMAT, UniqueId.BVAL_GOODREADS_FORMAT_EBOOK);
+        }
 
         /*
          * Cleanup the title by removing series name, if present
@@ -508,8 +514,9 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             String thisTitle = mBook.getString(UniqueId.KEY_TITLE);
             Series.SeriesDetails details = Series.findSeries(thisTitle);
             if (details != null && details.name.length() > 0) {
-                if (mSeries == null)
+                if (mSeries == null) {
                     mSeries = new ArrayList<>();
+                }
                 mSeries.add(new Series(details.name, details.position));
                 // Tempting to replace title with ORIG_TITLE, but that does bad things to translations (it used the original language)
                 mBook.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
@@ -529,21 +536,25 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         // If no published date, try original date
         if (!mBook.containsKey(UniqueId.KEY_BOOK_DATE_PUBLISHED)) {
             String origDate = GoodreadsManager.buildDate(mBook, ORIG_PUBLICATION_YEAR, ORIG_PUBLICATION_MONTH, ORIG_PUBLICATION_DAY, null);
-            if (origDate != null && origDate.length() > 0)
+            if (origDate != null && origDate.length() > 0) {
                 mBook.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, origDate);
+            }
         }
 
         //public static final String RATING = "__rating";
         //public static final String BOOK_URL = "__url";
 
-        if (mAuthors != null && mAuthors.size() > 0)
+        if (mAuthors != null && mAuthors.size() > 0) {
             mBook.putString(UniqueId.BKEY_AUTHOR_DETAILS, ArrayUtils.getAuthorUtils().encodeList('|', mAuthors));
+        }
 
-        if (mSeries != null && mSeries.size() > 0)
+        if (mSeries != null && mSeries.size() > 0) {
             mBook.putString(UniqueId.BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList('|', mSeries));
+        }
 
-        if (mShelves != null && mShelves.size() > 0)
+        if (mShelves != null && mShelves.size() > 0) {
             mBook.putStringArrayList(SHELVES, mShelves);
+        }
         // Return parsed results.
         return mBook;
     }

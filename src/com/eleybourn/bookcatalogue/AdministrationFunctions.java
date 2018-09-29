@@ -68,8 +68,8 @@ public class AdministrationFunctions extends ActivityWithTasks {
     private static final int ACTIVITY_BOOKSHELF = 1;
     private static final int ACTIVITY_FIELD_VISIBILITY = 2;
 
-    private static final String BKEY_DO_AUTO = "do_auto";
-    private static final String BVAL_EXPORT = "export";
+    private static final String DO_AUTO = "do_auto";
+    private static final String DO_AUTO_EXPORT = "export";
 
     private CatalogueDBAdapter mDb;
     private boolean finish_after = false;
@@ -99,16 +99,16 @@ public class AdministrationFunctions extends ActivityWithTasks {
             mDb.open();
 
             Bundle extras = getIntent().getExtras();
-            if (extras != null && extras.containsKey(BKEY_DO_AUTO)) {
-                String val = extras.getString(BKEY_DO_AUTO);
+            if (extras != null && extras.containsKey(DO_AUTO)) {
+                String val = extras.getString(DO_AUTO);
                 if (val != null) {
                     switch (val) {
-                        case BVAL_EXPORT:
+                        case DO_AUTO_EXPORT:
                             finish_after = true;
                             mExportOnStartup = true;
                             break;
                         default:
-                            Logger.logError("Unsupported BKEY_DO_AUTO option: " + val);
+                            Logger.logError("Unsupported DO_AUTO option: " + val);
                             break;
                     }
                 }

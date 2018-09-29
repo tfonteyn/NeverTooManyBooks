@@ -80,11 +80,11 @@ public class BookDetailsActivity extends BookCatalogueActivity
     public static final int TAB_EDIT_ANTHOLOGY = 3;
 
     private static final String FLATTENED_BOOKLIST_POSITION = "FlattenedBooklistPosition";
-    private static final String BKEY_FLATTENED_BOOKLIST = "FlattenedBooklist";
+    private static final String FLATTENED_BOOKLIST = "FlattenedBooklist";
     /**
      * Key using in intent to start this class in read-only mode
      */
-    private static final String LOCAL_BKEY_READ_ONLY = "key_read_only";
+    private static final String READ_ONLY = "key_read_only";
     /**
      * Classes used for the Tabs (in order)
      */
@@ -194,13 +194,13 @@ public class BookDetailsActivity extends BookCatalogueActivity
                                           @Nullable final String listTable,
                                           @Nullable final Integer position) {
         Intent intent = new Intent(activity, BookDetailsActivity.class);
-        intent.putExtra(BKEY_FLATTENED_BOOKLIST, listTable);
+        intent.putExtra(FLATTENED_BOOKLIST, listTable);
         if (position != null) {
             intent.putExtra(FLATTENED_BOOKLIST_POSITION, position);
         }
         intent.putExtra(UniqueId.KEY_ID, id);
         intent.putExtra(BookDetailsActivity.TAB, BookDetailsActivity.TAB_EDIT); // needed extra for creating BookDetailsActivity
-        intent.putExtra(BookDetailsActivity.LOCAL_BKEY_READ_ONLY, true);
+        intent.putExtra(BookDetailsActivity.READ_ONLY, true);
         activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_VIEW_BOOK);
     }
 
@@ -234,7 +234,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         boolean isExistingBook = (mRowId > 0);
 
         mIsReadOnly = (extras != null) && isExistingBook
-                && extras.getBoolean(LOCAL_BKEY_READ_ONLY, false);
+                && extras.getBoolean(READ_ONLY, false);
 
         // prepare the tabs, will use multiple for editing, or invisible one for viewing
         mTabLayout = findViewById(R.id.tabpanel);
@@ -371,7 +371,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
     private void initBooklist(@Nullable final Bundle extras,
                               @Nullable final Bundle savedInstanceState) {
         if (extras != null) {
-            String list = extras.getString(BKEY_FLATTENED_BOOKLIST);
+            String list = extras.getString(FLATTENED_BOOKLIST);
             if (list != null && !list.isEmpty()) {
                 mList = new FlattenedBooklist(mDb, list);
                 // Check to see it really exists. The underlying table disappeared once in testing
@@ -417,7 +417,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
             if (mIsReadOnly && mList != null) {
                 // display a book
 //   to long, doesn't fit
-//                bar.setTitle(mBookData.getString(KEY_TITLE));
+//                bar.setTitle(mBookData.getString(UniqueId.KEY_TITLE));
 //                bar.setSubtitle(mBookData.getAuthorTextShort()
 //                                + String.format(" (" + getResources().getString(R.string.x_of_y) + ")",
 //                                  mList.getAbsolutePosition(), mList.getCount())
@@ -848,7 +848,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         if (mRowId == 0) {
             String isbn = mBookData.getString(UniqueId.KEY_ISBN);
             /* Check if the book currently exists */
-            if (!isbn.isEmpty() && (mDb.isbnExists(isbn, true))) {
+            if (!isbn.isEmpty() && ((mDb.getIdFromIsbn(isbn, true) > 0))) {
                 /*
                  * If it exists, show a dialog and use it to perform the
                  * next action, according to the users choice.

@@ -361,12 +361,12 @@ public class CoversDbHelper implements AutoCloseable {
         try {
             // count, so no SQLiteDoneException
             if (mExistsStmt.simpleQueryForLong() == 0) {
-                rowsAffected = mSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
+                rowsAffected = mSyncedDb.insertOrThrow(TBL_IMAGE.getName(), null, cv);
             } else {
                 rowsAffected = mSyncedDb.update(TBL_IMAGE.getName(), cv, DOM_FILENAME.name + " = ?", new String[]{filename});
             }
             if (rowsAffected == 0) {
-                throw new RuntimeException("Failed to insert data");
+                throw new RuntimeException("Failed to insertOrThrow data");
             }
             mSyncedDb.setTransactionSuccessful();
         } finally {

@@ -769,7 +769,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
                         if ((mFlags & BooklistStyle.EXTRAS_AUTHOR) != 0) {
                             if (mAuthorCol < 0)
-                                mAuthorCol = c.getColumnIndex(UniqueId.KEY_AUTHOR_FORMATTED);
+                                mAuthorCol = c.getColumnIndex(DOM_AUTHOR_FORMATTED.name);
                             //if (mLocationRes == null)
                             //	mLocationRes = BookCatalogueApp.getResourceString(R.string.location);
 
@@ -778,7 +778,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
                         if ((mFlags & BooklistStyle.EXTRAS_LOCATION) != 0) {
                             if (mLocationCol < 0) {
-                                mLocationCol = c.getColumnIndex(UniqueId.KEY_BOOK_LOCATION);
+                                mLocationCol = c.getColumnIndex(DOM_BOOK_LOCATION.name);
                             }
                             if (mLocationRes == null) {
                                 mLocationRes = BookCatalogueApp.getResourceString(R.string.location);
@@ -789,7 +789,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
                         if ((mFlags & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
                             if (mPublisherCol < 0) {
-                                mPublisherCol = c.getColumnIndex(UniqueId.KEY_PUBLISHER);
+                                mPublisherCol = c.getColumnIndex(DOM_PUBLISHER.name);
                             }
                             if (mPublisherRes == null) {
                                 mPublisherRes = BookCatalogueApp.getResourceString(R.string.publisher);
@@ -800,7 +800,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
                         if ((mFlags & BooklistStyle.EXTRAS_FORMAT) != 0) {
                             if (mFormatCol < 0) {
-                                mFormatCol = c.getColumnIndex(UniqueId.KEY_BOOK_FORMAT);
+                                mFormatCol = c.getColumnIndex(DOM_BOOK_FORMAT.name);
                             }
                             if (mFormatRes == null) {
                                 mFormatRes = BookCatalogueApp.getResourceString(R.string.format);
@@ -1039,13 +1039,13 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
             // Series details
             if (rowView.hasSeries()) {
-                final String number = rowView.getSeriesNumber();
                 String name = rowView.getSeriesName();
-                if (name != null && name.isEmpty()) {
+                if (name == null || name.isEmpty()) {
                     // Hide it.
                     seriesNum.setVisibility(View.GONE);
                     seriesNumLong.setVisibility(View.GONE);
                 } else {
+                    final String number = rowView.getSeriesNumber();
                     if (number != null) {
                         // Display it in one of the views, based on the size of the text.
                         if (number.length() > 4) {
