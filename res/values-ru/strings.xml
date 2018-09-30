@@ -115,7 +115,7 @@
     <string name="format">Формат</string>
     <string name="description">Описание</string>
     <string name="genre">Жанр</string>
-    <string name="notset">Не установлено</string>
+    <string name="not_set">Не установлено</string>
     <string name="menu_search">Искать книги</string>
     <string name="isbn_name_search_help">Добавление книг по ISBN гораздо более точное, чем добавление по автору и названию и в большинстве случаев является предпочтительным. Имейте в виду, что иногда правильный штрих-код находится внутри книги. \n\n</string>
     <string name="help_click_here">Пожалуйста, нажмите здесь, чтобы получить справочную информацию в интернете</string>

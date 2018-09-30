@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -330,7 +331,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
          * @param stringId ID of String for this item
          * @param id       ID of this item
          */
-        ContextItem(final int stringId, final int id) {
+        ContextItem(@StringRes final int stringId, final int id) {
             mString = getString(stringId);
             mId = id;
         }

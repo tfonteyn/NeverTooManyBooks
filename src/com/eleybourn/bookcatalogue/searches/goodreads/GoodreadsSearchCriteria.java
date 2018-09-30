@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -122,7 +123,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
     /**
      * Set the visibility of the passed view.
      */
-    private void setViewVisibility(@SuppressWarnings("SameParameterValue") int id, final boolean visible) {
+    private void setViewVisibility(@SuppressWarnings("SameParameterValue") @IdRes final int id, final boolean visible) {
         int flag;
         if (visible) {
             flag = View.VISIBLE;
@@ -135,21 +136,21 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
     /**
      * Set the text of the passed view
      */
-    private void setViewText(final int id, @NonNull final String s) {
+    private void setViewText(@IdRes final int id, @NonNull final String s) {
         ((TextView) this.findViewById(id)).setText(s);
     }
 
     /**
      * Get the text of the passed view
      */
-    private String getViewText(@SuppressWarnings("SameParameterValue") final int id) {
+    private String getViewText(@SuppressWarnings("SameParameterValue") @IdRes final int id) {
         return ((TextView) this.findViewById(id)).getText().toString();
     }
 
     /**
      * Set the OnClickListener for the passed view
      */
-    private void setClickListener(@SuppressWarnings("SameParameterValue") final int id, @NonNull final OnClickListener listener) {
+    private void setClickListener(@SuppressWarnings("SameParameterValue") @IdRes final int id, @NonNull final OnClickListener listener) {
         this.findViewById(id).setOnClickListener(listener);
     }
 

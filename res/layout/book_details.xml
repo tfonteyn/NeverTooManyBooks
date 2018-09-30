@@ -127,14 +127,14 @@
 
             <!-- layout_height for image_wrapper used to be wrap_content but caused the image to disappear??? wtf? -->
             <RelativeLayout
-                android:id="@+id/image_wrapper"
+                android:id="@+id/row_image"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="top|center_horizontal"
                 android:layout_weight="1">
 
                 <ImageView
-                    android:id="@+id/row_img"
+                    android:id="@+id/image"
                     style="@style/thumbnail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -182,13 +182,6 @@
                 android:textOn=""
                 android:textOff=""
                 tools:ignore="ContentDescription" />
-
-            <!-- Checkbox below is used only for compatibility with edit_book -->
-            <CheckBox
-                android:id="@+id/anthology"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
         </LinearLayout>
 
         <ListView
@@ -214,13 +207,12 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/publishing_details"
+                android:id="@+id/publisher"
                 style="@style/bookDetailText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
                 tools:text="Publisher name, Jan 25, 2012" />
-
         </LinearLayout>
 
         <!-- Book Shelves -->
@@ -263,12 +255,26 @@
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+            <TableRow
+                android:id="@+id/row_first_publication"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    style="@style/bookDetailLabel"
+                    android:text="@string/first_publication" />
+
+                <TextView
+                    android:id="@+id/first_publication"
+                    style="@style/bookDetailText"
+                    android:layout_weight="1"
+                    android:textIsSelectable="true"
+                    tools:text="1938" />
+            </TableRow>
             <!-- List price -->
             <TableRow
                 android:id="@+id/row_list_price"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:ignore="UselessParent">
+                android:layout_height="wrap_content">
 
                 <TextView
                     style="@style/bookDetailLabel"
@@ -282,7 +288,6 @@
                     tools:text="45" />
             </TableRow>
         </TableLayout>
-
 
         <!-- Notes section starts here -->
 
@@ -389,12 +394,12 @@
         <TextView
             android:id="@+id/who"
             style="@style/bookDetailText"
-            android:hint="@string/notset"
+            android:hint="@string/not_set"
             android:visibility="gone" />
 
         <!-- Description -->
         <TextView
-            android:id="@+id/descriptionLabel"
+            android:id="@+id/lbl_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"

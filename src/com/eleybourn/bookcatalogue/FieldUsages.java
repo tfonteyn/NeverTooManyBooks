@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 import java.util.LinkedHashMap;
 
@@ -47,7 +48,7 @@ public class FieldUsages extends LinkedHashMap<String, FieldUsages.FieldUsage> {
         public Usages usage;
         public boolean selected;
 
-        public FieldUsage(@NonNull final String name, final int id, @NonNull final Usages usage, final boolean canAppend) {
+        public FieldUsage(@NonNull final String name, @StringRes final int id, @NonNull final Usages usage, final boolean canAppend) {
             this.fieldName = name;
             this.stringId = id;
             this.usage = usage;

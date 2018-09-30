@@ -10,25 +10,16 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
-import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_ANTHOLOGY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_AUTHORS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOKS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOK_ANTHOLOGY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOK_AUTHOR;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOK_BOOKSHELF_WEAK;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_BOOK_SERIES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_LOAN;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DB_TB_SERIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_MASK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_MASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_ID;
@@ -52,18 +43,29 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_ANTHOLOGY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_AUTHORS;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_ANTHOLOGY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_AUTHOR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_SERIES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_LOAN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIES;
 
 
 /**
@@ -109,72 +111,73 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /* Database creation sql statement */
     static final String DATABASE_CREATE_AUTHORS =
-            "create table " + DB_TB_AUTHORS + " (_id integer primary key autoincrement, " +
+            "create table " + TBL_AUTHORS + " (_id integer primary key autoincrement, " +
                     DOM_AUTHOR_FAMILY_NAME + " text not null, " +
                     DOM_AUTHOR_GIVEN_NAMES + " text not null" +
                     ")";
     static final String DATABASE_CREATE_BOOKSHELF =
-            "create table " + DB_TB_BOOKSHELF + " (_id integer primary key autoincrement, " +
-                    DOM_BOOKSHELF_ID + " text not null " +
+            "create table " + TBL_BOOKSHELF + " (_id integer primary key autoincrement, " +
+                    DOM_BOOKSHELF + " text not null " +
                     ")";
 
     /** this inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf} */
     static final String DATABASE_CREATE_BOOKSHELF_DATA =
-            "INSERT INTO " + DB_TB_BOOKSHELF + " (" + DOM_BOOKSHELF_ID + ") VALUES ('" + BookCatalogueApp.getResourceString(R.string.initial_bookshelf) +
+            "INSERT INTO " + TBL_BOOKSHELF + " (" + DOM_BOOKSHELF + ") VALUES ('" + BookCatalogueApp.getResourceString(R.string.initial_bookshelf) +
                     "')";
     static final String DATABASE_CREATE_LOAN =
-            "create table " + DB_TB_LOAN + " (_id integer primary key autoincrement, " +
-                    DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
+            "create table " + TBL_LOAN + " (_id integer primary key autoincrement, " +
+                    DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
                     DOM_LOANED_TO + " text " +
                     ")";
     static final String DATABASE_CREATE_BOOK_BOOKSHELF_WEAK =
-            "create table " + DB_TB_BOOK_BOOKSHELF_WEAK + "(" +
-                    DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
-                    DOM_BOOKSHELF_ID + " integer REFERENCES " + DB_TB_BOOKSHELF + " ON DELETE SET NULL ON UPDATE SET NULL" +
+            "create table " + TBL_BOOK_BOOKSHELF + "(" +
+                    DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
+                    DOM_BOOKSHELF_ID + " integer REFERENCES " + TBL_BOOKSHELF + " ON DELETE SET NULL ON UPDATE SET NULL" +
                     ")";
     static final String DATABASE_CREATE_SERIES =
-            "create table " + DB_TB_SERIES + " (_id integer primary key autoincrement, " +
+            "create table " + TBL_SERIES + " (_id integer primary key autoincrement, " +
                     DOM_SERIES_NAME + " text not null " +
                     ")";
     static final String DATABASE_CREATE_BOOK_SERIES =
-            "create table " + DB_TB_BOOK_SERIES + "(" +
-                    DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
-                    DOM_SERIES_ID + " integer REFERENCES " + DB_TB_SERIES + " ON DELETE SET NULL ON UPDATE CASCADE, " +
-                    DOM_SERIES_NUM + " text, " +
+            "create table " + TBL_BOOK_SERIES + "(" +
+                    DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
+                    DOM_SERIES_ID + " integer REFERENCES " + TBL_SERIES + " ON DELETE SET NULL ON UPDATE CASCADE, " +
+                    DOM_BOOK_SERIES_NUM + " text, " +
                     DOM_BOOK_SERIES_POSITION + " integer," +
                     "PRIMARY KEY(" + DOM_BOOK_ID + ", " + DOM_BOOK_SERIES_POSITION + ")" +
                     ")";
     static final String DATABASE_CREATE_BOOK_AUTHOR =
-            "create table " + DB_TB_BOOK_AUTHOR + "(" +
-                    DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
-                    DOM_AUTHOR_ID + " integer REFERENCES " + DB_TB_AUTHORS + " ON DELETE SET NULL ON UPDATE CASCADE, " +
+            "create table " + TBL_BOOK_AUTHOR + "(" +
+                    DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
+                    DOM_AUTHOR_ID + " integer REFERENCES " + TBL_AUTHORS + " ON DELETE SET NULL ON UPDATE CASCADE, " +
                     DOM_AUTHOR_POSITION + " integer NOT NULL, " +
                     "PRIMARY KEY(" + DOM_BOOK_ID + ", " + DOM_AUTHOR_POSITION + ")" +
                     ")";
     private static final String DATABASE_CREATE_ANTHOLOGY =
-            "create table " + DB_TB_ANTHOLOGY + " (_id integer primary key autoincrement, " +
-                    DOM_AUTHOR_ID + " integer not null REFERENCES " + DB_TB_AUTHORS + ", " +
+            "create table " + TBL_ANTHOLOGY + " (_id integer primary key autoincrement, " +
+                    DOM_AUTHOR_ID + " integer not null REFERENCES " + TBL_AUTHORS + ", " +
                     DOM_TITLE + " text not null, " +
-                    DOM_DATE_PUBLISHED + " date" +
+                    DOM_FIRST_PUBLICATION + " date" +
                     ")";
     private static final String DATABASE_CREATE_BOOK_ANTHOLOGY =
-            "create table " + DB_TB_BOOK_ANTHOLOGY + "(_id integer primary key autoincrement, " +
-                    DOM_BOOK_ID + " integer REFERENCES " + DB_TB_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
-                    DOM_ANTHOLOGY_ID + " integer REFERENCES " + DB_TB_ANTHOLOGY + " ON DELETE CASCADE ON UPDATE CASCADE, " +
+            "create table " + TBL_BOOK_ANTHOLOGY + "(_id integer primary key autoincrement, " +
+                    DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
+                    DOM_ANTHOLOGY_ID + " integer REFERENCES " + TBL_ANTHOLOGY + " ON DELETE CASCADE ON UPDATE CASCADE, " +
                     DOM_BOOK_ANTHOLOGY_POSITION + " integer" +
                     ")";
-    private static final String DATABASE_CREATE_BOOKS =
-            "create table " + DB_TB_BOOKS + " (_id integer primary key autoincrement, " +
+    static final String DATABASE_CREATE_BOOKS =
+            "create table " + TBL_BOOKS + " (_id integer primary key autoincrement, " +
                     DOM_TITLE + " text not null, " +
                     DOM_BOOK_ISBN + " text, " +
-                    DOM_PUBLISHER + " text, " +
-                    DOM_DATE_PUBLISHED + " date, " +
+                    DOM_BOOK_PUBLISHER + " text, " +
+                    DOM_BOOK_DATE_PUBLISHED + " date, " +
+                    DOM_FIRST_PUBLICATION +  " date, " +
                     DOM_BOOK_RATING + " float not null default 0, " +
                     DOM_BOOK_READ + " boolean not null default 0, " +
                     DOM_BOOK_PAGES + " int, " +
                     DOM_BOOK_NOTES + " text, " +
                     DOM_BOOK_LIST_PRICE + " text, " +
-                    DOM_ANTHOLOGY_MASK + " int not null default " + TableInfo.ColumnInfo.ANTHOLOGY_NO + ", " +
+                    DOM_BOOK_ANTHOLOGY_MASK + " int not null default " + DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY + ", " +
                     DOM_BOOK_LOCATION + " text, " +
                     DOM_BOOK_READ_START + " date, " +
                     DOM_BOOK_READ_END + " date, " +
@@ -184,45 +187,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DOM_BOOK_GENRE + " text, " +
                     DOM_BOOK_LANGUAGE + " text default '', " +
                     DOM_BOOK_DATE_ADDED + " datetime default current_timestamp, " +
-                    DOM_GOODREADS_BOOK_ID + " int, " +
-                    DOM_GOODREADS_LAST_SYNC_DATE + " date default '0000-00-00', " +
+                    DOM_BOOK_GOODREADS_BOOK_ID + " int, " +
+                    DOM_BOOK_GOODREADS_LAST_SYNC_DATE + " date default '0000-00-00', " +
                     DOM_BOOK_UUID + " text not null default (lower(hex(randomblob(16)))), " +
                     DOM_LAST_UPDATE_DATE + " date not null default current_timestamp " +
                     ")";
 
     private static final String[] DATABASE_CREATE_INDICES = {
-            "CREATE INDEX IF NOT EXISTS authors_given_names ON " + DB_TB_AUTHORS + " (" + DOM_AUTHOR_GIVEN_NAMES + ");",
-            "CREATE INDEX IF NOT EXISTS authors_given_names_ci ON " + DB_TB_AUTHORS + " (" + DOM_AUTHOR_GIVEN_NAMES + " " + COLLATION + ");",
-            "CREATE INDEX IF NOT EXISTS authors_family_name ON " + DB_TB_AUTHORS + " (" + DOM_AUTHOR_FAMILY_NAME + ");",
-            "CREATE INDEX IF NOT EXISTS authors_family_name_ci ON " + DB_TB_AUTHORS + " (" + DOM_AUTHOR_FAMILY_NAME + " " + COLLATION + ");",
+            "CREATE INDEX IF NOT EXISTS authors_given_names ON " + TBL_AUTHORS + " (" + DOM_AUTHOR_GIVEN_NAMES + ");",
+            "CREATE INDEX IF NOT EXISTS authors_given_names_ci ON " + TBL_AUTHORS + " (" + DOM_AUTHOR_GIVEN_NAMES + " " + COLLATION + ");",
+            "CREATE INDEX IF NOT EXISTS authors_family_name ON " + TBL_AUTHORS + " (" + DOM_AUTHOR_FAMILY_NAME + ");",
+            "CREATE INDEX IF NOT EXISTS authors_family_name_ci ON " + TBL_AUTHORS + " (" + DOM_AUTHOR_FAMILY_NAME + " " + COLLATION + ");",
 
-            "CREATE INDEX IF NOT EXISTS bookshelf_bookshelf ON " + DB_TB_BOOKSHELF + " (" + DOM_BOOKSHELF_ID + ");",
+            "CREATE INDEX IF NOT EXISTS bookshelf_bookshelf ON " + TBL_BOOKSHELF + " (" + DOM_BOOKSHELF + ");",
 
-            "CREATE INDEX IF NOT EXISTS books_title ON " + DB_TB_BOOKS + " (" + DOM_TITLE + ");",
-            "CREATE INDEX IF NOT EXISTS books_title_ci ON " + DB_TB_BOOKS + " (" + DOM_TITLE + " " + COLLATION + ");",
-            "CREATE INDEX IF NOT EXISTS books_isbn ON " + DB_TB_BOOKS + " (" + DOM_BOOK_ISBN + ");",
-            "CREATE INDEX IF NOT EXISTS books_publisher ON " + DB_TB_BOOKS + " (" + DOM_PUBLISHER + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS books_uuid ON " + DB_TB_BOOKS + " (" + DOM_BOOK_UUID + ");",
-            "CREATE INDEX IF NOT EXISTS books_gr_book ON " + DB_TB_BOOKS + " (" + DOM_GOODREADS_BOOK_ID + ");",
+            "CREATE INDEX IF NOT EXISTS books_title ON " + TBL_BOOKS + " (" + DOM_TITLE + ");",
+            "CREATE INDEX IF NOT EXISTS books_title_ci ON " + TBL_BOOKS + " (" + DOM_TITLE + " " + COLLATION + ");",
+            "CREATE INDEX IF NOT EXISTS books_isbn ON " + TBL_BOOKS + " (" + DOM_BOOK_ISBN + ");",
+            "CREATE INDEX IF NOT EXISTS books_publisher ON " + TBL_BOOKS + " (" + DOM_BOOK_PUBLISHER + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS books_uuid ON " + TBL_BOOKS + " (" + DOM_BOOK_UUID + ");",
+            "CREATE INDEX IF NOT EXISTS books_gr_book ON " + TBL_BOOKS + " (" + DOM_BOOK_GOODREADS_BOOK_ID + ");",
 
-            "CREATE UNIQUE INDEX IF NOT EXISTS series_series ON " + DB_TB_SERIES + " (" + DOM_ID + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS series_series ON " + TBL_SERIES + " (" + DOM_ID + ");",
 
-            "CREATE UNIQUE INDEX IF NOT EXISTS loan_book_loaned_to ON " + DB_TB_LOAN + " (" + DOM_BOOK_ID + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS loan_book_loaned_to ON " + TBL_LOAN + " (" + DOM_BOOK_ID + ");",
 
-            "CREATE INDEX IF NOT EXISTS anthology_author ON " + DB_TB_ANTHOLOGY + " (" + DOM_AUTHOR_ID + ");",
-            "CREATE INDEX IF NOT EXISTS anthology_title ON " + DB_TB_ANTHOLOGY + " (" + DOM_TITLE + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS anthology_pk_idx ON " + DB_TB_ANTHOLOGY + " (" + DOM_AUTHOR_ID + ", " + DOM_TITLE + ")",
+            "CREATE INDEX IF NOT EXISTS anthology_author ON " + TBL_ANTHOLOGY + " (" + DOM_AUTHOR_ID + ");",
+            "CREATE INDEX IF NOT EXISTS anthology_title ON " + TBL_ANTHOLOGY + " (" + DOM_TITLE + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS anthology_pk_idx ON " + TBL_ANTHOLOGY + " (" + DOM_AUTHOR_ID + ", " + DOM_TITLE + ")",
 
-            "CREATE INDEX IF NOT EXISTS book_anthology_anthology ON " + DB_TB_BOOK_ANTHOLOGY + " (" + DOM_ANTHOLOGY_ID + ");",
-            "CREATE INDEX IF NOT EXISTS book_anthology_book ON " + DB_TB_BOOK_ANTHOLOGY + " (" + DOM_BOOK_ID + ");",
+            "CREATE INDEX IF NOT EXISTS book_anthology_anthology ON " + TBL_BOOK_ANTHOLOGY + " (" + DOM_ANTHOLOGY_ID + ");",
+            "CREATE INDEX IF NOT EXISTS book_anthology_book ON " + TBL_BOOK_ANTHOLOGY + " (" + DOM_BOOK_ID + ");",
 
-            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_book ON " + DB_TB_BOOK_BOOKSHELF_WEAK + " (" + DOM_BOOK_ID + ");",
-            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_bookshelf ON " + DB_TB_BOOK_BOOKSHELF_WEAK + " (" + DOM_BOOKSHELF_ID + ");",
+            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_book ON " + TBL_BOOK_BOOKSHELF + " (" + DOM_BOOK_ID + ");",
+            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_bookshelf ON " + TBL_BOOK_BOOKSHELF + " (" + DOM_BOOKSHELF_ID + ");",
 
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_series ON " + DB_TB_BOOK_SERIES + " (" + DOM_SERIES_ID + ", " + DOM_BOOK_ID + ", " + DOM_SERIES_NUM + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_book ON " + DB_TB_BOOK_SERIES + " (" + DOM_BOOK_ID + ", " + DOM_SERIES_ID + ", " + DOM_SERIES_NUM + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_author ON " + DB_TB_BOOK_AUTHOR + " (" + DOM_AUTHOR_ID + ", " + DOM_BOOK_ID + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_book ON " + DB_TB_BOOK_AUTHOR + " (" + DOM_BOOK_ID + ", " + DOM_AUTHOR_ID + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_series ON " + TBL_BOOK_SERIES + " (" + DOM_SERIES_ID + ", " + DOM_BOOK_ID + ", " + DOM_BOOK_SERIES_NUM + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_book ON " + TBL_BOOK_SERIES + " (" + DOM_BOOK_ID + ", " + DOM_SERIES_ID + ", " + DOM_BOOK_SERIES_NUM + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_author ON " + TBL_BOOK_AUTHOR + " (" + DOM_AUTHOR_ID + ", " + DOM_BOOK_ID + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_book ON " + TBL_BOOK_AUTHOR + " (" + DOM_BOOK_ID + ", " + DOM_AUTHOR_ID + ");",
     };
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -248,7 +251,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * This routine renames all files, if they exist.
      */
     private static void v83_moveCoversToDedicatedDirectory(@NonNull final DbSync.SynchronizedDb db) {
-        String sql = "select " + DOM_BOOK_UUID + " from " + DB_TB_BOOKS;
+        String sql = "select " + DOM_BOOK_UUID + " from " + TBL_BOOKS;
 
         try (Cursor cur = db.rawQuery(sql)) {
             while (cur.moveToNext()) {
@@ -298,7 +301,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         DatabaseDefinitions.TBL_BOOK_LIST_NODE_SETTINGS.createAll(syncedDb, true);
         DatabaseDefinitions.TBL_BOOKS_FTS.create(syncedDb, false);
-        DatabaseDefinitions.TBL_BOOK_LIST_STYLES.createAll(syncedDb, true);
+        DatabaseDefinitions.TBL_BOOKLIST_STYLES.createAll(syncedDb, true);
 
         createTriggers(syncedDb);
     }
@@ -392,26 +395,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+        // older version upgrades archived/execute in UpgradeDatabase
         curVersion = UpgradeDatabase.doUpgrade(db, syncedDb, curVersion);
         mMessage += UpgradeDatabase.getMessage();
 
-        if (curVersion == 81) {
-            curVersion++;
-            UpgradeDatabase.recreateAndReloadTable(syncedDb, DB_TB_BOOKS, DATABASE_CREATE_BOOKS);
-        }
-
         if (curVersion < newVersion && curVersion == 82) {
             curVersion++;
+            mMessage += "New in v83:\n\n";
+            mMessage += "* Moved to base Android 5.0 bringing lots of new UI goodies.";
+            mMessage += "* Removed the old 'Classic' view (sorry)\n";
+            mMessage += "* Cover thumbnails are moved to a 'covers' sub folder to clean up the root folder.\n\n";
+            mMessage += "* Better Anthology support\n";
+            mMessage += "* Books & Anthology titles now have a 'first published' year\n";
+
             v83_moveCoversToDedicatedDirectory(syncedDb);
 
             // move the existing book-anthology links to the new table
             db.execSQL(DATABASE_CREATE_BOOK_ANTHOLOGY);
-            db.execSQL("INSERT INTO " + DB_TB_BOOK_ANTHOLOGY +
-                    " SELECT " + DOM_BOOK_ID + ", " + DOM_ID + ", " + DOM_BOOK_ANTHOLOGY_POSITION + " FROM " + DB_TB_ANTHOLOGY);
+            db.execSQL("INSERT INTO " + TBL_BOOK_ANTHOLOGY +
+                    " SELECT " + DOM_BOOK_ID + ", " + DOM_ID + ", " + DOM_BOOK_ANTHOLOGY_POSITION + " FROM " + TBL_ANTHOLOGY);
 
-            // redo the anthology table as last step
-            UpgradeDatabase.recreateAndReloadTable(syncedDb, DB_TB_ANTHOLOGY, DATABASE_CREATE_ANTHOLOGY,
+            // reorganise the original table
+            UpgradeDatabase.recreateAndReloadTable(syncedDb, TBL_ANTHOLOGY.getName(), DATABASE_CREATE_ANTHOLOGY,
                     /* remove fields: */ DOM_BOOK_ID.name, DOM_BOOK_ANTHOLOGY_POSITION.name);
+
+            // add new field
+            db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_FIRST_PUBLICATION + " date");
         }
 
         // Rebuild all indices

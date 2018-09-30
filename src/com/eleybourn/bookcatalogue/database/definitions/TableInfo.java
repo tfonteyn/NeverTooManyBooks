@@ -126,11 +126,6 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
      * @author Philip Warner
      */
     public static class ColumnInfo {
-        /** bit flags, used for {@link DatabaseDefinitions#DOM_ANTHOLOGY_MASK} */
-        public static final int ANTHOLOGY_NO = 0;
-        public static final int ANTHOLOGY_IS_ANTHOLOGY = 1;
-        public static final int ANTHOLOGY_MULTIPLE_AUTHORS = 2;
-
         public int position;
         public String name;
         public String typeName;

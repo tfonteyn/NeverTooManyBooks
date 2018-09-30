@@ -24,8 +24,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.SQLException;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -73,10 +75,10 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         return inflater.inflate(R.layout.fragment_edit_book_fields, container, false);
     }
 
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnActivityCreated(this);
-        double t0;
-        double t1;
+        long t0;
+        long t1;
 
         try {
             if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
@@ -152,7 +154,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
             });
 
 
-            setupMenuMoreButton(R.id.publisher, R.id.publisher_button, mEditManager.getPublishers(), R.string.format);
+            setupMenuMoreButton(R.id.publisher, R.id.publisher_button, mEditManager.getPublishers(), R.string.publisher);
             setupMenuMoreButton(R.id.format, R.id.format_button, mEditManager.getFormats(), R.string.format);
             setupMenuMoreButton(R.id.genre, R.id.genre_button, mEditManager.getGenres(), R.string.genre);
             setupMenuMoreButton(R.id.language, R.id.language_button, mEditManager.getLanguages(), R.string.language);
@@ -185,7 +187,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
     }
 
     //TODO: if field not visible, skip
-    private void setupMenuMoreButton(final int resId, final int buttonResId, final List<String> list, final int dialogTitleResId) {
+    private void setupMenuMoreButton(@IdRes final int resId, @IdRes final int buttonResId, @NonNull final List<String> list, @StringRes final int dialogTitleResId) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_dropdown_item_1line, list);
         mFields.setAdapter(resId, adapter);
@@ -222,7 +224,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
      * 3. It will leave the fields blank for new books.
      */
     private void populateFields() {
-        double t0;
+        long t0;
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
             t0 = System.currentTimeMillis();
         }
@@ -338,7 +340,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
      * Show the context menu for the cover thumbnail
      */
     public void showCoverContextMenu() {
-        View v = getView().findViewById(R.id.row_img);
+        View v = getView().findViewById(R.id.image);
         v.showContextMenu();
     }
 

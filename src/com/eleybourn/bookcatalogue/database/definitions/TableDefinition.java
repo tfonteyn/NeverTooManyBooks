@@ -279,7 +279,7 @@ public class TableDefinition implements AutoCloseable {
     @NonNull
     private TableDefinition addReference(@NonNull final FkReference fk) {
         if (fk.child != this)
-            throw new RuntimeException("Foreign key does not include this table as child");
+            throw new IllegalStateException("Foreign key does not include this table as child");
         mParents.put(fk.parent, fk);
         fk.parent.addChild(this, fk);
         return this;
@@ -373,7 +373,7 @@ public class TableDefinition implements AutoCloseable {
             return this;
         // Make sure one with same name is not already in table
         if (mDomainNameCheck.containsKey(domain.name.toLowerCase()))
-            throw new RuntimeException("A domain with that name has already been added");
+            throw new IllegalStateException("A domain with that name has already been added");
         // Add it
         mDomains.add(domain);
         mDomainCheck.add(domain);
@@ -423,7 +423,7 @@ public class TableDefinition implements AutoCloseable {
     public TableDefinition addIndex(@NonNull final String localKey, final boolean unique, @NonNull final DomainDefinition... domains) {
         // Make sure not already defined
         if (mIndexes.containsKey(localKey))
-            throw new RuntimeException("Index with local name '" + localKey + "' already defined");
+            throw new IllegalStateException("Index with local name '" + localKey + "' already defined");
         // Construct the full index name
         String name = this.mName + "_IX" + (mIndexes.size() + 1) + "_" + localKey;
         mIndexes.put(localKey, new IndexDefinition(name, unique, this, domains));
@@ -644,7 +644,7 @@ public class TableDefinition implements AutoCloseable {
         sql.append("Table ");
         if (ifNecessary) {
             if (mType == TableTypes.FTS3 || mType == TableTypes.FTS4)
-                throw new RuntimeException("'if not exists' can not be used when creating virtual tables");
+                throw new IllegalStateException("'if not exists' can not be used when creating virtual tables");
             sql.append("if not exists ");
         }
 
@@ -699,7 +699,7 @@ public class TableDefinition implements AutoCloseable {
             fk = mParents.get(to);
         }
         if (fk == null)
-            throw new RuntimeException("No foreign key between '" + this.getName() + "' and '" + to.getName() + "'");
+            throw new IllegalStateException("No foreign key between '" + this.getName() + "' and '" + to.getName() + "'");
 
         return fk.getPredicate();
     }

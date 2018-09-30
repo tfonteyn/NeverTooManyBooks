@@ -114,7 +114,7 @@
     <string name="format">Formato</string>
     <string name="description">Descrizione</string>
     <string name="genre">Genere</string>
-    <string name="notset">Non impostato</string>
+    <string name="not_set">Non impostato</string>
     <string name="menu_search">Cerca libri</string>
     <string name="isbn_name_search_help">Aggiungere libri mediante codice ISBN è molto più preciso rispetto ad aggiungerli per autore e titolo ed è in genere consigliato. Nota che a volte il codice ISBN si trova all\'interno della copertina. \n\n</string>
     <string name="help_click_here">Tocca qui per accedere all\'aiuto online</string>

@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.baseactivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -315,7 +316,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * @param id Resource ID
      * @param l  Listener
      */
-    private void setupListener(int id, OnClickListener l) {
+    private void setupListener(@IdRes final int id, @NonNull final OnClickListener l) {
         View v = this.findViewById(id);
         if (v != null) {
             v.setOnClickListener(l);
@@ -328,7 +329,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * @param id View ID
      * @param s  String to set
      */
-    protected void setTextOrHideView(@SuppressWarnings("SameParameterValue") final int id, @Nullable final String s) {
+    protected void setTextOrHideView(@SuppressWarnings("SameParameterValue") @IdRes final int id, @Nullable final String s) {
         TextView textView = this.findViewById(id);
         if (textView == null) {
             return;

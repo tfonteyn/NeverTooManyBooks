@@ -268,7 +268,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         // Deliver any outstanding messages

@@ -166,17 +166,17 @@ public class CropBitmapManager {
 		notifyAll();
 	}
 
-	// /**
-	// * A debugging routine.
-	// */
-	// public synchronized void dump() {
-	// Iterator<Map.Entry<Thread, ThreadStatus>> i =
-	// mThreadStatus.entrySet().iterator();
-	//
-	// while (i.hasNext()) {
-	// Map.Entry<Thread, ThreadStatus> entry = i.next();
-	// }
-	// }
+//	 /**
+//	 * A debugging routine.
+//	 */
+//	 public synchronized void dump() {
+//	 Iterator<Map.Entry<Thread, ThreadStatus>> i =
+//	 mThreadStatus.entrySet().iterator();
+//
+//	 while (i.hasNext()) {
+//	 Map.Entry<Thread, ThreadStatus> entry = i.next();
+//	 }
+//	 }
 
 	public static synchronized CropBitmapManager instance() {
 		if (sManager == null) {
@@ -185,25 +185,25 @@ public class CropBitmapManager {
 		return sManager;
 	}
 
-	/**
-	 * The real place to delegate bitmap decoding to BitmapFactory.
-	 */
-	@Nullable
-	public Bitmap decodeFileDescriptor(FileDescriptor fd,
-			BitmapFactory.Options options) {
-		if (options.mCancel) {
-			return null;
-		}
-
-		Thread thread = Thread.currentThread();
-		if (!canThreadDecoding(thread)) {
-			return null;
-		}
-
-		setDecodingOptions(thread, options);
-		Bitmap b = BitmapFactory.decodeFileDescriptor(fd, null, options);
-
-		removeDecodingOptions(thread);
-		return b;
-	}
+//	/**
+//	 * The real place to delegate bitmap decoding to BitmapFactory.
+//	 */
+//	@Nullable
+//	public Bitmap decodeFileDescriptor(FileDescriptor fd,
+//			BitmapFactory.Options options) {
+//		if (options.mCancel) {
+//			return null;
+//		}
+//
+//		Thread thread = Thread.currentThread();
+//		if (!canThreadDecoding(thread)) {
+//			return null;
+//		}
+//
+//		setDecodingOptions(thread, options);
+//		Bitmap b = BitmapFactory.decodeFileDescriptor(fd, null, options);
+//
+//		removeDecodingOptions(thread);
+//		return b;
+//	}
 }

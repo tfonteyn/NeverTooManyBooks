@@ -116,7 +116,7 @@
     <string name="format">Formaat</string>
     <string name="description">Beschrijving</string>
     <string name="genre">Genre</string>
-    <string name="notset">Niet Ingevuld</string>
+    <string name="not_set">Niet Ingevuld</string>
     <string name="menu_search">Zoek boeken</string>
     <string name="isbn_name_search_help">toevoegen van boeken via ISBN is veel preciezer dan toevoegen via auteur en titel en verdient meestal de voorkeur. De juiste streepjescode kunt u meestal vinden aan de achterkant van de boekomslag. \n\n</string>
     <string name="help_click_here">Tik hier voor online help</string>

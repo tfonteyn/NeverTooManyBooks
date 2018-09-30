@@ -71,7 +71,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     private long id = 0;
     private Author mAuthor;
     private String mTitle;
-    private String mPublicationDate;
+    private String mFirstPublicationDate;
 
     private long mBookId = 0;
     private long mPosition = 0;     // order in the book, [1..x]
@@ -97,7 +97,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
                           final long bookId) {
         mAuthor = author;
         mTitle = title.trim();
-        mPublicationDate = publicationDate;
+        mFirstPublicationDate = publicationDate;
 
         mBookId = bookId;
     }
@@ -115,10 +115,10 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
 
         Matcher matcher = AnthologyTitle.YEAR_FROM_STRING.matcher(title);
         if (matcher.find()) {
-            mPublicationDate = matcher.group(1);
+            mFirstPublicationDate = matcher.group(1);
             mTitle = title.replace(matcher.group(0), "").trim();
         } else {
-            mPublicationDate = "";
+            mFirstPublicationDate = "";
             mTitle = title;
         }
     }
@@ -129,9 +129,9 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     @NonNull
     public String toString() {
         String yearStr;
-        if (mPublicationDate != null && !mPublicationDate.isEmpty()) {
+        if (mFirstPublicationDate != null && !mFirstPublicationDate.isEmpty()) {
             // start with a space !
-            yearStr = " (" + mPublicationDate + ")";
+            yearStr = " (" + mFirstPublicationDate + ")";
         } else {
             yearStr = "";
         }
@@ -173,12 +173,12 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         this.mPosition = mPosition;
     }
 
-    public String getPublicationDate() {
-        return mPublicationDate;
+    public String getFirstPublication() {
+        return mFirstPublicationDate;
     }
 
-    public void setPublicationDate(final String publicationDate) {
-        mPublicationDate = publicationDate;
+    public void setFirstPublication(final String publicationDate) {
+        mFirstPublicationDate = publicationDate;
     }
 
 

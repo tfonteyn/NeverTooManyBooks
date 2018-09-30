@@ -2,9 +2,7 @@ package com.eleybourn.bookcatalogue.backup;
 
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
@@ -45,12 +43,9 @@ public class ExportThread extends ManagedTask {
         }
 
     };
-    private CatalogueDBAdapter mDb;
 
     public ExportThread(@NonNull final TaskManager manager) {
         super(manager);
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-        mDb.open();
     }
 
     @Override
@@ -67,24 +62,6 @@ public class ExportThread extends ManagedTask {
         } catch (IOException e) {
             Logger.logError(e);
             mManager.doToast(getString(R.string.export_failed_sdcard));
-        }
-    }
-
-    @Override
-    protected void onThreadFinish() {
-        cleanup();
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        cleanup();
-        super.finalize();
-    }
-
-    private void cleanup() {
-        if (mDb != null) {
-            mDb.close();
-            mDb = null;
         }
     }
 

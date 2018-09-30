@@ -60,7 +60,6 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     private static final String BKEY_RETURN_DATA = "return-data";
     private static final String BKEY_DATA = "data";
 
-    private static final String BOOKSHELF_TEXT = "bookshelf_text";
     private static final String THUMBNAIL = "thumbnail";
     /**
      * Counter used to prevent images being reused accidentally
@@ -246,7 +245,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         initFields();
 
         //Set zooming by default on clicking on image
-        getView().findViewById(R.id.row_img).setOnClickListener(new OnClickListener() {
+        getView().findViewById(R.id.image).setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -289,7 +288,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         Tracker.handleEvent(this, "Context Menu Item " + item.getItemId(), Tracker.States.Enter);
 
         try {
-            ImageView thumbView = getView().findViewById(R.id.row_img);
+            ImageView thumbView = getView().findViewById(R.id.image);
             File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
 
             switch (item.getItemId()) {
@@ -561,8 +560,6 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      * Add all book fields with corresponding validators.
      */
     private void initFields() {
-        final View root = getView();
-
         /* Title has some post-processing on the text, to move leading 'A', 'The' etc to the end.
          * While we could do it in a formatter, it it not really a display-oriented function and
          * is handled in pre-processing in the database layer since it also needs to be applied
@@ -574,39 +571,37 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
          * value was 0 or 1, then setting/clearing it here should just set the new value to 0 or 1.
          * However...if if the original value was 2, then we want setting/clearing to alternate
          * between 2 and 0, not 1 and 0.
-         * So, despite if being a checkbox, we use an integerValidator and use a special formatter.
+         * So, despite it being a checkbox, we use an integerValidator and use a special formatter.
          * We also store it in the tag field so that it is automatically serialized with the
          * activity.
          */
-        mFields.add(R.id.anthology, BookData.IS_ANTHOLOGY, null);
+        if (getView().findViewById(R.id.anthology) != null) {
+            mFields.add(R.id.anthology, BookData.IS_ANTHOLOGY, null);
+        }
 
-        mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED, null);
-        mFields.add(R.id.isbn, UniqueId.KEY_ISBN, null);
-
-        if (root.findViewById(R.id.publisher) != null) {
+        if (getView().findViewById(R.id.publisher) != null) {
             mFields.add(R.id.publisher, UniqueId.KEY_PUBLISHER, null);
         }
 
-        if (root.findViewById(R.id.date_published) != null) {
+        if (getView().findViewById(R.id.date_published) != null) {
             mFields.add(R.id.date_published, UniqueId.KEY_BOOK_DATE_PUBLISHED, UniqueId.KEY_BOOK_DATE_PUBLISHED,
                     null, new Fields.DateFieldFormatter());
         }
 
+        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION, null).setShowHtml(true);
+        mFields.add(R.id.bookshelf, UniqueId.BKEY_BOOKSHELF_TEXT, null).doNoFetch = true; // Output-only field
+        mFields.add(R.id.image, "", THUMBNAIL, null);
+        mFields.getField(R.id.image).getView().setOnCreateContextMenuListener(mCreateBookThumbContextMenuListener);
+
+        mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED, null);
+        mFields.add(R.id.isbn, UniqueId.KEY_ISBN, null);
+        mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION, UniqueId.KEY_FIRST_PUBLICATION, null);
         mFields.add(R.id.series, UniqueId.KEY_SERIES_NAME, UniqueId.KEY_SERIES_NAME, null);
         mFields.add(R.id.list_price, UniqueId.KEY_BOOK_LIST_PRICE, null);
         mFields.add(R.id.pages, UniqueId.KEY_BOOK_PAGES, null);
-        mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT, null);
-        //mFields.add(R.id.bookshelf, KEY_BOOKSHELF_NAME, null);
-        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION, null)
-                .setShowHtml(true);
         mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE, null);
         mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE, null);
-
-        mFields.add(R.id.row_img, "", THUMBNAIL, null);
-        mFields.getField(R.id.row_img).getView().setOnCreateContextMenuListener(mCreateBookThumbContextMenuListener);
-
-        mFields.add(R.id.format_button, "", UniqueId.KEY_BOOK_FORMAT, null);
-        mFields.add(R.id.bookshelf, BOOKSHELF_TEXT, null).doNoFetch = true; // Output-only field
+        mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT, null);
         mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED, null);
     }
 
@@ -619,7 +614,6 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     protected void populateFieldsFromBook(@NonNull final BookData book) {
         // From the database (edit)
         try {
-
             populateBookDetailsFields(book);
             setBookThumbnail(book.getRowId(), mThumper.normal, mThumper.normal);
 
@@ -628,7 +622,6 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         }
 
         populateBookshelvesField(mFields, book);
-
     }
 
     /**
@@ -646,37 +639,24 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      */
     protected void setBookThumbnail(final long rowId, final int maxWidth, final int maxHeight) {
         // Sets book thumbnail
-        ImageView iv = getView().findViewById(R.id.row_img);
+        ImageView iv = getView().findViewById(R.id.image);
         ImageUtils.fetchFileIntoImageView(iv, getCoverFile(rowId), maxWidth, maxHeight, true);
     }
 
-    // unused in Context itself. But IS used in android\support\v7\view\ContextThemeWrapper.java
-//    private int getThemeResId() {
-//        try {
-//            Class<?> wrapper = Context.class;
-//            Method method = wrapper.getMethod("getThemeResId");
-//            method.setAccessible(true);
-//            return (Integer) method.invoke(this);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return 0;
-//    }
-
     /**
-     * Gets all bookshelves for the book from database and populate corresponding filed with them.
+     * Gets all bookshelves for the book from database and populate corresponding field with them.
      *
      * @param fields Fields containing book information
-     * @param book   the book
+     * @param bookData   the book
      *
      * @return true if populated, false otherwise
      */
-    protected boolean populateBookshelvesField(@NonNull final Fields fields, @NonNull final BookData book) {
+    protected boolean populateBookshelvesField(@NonNull final Fields fields, @NonNull final BookData bookData) {
         boolean result = false;
         try {
             // Display the selected bookshelves
             Field bookshelfTextFe = fields.getField(R.id.bookshelf);
-            String text = book.getBookshelfText();
+            String text = bookData.getBookshelfText();
             bookshelfTextFe.setValue(text);
             if (!text.isEmpty()) {
                 result = true; // One or more bookshelves have been set
@@ -688,7 +668,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     }
 
     protected void setCoverImage() {
-        ImageView iv = getView().findViewById(R.id.row_img);
+        ImageView iv = getView().findViewById(R.id.image);
         ImageUtils.fetchFileIntoImageView(iv, getCoverFile(mEditManager.getBookData().getRowId()), mThumper.normal, mThumper.normal, true);
         // Make sure the cached thumbnails (if present) are deleted
         invalidateCachedThumbnail();

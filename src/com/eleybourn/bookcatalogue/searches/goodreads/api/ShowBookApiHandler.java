@@ -478,7 +478,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         // Cons: Overwrite GR id when it should not
 
         //if (mBook.containsKey(BOOK_ID)) {
-        //	mBook.putLong(DatabaseDefinitions.DOM_GOODREADS_BOOK_ID.name, mBook.getLong(BOOK_ID));
+        //	mBook.putLong(DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name, mBook.getLong(BOOK_ID));
         //}
 
         if (fetchThumbnail) {

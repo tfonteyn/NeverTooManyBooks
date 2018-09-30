@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -78,12 +79,16 @@ public class UpdateFromInternet extends ActivityWithTasks {
     /**
      * Add a FieldUsage if the specified field has not been hidden by the user.
      *
-     * @param field    Field name to use in FieldUsages
+     * @param field    name to use in FieldUsages
      * @param visField Field name to check for visibility. If null, use field.
-     * @param stringId ID of field label string
+     * @param stringId of field label string
      * @param usage    Usage to apply.
      */
-    private void addIfVisible(@NonNull final String field, @Nullable String visField, final int stringId, @NonNull final FieldUsages.Usages usage, final boolean canAppend) {
+    private void addIfVisible(@NonNull final String field,
+                              @Nullable String visField,
+                              @StringRes final int stringId,
+                              @NonNull final FieldUsages.Usages usage,
+                              final boolean canAppend) {
         if (visField == null || visField.trim().isEmpty()) {
             visField = field;
         }
@@ -174,7 +179,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                     extra = getResources().getString(R.string.usage_overwrite);
                     break;
                 default:
-                    throw new RuntimeException("Unknown Usage");
+                    throw new IllegalArgumentException("Unknown Usage");
             }
             cb.setText(getResources().getString(R.string.a_bracket_b_bracket,
                     getResources().getString(usage.stringId), extra));

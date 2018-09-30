@@ -75,7 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/add_button"
         android:textSize="16sp"
-        tools:text="@string/notset"
+        tools:text="@string/not_set"
         android:textIsSelectable="false" />
 
 </RelativeLayout>

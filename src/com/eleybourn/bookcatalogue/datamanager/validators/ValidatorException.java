@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.datamanager.validators;
 
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 /**
  * Exception class for all validation errors. String ID and args are stored for later retrieval.
@@ -35,7 +36,7 @@ public class ValidatorException extends RuntimeException {
     private final Object[] mArgs;
 
     // Constructor
-    public ValidatorException(final int stringId, @NonNull final Object[] args) {
+    public ValidatorException(@StringRes final int stringId, @NonNull final Object[] args) {
         mStringId = stringId;
         mArgs = args;
     }

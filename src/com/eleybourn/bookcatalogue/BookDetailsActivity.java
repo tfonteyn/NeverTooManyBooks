@@ -42,6 +42,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -276,8 +277,9 @@ public class BookDetailsActivity extends BookCatalogueActivity
     private void initForEditing(@Nullable final Bundle extras,
                                 final boolean isExistingBook) {
         ArrayList<TabLayout.Tab> mAllTabs = new ArrayList<>();
-        try {
 
+        mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        try {
             TabLayout.Tab tab = mTabLayout.newTab().setText(R.string.details).setTag(mTabClasses[TAB_EDIT].newInstance());
             mTabLayout.addTab(tab);
             mAllTabs.add(tab);
@@ -291,7 +293,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
                 mTabLayout.addTab(tab);
                 mAllTabs.add(tab);
 
-                boolean isAnthology = (mBookData.getRowId() > 0) && (mBookData.getInt(BookData.IS_ANTHOLOGY) != 0);
+                boolean isAnthology = (mBookData.getRowId() > 0) && (mBookData.getInt(BookData.IS_ANTHOLOGY) != DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY);
                 showAnthologyTab(isAnthology);
             }
         } catch (InstantiationException | IllegalAccessException e) {

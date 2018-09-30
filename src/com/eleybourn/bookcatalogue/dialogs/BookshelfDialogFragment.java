@@ -126,7 +126,7 @@ public class BookshelfDialogFragment extends DialogFragment {
      * //     * Return a Cursor over the list of all bookshelves in the database
      * //     *
      * //     * DOM_ID
-     * //     * DOM_BOOKSHELF_NAME
+     * //     * DOM_BOOKSHELF
      * //     * 0 or 1               boolean if book was on shelf or not.
      * //     *
      * //     * @param bookId the book, which in turn adds a new field on each row as to the active state of that bookshelf for the book
@@ -136,12 +136,12 @@ public class BookshelfDialogFragment extends DialogFragment {
 //    @NonNull
 //    public Cursor fetchBookshelvesByBookId(final long bookId) {
 //        String sql = "SELECT DISTINCT bs." + DOM_ID + " AS " + DOM_ID + "," +
-//                " bs." + DOM_BOOKSHELF_NAME + " AS " + DOM_BOOKSHELF_NAME + "," +
+//                " bs." + DOM_BOOKSHELF + " AS " + DOM_BOOKSHELF + "," +
 //                " CASE WHEN w." + DOM_BOOK_ID + " IS NULL THEN 0 ELSE 1 END as " + DOM_BOOK_ID +
-//                " FROM " + DB_TB_BOOKSHELF + " bs LEFT OUTER JOIN " + DB_TB_BOOK_BOOKSHELF_WEAK + " w" +
+//                " FROM " + TBL_BOOKSHELF + " bs LEFT OUTER JOIN " + DB_TB_BOOK_BOOKSHELF_WEAK + " w" +
 //
-//                " ON (w." + DOM_BOOKSHELF_NAME + "=bs." + DOM_ID + " AND w." + DOM_BOOK_ID + "=" + bookId + ") " +
-//                " ORDER BY Upper(bs." + DOM_BOOKSHELF_NAME + ") " + COLLATION;
+//                " ON (w." + DOM_BOOKSHELF + "=bs." + DOM_ID + " AND w." + DOM_BOOK_ID + "=" + bookId + ") " +
+//                " ORDER BY Upper(bs." + DOM_BOOKSHELF + ") " + COLLATION;
 //        return mSyncedDb.rawQuery(sql, new String[]{});
 //    }
     @Override

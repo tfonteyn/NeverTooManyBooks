@@ -20,7 +20,9 @@
 
 package com.eleybourn.bookcatalogue.tasks;
 
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
@@ -87,7 +89,9 @@ abstract public class ManagedTask extends Thread {
      * was executed (if necessary). TaskHandler objects will be cleared by the disconnect() call
      * and reset by the reconnect() call.
      */
-    abstract protected void onThreadFinish();
+    protected void onThreadFinish() {
+        //do nothing
+    }
 
     /** Called to do the main thread work. Can use doProgress() and doToast() to display messages. */
     abstract protected void onRun() throws InterruptedException;
@@ -99,7 +103,7 @@ abstract public class ManagedTask extends Thread {
      *
      * @return Result
      */
-    protected String getString(final int id) {
+    protected String getString(@StringRes final int id) {
         return mManager.getContext().getString(id);
     }
 
@@ -159,7 +163,7 @@ abstract public class ManagedTask extends Thread {
     /**
      * Mark this thread as 'cancelled'
      */
-    public void cancelTask() {
+    protected void cancelTask() {
         mCancelFlg = true;
         this.interrupt();
     }

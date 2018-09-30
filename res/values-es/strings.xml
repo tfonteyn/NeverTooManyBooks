@@ -116,7 +116,7 @@
     <string name="format">Formato</string>
     <string name="description">Descripción</string>
     <string name="genre">Género</string>
-    <string name="notset">No configurado</string>
+    <string name="not_set">No configurado</string>
     <string name="menu_search">Buscar libro</string>
     <string name="isbn_name_search_help">Añadir libros con ISBN es mucho más preciso que hacerlo por autor y título. Recuerde que en ocasiones el código de barras o el ISBN se encuentran en la parte interior de la portada.\n\n</string>
     <string name="help_click_here">Pulse aquí para acceder a la ayuda online</string>

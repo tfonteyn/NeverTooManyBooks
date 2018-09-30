@@ -124,7 +124,7 @@ public class ListReviewsApiHandler extends ApiHandler {
 		public static final String DB_TITLE = DatabaseDefinitions.DOM_TITLE.name;
 		public static final String DB_NOTES = DatabaseDefinitions.DOM_BOOK_NOTES.name;
 		public static final String DB_FORMAT = DatabaseDefinitions.DOM_BOOK_FORMAT.name;
-		public static final String DB_PUBLISHER = DatabaseDefinitions.DOM_PUBLISHER.name;
+		public static final String DB_PUBLISHER = DatabaseDefinitions.DOM_BOOK_PUBLISHER.name;
 		public static final String DB_DESCRIPTION = DatabaseDefinitions.DOM_DESCRIPTION.name;
 		public static final String DB_AUTHOR_ID = DatabaseDefinitions.DOM_AUTHOR_ID.name;
 		public static final String DB_AUTHOR_NAME = DatabaseDefinitions.DOM_AUTHOR_NAME.name;

@@ -116,7 +116,7 @@
     <string name="format">Μορφή</string>
     <string name="description">Περιγραφή</string>
     <string name="genre">Είδος</string>
-    <string name="notset">Μη ορισμένο</string>
+    <string name="not_set">Μη ορισμένο</string>
     <string name="menu_search">Αναζήτηση βιβλίων</string>
     <string name="isbn_name_search_help">Η προσθήκη βιβλίων με ISBN είναι πολύ πιο ακριβής από την προσθήκη με συγγραφέα και τίτλο και γενικά είναι η προτεινομενη μέθοδος. Παρακαλούμε να θυμάστε ότι μερικές φορές το σωστό barcode βρίσκεται στην εσωτερική πλευρά του εξωφύλλου. \n\n</string>
     <string name="help_click_here">Παρακαλούμε πατήστε εδώ για να μπέιτε στις online σελίδες βοήθειας</string>

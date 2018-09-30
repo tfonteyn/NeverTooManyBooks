@@ -23,6 +23,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -94,6 +95,7 @@ public class TouchListView extends ListView {
     private Bitmap mDragBitmap;
     private int mItemHeightNormal = -1;
     //private int mItemHeightExpanded=-1;
+    @IdRes
     private int grabberId = -1;
     private int dragndropBackgroundColor = Color.TRANSPARENT;
     private boolean mWasFirstExpansion = false;    // Set to true at start of a new drag operation

@@ -113,7 +113,7 @@
     <string name="format">Ausgaben</string>
     <string name="description">Beschreibung</string>
     <string name="genre">Genre</string>
-    <string name="notset">Nicht gesetzt</string>
+    <string name="not_set">Nicht gesetzt</string>
     <string name="menu_search">Suche Bücher</string>
     <string name="isbn_name_search_help">Das Hinzufügen der Bücher per ISBN ist genauer als das Hinzufügen per Autor und Titel und sollte im Allgemeinen bevorzugt werden. Bitte beachten Sie, dass der korrekte Barcode manchmal auf der Rückseite des Covers zu finden ist. \n\n</string>
     <string name="help_click_here">Klicken Sie hier, um die Online-Hilfe aufzurufen</string>

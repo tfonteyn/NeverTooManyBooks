@@ -30,6 +30,8 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY;
+
 /**
  * Class for representing read-only book details.
  *
@@ -108,7 +110,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
             showSignedStatus(book);
             formatFormatSection(book);
             formatPublishingSection(book);
-            if (0 != book.getInt(BookData.IS_ANTHOLOGY)) {
+            if (book.getInt(BookData.IS_ANTHOLOGY) != DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY) {
                 showAnthologySection(book);
             }
 
@@ -125,7 +127,6 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         // Populate bookshelves and hide the field if bookshelves are not set.
         if (!populateBookshelvesField(mFields, book)) {
             getView().findViewById(R.id.lbl_bookshelves).setVisibility(View.GONE);
-            //getView().findViewById(R.id.bookshelf_text).setVisibility(View.GONE);
         }
     }
 
@@ -262,7 +263,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION, null);
         // Make sure the label is hidden when the ISBN is
         mFields.add(R.id.isbn_label, "", UniqueId.KEY_ISBN, null);
-        mFields.add(R.id.publishing_details, "", UniqueId.KEY_PUBLISHER, null);
+        mFields.add(R.id.publisher, "", UniqueId.KEY_PUBLISHER, null);
     }
 
     /**
@@ -326,7 +327,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
                 value = "";
             }
         }
-        mFields.getField(R.id.publishing_details).setValue(value);
+        mFields.getField(R.id.publisher).setValue(value);
     }
 
     /**
@@ -408,9 +409,9 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
 
     public void onResume() {
         // If we are read-only, returning here from somewhere else and have an ID...reload!
-        BookData book = mEditManager.getBookData();
-        if (book.getRowId() != 0) {
-            book.reload();
+        BookData bookData = mEditManager.getBookData();
+        if (bookData.getRowId() != 0) {
+            bookData.reload();
         }
         super.onResume();
     }

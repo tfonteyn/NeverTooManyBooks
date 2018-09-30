@@ -92,8 +92,8 @@ public class HintManager {
         }
     }
 
-    public static boolean shouldBeShown(final int hintStringId) {
-        return mHints.get(hintStringId).shouldBeShown();
+    public static boolean shouldBeShown(@StringRes final int id) {
+        return mHints.get(id).shouldBeShown();
     }
 
     /** Display the passed hint, if the user has not disabled it */

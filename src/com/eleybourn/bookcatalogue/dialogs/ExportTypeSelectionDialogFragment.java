@@ -3,7 +3,9 @@ package com.eleybourn.bookcatalogue.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -69,7 +71,7 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
      * @param root root view
      * @param id   Sub-View ID
      */
-    private void setOnClickListener(@NonNull final View root, final int id) {
+    private void setOnClickListener(@NonNull final View root, @IdRes final int id) {
         View v = root.findViewById(id);
         v.setOnClickListener(mRowClickListener);
         v.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -80,7 +82,7 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
      */
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
         mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
 

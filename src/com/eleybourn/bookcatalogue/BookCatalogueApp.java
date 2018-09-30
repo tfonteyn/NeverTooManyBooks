@@ -259,10 +259,10 @@ public class BookCatalogueApp extends Application {
         boolean alreadyAdded = false;
 
         for (WeakReference<OnLocaleChangedListener> ref : mOnLocaleChangedListeners) {
-            OnLocaleChangedListener l = ref.get();
-            if (l == null) {
+            OnLocaleChangedListener localeChangedListener = ref.get();
+            if (localeChangedListener == null) {
                 toRemove.add(ref);
-            } else if (l == listener) {
+            } else if (localeChangedListener == listener) {
                 alreadyAdded = true;
             }
         }
@@ -282,8 +282,8 @@ public class BookCatalogueApp extends Application {
         List<WeakReference<OnLocaleChangedListener>> toRemove = new ArrayList<>();
 
         for (WeakReference<OnLocaleChangedListener> ref : mOnLocaleChangedListeners) {
-            OnLocaleChangedListener l = ref.get();
-            if ((l == null) || (l == listener)) {
+            OnLocaleChangedListener localeChangedListener = ref.get();
+            if ((localeChangedListener == null) || (localeChangedListener == listener)) {
                 toRemove.add(ref);
             }
         }
@@ -584,12 +584,12 @@ public class BookCatalogueApp extends Application {
         List<WeakReference<OnLocaleChangedListener>> toRemove = new ArrayList<>();
 
         for (WeakReference<OnLocaleChangedListener> ref : mOnLocaleChangedListeners) {
-            OnLocaleChangedListener l = ref.get();
-            if (l == null) {
+            OnLocaleChangedListener listener = ref.get();
+            if (listener == null) {
                 toRemove.add(ref);
             } else {
                 try {
-                    l.onLocaleChanged();
+                    listener.onLocaleChanged();
                 } catch (Exception ignore) {
                 }
             }

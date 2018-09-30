@@ -20,16 +20,22 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -46,6 +52,10 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Single Activity to be the 'Main' activity for the app. I does app-startup stuff which is initially
@@ -83,13 +93,12 @@ public class StartupActivity extends AppCompatActivity {
 
     /** Number of app startup's between displaying the Amazon hint */
     private static final int AMAZON_PROMPT_WAIT = 7;
-
+    /** The result code used when requesting permissions */
+    private static final int PERMISSIONS_REQUEST = 1234;
     /** Indicates the upgrade message has been shown */
     private static boolean mUpgradeMessageShown = false;
     /** Flag set to true on first call */
     private static boolean mIsReallyStartup = true;
-    /** Flag indicating a StartupActivity has been created in this session */
-    private static boolean mHasBeenCalled = false;
     /** Flag indicating Amazon hint could be shown */
     private static boolean mShowAmazonHint = false;
     private static WeakReference<StartupActivity> mStartupActivity = null;
@@ -142,7 +151,6 @@ public class StartupActivity extends AppCompatActivity {
             System.out.println("Startup isTaskRoot() = " + isTaskRoot());
         }
 
-        mHasBeenCalled = true;
         mUiThread = Thread.currentThread();
 
         // Create a progress dialog; we may not use it...but we need it to be created in the UI thread.
@@ -191,7 +199,7 @@ public class StartupActivity extends AppCompatActivity {
     /**
      * Update the progress dialog, if it has not been dismissed.
      */
-    public void updateProgress(final int stringId) {
+    public void updateProgress(@StringRes final int stringId) {
         updateProgress(getString(stringId));
     }
 
@@ -249,6 +257,19 @@ public class StartupActivity extends AppCompatActivity {
     }
 
     /**
+     * request Permissions (Android 6+)
+     */
+    private void stage2Startup() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            checkPermissions();
+        } else {
+            // older Android, simply move forward as the permissions will have
+            // been requested at install time.
+            stage3Startup();
+        }
+    }
+
+    /**
      * Get (or create) the task queue.
      */
     private SimpleTaskQueue getQueue() {
@@ -268,7 +289,7 @@ public class StartupActivity extends AppCompatActivity {
     /**
      * Called in UI thread after last startup task completes, or if there are no tasks to queue.
      */
-    private void stage2Startup() {
+    private void stage3Startup() {
         // Remove the weak reference. Only used by db onUpgrade.
         mStartupActivity.clear();
         // Get rid of the progress dialog
@@ -277,15 +298,15 @@ public class StartupActivity extends AppCompatActivity {
             mProgress = null;
         }
 
-        // Display upgrade message if necessary, otherwise go on to stage 3
+        // Display upgrade message if necessary, otherwise go on to stage 4
         if (mUpgradeMessageShown || UpgradeMessageManager.getUpgradeMessage().isEmpty()) {
-            stage3Startup();
+            stage4Startup();
         } else {
             upgradePopup(UpgradeMessageManager.getUpgradeMessage());
         }
     }
 
-    private void stage3Startup() {
+    private void stage4Startup() {
         int opened = BCPreferences.getInt(STATE_OPENED, BACKUP_PROMPT_WAIT);
         int startCount = BCPreferences.getInt(PREF_START_COUNT, 0) + 1;
 
@@ -329,19 +350,19 @@ public class StartupActivity extends AppCompatActivity {
             dialog.setOnDismissListener(new OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
-                    stage4Startup();
+                    stage5Startup();
                 }
             });
             dialog.show();
         } else {
-            stage4Startup();
+            stage5Startup();
         }
     }
 
     /**
      * Last step
      */
-    private void stage4Startup() {
+    private void stage5Startup() {
         Intent i = new Intent(this, BooksOnBookshelf.class);
         if (mWasReallyStartup) {
             i.putExtra(BKEY_STARTUP, true);
@@ -374,7 +395,7 @@ public class StartupActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         UpgradeMessageManager.setMessageAcknowledged();
-                        stage3Startup();
+                        stage4Startup();
                     }
                 });
         dialog.show();
@@ -386,6 +407,54 @@ public class StartupActivity extends AppCompatActivity {
         super.onDestroy();
         if (mTaskQueue != null) {
             mTaskQueue.finish();
+        }
+    }
+
+    /**
+     * Minimally needed.
+     * - WRITE_EXTERNAL_STORAGE
+     *
+     * Other permissions we use will be requested when needed
+     * - READ_CONTACTS
+     */
+    @NonNull
+    protected String[] getRequiredPermissions() {
+        return new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    }
+
+    /**
+     * See if we now have all of the required dangerous permissions. Otherwise, tell the user that
+     * they can't continue without granting the permissions, and then request the permissions again.
+     */
+    @Override
+    public void onRequestPermissionsResult(final int requestCode,
+                                           @NonNull final String permissions[],
+                                           @NonNull final int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST) {
+            checkPermissions();
+        }
+    }
+
+    private void checkPermissions() {
+        // Convert the array of required permissions to a {@link Set} to remove redundant elements.
+        // Then remove already granted permissions, and return an array of missing permissions.
+        Set<String> permissions = new HashSet<>();
+        Collections.addAll(permissions, getRequiredPermissions());
+
+        for (Iterator<String> i = permissions.iterator(); i.hasNext(); ) {
+            //TODO: when going to API 23+, use native call
+            if (ContextCompat.checkSelfPermission(this, i.next()) == PackageManager.PERMISSION_GRANTED) {
+                i.remove();
+            }
+        }
+        String[] missing = permissions.toArray(new String[0]);
+
+        if (missing.length == 0) {
+            stage3Startup();
+        } else {
+            ActivityCompat.requestPermissions(this, missing, PERMISSIONS_REQUEST);
+            //TODO: when going to API 23+, use native call
+            //requestPermissions(missing, PERMISSIONS_REQUEST);
         }
     }
 
@@ -440,5 +509,4 @@ public class StartupActivity extends AppCompatActivity {
         }
 
     }
-
 }

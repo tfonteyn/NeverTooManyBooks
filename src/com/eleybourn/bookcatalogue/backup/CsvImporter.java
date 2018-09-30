@@ -89,11 +89,11 @@ public class CsvImporter implements Importer {
         final BookData bookData = new BookData();
 
         // first line in import are the column names
-        final String[] names = returnRow(importedList.get(0), true);
+        final String[] csvColumnNames = returnRow(importedList.get(0), true);
         // Store the names so we can check what is present
-        for (int i = 0; i < names.length; i++) {
-            names[i] = names[i].toLowerCase();
-            bookData.putString(names[i], "");
+        for (int i = 0; i < csvColumnNames.length; i++) {
+            csvColumnNames[i] = csvColumnNames[i].toLowerCase();
+            bookData.putString(csvColumnNames[i], "");
         }
 
         // See if we can deduce the kind of escaping to use based on column names.
@@ -146,11 +146,11 @@ public class CsvImporter implements Importer {
                 txRowCount++;
 
                 // Get row
-                final String[] imported = returnRow(importedList.get(row), fullEscaping);
+                final String[] csvDataRow = returnRow(importedList.get(row), fullEscaping);
                 // and add each field into bookData
                 bookData.clear();
-                for (int i = 0; i < names.length; i++) {
-                    bookData.putString(names[i], imported[i]);
+                for (int i = 0; i < csvColumnNames.length; i++) {
+                    bookData.putString(csvColumnNames[i], csvDataRow[i]);
                 }
 
                 // Validate ID
@@ -195,21 +195,20 @@ public class CsvImporter implements Importer {
                     importBooks_handleAnthology(mDb, bookData);
                 }
 
-                // Make sure we have bookshelf_text if we imported bookshelf
-                // "bookshelf_text" is (I think?) from older versions?
-                if (bookData.containsKey(UniqueId.KEY_BOOKSHELF_NAME) && !bookData.containsKey("bookshelf_text")) {
+                // Make sure we have UniqueId.BKEY_BOOKSHELF_TEXT if we imported bookshelf
+                if (bookData.containsKey(UniqueId.KEY_BOOKSHELF_NAME) && !bookData.containsKey(UniqueId.BKEY_BOOKSHELF_TEXT)) {
                     bookData.setBookshelfList(bookData.getString(UniqueId.KEY_BOOKSHELF_NAME));
                 }
 
                 try {
                     // Save the original ID from the file for use in checking for images
-                    long idFromFile = bookId;
+                    long bookIdFromFile = bookId;
 
                     bookId = importBook(bookId, hasNumericId, uuidVal, hasUuid, bookData, updateOnlyIfNewer);
 
                     // When importing a file that has an ID or UUID, try to import a cover.
                     if (coverFinder != null) {
-                        coverFinder.copyOrRenameCoverFile(uuidVal, idFromFile, bookId);
+                        coverFinder.copyOrRenameCoverFile(uuidVal, bookIdFromFile, bookId);
                     }
                 } catch (IOException e) {
                     Logger.logError(e, "Cover import failed at row " + row);
@@ -254,8 +253,10 @@ public class CsvImporter implements Importer {
      *
      * @return new or updated bookId
      */
-    private long importBook(long bookId, final boolean hasNumericId,
-                            final String uuidVal, final boolean hasUuid,
+    private long importBook(long bookId,
+                            final boolean hasNumericId,
+                            final String uuidVal,
+                            final boolean hasUuid,
                             final BookData bookData,
                             final boolean updateOnlyIfNewer) {
         if (!hasUuid && !hasNumericId) {
@@ -457,7 +458,7 @@ public class CsvImporter implements Importer {
         // Last position in row
         int endPos = row.length() - 1;
         // Array of fields found in row
-        final ArrayList<String> fields = new ArrayList<>();
+        final List<String> fields = new ArrayList<>();
         // Temp. storage for current field
         StringBuilder bld = new StringBuilder();
 

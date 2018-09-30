@@ -40,9 +40,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Date;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_MASK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_MASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_NAME;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
@@ -58,14 +58,15 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_START;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
 /**
@@ -77,38 +78,43 @@ public class CsvExporter implements Exporter {
     private static final String UTF8 = "utf8";
     private static final int BUFFER_SIZE = 32768;
 
-    /** The order of the header MUST be the same as the order used to write the data (obvious eh?) */
+    /**
+     * The order of the header MUST be the same as the order used to write the data (obvious eh?)
+     *
+     * The fields *._DETAILS are string encoded
+     */
     private final String EXPORT_FIELD_HEADERS =
-            '"' + DOM_ID.name + "\"," +            //0
-                    '"' + UniqueId.BKEY_AUTHOR_DETAILS + "\"," +    //2
-                    '"' + DOM_TITLE + "\"," +            //4
-                    '"' + DOM_BOOK_ISBN + "\"," +            //5
-                    '"' + DOM_PUBLISHER + "\"," +        //6
-                    '"' + DOM_DATE_PUBLISHED + "\"," +    //7
-                    '"' + DOM_BOOK_RATING + "\"," +            //8
-                    '"' + "bookshelf_id\"," +              //9
-                    '"' + DOM_BOOKSHELF_ID + "\"," +        //10
-                    '"' + DOM_BOOK_READ + "\"," +                //11
-                    '"' + UniqueId.BKEY_SERIES_DETAILS + "\"," +    //12
-                    '"' + DOM_BOOK_PAGES + "\"," +            //14
-                    '"' + DOM_BOOK_NOTES + "\"," +            //15
-                    '"' + DOM_BOOK_LIST_PRICE + "\"," +        //16
-                    '"' + DOM_ANTHOLOGY_MASK + "\"," +        //17
-                    '"' + DOM_BOOK_LOCATION + "\"," +            //18
-                    '"' + DOM_BOOK_READ_START + "\"," +        //19
-                    '"' + DOM_BOOK_READ_END + "\"," +            //20
-                    '"' + DOM_BOOK_FORMAT + "\"," +            //21
-                    '"' + DOM_BOOK_SIGNED + "\"," +            //22
-                    '"' + DOM_LOANED_TO + "\"," +            //23
-                    '"' + UniqueId.BKEY_ANTHOLOGY_DETAILS + "\"," +       //24
-                    '"' + DOM_DESCRIPTION + "\"," +        //25
-                    '"' + DOM_BOOK_GENRE + "\"," +            //26
-                    '"' + DOM_BOOK_LANGUAGE + "\"," +            //+1
-                    '"' + DOM_BOOK_DATE_ADDED + "\"," +        //27
-                    '"' + DOM_GOODREADS_BOOK_ID + "\"," +        //28
-                    '"' + DOM_GOODREADS_LAST_SYNC_DATE + "\"," + //29
-                    '"' + DOM_LAST_UPDATE_DATE + "\"," +         //30
-                    '"' + DOM_BOOK_UUID + "\"," +        //31
+            '"' + DOM_ID.name + "\"," +
+                    '"' + UniqueId.BKEY_AUTHOR_DETAILS + "\"," +
+                    '"' + DOM_TITLE + "\"," +
+                    '"' + DOM_BOOK_ISBN + "\"," +
+                    '"' + DOM_BOOK_PUBLISHER + "\"," +
+                    '"' + DOM_BOOK_DATE_PUBLISHED + "\"," +
+                    '"' + DOM_FIRST_PUBLICATION + "\"," +
+                    '"' + DOM_BOOK_RATING + "\"," +
+                    '"' + "bookshelf_id\"," + // DOM_BOOKSHELF_ID but we misnamed it originally
+                    '"' + DOM_BOOKSHELF + "\"," +
+                    '"' + DOM_BOOK_READ + "\"," +
+                    '"' + UniqueId.BKEY_SERIES_DETAILS + "\"," +
+                    '"' + DOM_BOOK_PAGES + "\"," +
+                    '"' + DOM_BOOK_NOTES + "\"," +
+                    '"' + DOM_BOOK_LIST_PRICE + "\"," +
+                    '"' + DOM_BOOK_ANTHOLOGY_MASK + "\"," +
+                    '"' + DOM_BOOK_LOCATION + "\"," +
+                    '"' + DOM_BOOK_READ_START + "\"," +
+                    '"' + DOM_BOOK_READ_END + "\"," +
+                    '"' + DOM_BOOK_FORMAT + "\"," +
+                    '"' + DOM_BOOK_SIGNED + "\"," +
+                    '"' + DOM_LOANED_TO + "\"," +
+                    '"' + UniqueId.BKEY_ANTHOLOGY_DETAILS + "\"," +
+                    '"' + DOM_DESCRIPTION + "\"," +
+                    '"' + DOM_BOOK_GENRE + "\"," +
+                    '"' + DOM_BOOK_LANGUAGE + "\"," +
+                    '"' + DOM_BOOK_DATE_ADDED + "\"," +
+                    '"' + DOM_BOOK_GOODREADS_BOOK_ID + "\"," +
+                    '"' + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "\"," +
+                    '"' + DOM_LAST_UPDATE_DATE + "\"," +
+                    '"' + DOM_BOOK_UUID + "\"," +
                     "\n";
     private String mLastError;
 
@@ -186,7 +192,7 @@ public class CsvExporter implements Exporter {
                 StringBuilder bookshelves_name_text = new StringBuilder();
                 try (Cursor bookshelves = db.fetchAllBookshelvesByBook(bookId)) {
                     int bsIdCol = bookshelves.getColumnIndex(DOM_ID.name);
-                    int bsCol = bookshelves.getColumnIndex(DOM_BOOKSHELF_ID.name);
+                    int bsCol = bookshelves.getColumnIndex(DOM_BOOKSHELF.name);
                     while (bookshelves.moveToNext()) {
                         bookshelves_id_text
                                 .append(bookshelves.getString(bsIdCol))
@@ -204,6 +210,7 @@ public class CsvExporter implements Exporter {
                         .append(formatCell(rowView.getIsbn()))
                         .append(formatCell(rowView.getPublisher()))
                         .append(formatCell(rowView.getDatePublished()))
+                        .append(formatCell(rowView.getFirstPublication()))
                         .append(formatCell(rowView.getRating()))
                         .append(formatCell(bookshelves_id_text.toString()))
                         .append(formatCell(bookshelves_name_text.toString()))
@@ -265,7 +272,7 @@ public class CsvExporter implements Exporter {
             try (Cursor titles = db.fetchAnthologyTitlesByBookId(bookId)) {
                 final int authorCol = titles.getColumnIndexOrThrow(DOM_AUTHOR_NAME.name);
                 final int titleCol = titles.getColumnIndexOrThrow(DOM_TITLE.name);
-                final int pubDateCol = titles.getColumnIndexOrThrow(DOM_DATE_PUBLISHED.name);
+                final int pubDateCol = titles.getColumnIndexOrThrow(DOM_FIRST_PUBLICATION.name);
 
                 while (titles.moveToNext()) {
                     String year = titles.getString(pubDateCol);

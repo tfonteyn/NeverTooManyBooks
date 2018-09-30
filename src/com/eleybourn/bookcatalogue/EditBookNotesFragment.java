@@ -211,8 +211,8 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
     @Override
     public void onPause() {
         Tracker.enterOnPause(this);
-        BookData book = mEditManager.getBookData();
-        mFields.getAll(book);
+        BookData bookData = mEditManager.getBookData();
+        mFields.getAll(bookData);
         super.onPause();
         Tracker.exitOnPause(this);
     }

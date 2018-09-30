@@ -44,7 +44,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -120,7 +120,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
      * Display the edit fields page
      */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         loadPage();
     }
@@ -154,7 +154,8 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 
         // Setup the same author field
         mSame = getView().findViewById(R.id.same_author);
-        mSame.setChecked(((bookData.getInt(UniqueId.KEY_ANTHOLOGY_MASK) & TableInfo.ColumnInfo.ANTHOLOGY_MULTIPLE_AUTHORS) == TableInfo.ColumnInfo.ANTHOLOGY_NO));
+        mSame.setChecked(((bookData.getInt(UniqueId.KEY_ANTHOLOGY_MASK) & DatabaseDefinitions.DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS)
+                == DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY));
         mSame.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 saveState(mEditManager.getBookData());
@@ -189,7 +190,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
                     AnthologyTitle anthology = adapter.getItem(mEditPosition);
                     anthology.setAuthor(new Author(author));
                     anthology.setTitle(title);
-                    anthology.setPublicationDate(pubDate);
+                    anthology.setFirstPublication(pubDate);
 
                     adapter.notifyDataSetChanged();
 
@@ -228,7 +229,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 mEditPosition = position;
                 AnthologyTitle anthology = mList.get(position);
-                mPubDateText.setText(anthology.getPublicationDate());
+                mPubDateText.setText(anthology.getFirstPublication());
                 mTitleText.setText(anthology.getTitle());
                 mAuthorText.setText(anthology.getAuthor().getDisplayName());
                 mAdd.setText(R.string.anthology_save);
@@ -386,8 +387,8 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         // setting it wrong. insert/update into the database will correctly set it.
         bookData.putInt(UniqueId.KEY_ANTHOLOGY_MASK,
                 mSame.isChecked() ?
-                        TableInfo.ColumnInfo.ANTHOLOGY_IS_ANTHOLOGY
-                        : TableInfo.ColumnInfo.ANTHOLOGY_MULTIPLE_AUTHORS ^ TableInfo.ColumnInfo.ANTHOLOGY_IS_ANTHOLOGY);
+                        DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY
+                        : DatabaseDefinitions.DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS ^ DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY);
     }
 
     @Override
@@ -550,7 +551,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 
         @Override
         protected void onRowClick(@NonNull final View v, @NonNull final AnthologyTitle item, final int position) {
-            mPubDateText.setText(item.getPublicationDate());
+            mPubDateText.setText(item.getFirstPublication());
             mTitleText.setText(item.getTitle());
             mAuthorText.setText(item.getAuthor().getDisplayName());
             mEditPosition = position;

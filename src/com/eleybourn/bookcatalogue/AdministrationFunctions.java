@@ -374,20 +374,20 @@ public class AdministrationFunctions extends ActivityWithTasks {
     }
 
     private void confirmToImportFromCSV() {
-        AlertDialog dialog = new AlertDialog.Builder(AdministrationFunctions.this)
+        AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(R.string.import_alert)
                 .setTitle(R.string.import_data)
                 .setIcon(R.drawable.ic_info_outline)
                 .create();
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                AdministrationFunctions.this.getResources().getString(android.R.string.ok),
+                this.getResources().getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         importFromCSV();
                     }
                 });
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                AdministrationFunctions.this.getResources().getString(android.R.string.cancel),
+                this.getResources().getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         //do nothing
@@ -408,7 +408,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
      * Load the Edit Book List Styles Activity
      */
     private void manageBooklistStyles() {
-        BooklistStylesListActivity.startActivity(AdministrationFunctions.this);
+        BooklistStylesListActivity.startActivity(this);
     }
 
     /**

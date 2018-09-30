@@ -182,12 +182,12 @@ public class PreferencesActivity extends PreferencesBaseActivity {
     private static ItemEntries<String> getLocalesListItems() {
         ItemEntries<String> items = new ItemEntries<>();
 
-        Locale l = BookCatalogueApp.getSystemLocal();
-        items.add("", R.string.preferred_language_x, BookCatalogueApp.getResourceString(R.string.system_locale), l.getDisplayLanguage());
+        Locale locale = BookCatalogueApp.getSystemLocal();
+        items.add("", R.string.preferred_language_x, BookCatalogueApp.getResourceString(R.string.system_locale), locale.getDisplayLanguage());
 
         for (String loc : BookCatalogueApp.getSupportedLocales()) {
-            l = BookCatalogueApp.localeFromName(loc);
-            items.add(loc, R.string.preferred_language_x, l.getDisplayLanguage(l), l.getDisplayLanguage());
+            locale = BookCatalogueApp.localeFromName(loc);
+            items.add(loc, R.string.preferred_language_x, locale.getDisplayLanguage(locale), locale.getDisplayLanguage());
         }
         return items;
     }

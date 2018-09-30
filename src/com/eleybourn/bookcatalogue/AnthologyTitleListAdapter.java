@@ -35,12 +35,12 @@ public class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle>
         vTitle.setText(item.getTitle());
 
         TextView vYear = convertView.findViewById(R.id.year);
-        String year = item.getPublicationDate();
+        String year = item.getFirstPublication();
         if (year.isEmpty()) {
             vYear.setVisibility(View.GONE);
         } else {
             vYear.setVisibility(View.VISIBLE);
-            vYear.setText(mContext.getString(R.string.brackets, item.getPublicationDate()));
+            vYear.setText(mContext.getString(R.string.brackets, item.getFirstPublication()));
         }
     }
 

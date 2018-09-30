@@ -58,39 +58,19 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity
-            android:name="org.acra.CrashReportDialog"
-            android:excludeFromRecents="true"
-            android:finishOnTaskLaunch="true"
-            android:launchMode="singleInstance"
-            android:theme="?android:attr/dialogTheme" />
-
-        <!-- *********************************************************************************** -->
-        <!-- BEGIN startups -->
-        <!-- *********************************************************************************** -->
-
+        <!--<activity-->
+            <!--android:name="org.acra.CrashReportDialog"-->
+            <!--android:excludeFromRecents="true"-->
+            <!--android:finishOnTaskLaunch="true"-->
+            <!--android:launchMode="singleInstance"-->
+            <!--android:theme="?android:attr/dialogTheme" />-->
 
         <!-- .BookCatalogue is now just a forwarder to .StartupActivity. -->
         <activity android:name=".BookCatalogue" />
 
         <!--
-            Yet another new application entry point :(
-            This allows us on Android 6+ to force the user to grant the needed permissions
-            without which the app is useless.
-            It will forward to .StartupActivity when granted
-            TODO: clean up by integrating into StartupActivity, in a startup step
-        -->
-        <activity android:name=".StartupWithSplashActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <!--
-            The StartupActivity activity is just a forwarder to the users chosen first screen; does not 
-			rebuild on orientation changes so progress dialogs are easier 
+            The StartupActivity activity takes care of all pre-UI tasks.
+            It does not rebuild on orientation changes so progress dialogs are easier
         -->
         <activity
             android:name=".StartupActivity"
@@ -100,13 +80,13 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <!--
-             The .StartupActivity activity is just a forwarder to the users chosen first screen, which could
-			 be the .BooksOnBookshelf Activity . So in theory it is OK to make is singleInstance
+             The .StartupActivity activity is just a forwarder to the .BooksOnBookshelf Activity.
+              So in theory it is OK to make is singleInstance
 			    android:launchMode="singleInstance"
         -->
 
@@ -121,11 +101,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
-        <!-- *********************************************************************************** -->
-        <!-- END startups -->
-        <!-- *********************************************************************************** -->
-
 
         <!-- Admin pages -->
         <activity android:name=".Help" />

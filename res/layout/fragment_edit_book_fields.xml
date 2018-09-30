@@ -18,7 +18,7 @@
         android:padding="@dimen/padding_border_double">
 
         <ImageView
-            android:id="@+id/row_img"
+            android:id="@+id/image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -64,7 +64,8 @@
             <EditText
                 android:id="@+id/title"
                 style="@style/bookOrSeriesTitleTextEntry"
-                android:layout_below="@id/heading" />
+                android:layout_below="@id/heading"
+                tools:ignore="Autofill" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -85,7 +86,8 @@
                 style="@style/editorFieldText"
                 android:layout_alignParentStart="false"
                 android:layout_toEndOf="@id/heading"
-                android:inputType="text" />
+                android:inputType="text"
+                tools:ignore="Autofill" />
         </RelativeLayout>
 
         <CheckBox
@@ -165,6 +167,28 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/row_first_publication"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/heading"
+                style="@style/editorFieldHeader"
+                android:labelFor="@id/first_publication"
+                android:text="@string/first_publication" />
+
+            <EditText
+                android:id="@+id/first_publication"
+                style="@style/editorFieldText"
+                android:layout_below="@id/heading"
+                android:layout_centerVertical="true"
+                android:inputType="number"
+                android:maxLength="4"
+                android:singleLine="true"
+                tools:ignore="Autofill" />
+        </RelativeLayout>
+
+        <RelativeLayout
             android:id="@+id/row_bookshelf"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -200,7 +224,8 @@
                 style="@style/editorFieldText"
                 android:layout_below="@id/heading"
                 android:layout_centerVertical="true"
-                android:inputType="number" />
+                android:inputType="number"
+                tools:ignore="Autofill" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -219,7 +244,8 @@
                 style="@style/editorFieldText"
                 android:layout_below="@id/heading"
                 android:layout_centerVertical="true"
-                android:inputType="numberDecimal" />
+                android:inputType="numberDecimal"
+                tools:ignore="Autofill" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -335,7 +361,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
-            android:hint="@string/notset"
+            android:hint="@string/not_set"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textIsSelectable="true" />
     </LinearLayout>

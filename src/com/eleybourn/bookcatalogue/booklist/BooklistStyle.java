@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.booklist;
 import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler;
@@ -235,7 +236,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Constructor for system-defined styles.
      */
-    BooklistStyle(final int stringId) {
+    BooklistStyle(@StringRes final int stringId) {
         mNameStringId = stringId;
         mGroups = new ArrayList<>();
         initProperties();

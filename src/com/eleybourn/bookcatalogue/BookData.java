@@ -23,8 +23,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.datamanager.DataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
@@ -116,12 +116,12 @@ public class BookData extends DataManager {
     }
 
     /**
-     * @return a formatted list of bookshelves
+     * @return a csv formatted list of bookshelves
      */
     @NonNull
     public String getBookshelfText() {
         final String list = getString(BOOKSHELF_LIST);
-        final ArrayList<String> items = ArrayUtils.decodeList(Bookshelf.SEPARATOR, list);
+        final List<String> items = ArrayUtils.decodeList(Bookshelf.SEPARATOR, list);
         if (items.size() == 0)
             return "";
 
@@ -153,15 +153,15 @@ public class BookData extends DataManager {
         CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         db.open();
         try {
-            try(BooksCursor book = db.fetchBookById(getRowId())) {
+            try (BooksCursor book = db.fetchBookById(getRowId())) {
                 // Put all cursor fields in collection
                 putAll(book);
 
                 // Get author, series, bookshelf and anthology title lists
                 setAuthorList(db.getBookAuthorList(getRowId()));
                 setSeriesList(db.getBookSeriesList(getRowId()));
-                setBookshelfList( db.getBookshelvesByBookIdAsStringList(getRowId()));
                 setAnthologyTitles(db.getBookAnthologyTitleList(getRowId()));
+                setBookshelfList(db.getBookshelvesByBookIdAsStringList(getRowId()));
 
             } catch (Exception e) {
                 Logger.logError(e);
@@ -186,12 +186,6 @@ public class BookData extends DataManager {
     }
 
     /**
-     * Special Accessor
-     */
-    public void setAnthologyTitles(@NonNull final ArrayList<AnthologyTitle> list) {
-        putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, list);
-    }
-    /**
      * Special Accessor.
      *
      * Build a formatted string for author list.
@@ -209,6 +203,21 @@ public class BookData extends DataManager {
             }
         }
         return newText;
+    }
+
+    /**
+     * Utility routine to get an anthology title list from a data manager
+     *
+     * @return List of anthology titles
+     */
+    @SuppressWarnings("unchecked")
+    @NonNull
+    public ArrayList<AnthologyTitle> getAnthologyTitles() {
+        ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) getSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        return list;
     }
 
 //    /**
@@ -231,18 +240,10 @@ public class BookData extends DataManager {
 //    }
 
     /**
-     * Utility routine to get an anthology title list from a data manager
-     *
-     * @return List of anthology titles
+     * Special Accessor
      */
-    @SuppressWarnings("unchecked")
-    @NonNull
-    public ArrayList<AnthologyTitle> getAnthologyTitles() {
-        ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) getSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
-        if (list == null) {
-            list = new ArrayList<>();
-        }
-        return list;
+    public void setAnthologyTitles(@NonNull final ArrayList<AnthologyTitle> list) {
+        putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, list);
     }
 
     /**
@@ -312,9 +313,11 @@ public class BookData extends DataManager {
     /**
      * Get the underlying raw data.
      * DO NOT UPDATE THIS! IT SHOULD BE USED FOR READING DATA ONLY.
+     * 2018-09-29: so we clone it before.
      */
+    @NonNull
     public Bundle getRawData() {
-        return mBundle;
+        return (Bundle) mBundle.clone();
     }
 
     /**
@@ -358,7 +361,7 @@ public class BookData extends DataManager {
 
         });
 
-        // Make a formatted list of bookshelves
+        /* Make a csv formatted list of bookshelves */
         addAccessor(BOOKSHELF_TEXT, new DataAccessor() {
             @Override
             public Object get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
@@ -367,7 +370,7 @@ public class BookData extends DataManager {
 
             @Override
             public void set(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData, @NonNull final Object value) {
-                throw new RuntimeException("Bookshelf Text can not be set");
+                throw new IllegalStateException("Bookshelf Text can not be set");
             }
 
             @Override

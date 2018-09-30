@@ -115,7 +115,7 @@
     <string name="format">Format</string>
     <string name="description">Opis</string>
     <string name="genre">Gatunek</string>
-    <string name="notset">Nie wybrany(a)</string>
+    <string name="not_set">Nie wybrany(a)</string>
     <string name="menu_search">Przeszukaj książki</string>
     <string name="isbn_name_search_help">Dodawanie wg ISBN jest zalecane - bardziej dokładne niż wg autora i tytułu. W niektórych książkach kod kreskowy znajdziesz wewnątrz okładki. \n\n</string>
     <string name="help_click_here">Kliknij tu by wejść do pomocy online</string>

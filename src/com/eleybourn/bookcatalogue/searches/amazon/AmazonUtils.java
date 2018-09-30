@@ -1,6 +1,6 @@
 package com.eleybourn.bookcatalogue.searches.amazon;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -35,7 +35,7 @@ public class AmazonUtils {
 	// key into the Manifest meta-data
 	private static final String AMAZON_KEY = "amazon.appkey";
 
-	private static void openLink(@NonNull final Activity context, @Nullable String author, @Nullable String series) {
+	private static void openLink(@NonNull final Context context, @Nullable String author, @Nullable String series) {
 		// Build the URL and args
 		String url = AmazonManager.getBaseURL() + SUFFIX_BASE_URL;
 		author = cleanupSearchString(author);
@@ -126,7 +126,7 @@ public class AmazonUtils {
 		return out.toString();
 	}
 
-	public static void openAmazonSearchPage(@NonNull final Activity context, @Nullable final String author, @Nullable final String series) {
+	public static void openAmazonSearchPage(@NonNull final Context context, @Nullable final String author, @Nullable final String series) {
 
 		try {
 			openLink(context, author, series);

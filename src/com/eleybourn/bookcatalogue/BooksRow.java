@@ -23,11 +23,9 @@ package com.eleybourn.bookcatalogue;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_MASK;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsSearchCriteria;
 
 /**
  * Convenience class to avoid having to write the same code in more than one place. This
@@ -53,6 +51,7 @@ public class BooksRow {
     private int mAnthologyMaskCol = -2;
     private int mDatePublishedCol = -2;
     private int mDescriptionCol = -2;
+    private int mFirstPublicationCol = -2;
     private int mFormatCol = -2;
     private int mGenreCol = -2;
     private int mGoodreadsBookIdCol = -2;
@@ -109,9 +108,9 @@ public class BooksRow {
 
     public final long getAnthologyMask() {
         if (mAnthologyMaskCol < 0) {
-            mAnthologyMaskCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ANTHOLOGY_MASK.name);
+            mAnthologyMaskCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_MASK.name);
             if (mAnthologyMaskCol < 0) {
-                throw new IllegalArgumentException("DOM_ANTHOLOGY_MASK column not in result set");
+                throw new IllegalArgumentException("DOM_BOOK_ANTHOLOGY_MASK column not in result set");
             }
         }
         return mCursor.getLong(mAnthologyMaskCol);
@@ -138,9 +137,9 @@ public class BooksRow {
     }
     public final String getDateLastSyncedWithGoodReads() {
         if (mDateLastSyncedWithGoodReadsCol < 0) {
-            mDateLastSyncedWithGoodReadsCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_GOODREADS_LAST_SYNC_DATE.name);
+            mDateLastSyncedWithGoodReadsCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name);
             if (mDateLastSyncedWithGoodReadsCol < 0) {
-                throw new IllegalArgumentException("DOM_GOODREADS_LAST_SYNC_DATE column not in result set");
+                throw new IllegalArgumentException("DOM_BOOK_GOODREADS_LAST_SYNC_DATE column not in result set");
             }
         }
         return mCursor.getString(mDateLastSyncedWithGoodReadsCol);
@@ -149,12 +148,22 @@ public class BooksRow {
 
     public final String getDatePublished() {
         if (mDatePublishedCol < 0) {
-            mDatePublishedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_DATE_PUBLISHED.name);
+            mDatePublishedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED.name);
             if (mDatePublishedCol < 0) {
                 throw new IllegalArgumentException("DATE_PUBLISHED column not in result set");
             }
         }
         return mCursor.getString(mDatePublishedCol);
+    }
+
+    public final String getFirstPublication() {
+        if (mFirstPublicationCol < 0) {
+            mFirstPublicationCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_FIRST_PUBLICATION.name);
+            if (mFirstPublicationCol < 0) {
+                throw new IllegalArgumentException("DOM_FIRST_PUBLICATION column not in result set");
+            }
+        }
+        return mCursor.getString(mFirstPublicationCol);
     }
 
     public final String getDescription() {
@@ -189,9 +198,9 @@ public class BooksRow {
 
     public final long getGoodreadsBookId() {
         if (mGoodreadsBookIdCol < 0) {
-            mGoodreadsBookIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_GOODREADS_BOOK_ID.name);
+            mGoodreadsBookIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
             if (mGoodreadsBookIdCol < 0) {
-                throw new IllegalArgumentException("DOM_GOODREADS_BOOK_ID column not in result set");
+                throw new IllegalArgumentException("DOM_BOOK_GOODREADS_BOOK_ID column not in result set");
             }
         }
         return mCursor.getLong(mGoodreadsBookIdCol);
@@ -237,11 +246,16 @@ public class BooksRow {
         return mCursor.getString(mNotesCol);
     }
 
+    /**
+     * Used by {@link GoodreadsSearchCriteria}
+     *
+     * The 'primary' of this method name seems wrong. What is returned is a name in the format "Kilgore Trout", given + family
+     */
     public final String getPrimaryAuthorName() {
         if (mPrimaryAuthorCol < 0) {
             mPrimaryAuthorCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
             if (mPrimaryAuthorCol < 0) {
-                throw new IllegalArgumentException("Primary author column not in result set");
+                throw new IllegalArgumentException("DOM_AUTHOR_FORMATTED_GIVEN_FIRST column not in result set");
             }
         }
         return mCursor.getString(mPrimaryAuthorCol);
@@ -258,9 +272,9 @@ public class BooksRow {
     }
     public final String getPublisher() {
         if (mPublisherCol < 0) {
-            mPublisherCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_PUBLISHER.name);
+            mPublisherCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PUBLISHER.name);
             if (mPublisherCol < 0) {
-                throw new IllegalArgumentException("DOM_PUBLISHER column not in result set");
+                throw new IllegalArgumentException("DOM_BOOK_PUBLISHER column not in result set");
             }
         }
         return mCursor.getString(mPublisherCol);

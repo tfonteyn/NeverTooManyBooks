@@ -65,8 +65,8 @@ public class BookUtils {
         final Bundle book = new Bundle();
         try (Cursor cursor = db.fetchBookById(rowId)) {
             cursor.moveToFirst();
-            book.putLong(UniqueId.KEY_ANTHOLOGY_MASK, cursor.getLong(cursor.getColumnIndex(DatabaseDefinitions.DOM_ANTHOLOGY_MASK.name)));
-            book.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_DATE_PUBLISHED.name)));
+            book.putLong(UniqueId.KEY_ANTHOLOGY_MASK, cursor.getLong(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_MASK.name)));
+            book.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED.name)));
             book.putString(UniqueId.KEY_DESCRIPTION, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_DESCRIPTION.name)));
             book.putString(UniqueId.KEY_BOOK_FORMAT, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_FORMAT.name)));
             book.putString(UniqueId.KEY_BOOK_GENRE, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GENRE.name)));
@@ -76,7 +76,7 @@ public class BookUtils {
             book.putString(UniqueId.KEY_BOOK_LOCATION, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LOCATION.name)));
             book.putString(UniqueId.KEY_NOTES, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_NOTES.name)));
             book.putString(UniqueId.KEY_BOOK_PAGES, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PAGES.name)));
-            book.putString(UniqueId.KEY_PUBLISHER, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_PUBLISHER.name)));
+            book.putString(UniqueId.KEY_PUBLISHER, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PUBLISHER.name)));
             book.putString(UniqueId.KEY_BOOK_RATING, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_RATING.name)));
             book.putString(UniqueId.KEY_BOOK_READ, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_READ.name)));
             book.putString(UniqueId.KEY_BOOK_READ_END, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_READ_END.name)));
@@ -185,10 +185,10 @@ public class BookUtils {
 
     /**
      * Update the 'read' status of a book in the database
-     * The 'book' will have its 'read' status updated ONLY if the update went through.
+     * The bookData will have its 'read' status updated ONLY if the update went through.
      *
      * @param db  database
-     * @param bookData book to update
+     * @param bookData to update
      *
      * @return true/false as result from database update
      */

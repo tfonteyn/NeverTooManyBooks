@@ -168,7 +168,7 @@ public class BookEvents {
             if (authors.size() > 0) {
                 author = authors.get(0).getDisplayName();
                 if (authors.size() > 1)
-                    author = author + " et. al.";
+                    author = author + " " + BookCatalogueApp.getResourceString(R.string.and_others);
             } else {
                 author = context.getString(R.string.unknown_uc);
             }

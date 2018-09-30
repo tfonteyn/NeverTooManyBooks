@@ -57,7 +57,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_GOODREADS_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement.INSERT_FAILED;
 import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.UPDATED;
 
@@ -313,9 +313,9 @@ class ImportAllTask extends GenericTask {
         }
         // We build a new book bundle each time since it will build on the existing
         // data for the given book, not just replace it.
-        BookData book = buildBundle(db, booksRow, review);
+        BookData bookData = buildBundle(db, booksRow, review);
 
-        db.updateBook(booksRow.getId(), book, CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES | CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+        db.updateBook(booksRow.getId(), bookData, CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES | CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
         //db.setGoodreadsSyncDate(rv.getId());
     }
 
@@ -323,10 +323,10 @@ class ImportAllTask extends GenericTask {
      * Create a new book
      */
     private void insertBook(@NonNull final CatalogueDBAdapter db, @NonNull final Bundle review) {
-        BookData book = buildBundle(db, null, review);
-        long id = db.insertBook(book, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+        BookData bookData = buildBundle(db, null, review);
+        long id = db.insertBook(bookData, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
         if (id != INSERT_FAILED) {
-            if (book.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
+            if (bookData.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
                 String uuid = db.getBookUuid(id);
                 File thumb = StorageUtils.getTempCoverFile();
                 File real = StorageUtils.getCoverFile(uuid);
@@ -361,7 +361,7 @@ class ImportAllTask extends GenericTask {
         }
 
         addStringIfNonBlank(review, ListReviewsFieldNames.DB_TITLE, bookData, ListReviewsFieldNames.DB_TITLE);
-        addLongIfPresent(review, ListReviewsFieldNames.GR_BOOK_ID, bookData, DOM_GOODREADS_BOOK_ID.name);
+        addLongIfPresent(review, ListReviewsFieldNames.GR_BOOK_ID, bookData, DOM_BOOK_GOODREADS_BOOK_ID.name);
 
         // Find the best (longest) isbn.
         ArrayList<String> isbns = extractIsbns(review);
@@ -492,7 +492,10 @@ class ImportAllTask extends GenericTask {
      * @return reformatted sql date, or null if not able to parse
      */
     @Nullable
-    private String addDateIfValid(Bundle source, String sourceField, BookData dest, String destField) {
+    private String addDateIfValid(@NonNull final Bundle source,
+                                  @NonNull final String sourceField,
+                                  @NonNull final BookData dest,
+                                  @NonNull final String destField) {
         if (!source.containsKey(sourceField))
             return null;
 
@@ -513,7 +516,7 @@ class ImportAllTask extends GenericTask {
      * Utility to copy a non-blank string to the book bundle.
      */
     private void addStringIfNonBlank(@NonNull final Bundle source,
-                                     String sourceField,
+                                     @NonNull final String sourceField,
                                      @NonNull final BookData dest,
                                      @NonNull final String destField) {
         if (source.containsKey(sourceField)) {

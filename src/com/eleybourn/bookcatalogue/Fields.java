@@ -26,6 +26,8 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -329,10 +331,10 @@ public class Fields extends ArrayList<Fields.Field> {
     /**
      * For a View that supports onClick() (all of them?), set the listener.
      *
-     * @param id       Layout ID
+     * @param id       view ID
      * @param listener onClick() listener.
      */
-    void setListener(int id, @NonNull final View.OnClickListener listener) {
+    void setListener(@IdRes final int id, @NonNull final View.OnClickListener listener) {
         View v = getField(id).getView();
         if (v != null) {
             v.setOnClickListener(listener);
@@ -512,7 +514,7 @@ public class Fields extends ArrayList<Fields.Field> {
     private interface FieldsContext {
         Object dbgGetOwnerContext();
 
-        View findViewById(int id);
+        View findViewById(@IdRes int id);
     }
 
     /**
@@ -1139,7 +1141,7 @@ public class Fields extends ArrayList<Fields.Field> {
         }
 
         @Override
-        public View findViewById(final int id) {
+        public View findViewById(@IdRes final int id) {
             return mActivity.get().findViewById(id);
         }
     }
@@ -1158,7 +1160,7 @@ public class Fields extends ArrayList<Fields.Field> {
 
         @Override
         @Nullable
-        public View findViewById(final int id) {
+        public View findViewById(@IdRes final int id) {
             if (mFragment.get() == null) {
                 if (BuildConfig.DEBUG) {
                     System.out.println("Fragment is NULL");
@@ -1185,7 +1187,8 @@ public class Fields extends ArrayList<Fields.Field> {
      * @author Philip Warner
      */
     public class Field {
-        /** Layout ID */
+        /** Field ID */
+        @IdRes
         public final int id;
         /** database column name (can be blank) */
         public final String column;
@@ -1230,7 +1233,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * @param fieldFormatter      Formatter. Can be null.
          */
         Field(@NonNull final Fields fields,
-              final int fieldId,
+              @IdRes final int fieldId,
               @NonNull final String sourceColumn,
               @NonNull final String visibilityGroupName,
               @Nullable final FieldValidator fieldValidator,
@@ -1251,7 +1254,7 @@ public class Fields extends ArrayList<Fields.Field> {
             }
 
             // Lookup the view
-            final View view = c.findViewById(id);
+            final View view = c.findViewById(this.id);
 
             // Set the appropriate accessor
             if (view == null) {
@@ -1321,7 +1324,7 @@ public class Fields extends ArrayList<Fields.Field> {
                 return;
             }
             // Lookup the view
-            final View view = context.findViewById(id);
+            final View view = context.findViewById(this.id);
             if (view != null) {
                 visible = BCPreferences.getBoolean(FieldVisibilityActivity.TAG + group, true);
                 view.setVisibility(visible ? View.VISIBLE : View.GONE);

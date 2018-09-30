@@ -29,6 +29,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.View;
@@ -119,7 +120,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
         }
     }
 
-    private void sendContactEmail(int stringId) {
+    private void sendContactEmail(@StringRes final int stringId) {
         try {
             Intent msg = new Intent(Intent.ACTION_SEND);
             msg.setType("text/plain");

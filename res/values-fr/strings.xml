@@ -198,7 +198,7 @@
     <string name="format">Format</string>
     <string name="description">Description</string>
     <string name="genre">Genre</string>
-    <string name="notset">Non défini</string>
+    <string name="not_set">Non défini</string>
     <string name="menu_search">Rechercher des livres</string>
     <string name="isbn_name_search_help">L\'ajout de livres par ISBN est plus précis que par auteur ou titre, et généralement préférable. Rappelez-vous qu\'il est parfois possible de trouver le bon code barre à l\'intérieur de la couverture.\n\n</string>
     <string name="help_click_here">Veuillez cliquer ici pour accéder à l\'aide en ligne.</string>

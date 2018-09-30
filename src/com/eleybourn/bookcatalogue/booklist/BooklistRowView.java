@@ -43,11 +43,11 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LEVEL;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ROW_KIND;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
 /**
@@ -383,9 +383,9 @@ public class BooklistRowView {
     @NonNull
     public String getPublisherName() {
         if (mPublisherCol < 0) {
-            mPublisherCol = mCursor.getColumnIndex(DOM_PUBLISHER.name);
+            mPublisherCol = mCursor.getColumnIndex(DOM_BOOK_PUBLISHER.name);
             if (mPublisherCol < 0) {
-                throw new RuntimeException("Column " + DOM_PUBLISHER + " not present in cursor");
+                throw new RuntimeException("Column " + DOM_BOOK_PUBLISHER + " not present in cursor");
             }
         }
         return mCursor.getString(mPublisherCol);
@@ -482,9 +482,9 @@ public class BooklistRowView {
     @Nullable
     public String getSeriesNumber() {
         if (mSeriesNumberCol < 0) {
-            mSeriesNumberCol = mCursor.getColumnIndex(DOM_SERIES_NUM.name);
+            mSeriesNumberCol = mCursor.getColumnIndex(DOM_BOOK_SERIES_NUM.name);
             if (mSeriesNumberCol < 0) {
-                throw new RuntimeException("Column " + DOM_SERIES_NUM + " not present in cursor");
+                throw new RuntimeException("Column " + DOM_BOOK_SERIES_NUM + " not present in cursor");
             }
         }
         return mCursor.getString(mSeriesNumberCol);

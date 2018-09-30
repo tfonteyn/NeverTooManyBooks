@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -63,7 +64,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         super.onAttach(context);
 
         if (!(context instanceof OnExportTypeSelectionDialogResultListener))
-            throw new RuntimeException("Activity " + context.getClass().getSimpleName() + " must implement OnExportTypeSelectionDialogResultListener");
+            throw new IllegalArgumentException("Activity " + context.getClass().getSimpleName() + " must implement OnExportTypeSelectionDialogResultListener");
 
     }
 
@@ -74,13 +75,13 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
      * @param cbId  checkbox view id
      * @param relId Related view id
      */
-    private void setRelatedView(@NonNull final View root, final int cbId, final int relId) {
+    private void setRelatedView(@NonNull final View root, @IdRes final int cbId, @IdRes final int relId) {
         final CheckBox cb = root.findViewById(cbId);
         final View rel = root.findViewById(relId);
         if (BuildConfig.DEBUG) {
             // catch layout issues before we click on them.
             if (cb == null || rel == null) {
-                throw new NullPointerException("Layout must have: " + cbId + " and " + relId);
+                throw new IllegalArgumentException("Layout must have: " + cbId + " and " + relId);
             }
         }
         rel.setOnClickListener(new View.OnClickListener() {
@@ -101,9 +102,8 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
 //	 * Utility routine to set the OnClickListener for a given view item.
 //	 * 
 //	 * @param id		Sub-View ID
-//	 * @param l			Listener
 //	 */
-//	private void setOnClickListener(View root, int id) {
+//	private void setOnClickListener(View root, @IdRes int id) {
 //		View v = root.findViewById(id);
 //		v.setOnClickListener(mRowClickListener);
 //		v.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -114,7 +114,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
      */
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
         mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
 

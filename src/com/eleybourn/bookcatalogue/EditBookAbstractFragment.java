@@ -22,8 +22,10 @@ package com.eleybourn.bookcatalogue;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RawRes;
 import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -77,7 +79,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         super.onAttach(context);
 
         if (!(context instanceof BookEditManager))
-            throw new RuntimeException("Activity " + context.getClass().getSimpleName() + " must implement BookEditManager");
+            throw new IllegalStateException("Activity " + context.getClass().getSimpleName() + " must implement BookEditManager");
 
         mEditManager = (BookEditManager) context;
         mDb = new CatalogueDBAdapter(context);
@@ -109,7 +111,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
             menu.add(Menu.NONE, SHARE_ID, 0, R.string.menu_share_this)
                     .setIcon(R.drawable.ic_share);
             // Very rarely used, and easy to miss-click, so do not add as action_if_room!
-            //tweet.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            //.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
         if (this instanceof BookDetailsFragment) {
@@ -236,8 +238,8 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         // Load the data and preserve the isDirty() setting
         mFields.setAfterFieldChangeListener(null);
         final boolean wasDirty = mEditManager.isDirty();
-        BookData book = mEditManager.getBookData();
-        onLoadBookDetails(book, false);
+        BookData bookData = mEditManager.getBookData();
+        onLoadBookDetails(bookData, false);
         mEditManager.setDirty(wasDirty);
 
         // Set the listener to monitor edits
@@ -281,7 +283,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      * @return The resulting visibility setting value (VISIBLE or GONE)
      */
     @SuppressWarnings("UnusedReturnValue")
-    private int showHideField(final boolean hideIfEmpty, final int resId, final int... relatedFields) {
+    private int showHideField(final boolean hideIfEmpty, @IdRes final int resId, @IdRes final int... relatedFields) {
         // Get the base view
         final View v = getView().findViewById(resId);
         int visibility;
@@ -319,40 +321,25 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     protected void showHideFields(final boolean hideIfEmpty) {
         mFields.resetVisibility();
 
-        // Check publishing information; in reality only one of these fields will exist
-        showHideField(hideIfEmpty, R.id.publishing_details, R.id.lbl_publishing, R.id.row_publisher);
         showHideField(hideIfEmpty, R.id.publisher, R.id.lbl_publishing, R.id.row_publisher);
-
         showHideField(hideIfEmpty, R.id.date_published, R.id.row_date_published);
-
-        showHideField(hideIfEmpty, R.id.row_img, R.id.image_wrapper);
-
+        showHideField(hideIfEmpty, R.id.first_publication, R.id.row_first_publication);
+        showHideField(hideIfEmpty, R.id.image, R.id.row_image);
         showHideField(hideIfEmpty, R.id.pages, R.id.row_pages);
-
         showHideField(hideIfEmpty, R.id.format, R.id.row_format);
-
         showHideField(hideIfEmpty, R.id.genre, R.id.lbl_genre, R.id.row_genre);
-
         showHideField(hideIfEmpty, R.id.language, R.id.lbl_language, R.id.row_language);
-
         showHideField(hideIfEmpty, R.id.isbn, R.id.row_isbn);
-
         showHideField(hideIfEmpty, R.id.series, R.id.row_series, R.id.lbl_series);
-
         showHideField(hideIfEmpty, R.id.list_price, R.id.row_list_price);
-
-        showHideField(hideIfEmpty, R.id.description, R.id.descriptionLabel, R.id.description_divider);
+        showHideField(hideIfEmpty, R.id.description, R.id.lbl_description, R.id.description_divider);
 
         // **** MY COMMENTS SECTION ****
 
         showHideField(hideIfEmpty, R.id.notes, R.id.lbl_notes, R.id.row_notes);
-
         showHideField(hideIfEmpty, R.id.read_start, R.id.row_read_start);
-
         showHideField(hideIfEmpty, R.id.read_end, R.id.row_read_end);
-
         showHideField(hideIfEmpty, R.id.location, R.id.row_location, R.id.row_location);
-
         showHideField(hideIfEmpty, R.id.signed, R.id.row_signed);
     }
 

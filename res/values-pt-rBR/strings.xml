@@ -116,7 +116,7 @@
     <string name="format">Format</string>
     <string name="description">Description</string>
     <string name="genre">Genre</string>
-    <string name="notset">Not Set</string>
+    <string name="not_set">Not Set</string>
     <string name="menu_search">Search Books</string>
     <string name="isbn_name_search_help">Adding books by ISBN is much more accurate than adding by author and title and is generally preferred. Please remember you can sometimes find the correct barcode on the inside front cover. \n\n</string>
     <string name="help_click_here">Please click here to access the online help pages</string>

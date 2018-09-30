@@ -72,7 +72,7 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
      * @param savedInstanceState The saved bundle (from pausing). Can be null.
      */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         try {
             super.onActivityCreated(savedInstanceState);

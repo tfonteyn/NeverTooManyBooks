@@ -101,7 +101,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:layout_alignParentStart">true</item>
-        <item name="android:hint">@string/notset</item>
+        <item name="android:hint">@string/not_set</item>
     </style>
 
     <!-- BEGIN Usually customized in the language styles.ml for localised differences -->

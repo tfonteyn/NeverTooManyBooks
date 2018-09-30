@@ -24,6 +24,7 @@ import android.annotation.SuppressLint;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -280,22 +281,10 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
          *
          * @return this for chaining
          */
-        public ItemEntries<T> add(@Nullable final T value, final int stringId, @NonNull final Object... args) {
+        public ItemEntries<T> add(@Nullable final T value, @StringRes final int stringId, @NonNull final Object... args) {
             mList.add(new ItemEntry<>(value, stringId, args));
             return this;
         }
-
-//		/**
-//		 * Utility to make adding items easier.
-//		 *
-//		 * @param value		Underlying value
-//		 * @param stringId	Description
-//		 * @return
-//		 */
-//		public ItemEntries<T> add(T value, int string) {
-//			mList.add(new ItemEntry<T>(value, string));
-//			return this;
-//		}
 
         @NonNull
         @Override
