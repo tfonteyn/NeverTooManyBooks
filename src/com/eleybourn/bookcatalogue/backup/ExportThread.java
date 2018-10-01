@@ -19,9 +19,6 @@ import java.io.IOException;
  */
 public class ExportThread extends ManagedTask {
 
-    /** backup copies to keep */
-    private static final int COPIES = 5;
-
     private final Exporter.ExportListener mOnExportListener = new Exporter.ExportListener() {
         @Override
         public void onProgress(@NonNull final String message, final int position) {
@@ -44,21 +41,25 @@ public class ExportThread extends ManagedTask {
 
     };
 
+    private final CsvExporter mExporter;
+
     public ExportThread(@NonNull final TaskManager manager) {
         super(manager);
+        mExporter = new CsvExporter();
     }
 
     @Override
     protected void onRun() {
         try {
-            final FileOutputStream out = new FileOutputStream(StorageUtils.getTempExportFile());
+            File tmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
+            final FileOutputStream out = new FileOutputStream(tmpFile);
 
-            new CsvExporter().export(out, mOnExportListener, Exporter.EXPORT_ALL, null);
+            mExporter.export(out, mOnExportListener, Exporter.EXPORT_ALL, null);
 
             if (out.getChannel().isOpen()) {
                 out.close();
             }
-            renameFiles();
+            renameFiles(tmpFile);
         } catch (IOException e) {
             Logger.logError(e);
             mManager.doToast(getString(R.string.export_failed_sdcard));
@@ -68,23 +69,12 @@ public class ExportThread extends ManagedTask {
     /**
      * Backup the current file
      */
-    private void renameFiles() {
-        final File temp = StorageUtils.getTempExportFile();
+    private void renameFiles(@NonNull final File temp) {
         if (isCancelled()) {
             StorageUtils.deleteFile(temp);
         } else {
-            String fmt = "export.%s.csv";
-            File fLast = StorageUtils.getFile(String.format(fmt, COPIES));
-             StorageUtils.deleteFile(fLast);
-
-            for (int i = COPIES - 1; i > 0; i--) {
-                final File fCurr = StorageUtils.getFile(String.format(fmt, i));
-                StorageUtils.renameFile(fCurr, fLast);
-                fLast = fCurr;
-            }
-            final File export = StorageUtils.getExportFile();
-            StorageUtils.renameFile(export, fLast);
-            StorageUtils.renameFile(temp, export);
+            mExporter.renameFiles(temp);
         }
     }
+
 }

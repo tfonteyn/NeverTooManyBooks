@@ -116,10 +116,6 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
 
             // Restore default visibility and hide unused/unwanted and empty fields
             showHideFields(true);
-
-            // Hide the fields that we never use...
-            getView().findViewById(R.id.anthology).setVisibility(View.GONE);
-
         } catch (Exception e) {
             Logger.logError(e);
         }

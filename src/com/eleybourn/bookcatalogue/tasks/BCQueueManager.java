@@ -24,7 +24,6 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.taskqueue.LegacyTask;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 

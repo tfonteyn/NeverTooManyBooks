@@ -84,7 +84,9 @@
     <item name="TAG_POSITION" type="id" />
     <!-- END used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
 
-    <!-- other -->
+    <!-- BEGIN Not used in xml -->
     <item name="UPDATE_FROM_INTERNET_FIELD_CHECKBOX" type="id" />
     <item name="NOTIFICATION" type="id" />
+    <!-- END Not used in xml -->
+
 </resources>

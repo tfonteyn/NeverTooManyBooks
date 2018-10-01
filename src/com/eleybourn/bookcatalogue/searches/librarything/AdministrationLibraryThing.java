@@ -93,7 +93,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 
 		EditText devkeyView = findViewById(R.id.devkey);
 		SharedPreferences prefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
-		devkeyView.setText(prefs.getString(LibraryThingManager.LT_DEVKEY_PREF_NAME, ""));
+		devkeyView.setText(prefs.getString(LibraryThingManager.PREFS_LT_DEV_KEY, ""));
 		
 		/* Save Button */
 		Button btn = findViewById(R.id.confirm);
@@ -101,10 +101,10 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 			@Override
 			public void onClick(View v) {
 				EditText devkeyView = findViewById(R.id.devkey);
-				String devkey = devkeyView.getText().toString();
+				String devkey = devkeyView.getText().toString().trim();
 				SharedPreferences prefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
 				SharedPreferences.Editor ed = prefs.edit();
-				ed.putString(LibraryThingManager.LT_DEVKEY_PREF_NAME, devkey);
+				ed.putString(LibraryThingManager.PREFS_LT_DEV_KEY, devkey);
 				ed.apply();
 				
 				if (!devkey.isEmpty()) {
@@ -152,7 +152,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
 				SharedPreferences prefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
 				SharedPreferences.Editor ed = prefs.edit();
 				for( String key : prefs.getAll().keySet()) {
-					if (key.toLowerCase().startsWith(LibraryThingManager.LT_HIDE_ALERT_PREF_NAME.toLowerCase())) 
+					if (key.toLowerCase().startsWith(LibraryThingManager.PREFS_LT_HIDE_ALERT.toLowerCase()))
 						ed.remove(key);
 				}
 				ed.apply();

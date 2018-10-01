@@ -36,7 +36,6 @@ import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.taskqueue.RunnableTask;
-import com.eleybourn.bookcatalogue.taskqueue.Task;
 import com.eleybourn.bookcatalogue.taskqueue.TasksCursor;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 

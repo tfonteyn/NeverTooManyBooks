@@ -512,7 +512,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
          */
         if (mBook.containsKey(UniqueId.KEY_TITLE)) {
             String thisTitle = mBook.getString(UniqueId.KEY_TITLE);
-            Series.SeriesDetails details = Series.findSeries(thisTitle);
+            Series.SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
             if (details != null && details.name.length() > 0) {
                 if (mSeries == null) {
                     mSeries = new ArrayList<>();

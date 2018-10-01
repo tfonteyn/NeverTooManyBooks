@@ -14,4 +14,7 @@
     <attr name="color_background_nav_panel" format="reference|color" />
     <attr name="color_background_thumbnail" format="reference|color" />
     <attr name="color_background_toolbar" format="reference|color" />
+
+    <attr name="color_border" format="reference|color" />
+
 </resources>

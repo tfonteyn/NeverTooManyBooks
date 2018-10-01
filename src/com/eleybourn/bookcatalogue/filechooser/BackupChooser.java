@@ -222,7 +222,6 @@ public class BackupChooser extends FileChooser implements
                                                   @NonNull final DialogFragment dialog,
                                                   @NonNull final ImportTypeSelectionDialogFragment.ImportSettings settings) {
         switch (settings.options) {
-
             case Importer.IMPORT_ALL:
                 BackupManager.restoreCatalogue(this, settings.file, TASK_ID_OPEN, Importer.IMPORT_ALL);
                 break;

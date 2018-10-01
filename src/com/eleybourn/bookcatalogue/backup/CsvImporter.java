@@ -252,16 +252,18 @@ public class CsvImporter implements Importer {
     /**
      *
      * @return new or updated bookId
+     *
+     * @throws Exception on failure
      */
     private long importBook(long bookId,
                             final boolean hasNumericId,
                             final String uuidVal,
                             final boolean hasUuid,
                             final BookData bookData,
-                            final boolean updateOnlyIfNewer) {
+                            final boolean updateOnlyIfNewer) throws Exception {
         if (!hasUuid && !hasNumericId) {
             // Always import empty IDs...even if they are duplicates.
-            long id = mDb.insertBookWithId(0, bookData, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+            long id = mDb.insertBookWithId(0, bookData);
             //FIXME: ignoring failure
             bookData.putLong(UniqueId.KEY_ID, id);
             // Would be nice to import a cover, but with no ID/UUID that is not possible
@@ -296,7 +298,7 @@ public class CsvImporter implements Importer {
                     mUpdated++;
                 }
             } else {
-                bookId = mDb.insertBookWithId(bookId, bookData, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+                bookId = mDb.insertBookWithId(bookId, bookData);
                 mCreated++;
             }
 

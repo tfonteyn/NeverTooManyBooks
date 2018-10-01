@@ -323,6 +323,6 @@
         <item name="android:layout_centerVertical">true</item>
         <item name="android:padding">@dimen/padding_border</item>
         <item name="android:scaleType">centerInside</item>
-        <item name="android:background">?attr/color_background_thumbnail</item>
+        <item name="android:background">@drawable/border</item>
     </style>
 </resources>

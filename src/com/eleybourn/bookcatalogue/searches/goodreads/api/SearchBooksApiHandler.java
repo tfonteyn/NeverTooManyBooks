@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -44,66 +44,34 @@ import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GO
 
 /**
  * Class to query and response to search.books api call.
- * 
+ *
  * @author Philip Warner
  */
 public class SearchBooksApiHandler extends ApiHandler {
-	/** List of GoodreadsWork objects that result from a search */
-	private ArrayList<GoodreadsWork> mWorks = null;
-	/** Starting result # (for multi-page result sets). We dont use (yet). */
-	private Long mResultsStart;
-	/** Ending result # (for multi-page result sets). We dont use (yet). */
-	private Long mResultsEnd;
-	/** Total results available, as opposed to number returned on firt page. */
-	private Long mTotalResults;
-	/** Transient global data for current work in search results. */
-	private GoodreadsWork mCurrentWork;
-
-	public SearchBooksApiHandler(GoodreadsManager manager) {
-		super(manager);
-		// Build the XML filters needed to get the data we're interested in.
-		buildFilters();
-	}
-
-	/**
-	 * Perform a search and handle the results.
-	 *
-	 * @return	the array of GoodreadsWork objects.
-	 */
-	public ArrayList<GoodreadsWork> search(String query) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
-		query = query.trim();
-
-		// Setup API call
-		HttpPost post = new HttpPost(GOODREADS_API_ROOT + "/search/index.xml");
-		ArrayList<NameValuePair> parameters = new ArrayList<>();
-        parameters.add(new BasicNameValuePair("q", query));
-        parameters.add(new BasicNameValuePair("key", mManager.getDeveloperKey()));
-    
-        post.setEntity(new UrlEncodedFormEntity(parameters));
-        mWorks = new ArrayList<>();
-
-        // Get a handler and run query.
-        XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-        mManager.execute(post, handler, false);
-
-        // Return parsed results.
-        return mWorks;
-	}
-
-	@SuppressWarnings("unused")
-	public long getResultsStart() {
-		return mResultsStart;
-	}
-
-	@SuppressWarnings("unused")
-	public long getTotalResults() {
-		return mTotalResults;
-	}
-
-	@SuppressWarnings("unused")
-	public long getResultsEnd() {
-		return mResultsEnd;
-	}
+    // prevent duplication of strings in jvm, or am I paranoid ?
+    private static final String GR_RESP = "GoodreadsResponse";
+    private static final String GR_SEARCH = "search";
+    private static final String GR_RESULT = "results";
+    private static final String GR_WORK = "work";
+    private static final String GR_BEST_BOOK = "best_book";
+    /** List of GoodreadsWork objects that result from a search */
+    private ArrayList<GoodreadsWork> mWorks = null;
+    /** Starting result # (for multi-page result sets). We dont use (yet). */
+    private Long mResultsStart;
+    private final XmlHandler mHandleResultsStart = new XmlHandler() {
+        @Override
+        public void process(ElementContext context) {
+            mResultsStart = Long.parseLong(context.body);
+        }
+    };
+    /** Ending result # (for multi-page result sets). We dont use (yet). */
+    private Long mResultsEnd;
+    private final XmlHandler mHandleResultsEnd = new XmlHandler() {
+        @Override
+        public void process(ElementContext context) {
+            mResultsEnd = Long.parseLong(context.body);
+        }
+    };
 
 	/*
 	 * Typical result:
@@ -248,19 +216,159 @@ public class SearchBooksApiHandler extends ApiHandler {
 		</GoodreadsResponse>
 
 	 */
+    /** Total results available, as opposed to number returned on firt page. */
+    private Long mTotalResults;
+    private final XmlHandler mHandleTotalResults = new XmlHandler() {
+        @Override
+        public void process(ElementContext context) {
+            mTotalResults = Long.parseLong(context.body);
+        }
+    };
+    /** Transient global data for current work in search results. */
+    private GoodreadsWork mCurrentWork;
+    /**
+     * At the START of a "work" tag, we create a new work.
+     */
+    private final XmlHandler mHandleWorkStart = new XmlHandler() {
+        @Override
+        public void process(ElementContext context) {
+            mCurrentWork = new GoodreadsWork();
+        }
+    };
+    /**
+     * At the END of a "work" tag, we add it to list and reset the pointer.
+     */
+    private final XmlHandler mHandleWorkEnd = new XmlHandler() {
+        @Override
+        public void process(ElementContext context) {
+            //mCurrentWork.requestImage();
+            mWorks.add(mCurrentWork);
+            mCurrentWork = null;
+        }
+    };
+    private final XmlHandler mHandleWorkId = new XmlHandler() {
+        @Override
+        public void process(ElementContext context) {
+            mCurrentWork.workId = Long.parseLong(context.body);
+        }
+    };
+    private final XmlHandler mHandlePubDay = new XmlHandler() {
+        @Override
+        public void process(ElementContext context) {
+            try {
+                mCurrentWork.pubDay = Long.parseLong(context.body);
+            } catch (Exception ignored) {
+            }
+        }
+    };
+    private final XmlHandler mHandlePubMonth = new XmlHandler() {
+        @Override
+        public void process(ElementContext context) {
+            try {
+                mCurrentWork.pubMonth = Long.parseLong(context.body);
+            } catch (Exception ignored) {
+            }
+        }
+    };
+    private final XmlHandler mHandlePubYear = new XmlHandler() {
+        @Override
+        public void process(ElementContext context) {
+            try {
+                mCurrentWork.pubYear = Long.parseLong(context.body);
+            } catch (Exception ignored) {
+            }
+        }
+    };
+    private final XmlHandler mHandleBookId = new XmlHandler() {
+        @Override
+        public void process(ElementContext context) {
+            mCurrentWork.bookId = Long.parseLong(context.body);
+        }
+    };
+    private final XmlHandler mHandleBookTitle = new XmlHandler() {
+        @Override
+        public void process(ElementContext context) {
+            mCurrentWork.title = context.body;
+        }
+    };
+    private final XmlHandler mHandleAuthorId = new XmlHandler() {
+        @Override
+        public void process(ElementContext context) {
+            mCurrentWork.authorId = Long.parseLong(context.body);
+        }
+    };
+    private final XmlHandler mHandleAuthorName = new XmlHandler() {
+        @Override
+        public void process(ElementContext context) {
+            mCurrentWork.authorName = context.body;
+        }
+    };
+    private final XmlHandler mHandleImageUrl = new XmlHandler() {
+        @Override
+        public void process(ElementContext context) {
+            mCurrentWork.imageUrl = context.body;
+        }
+    };
+    private final XmlHandler mHandleSmallImageUrl = new XmlHandler() {
+        @Override
+        public void process(ElementContext context) {
+            mCurrentWork.smallImageUrl = context.body;
+        }
+    };
+    public SearchBooksApiHandler(GoodreadsManager manager) {
+        super(manager);
+        // Build the XML filters needed to get the data we're interested in.
+        buildFilters();
+    }
 
-	// prevent duplication of strings in jvm, or am I paranoid ?
-	private static final String GR_RESP = "GoodreadsResponse";
-	private static final String GR_SEARCH = "search";
-	private static final String GR_RESULT = "results";
-	private static final String GR_WORK = "work";
-	private static final String GR_BEST_BOOK = "best_book";
+    /**
+     * Perform a search and handle the results.
+     *
+     * @return the array of GoodreadsWork objects.
+     */
+    public ArrayList<GoodreadsWork> search(String query) throws
+            OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+            NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 
-	/**
-	 * Setup filters to process the XML parts we care about.
-	 */
-	@SuppressWarnings("ConstantConditions")
-	private void buildFilters() {
+        query = query.trim();
+
+        // Setup API call
+        HttpPost post = new HttpPost(GOODREADS_API_ROOT + "/search/index.xml");
+        ArrayList<NameValuePair> parameters = new ArrayList<>();
+        parameters.add(new BasicNameValuePair("q", query));
+        parameters.add(new BasicNameValuePair("key", mManager.getDeveloperKey()));
+
+        post.setEntity(new UrlEncodedFormEntity(parameters));
+        mWorks = new ArrayList<>();
+
+        // Get a handler and run query.
+        XmlResponseParser handler = new XmlResponseParser(mRootFilter);
+        mManager.execute(post, handler, false);
+
+        // Return parsed results.
+        return mWorks;
+    }
+
+    @SuppressWarnings("unused")
+    public long getResultsStart() {
+        return mResultsStart;
+    }
+
+    @SuppressWarnings("unused")
+    public long getTotalResults() {
+        return mTotalResults;
+    }
+
+    @SuppressWarnings("unused")
+    public long getResultsEnd() {
+        return mResultsEnd;
+    }
+
+    /**
+     * Setup filters to process the XML parts we care about.
+     */
+    @SuppressWarnings("ConstantConditions")
+    private void buildFilters() {
 		/*
 		   Stuff we care about
 
@@ -303,141 +411,35 @@ public class SearchBooksApiHandler extends ApiHandler {
 			</GoodreadsResponse>
 
 		 */
-		XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, "results-start")
-				.setEndAction(mHandleResultsStart);
-		XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, "results-end")
-				.setEndAction(mHandleResultsEnd);
-		XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, "total-results")
-				.setEndAction(mHandleTotalResults);
-		XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK)
-				.setStartAction(mHandleWorkStart)
-				.setEndAction(mHandleWorkEnd);
-		XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, "id")
-				.setEndAction(mHandleWorkId);
-		XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, "original_publication_day")
-				.setEndAction(mHandlePubDay);
-		XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, "original_publication_month")
-				.setEndAction(mHandlePubMonth);
-		XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, "original_publication_year")
-				.setEndAction(mHandlePubYear);
-		XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "id")
-				.setEndAction(mHandleBookId);
-		XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "title")
-				.setEndAction(mHandleBookTitle);
-		XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "author", "id")
-				.setEndAction(mHandleAuthorId);
-		XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "author", "name")
-				.setEndAction(mHandleAuthorName);
-		XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "image_url")
-				.setEndAction(mHandleImageUrl);
-		XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "small_image_url")
-				.setEndAction(mHandleSmallImageUrl);
-	}
+        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, "results-start")
+                .setEndAction(mHandleResultsStart);
+        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, "results-end")
+                .setEndAction(mHandleResultsEnd);
+        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, "total-results")
+                .setEndAction(mHandleTotalResults);
+        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK)
+                .setStartAction(mHandleWorkStart)
+                .setEndAction(mHandleWorkEnd);
+        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, "id")
+                .setEndAction(mHandleWorkId);
+        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, "original_publication_day")
+                .setEndAction(mHandlePubDay);
+        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, "original_publication_month")
+                .setEndAction(mHandlePubMonth);
+        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, "original_publication_year")
+                .setEndAction(mHandlePubYear);
+        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "id")
+                .setEndAction(mHandleBookId);
+        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "title")
+                .setEndAction(mHandleBookTitle);
+        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "author", "id")
+                .setEndAction(mHandleAuthorId);
+        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "author", "name")
+                .setEndAction(mHandleAuthorName);
+        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "image_url")
+                .setEndAction(mHandleImageUrl);
+        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "small_image_url")
+                .setEndAction(mHandleSmallImageUrl);
+    }
 
-	private final XmlHandler mHandleResultsStart = new XmlHandler(){
-		@Override
-		public void process(ElementContext context) {
-			mResultsStart = Long.parseLong(context.body);
-		}
-	};
-	private final XmlHandler mHandleResultsEnd = new XmlHandler(){
-		@Override
-		public void process(ElementContext context) {
-			mResultsEnd = Long.parseLong(context.body);
-		}
-	};
-	private final XmlHandler mHandleTotalResults = new XmlHandler(){
-		@Override
-		public void process(ElementContext context) {
-			mTotalResults = Long.parseLong(context.body);
-		}
-	};
-	
-	/**
-	 * At the START of a "work" tag, we create a new work.
-	 */
-	private final XmlHandler mHandleWorkStart = new XmlHandler(){
-		@Override
-		public void process(ElementContext context) {
-			mCurrentWork = new GoodreadsWork();
-		}
-	};
-	/**
-	 * At the END of a "work" tag, we add it to list and reset the pointer.
-	 */
-	private final XmlHandler mHandleWorkEnd = new XmlHandler(){
-		@Override
-		public void process(ElementContext context) {
-			//mCurrentWork.requestImage();
-			mWorks.add(mCurrentWork);
-			mCurrentWork = null;
-		}
-	};
-	private final XmlHandler mHandleWorkId = new XmlHandler(){
-		@Override
-		public void process(ElementContext context) {
-			mCurrentWork.workId = Long.parseLong(context.body);
-		}
-	};
-	private final XmlHandler mHandlePubDay = new XmlHandler(){
-		@Override
-		public void process(ElementContext context) {
-			try {
-				mCurrentWork.pubDay = Long.parseLong(context.body);
-			} catch (Exception ignored) {}
-        }
-	};
-	private final XmlHandler mHandlePubMonth = new XmlHandler(){
-		@Override
-		public void process(ElementContext context) {
-			try {
-				mCurrentWork.pubMonth = Long.parseLong(context.body);
-			} catch (Exception ignored) {}
-        }
-	};
-	private final XmlHandler mHandlePubYear = new XmlHandler(){
-		@Override
-		public void process(ElementContext context) {
-			try {
-				mCurrentWork.pubYear = Long.parseLong(context.body);
-			} catch (Exception ignored) {}
-        }
-	};
-	private final XmlHandler mHandleBookId = new XmlHandler(){
-		@Override
-		public void process(ElementContext context) {
-			mCurrentWork.bookId = Long.parseLong(context.body);
-		}
-	};
-	private final XmlHandler mHandleBookTitle = new XmlHandler(){
-		@Override
-		public void process(ElementContext context) {
-			mCurrentWork.title = context.body;
-		}
-	};
-	private final XmlHandler mHandleAuthorId = new XmlHandler(){
-		@Override
-		public void process(ElementContext context) {
-			mCurrentWork.authorId = Long.parseLong(context.body);
-		}
-	};
-	private final XmlHandler mHandleAuthorName = new XmlHandler(){
-		@Override
-		public void process(ElementContext context) {
-			mCurrentWork.authorName = context.body;
-		}
-	};
-	private final XmlHandler mHandleImageUrl = new XmlHandler(){
-		@Override
-		public void process(ElementContext context) {
-			mCurrentWork.imageUrl = context.body;
-		}
-	};
-	private final XmlHandler mHandleSmallImageUrl = new XmlHandler(){
-		@Override
-		public void process(ElementContext context) {
-			mCurrentWork.smallImageUrl = context.body;
-		}
-	};
-		
 }

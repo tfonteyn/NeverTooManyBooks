@@ -30,6 +30,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
 
@@ -165,7 +166,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
             try {
                 convertView = bindable.newListItemView(mInflater, mContext, cursor, parent);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                Logger.logError(e);
             }
         }
 

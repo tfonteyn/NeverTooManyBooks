@@ -175,7 +175,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
                     public void onClick(final DialogInterface dialog, final int which) {
                         switch (items.get(which).getId()) {
                             case R.id.MENU_STYLE_DELETE:
-                                style.deleteFromDb(mDb);
+                                style.delete(mDb);
                                 setList(getList()); // Refresh the list
                                 dialog.dismiss();
                                 return;

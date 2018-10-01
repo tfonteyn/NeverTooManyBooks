@@ -62,7 +62,7 @@
                 android:layout_below="@id/notes_heading"
                 android:inputType="textCapSentences|textMultiLine"
                 android:singleLine="false"
-                tools:ignore="LabelFor" />
+                tools:ignore="LabelFor,Autofill" />
 
         </RelativeLayout>
 

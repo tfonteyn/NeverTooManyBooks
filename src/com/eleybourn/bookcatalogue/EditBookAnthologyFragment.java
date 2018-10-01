@@ -92,7 +92,6 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     private long mBookId;
     private String mIsbn;
     private String mBookAuthor;
-    private String mBookTitle;
     private Button mAdd;
     private CheckBox mSame;
     private Integer mEditPosition = null;
@@ -148,7 +147,6 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 
         final BookData bookData = mEditManager.getBookData();
         mBookAuthor = bookData.getString(UniqueId.KEY_AUTHOR_FORMATTED);
-        mBookTitle = bookData.getString(UniqueId.KEY_TITLE);
         mIsbn = bookData.getString(UniqueId.KEY_ISBN);
         mBookId = bookData.getRowId();
 
@@ -175,9 +173,9 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         mAdd = getView().findViewById(R.id.add_button);
         mAdd.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                String pubDate = mPubDateText.getText().toString();
-                String title = mTitleText.getText().toString();
-                String author = mAuthorText.getText().toString();
+                String pubDate = mPubDateText.getText().toString().trim();
+                String title = mTitleText.getText().toString().trim();
+                String author = mAuthorText.getText().toString().trim();
                 if (mSame.isChecked()) {
                     author = mBookAuthor;
                 }

@@ -96,7 +96,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         String authorName = authorField.getText().toString().trim();
         if (!authorName.isEmpty()) {
             // Get an author and try to find in DB.
-            Author author = new Author(authorField.getText().toString());
+            Author author = new Author(authorField.getText().toString().trim());
             author.id = mDb.getAuthorIdByName(author.familyName, author.givenNames);
             for (Author s : mList) {
                 if (s.equals(author)) {
@@ -135,7 +135,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                 }
 
                 EditText givenView = dialog.findViewById(R.id.given_names);
-                String newGiven = givenView.getText().toString();
+                String newGiven = givenView.getText().toString().trim();
                 Author newAuthor = new Author(newFamily, newGiven);
                 dialog.dismiss();
                 confirmEdit(author, newAuthor);

@@ -400,7 +400,7 @@ public class PartialDatePicker extends AlertDialog {
      */
     private void handleYear() {
         // Try to convert to integer
-        String val = mYearView.getText().toString();
+        String val = mYearView.getText().toString().trim();
         try {
             mYear = Integer.parseInt(val);
         } catch (Exception e) {

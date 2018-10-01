@@ -416,7 +416,7 @@ public class DbAdapter {
     void storeTaskEvent(@NonNull final Task t, @NonNull final Event e) {
         SQLiteDatabase db = getDb();
 
-        // Setup parameters for insertOrThrow
+        // Setup parameters for insert
         ContentValues cv = new ContentValues();
         cv.put(DOM_TASK_ID, t.getId());
         cv.put(DOM_EVENT, SerializationUtils.serializeObject(e));

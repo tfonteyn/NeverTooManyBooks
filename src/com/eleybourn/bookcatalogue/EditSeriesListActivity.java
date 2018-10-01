@@ -93,7 +93,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
         if (!seriesTitle.isEmpty()) {
             EditText numberField = EditSeriesListActivity.this.findViewById(R.id.series_num);
-            Series newSeries = new Series(seriesTitle, numberField.getText().toString());
+            Series newSeries = new Series(seriesTitle, numberField.getText().toString().trim());
             // see if we can find it based on the name
             newSeries.id = mDb.getSeriesId(newSeries.name);
             for (Series series : mList) {
@@ -136,7 +136,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
                 }
 
                 EditText seriesNumberField = dialog.findViewById(R.id.series_num);
-                Series newSeries = new Series(newName, seriesNumberField.getText().toString());
+                Series newSeries = new Series(newName, seriesNumberField.getText().toString().trim());
                 confirmEdit(series, newSeries);
 
                 dialog.dismiss();

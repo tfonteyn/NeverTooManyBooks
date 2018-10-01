@@ -177,7 +177,7 @@
     <string name="really_delete_series">Really delete series \'%s\'?\n\nThe books themselves will not be deleted.\n\nConsider editing the series and changing the series name to that of another series to preserve this data</string>
     <string name="edit_series">Edit Series Details</string>
     <string name="select_cover">Select Cover</string>
-    <string name="no_isbn_no_editions">Can not get editions for a book with no ISBN</string>
+    <string name="no_isbn_no_editions">Can not get editions for a book without a valid ISBN</string>
     <string name="unsaved_edits">You have unsaved changes. Are you sure you want to continue?</string>
     <string name="unsaved_edits_title">Unsaved Changes</string>
     <string name="changed_author_how_apply">You have changed the author from:\n  \'%1$s\' to \n  \'%2$s\'\nHow do you wish to apply this change?\nNote: The choice \'%3$s\' will be applied instantly.</string>
@@ -1037,6 +1037,8 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- adding more does not require code changes -->
     <string-array name="predefined_locations">
         <item>Library</item>
+        <item>Lounge</item>
+        <item>Bedroom</item>
     </string-array>
 
     <!-- adding more does not require code changes -->
@@ -1111,6 +1113,13 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="populate_anthology_titles">Automatically Populate (ISFDB only)</string>
     <string name="first_publication">First Publication</string>
 
+    <string name="new_in_600">
+		<![CDATA[
+			<p><b>New in 6.0.0</b>\n\n
+				* Modernisation to Android 5\n\n
+			</p>
+		]]>
+    </string>
     <!-- End: Added/Updated in  [Next Version]  -->
 
 </resources>

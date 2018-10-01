@@ -40,7 +40,7 @@ public class AmazonManager {
     public static void searchAmazon(@NonNull final String isbn,
                                     @NonNull String author,
                                     @NonNull String title,
-                                    @NonNull final Bundle bookData,
+                                    @NonNull final Bundle bookInfo,
                                     final boolean fetchThumbnail) {
 
         //replace spaces with %20
@@ -68,7 +68,7 @@ public class AmazonManager {
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser;
-        SearchAmazonHandler handler = new SearchAmazonHandler(bookData, fetchThumbnail);
+        SearchAmazonHandler handler = new SearchAmazonHandler(bookInfo, fetchThumbnail);
 
         try {
             url = new URL(path);

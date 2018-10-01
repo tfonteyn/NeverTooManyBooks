@@ -34,6 +34,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.xml.sax.Attributes;
@@ -63,10 +64,10 @@ import javax.xml.parsers.SAXParserFactory;
  * @author Philip Warner
  */
 public class LibraryThingManager {
-    /** Name of preference that contains the dev key for the user */
-    public static final String LT_DEVKEY_PREF_NAME = "lt_devkey";
     /** Name of preference that controls display of alert about LT */
-    public static final String LT_HIDE_ALERT_PREF_NAME = "lt_hide_alert";
+    public static final String PREFS_LT_HIDE_ALERT = "lt_hide_alert";
+    /** Name of preference that contains the dev key for the user */
+    static final String PREFS_LT_DEV_KEY = "lt_devkey";
     static final String BASE_URL = "https://www.librarything.com";
 
     private static final String AUTHOR = "author";
@@ -95,13 +96,13 @@ public class LibraryThingManager {
     /** App context (for prefs) */
     private final Context mAppContext;
 
-    public LibraryThingManager(Context context) {
+    public LibraryThingManager(@NonNull final Context context) {
         mAppContext = context.getApplicationContext();
     }
 
     /**
      * Use mLastRequestTime to determine how long until the next request is allowed; and
-     * update mLastRequestTime this needs to be synchroized across threads.
+     * update mLastRequestTime this needs to be synchronized across threads.
      *
      * Note that as a result of this approach mLastRequestTime may in fact be
      * in the future; callers to this routine effectively allocate time slots.
@@ -136,10 +137,10 @@ public class LibraryThingManager {
      * Search for edition data.
      * *
      */
-    public static List<String> searchEditions(String isbn) {
+    public static List<String> searchEditions(@NonNull final String isbn) {
         // Base path for an ISBN search
         String path = String.format(EDITIONS_URL, isbn);
-        if (isbn.isEmpty()) {
+        if (!IsbnUtils.isValid(isbn)) {
             throw new RuntimeException("Can not get editions without an ISBN");
         }
 
@@ -158,7 +159,7 @@ public class LibraryThingManager {
         return editions;
     }
 
-    public static void showLtAlertIfNecessary(Context context, boolean always, String suffix) {
+    public static void showLtAlertIfNecessary(@NonNull final Context context, final boolean always, @NonNull final String suffix) {
         LibraryThingManager ltm = new LibraryThingManager(context);
         if (!ltm.isAvailable()) {
             StandardDialogs.needLibraryThingAlert(context, always, suffix);
@@ -166,10 +167,10 @@ public class LibraryThingManager {
     }
 
     /**
-     * Search LibaryThing for an ISBN using the Web API.
+     * Search LibraryThing for an ISBN using the Web API.
      *
      * @param isbn     ISBN to lookup
-     * @param bookData Collection to save results in
+     * @param bookInfo Collection to save results in
      *
      *                 A typical (and thorough) LibraryThing ISBN response looks like (with formatting added):
      *
@@ -456,8 +457,12 @@ public class LibraryThingManager {
      *                 </response>
      *
      *                 but in both cases, in both cases it should be noted that the covers are still available.
+     *
+     *
+     *
+     * call {@link #isAvailable()} before calling this method
      */
-    public void searchByIsbn(String isbn, boolean fetchThumbnail, Bundle bookData) {
+    void searchByIsbn(@NonNull final String isbn, final boolean fetchThumbnail, @NonNull final Bundle bookInfo) {
         String devKey = getDevKey();
         if (devKey.isEmpty()) {
             throw new RuntimeException("Developer Key not available");
@@ -475,32 +480,32 @@ public class LibraryThingManager {
         // Setup the parser
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser;
-        SearchLibraryThingEntryHandler entryHandler = new LibraryThingManager.SearchLibraryThingEntryHandler(bookData);
+        SearchLibraryThingEntryHandler entryHandler = new LibraryThingManager.SearchLibraryThingEntryHandler(bookInfo);
 
         try {
             url = new URL(path);
             parser = factory.newSAXParser();
+
             // Make sure we follow LibraryThing ToS (no more than 1 request/second).
             waitUntilRequestAllowed();
+
             parser.parse(Utils.getInputStream(url), entryHandler);
+
             // Don't bother catching general exceptions, they will be caught by the caller.
         } catch (ParserConfigurationException | SAXException | java.io.IOException e) {
-            String s = "unknown";
-            try {
-                s = e.getMessage();
-            } catch (Exception ignored) {
-            }
-            Logger.logError(e, s);
+            Logger.logError(e, e.getMessage());
         }
 
         if (fetchThumbnail) {
-            getCoverImage(isbn, bookData, ImageSizes.LARGE);
+            getCoverImage(isbn, bookInfo, ImageSizes.LARGE);
         }
 
     }
 
     /**
      * Get the cover image using the ISBN
+     *
+     * call {@link #isAvailable()} before calling this method
      */
     @NonNull
     private String getCoverImageUrl(@NonNull final String isbn, @NonNull final ImageSizes size) {
@@ -534,7 +539,7 @@ public class LibraryThingManager {
      * @return the fileSpec
      **/
     @NonNull
-    public String getCoverImage(@NonNull final String isbn, @Nullable final Bundle bookData, @NonNull final ImageSizes size) {
+    public String getCoverImage(@NonNull final String isbn, @Nullable final Bundle bookInfo, @NonNull final ImageSizes size) {
         String url = getCoverImageUrl(isbn, size);
         if (DEBUG_SWITCHES.LIBRARYTHING && BuildConfig.DEBUG) {
             System.out.println("LTM: " + url + " " + isbn + " " + size);
@@ -545,20 +550,28 @@ public class LibraryThingManager {
 
         // Save it with an _LT suffix
         String fileSpec = ImageUtils.saveThumbnailFromUrl(url, "_LT_" + size + "_" + isbn);
-        if (fileSpec.length() > 0 && bookData != null) {
-            ArrayUtils.appendOrAdd(bookData, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
+        if (fileSpec.length() > 0 && bookInfo != null) {
+            ArrayUtils.appendOrAdd(bookInfo, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
         }
         return fileSpec;
     }
 
+    /**
+     * external users (to this class) should call this before doing any searches
+     *
+     * @return true if there is a non-empty dev key
+     */
     public boolean isAvailable() {
-        return getDevKey().length() > 0;
+        return !getDevKey().isEmpty();
     }
 
+    /**
+     * @return the dev key, CAN BE EMPTY but won't be null
+     */
     @NonNull
     private String getDevKey() {
         SharedPreferences prefs = mAppContext.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
-        String key = prefs.getString(LT_DEVKEY_PREF_NAME, "");
+        String key = prefs.getString(PREFS_LT_DEV_KEY, "");
         return key.replaceAll("[\\r\\t\\n\\s]*", "");
     }
 
@@ -593,7 +606,7 @@ public class LibraryThingManager {
         private final StringBuilder mBuilder = new StringBuilder();
         private final List<String> mEditions;
 
-        SearchLibraryThingEditionHandler(List<String> editions) {
+        SearchLibraryThingEditionHandler(@NonNull final List<String> editions) {
             mEditions = editions;
         }
 
@@ -628,13 +641,13 @@ public class LibraryThingManager {
      * @author Philip Warner
      */
     private class SearchLibraryThingEntryHandler extends DefaultHandler {
-        private final Bundle mBookData;
+        private final Bundle mBookInfo;
         private final StringBuilder mBuilder = new StringBuilder();
 
         private FieldTypes mFieldType = FieldTypes.OTHER;
 
-        SearchLibraryThingEntryHandler(Bundle bookData) {
-            mBookData = bookData;
+        SearchLibraryThingEntryHandler(@NonNull final Bundle bookInfo) {
+            mBookInfo = bookInfo;
         }
 
         @Override
@@ -649,8 +662,8 @@ public class LibraryThingManager {
          * @param key Key for data to add
          */
         private void addIfNotPresent(@SuppressWarnings("SameParameterValue") @NonNull final String key) {
-            if (!mBookData.containsKey(key) || mBookData.getString(key).isEmpty()) {
-                mBookData.putString(key, mBuilder.toString());
+            if (!mBookInfo.containsKey(key) || mBookInfo.getString(key).isEmpty()) {
+                mBookInfo.putString(key, mBuilder.toString().trim());
             }
         }
 
@@ -661,7 +674,7 @@ public class LibraryThingManager {
          * @param key Key for data to add
          */
         private void appendOrAdd(@NonNull final String key) {
-            ArrayUtils.appendOrAdd(mBookData, key, mBuilder.toString());
+            ArrayUtils.appendOrAdd(mBookInfo, key, mBuilder.toString());
         }
 
         @Override
@@ -709,7 +722,7 @@ public class LibraryThingManager {
 
             } else if (localName.equalsIgnoreCase(AUTHOR)) {
                 // Add the author
-                ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, mBuilder.toString());
+                ArrayUtils.appendOrAdd(mBookInfo, UniqueId.BKEY_AUTHOR_DETAILS, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(FACT)) {
                 // Process the FACT according to the active FIELD type.

@@ -418,12 +418,6 @@ public class BookDetailsActivity extends BookCatalogueActivity
         if (bar != null) {
             if (mIsReadOnly && mList != null) {
                 // display a book
-//   to long, doesn't fit
-//                bar.setTitle(mBookData.getString(UniqueId.KEY_TITLE));
-//                bar.setSubtitle(mBookData.getAuthorTextShort()
-//                                + String.format(" (" + getResources().getString(R.string.x_of_y) + ")",
-//                                  mList.getAbsolutePosition(), mList.getCount())
-//                );
                 bar.setTitle(this.getResources().getString(R.string.book_details));
                 bar.setSubtitle(null);
 
@@ -842,7 +836,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
             return;
         }
         if (!mBookData.containsKey(UniqueId.KEY_TITLE)
-                || mBookData.getString(UniqueId.KEY_TITLE).trim().isEmpty()) {
+                || mBookData.getString(UniqueId.KEY_TITLE).isEmpty()) {
             Toast.makeText(this, getResources().getText(R.string.title_required), Toast.LENGTH_LONG).show();
             return;
         }
@@ -891,7 +885,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
      */
     private void updateOrInsert() {
         if (mRowId == 0) {
-            long id = mDb.insertBook(mBookData, 0);
+            long id = mDb.insertBook(mBookData);
 
             if (id > 0) {
                 setRowId(id);

@@ -104,7 +104,7 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
         mConfirmButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 AutoCompleteTextView who = getView().findViewById(R.id.who);
-                String friend = who.getText().toString();
+                String friend = who.getText().toString().trim();
                 saveLoan(friend);
                 showLoaned(friend);
             }

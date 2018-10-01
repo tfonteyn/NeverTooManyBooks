@@ -36,11 +36,11 @@ import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.GetThumbnailTask;
-import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
+import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.IndexDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
@@ -64,7 +64,7 @@ import java.util.Date;
  */
 public class CoversDbHelper implements AutoCloseable {
 
-    /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync  */
+    /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync */
     private static final Synchronizer mSynchronizer = new Synchronizer();
     /** DB location */
     private static final String COVERS_DATABASE_NAME = "covers.db";
@@ -219,7 +219,8 @@ public class CoversDbHelper implements AutoCloseable {
 
     /**
      * Given arrays of table and index definitions, create the database.
-     *  @param db     Blank database
+     *
+     * @param db     Blank database
      * @param tables Table list
      */
     private static void createTables(@NonNull final SynchronizedDb db, @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition[] tables) {
@@ -317,7 +318,7 @@ public class CoversDbHelper implements AutoCloseable {
     /**
      * Save the passed bitmap to a 'file'
      */
-    public void saveFile(@NonNull final Bitmap bm, @NonNull final  String filename) {
+    public void saveFile(@NonNull final Bitmap bm, @NonNull final String filename) {
         if (mSyncedDb == null) {
             return;
         }
@@ -332,22 +333,22 @@ public class CoversDbHelper implements AutoCloseable {
     /**
      * Save the passed encoded image data to a 'file'
      *
+     * @return the row ID of the newly inserted row, or -1 if an error occurred, or 1 for a successful update
      */
-    private void saveFile(@NonNull final  String filename, final int height, final int width, @NonNull final  byte[] bytes) {
+    @SuppressWarnings("UnusedReturnValue")
+    private long saveFile(@NonNull final String filename, final int height, final int width, @NonNull final byte[] bytes) {
         if (mSyncedDb == null) {
-            return;
+            return -1L;
         }
 
         if (mExistsStmt == null) {
             mExistsStmt = mStatements.add(mSyncedDb, "mExistsStmt",
-                    "Select Count(" + DOM_ID + ") From " + TBL_IMAGE + " Where " + DOM_FILENAME + " = ?");
+                    "SELECT COUNT(" + DOM_ID + ") FROM " + TBL_IMAGE + " WHERE " + DOM_FILENAME + "=?");
         }
 
         ContentValues cv = new ContentValues();
-
         cv.put(DOM_FILENAME.name, filename);
         cv.put(DOM_IMAGE.name, bytes);
-
         cv.put(DOM_DATE.name, DateUtils.toSqlDateTime(new Date()));
         cv.put(DOM_TYPE.name, "T");
         cv.put(DOM_WIDTH.name, height);
@@ -355,22 +356,11 @@ public class CoversDbHelper implements AutoCloseable {
         cv.put(DOM_SIZE.name, bytes.length);
 
         mExistsStmt.bindString(1, filename);
-        long rowsAffected;
 
-        SyncLock txLock = mSyncedDb.beginTransaction(true);
-        try {
-            // count, so no SQLiteDoneException
-            if (mExistsStmt.simpleQueryForLong() == 0) {
-                rowsAffected = mSyncedDb.insertOrThrow(TBL_IMAGE.getName(), null, cv);
-            } else {
-                rowsAffected = mSyncedDb.update(TBL_IMAGE.getName(), cv, DOM_FILENAME.name + " = ?", new String[]{filename});
-            }
-            if (rowsAffected == 0) {
-                throw new RuntimeException("Failed to insertOrThrow data");
-            }
-            mSyncedDb.setTransactionSuccessful();
-        } finally {
-            mSyncedDb.endTransaction(txLock);
+        if (mExistsStmt.count() == 0) {
+            return mSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
+        } else {
+            return mSyncedDb.update(TBL_IMAGE.getName(), cv, DOM_FILENAME.name + "=?", new String[]{filename});
         }
     }
 
@@ -397,9 +387,9 @@ public class CoversDbHelper implements AutoCloseable {
      * @return Bitmap (if cached) or null (if not cached)
      */
     @Nullable
-    public Bitmap fetchCachedImageIntoImageView(@NonNull final  File originalFile,
+    public Bitmap fetchCachedImageIntoImageView(@NonNull final File originalFile,
                                                 @Nullable final ImageView destView,
-                                                @NonNull final  String hash,
+                                                @NonNull final String hash,
                                                 final int maxWidth,
                                                 final int maxHeight) {
         return fetchCachedImageIntoImageView(originalFile, destView, getThumbnailCoverCacheId(hash, maxWidth, maxHeight));
@@ -418,7 +408,7 @@ public class CoversDbHelper implements AutoCloseable {
     @Nullable
     public Bitmap fetchCachedImageIntoImageView(@Nullable final File originalFile,
                                                 @Nullable final ImageView destView,
-                                                @NonNull final  String cacheId) {
+                                                @NonNull final String cacheId) {
         if (mSyncedDb == null) {
             return null;
         }

@@ -195,9 +195,9 @@ public class SearchCatalogue extends BookCatalogueActivity {
      */
     private void doSearch() {
         // Get search criteria
-        String author = ((EditText) this.findViewById(R.id.author)).getText().toString();
-        String title = ((EditText) this.findViewById(R.id.title)).getText().toString();
-        String criteria = ((EditText) this.findViewById(R.id.criteria)).getText().toString();
+        String author = ((EditText) this.findViewById(R.id.author)).getText().toString().trim();
+        String title = ((EditText) this.findViewById(R.id.title)).getText().toString().trim();
+        String criteria = ((EditText) this.findViewById(R.id.criteria)).getText().toString().trim();
 
         // Save time to log how long query takes.
         long t0 = System.currentTimeMillis();

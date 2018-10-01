@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue.backup.tar;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.backup.BackupContainer;
 import com.eleybourn.bookcatalogue.backup.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.BackupReaderAbstract;
 import com.eleybourn.bookcatalogue.backup.ReaderEntity;
@@ -40,8 +39,6 @@ import java.io.IOException;
  * @author pjw
  */
 public class TarBackupReader extends BackupReaderAbstract {
-    /** Parent container */
-    private final TarBackupContainer mContainer;
     /** The data stream for the archive */
     private final TarArchiveInputStream mInput;
     /** The INFO data read from the start of the archive */
@@ -55,7 +52,6 @@ public class TarBackupReader extends BackupReaderAbstract {
      * @param container Parent
      */
     TarBackupReader(@NonNull final TarBackupContainer container) throws IOException {
-        mContainer = container;
 
         // Open the file and create the archive stream
         final FileInputStream in = new FileInputStream(container.getFile());
@@ -63,7 +59,7 @@ public class TarBackupReader extends BackupReaderAbstract {
 
         // Process the INFO entry. Should be first.
         ReaderEntity info = nextEntity();
-        if (info.getType() != BackupEntityType.Info)
+        if (info == null || info.getType() != BackupEntityType.Info)
             throw new RuntimeException("Not a valid backup");
 
         // Save the INFO

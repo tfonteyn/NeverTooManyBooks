@@ -347,14 +347,14 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
 
         mConfirmButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                String author = mAuthorText.getText().toString();
-                String title = mTitleText.getText().toString();
+                String author = mAuthorText.getText().toString().trim();
+                String title = mTitleText.getText().toString().trim();
 
                 ArrayAdapter<String> adapter = mAuthorAdapter;
                 if (adapter.getPosition(author) < 0) {
                     // Based on code from filipeximenes we also need to update the adapter here in
                     // case no author or book is added, but we still want to see 'recent' entries.
-                    if (!author.trim().isEmpty()) {
+                    if (!author.isEmpty()) {
                         boolean found = false;
                         for (String s : mAuthorNames) {
                             if (s.equalsIgnoreCase(author)) {
@@ -497,7 +497,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
 
         mConfirmButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                String mIsbn = mIsbnText.getText().toString();
+                String mIsbn = mIsbnText.getText().toString().trim();
                 go(mIsbn, "", "");
             }
         });

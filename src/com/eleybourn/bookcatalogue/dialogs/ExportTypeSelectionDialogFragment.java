@@ -87,14 +87,17 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
         mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
 
         View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_export_type_selection, null);
-        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(v).setTitle(R.string.backup_to_archive).create();
-        alertDialog.setIcon(R.drawable.ic_help_outline);
-        alertDialog.setCanceledOnTouchOutside(false);
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setView(v)
+                .setTitle(R.string.backup_to_archive)
+                .setIcon(R.drawable.ic_help_outline)
+                .create();
+        dialog.setCanceledOnTouchOutside(false);
 
         setOnClickListener(v, R.id.all_books_row);
         setOnClickListener(v, R.id.advanced_options_row);
 
-        return alertDialog;
+        return dialog;
     }
 
     private void handleClick(@NonNull final View v) {

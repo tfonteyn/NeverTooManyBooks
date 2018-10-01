@@ -53,7 +53,8 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/developer_key"
                 android:inputType="text"
-                android:singleLine="true" />
+                android:singleLine="true"
+                tools:ignore="Autofill" />
 
             <Button
                 android:id="@+id/confirm"

@@ -34,12 +34,8 @@ import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
  * @author Philip Warner
  */
 public class BooklistCursor extends TrackedCursor implements BooklistSupportProvider {
-    /** ID counter */
-    private static Integer mBooklistCursorIdCounter = 0;
     /** Underlying BooklistBuilder object */
     private final BooklistBuilder mBuilder;
-    /** ID of this cursor */
-    private final long mId;
     /** Cached RowView for this cursor */
     private BooklistRowView mRowView = null;
 
@@ -58,11 +54,6 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
                    @NonNull final BooklistBuilder builder,
                    @NonNull final Synchronizer sync) {
         super(driver, editTable, query, sync);
-        // Allocate ID
-        synchronized (mBooklistCursorIdCounter) {
-            mId = ++mBooklistCursorIdCounter;
-        }
-        // Save builder.
         mBuilder = builder;
     }
 
@@ -84,12 +75,4 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
         }
         return mRowView;
     }
-
-    /*
-     * no need for this yet; it may even die because table is deleted and recreated.
-     */
-    //	public boolean requeryRebuild() {
-    //		mBuilder.rebuild();
-    //		return requery();
-    //	}
 }

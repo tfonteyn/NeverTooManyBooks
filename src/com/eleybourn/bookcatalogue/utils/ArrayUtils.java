@@ -57,8 +57,8 @@ public class ArrayUtils<T> {
             mAuthorUtils = new ArrayUtils<>(new Factory<Author>() {
                 @Override
                 @NonNull
-                public Author get(@NonNull final String source) {
-                    return new Author(source);
+                public Author get(@NonNull final String encodedName) {
+                    return new Author(encodedName);
                 }
             });
         }
@@ -89,11 +89,7 @@ public class ArrayUtils<T> {
     @NonNull
     public static ArrayList<Author> getAuthorFromIntentExtras(@NonNull final Intent i) {
         ArrayList<Author> list = (ArrayList<Author>) i.getSerializableExtra(UniqueId.BKEY_AUTHOR_ARRAY);
-        if (list != null) {
-            return list;
-        } else {
-            return new ArrayList<>();
-        }
+        return list != null ? list : new ArrayList<Author>();
     }
     //</editor-fold>
 
@@ -105,8 +101,8 @@ public class ArrayUtils<T> {
             mSeriesUtils = new ArrayUtils<>(new Factory<Series>() {
                 @Override
                 @NonNull
-                public Series get(@NonNull final String source) {
-                    return new Series(source);
+                public Series get(@NonNull final String encodedName) {
+                    return new Series(encodedName);
                 }
             });
         }
@@ -137,11 +133,7 @@ public class ArrayUtils<T> {
     @NonNull
     public static ArrayList<Series> getSeriesFromIntentExtras(@NonNull final Intent i) {
         ArrayList<Series> list = (ArrayList<Series>) i.getSerializableExtra(UniqueId.BKEY_SERIES_ARRAY);
-        if (list != null) {
-            return list;
-        } else {
-            return new ArrayList<>();
-        }
+        return list != null ? list : new ArrayList<Series>();
     }
     //</editor-fold>
 
@@ -191,7 +183,7 @@ public class ArrayUtils<T> {
      * @param delim delimiter used in string s
      * @param s     String representing the list
      *
-     * @return Array of strings resulting from list
+     * @return Array of strings(trimmed) resulting from list
      */
     @NonNull
     public static ArrayList<String> decodeList(final char delim, @NonNull final String s) {
@@ -226,7 +218,7 @@ public class ArrayUtils<T> {
                         break;
                     default:
                         if (c == delim) {
-                            list.add(ns.toString());
+                            list.add(ns.toString().trim());
                             ns.setLength(0);
                             break;
                         } else {
@@ -256,15 +248,15 @@ public class ArrayUtils<T> {
      * This is used to build text lists separated by the passed delimiter.
      *
      * @param delim The list delimiter to encode (if found).
-     * @param s     String to convert
+     * @param value     String to convert
      *
-     * @return Converted string
+     * @return Converted string(trimmed)
      */
     @NonNull
-    public static String encodeListItem(final char delim, @NonNull final String s) {
+    public static String encodeListItem(final char delim, @NonNull final String value) {
         StringBuilder ns = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
             switch (c) {
                 case '\\':
                     ns.append("\\\\");
@@ -282,25 +274,25 @@ public class ArrayUtils<T> {
                     ns.append(c);
             }
         }
-        return ns.toString();
+        return ns.toString().trim();
     }
 
     /**
      * Convert a array of objects to a string.
      *
-     * @param a Array
+     * @param list Array
      *
      * @return Resulting string
      */
     @NonNull
-    public static <T> String toString(@NonNull final ArrayList<T> a) {
+    public static <T> String toString(@NonNull final List<T> list) {
         StringBuilder details = new StringBuilder();
 
-        for (T i : a) {
+        for (T i : list) {
             if (details.length() > 0) {
                 details.append(MULTI_STRING_SEPARATOR);
             }
-            details.append(encodeListItem(MULTI_STRING_SEPARATOR, i.toString()));
+            details.append(encodeListItem(MULTI_STRING_SEPARATOR, i.toString().trim()));
         }
         return details.toString();
     }
@@ -348,14 +340,14 @@ public class ArrayUtils<T> {
      *
      * This is used to build text lists separated by 'delim'.
      *
-     * @param sa String to convert
+     * @param list to convert, objects are converted to String with their toString() method.
      *
      * @return Converted string
      */
     @NonNull
-    public String encodeList(final char delim, @NonNull final List<T> sa) {
+    public String encodeList(final char delim, @NonNull final List<T> list) {
         StringBuilder ns = new StringBuilder();
-        Iterator<T> si = sa.iterator();
+        Iterator<T> si = list.iterator();
         if (si.hasNext()) {
             ns.append(encodeListItem(delim, si.next().toString()));
             while (si.hasNext()) {

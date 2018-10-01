@@ -25,7 +25,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsSearchCriteria;
 
 /**
  * Convenience class to avoid having to write the same code in more than one place. This
@@ -63,6 +62,7 @@ public class BooksRow {
     private int mNotesCol = -2;
     private int mPagesCol = -2;
     private int mPrimaryAuthorCol = -2;
+    private int mPrimarySeriesCol = -2;
     private int mPublisherCol = -2;
     private int mRatingCol = -2;
     private int mReadCol = -2;
@@ -246,12 +246,7 @@ public class BooksRow {
         return mCursor.getString(mNotesCol);
     }
 
-    /**
-     * Used by {@link GoodreadsSearchCriteria}
-     *
-     * The 'primary' of this method name seems wrong. What is returned is a name in the format "Kilgore Trout", given + family
-     */
-    public final String getPrimaryAuthorName() {
+    public final String getPrimaryAuthorNameFormatted() {
         if (mPrimaryAuthorCol < 0) {
             mPrimaryAuthorCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
             if (mPrimaryAuthorCol < 0) {
@@ -259,6 +254,16 @@ public class BooksRow {
             }
         }
         return mCursor.getString(mPrimaryAuthorCol);
+    }
+
+    public final String getPrimarySeriesFormatted() {
+        if (mPrimarySeriesCol < 0) {
+            mPrimarySeriesCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_SERIES_FORMATTED.name);
+            if (mPrimarySeriesCol < 0) {
+                throw new IllegalArgumentException("DOM_SERIES_FORMATTED column not in result set");
+            }
+        }
+        return mCursor.getString(mPrimarySeriesCol);
     }
 
     public final String getPages() {

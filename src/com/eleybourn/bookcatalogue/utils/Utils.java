@@ -271,7 +271,7 @@ public class Utils {
         Map<String, Series> index = new HashMap<>();
 
         for (Series s : list) {
-            final boolean emptyNum = s.number == null || s.number.trim().isEmpty();
+            final boolean emptyNum = (s.number == null || s.number.trim().isEmpty());
             final String lcName = s.name.trim().toLowerCase();
             final boolean inNames = index.containsKey(lcName);
             if (!inNames) {

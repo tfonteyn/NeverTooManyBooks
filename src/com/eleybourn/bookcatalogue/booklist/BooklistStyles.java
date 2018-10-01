@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.booklist;
 
 import android.content.SharedPreferences.Editor;
-import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -29,10 +28,7 @@ import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
-import com.eleybourn.bookcatalogue.utils.SerializationUtils;
-import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -72,7 +68,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
     /**
      * Internal storage for defined styles represented by this object
      */
-    private final ArrayList<BooklistStyle> mList = new ArrayList<>();
+    private final List<BooklistStyle> mList = new ArrayList<>();
     private final HashSet<String> mPreferredStyleNames;
 
     /**
@@ -102,176 +98,111 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
     }
 
     /**
-     * Static method to get all defined styles, including user-defined styles (the latter is
-     * not supported yet).
-     * <p>
+     * Static method to get all defined styles
+     *
      * NOTE: Do NOT call this in static initialization of application. This method requires the
      * application context to be present.
      */
-    private static void getBuiltinStyles(@NonNull final BooklistStyles styles) {
-        // First build the stock ones
+    private static List<BooklistStyle> getBuiltinStyles() {
+        List<BooklistStyle> list = new ArrayList<>();
         BooklistStyle style;
 
         // Author/Series
         style = new BooklistStyle(R.string.sort_author_series);
-        styles.add(style);
-        style.addGroup(ROW_KIND_AUTHOR);
-        style.addGroup(ROW_KIND_SERIES);
-
-        //// Author(first)/Series
-        //style = new BooklistStyle(R.string.sort_first_author_series);
-        //styles.add(style);
-        //a = new BooklistAuthorGroup();
-        //a.setAllAuthors(false);
-        //style.addGroup(a);
-        //style.addGroup(ROW_KIND_SERIES);
+        list.add(style);
+        style.addGroups(ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Unread
         style = new BooklistStyle(R.string.sort_unread);
-        styles.add(style);
-        style.addGroup(ROW_KIND_AUTHOR);
-        style.addGroup(ROW_KIND_SERIES);
+        list.add(style);
+        style.addGroups(ROW_KIND_AUTHOR, ROW_KIND_SERIES);
         style.setReadFilter(BooklistStyle.FILTER_NO);
 
         // Compact
         style = new BooklistStyle(R.string.compact);
-        styles.add(style);
-        style.addGroup(ROW_KIND_AUTHOR);
+        list.add(style);
+        style.addGroups(ROW_KIND_AUTHOR);
         style.setCondensed(true);
         style.setShowThumbnails(false);
 
         // Title
         style = new BooklistStyle(R.string.sort_title_first_letter);
-        styles.add(style);
-        style.addGroup(RowKinds.ROW_KIND_TITLE_LETTER);
+        list.add(style);
+        style.addGroups(RowKinds.ROW_KIND_TITLE_LETTER);
 
         // Series
         style = new BooklistStyle(R.string.sort_series);
-        styles.add(style);
+        list.add(style);
         style.addGroup(RowKinds.ROW_KIND_SERIES);
 
         // Genre
         style = new BooklistStyle(R.string.sort_genre);
-        styles.add(style);
-        style.addGroup(ROW_KIND_GENRE);
-        style.addGroup(ROW_KIND_AUTHOR);
-        style.addGroup(ROW_KIND_SERIES);
+        list.add(style);
+        style.addGroups(ROW_KIND_GENRE, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Loaned
         style = new BooklistStyle(R.string.sort_loaned);
-        styles.add(style);
-        style.addGroup(ROW_KIND_LOANED);
-        style.addGroup(ROW_KIND_AUTHOR);
-        style.addGroup(ROW_KIND_SERIES);
+        list.add(style);
+        style.addGroups(ROW_KIND_LOANED, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Read & Unread
         style = new BooklistStyle(R.string.sort_read_and_unread);
-        styles.add(style);
-        style.addGroup(ROW_KIND_READ_AND_UNREAD);
-        style.addGroup(ROW_KIND_AUTHOR);
-        style.addGroup(ROW_KIND_SERIES);
+        list.add(style);
+        style.addGroups(ROW_KIND_READ_AND_UNREAD, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Publication date
         style = new BooklistStyle(R.string.sort_publication_date);
-        styles.add(style);
-        style.addGroup(ROW_KIND_YEAR_PUBLISHED);
-        style.addGroup(ROW_KIND_MONTH_PUBLISHED);
-        style.addGroup(ROW_KIND_AUTHOR);
-        style.addGroup(ROW_KIND_SERIES);
+        list.add(style);
+        style.addGroups(ROW_KIND_YEAR_PUBLISHED, ROW_KIND_MONTH_PUBLISHED, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Added date
         style = new BooklistStyle(R.string.sort_added_date);
-        styles.add(style);
-        style.addGroup(ROW_KIND_YEAR_ADDED);
-        style.addGroup(ROW_KIND_MONTH_ADDED);
-        style.addGroup(ROW_KIND_DAY_ADDED);
-        style.addGroup(ROW_KIND_AUTHOR);
+        list.add(style);
+        style.addGroups(ROW_KIND_YEAR_ADDED, ROW_KIND_MONTH_ADDED, ROW_KIND_DAY_ADDED, ROW_KIND_AUTHOR);
 
         // Author/Publication date
         style = new BooklistStyle(R.string.sort_author_year);
-        styles.add(style);
-        style.addGroup(ROW_KIND_AUTHOR);
-        style.addGroup(ROW_KIND_YEAR_PUBLISHED);
-        style.addGroup(ROW_KIND_SERIES);
+        list.add(style);
+        style.addGroups(ROW_KIND_AUTHOR, ROW_KIND_YEAR_PUBLISHED, ROW_KIND_SERIES);
 
         // Format
         style = new BooklistStyle(R.string.format);
-        styles.add(style);
-        style.addGroup(ROW_KIND_FORMAT);
+        list.add(style);
+        style.addGroups(ROW_KIND_FORMAT);
 
         // Read date
         style = new BooklistStyle(R.string.sort_read_date);
-        styles.add(style);
-        style.addGroup(ROW_KIND_YEAR_READ);
-        style.addGroup(ROW_KIND_MONTH_READ);
-        style.addGroup(ROW_KIND_AUTHOR);
+        list.add(style);
+        style.addGroups(ROW_KIND_YEAR_READ, ROW_KIND_MONTH_READ, ROW_KIND_AUTHOR);
 
         // Location
         style = new BooklistStyle(R.string.location);
-        styles.add(style);
-        style.addGroup(ROW_KIND_LOCATION);
-        style.addGroup(ROW_KIND_AUTHOR);
-        style.addGroup(ROW_KIND_SERIES);
+        list.add(style);
+        style.addGroups(ROW_KIND_LOCATION, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Location
         style = new BooklistStyle(R.string.language);
-        styles.add(style);
-        style.addGroup(ROW_KIND_LANGUAGE);
-        style.addGroup(ROW_KIND_AUTHOR);
-        style.addGroup(ROW_KIND_SERIES);
+        list.add(style);
+        style.addGroups(ROW_KIND_LANGUAGE, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Rating
         style = new BooklistStyle(R.string.rating);
-        styles.add(style);
-        style.addGroup(ROW_KIND_RATING);
-        style.addGroup(ROW_KIND_AUTHOR);
-        style.addGroup(ROW_KIND_SERIES);
+        list.add(style);
+        style.addGroups(ROW_KIND_RATING, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Bookshelf
         style = new BooklistStyle(R.string.bookshelf);
-        styles.add(style);
-        style.addGroup(ROW_KIND_BOOKSHELF);
-        style.addGroup(ROW_KIND_AUTHOR);
-        style.addGroup(ROW_KIND_SERIES);
+        list.add(style);
+        style.addGroups(ROW_KIND_BOOKSHELF, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Update date
         style = new BooklistStyle(R.string.update_date);
-        styles.add(style);
-        style.addGroup(ROW_KIND_UPDATE_YEAR);
-        style.addGroup(ROW_KIND_UPDATE_MONTH);
-        style.addGroup(ROW_KIND_UPDATE_DAY);
+        list.add(style);
+        style.addGroups(ROW_KIND_UPDATE_YEAR, ROW_KIND_UPDATE_MONTH, ROW_KIND_UPDATE_DAY);
         style.setShowAuthor(true);
         // NEWKIND: Add new kinds to this list so the user sees them (Optional)
-    }
 
-    /**
-     * Static method to get all user-defined styles from the passed database.
-     */
-    private static void getUserStyles(@NonNull final CatalogueDBAdapter db,
-                                      @NonNull final BooklistStyles styles) {
-        BooklistStyle style;
-
-        try (Cursor cursor = db.getBooklistStyles()) {
-            // Get the columns we want
-            int idCol = cursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
-            int blobCol = cursor.getColumnIndex(DatabaseDefinitions.DOM_STYLE.name);
-            // Loop over all rows
-            while (cursor.moveToNext()) {
-                long id = cursor.getLong(idCol);
-                byte[] blob = cursor.getBlob(blobCol);
-                try {
-                    style = SerializationUtils.deserializeObject(blob);
-                } catch (DeserializationException e) {
-                    // Not much we can do; just delete it. Really should only happen in development.
-                    db.deleteBooklistStyle(id);
-                    style = null;
-                }
-                if (style != null) {
-                    style.setRowId(id);
-                    styles.add(style);
-                }
-            }
-        }
+        return list;
     }
 
     /**
@@ -287,7 +218,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
         String itemStr = BCPreferences.getString(PREF_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.isEmpty()) {
             // Break it up and process in order
-            ArrayList<String> list = ArrayUtils.decodeList('|', itemStr);
+            List<String> list = ArrayUtils.decodeList('|', itemStr);
             for (String n : list) {
                 // Add any exiting style that is preferred
                 BooklistStyle s = allStyles.findCanonical(n);
@@ -312,8 +243,8 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
         BooklistStyles allStyles = new BooklistStyles();
 
         // Get all styles: user & builtin
-        getUserStyles(db, allStyles);
-        getBuiltinStyles(allStyles);
+        allStyles.addAll(db.getBooklistStyles());
+        allStyles.addAll(getBuiltinStyles());
 
         // Return filtered list
         return filterPreferredStyles(allStyles);
@@ -327,8 +258,8 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
         BooklistStyles allStyles = new BooklistStyles();
 
         // Get all styles and preferred styles.
-        getUserStyles(db, allStyles);
-        getBuiltinStyles(allStyles);
+        allStyles.addAll(db.getBooklistStyles());
+        allStyles.addAll(getBuiltinStyles());
 
         BooklistStyles styles = filterPreferredStyles(allStyles);
 
@@ -345,7 +276,7 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
     /**
      * Save the preferred style menu list.
      */
-    public static void saveMenuOrder(@NonNull final ArrayList<BooklistStyle> list) {
+    public static void saveMenuOrder(@NonNull final List<BooklistStyle> list) {
         StringBuilder items = new StringBuilder();
         for (int i = 0; i < list.size(); i++) {
             BooklistStyle s = list.get(i);
@@ -381,6 +312,13 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
     private void add(@NonNull final BooklistStyle style) {
         style.setPreferred(mPreferredStyleNames.contains(style.getCanonicalName()));
         mList.add(style);
+    }
+
+    /**
+     * Add a list of styles to this list
+     */
+    private void addAll(@NonNull final List<BooklistStyle> list) {
+        mList.addAll(list);
     }
 
     /**

@@ -189,7 +189,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
                     selected = true;
 
                 // Make the view for this item
-                View line = inflater.inflate(R.layout.property_value_list_item, radioGroup);
+                View line = inflater.inflate(R.layout.property_value_list_item, null);
                 RadioButton sel = line.findViewById(R.id.selector);
 
                 //Set the various values

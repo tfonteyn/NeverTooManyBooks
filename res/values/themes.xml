@@ -26,6 +26,8 @@
         <item name="color_background_thumbnail">@color/grey_400</item>
         <item name="color_background_toolbar">@color/blue_600</item>
 
+        <item name="color_border">@color/grey_400</item>
+
         <!-- AppCompat Dialog Attributes -->
         <item name="dialogTheme">@style/AppTheme.Dialog</item>
         <item name="alertDialogTheme">@style/AppTheme.Dialog.Alert</item>
@@ -74,6 +76,8 @@
         <item name="color_background_nav_panel">@color/white</item>
         <item name="color_background_thumbnail">@color/grey_400</item>
         <item name="color_background_toolbar">@color/light_blue_600</item>
+
+        <item name="color_border">@color/grey_400</item>
 
         <!-- AppCompat Dialog Attributes -->
         <item name="dialogTheme">@style/AppTheme.Dialog.Light</item>

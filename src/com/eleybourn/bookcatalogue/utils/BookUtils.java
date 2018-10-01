@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,10 +32,11 @@ import android.widget.Toast;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookData;
 import com.eleybourn.bookcatalogue.BookDetailsActivity;
+import com.eleybourn.bookcatalogue.BooksRow;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
@@ -63,26 +63,29 @@ public class BookUtils {
                                      final long rowId) {
         Intent intent = new Intent(activity, BookDetailsActivity.class);
         final Bundle book = new Bundle();
-        try (Cursor cursor = db.fetchBookById(rowId)) {
+        try (BooksCursor cursor = db.fetchBookById(rowId)) {
+            BooksRow bookRow = cursor.getRowView();
+
             cursor.moveToFirst();
-            book.putLong(UniqueId.KEY_ANTHOLOGY_MASK, cursor.getLong(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_MASK.name)));
-            book.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED.name)));
-            book.putString(UniqueId.KEY_DESCRIPTION, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_DESCRIPTION.name)));
-            book.putString(UniqueId.KEY_BOOK_FORMAT, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_FORMAT.name)));
-            book.putString(UniqueId.KEY_BOOK_GENRE, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GENRE.name)));
-            book.putString(UniqueId.KEY_ISBN, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_ISBN.name)));
-            book.putString(UniqueId.KEY_BOOK_LIST_PRICE, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LIST_PRICE.name)));
-            book.putString(UniqueId.KEY_BOOK_LANGUAGE, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LANGUAGE.name)));
-            book.putString(UniqueId.KEY_BOOK_LOCATION, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LOCATION.name)));
-            book.putString(UniqueId.KEY_NOTES, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_NOTES.name)));
-            book.putString(UniqueId.KEY_BOOK_PAGES, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PAGES.name)));
-            book.putString(UniqueId.KEY_PUBLISHER, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PUBLISHER.name)));
-            book.putString(UniqueId.KEY_BOOK_RATING, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_RATING.name)));
-            book.putString(UniqueId.KEY_BOOK_READ, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_READ.name)));
-            book.putString(UniqueId.KEY_BOOK_READ_END, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_READ_END.name)));
-            book.putString(UniqueId.KEY_BOOK_READ_START, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_READ_START.name)));
-            book.putString(UniqueId.KEY_BOOK_SIGNED, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_SIGNED.name)));
-            book.putString(UniqueId.KEY_TITLE, cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_TITLE.name)));
+
+            book.putLong(UniqueId.KEY_ANTHOLOGY_MASK, bookRow.getAnthologyMask());
+            book.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, bookRow.getDatePublished());
+            book.putString(UniqueId.KEY_DESCRIPTION, bookRow.getDescription());
+            book.putString(UniqueId.KEY_BOOK_FORMAT, bookRow.getFormat());
+            book.putString(UniqueId.KEY_BOOK_GENRE, bookRow.getGenre());
+            book.putString(UniqueId.KEY_ISBN, bookRow.getIsbn());
+            book.putString(UniqueId.KEY_BOOK_LIST_PRICE, bookRow.getListPrice());
+            book.putString(UniqueId.KEY_BOOK_LANGUAGE, bookRow.getLanguage());
+            book.putString(UniqueId.KEY_BOOK_LOCATION, bookRow.getLocation());
+            book.putString(UniqueId.KEY_NOTES, bookRow.getNotes());
+            book.putString(UniqueId.KEY_BOOK_PAGES, bookRow.getPages());
+            book.putString(UniqueId.KEY_PUBLISHER, bookRow.getPublisher());
+            book.putDouble(UniqueId.KEY_BOOK_RATING, bookRow.getRating());
+            book.putInt(UniqueId.KEY_BOOK_READ, bookRow.getRead());
+            book.putString(UniqueId.KEY_BOOK_READ_END, bookRow.getReadEnd());
+            book.putString(UniqueId.KEY_BOOK_READ_START, bookRow.getReadStart());
+            book.putInt(UniqueId.KEY_BOOK_SIGNED, bookRow.getSigned());
+            book.putString(UniqueId.KEY_TITLE, bookRow.getTitle());
 
             book.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, db.getBookAuthorList(rowId));
             book.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(rowId));
@@ -126,26 +129,27 @@ public class BookUtils {
      * apps for sharing some text like the next:<br>
      * <b>"I'm reading " + title + " by " + author + series + " " + ratingString</b>
      *
-     * @param rowId The database id of the book for deleting
+     * @param bookId  of the book
      */
     public static void shareBook(@NonNull final Context context,
                                  @NonNull final CatalogueDBAdapter db,
-                                 final long rowId) {
+                                 final long bookId) {
         String title;
         double rating;
         String ratingString = "";
         String author;
         String series;
 
-        try (Cursor cursor = db.fetchBookById(rowId)) {
+        try (BooksCursor cursor = db.fetchBookById(bookId)) {
             cursor.moveToFirst();
-            title = cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_TITLE.name));
-            rating = cursor.getDouble(cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_RATING.name));
-            author = cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name));
-            series = cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_SERIES_FORMATTED.name));
+            BooksRow booksRow = cursor.getRowView();
+            title = booksRow.getTitle();
+            rating = booksRow.getRating();
+            author = booksRow.getPrimaryAuthorNameFormatted();
+            series = booksRow.getPrimarySeriesFormatted();
         }
 
-        File image = StorageUtils.getCoverFile(db.getBookUuid(rowId));
+        File image = StorageUtils.getCoverFile(db.getBookUuid(bookId));
 
         if (!series.isEmpty()) {
             series = " (" + series.replace("#", "%23") + ")";
@@ -184,10 +188,10 @@ public class BookUtils {
     }
 
     /**
-     * Update the 'read' status of a book in the database
+     * Update the 'read' status of a book in the database + sets the 'read end' to today
      * The bookData will have its 'read' status updated ONLY if the update went through.
      *
-     * @param db  database
+     * @param db       database
      * @param bookData to update
      *
      * @return true/false as result from database update
@@ -202,7 +206,7 @@ public class BookUtils {
         bookData.putInt(UniqueId.KEY_BOOK_READ, read ? 1 : 0);
         bookData.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
 
-        if (!( 1== db.updateBook(bookData.getRowId(), bookData, 0))) {
+        if (!(1 == db.updateBook(bookData.getRowId(), bookData, 0))) {
             bookData.putInt(UniqueId.KEY_BOOK_READ, prevRead);
             bookData.putString(UniqueId.KEY_BOOK_READ_END, prevReadEnd);
             return false;
@@ -224,7 +228,7 @@ public class BookUtils {
     public static boolean setRead(final long bookId, final boolean read) {
         CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         db.open();
-        boolean ok =setRead(db, bookId, read);
+        boolean ok = setRead(db, bookId, read);
         db.close();
         return ok;
     }

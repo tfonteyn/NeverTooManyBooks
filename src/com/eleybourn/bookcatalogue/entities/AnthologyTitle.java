@@ -36,9 +36,9 @@ import java.util.regex.Pattern;
  * Class to represent a single title within an anthology
  *
  * Note:
- * these are always insertOrThrow/update'd ONLY when a book is insertOrThrow/update'd
+ * these are always insert/update'd ONLY when a book is insert/update'd
  * Hence writes are always a List<AnthologyTitle> in one go. This circumvents the 'position' column
- * as the update will simply insertOrThrow in-order and auto increment position.
+ * as the update will simply insert in-order and auto increment position.
  *
  * The table has some limitations right now
  * 1. can only exist in ONE book
@@ -73,7 +73,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     private String mTitle;
     private String mFirstPublicationDate;
 
-    private long mBookId = 0;
+    private long mBookId;
     private long mPosition = 0;     // order in the book, [1..x]
 
     /**

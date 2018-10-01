@@ -5,6 +5,9 @@ if (project.hasProperty("BookCatalogue.signing")
     apply from: project.property("MyProject.signing")
 }
 
+//        2018-10-01 when using Android 28 & gradle plugin 3.2.0, so downgraded to 27 & 3.1.0
+//            https://issuetracker.google.com/issues/110162198
+
 buildscript {
     repositories {
         jcenter()
@@ -12,7 +15,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath 'com.android.tools.build:gradle:3.1.0'
     }
 }
 
@@ -28,9 +31,9 @@ dependencies {
     implementation fileTree(include: 'amazon-mobile-associates-1.0.64.0.jar', dir: 'libs')
 
     // standard Android support libs
-    implementation 'com.android.support:support-v4:28.0.0'
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:support-v4:27.1.1'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
     implementation 'ch.acra:acra:4.11'
     // jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.11.3'
@@ -42,8 +45,10 @@ dependencies {
     implementation 'oauth.signpost:signpost-commonshttp4:1.2.1.2'
 }
 
+
+
 android {
-    compileSdkVersion 28
+    compileSdkVersion 27
     lintOptions {
         disable 'MissingTranslation'
     }
@@ -70,13 +75,18 @@ android {
         }
     }
 
-//    2018-08-20: https://developer.android.com/about/dashboards/
-//    6+      23  ->  66.5%
-//    5.1+    22  ->  82.6%
-//    5.0+    21  ->  86.8%
-//    4.4+    19  ->  95.9%   but 5.0 has has so many new things....
+    //    2018-10-01: https://developer.android.com/about/dashboards/
+    //  9       28
+    //  8.1     27
+    //  8       26
+    //  7.1     25
+    //  7       24      48.5%
+    //  6       23      70.1%
+    //  5.1     22      84.8%
+    //  5.0     21      88.4%
+    //  4.4     19      96.2%   but 5.0 has has so many new things....
     defaultConfig {
-        minSdkVersion 21        // Android 5.0
-        targetSdkVersion 28     // Android 9
+        minSdkVersion 21
+        targetSdkVersion 27
     }
 }

@@ -36,7 +36,11 @@ public class IsbnUtils {
     /**
      * Validate an ISBN
      */
-    public static boolean isValid(@NonNull final String isbn) {
+    public static boolean isValid(@Nullable final String isbn) {
+        if (isbn == null || isbn.isEmpty()) {
+            return false;
+        }
+
         try {
             return new ISBNNumber(isbn).isValid();
         } catch (NumberFormatException e) {

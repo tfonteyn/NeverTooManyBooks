@@ -111,7 +111,9 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
             blurb.setText(R.string.old_archive_blurb);
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(getActivity()).setView(view).setTitle(R.string.import_from_archive)
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setView(view)
+                .setTitle(R.string.import_from_archive)
                 .setIcon(R.drawable.ic_help_outline)
                 .create();
         dialog.setCanceledOnTouchOutside(false);

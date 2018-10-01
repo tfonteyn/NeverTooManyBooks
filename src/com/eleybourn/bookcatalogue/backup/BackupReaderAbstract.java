@@ -187,7 +187,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
             Logger.logError(e, "Unable to restore style");
         }
         if (s != null) {
-            s.saveToDb(mDb);
+            s.insertOrUpdateBooklistStyle(mDb);
         }
     }
 

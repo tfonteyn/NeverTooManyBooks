@@ -94,11 +94,13 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
             }
 
             final CheckBox cb = getView().findViewById(R.id.anthology);
-            cb.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View view) {
-                    mEditManager.showAnthologyTab(cb.isChecked());
-                }
-            });
+            if (cb != null) {
+                cb.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        mEditManager.showAnthologyTab(cb.isChecked());
+                    }
+                });
+            }
 
             getView().findViewById(R.id.description_edit_button).setOnClickListener(new View.OnClickListener() {
                 @Override

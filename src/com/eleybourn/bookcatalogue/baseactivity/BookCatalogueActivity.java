@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.StartupActivity;
 
 /**
  * Base class for all (most) Activity's
@@ -72,8 +71,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
             bar.setDisplayHomeAsUpEnabled(true);
 
             // Only display the 'back' decoration if we are at the top
-            boolean isTaskRoot = isTaskRoot() || getIntent().getBooleanExtra(StartupActivity.BKEY_IS_TASK_ROOT, false);
-            if (isTaskRoot) {
+            if (isTaskRoot()) {
                 bar.setDisplayShowHomeEnabled(true);
                 bar.setHomeAsUpIndicator(R.drawable.ic_menu);
             }

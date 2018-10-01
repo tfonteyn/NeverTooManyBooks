@@ -49,8 +49,6 @@ import java.util.Date;
  */
 public class BackupManager {
 
-
-
     /**
      * Ensure the file name extension is what we want
      */
@@ -69,7 +67,8 @@ public class BackupManager {
      * We use a FragmentTask so that long actions do not occur in the UI thread.
      */
     public static File backupCatalogue(@NonNull final FragmentActivity context,
-                                       @NonNull final File requestedFile, final int taskId,
+                                       @NonNull final File requestedFile,
+                                       final int taskId,
                                        final int backupFlags,
                                        @Nullable final Date since) {
         final int flags = backupFlags & Exporter.EXPORT_MASK;

@@ -1,0 +1,33 @@
+Original guidelines for the project:
+
+https://github.com/eleybourn/Book-Catalogue/wiki/Developer-Notes-Suggestions-Guidelines
+
+Small notes in addition:
+
+* trimming
+  Wherever a View is READ as a String, a trim should be done
+       view.getText().toString().trim();
+   2018-10-01 ok
+
+  Datum
+  2018-10-01 ok
+
+  ArrayUtils
+  2018-10-01 ok
+
+  Fields
+  2018-10-01 ok
+
+  getSharedPreferences string
+  not checked yet.
+
+  The database (as of v82) will/can contain untrimmed string.
+  Best to add .trim() to al locations where a getString is done.
+  Eventually the database will then be trim-proof.
+  TODO: perhaps run a batch correction on all fields as an update ? bit brutal...
+
+  No doubt some places do a trim which is not really needed, something for a rainy day.
+
+
+* pedantic but I hope polite request:
+  Single character variables names are best left to BASIC style from the 1980's

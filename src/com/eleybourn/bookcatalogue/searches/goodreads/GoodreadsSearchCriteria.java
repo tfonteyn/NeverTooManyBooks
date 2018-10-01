@@ -75,7 +75,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
         // If we have a book, fill in criteria AND try a search
         if (mBookId != 0) {
             // Initial value; try to build from passed book, if available.
-            String criteria = "";
+            StringBuilder criteria = new StringBuilder();
 
             setViewVisibility(R.id.original_details, true);
             final BooksCursor c = mDb.fetchBookById(mBookId);
@@ -87,26 +87,25 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
                     return;
                 }
                 {
-                    String s = book.getPrimaryAuthorName();
+                    String s = book.getPrimaryAuthorNameFormatted();
                     setViewText(R.id.author, s);
-                    criteria += s + " ";
+                    criteria.append(s).append(" ");
                 }
                 {
                     String s = book.getTitle();
                     setViewText(R.id.title, s);
-                    criteria += s + " ";
+                    criteria.append(s).append(" ");
                 }
                 {
                     String s = book.getIsbn();
                     setViewText(R.id.isbn, s);
-                    criteria += s + " ";
+                    criteria.append(s).append(" ");
                 }
             } finally {
                 c.close();
             }
-            criteria = criteria.trim();
 
-            setViewText(R.id.search_text, criteria.trim());
+            setViewText(R.id.search_text, criteria.toString().trim());
             doSearch();
         } else {
             setViewVisibility(R.id.original_details, false);
@@ -144,7 +143,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
      * Get the text of the passed view
      */
     private String getViewText(@SuppressWarnings("SameParameterValue") @IdRes final int id) {
-        return ((TextView) this.findViewById(id)).getText().toString();
+        return ((TextView) this.findViewById(id)).getText().toString().trim();
     }
 
     /**

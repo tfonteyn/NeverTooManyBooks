@@ -3,13 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.eleybourn.bookcatalogue"
     android:installLocation="auto"
-    android:versionCode="179"
-    android:versionName="5.2.2">
+    android:versionCode="200"
+    android:versionName="6.0.0">
     <!-- original package -->
     <!--package="com.eleybourn.bookcatalogue"-->
     <!--android:installLocation="auto"-->
     <!--android:versionCode="179"-->
     <!--android:versionName="5.2.2"-->
+
 
 
 
@@ -58,12 +59,11 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <!--<activity-->
-            <!--android:name="org.acra.CrashReportDialog"-->
-            <!--android:excludeFromRecents="true"-->
-            <!--android:finishOnTaskLaunch="true"-->
-            <!--android:launchMode="singleInstance"-->
-            <!--android:theme="?android:attr/dialogTheme" />-->
+        <activity
+            android:name="org.acra.dialog.CrashReportDialog"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true"
+            android:launchMode="singleInstance" />
 
         <!-- .BookCatalogue is now just a forwarder to .StartupActivity. -->
         <activity android:name=".BookCatalogue" />
@@ -71,11 +71,15 @@
         <!--
             The StartupActivity activity takes care of all pre-UI tasks.
             It does not rebuild on orientation changes so progress dialogs are easier
+
+            The .StartupActivity activity is just a forwarder to the .BooksOnBookshelf Activity.
+            So in theory it is OK to make is singleInstance
         -->
         <activity
             android:name=".StartupActivity"
             android:configChanges="orientation|keyboardHidden"
             android:noHistory="true"
+            android:launchMode="singleInstance"
             android:theme="@style/Invisible">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -83,12 +87,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!--
-             The .StartupActivity activity is just a forwarder to the .BooksOnBookshelf Activity.
-              So in theory it is OK to make is singleInstance
-			    android:launchMode="singleInstance"
-        -->
 
         <activity android:name=".BooksOnBookshelf">
             <intent-filter>
@@ -117,7 +115,6 @@
         <activity
             android:name=".EditBookshelfActivity"
             android:windowSoftInputMode="adjustResize" />
-
 
         <!-- Field Visibility -->
         <activity android:name=".FieldVisibilityActivity" />

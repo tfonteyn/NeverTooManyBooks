@@ -153,7 +153,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
         }
 
         if (mSaveToDb) {
-            mStyle.saveToDb(getDb());
+            mStyle.insertOrUpdateBooklistStyle(getDb());
         }
         Intent intent = new Intent();
         intent.putExtra(BKEY_STYLE, mStyle);

@@ -226,7 +226,7 @@ public class BooklistBuilder implements AutoCloseable {
     private SynchronizedStatement mBaseBuildStmt = null;
     /** Collection of statements used to build remaining data */
     private ArrayList<SynchronizedStatement> mLevelBuildStmts = null;
-    private String mUNKNOWNText = BookCatalogueApp.getResourceString(R.string.unknown_uc);
+    private final String mUNKNOWNText = BookCatalogueApp.getResourceString(R.string.unknown_uc);
     private SynchronizedStatement mDeleteListNodeSettingsStmt = null;
     private SynchronizedStatement mSaveListNodeSettingsStmt = null;
     private SynchronizedStatement mDeleteListNodeSettingStmt = null;
@@ -254,10 +254,10 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Constructor
      *
-     * @param adapter Database Adapter to use
-     * @param style   Book list style to use
+     * @param db        Database Adapter to use
+     * @param style     Book list style to use
      */
-    public BooklistBuilder(@NonNull final CatalogueDBAdapter adapter, @NonNull final BooklistStyle style) {
+    public BooklistBuilder(@NonNull final CatalogueDBAdapter db, @NonNull final BooklistStyle style) {
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
             synchronized (mInstanceCount) {
                 mInstanceCount++;
@@ -270,7 +270,7 @@ public class BooklistBuilder implements AutoCloseable {
             mBooklistBuilderId = ++mBooklistBuilderIdCounter;
         }
         // Get the database and create a statements collection
-        mSyncedDb = adapter.getDbIfYouAreSureWhatYouAreDoing();
+        mSyncedDb = db.getDbIfYouAreSureWhatYouAreDoing();
         mStatements = new SqlStatementManager(mSyncedDb);
         // Save the requested style
         mStyle = style;
@@ -811,14 +811,14 @@ public class BooklistBuilder implements AutoCloseable {
 
             // If we have a book ID to mark, then add the MARK field, and setup the expression.
             if (markId != 0) {
-                summary.addDomain(DOM_MARK, TBL_BOOKS.dot(DOM_ID) + " = " + markId, SummaryBuilder.FLAG_NONE);
+                summary.addDomain(DOM_MARK, TBL_BOOKS.dot(DOM_ID) + "=" + markId, SummaryBuilder.FLAG_NONE);
             }
 
             if (seriesGroup != null) {
                 // We want the series number in the base data in sorted order
 
-                // Allow for the possibility of 3.1, or even "3.1|Omnibus 3-10" as a series name. so we convert it to
-                // a float.
+                // Allow for the possibility of 3.1, or even "3.1|Omnibus 3-10" as a series name.
+                // so we convert it to a float.
                 summary.addDomain(DOM_SERIES_NUM_FLOAT, "cast(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM) + " as float)", SummaryBuilder.FLAG_SORTED);
                 // We also add the base name as a sorted field for display purposes and in case of non-numeric data.
                 summary.addDomain(DOM_BOOK_SERIES_NUM, TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM), SummaryBuilder.FLAG_SORTED);
@@ -1343,7 +1343,8 @@ public class BooklistBuilder implements AutoCloseable {
                 where.append(" AND ");
             }
             where.append("(").append(TBL_BOOKS.dot(DOM_ID)).append(" in (select ").append(DOM_DOCID).append(" from ").append(TBL_BOOKS_FTS)
-                    .append(" WHERE ").append(TBL_BOOKS_FTS).append(" match '").append(CatalogueDBAdapter.encodeString(CatalogueDBAdapter.cleanupFtsCriterion(searchText))).append("'))");
+                    .append(" WHERE ").append(TBL_BOOKS_FTS).append(" match '")
+                    .append(CatalogueDBAdapter.encodeString(CatalogueDBAdapter.cleanupFtsCriterion(searchText))).append("'))");
         }
 
 
@@ -1854,9 +1855,9 @@ public class BooklistBuilder implements AutoCloseable {
         }
 
         // Build the SQL, adding ABS POS.
-        final String sql = "select " + domains + " (" + mNavTable.dot(DOM_ID) + " - 1) As " + DOM_ABSOLUTE_POSITION +
-                " from " + mListTable.ref() + mListTable.join(mNavTable) +
-                " Where " + mNavTable.dot(DOM_VISIBLE) + " = 1 Order by " + mNavTable.dot(DOM_ID) +
+        final String sql = "SELECT " + domains + " (" + mNavTable.dot(DOM_ID) + " - 1) AS " + DOM_ABSOLUTE_POSITION +
+                " FROM " + mListTable.ref() + mListTable.join(mNavTable) +
+                " WHERE " + mNavTable.dot(DOM_VISIBLE) + " = 1 ORDER BY " + mNavTable.dot(DOM_ID) +
                 " Limit " + size + " Offset " + position;
 
         // Get and return the cursor
@@ -1876,7 +1877,7 @@ public class BooklistBuilder implements AutoCloseable {
      */
     int getPseudoCount() {
         return pseudoCount("NavTable",
-                "Select count(*) from " + mNavTable + " Where " + DOM_VISIBLE + " = 1");
+                "SELECT COUNT(*) FROM " + mNavTable + " WHERE " + DOM_VISIBLE + "=1");
     }
 
     /**
@@ -1884,7 +1885,7 @@ public class BooklistBuilder implements AutoCloseable {
      */
     int getBookCount() {
         return pseudoCount("ListTableBooks",
-                "Select count(*) from " + mListTable + " Where " + DOM_LEVEL + " = " + (mStyle.size() + 1));
+                "SELECT COUNT(*) FROM " + mListTable + " WHERE " + DOM_LEVEL + "=" + (mStyle.size() + 1));
     }
 
     /**
@@ -1892,7 +1893,7 @@ public class BooklistBuilder implements AutoCloseable {
      */
     int getUniqueBookCount() {
         return pseudoCount("ListTableUniqueBooks",
-                "Select count(distinct " + DOM_BOOK_ID + ") from " + mListTable + " Where " + DOM_LEVEL + " = " + (mStyle.size() + 1));
+                "SELECT COUNT(distinct " + DOM_BOOK_ID + ") FROM " + mListTable + " WHERE " + DOM_LEVEL + "=" + (mStyle.size() + 1));
     }
 
     /**
@@ -1902,8 +1903,7 @@ public class BooklistBuilder implements AutoCloseable {
         long tc0 = System.currentTimeMillis();
         int cnt = 0;
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(countSql)) {
-            // count, so no SQLiteDoneException
-            cnt = (int) stmt.simpleQueryForLong();
+            cnt = (int) stmt.count();
         }
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
@@ -1940,29 +1940,22 @@ public class BooklistBuilder implements AutoCloseable {
      */
     public int getPosition(final int absolutePosition) {
         if (mGetPositionCheckVisibleStmt == null) {
-            String sql = "Select visible from " + mNavTable + " Where " + DOM_ID + " = ?";
-            mGetPositionCheckVisibleStmt = mStatements.add("mGetPositionCheckVisibleStmt", sql);
+            mGetPositionCheckVisibleStmt = mStatements.add("mGetPositionCheckVisibleStmt",
+                    "SELECT visible FROM " + mNavTable + " WHERE " + DOM_ID + "=?");
         }
         // Check the absolute position is visible
         final long rowId = absolutePosition + 1;
-        mGetPositionCheckVisibleStmt.bindLong(1, rowId);
-        boolean isVisible;
-        try {
-            isVisible = (1 == mGetPositionCheckVisibleStmt.simpleQueryForLong());
-        } catch (SQLiteDoneException e) {
-            // row is not in the current list at all
-            isVisible = false;
-        }
+        mGetPositionCheckVisibleStmt.bindLong(1,  rowId);
+        boolean isVisible = (1 == mGetPositionCheckVisibleStmt.simpleQueryForLongOrZero());
 
         if (mGetPositionStmt == null) {
-            String sql = "Select count(*) From " + mNavTable + " Where visible = 1 and " + DOM_ID + " < ?";
-            mGetPositionStmt = mStatements.add("mGetPositionStmt", sql);
+            mGetPositionStmt = mStatements.add("mGetPositionStmt",
+                    "SELECT COUNT(*) FROM " + mNavTable + " WHERE visible = 1 and " + DOM_ID + " < ?");
         }
         // Count the number of *visible* rows *before* the specified one.
         mGetPositionStmt.bindLong(1, rowId);
-        // count, so no SQLiteDoneException
-        int newPos = (int) mGetPositionStmt.simpleQueryForLong();
-        // If specified row is visible, the the position is the count, otherwise, count -1 (ie. the
+        int newPos = (int) mGetPositionStmt.count();
+        // If specified row is visible, then the position is the count, otherwise, count -1 (ie. the
         // previous visible row).
         if (isVisible) {
             return newPos;
@@ -2039,20 +2032,19 @@ public class BooklistBuilder implements AutoCloseable {
     public void expandAll(final boolean expand) {
         long t0 = System.currentTimeMillis();
         if (expand) {
-            String sql = "UPDATE " + mNavTable + " SET expanded = 1, visible = 1";
+            String sql = "UPDATE " + mNavTable + " SET expanded=1, visible=1";
             mSyncedDb.execSQL(sql);
             saveListNodeSettings();
         } else {
-            String sql = "UPDATE " + mNavTable + " SET expanded = 0, visible = 0 WHERE level > 1";
+            String sql = "UPDATE " + mNavTable + " SET expanded=0, visible=0 WHERE level > 1";
             mSyncedDb.execSQL(sql);
-            sql = "UPDATE " + mNavTable + " SET expanded = 0 WHERE level = 1";
+            sql = "UPDATE " + mNavTable + " SET expanded=0 WHERE level=1";
             mSyncedDb.execSQL(sql);
             deleteListNodeSettings();
         }
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            long t1 = System.currentTimeMillis() - t0;
-            System.out.println("Expand All: " + t1);
+            System.out.println("Expand All: " + (System.currentTimeMillis() - t0));
         }
     }
 
@@ -2074,8 +2066,7 @@ public class BooklistBuilder implements AutoCloseable {
         String[] info;
         try {
             info = mGetNodeLevelStmt.simpleQueryForString().split("/");
-        } catch (SQLiteDoneException e) {
-            Logger.logError(e, "mGetNodeLevelStmt returned zero rows? ");
+        } catch (SQLiteDoneException ignore) {
             return;
         }
         long level = Long.parseLong(info[0]);

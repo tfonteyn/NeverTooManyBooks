@@ -31,7 +31,7 @@ public class TouchListViewWithDropListener<T> extends TouchListView implements T
             return;
         }
 
-        // before remove/insertOrThrow
+        // before remove/insert
         final int firstPos = getFirstVisiblePosition();
 
         ArrayAdapter<T> adapter = (ArrayAdapter)getAdapter();

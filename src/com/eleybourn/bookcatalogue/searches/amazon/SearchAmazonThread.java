@@ -18,8 +18,8 @@ public class SearchAmazonThread extends SearchThread {
         this.doProgress(getString(R.string.searching_amazon_books), 0);
 
         try {
-            AmazonManager.searchAmazon(mIsbn, mAuthor, mTitle, mBookData, mFetchThumbnail);
-            if (mBookData.size() == 0) {
+            AmazonManager.searchAmazon(mIsbn, mAuthor, mTitle, mBookInfo, mFetchThumbnail);
+            if (mBookInfo.size() == 0) {
                 Logger.logError(new RuntimeException("No data found for " + mIsbn + "/" + mAuthor + "/" + mTitle));
             }
             // Look for series name and clear KEY_TITLE

@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
+import com.eleybourn.bookcatalogue.backup.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.ExportThread;
 import com.eleybourn.bookcatalogue.backup.ImportThread;
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
@@ -432,7 +433,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
      */
     private void importFromCSV() {
         // Find all possible files (CSV in bookCatalogue directory)
-        List<File> files = StorageUtils.findExportFiles();
+        List<File> files = StorageUtils.findCsvFiles();
         // If none, exit with message
         if (files == null || files.size() == 0) {
             Toast.makeText(this, R.string.no_export_files_found, Toast.LENGTH_LONG).show();
@@ -530,7 +531,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
                         ArrayList<Uri> uris = new ArrayList<>();
                         try {
-                            uris.add(Uri.fromFile(StorageUtils.getExportFile()));
+                            uris.add(Uri.fromFile(StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME)));
                             emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
                             startActivity(Intent.createChooser(emailIntent, "Send mail..."));
                         } catch (NullPointerException e) {

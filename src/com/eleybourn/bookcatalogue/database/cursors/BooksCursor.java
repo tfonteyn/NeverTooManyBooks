@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.database.cursors;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
 import android.support.annotation.NonNull;
-import android.util.LongSparseArray;
 
 import com.eleybourn.bookcatalogue.BooksRow;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
@@ -33,14 +32,10 @@ import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
  * Cursor implementation for book-related queries. The cursor wraps common
  * column lookups and reduces code clutter when accessing common columns.
  *
- * The cursor also simulates a 'selected' flag for each book based on a HashMap of book IDs.
- *
  * @author Philip Warner
  */
 public class BooksCursor extends TrackedCursor implements AutoCloseable {
 
-    /** HashMap of selected book IDs */
-    private final LongSparseArray<Boolean> mSelections = new LongSparseArray<>();
     /** Get the row ID; need a local implementation so that get/setSelected() works. */
     private int mIdCol = -2;
     /** Get a RowView */
@@ -57,7 +52,7 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
         if (mIdCol < 0) {
             mIdCol = getColumnIndex(DatabaseDefinitions.DOM_ID.name);
             if (mIdCol < 0)
-                throw new RuntimeException("ISBN column not in result set");
+                throw new RuntimeException("DOM_ID column not in result set");
         }
         return getLong(mIdCol);
     }
@@ -70,12 +65,11 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
     }
 
     /**
-     * Clear the RowView and selections, if any
+     * Clear the RowView
      */
     @Override
     public void close() {
         super.close();
-        mSelections.clear();
         mView = null;
     }
 }

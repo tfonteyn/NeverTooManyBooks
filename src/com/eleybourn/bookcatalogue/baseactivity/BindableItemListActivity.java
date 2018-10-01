@@ -106,6 +106,18 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
         mListAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            if (mBindableItems != null) {
+                mBindableItems.close();
+                mBindableItems = null;
+            }
+        } catch (Exception ignore) {
+        }
+    }
+
     protected void onListItemClick(@NonNull final AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
     }
 

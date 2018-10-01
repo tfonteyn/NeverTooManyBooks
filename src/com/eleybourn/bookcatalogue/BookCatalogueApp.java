@@ -31,8 +31,11 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.support.annotation.ArrayRes;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.util.TypedValue;
 
 import com.eleybourn.bookcatalogue.debug.DebugReport;
@@ -112,8 +115,8 @@ public class BookCatalogueApp extends Application {
     private static final int[] DIALOG_ALERT_THEMES = {
             R.style.AppTheme_Dialog_Alert,
             R.style.AppTheme_Dialog_Alert_Light
-
-    };   private static final int[] DIALOG_ALERT_NOACTIONBAR_THEMES = {
+    };
+    private static final int[] DIALOG_ALERT_NOACTIONBAR_THEMES = {
             R.style.AppTheme_Dialog_Alert_NoActionBar,
             R.style.AppTheme_Dialog_Alert_NoActionBar_Light
     };
@@ -141,6 +144,7 @@ public class BookCatalogueApp extends Application {
     public static int getDialogThemeResId(final boolean actionbar) {
         return actionbar ? DIALOG_THEMES[mLastTheme] : DIALOG_NOACTIONBAR_THEMES[mLastTheme] ;
     }
+    @SuppressWarnings("unused")
     public static int getDialogAlertThemeResId(final boolean actionbar) {
         return actionbar ? DIALOG_ALERT_THEMES[mLastTheme] : DIALOG_ALERT_NOACTIONBAR_THEMES[mLastTheme] ;
     }
@@ -337,8 +341,8 @@ public class BookCatalogueApp extends Application {
      *
      * @return Localized resource string
      */
-    public static String getResourceString(final int resId) {
-        return getAppContext().getString(resId);
+    public static String getResourceString(@StringRes final int resId) {
+        return mInstance.getApplicationContext().getString(resId).trim();
     }
 
     /**
@@ -348,8 +352,8 @@ public class BookCatalogueApp extends Application {
      *
      * @return Localized resource string[]
      */
-    public static String[] getResourceStringArray(final int resId) {
-        return getAppContext().getResources().getStringArray(resId);
+    public static String[] getResourceStringArray(@ArrayRes final int resId) {
+        return mInstance.getApplicationContext().getResources().getStringArray(resId);
     }
 
     /**
@@ -360,8 +364,8 @@ public class BookCatalogueApp extends Application {
      * @return Localized resource string
      */
     @NonNull
-    public static String getResourceString(final int resId, @Nullable final Object... objects) {
-        return getAppContext().getString(resId, objects);
+    public static String getResourceString(@StringRes final int resId, @Nullable final Object... objects) {
+        return mInstance.getApplicationContext().getString(resId, objects).trim();
     }
 
     /**
@@ -379,13 +383,13 @@ public class BookCatalogueApp extends Application {
                     .getApplicationInfo(mInstance.getPackageName(), PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
             Logger.logError(e);
-            throw new NullPointerException("See log for PackageManager.NameNotFoundException");
+            throw new IllegalStateException("See log for PackageManager.NameNotFoundException");
         }
         String result = ai.metaData.getString(name);
         if (result == null) {
             throw new IllegalStateException();
         }
-        return result;
+        return result.trim();
     }
 
     /**
@@ -519,19 +523,28 @@ public class BookCatalogueApp extends Application {
         return mInstance.getApplicationContext().getSharedPreferences(APP_SHARED_PREFERENCES, MODE_PRIVATE);
     }
 
+    /**
+     * Using the global app theme.
+     *
+     * @param attr  resource id to get
+     *
+     * @return resolved attribute
+     */
+    @SuppressWarnings("unused")
     public static int getAttr(final int attr){
         return getAttr(mInstance.getApplicationContext().getTheme(), attr);
     }
 
     /**
      *
-     * @param theme for example from an Activity, pass the them in.
-     * @param resId to get
+     * @param theme     allows to override the app theme, f.e. with Dialog Themes
+     * @param attr      resource id to get
+     *
      * @return resolved attribute
      */
-    public static int getAttr(@NonNull final Resources.Theme theme, final int resId){
+    public static int getAttr(@NonNull final Resources.Theme theme, @IdRes final int attr){
         TypedValue tv = new TypedValue();
-        theme.resolveAttribute(resId, tv, true);
+        theme.resolveAttribute(attr, tv, true);
         return tv.resourceId;
     }
     /**

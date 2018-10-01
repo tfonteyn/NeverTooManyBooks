@@ -762,8 +762,7 @@ public class TableDefinition implements AutoCloseable {
         try (DbSync.SynchronizedStatement stmt = db.compileStatement(mExistsSql)) {
             stmt.bindString(1, getName());
             stmt.bindString(2, getName());
-            // count, so no SQLiteDoneException
-            return (stmt.simpleQueryForLong() > 0);
+            return (stmt.count() > 0);
         }
     }
 

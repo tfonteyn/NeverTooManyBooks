@@ -53,12 +53,12 @@ public class SearchGoodreadsThread extends SearchThread {
 		GoodreadsManager grMgr = new GoodreadsManager();
 		try {
 			if (mIsbn != null && mIsbn.trim().length() > 0) {
-				mBookData = grMgr.getBookByIsbn(mIsbn);
+				mBookInfo = grMgr.getBookByIsbn(mIsbn);
 			} else {
 				List<GoodreadsWork> list = grMgr.search(mAuthor + " " + mTitle);
 				if (list != null && list.size() > 0) {
 					GoodreadsWork w = list.get(0);
-					mBookData = grMgr.getBookById(w.bookId);
+					mBookInfo = grMgr.getBookById(w.bookId);
 				}
 			}
 		} catch (BookNotFoundException ignore) {

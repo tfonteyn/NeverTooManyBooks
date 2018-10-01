@@ -110,7 +110,7 @@ public class FlattenedBooklist implements AutoCloseable {
             mPosition = Long.parseLong(data[0]);
             mBookId = Long.parseLong(data[1]);
             return true;
-        } catch (SQLiteDoneException e) {
+        } catch (SQLiteDoneException ignore) {
             return false;
         }
     }
@@ -242,13 +242,12 @@ public class FlattenedBooklist implements AutoCloseable {
     public long getAbsolutePosition() {
         SynchronizedStatement stmt = mStatements.get(POSITION_STMT_NAME);
         if (stmt == null) {
-            String sql = "Select Count(*) From " + mTable.ref() +
-                    " where " + mTable.dot(DatabaseDefinitions.DOM_ID) + " <= ?";
+            String sql = "SELECT COUNT(*) FROM " + mTable.ref() +
+                    " WHERE " + mTable.dot(DatabaseDefinitions.DOM_ID) + " <= ?";
             stmt = mStatements.add(POSITION_STMT_NAME, sql);
         }
         stmt.bindLong(1, mPosition);
-        // count, so no SQLiteDoneException
-        return stmt.simpleQueryForLong();
+        return stmt.count();
     }
 
     /**

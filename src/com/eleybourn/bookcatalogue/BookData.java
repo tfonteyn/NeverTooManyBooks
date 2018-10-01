@@ -67,24 +67,24 @@ public class BookData extends DataManager {
     /**
      * Constructor
      *
-     * @param src Bundle with book data (may be null)
+     * @param bundle with book data (may be null)
      */
-    public BookData(@Nullable final Bundle src) {
-        this(0L, src);
+    public BookData(@Nullable final Bundle bundle) {
+        this(0L, bundle);
     }
 
     /**
      * Constructor
      *
-     * @param rowId ID of book (may be 0 for new)
-     * @param src   Bundle with book data (may be null)
+     * @param rowId     of book (may be 0 for new)
+     * @param bundle    Bundle with book data (may be null)
      */
-    public BookData(final long rowId, @Nullable final Bundle src) {
+    public BookData(final long rowId, @Nullable final Bundle bundle) {
         mRowId = rowId;
 
         // Load from bundle or database
-        if (src != null) {
-            putAll(src);
+        if (bundle != null) {
+            putAll(bundle);
         } else if (mRowId > 0) {
             reload();
         }
@@ -195,14 +195,14 @@ public class BookData extends DataManager {
         String newText;
         List<Author> list = getAuthors();
         if (list.size() == 0) {
-            newText = null;
+            return null;
         } else {
             newText = list.get(0).getDisplayName();
             if (list.size() > 1) {
                 newText += " " + BookCatalogueApp.getResourceString(R.string.and_others);
             }
+            return newText;
         }
-        return newText;
     }
 
     /**
@@ -214,10 +214,7 @@ public class BookData extends DataManager {
     @NonNull
     public ArrayList<AnthologyTitle> getAnthologyTitles() {
         ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) getSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
-        if (list == null) {
-            list = new ArrayList<>();
-        }
-        return list;
+        return list != null ? list : new ArrayList<AnthologyTitle>();
     }
 
 //    /**
@@ -255,10 +252,7 @@ public class BookData extends DataManager {
     @NonNull
     public ArrayList<Author> getAuthors() {
         ArrayList<Author> list = (ArrayList<Author>) getSerializable(UniqueId.BKEY_AUTHOR_ARRAY);
-        if (list == null) {
-            list = new ArrayList<>();
-        }
-        return list;
+        return list != null ? list : new ArrayList<Author>();
     }
 
     /**
@@ -270,10 +264,7 @@ public class BookData extends DataManager {
     @NonNull
     public ArrayList<Series> getSeries() {
         ArrayList<Series> list = (ArrayList<Series>) getSerializable(UniqueId.BKEY_SERIES_ARRAY);
-        if (list == null) {
-            list = new ArrayList<>();
-        }
-        return list;
+        return list != null ? list : new ArrayList<Series>();
     }
 
     /**
@@ -326,6 +317,8 @@ public class BookData extends DataManager {
     private void initValidators() {
         addValidator(UniqueId.KEY_TITLE, nonBlankValidator);
         addValidator(UniqueId.KEY_ANTHOLOGY_MASK, integerValidator);
+        addValidator(UniqueId.KEY_BOOK_LIST_PRICE, blankOrFloatValidator);
+        addValidator(UniqueId.KEY_BOOK_PAGES, blankOrIntegerValidator);
 
         /* Anthology needs special handling, and we use a formatter to do this. If the original
          * value was 0 or 1, then setting/clearing it here should just set the new value to 0 or 1.
@@ -397,10 +390,5 @@ public class BookData extends DataManager {
                 return true;
             }
         });
-
-
-        addValidator(UniqueId.KEY_BOOK_LIST_PRICE, blankOrFloatValidator);
-        addValidator(UniqueId.KEY_BOOK_PAGES, blankOrIntegerValidator);
     }
-
 }

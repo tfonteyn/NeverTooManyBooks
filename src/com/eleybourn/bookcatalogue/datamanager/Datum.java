@@ -33,6 +33,8 @@ import java.util.ArrayList;
  * Class to manage storage and retrieval of a piece of data from a bundle as well as
  * ancillary details such as visibility.
  *
+ * In theory, all strings PUT into the collection will get automatically trimmed.
+ *
  * @author pjw
  */
 public class Datum {
@@ -66,8 +68,9 @@ public class Datum {
      * @return Resulting value
      */
     public static long toLong(@Nullable final Object o) {
-        if (o == null)
+        if (o == null) {
             return 0;
+        }
         try {
             return (Long) o;
         } catch (ClassCastException e) {
@@ -91,35 +94,37 @@ public class Datum {
      * @return Resulting value
      */
     private static double toDouble(@Nullable final Object o) {
-        if (o == null)
+        if (o == null) {
             return 0;
+        }
         try {
             return (Double) o;
         } catch (ClassCastException e) {
             final String s = o.toString();
-            if (s.isEmpty())
+            if (s.isEmpty()) {
                 return 0;
-            else
+            } else {
                 return Double.parseDouble(s);
+            }
         }
     }
 
     /**
      * Format the passed bundle in a way that is convenient for display
      *
-     * @param b Bundle to format
+     * @param bundle Bundle to format, strings will be trimmed before adding
      *
      * @return Formatted string
      */
     @NonNull
-    public static String toString(@NonNull final Bundle b) {
+    public static String toString(@NonNull final Bundle bundle) {
         StringBuilder sb = new StringBuilder();
-        for (String k : b.keySet()) {
+        for (String k : bundle.keySet()) {
             sb.append(k).append("->");
             try {
-                Object o = b.get(k);
+                Object o = bundle.get(k);
                 if (o != null) {
-                    sb.append(o);
+                    sb.append(String.valueOf(o).trim());
                 }
             } catch (Exception e) {
                 sb.append("<<").append(R.string.unknown).append(">>");
@@ -138,7 +143,7 @@ public class Datum {
      */
     @NonNull
     private static String toString(@Nullable final Object o) {
-        return o == null ? "" : o.toString();
+        return o == null ? "" : o.toString().trim();
     }
 
     /**
@@ -150,13 +155,13 @@ public class Datum {
      * @return Boolean value
      */
     public static boolean toBoolean(@Nullable final String s, final boolean emptyIsFalse) {
-        if (s == null || s.trim().isEmpty())
+        if (s == null || s.trim().isEmpty()) {
             if (emptyIsFalse) {
                 return false;
             } else {
                 throw new RuntimeException("Not a valid boolean value");
             }
-        else {
+        } else {
             switch (s.trim().toLowerCase()) {
                 case "1":
                 case "y":
@@ -218,8 +223,9 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     public Datum setValidator(@NonNull final DataValidator validator) {
-        if (mValidator != null && validator != mValidator)
-            throw new RuntimeException("Datum '" + mKey + "' already has a validator");
+        if (mValidator != null && validator != mValidator) {
+            throw new IllegalStateException("Datum '" + mKey + "' already has a validator");
+        }
         mValidator = validator;
         return this;
     }
@@ -238,8 +244,9 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     public Datum setAccessor(@NonNull final DataAccessor accessor) {
-        if (mAccessor != null && accessor != mAccessor)
-            throw new RuntimeException("Datum '" + mKey + "' already has an Accessor");
+        if (mAccessor != null && accessor != mAccessor) {
+            throw new IllegalStateException("Datum '" + mKey + "' already has an Accessor");
+        }
         mAccessor = accessor;
         return this;
     }
@@ -469,6 +476,7 @@ public class Datum {
      *
      * @param data   Parent collection
      * @param bundle Raw data
+     * @param value string will be trimmed before storing.
      *
      * @return This Datum, for chaining
      */
@@ -476,9 +484,9 @@ public class Datum {
     @NonNull
     public Datum putString(@NonNull final DataManager data, @NonNull final Bundle bundle, @NonNull final String value) {
         if (mAccessor == null) {
-            bundle.putString(mKey, value);
+            bundle.putString(mKey, value.trim());
         } else {
-            mAccessor.set(data, this, bundle, value);
+            mAccessor.set(data, this, bundle, value.trim());
         }
         return this;
     }

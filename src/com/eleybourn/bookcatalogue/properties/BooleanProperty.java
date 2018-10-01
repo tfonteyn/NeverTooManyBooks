@@ -168,12 +168,6 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
         return (b != null ? b: false);
     }
 
-    @Nullable
-    @Override
-    @Deprecated
-    public Boolean getResolvedValue() {
-        return super.getResolvedValue();
-    }
 
     @Override
     @NonNull

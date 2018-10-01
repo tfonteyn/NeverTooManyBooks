@@ -56,7 +56,7 @@ public class GoogleBooksManager {
     static public void searchGoogle(@NonNull final String isbn,
                                     @NonNull String author,
                                     @NonNull String title,
-                                    @NonNull final Bundle bookData,
+                                    @NonNull final Bundle bookInfo,
                                     final boolean fetchThumbnail) {
         //replace spaces with %20
         author = author.replace(" ", "%20");
@@ -73,7 +73,7 @@ public class GoogleBooksManager {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser;
         SearchGoogleBooksHandler handler = new SearchGoogleBooksHandler();
-        SearchGoogleBooksEntryHandler entryHandler = new SearchGoogleBooksEntryHandler(bookData, fetchThumbnail);
+        SearchGoogleBooksEntryHandler entryHandler = new SearchGoogleBooksEntryHandler(bookInfo, fetchThumbnail);
 
         try {
             url = new URL(path);

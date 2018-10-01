@@ -24,7 +24,7 @@
         android:paddingEnd="@dimen/padding_border"
         android:paddingStart="@dimen/padding_border"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:ignore="LabelFor,TextFields" />
+        tools:ignore="LabelFor,TextFields,Autofill" />
 
     <View style="@style/listDividerHorizontal" />
 

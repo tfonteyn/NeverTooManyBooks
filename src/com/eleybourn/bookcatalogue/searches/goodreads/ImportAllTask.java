@@ -58,7 +58,6 @@ import java.util.Map;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement.INSERT_FAILED;
 import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.UPDATED;
 
 /**
@@ -324,8 +323,8 @@ class ImportAllTask extends GenericTask {
      */
     private void insertBook(@NonNull final CatalogueDBAdapter db, @NonNull final Bundle review) {
         BookData bookData = buildBundle(db, null, review);
-        long id = db.insertBook(bookData, CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
-        if (id != INSERT_FAILED) {
+        long id = db.insertBook(bookData);
+        if (id > 0) {
             if (bookData.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
                 String uuid = db.getBookUuid(id);
                 File thumb = StorageUtils.getTempCoverFile();
@@ -437,7 +436,7 @@ class ImportAllTask extends GenericTask {
          */
         if (bookData.containsKey(UniqueId.KEY_TITLE)) {
             String thisTitle = bookData.getString(UniqueId.KEY_TITLE);
-            Series.SeriesDetails details = Series.findSeries(thisTitle);
+            Series.SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
             if (details != null && details.name.length() > 0) {
                 ArrayList<Series> allSeries;
                 if (booksRow == null)

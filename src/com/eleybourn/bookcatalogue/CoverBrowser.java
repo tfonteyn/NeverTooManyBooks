@@ -51,6 +51,7 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import com.eleybourn.bookcatalogue.widgets.PagerLayout;
@@ -151,7 +152,7 @@ public class CoverBrowser {
             return;
         }
 
-        if (mIsbn == null || mIsbn.trim().isEmpty()) {
+        if (!IsbnUtils.isValid(mIsbn)) {
             Toast.makeText(mActivity, R.string.no_isbn_no_editions, Toast.LENGTH_LONG).show();
             shutdown();
             return;
@@ -227,7 +228,7 @@ public class CoverBrowser {
                 i.setLayoutParams(new ImageSwitcher.LayoutParams(
                         ImageSwitcher.LayoutParams.WRAP_CONTENT,
                         ImageSwitcher.LayoutParams.WRAP_CONTENT));
-                i.setImageResource(R.drawable.ic_help_outline);
+                i.setImageResource(R.drawable.ic_warning);
                 return i;
             }
         });
@@ -298,7 +299,7 @@ public class CoverBrowser {
                 // Not present; request it
                 mImageFetcher.enqueue(new GetThumbnailTask(isbn, coverImage, mPreviewSizeWidth, mPreviewSizeHeight));
                 //  and use a placeholder.
-                coverImage.setImageResource(R.drawable.ic_help_outline);
+                coverImage.setImageResource(R.drawable.ic_warning);
             } else {
                 // Present, so use it.
                 ImageUtils.fetchFileIntoImageView(coverImage, file, mPreviewSizeWidth, mPreviewSizeHeight, true);

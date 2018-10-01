@@ -30,6 +30,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -341,11 +342,11 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                     return true;
                 case R.id.MENU_ADD_THUMB_ALT_EDITIONS:
                     String isbn = mFields.getField(R.id.isbn).getValue().toString();
-                    if (isbn == null || isbn.trim().isEmpty()) {
-                        Toast.makeText(getActivity(), getResources().getString(R.string.editions_require_isbn), Toast.LENGTH_LONG).show();
-                    } else {
+                    if (IsbnUtils.isValid(isbn)) {
                         mCoverBrowser = new CoverBrowser(getActivity(), isbn, mOnImageSelectedListener);
                         mCoverBrowser.showEditionCovers();
+                    } else {
+                        Toast.makeText(getActivity(), getResources().getString(R.string.editions_require_isbn), Toast.LENGTH_LONG).show();
                     }
                     return true;
             }
@@ -629,9 +630,12 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      * Also set thumbnail of the book.
      */
     protected void populateBookDetailsFields(@NonNull final BookData book) {
-        //Set anthology field
-        Integer ant = book.getInt(BookData.IS_ANTHOLOGY);
-        mFields.getField(R.id.anthology).setValue(ant.toString()); // Set checked if ant != 0
+        //Set anthology field, which is only there on the Edit screen, but not on the 'Look'
+        View ant = getView().findViewById(R.id.anthology);
+        if (ant !=null) {
+            Integer val = book.getInt(BookData.IS_ANTHOLOGY);
+            mFields.getField(R.id.anthology).setValue(val.toString()); // Set checked if ant != 07
+        }
     }
 
     /**

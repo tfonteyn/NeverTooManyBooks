@@ -58,27 +58,14 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * Single Activity to be the 'Main' activity for the app. I does app-startup stuff which is initially
+ * Single Activity to be the 'Main' activity for the app. It does app-startup stuff which is initially
  * to start the 'real' main activity.
- *
- * FIXME: now that MainMenu is gone.... see what this note means ? if anything
- * Note that calling the desired main activity first resulted in MainMenu's 'singleInstance' property
- * NOT being honoured. So we call MainMenu anyway, but set a flag in the Intent to indicate this is
- * a startup. This approach mostly works, but results in an apparent mis-ordering of the activity
- * stack, which we can live with for now.
  *
  * @author Philip Warner
  */
 public class StartupActivity extends AppCompatActivity {
-    /**
-     * FIXME: This is nasty, now we use fragments, StartupActivity should be a FragmentActivity and load the right fragment
-     * then we could do away with the whole isRoot/willBeRoot thing
-     * Check usage in the code of this string in the intent extra
-     */
-    public static final String BKEY_IS_TASK_ROOT = "willBeTaskRoot";
 
     private static final String TAG = "StartupActivity";
-    private static final String BKEY_STARTUP = "startup";
 
     /** Flag to indicate FTS rebuild is required at startup */
     private static final String PREF_FTS_REBUILD_REQUIRED = TAG + ".FtsRebuildRequired";
@@ -108,12 +95,12 @@ public class StartupActivity extends AppCompatActivity {
     private SimpleTaskQueue mTaskQueue = null;
     /** Progress Dialog for startup tasks */
     private ProgressDialog mProgress = null;
-    /** Flag indicating THIS instance was really the startup instance */
-    private boolean mWasReallyStartup = false;
     /** Flag indicating an export is required after startup */
     private boolean mExportRequired = false;
     /** UI thread */
     private Thread mUiThread;
+    /** stage the startup is at. */
+    private int mStartupStage = 0;
 
     /** Set the flag to indicate an FTS rebuild is required */
     public static void scheduleFtsRebuild() {
@@ -147,29 +134,68 @@ public class StartupActivity extends AppCompatActivity {
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // request Permissions (Android 6+)
+        if (Build.VERSION.SDK_INT >= 23) {
+            checkPermissions();
+        } else {
+            // older Android, simply move forward as the permissions will have
+            // been requested at install time.
+            startNextStage();
+        }
+    }
+
+    /** determines the order of startup stages (without having to manually renumber */
+    private void startNextStage() {
+        // onCreate being stage 0
+        mStartupStage++;
+        if (BuildConfig.DEBUG) {
+            System.out.println("Starting stage " + mStartupStage);
+        }
+        switch (mStartupStage) {
+            case 1: {
+                // Create a progress dialog; we may not use it...but we need it to be created in the UI thread.
+                //FIXME: see startup logs
+                mProgress = ProgressDialog.show(this, getString(R.string.book_catalogue_startup), getString(R.string.starting_up),
+                        true, true, new OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                // Cancelling the list cancels the activity.
+                                StartupActivity.this.finish();
+                            }
+                        });
+                startTasks();
+                break;
+            }
+            case 2: {
+                // Get rid of the progress dialog
+                if (mProgress != null) {
+                    mProgress.dismiss();
+                    mProgress = null;
+                }
+                checkForUpgrades();
+                break;
+            }
+            case 3:
+                proposeBackup();
+                break;
+            case 4:
+                gotoMainScreen();
+                break;
+        }
+    }
+
+    private void startTasks() {
         if (BuildConfig.DEBUG) {
             System.out.println("Startup isTaskRoot() = " + isTaskRoot());
         }
 
         mUiThread = Thread.currentThread();
 
-        // Create a progress dialog; we may not use it...but we need it to be created in the UI thread.
-        mProgress = ProgressDialog.show(this, getString(R.string.book_catalogue_startup), getString(R.string.starting_up),
-                true, true, new OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        // Cancelling the list cancels the activity.
-                        StartupActivity.this.finish();
-                    }
-                });
-
-        mWasReallyStartup = mIsReallyStartup;
-
         // If it's a real application startup...cleanup old stuff
-        if (mWasReallyStartup) {
+        if (mIsReallyStartup) {
             mStartupActivity = new WeakReference<>(this);
 
-            updateProgress(getString(R.string.starting));
+            updateProgress(R.string.starting);
 
             // at this point the user will have granted us STORAGE permission,
             // so make sure we have our directories are ready
@@ -189,10 +215,10 @@ public class StartupActivity extends AppCompatActivity {
             // ENHANCE: add checks for new Events/crashes
         }
 
-        // If no tasks were queued, then move on to stage 2. Otherwise, the completed
-        // tasks will cause stage 2 to start.
+        // If no tasks were queued, then move on to next stage. Otherwise, the completed
+        // tasks will cause the next stage to start.
         if (mTaskQueue == null) {
-            stage2Startup();
+            startNextStage();
         }
     }
 
@@ -206,7 +232,7 @@ public class StartupActivity extends AppCompatActivity {
     /**
      * Update the progress dialog, if it has not been dismissed.
      */
-    private void updateProgress(final String message) {
+    private void updateProgress(@NonNull final String message) {
         // If mProgress is null, it has been dismissed. Don't update.
         if (mProgress == null) {
             return;
@@ -252,22 +278,10 @@ public class StartupActivity extends AppCompatActivity {
             if (BuildConfig.DEBUG) {
                 System.out.println("Task Completed - no more");
             }
-            stage2Startup();
+            startNextStage();
         }
     }
 
-    /**
-     * request Permissions (Android 6+)
-     */
-    private void stage2Startup() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            checkPermissions();
-        } else {
-            // older Android, simply move forward as the permissions will have
-            // been requested at install time.
-            stage3Startup();
-        }
-    }
 
     /**
      * Get (or create) the task queue.
@@ -289,24 +303,33 @@ public class StartupActivity extends AppCompatActivity {
     /**
      * Called in UI thread after last startup task completes, or if there are no tasks to queue.
      */
-    private void stage3Startup() {
+    private void checkForUpgrades() {
         // Remove the weak reference. Only used by db onUpgrade.
         mStartupActivity.clear();
-        // Get rid of the progress dialog
-        if (mProgress != null) {
-            mProgress.dismiss();
-            mProgress = null;
-        }
 
-        // Display upgrade message if necessary, otherwise go on to stage 4
+        // Display upgrade message if necessary, otherwise go on to next stage
         if (mUpgradeMessageShown || UpgradeMessageManager.getUpgradeMessage().isEmpty()) {
-            stage4Startup();
+            startNextStage();
         } else {
-            upgradePopup(UpgradeMessageManager.getUpgradeMessage());
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setMessage(Html.fromHtml(UpgradeMessageManager.getUpgradeMessage()))
+                    .setTitle(R.string.upgrade_title)
+                    .setIcon(R.drawable.ic_info_outline)
+                    .create();
+
+            dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, final int which) {
+                            UpgradeMessageManager.setMessageAcknowledged();
+                            startNextStage();
+                        }
+                    });
+            dialog.show();
+            mUpgradeMessageShown = true;
         }
     }
 
-    private void stage4Startup() {
+    private void proposeBackup() {
         int opened = BCPreferences.getInt(STATE_OPENED, BACKUP_PROMPT_WAIT);
         int startCount = BCPreferences.getInt(PREF_START_COUNT, 0) + 1;
 
@@ -319,9 +342,7 @@ public class StartupActivity extends AppCompatActivity {
         ed.putInt(PREF_START_COUNT, startCount);
         ed.commit();
 
-        if ((startCount % AMAZON_PROMPT_WAIT) == 0) {
-            mShowAmazonHint = true;
-        }
+        mShowAmazonHint = ((startCount % AMAZON_PROMPT_WAIT) == 0);
 
         mExportRequired = false;
 
@@ -350,26 +371,21 @@ public class StartupActivity extends AppCompatActivity {
             dialog.setOnDismissListener(new OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
-                    stage5Startup();
+                    startNextStage();
                 }
             });
             dialog.show();
         } else {
-            stage5Startup();
+            startNextStage();
         }
     }
 
     /**
      * Last step
      */
-    private void stage5Startup() {
-        Intent i = new Intent(this, BooksOnBookshelf.class);
-        if (mWasReallyStartup) {
-            i.putExtra(BKEY_STARTUP, true);
-        }
-
-        i.putExtra(BKEY_IS_TASK_ROOT, isTaskRoot());
-        startActivity(i);
+    private void gotoMainScreen() {
+        Intent intent = new Intent(this, BooksOnBookshelf.class);
+        startActivity(intent);
 
         if (mExportRequired) {
             AdministrationFunctions.exportToArchive(this);
@@ -377,29 +393,6 @@ public class StartupActivity extends AppCompatActivity {
 
         // We are done
         finish();
-    }
-
-    /**
-     * This will display a popup with a provided message to the user. This will be
-     * mostly used for upgrade notifications
-     *
-     * @param message The message to display in the popup
-     */
-    private void upgradePopup(String message) {
-        AlertDialog dialog = new AlertDialog.Builder(this).setMessage(Html.fromHtml(message))
-                .setTitle(R.string.upgrade_title)
-                .setIcon(R.drawable.ic_info_outline)
-                .create();
-
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        UpgradeMessageManager.setMessageAcknowledged();
-                        stage4Startup();
-                    }
-                });
-        dialog.show();
-        mUpgradeMessageShown = true;
     }
 
     @Override
@@ -450,7 +443,7 @@ public class StartupActivity extends AppCompatActivity {
         String[] missing = permissions.toArray(new String[0]);
 
         if (missing.length == 0) {
-            stage3Startup();
+            startNextStage();
         } else {
             ActivityCompat.requestPermissions(this, missing, PERMISSIONS_REQUEST);
             //TODO: when going to API 23+, use native call
@@ -470,7 +463,7 @@ public class StartupActivity extends AppCompatActivity {
             // Get a DB to make sure the FTS rebuild flag is set appropriately
             CatalogueDBAdapter db = taskContext.getDb();
             if (BCPreferences.getBoolean(PREF_FTS_REBUILD_REQUIRED, false)) {
-                updateProgress(getString(R.string.rebuilding_search_index));
+                updateProgress(R.string.rebuilding_search_index);
                 db.rebuildFts();
                 BCPreferences.setBoolean(PREF_FTS_REBUILD_REQUIRED, false);
             }
@@ -489,7 +482,7 @@ public class StartupActivity extends AppCompatActivity {
 
             CatalogueDBAdapter db = taskContext.getDb();
 
-            updateProgress(getString(R.string.optimizing_databases));
+            updateProgress(R.string.optimizing_databases);
             // Analyze DB
             db.analyzeDb();
             if (BooklistPreferencesActivity.isThumbnailCacheEnabled()) {

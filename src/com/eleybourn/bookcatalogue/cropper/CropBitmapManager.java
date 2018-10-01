@@ -16,12 +16,10 @@
 
 package com.eleybourn.bookcatalogue.cropper;
 
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.io.FileDescriptor;
 import java.util.Iterator;
 import java.util.WeakHashMap;
 

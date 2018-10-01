@@ -59,6 +59,8 @@
                 android:drawableStart="@drawable/ic_file_download"
                 android:text="@string/import_from_archive" />
 
+            <View style="@style/listDividerHorizontal" />
+
             <TextView
                 android:id="@+id/export_label"
                 style="@style/prefsItem"

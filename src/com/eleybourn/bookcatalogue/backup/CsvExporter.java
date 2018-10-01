@@ -35,6 +35,7 @@ import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -78,6 +79,14 @@ public class CsvExporter implements Exporter {
     private static final String UTF8 = "utf8";
     private static final int BUFFER_SIZE = 32768;
 
+    /** standard export file */
+    public static final String EXPORT_FILE_NAME = "export.csv";
+    /** standard temp export file, first we write here, then rename to csv */
+    static final String EXPORT_TEMP_FILE_NAME = "export.tmp";
+    /** pattern we look for to rename/keep older copies */
+    static final String EXPORT_CSV_FILES_PATTERN = "export.%s.csv";
+    /** backup copies to keep */
+    private static final int COPIES = 5;
     /**
      * The order of the header MUST be the same as the order used to write the data (obvious eh?)
      *
@@ -117,6 +126,20 @@ public class CsvExporter implements Exporter {
                     '"' + DOM_BOOK_UUID + "\"," +
                     "\n";
     private String mLastError;
+
+    void renameFiles(final @NonNull File temp) {
+        File fLast = StorageUtils.getFile(String.format(EXPORT_CSV_FILES_PATTERN, COPIES));
+        StorageUtils.deleteFile(fLast);
+
+        for (int i = COPIES - 1; i > 0; i--) {
+            final File fCurr = StorageUtils.getFile(String.format(EXPORT_CSV_FILES_PATTERN, i));
+            StorageUtils.renameFile(fCurr, fLast);
+            fLast = fCurr;
+        }
+        final File export = StorageUtils.getFile(EXPORT_FILE_NAME);
+        StorageUtils.renameFile(export, fLast);
+        StorageUtils.renameFile(temp, export);
+    }
 
     public String getLastError() {
         return mLastError;

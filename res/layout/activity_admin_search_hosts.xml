@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:hint="http://www.amazon.com"
             android:inputType="textUri"
-            tools:ignore="HardcodedText" />
+            tools:ignore="Autofill,HardcodedText" />
 
         <TextView
             android:layout_width="match_parent"
@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:hint="http://books.google.com"
             android:inputType="textUri"
-            tools:ignore="HardcodedText" />
+            tools:ignore="Autofill,HardcodedText" />
 
     </LinearLayout>
 

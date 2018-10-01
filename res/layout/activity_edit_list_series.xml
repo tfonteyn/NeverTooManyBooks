@@ -48,7 +48,8 @@
             android:layout_weight="1"
             android:hint="@string/series_num"
             android:inputType="text"
-            android:singleLine="true" />
+            android:singleLine="true"
+            tools:ignore="Autofill" />
 
         <Button
             android:id="@+id/add"

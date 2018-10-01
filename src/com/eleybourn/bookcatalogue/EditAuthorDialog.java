@@ -64,7 +64,7 @@ public class EditAuthorDialog {
 					Toast.makeText(mContext, R.string.author_is_blank, Toast.LENGTH_LONG).show();
 					return;
 				}
-				String newGiven = givenView.getText().toString();
+				String newGiven = givenView.getText().toString().trim();
 				Author newAuthor = new Author(newFamily, newGiven);
 				dialog.dismiss();
 				confirmEdit(author, newAuthor);

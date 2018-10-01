@@ -77,7 +77,7 @@ class TextFieldEditor extends AlertDialog {
 		root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mListener.onSaved(mTextView.getText().toString());
+				mListener.onSaved(mTextView.getText().toString().trim());
 			}}
 		);
 

@@ -36,8 +36,6 @@ import java.util.Date;
 
 import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_CATEGORY;
 import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_EVENT_COUNT;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_EXCEPTION;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_FAILURE_REASON;
 import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_ID;
 import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_QUEUED_DATE;
 import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_RETRY_DATE;

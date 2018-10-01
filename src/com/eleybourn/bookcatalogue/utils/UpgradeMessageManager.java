@@ -62,7 +62,8 @@ public class UpgradeMessageManager {
             .add(162, R.string.new_in_510)
             .add(166, R.string.new_in_511)
             .add(171, R.string.new_in_520)
-            .add(179, R.string.new_in_522);
+            .add(179, R.string.new_in_522)
+            .add(200, R.string.new_in_600);
 
     // New messages go here in order of increasing version ID.
     /** The message generated for this instance; will be set first time it is generated */

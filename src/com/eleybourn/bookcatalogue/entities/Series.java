@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue.entities;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -83,13 +81,13 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 
     public String number;
 
-    public Series(@NonNull final String name) {
-        java.util.regex.Matcher m = PATTERN.matcher(name);
+    public Series(@NonNull final String encodedName) {
+        java.util.regex.Matcher m = PATTERN.matcher(encodedName);
         if (m.find()) {
             this.name = m.group(1).trim();
             this.number = cleanupSeriesPosition(m.group(2));
         } else {
-            this.name = name.trim();
+            this.name = encodedName.trim();
             this.number = "";
         }
         this.id = 0L;
@@ -111,7 +109,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
      * @param title Book title to parse
      */
     @Nullable
-    public static SeriesDetails findSeries(@Nullable final String title) {
+    public static SeriesDetails findSeriesFromBookTitle(@Nullable final String title) {
         if (title == null || title.isEmpty()) {
             return null;
         }
@@ -141,7 +139,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
      *
      * @param position Position name to cleanup
      *
-     * @return th series number (remember: number is really alfanum)
+     * @return the series number (remember: it's really alphanumeric)
      */
     @NonNull
     private static String cleanupSeriesPosition(@Nullable String position) {

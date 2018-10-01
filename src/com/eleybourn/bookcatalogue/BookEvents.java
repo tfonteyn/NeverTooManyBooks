@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDoneException;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -173,12 +172,11 @@ public class BookEvents {
                 author = context.getString(R.string.unknown_uc);
             }
 
-            String title;
-            try {
-                title = db.getBookTitle(mBookId);
-            } catch (SQLiteDoneException e) {
+            String title = db.getBookTitle(mBookId);
+            if (title==null) {
                 title = context.getString(R.string.this_book_deleted_uc);
             }
+
             holder.title.setText(title);
             holder.author.setText(String.format(context.getString(R.string.by), author));
             holder.error.setText(this.getDescription());

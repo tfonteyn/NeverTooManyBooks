@@ -15,7 +15,7 @@
         android:ems="10"
         android:gravity="top"
         android:inputType="textMultiLine"
-        tools:ignore="LabelFor"
+        tools:ignore="LabelFor,Autofill"
         tools:text="This book should be in everyone's bathroom.">
 
         <requestFocus />

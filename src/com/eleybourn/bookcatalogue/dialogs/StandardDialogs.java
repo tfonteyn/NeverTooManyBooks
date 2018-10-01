@@ -44,7 +44,6 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegister;
 import com.eleybourn.bookcatalogue.searches.librarything.AdministrationLibraryThing;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
@@ -99,10 +98,10 @@ public class StandardDialogs {
 
     public static void needLibraryThingAlert(@NonNull final Context context,
                                              final boolean ltRequired,
-                                             final String prefSuffix) {
+                                             @NonNull final String prefSuffix) {
         boolean showAlert;
         int msgId;
-        final String prefName = LibraryThingManager.LT_HIDE_ALERT_PREF_NAME + "_" + prefSuffix;
+        final String prefName = LibraryThingManager.PREFS_LT_HIDE_ALERT + "_" + prefSuffix;
         if (!ltRequired) {
             msgId = R.string.uses_library_thing_info;
             SharedPreferences prefs = context.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
@@ -188,7 +187,7 @@ public class StandardDialogs {
     public static int deleteBookAlert(@NonNull final Context context,
                                       @NonNull final CatalogueDBAdapter dba,
                                       final long id,
-                                      final Runnable onDeleted) {
+                                      @NonNull final Runnable onDeleted) {
 
         List<Author> authorList = dba.getBookAuthorList(id);
 

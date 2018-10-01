@@ -320,7 +320,7 @@ public class DbSync {
          * @param helper SQLiteOpenHelper to open underlying database
          * @param sync   Synchronizer to use
          */
-        SynchronizedDb(@NonNull final  SQLiteOpenHelper helper, @NonNull final Synchronizer sync) {
+        SynchronizedDb(@NonNull final SQLiteOpenHelper helper, @NonNull final Synchronizer sync) {
             mSync = sync;
             mDb = openWithRetries(new DbOpener() {
                 @Override
@@ -490,11 +490,11 @@ public class DbSync {
         /**
          * Locking-aware wrapper for underlying database method
          *
-         * @return the row ID of the newly inserted row, or {@link SynchronizedStatement#INSERT_FAILED} if an error occurred
+         * @return the row ID of the newly inserted row, or -1 if an error occurred
          */
-        public long insertOrThrow(@NonNull final String table,
-                                  @Nullable final String nullColumnHack,
-                                  @NonNull final ContentValues values) {
+        long insert(@NonNull final String table,
+                    @Nullable final String nullColumnHack,
+                    @NonNull final ContentValues values) {
             SyncLock syncLock = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive) {
@@ -504,8 +504,10 @@ public class DbSync {
                 syncLock = mSync.getExclusiveLock();
             }
 
+            // reminder: insert does not throw exceptions for the actual insert.
+            // but it can throw other exceptions.
             try {
-                return mDb.insertOrThrow(table, nullColumnHack, values);
+                return mDb.insert(table, nullColumnHack, values);
             } finally {
                 if (syncLock != null) {
                     syncLock.unlock();
@@ -521,7 +523,7 @@ public class DbSync {
         public int update(@NonNull final String table,
                           @NonNull final ContentValues values,
                           @NonNull final String whereClause,
-                          @Nullable final String[] whereArgs) throws IllegalArgumentException, SQLException {
+                          @Nullable final String[] whereArgs) {
             SyncLock syncLock = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive) {
@@ -531,6 +533,8 @@ public class DbSync {
                 syncLock = mSync.getExclusiveLock();
             }
 
+            // reminder: update does not throw exceptions for the actual update.
+            // but it can throw other exceptions.
             try {
                 return mDb.update(table, values, whereClause, whereArgs);
             } finally {
@@ -544,8 +548,8 @@ public class DbSync {
          * Locking-aware wrapper for underlying database method.
          *
          * @return the number of rows affected if a whereClause is passed in, 0
-         *         otherwise. To remove all rows and get a count pass "1" as the
-         *         whereClause.
+         * otherwise. To remove all rows and get a count pass "1" as the
+         * whereClause.
          */
         public int delete(@NonNull final String table,
                           @NonNull final String whereClause,
@@ -559,6 +563,8 @@ public class DbSync {
                 syncLock = mSync.getExclusiveLock();
             }
 
+            // reminder: delete does not throw exceptions for the actual delete.
+            // but it can throw other exceptions.
             try {
                 return mDb.delete(table, whereClause, whereArgs);
             } finally {
@@ -687,7 +693,7 @@ public class DbSync {
          * Wrapper for underlying database method.
          *
          * @throws IllegalStateException if the current thread is not in a transaction or the
-         * transaction is already marked as successful.
+         *                               transaction is already marked as successful.
          */
         public void setTransactionSuccessful() {
             mDb.setTransactionSuccessful();
@@ -743,9 +749,6 @@ public class DbSync {
      * @author Philip Warner
      */
     public static class SynchronizedStatement implements Closeable {
-
-        /** insertOrThrow calls indicate failure by returning -1L */
-        public static final long INSERT_FAILED = -1L;
 
         /** Synchronizer from database */
         final Synchronizer mSync;
@@ -845,8 +848,8 @@ public class DbSync {
         public long simpleQueryForLong() throws SQLiteDoneException {
             SyncLock sharedLock = mSync.getSharedLock();
             try {
-                long result =  mStatement.simpleQueryForLong();
-                if (DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG && result <= 0 ) {
+                long result = mStatement.simpleQueryForLong();
+                if (DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG && result <= 0) {
                     Logger.printStackTrace("simpleQueryForLong got: " + result);
                 }
                 return result;
@@ -854,6 +857,7 @@ public class DbSync {
                 sharedLock.unlock();
             }
         }
+
         /**
          * Syntax sugar
          *
@@ -863,11 +867,11 @@ public class DbSync {
          *
          * @return The result of the query, or 0 when no rows found
          */
-        long simpleQueryForLongOrZero() {
+        public long simpleQueryForLongOrZero() {
             SyncLock sharedLock = mSync.getSharedLock();
             try {
-                long result =  mStatement.simpleQueryForLong();
-                if (DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG && result <= 0 ) {
+                long result = mStatement.simpleQueryForLong();
+                if (DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG && result <= 0) {
                     Logger.printStackTrace("simpleQueryForLongOrZero got: " + result);
                 }
                 return result;
@@ -901,7 +905,6 @@ public class DbSync {
          * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
          *
          * Execute a statement that returns a 1 by 1 table with a text value.
-         * For example, SELECT COUNT(*) FROM table;
          *
          * @return The result of the query.
          *
@@ -923,11 +926,8 @@ public class DbSync {
          * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
          *
          * Execute a statement that returns a 1 by 1 table with a text value.
-         * For example, SELECT COUNT(*) FROM table;
          *
          * @return The result of the query.
-         *
-         * @throws android.database.sqlite.SQLiteDoneException if the query returns zero rows
          */
         @Nullable
         String simpleQueryForStringOrNull() {
@@ -943,6 +943,7 @@ public class DbSync {
                 sharedLock.unlock();
             }
         }
+
         /**
          * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
          *
@@ -974,7 +975,7 @@ public class DbSync {
          * Execute this SQL statement and return the ID of the row inserted due to this call.
          * The SQL statement should be an INSERT for this to be a useful call.
          *
-         * @return the row ID of the last row inserted, if this insertOrThrow is successful. {@link #INSERT_FAILED} otherwise.
+         * @return the row ID of the last row inserted, if this insert is successful. -1 otherwise.
          *
          * @throws android.database.SQLException If the SQL string is invalid for some reason
          */

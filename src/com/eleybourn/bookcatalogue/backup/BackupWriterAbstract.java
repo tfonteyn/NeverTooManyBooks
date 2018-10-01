@@ -290,10 +290,10 @@ public abstract class BackupWriterAbstract implements BackupWriter {
         String fmt_noskip = BookCatalogueApp.getResourceString(R.string.covers_progress);
         String fmt_skip = BookCatalogueApp.getResourceString(R.string.covers_progress_incr);
 
-        try (Cursor c = mDb.getBookUuidList()) {
-            final int uuidCol = c.getColumnIndex(DatabaseDefinitions.DOM_BOOK_UUID.toString());
-            while (c.moveToNext() && !listener.isCancelled()) {
-                File cover = StorageUtils.getCoverFile(c.getString(uuidCol));
+        try (Cursor cursor = mDb.fetchBookUuidList()) {
+            final int uuidCol = cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_UUID.toString());
+            while (cursor.moveToNext() && !listener.isCancelled()) {
+                File cover = StorageUtils.getCoverFile(cursor.getString(uuidCol));
                 if (cover.exists()) {
                     if (cover.exists()
                             && (since == null || sinceTime < cover.lastModified())) {

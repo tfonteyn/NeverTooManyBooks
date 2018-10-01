@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.properties;
 
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
@@ -86,7 +87,7 @@ public class PropertyGroup {
     private String mName = null;
 
     /** Constructor */
-    private PropertyGroup(final int id, @IdRes final int nameId, final int weight) {
+    private PropertyGroup(final int id, @StringRes final int nameId, final int weight) {
         this.id = id;
         this.nameId = nameId;
         this.weight = weight;
@@ -109,7 +110,7 @@ public class PropertyGroup {
         }
     }
 
-    @IdRes
+    @StringRes
     int getNameId() {
         return nameId;
     }
@@ -142,7 +143,7 @@ public class PropertyGroup {
         }
 
         /** Construct and add a group based on parameters */
-        PropertyGroup addGroup(final int id, @IdRes final int nameId, final int weight) {
+        PropertyGroup addGroup(final int id, @StringRes final int nameId, final int weight) {
             PropertyGroup g = new PropertyGroup(id, nameId, weight);
             addGroup(g);
             return g;

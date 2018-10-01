@@ -28,9 +28,9 @@
                     android:id="@+id/title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_alignWithParentIfMissing="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:layout_alignWithParentIfMissing="true"
                     android:layout_toStartOf="@id/read"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textIsSelectable="true"
@@ -53,8 +53,8 @@
                     style="@style/read_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
                     android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
                     tools:checked="true" />
 
                 <LinearLayout
@@ -85,8 +85,8 @@
                         style="@style/bookDetailLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingEnd="6dp"
                         android:paddingStart="6dp"
+                        android:paddingEnd="6dp"
                         android:text="@string/isbn" />
 
                     <TextView
@@ -110,8 +110,8 @@
                         style="@style/bookMinorDetailText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingEnd="@dimen/padding_border"
                         android:paddingStart="@dimen/padding_border"
+                        android:paddingEnd="@dimen/padding_border"
                         android:textIsSelectable="true"
                         tools:text="573 pages" />
 
@@ -139,7 +139,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/thumbnail"
-                    tools:src="@drawable/ic_help_outline" />
+                    tools:src="@drawable/ic_warning" />
             </RelativeLayout>
         </LinearLayout>
 
@@ -179,8 +179,8 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/expander"
                 android:buttonTint="@android:color/transparent"
-                android:textOn=""
                 android:textOff=""
+                android:textOn=""
                 tools:ignore="ContentDescription" />
         </LinearLayout>
 
@@ -239,26 +239,32 @@
             android:textIsSelectable="true"
             tools:text="Science Fiction" />
 
-        <!-- Language -->
-        <TextView
-            android:id="@+id/lbl_language"
-            style="@style/bookDetailLabel"
-            android:text="@string/language" />
-
-        <TextView
-            android:id="@+id/language"
-            style="@style/bookDetailText"
-            android:textIsSelectable="true"
-            tools:text="Quenya" />
-
-
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+            <!-- Language -->
+            <TableRow
+                android:id="@+id/row_language"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/lbl_language"
+                    style="@style/bookDetailLabel"
+                    android:text="@string/language" />
+
+                <TextView
+                    android:id="@+id/language"
+                    style="@style/bookDetailText"
+                    android:textIsSelectable="true"
+                    tools:text="Quenya" />
+            </TableRow>
+
             <TableRow
                 android:id="@+id/row_first_publication"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <TextView
                     style="@style/bookDetailLabel"
                     android:text="@string/first_publication" />

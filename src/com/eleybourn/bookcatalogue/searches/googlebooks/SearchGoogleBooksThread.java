@@ -18,7 +18,7 @@ public class SearchGoogleBooksThread extends SearchThread {
 		try {
 			doProgress(getString(R.string.searching_google_books), 0);
 			try {
-				GoogleBooksManager.searchGoogle(mIsbn, mAuthor, mTitle, mBookData, mFetchThumbnail);
+				GoogleBooksManager.searchGoogle(mIsbn, mAuthor, mTitle, mBookInfo, mFetchThumbnail);
 			} catch (Exception e) {
 				Logger.logError(e);
 				showException(R.string.searching_google_books, e);

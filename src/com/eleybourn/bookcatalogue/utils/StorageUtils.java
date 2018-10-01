@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,10 +69,6 @@ public class StorageUtils {
     private static final String COVER_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "covers";
     /** serious errors are written to this file */
     private static final String ERROR_LOG_FILE = "error.log";
-    /** standard export file */
-    private static final String EXPORT_FILE_NAME = "export.csv";
-    /** standard temp export file, first we write here, then rename to csv */
-    private static final String EXPORT_TEMP_FILE_NAME = "export.tmp";
     /** written to root external storage as 'writable' test + prevent 'detection' by apps who want to 'do things' with media */
     private static final String NOMEDIA_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + ".nomedia";
 
@@ -143,13 +140,6 @@ public class StorageUtils {
 
     private static File getTempStorage() {
         return new File(TEMP_FILE_PATH);
-    }
-
-    public static File getExportFile() {
-        return new File(EXTERNAL_FILE_PATH + File.separator + EXPORT_FILE_NAME);
-    }
-    public static File getTempExportFile() {
-        return new File(EXTERNAL_FILE_PATH + File.separator + EXPORT_TEMP_FILE_NAME);
     }
 
     /**
@@ -292,7 +282,7 @@ public class StorageUtils {
         }
     }
 
-    public static ArrayList<File> findExportFiles() {
+    public static List<File> findCsvFiles() {
         // Make a filter for files ending in .csv
         FilenameFilter csvFilter = new FilenameFilter() {
             @Override
@@ -310,7 +300,7 @@ public class StorageUtils {
         }
 
         // Scan all mounted file systems
-        final ArrayList<File> dirs = new ArrayList<>();
+        final List<File> dirs = new ArrayList<>();
 
         try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("/proc/mounts")), 1024)) {
             String line;
@@ -378,7 +368,7 @@ public class StorageUtils {
             debugInfo.append("Looking for files in directories\n");
         }
 
-        final ArrayList<File> files = new ArrayList<>();
+        final List<File> files = new ArrayList<>();
         for (File dir : dirs) {
             try {
                 if (dir.exists()) {
@@ -484,7 +474,7 @@ public class StorageUtils {
      * ENHANCE: make suitable for multiple filesystems using {@link #copyFile(File, File)}
      * from the Android docs {@link File#renameTo(File)}: Both paths be on the same mount point.
      *
-     * @return true if the rename worked, this is really a "to.exists()" call.
+     * @return true if the rename worked, this is really a ".exists()" call.
      *              and not relying on the OS renameTo call.
      */
     public static boolean renameFile(@NonNull final File src, @NonNull final File dst) {

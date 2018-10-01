@@ -441,7 +441,7 @@ public class SearchManager implements TaskManagerListener {
 
         for (String k : bookData.keySet()) {
             // If its not there, copy it.
-            if (!mBookData.containsKey(k) || mBookData.getString(k) == null || mBookData.getString(k).trim().isEmpty()) {
+            if (!mBookData.containsKey(k) || mBookData.getString(k) == null || mBookData.getString(k).isEmpty()) {
                 mBookData.putString(k, bookData.get(k).toString());
             } else {
                 // Copy, append or update data as appropriate.
@@ -577,18 +577,6 @@ public class SearchManager implements TaskManagerListener {
             //add series to stop crashing
             mBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, new ArrayList<Series>());
         }
-
-        //
-        // TODO: this needs to be locale-specific. Currently we probably get good-enough data without
-        // forcing a cleanup.
-        //
-        // Removed 20-Jan-2016 PJW; see Issue 717.
-        //
-        // Cleanup other fields
-        //Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_TITLE);
-        //Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_PUBLISHER);
-        //Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_BOOK_DATE_PUBLISHED);
-        //Utils.doProperCase(mBookData, DatabaseDefinitions.KEY_SERIES_NAME);
 
         // If book is not found or missing required data, warn the user
         if (authors == null || authors.isEmpty() || title == null || title.isEmpty()) {

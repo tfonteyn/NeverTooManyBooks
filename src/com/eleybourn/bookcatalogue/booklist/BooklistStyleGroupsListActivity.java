@@ -176,17 +176,10 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
 
         // Save to DB if necessary
         if (mSaveToDb) {
-            mStyle.saveToDb(mDb);
+            mStyle.insertOrUpdateBooklistStyle(mDb);
         }
 
         return true;
-    }
-
-    /**
-     * Required. Do nothing.
-     */
-    @Override
-    protected void onRowClick(@NonNull final View target, @NonNull final GroupWrapper object, final int position) {
     }
 
     /**

@@ -191,7 +191,7 @@
             android:layout_toStartOf="@id/date_button"
             android:ems="10"
             android:inputType="date"
-            tools:ignore="LabelFor" />
+            tools:ignore="LabelFor,Autofill" />
 
     </RelativeLayout>
 

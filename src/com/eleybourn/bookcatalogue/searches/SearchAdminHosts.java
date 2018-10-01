@@ -33,9 +33,9 @@ public class SearchAdminHosts extends BookCatalogueActivity {
             @Override
             public void onClick(View v) {
                 EditText amazon_url = findViewById(R.id.amazon_url);
-                String newAmazon = amazon_url.getText().toString();
+                String newAmazon = amazon_url.getText().toString().trim();
                 EditText google_url = findViewById(R.id.google_url);
-                String newGoogle = google_url.getText().toString();
+                String newGoogle = google_url.getText().toString().trim();
 
                 //TODO: add sanity checks
                 if (!newAmazon.isEmpty()) {

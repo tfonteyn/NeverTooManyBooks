@@ -27,7 +27,6 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -126,8 +125,8 @@ public class Fields extends ArrayList<Fields.Field> {
     public static final long serialVersionUID = 1L;
     // Used for date parsing
     @SuppressLint("SimpleDateFormat")
-    private static final java.text.SimpleDateFormat mDateSqlSdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
-    private static final java.text.DateFormat mDateDisplaySdf = java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM);
+    private static final java.text.SimpleDateFormat DATE_SQL_SDF = new java.text.SimpleDateFormat("yyyy-MM-dd");
+    private static final java.text.DateFormat DATE_DISPLAY_SDF = java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM);
     // The activity and preferences related to this object.
     private final FieldsContext mContext;
     private final SharedPreferences mPrefs;
@@ -177,11 +176,10 @@ public class Fields extends ArrayList<Fields.Field> {
         }
         Date date;
         try {
-            // Parse as SQL/ANSI date
-            date = mDateSqlSdf.parse(s);
+            date = DATE_SQL_SDF.parse(s);
         } catch (Exception e) {
             try {
-                date = mDateDisplaySdf.parse(s);
+                date = DATE_DISPLAY_SDF.parse(s);
             } catch (Exception e1) {
                 java.text.DateFormat df = java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT);
                 date = df.parse(s);
@@ -225,6 +223,7 @@ public class Fields extends ArrayList<Fields.Field> {
     /**
      * Provides access to the underlying arrays get() method.
      */
+    @SuppressWarnings("unused")
     public Field getItem(final int index) {
         return super.get(index);
     }
@@ -397,8 +396,6 @@ public class Fields extends ArrayList<Fields.Field> {
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean validate(@NonNull final Bundle values, final boolean crossValidating) {
-        Objects.requireNonNull(values);
-
         Iterator<Field> fi = this.iterator();
         boolean isOk = true;
 
@@ -413,7 +410,7 @@ public class Fields extends ArrayList<Fields.Field> {
                     // Always save the value...even if invalid. Or at least try to.
                     if (!crossValidating) {
                         try {
-                            values.putString(fe.column, fe.getValue().toString());
+                            values.putString(fe.column, fe.getValue().toString().trim());
                         } catch (Exception ignored) {
                         }
                     }
@@ -678,12 +675,12 @@ public class Fields extends ArrayList<Fields.Field> {
 
         @Override
         public void get(@NonNull final Field field, @NonNull final Bundle values) {
-            values.putString(field.column, field.extract(mLocalValue));
+            values.putString(field.column, field.extract(mLocalValue).trim());
         }
 
         @Override
         public void get(@NonNull final Field field, @NonNull final DataManager values) {
-            values.putString(field.column, field.extract(mLocalValue));
+            values.putString(field.column, field.extract(mLocalValue).trim());
         }
 
         @Override
@@ -760,19 +757,16 @@ public class Fields extends ArrayList<Fields.Field> {
         }
 
         public void get(@NonNull final Field field, @NonNull final Bundle values) {
-            //TextView v = (TextView) field.getView();
-            //values.putString(field.column, field.extract(v.getText().toString()));
-            values.putString(field.column, mRawValue);
+            values.putString(field.column, mRawValue.trim());
         }
 
         @Override
         public void get(@NonNull final Field field, @NonNull final DataManager values) {
-            values.putString(field.column, mRawValue);
+            values.putString(field.column, mRawValue.trim());
         }
 
         public Object get(@NonNull final Field field) {
             return mRawValue;
-            //return field.extract(((TextView) field.getView()).getText().toString());
         }
 
         /**
@@ -813,7 +807,7 @@ public class Fields extends ArrayList<Fields.Field> {
                 mIsSetting = true;
             }
             try {
-                TextView v = (TextView) field.getView();
+                TextView view = (TextView) field.getView();
                 //
                 // Every field MUST have an associated View object, but sometimes it is not found.
                 // When not found, the app crashes.
@@ -829,7 +823,7 @@ public class Fields extends ArrayList<Fields.Field> {
                 // is removed from the screen. In this case, there is no need to synchronize the values 
                 // since the view is gone.
                 //
-                if (v == null) {
+                if (view == null) {
                     String msg = "NULL View: col=" + field.column + ", id=" + field.id + ", group=" + field.group;
                     Fields fs = field.getFields();
                     if (fs == null) {
@@ -854,17 +848,17 @@ public class Fields extends ArrayList<Fields.Field> {
                 }
 
                 // If the view is still present, make sure it is accurate.
-                if (v != null) {
+                if (view != null) {
                     String newVal = field.format(s);
                     // Despite assurances otherwise, getText() apparently returns null sometimes
-                    String oldVal = v.getText() == null ? null : v.getText().toString();
+                    String oldVal = view.getText() == null ? null : view.getText().toString().trim();
                     if (newVal == null && oldVal == null) {
                         return;
                     }
                     if (newVal != null && newVal.equals(oldVal)) {
                         return;
                     }
-                    v.setText(newVal);
+                    view.setText(newVal);
                 }
             } finally {
                 mIsSetting = false;
@@ -872,21 +866,21 @@ public class Fields extends ArrayList<Fields.Field> {
         }
 
         public void get(@NonNull final Field field, @NonNull final Bundle values) {
-            TextView v = (TextView) field.getView();
-            values.putString(field.column, field.extract(v.getText().toString()));
+            TextView view = (TextView) field.getView();
+            values.putString(field.column, field.extract(view.getText().toString()).trim());
         }
 
         @Override
         public void get(@NonNull final Field field, @NonNull final DataManager values) {
             try {
-                TextView v = (TextView) field.getView();
-                if (v == null) {
+                TextView view = (TextView) field.getView();
+                if (view == null) {
                     throw new RuntimeException("No view for field " + field.column);
                 }
-                if (v.getText() == null) {
+                if (view.getText() == null) {
                     throw new RuntimeException("Text is NULL for field " + field.column);
                 }
-                values.putString(field.column, field.extract(v.getText().toString()));
+                values.putString(field.column, field.extract(view.getText().toString()).trim());
             } catch (Exception e) {
                 throw new RuntimeException("Unable to save data", e);
             }
@@ -1048,13 +1042,13 @@ public class Fields extends ArrayList<Fields.Field> {
 
         public void get(@NonNull final Field field, @NonNull final Bundle values) {
             String value;
-            Spinner v = (Spinner) field.getView();
-            if (v == null) {
+            Spinner view = (Spinner) field.getView();
+            if (view == null) {
                 value = "";
             } else {
-                Object selItem = v.getSelectedItem();
+                Object selItem = view.getSelectedItem();
                 if (selItem != null) {
-                    value = selItem.toString();
+                    value = selItem.toString().trim();
                 } else {
                     value = "";
                 }
@@ -1064,13 +1058,13 @@ public class Fields extends ArrayList<Fields.Field> {
 
         public void get(@NonNull final Field field, @NonNull final DataManager values) {
             String value;
-            Spinner v = (Spinner) field.getView();
-            if (v == null) {
+            Spinner view = (Spinner) field.getView();
+            if (view == null) {
                 value = "";
             } else {
-                Object selItem = v.getSelectedItem();
+                Object selItem = view.getSelectedItem();
                 if (selItem != null) {
-                    value = selItem.toString();
+                    value = selItem.toString().trim();
                 } else {
                     value = "";
                 }
@@ -1080,13 +1074,13 @@ public class Fields extends ArrayList<Fields.Field> {
 
         public Object get(@NonNull final Field field) {
             String value;
-            Spinner v = (Spinner) field.getView();
-            if (v == null) {
+            Spinner view = (Spinner) field.getView();
+            if (view == null) {
                 value = "";
             } else {
-                Object selItem = v.getSelectedItem();
+                Object selItem = view.getSelectedItem();
                 if (selItem != null) {
-                    value = selItem.toString();
+                    value = selItem.toString().trim();
                 } else {
                     value = "";
                 }
@@ -1109,7 +1103,7 @@ public class Fields extends ArrayList<Fields.Field> {
         public String format(@NonNull final Field f, @Nullable final String source) {
             try {
                 java.util.Date d = parseDate(source);
-                return mDateDisplaySdf.format(d);
+                return DATE_DISPLAY_SDF.format(d);
             } catch (Exception e) {
                 return source;
             }
@@ -1121,7 +1115,7 @@ public class Fields extends ArrayList<Fields.Field> {
         public String extract(@NonNull final Field f, @NonNull final String source) {
             try {
                 java.util.Date d = parseDate(source);
-                return mDateSqlSdf.format(d);
+                return DATE_SQL_SDF.format(d);
             } catch (Exception e) {
                 return source;
             }
@@ -1167,15 +1161,15 @@ public class Fields extends ArrayList<Fields.Field> {
                 }
                 return null;
             }
-            final View v = mFragment.get().getView();
-            if (v == null) {
+            final View view = mFragment.get().getView();
+            if (view == null) {
                 if (BuildConfig.DEBUG) {
                     System.out.println("View is NULL");
                 }
                 return null;
             }
 
-            return v.findViewById(id);
+            return view.findViewById(id);
         }
 
     }
@@ -1195,11 +1189,13 @@ public class Fields extends ArrayList<Fields.Field> {
         /** Visibility group name. Used in conjunction with preferences to show/hide Views */
         public final String group;
         /** Validator to use (can be null) */
+        @Nullable
         public final FieldValidator validator;
         /** Owning collection */
         final WeakReference<Fields> mFields;
         /** FieldFormatter to use (can be null) */
-        public FieldFormatter formatter;
+        @Nullable
+        FieldFormatter formatter;
         /** Has the field been set to invisible **/
         public boolean visible;
         /**

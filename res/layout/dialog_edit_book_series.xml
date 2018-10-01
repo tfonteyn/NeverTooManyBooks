@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/dialogFrame">
 
     <LinearLayout
@@ -27,7 +28,8 @@
             android:layout_weight="1"
             android:hint="@string/series_num"
             android:inputType="text"
-            android:singleLine="true" />
+            android:singleLine="true"
+            tools:ignore="Autofill" />
     </LinearLayout>
 
     <!-- studio editor will show at top... but ButtonBar *does* show properly at the bottom when run -->

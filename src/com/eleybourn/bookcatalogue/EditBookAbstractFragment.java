@@ -25,7 +25,6 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RawRes;
 import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -283,7 +282,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      * @return The resulting visibility setting value (VISIBLE or GONE)
      */
     @SuppressWarnings("UnusedReturnValue")
-    private int showHideField(final boolean hideIfEmpty, @IdRes final int resId, @IdRes final int... relatedFields) {
+    int showHideField(final boolean hideIfEmpty, @IdRes final int resId, @IdRes final int... relatedFields) {
         // Get the base view
         final View v = getView().findViewById(resId);
         int visibility;
@@ -520,7 +519,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         //		System.out.print(" ");
         //	System.out.print(v.getClass().getName() + " (" + v.getId() + ")" + (v.getId() == R.id.descriptionLabel? "DESC! ->" : " ->"));
         //	if (v instanceof TextView) {
-        //		String s = ((TextView)v).getText().toString();
+        //		String s = ((TextView)v).getText().toString().trim();
         //		System.out.println(s.substring(0, Math.min(s.length(), 20)));
         //	} else {
         //		System.out.println();
