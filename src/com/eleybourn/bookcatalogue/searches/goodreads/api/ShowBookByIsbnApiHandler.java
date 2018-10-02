@@ -49,7 +49,7 @@ import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GO
 public class ShowBookByIsbnApiHandler extends ShowBookApiHandler {
 
 	
-	public ShowBookByIsbnApiHandler(GoodreadsManager manager) {
+	public ShowBookByIsbnApiHandler(@NonNull final GoodreadsManager manager) {
 		// TODO: If goodreads fix signed book.show_by_isbn requests, change false to true...
 		super(manager, true);
 	}

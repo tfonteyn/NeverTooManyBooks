@@ -95,8 +95,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
         View emptyView = findViewById(android.R.id.empty);
         mList = findViewById(android.R.id.list);
         if (mList == null) {
-            throw new RuntimeException(
-                    "Your content must have a ListView whose id attribute is '@android:id/list'");
+            throw new IllegalStateException("Your content must have a ListView whose id attribute is '@android:id/list'");
         }
         if (emptyView != null) {
             mList.setEmptyView(emptyView);

@@ -80,7 +80,7 @@ class UpgradeDatabase {
     // Renamed to the LAST version in which it was used
 
     private static final String DATABASE_CREATE_ANTHOLOGY_82 =
-            "create table " + TBL_ANTHOLOGY + " (_id integer primary key autoincrement, " +
+            "CREATE TABLE " + TBL_ANTHOLOGY + " (_id integer primary key autoincrement, " +
                     DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
                     DOM_AUTHOR_ID + " integer not null REFERENCES " + TBL_AUTHORS + ", " +
                     DOM_TITLE + " text not null, " +
@@ -88,7 +88,7 @@ class UpgradeDatabase {
                     ")";
 
      private static final String DATABASE_CREATE_BOOKS_81 =
-            "create table " + TBL_BOOKS + " (_id integer primary key autoincrement, " +
+            "CREATE TABLE " + TBL_BOOKS + " (_id integer primary key autoincrement, " +
                     DOM_TITLE + " text not null, " +
                     DOM_BOOK_ISBN + " text, " +
                     DOM_BOOK_PUBLISHER + " text, " +
@@ -114,7 +114,7 @@ class UpgradeDatabase {
                     ")";
 
     private static final String DATABASE_CREATE_BOOKS_68 =
-            "create table " + TBL_BOOKS +
+            "CREATE TABLE " + TBL_BOOKS +
                     " (_id integer primary key autoincrement, " +
                     DOM_TITLE + " text not null, " +
                     DOM_BOOK_ISBN + " text, " +
@@ -136,7 +136,7 @@ class UpgradeDatabase {
                     DOM_BOOK_DATE_ADDED + " datetime default current_timestamp" +
                     ")";
     private static final String DATABASE_CREATE_BOOKS_63 =
-            "create table " + TBL_BOOKS +
+            "CREATE TABLE " + TBL_BOOKS +
                     " (_id integer primary key autoincrement, " +
                     DOM_TITLE + " text not null, " +
                     DOM_BOOK_ISBN + " text, " +
@@ -157,7 +157,7 @@ class UpgradeDatabase {
                     DOM_BOOK_GENRE + " text " +
                     ")";
     private static final String DATABASE_CREATE_BOOK_SERIES_54 =
-            "create table " + TBL_BOOK_SERIES + "(" +
+            "CREATE TABLE " + TBL_BOOK_SERIES + "(" +
                     DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
                     DOM_SERIES_ID + " integer REFERENCES " + TBL_SERIES + " ON DELETE SET NULL ON UPDATE CASCADE, " +
                     DOM_BOOK_SERIES_NUM + " integer, " +
@@ -166,7 +166,7 @@ class UpgradeDatabase {
                     ")";
 
     private static final String DATABASE_CREATE_BOOKS_41 =
-            "create table " + TBL_BOOKS +
+            "CREATE TABLE " + TBL_BOOKS +
                     " (_id integer primary key autoincrement, " +
                     DOM_AUTHOR_ID + " integer not null REFERENCES " + TBL_AUTHORS + ", " +
                     DOM_TITLE + " text not null, " +
@@ -232,7 +232,7 @@ class UpgradeDatabase {
             }
         }
         String colList = cols.toString();
-        String sql = "Insert into " + to + "(" + colList + ") select " + colList + " from " + from;
+        String sql = "Insert INTO " + to + "(" + colList + ") SELECT " + colList + " FROM " + from;
         sdb.execSQL(sql);
     }
 
@@ -255,7 +255,7 @@ class UpgradeDatabase {
      * This routine renames all files, if they exist.
      */
     private static void v72_renameIdFilesToHash(@NonNull final DbSync.SynchronizedDb db) {
-        String sql = "select " + DOM_ID + ", " + DOM_BOOK_UUID + " from " + TBL_BOOKS + " Order by " + DOM_ID;
+        String sql = "SELECT " + DOM_ID + "," + DOM_BOOK_UUID + " FROM " + TBL_BOOKS + " ORDER BY " + DOM_ID;
         try (Cursor c = db.rawQuery(sql)) {
             while (c.moveToNext()) {
                 final long id = c.getLong(0);
@@ -618,7 +618,7 @@ class UpgradeDatabase {
             db.execSQL("DROP TABLE " + TBL_BOOK_BOOKSHELF);
 
             String TMP_DATABASE_CREATE_BOOKS =
-                    "create table " + TBL_BOOKS +
+                    "CREATE TABLE " + TBL_BOOKS +
                             " (_id integer primary key autoincrement, " +
                             OLD_KEY_AUTHOR + " integer not null REFERENCES " + TBL_AUTHORS + ", " +
                             DOM_TITLE + " text not null, " +
@@ -683,9 +683,9 @@ class UpgradeDatabase {
         }
         if (curVersion == 48) {
             curVersion++;
-            db.execSQL("delete from loan where loaned_to='null';");
-            db.execSQL("delete from loan where _id!=(select max(l2._id) from loan l2 where l2.book=loan.book);");
-            db.execSQL("delete from anthology where _id!=(select max(a2._id) from anthology a2 where a2.book=anthology.book AND a2.author=anthology.author AND a2.title=anthology.title);");
+            db.execSQL("DELETE FROM loan WHERE loaned_to='null';");
+            db.execSQL("DELETE FROM loan WHERE _id!=(SELECT max(l2._id) FROM loan l2 WHERE l2.book=loan.book);");
+            db.execSQL("DELETE FROM anthology WHERE _id!=(SELECT max(a2._id) FROM anthology a2 WHERE a2.book=anthology.book AND a2.author=anthology.author AND a2.title=anthology.title);");
             //createIndices(db); // All createIndices prior to the latest have been removed
         }
         if (curVersion == 49) {
@@ -755,9 +755,9 @@ class UpgradeDatabase {
                     // system allowed for series with slightly different case. So we capture these by using
                     // max() to pick and arbitrary matching name to use as our canonical version.
                     db.execSQL("INSERT INTO " + TBL_SERIES + " (" + DOM_SERIES_NAME + ") "
-                            + "SELECT name from ("
-                            + "    SELECT Upper(" + OLD_KEY_SERIES + ") " + COLLATION + " as ucName, "
-                            + "    max(" + OLD_KEY_SERIES + ")" + COLLATION + " as name FROM " + TBL_BOOKS
+                            + "SELECT name FROM ("
+                            + "    SELECT Upper(" + OLD_KEY_SERIES + ") " + COLLATION + " AS ucName, "
+                            + "    max(" + OLD_KEY_SERIES + ")" + COLLATION + " AS name FROM " + TBL_BOOKS
                             + "    WHERE Coalesce(" + OLD_KEY_SERIES + ",'') <> ''"
                             + "    Group By Upper(" + OLD_KEY_SERIES + ")"
                             + " )"
@@ -771,8 +771,8 @@ class UpgradeDatabase {
                     db.execSQL("INSERT INTO " + TBL_BOOK_SERIES + " (" + DOM_BOOK_ID + ", " + DOM_SERIES_ID + ", " + DOM_BOOK_SERIES_NUM + ", " + DOM_BOOK_SERIES_POSITION + ") "
                             + "SELECT DISTINCT b." + DOM_ID + ", s." + DOM_ID + ", b." + DOM_BOOK_SERIES_NUM + ", 1"
                             + " FROM " + TBL_BOOKS + " b "
-                            + " Join " + TBL_SERIES + " s On Upper(s." + DOM_SERIES_NAME + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
-                            + " Where Coalesce(b." + OLD_KEY_SERIES + ", '') <> ''");
+                            + " JOIN " + TBL_SERIES + " s ON Upper(s." + DOM_SERIES_NAME + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
+                            + " WHERE Coalesce(b." + OLD_KEY_SERIES + ", '') <> ''");
 
                     db.execSQL("INSERT INTO " + TBL_BOOK_AUTHOR + " (" + DOM_BOOK_ID + ", " + DOM_AUTHOR_ID + ", " + DOM_AUTHOR_POSITION + ") "
                             + "SELECT b." + DOM_ID + ", b." + OLD_KEY_AUTHOR + ", 1 FROM " + TBL_BOOKS + " b ");
@@ -822,9 +822,9 @@ class UpgradeDatabase {
                         // system allowed for series with slightly different case. So we capture these by using
                         // max() to pick and arbitrary matching name to use as our canonical version.
                         db.execSQL("INSERT INTO " + TBL_SERIES + " (" + DOM_SERIES_NAME + ") "
-                                + "SELECT name from ("
-                                + "    SELECT Upper(" + OLD_KEY_SERIES + ") " + COLLATION + " as ucName, "
-                                + "    max(" + OLD_KEY_SERIES + ")" + COLLATION + " as name FROM " + TBL_BOOKS
+                                + "SELECT name FROM ("
+                                + "    SELECT Upper(" + OLD_KEY_SERIES + ") " + COLLATION + " AS ucName, "
+                                + "    max(" + OLD_KEY_SERIES + ")" + COLLATION + " AS name FROM " + TBL_BOOKS
                                 + "    WHERE Coalesce(" + OLD_KEY_SERIES + ",'') <> ''"
                                 + "    Group By Upper(" + OLD_KEY_SERIES + ")"
                                 + " )"
@@ -836,8 +836,8 @@ class UpgradeDatabase {
                         db.execSQL("INSERT INTO " + TBL_BOOK_SERIES + " (" + DOM_BOOK_ID + ", " + DOM_SERIES_ID + ", " + DOM_BOOK_SERIES_NUM + ", " + DOM_BOOK_SERIES_POSITION + ") "
                                 + "SELECT DISTINCT b." + DOM_ID + ", s." + DOM_ID + ", b." + DOM_BOOK_SERIES_NUM + ", 1"
                                 + " FROM " + TBL_BOOKS + " b "
-                                + " Join " + TBL_SERIES + " s On Upper(s." + DOM_SERIES_NAME + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
-                                + " Where Coalesce(b." + OLD_KEY_SERIES + ", '') <> ''");
+                                + " JOIN " + TBL_SERIES + " s ON Upper(s." + DOM_SERIES_NAME + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
+                                + " WHERE Coalesce(b." + OLD_KEY_SERIES + ", '') <> ''");
 
                         db.execSQL("INSERT INTO " + TBL_BOOK_AUTHOR + " (" + DOM_BOOK_ID + ", " + DOM_AUTHOR_ID + ", " + DOM_AUTHOR_POSITION + ") "
                                 + "SELECT b." + DOM_ID + ", b." + OLD_KEY_AUTHOR + ", 1 FROM " + TBL_BOOKS + " b ");
@@ -897,9 +897,9 @@ class UpgradeDatabase {
                         if (results2.getCount() > 0) {
                             if (results2.getColumnIndex(OLD_KEY_SERIES) > -1) {
                                 db.execSQL("INSERT INTO " + TBL_SERIES + " (" + DOM_SERIES_NAME + ") "
-                                        + "SELECT name from ("
-                                        + "    SELECT Upper(" + OLD_KEY_SERIES + ") " + COLLATION + " as ucName, "
-                                        + "    max(" + OLD_KEY_SERIES + ")" + COLLATION + " as name FROM " + TBL_BOOKS
+                                        + "SELECT name FROM ("
+                                        + "    SELECT Upper(" + OLD_KEY_SERIES + ") " + COLLATION + " AS ucName, "
+                                        + "    max(" + OLD_KEY_SERIES + ")" + COLLATION + " AS name FROM " + TBL_BOOKS
                                         + "    WHERE Coalesce(" + OLD_KEY_SERIES + ",'') <> ''"
                                         + "    Group By Upper(" + OLD_KEY_SERIES + ")"
                                         + " )"
@@ -940,8 +940,8 @@ class UpgradeDatabase {
                     db.execSQL("INSERT INTO " + TBL_BOOK_SERIES + " (" + DOM_BOOK_ID + ", " + DOM_SERIES_ID + ", " + DOM_BOOK_SERIES_NUM + ", " + DOM_BOOK_SERIES_POSITION + ") "
                             + "SELECT DISTINCT b." + DOM_ID + ", s." + DOM_ID + ", b." + DOM_BOOK_SERIES_NUM + ", 1"
                             + " FROM " + TBL_BOOKS + " b "
-                            + " Join " + TBL_SERIES + " s On Upper(s." + DOM_SERIES_NAME + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
-                            + " Where Coalesce(b." + OLD_KEY_SERIES + ", '') <> ''");
+                            + " JOIN " + TBL_SERIES + " s ON Upper(s." + DOM_SERIES_NAME + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
+                            + " WHERE Coalesce(b." + OLD_KEY_SERIES + ", '') <> ''");
                 }
             }
             try (Cursor results = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='" + TBL_BOOK_AUTHOR + "'", new String[]{})) {
@@ -1011,23 +1011,23 @@ class UpgradeDatabase {
         if (curVersion == 63) {
             // Fix up old default 'f' values to be 0 (true = 1).
             curVersion++;
-            db.execSQL("UPDATE " + TBL_BOOKS + " Set " + DOM_BOOK_READ + " = 0 Where " + DOM_BOOK_READ + " = 'f'");
-            db.execSQL("UPDATE " + TBL_BOOKS + " Set " + DOM_BOOK_READ + " = 1 Where " + DOM_BOOK_READ + " = 't'");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ + " = 0 WHERE " + DOM_BOOK_READ + " = 'f'");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ + " = 1 WHERE " + DOM_BOOK_READ + " = 't'");
             db.execSQL("ALTER TABLE " + TBL_BOOKS + " RENAME TO books_tmp");
             db.execSQL(DATABASE_CREATE_BOOKS_63);
-            db.execSQL("INSERT INTO " + TBL_BOOKS + " Select * FROM books_tmp");
+            db.execSQL("INSERT INTO " + TBL_BOOKS + " SELECT * FROM books_tmp");
             db.execSQL("DROP TABLE books_tmp");
         }
         if (curVersion == 64) {
             // Changed SIGNED to boolean {0,1} and added DATE_ADDED
             // Fix up old default 'f' values to be 0 (true = 1).
             curVersion++;
-            db.execSQL("UPDATE " + TBL_BOOKS + " Set " + DOM_BOOK_SIGNED + " = 0 Where " + DOM_BOOK_SIGNED + " = 'f'");
-            db.execSQL("UPDATE " + TBL_BOOKS + " Set " + DOM_BOOK_SIGNED + " = 1 Where " + DOM_BOOK_SIGNED + " = 't'");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + " = 0 WHERE " + DOM_BOOK_SIGNED + " = 'f'");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + " = 1 WHERE " + DOM_BOOK_SIGNED + " = 't'");
             db.execSQL("ALTER TABLE " + TBL_BOOKS + " Add " + DOM_BOOK_DATE_ADDED + " datetime"); // Just want a null value for old records
             db.execSQL("ALTER TABLE " + TBL_BOOKS + " RENAME TO books_tmp");
             db.execSQL(DATABASE_CREATE_BOOKS_68);
-            db.execSQL("INSERT INTO " + TBL_BOOKS + " Select * FROM books_tmp");
+            db.execSQL("INSERT INTO " + TBL_BOOKS + " SELECT * FROM books_tmp");
             db.execSQL("DROP TABLE books_tmp");
         }
 

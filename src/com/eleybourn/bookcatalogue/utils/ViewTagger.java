@@ -47,7 +47,9 @@ public class ViewTagger {
     /**
      * Stores the basic tag referred to without an ID
      */
+    @Nullable
     private Object mBareTag = null;
+    @Nullable
     private SparseArray<Object> mTags = null;
     private ViewTagger() {
     }
@@ -76,7 +78,7 @@ public class ViewTagger {
         } else {
             // Make sure it's a valid object type
             if (!(o instanceof ViewTagger)) {
-                throw new RuntimeException("View already has a tag that is not a ViewTagger");
+                throw new IllegalStateException("View already has a tag that is not a ViewTagger");
             }
             return (ViewTagger) o;
         }
@@ -168,6 +170,7 @@ public class ViewTagger {
      *
      * @return The bare tag object
      */
+    @Nullable
     public Object get() {
         return mBareTag;
     }

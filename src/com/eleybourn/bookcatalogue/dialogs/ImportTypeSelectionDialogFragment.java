@@ -67,7 +67,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
         super.onAttach(context);
 
         if (!(context instanceof OnImportTypeSelectionDialogResultListener))
-            throw new RuntimeException("Activity " + context.getClass().getSimpleName() + " must implement OnImportTypeSelectionDialogResultListener");
+            throw new IllegalStateException("Activity " + context.getClass().getSimpleName() + " must implement OnImportTypeSelectionDialogResultListener");
 
     }
 

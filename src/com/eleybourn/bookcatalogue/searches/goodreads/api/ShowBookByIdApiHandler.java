@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
@@ -44,7 +45,7 @@ import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GO
  */
 public class ShowBookByIdApiHandler extends ShowBookApiHandler {
 	
-	public ShowBookByIdApiHandler(GoodreadsManager manager) {
+	public ShowBookByIdApiHandler(@NonNull final GoodreadsManager manager) {
 		super(manager, true);
 	}
 
@@ -53,7 +54,7 @@ public class ShowBookByIdApiHandler extends ShowBookApiHandler {
 	 *
 	 * @return	the array of GoodreadsWork objects.
 	 */
-	public Bundle get(long workId, boolean fetchThumbnail) throws
+	public Bundle get(final long workId, final boolean fetchThumbnail) throws
 			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
 			NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 		// Setup API call

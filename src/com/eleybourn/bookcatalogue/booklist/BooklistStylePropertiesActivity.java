@@ -237,7 +237,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
         @Override
         @NonNull
         public GroupsProperty set(@Nullable final String value) {
-            throw new RuntimeException("Attempt to set read-only property string");
+            throw new IllegalStateException("Attempt to set read-only property string");
         }
 
         /**

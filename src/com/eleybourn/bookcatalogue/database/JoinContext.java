@@ -62,7 +62,7 @@ public class JoinContext {
      */
     @SuppressWarnings("UnusedReturnValue")
     public JoinContext leftOuterJoin(TableDefinition to) {
-        mSql.append(" left outer ");
+        mSql.append(" LEFT OUTER ");
         return join(to);
     }
 
@@ -76,7 +76,7 @@ public class JoinContext {
      */
     @SuppressWarnings("UnusedReturnValue")
     public JoinContext leftOuterJoin(TableDefinition from, TableDefinition to) {
-        mSql.append(" left outer ");
+        mSql.append(" LEFT OUTER ");
         return join(from, to);
     }
 

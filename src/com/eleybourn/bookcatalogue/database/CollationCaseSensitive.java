@@ -18,22 +18,22 @@ import android.database.sqlite.SQLiteDatabase;
 public class CollationCaseSensitive {
 	public static boolean isCaseSensitive(SQLiteDatabase db) {
 		// Drop and create table
-		db.execSQL("Drop Table If Exists collation_cs_check");
-		db.execSQL("Create Table collation_cs_check (t text, i int)");		
+		db.execSQL("DROP TABLE If Exists collation_cs_check");
+		db.execSQL("CREATE TABLE collation_cs_check (t text, i int)");
 		try {
 			// Row that *should* be returned first assuming 'a' <=> 'A' 
-			db.execSQL("insert into collation_cs_check values ('a', 1)");		
+			db.execSQL("insert INTO collation_cs_check values ('a', 1)");
 			// Row that *should* be returned second assuming 'a' <=> 'A'; will be returned first if 'A' < 'a'.
-			db.execSQL("insert into collation_cs_check values ('A', 2)");
+			db.execSQL("insert INTO collation_cs_check values ('A', 2)");
 
 			String s;
-			try (Cursor c = db.rawQuery("Select t, i from collation_cs_check order by t " + DatabaseHelper.COLLATION + ", i", new String[] {})) {
+			try (Cursor c = db.rawQuery("SELECT t, i FROM collation_cs_check ORDER BY t " + DatabaseHelper.COLLATION + ", i", new String[] {})) {
 				c.moveToFirst();
 				s = c.getString(0);
 			}
 			return !"a".equals(s);
 		} finally {
-			try { db.execSQL("Drop Table If Exists collation_cs_check");
+			try { db.execSQL("DROP TABLE If Exists collation_cs_check");
 			} catch (Exception ignored) {}
 		}
 	}

@@ -46,7 +46,7 @@ import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GO
  */
 public class IsbnToId extends ApiHandler {
 
-	public IsbnToId(GoodreadsManager manager) {
+	public IsbnToId(@NonNull final GoodreadsManager manager) {
 		super(manager);
 	}
 

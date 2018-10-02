@@ -56,14 +56,14 @@ public class BookUtils {
      * Open a new book editing activity with fields copied from saved book.
      * Saved book (original of duplicating) is defined by its row _id in database.
      *
-     * @param rowId The id of the book to copy fields
+     * @param bookId The id of the book to copy fields
      */
     public static void duplicateBook(@NonNull final Activity activity,
                                      @NonNull final CatalogueDBAdapter db,
-                                     final long rowId) {
+                                     final long bookId) {
         Intent intent = new Intent(activity, BookDetailsActivity.class);
         final Bundle book = new Bundle();
-        try (BooksCursor cursor = db.fetchBookById(rowId)) {
+        try (BooksCursor cursor = db.fetchBookById(bookId)) {
             BooksRow bookRow = cursor.getRowView();
 
             cursor.moveToFirst();
@@ -79,7 +79,7 @@ public class BookUtils {
             book.putString(UniqueId.KEY_BOOK_LOCATION, bookRow.getLocation());
             book.putString(UniqueId.KEY_NOTES, bookRow.getNotes());
             book.putString(UniqueId.KEY_BOOK_PAGES, bookRow.getPages());
-            book.putString(UniqueId.KEY_PUBLISHER, bookRow.getPublisher());
+            book.putString(UniqueId.KEY_BOOK_PUBLISHER, bookRow.getPublisher());
             book.putDouble(UniqueId.KEY_BOOK_RATING, bookRow.getRating());
             book.putInt(UniqueId.KEY_BOOK_READ, bookRow.getRead());
             book.putString(UniqueId.KEY_BOOK_READ_END, bookRow.getReadEnd());
@@ -87,9 +87,9 @@ public class BookUtils {
             book.putInt(UniqueId.KEY_BOOK_SIGNED, bookRow.getSigned());
             book.putString(UniqueId.KEY_TITLE, bookRow.getTitle());
 
-            book.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, db.getBookAuthorList(rowId));
-            book.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(rowId));
-            book.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, db.getBookAnthologyTitleList(rowId));
+            book.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, db.getBookAuthorList(bookId));
+            book.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(bookId));
+            book.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, db.getBookAnthologyTitleList(bookId));
 
             intent.putExtra(UniqueId.BKEY_BOOK_DATA, book);
 
@@ -103,13 +103,13 @@ public class BookUtils {
     /**
      * Delete book by its database row _id and close current activity.
      *
-     * @param rowId The database id of the book for deleting
+     * @param bookId  the book to deletin
      */
     public static void deleteBook(@NonNull final Context context,
                                   @NonNull final CatalogueDBAdapter db,
-                                  final long rowId,
+                                  final long bookId,
                                   final Runnable runnable) {
-        int res = StandardDialogs.deleteBookAlert(context, db, rowId, new Runnable() {
+        int res = StandardDialogs.deleteBookAlert(context, db, bookId, new Runnable() {
             @Override
             public void run() {
                 db.purgeAuthors();
@@ -206,7 +206,7 @@ public class BookUtils {
         bookData.putInt(UniqueId.KEY_BOOK_READ, read ? 1 : 0);
         bookData.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
 
-        if (!(1 == db.updateBook(bookData.getRowId(), bookData, 0))) {
+        if (!(1 == db.updateBook(bookData.getBookId(), bookData, 0))) {
             bookData.putInt(UniqueId.KEY_BOOK_READ, prevRead);
             bookData.putString(UniqueId.KEY_BOOK_READ_END, prevReadEnd);
             return false;

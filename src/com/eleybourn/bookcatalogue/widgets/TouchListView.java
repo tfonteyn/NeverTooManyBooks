@@ -126,25 +126,25 @@ public class TouchListView extends ListView {
 
     @Override
     final public void addHeaderView(View v, Object data, boolean isSelectable) {
-        throw new RuntimeException("Headers are not supported with TouchListView");
+        throw new IllegalStateException("Headers are not supported with TouchListView");
     }
 
     @Override
     final public void addHeaderView(View v) {
-        throw new RuntimeException("Headers are not supported with TouchListView");
+        throw new IllegalStateException("Headers are not supported with TouchListView");
     }
 
     @Override
     final public void addFooterView(View v, Object data, boolean isSelectable) {
         if (mRemoveMode == SLIDE_LEFT || mRemoveMode == SLIDE_RIGHT) {
-            throw new RuntimeException("Footers are not supported with TouchListView in conjunction with remove_mode");
+            throw new IllegalStateException("Footers are not supported with TouchListView in conjunction with remove_mode");
         }
     }
 
     @Override
     final public void addFooterView(View v) {
         if (mRemoveMode == SLIDE_LEFT || mRemoveMode == SLIDE_RIGHT) {
-            throw new RuntimeException("Footers are not supported with TouchListView in conjunction with remove_mode");
+            throw new IllegalStateException("Footers are not supported with TouchListView in conjunction with remove_mode");
         }
     }
 

@@ -142,7 +142,7 @@ public class UniqueId {
     // decide.... book only ? or ?
     public static final String KEY_NOTES = DOM_BOOK_NOTES.name;
     public static final String KEY_LOANED_TO = DOM_LOANED_TO.name;
-    public static final String KEY_PUBLISHER = DOM_BOOK_PUBLISHER.name;
+    public static final String KEY_BOOK_PUBLISHER = DOM_BOOK_PUBLISHER.name;
     public static final String KEY_DESCRIPTION = DOM_DESCRIPTION.name;
 
     public static final String KEY_FIRST_PUBLICATION = DOM_FIRST_PUBLICATION.name;

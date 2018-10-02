@@ -37,11 +37,11 @@ public class AmazonManager {
      *
      * @param isbn The ISBN to search for
      */
-    public static void searchAmazon(@NonNull final String isbn,
-                                    @NonNull String author,
-                                    @NonNull String title,
-                                    @NonNull final Bundle bookInfo,
-                                    final boolean fetchThumbnail) {
+    public static void search(@NonNull final String isbn,
+                              @NonNull String author,
+                              @NonNull String title,
+                              @NonNull final Bundle bookInfo,
+                              final boolean fetchThumbnail) {
 
         //replace spaces with %20
         author = author.replace(" ", "%20");

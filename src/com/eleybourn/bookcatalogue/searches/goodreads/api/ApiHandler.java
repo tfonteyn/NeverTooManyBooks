@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 
 /**
@@ -37,7 +39,7 @@ public abstract class ApiHandler {
 	/** XmlFilter root object. Used in extracting data file XML results. */
 	final XmlFilter mRootFilter = new XmlFilter("");
 
-	public ApiHandler(GoodreadsManager manager) {
+	public ApiHandler(@NonNull final GoodreadsManager manager) {
 		mManager = manager;
 	}
 }

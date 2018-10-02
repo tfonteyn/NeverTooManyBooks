@@ -411,7 +411,7 @@ public class StorageUtils {
         }
 
         if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
-            Logger.logError(new RuntimeException("INFO"), debugInfo.toString());
+            Logger.logError(debugInfo.toString());
         }
 
         // Sort descending based on modified date

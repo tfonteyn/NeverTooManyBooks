@@ -75,7 +75,7 @@ public class TextFieldEditorFragment extends DialogFragment {
 		super.onAttach(a);
 
 		if (! (a instanceof OnTextFieldEditorListener))
-			throw new RuntimeException("Activity " + a.getClass().getSimpleName() + " must implement OnTextFieldEditorListener");
+			throw new IllegalStateException("Activity " + a.getClass().getSimpleName() + " must implement OnTextFieldEditorListener");
 		
 	}
 

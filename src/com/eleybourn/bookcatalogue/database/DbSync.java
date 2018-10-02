@@ -765,7 +765,7 @@ public class DbSync {
             mSync = db.getSynchronizer();
             mSql = sql;
 
-            mIsReadOnly = sql.trim().toLowerCase().startsWith("select");
+            mIsReadOnly = sql.trim().toUpperCase().startsWith("SELECT");
             mStatement = db.getUnderlyingDatabase().compileStatement(sql);
 
             if (DEBUG_SWITCHES.SQL && BuildConfig.DEBUG) {
@@ -894,7 +894,7 @@ public class DbSync {
          */
         public long count() {
             if (DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG) {
-                if (!mSql.toLowerCase().startsWith("select count(")) {
+                if (!mSql.toUpperCase().startsWith("SELECT COUNT(")) {
                     Logger.printStackTrace("count statement not a count?");
                 }
             }

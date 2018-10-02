@@ -329,7 +329,7 @@ public class SearchManager implements TaskManagerListener {
                        final boolean fetchThumbnail,
                        final int searchFlags) {
         if ((searchFlags & SEARCH_ALL) == 0) {
-            throw new RuntimeException("Must specify at least one source to use");
+            throw new IllegalArgumentException("Must specify at least one source to use");
         }
 
         if (mRunningTasks.size() > 0) {
@@ -614,11 +614,6 @@ public class SearchManager implements TaskManagerListener {
         }
         return false;
     }
-
-    /* =====================================================================
-     * Message Switchboard implementation
-     * =====================================================================
-     */
 
     /**
      * Start all searches listed in passed parameter that have not been run yet.

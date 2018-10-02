@@ -37,6 +37,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
@@ -60,7 +61,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 	//	BRAND_NEW, LIKE_NEW, VERY_GOOD, GOOD, ACCEPTABLE, POOR
 	//}
 
-	public OwnedBookCreateHandler(GoodreadsManager manager) {
+	public OwnedBookCreateHandler(@NonNull final GoodreadsManager manager) {
 		super(manager);
 	}
 
@@ -157,7 +158,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 	 *	    owned_book[condition_description]: description of book's condition
 	 *	    owned_book[available_for_swap]: true or false, if book is available for swap
 	 */
-	public void create(String isbn, ArrayList<String> shelves) 
+	public void create(@NonNull final String isbn, @NonNull final List<String> shelves)
 			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException, 
 					NotAuthorizedException, NetworkException, BookNotFoundException 
 	{
@@ -172,7 +173,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 
 		HttpPost post = new HttpPost(GOODREADS_API_ROOT + "/owned_books.xml");
 
-		ArrayList<NameValuePair> parameters = new ArrayList<>();
+		List<NameValuePair> parameters = new ArrayList<>();
         parameters.add(new BasicNameValuePair("owned_book[book_id]", Long.toString(id)));
         
         post.setEntity(new UrlEncodedFormEntity(parameters));	        	
@@ -186,10 +187,10 @@ public class OwnedBookCreateHandler extends ApiHandler {
         }
 	}
 
-	public void create(String isbn, String shelf) 
+	public void create(@NonNull final String isbn, @NonNull final String shelf)
 			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException, 
 					NotAuthorizedException, NetworkException, BookNotFoundException {
-		ArrayList<String> shelves = new ArrayList<>();
+		List<String> shelves = new ArrayList<>();
 		shelves.add(shelf);
 		this.create(isbn, shelves);
 	}

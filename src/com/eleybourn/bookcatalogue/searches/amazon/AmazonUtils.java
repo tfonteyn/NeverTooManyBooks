@@ -120,9 +120,9 @@ public class AmazonUtils {
         return out.toString().trim();
     }
 
-    public static void openAmazonSearchPage(@NonNull final Context context,
-                                            @Nullable final String author,
-                                            @Nullable final String series) {
+    public static void openSearchPage(@NonNull final Context context,
+                                      @Nullable final String author,
+                                      @Nullable final String series) {
 
         try {
             openLink(context, author, series);

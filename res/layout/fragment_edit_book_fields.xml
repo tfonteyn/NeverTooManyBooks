@@ -16,18 +16,16 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical"
         android:padding="@dimen/padding_border_double">
-
         <ImageView
             android:id="@+id/image"
+            style="@style/thumbnail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="?attr/color_background_thumbnail"
             android:focusable="true"
             android:gravity="center_horizontal"
-            android:padding="@dimen/padding_border"
             tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_help_outline" />
+            tools:src="@drawable/ic_warning" />
 
         <RelativeLayout
             android:layout_width="match_parent"

@@ -66,7 +66,7 @@ public class MessageDialogFragment extends DialogFragment {
         super.onAttach(context);
 
         if (!(context instanceof OnMessageDialogResultListener))
-            throw new RuntimeException("Activity " + context.getClass().getSimpleName() + " must implement OnMessageDialogResultListener");
+            throw new IllegalStateException("Activity " + context.getClass().getSimpleName() + " must implement OnMessageDialogResultListener");
 
     }
 

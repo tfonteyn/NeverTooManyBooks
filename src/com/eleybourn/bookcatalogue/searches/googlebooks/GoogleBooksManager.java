@@ -37,7 +37,7 @@ public class GoogleBooksManager {
     static public File getThumbnailFromIsbn(@NonNull final String isbn) {
         Bundle bookData = new Bundle();
         try {
-            searchGoogle(isbn, "", "", bookData, true);
+            search(isbn, "", "", bookData, true);
             if (bookData.containsKey(UniqueId.BKEY_THUMBNAIL_USCORE)
                     && bookData.getString(UniqueId.BKEY_THUMBNAIL_USCORE) != null) {
                 File f = new File(Objects.requireNonNull(bookData.getString(UniqueId.BKEY_THUMBNAIL_USCORE)));
@@ -53,11 +53,11 @@ public class GoogleBooksManager {
         }
     }
 
-    static public void searchGoogle(@NonNull final String isbn,
-                                    @NonNull String author,
-                                    @NonNull String title,
-                                    @NonNull final Bundle bookInfo,
-                                    final boolean fetchThumbnail) {
+    public static void search(@NonNull final String isbn,
+                              @NonNull String author,
+                              @NonNull String title,
+                              @NonNull final Bundle bookInfo,
+                              final boolean fetchThumbnail) {
         //replace spaces with %20
         author = author.replace(" ", "%20");
         title = title.replace(" ", "%20");

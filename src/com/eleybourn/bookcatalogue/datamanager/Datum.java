@@ -159,7 +159,7 @@ public class Datum {
             if (emptyIsFalse) {
                 return false;
             } else {
-                throw new RuntimeException("Not a valid boolean value");
+                throw new IllegalArgumentException("Not a valid boolean value");
             }
         } else {
             switch (s.trim().toLowerCase()) {
@@ -178,8 +178,8 @@ public class Datum {
                 default:
                     try {
                         return Integer.parseInt(s) != 0;
-                    } catch (Exception e) {
-                        throw new RuntimeException("Not a valid boolean value");
+                    } catch (NumberFormatException e) {
+                        throw new IllegalArgumentException("Not a valid boolean value");
                     }
             }
         }
@@ -222,6 +222,7 @@ public class Datum {
      * Accessor. Protected against being set twice.
      */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public Datum setValidator(@NonNull final DataValidator validator) {
         if (mValidator != null && validator != mValidator) {
             throw new IllegalStateException("Datum '" + mKey + "' already has a validator");
@@ -235,6 +236,7 @@ public class Datum {
     }
 
     /** Accessor */
+    @Nullable
     public DataAccessor getAccessor() {
         return mAccessor;
     }
@@ -299,6 +301,7 @@ public class Datum {
      * @return This Datum, for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public Datum putBoolean(@NonNull final DataManager data, @NonNull final Bundle bundle, final boolean value) {
         if (mAccessor == null) {
             bundle.putBoolean(mKey, value);
@@ -335,6 +338,7 @@ public class Datum {
      * @return This Datum, for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public Datum putInt(@NonNull final DataManager data, @NonNull final Bundle bundle, final int value) {
         if (mAccessor == null) {
             bundle.putInt(mKey, value);
@@ -372,6 +376,7 @@ public class Datum {
      * @return This Datum, for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public Datum putLong(@NonNull final DataManager data, @NonNull final Bundle bundle, final long value) {
         if (mAccessor == null) {
             bundle.putLong(mKey, value);
@@ -408,6 +413,7 @@ public class Datum {
      * @return This Datum, for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     Datum putDouble(@NonNull final DataManager data, @NonNull final Bundle bundle, final double value) {
         if (mAccessor == null) {
             bundle.putDouble(mKey, value);
@@ -444,6 +450,7 @@ public class Datum {
      * @return This Datum, for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     Datum putFloat(@NonNull final DataManager data, @NonNull final Bundle bundle, final float value) {
         if (mAccessor == null) {
             bundle.putFloat(mKey, value);
@@ -461,6 +468,7 @@ public class Datum {
      *
      * @return Value of the data
      */
+    @NonNull
     public String getString(@NonNull final DataManager data, @NonNull final Bundle bundle) {
         Object o;
         if (mAccessor == null) {
@@ -476,7 +484,7 @@ public class Datum {
      *
      * @param data   Parent collection
      * @param bundle Raw data
-     * @param value string will be trimmed before storing.
+     * @param value  string will be trimmed before storing.
      *
      * @return This Datum, for chaining
      */
@@ -506,7 +514,7 @@ public class Datum {
         if (mAccessor == null) {
             return bundle.getSerializable(mKey);
         } else {
-            throw new RuntimeException("Accessor not supported for serializable objects");
+            throw new IllegalStateException("Accessor not supported for serializable objects");
         }
     }
 
@@ -521,11 +529,12 @@ public class Datum {
      * @return The data manager for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public Datum putSerializable(@NonNull final Bundle bundle, @NonNull final Serializable value) {
         if (mAccessor == null) {
             bundle.putSerializable(mKey, value);
         } else {
-            throw new RuntimeException("Accessor not supported for serializable objects");
+            throw new IllegalStateException("Accessor not supported for serializable objects");
         }
         return this;
     }
@@ -545,7 +554,7 @@ public class Datum {
         if (mAccessor == null) {
             return bundle.getStringArrayList(mKey);
         } else {
-            throw new RuntimeException("Accessor not supported for ArrayList<String> objects");
+            throw new IllegalStateException("Accessor not supported for ArrayList<String> objects");
         }
     }
 
@@ -560,11 +569,12 @@ public class Datum {
      * @return The data manager for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     Datum putStringArrayList(@NonNull final Bundle bundle, @NonNull final ArrayList<String> value) {
         if (mAccessor == null) {
             bundle.putStringArrayList(mKey, value);
         } else {
-            throw new RuntimeException("Accessor not supported for ArrayList<String> objects");
+            throw new IllegalStateException("Accessor not supported for ArrayList<String> objects");
         }
         return this;
     }

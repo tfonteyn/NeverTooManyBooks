@@ -75,7 +75,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
      */
     @Override
     public void bindView(final View view, final Context context, final Cursor cursor) {
-        throw new RuntimeException("EventsCursorAdapter.bindView is unsupported");
+        throw new IllegalStateException("EventsCursorAdapter.bindView is unsupported");
     }
 
     /**
@@ -83,7 +83,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
      */
     @Override
     public View newView(final Context context, final Cursor cursor, final ViewGroup parent) {
-        throw new RuntimeException("EventsCursorAdapter.newView is unsupported");
+        throw new IllegalStateException("EventsCursorAdapter.newView is unsupported");
     }
 
     @Override

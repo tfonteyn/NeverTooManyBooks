@@ -80,6 +80,7 @@ public class PropertyGroup {
     /** ID of this group */
     private final int id;
     /** String resource ID for group name */
+    @StringRes
     private final int nameId;
     /** Weight of this group, for sorting */
     private final Integer weight;

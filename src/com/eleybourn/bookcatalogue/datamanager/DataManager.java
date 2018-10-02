@@ -25,6 +25,7 @@ import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.datamanager.validators.BlankValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.DataCrossValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.DataValidator;
@@ -309,9 +310,9 @@ public class DataManager {
                 case SQLiteCursor.FIELD_TYPE_NULL:
                     break;
                 case SQLiteCursor.FIELD_TYPE_BLOB:
-                    throw new RuntimeException("Unsupported column type: 'blob'");
+                    throw new IllegalArgumentException("Unsupported column type: 'blob'");
                 default:
-                    throw new RuntimeException("Unsupported column type: " + cursor.getType(i));
+                    throw new IllegalArgumentException("Unsupported column type: " + cursor.getType(i));
             }
         }
     }

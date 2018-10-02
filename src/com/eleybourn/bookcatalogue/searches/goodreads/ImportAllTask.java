@@ -24,6 +24,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookData;
@@ -54,6 +55,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
@@ -127,6 +129,9 @@ class ImportAllTask extends GenericTask {
                 QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(true), BCQueueManager.QUEUE_MAIN);
             }
             return ok;
+        } catch (GoodreadsManager.Exceptions.NotAuthorizedException e) {
+            Toast.makeText(context, R.string.goodreads_auth_failed, Toast.LENGTH_SHORT).show();
+            throw new RuntimeException("Goodreads authorization failed");
         } finally {
             db.close();
         }
@@ -135,7 +140,8 @@ class ImportAllTask extends GenericTask {
     /**
      * Repeatedly request review pages until we are done.
      */
-    private boolean processReviews(@NonNull final QueueManager qMgr, @NonNull final CatalogueDBAdapter db) {
+    private boolean processReviews(@NonNull final QueueManager qMgr,
+                                   @NonNull final CatalogueDBAdapter db) throws GoodreadsManager.Exceptions.NotAuthorizedException {
         GoodreadsManager gr = new GoodreadsManager();
         ListReviewsApiHandler api = new ListReviewsApiHandler(gr);
 
@@ -231,7 +237,7 @@ class ImportAllTask extends GenericTask {
                 c.close();
                 c = null;
 
-                ArrayList<String> isbns = extractIsbns(review);
+                List<String> isbns = extractIsbns(review);
                 if (isbns != null && isbns.size() > 0) {
                     c = db.fetchBooksByIsbnList(isbns);
                     found = c.moveToFirst();
@@ -280,8 +286,8 @@ class ImportAllTask extends GenericTask {
     /**
      * Extract a list of ISBNs from the bundle
      */
-    private ArrayList<String> extractIsbns(@NonNull final Bundle review) {
-        ArrayList<String> isbns = new ArrayList<>();
+    private List<String> extractIsbns(@NonNull final Bundle review) {
+        List<String> isbns = new ArrayList<>();
 
         String isbn = review.getString(ListReviewsFieldNames.ISBN13).trim();
         if (!isbn.isEmpty())
@@ -363,7 +369,7 @@ class ImportAllTask extends GenericTask {
         addLongIfPresent(review, ListReviewsFieldNames.GR_BOOK_ID, bookData, DOM_BOOK_GOODREADS_BOOK_ID.name);
 
         // Find the best (longest) isbn.
-        ArrayList<String> isbns = extractIsbns(review);
+        List<String> isbns = extractIsbns(review);
         if (isbns.size() > 0) {
             String best = isbns.get(0);
             int bestLen = best.length();

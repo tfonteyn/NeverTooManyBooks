@@ -55,7 +55,7 @@ public abstract class GenericTask extends RunnableTask {
     private static final String STATUS_FAILED = "F";
     private static final String STATUS_QUEUED = "Q";
 
-    GenericTask(String description) {
+    GenericTask(@NonNull final String description) {
         super(description);
     }
 

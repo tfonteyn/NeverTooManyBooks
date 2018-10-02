@@ -63,25 +63,25 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         }
     };
 
-    private static final String m_failedTasksQuery = "Select *, "
-            + " (Select Count(*) from " + TBL_EVENT + " e Where e." + DOM_TASK_ID + "=t." + DOM_ID + ") as " + DOM_EVENT_COUNT
-            + " From " + TBL_TASK + " t "
-            + " Where " + DOM_STATUS_CODE + " = 'F' %1$s Order by " + DOM_ID + " desc";
+    private static final String m_failedTasksQuery = "SELECT *, "
+            + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
+            + " FROM " + TBL_TASK + " t "
+            + " WHERE " + DOM_STATUS_CODE + " = 'F' %1$s ORDER BY " + DOM_ID + " DESC";
 
-    private static final String m_allTasksQuery = "Select *, "
-            + " (Select Count(*) from " + TBL_EVENT + " e Where e." + DOM_TASK_ID + "=t." + DOM_ID + ") as " + DOM_EVENT_COUNT
-            + " From " + TBL_TASK + " t Where 1 = 1 %1$s"
-            + " Order by " + DOM_ID + " desc";
+    private static final String m_allTasksQuery = "SELECT *, "
+            + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
+            + " FROM " + TBL_TASK + " t WHERE 1 = 1 %1$s"
+            + " ORDER BY " + DOM_ID + " DESC";
 
-    private static final String m_activeTasksQuery = "Select *, "
-            + " (Select Count(*) from " + TBL_EVENT + " e Where e." + DOM_TASK_ID + "=t." + DOM_ID + ") as " + DOM_EVENT_COUNT
-            + " From " + TBL_TASK + " t "
-            + " Where Not " + DOM_STATUS_CODE + " In ('S','F') %1$s Order by " + DOM_ID + " desc";
+    private static final String m_activeTasksQuery = "SELECT *, "
+            + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
+            + " FROM " + TBL_TASK + " t "
+            + " WHERE Not " + DOM_STATUS_CODE + " In ('S','F') %1$s ORDER BY " + DOM_ID + " DESC";
 
-    private static final String m_queuedTasksQuery = "Select *, "
-            + " (Select Count(*) from " + TBL_EVENT + " e Where e." + DOM_TASK_ID + "=t." + DOM_ID + ") as " + DOM_EVENT_COUNT
-            + " From " + TBL_TASK + " t "
-            + " Where " + DOM_STATUS_CODE + " = 'Q' %1$s Order by " + DOM_ID + " desc";
+    private static final String m_queuedTasksQuery = "SELECT *, "
+            + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
+            + " FROM " + TBL_TASK + " t "
+            + " WHERE " + DOM_STATUS_CODE + " = 'Q' %1$s ORDER BY " + DOM_ID + " DESC";
     /** Column number of ID column. */
     private static int m_idCol = -1;
 
@@ -128,10 +128,10 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
                 query = m_activeTasksQuery;
                 break;
             default:
-                throw new RuntimeException("Unexpected cursor subtype specified: " + type);
+                throw new IllegalStateException("Unexpected cursor subtype specified: " + type);
         }
         // Add extra 'where' clause
-        query = String.format(query, " and " + DOM_CATEGORY + " = " + category);
+        query = String.format(query, " AND " + DOM_CATEGORY + " = " + category);
         return (TasksCursor) db.rawQueryWithFactory(m_factory, query, new String[]{}, "");
     }
 
@@ -151,7 +151,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
                 query = m_activeTasksQuery;
                 break;
             default:
-                throw new RuntimeException("Unexpected cursor subtype specified: " + type);
+                throw new IllegalStateException("Unexpected cursor subtype specified: " + type);
         }
         // No extra 'where' clause
         query = String.format(query, "");

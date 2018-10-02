@@ -118,7 +118,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
         final byte[] blob = SerializationUtils.serializeObject(style);
         if (blob == null) {
             Logger.logError("serializeObject failed?");
-            throw new RuntimeException("serializeObject failed?");
+            throw new IllegalStateException("serializeObject failed?");
         }
         mStyleCounter++;
         bytesToArchive(TarBackupContainer.STYLE_PREFIX + mStyleCounter, blob);

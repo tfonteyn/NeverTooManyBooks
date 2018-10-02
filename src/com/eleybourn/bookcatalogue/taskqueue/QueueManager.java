@@ -77,7 +77,7 @@ public abstract class QueueManager {
         if (m_queueManager != null) {
             // This is an essential requirement because (a) synchronization will not work with more than one
             // and (b) we want to store a static reference in the class.
-            throw new RuntimeException("Only one QueueManager can be present");
+            throw new IllegalStateException("Only one QueueManager can be present");
         }
         m_queueManager = this;
 
@@ -277,7 +277,7 @@ public abstract class QueueManager {
         if (task instanceof RunnableTask) {
             return ((RunnableTask) task).run(this, this.getApplicationContext());
         } else {
-            throw new RuntimeException("Can not handle tasks that are not RunnableTasks. Either extend RunnableTask, or override QueueManager.runOneTask()");
+            throw new IllegalStateException("Can not handle tasks that are not RunnableTasks. Either extend RunnableTask, or override QueueManager.runOneTask()");
         }
     }
 
@@ -472,7 +472,6 @@ public abstract class QueueManager {
                 String kind = b.getString("__internal");
                 if ("toast".equals(kind)) {
                     doToast(b.getString("message"));
-                    //Toast.makeText(BookCatalogueApp.getAppContext(), b.getString("message"), Toast.LENGTH_LONG).show();
                 }
             } else {
                 throw new RuntimeException("Unknown message");

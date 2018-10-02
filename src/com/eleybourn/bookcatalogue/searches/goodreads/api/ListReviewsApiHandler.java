@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -78,99 +79,59 @@ import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiH
 
 /**
  * Class to implement the reviews.list api call. It queries based on the passed parameters and returns
- * a single Bundle containing all results. The Bundle itself will contain other bundles: typically an 
+ * a single Bundle containing all results. The Bundle itself will contain other bundles: typically an
  * array of 'Review' bundles, each of which will contains arrays of 'author' bundles.
- * 
+ *
  * Processing this data is up to the caller, but it is guaranteed to be type-safe if present, with the
  * exception of dates, which are collected as text strings.
- * 
+ *
  * @author Philip Warner
  */
 public class ListReviewsApiHandler extends ApiHandler {
 
-	/** Date format used for parsing 'last_update_date' */
-	@SuppressLint("SimpleDateFormat")
-	private static final SimpleDateFormat mUpdateDateFmt = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy");
+    /** Date format used for parsing 'last_update_date' */
+    @SuppressLint("SimpleDateFormat")
+    private static final SimpleDateFormat mUpdateDateFmt = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy");
+    /**
+     * Listener to handle the contents of the date_updated field. We only
+     * keep it if it is a valid date, and we store it in SQL format using
+     * UTC TZ so comparisons work.
+     */
+    private final XmlListener mUpdatedListener = new XmlListener() {
+        @Override
+        public void onStart(@NonNull BuilderContext bc, @NonNull ElementContext c) {
+        }
 
-	/**
-	 * Field names we add to the bundle based on parsed XML data.
-	 * 
-	 * We duplicate the CatalogueDBAdapter names (and give them a DB_ prefix) so
-	 * that (a) it is clear which fields are provided by this call, and (b) it is clear
-	 * which fields directly relate to DB fields.
-	 * 
-	 * @author Philip Warner
-	 */
-	public static final class ListReviewsFieldNames {
-		public static final String START = "__start";
-		public static final String END = "__end";
-		public static final String TOTAL = "__total";
-		public static final String GR_BOOK_ID = "__gr_book_id";
-		public static final String GR_REVIEW_ID = "__gr_review_id";
-		public static final String ISBN13 = "__isbn13";
-		public static final String SMALL_IMAGE = "__smallImage";
-		public static final String LARGE_IMAGE = "__largeImage";
-		public static final String PUB_DAY = "__pubDay";
-		public static final String PUB_YEAR = "__pubYear";
-		public static final String PUB_MONTH = "__pubMonth";
-		public static final String ADDED = "__added";
-		public static final String UPDATED = "__updated";
-		public static final String REVIEWS = "__reviews";
-		public static final String AUTHORS = "__authors";
-		public static final String SHELF = "__shelf";
-		public static final String SHELVES = "__shelves";
-		public static final String DB_PAGES = DatabaseDefinitions.DOM_BOOK_PAGES.name;
-		public static final String DB_ISBN = DatabaseDefinitions.DOM_BOOK_ISBN.name;
-		public static final String DB_TITLE = DatabaseDefinitions.DOM_TITLE.name;
-		public static final String DB_NOTES = DatabaseDefinitions.DOM_BOOK_NOTES.name;
-		public static final String DB_FORMAT = DatabaseDefinitions.DOM_BOOK_FORMAT.name;
-		public static final String DB_PUBLISHER = DatabaseDefinitions.DOM_BOOK_PUBLISHER.name;
-		public static final String DB_DESCRIPTION = DatabaseDefinitions.DOM_DESCRIPTION.name;
-		public static final String DB_AUTHOR_ID = DatabaseDefinitions.DOM_AUTHOR_ID.name;
-		public static final String DB_AUTHOR_NAME = DatabaseDefinitions.DOM_AUTHOR_NAME.name;
-		public static final String DB_RATING = DatabaseDefinitions.DOM_BOOK_RATING.name;
-		public static final String DB_READ_START = DatabaseDefinitions.DOM_BOOK_READ_START.name;
-		public static final String DB_READ_END = DatabaseDefinitions.DOM_BOOK_READ_END.name;
-	}
+        @Override
+        public void onFinish(@NonNull BuilderContext bc, @NonNull ElementContext c) {
+            date2Sql(bc.getData(), UPDATED);
+        }
+    };
+    /**
+     * Listener to handle the contents of the date_added field. We only
+     * keep it if it is a valid date, and we store it in SQL format using
+     * UTC TZ so comparisons work.
+     */
+    private final XmlListener mAddedListener = new XmlListener() {
+        @Override
+        public void onStart(@NonNull BuilderContext bc, @NonNull ElementContext c) {
+        }
 
-	private SimpleXmlFilter mFilters;
+        @Override
+        public void onFinish(@NonNull BuilderContext bc, @NonNull ElementContext c) {
+            date2Sql(bc.getData(), ADDED);
+        }
+    };
+    private SimpleXmlFilter mFilters;
 
-	public ListReviewsApiHandler(GoodreadsManager manager) {
-		super(manager);
-		if (!manager.hasValidCredentials())
-			throw new RuntimeException("Goodreads credentials not valid");
-		// Build the XML filters needed to get the data we're interested in.
-		buildFilters();
-	}
-
-	public Bundle run(final int page, final int perPage)
-			throws OAuthMessageSignerException, OAuthExpectationFailedException,
-					OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException 
-	{
-		long t0 = System.currentTimeMillis();
-
-		// Sort by update_dte (descending) so sync is faster. Specify 'shelf=all' because it seems goodreads returns 
-		// the shelf that is selected in 'My Books' on the web interface by default.
-		final String urlBase = GOODREADS_API_ROOT + "/review/list/%4$s.xml?key=%1$s&v=2&page=%2$s&per_page=%3$s&sort=date_updated&order=d&shelf=all";
-		final String url = String.format(urlBase, mManager.getDeveloperKey(), page, perPage, mManager.getUserId());
-		HttpGet get = new HttpGet(url);
-
-		// Get a handler and run query.
-        XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-        // Even thought it's only a GET, it needs a signature.
-        mManager.execute(get, handler, true);
-
-        // When we get here, the data has been collected but needs to be processed into standard form.
-        Bundle results = mFilters.getData();
-
-		if (DEBUG_SWITCHES.TIMERS&& BuildConfig.DEBUG) {
-			long t1 = System.currentTimeMillis();
-			System.out.println("Found " + results.getLong(TOTAL) + " books in " + (t1 - t0) + "ms");
-		}
-
-		// Return parsed results.
-        return results;
-	}
+    public ListReviewsApiHandler(@NonNull final GoodreadsManager manager) throws NotAuthorizedException {
+        super(manager);
+        if (!manager.hasValidCredentials()) {
+            throw new NotAuthorizedException();
+        }
+        // Build the XML filters needed to get the data we're interested in.
+        buildFilters();
+    }
 
 	/*
 	 * Typical result:
@@ -330,155 +291,193 @@ public class ListReviewsApiHandler extends ApiHandler {
 
 	 */
 
-	/**
-	 * Setup filters to process the XML parts we care about.
-	 */
-	private void buildFilters() {
-		/*
-		 * Process the stuff we care about
-		 */
-		mFilters = new SimpleXmlFilter(mRootFilter);
+    public Bundle run(final int page, final int perPage)
+            throws OAuthMessageSignerException, OAuthExpectationFailedException,
+            OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
+        long t0 = System.currentTimeMillis();
 
-		mFilters
-		//<GoodreadsResponse>
-		  .s("GoodreadsResponse")
-		//	<Request>
-		//		...
-		//	</Request>
-		//	<reviews start="3" end="4" total="933">
-			.s("reviews").isArray(REVIEWS)
-				.longAttr("start", START)
-				.longAttr("end", END)
-				.longAttr("total", TOTAL)
-		//		<review>
-				.s("review").isArrayItem()
-		//			<id>276860380</id>
-					.longBody("id", GR_REVIEW_ID)
-		//			<book>
-					.s("book")
-		//				<id type="integer">951750</id>
-						.longBody("id", GR_BOOK_ID)
-		//				<isbn>0583120911</isbn>
-						.stringBody("isbn", DB_ISBN)
-		//				<isbn13>9780583120913</isbn13>
-						.stringBody("isbn13", ISBN13)
-		//				...			
-		//				<title><![CDATA[The Dying Earth]]></title>
-						.stringBody("title", DB_TITLE)
-		//				<image_url>http://photo.goodreads.com/books/1294108593m/951750.jpg</image_url>
-						.stringBody("image_url", LARGE_IMAGE)
-		//				<small_image_url>http://photo.goodreads.com/books/1294108593s/951750.jpg</small_image_url>
-						.stringBody("small_image_url", SMALL_IMAGE)
-		//				...
-		//				<num_pages>159</num_pages>			
-						.longBody("num_pages", DB_PAGES)
-		//				<format></format>
-						.stringBody("format", DB_FORMAT)
-		//				<publisher></publisher>
-						.stringBody("publisher", DB_PUBLISHER)
-		//				<publication_day>20</publication_day>
-						.longBody("publication_day", PUB_DAY)
-		//				<publication_year>1972</publication_year>
-						.longBody("publication_year", PUB_YEAR)
-		//				<publication_month>4</publication_month>
-						.longBody("publication_month", PUB_MONTH)
-		//				<description><![CDATA[]]></description>
-						.stringBody("description", DB_DESCRIPTION)
-		//				...
-		//
-		//				<authors>
-						.s("authors")
-						.isArray(AUTHORS)
-		//					<author>
-							.s("author")
-							.isArrayItem()
-		//						<id>5376</id>
-								.longBody("id", DB_AUTHOR_ID)
-		//						<name><![CDATA[Jack Vance]]></name>
-								.stringBody("name", DB_AUTHOR_NAME)
-		//						...
-		//					</author>
-		//				</authors>
-		//				...
-		//			</book>
-					.popTo("review")
-		//
-		//			<rating>0</rating>
-					.doubleBody("rating", DB_RATING)
-		//			...
-		//			<shelves>
-					.s("shelves")
-					.isArray(SHELVES)
-		//				<shelf name="sci-fi-fantasy" />
-						.s("shelf")
-							.isArrayItem()
-							.stringAttr("name", SHELF)
-					.popTo("review")
-		//				<shelf name="to-read" />
-		//			</shelves>
-		//			...
-		//			<started_at></started_at>
-					.stringBody("started_at", DB_READ_START)
-		//			<read_at></read_at>
-					.stringBody("read_at", DB_READ_END)
-		//			<date_added>Mon Feb 13 05:32:30 -0800 2012</date_added>
-					//.stringBody("date_added", ADDED)
-					.s("date_added").stringBody(ADDED).setListener(mAddedListener).pop()
-		//			<date_updated>Mon Feb 13 05:32:31 -0800 2012</date_updated>
-					.s("date_updated").stringBody(UPDATED).setListener(mUpdatedListener).pop()
-		//			...
-		//			<body><![CDATA[]]></body>
-					.stringBody("body", DB_NOTES).pop()
-		//			...			
-		//			<owned>0</owned>
-		//		</review>
-		//	</reviews>
-		//
-		//</GoodreadsResponse>
-		.done();
-	}
+        // Sort by update_dte (descending) so sync is faster. Specify 'shelf=all' because it seems goodreads returns
+        // the shelf that is selected in 'My Books' on the web interface by default.
+        final String urlBase = GOODREADS_API_ROOT + "/review/list/%4$s.xml?key=%1$s&v=2&page=%2$s&per_page=%3$s&sort=date_updated&order=d&shelf=all";
+        final String url = String.format(urlBase, mManager.getDeveloperKey(), page, perPage, mManager.getUserId());
+        HttpGet get = new HttpGet(url);
 
-	private void date2Sql(Bundle b, String key) {
+        // Get a handler and run query.
+        XmlResponseParser handler = new XmlResponseParser(mRootFilter);
+        // Even thought it's only a GET, it needs a signature.
+        mManager.execute(get, handler, true);
+
+        // When we get here, the data has been collected but needs to be processed into standard form.
+        Bundle results = mFilters.getData();
+
+        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+            long t1 = System.currentTimeMillis();
+            System.out.println("Found " + results.getLong(TOTAL) + " books in " + (t1 - t0) + "ms");
+        }
+
+        // Return parsed results.
+        return results;
+    }
+
+    /**
+     * Setup filters to process the XML parts we care about.
+     */
+    private void buildFilters() {
+        /*
+         * Process the stuff we care about
+         */
+        mFilters = new SimpleXmlFilter(mRootFilter);
+
+        mFilters
+                //<GoodreadsResponse>
+                .s("GoodreadsResponse")
+                //	<Request>
+                //		...
+                //	</Request>
+                //	<reviews start="3" end="4" total="933">
+                .s("reviews").isArray(REVIEWS)
+                .longAttr("start", START)
+                .longAttr("end", END)
+                .longAttr("total", TOTAL)
+                //		<review>
+                .s("review").isArrayItem()
+                //			<id>276860380</id>
+                .longBody("id", GR_REVIEW_ID)
+                //			<book>
+                .s("book")
+                //				<id type="integer">951750</id>
+                .longBody("id", GR_BOOK_ID)
+                //				<isbn>0583120911</isbn>
+                .stringBody("isbn", DB_ISBN)
+                //				<isbn13>9780583120913</isbn13>
+                .stringBody("isbn13", ISBN13)
+                //				...
+                //				<title><![CDATA[The Dying Earth]]></title>
+                .stringBody("title", DB_TITLE)
+                //				<image_url>http://photo.goodreads.com/books/1294108593m/951750.jpg</image_url>
+                .stringBody("image_url", LARGE_IMAGE)
+                //				<small_image_url>http://photo.goodreads.com/books/1294108593s/951750.jpg</small_image_url>
+                .stringBody("small_image_url", SMALL_IMAGE)
+                //				...
+                //				<num_pages>159</num_pages>
+                .longBody("num_pages", DB_PAGES)
+                //				<format></format>
+                .stringBody("format", DB_FORMAT)
+                //				<publisher></publisher>
+                .stringBody("publisher", DB_PUBLISHER)
+                //				<publication_day>20</publication_day>
+                .longBody("publication_day", PUB_DAY)
+                //				<publication_year>1972</publication_year>
+                .longBody("publication_year", PUB_YEAR)
+                //				<publication_month>4</publication_month>
+                .longBody("publication_month", PUB_MONTH)
+                //				<description><![CDATA[]]></description>
+                .stringBody("description", DB_DESCRIPTION)
+                //				...
+                //
+                //				<authors>
+                .s("authors")
+                .isArray(AUTHORS)
+                //					<author>
+                .s("author")
+                .isArrayItem()
+                //						<id>5376</id>
+                .longBody("id", DB_AUTHOR_ID)
+                //						<name><![CDATA[Jack Vance]]></name>
+                .stringBody("name", DB_AUTHOR_NAME)
+                //						...
+                //					</author>
+                //				</authors>
+                //				...
+                //			</book>
+                .popTo("review")
+                //
+                //			<rating>0</rating>
+                .doubleBody("rating", DB_RATING)
+                //			...
+                //			<shelves>
+                .s("shelves")
+                .isArray(SHELVES)
+                //				<shelf name="sci-fi-fantasy" />
+                .s("shelf")
+                .isArrayItem()
+                .stringAttr("name", SHELF)
+                .popTo("review")
+                //				<shelf name="to-read" />
+                //			</shelves>
+                //			...
+                //			<started_at></started_at>
+                .stringBody("started_at", DB_READ_START)
+                //			<read_at></read_at>
+                .stringBody("read_at", DB_READ_END)
+                //			<date_added>Mon Feb 13 05:32:30 -0800 2012</date_added>
+                //.stringBody("date_added", ADDED)
+                .s("date_added").stringBody(ADDED).setListener(mAddedListener).pop()
+                //			<date_updated>Mon Feb 13 05:32:31 -0800 2012</date_updated>
+                .s("date_updated").stringBody(UPDATED).setListener(mUpdatedListener).pop()
+                //			...
+                //			<body><![CDATA[]]></body>
+                .stringBody("body", DB_NOTES).pop()
+                //			...
+                //			<owned>0</owned>
+                //		</review>
+                //	</reviews>
+                //
+                //</GoodreadsResponse>
+                .done();
+    }
+
+    private void date2Sql(@NonNull final Bundle b, @NonNull final String key) {
         if (b.containsKey(key)) {
-        	String date = b.getString(key);
-        	try {
-        		Date d = mUpdateDateFmt.parse(date);
-        		date = DateUtils.toSqlDateTime(d);
-        		b.putString(key, date);
-        	} catch (Exception e) {
-        		b.remove(key);
-        	}
-        }		
-	}
-	/**
-	 * Listener to handle the contents of the date_updated field. We only
-	 * keep it if it is a valid date, and we store it in SQL format using 
-	 * UTC TZ so comparisons work.
-	 */
-    private final XmlListener mUpdatedListener = new XmlListener() {
-		@Override
-		public void onStart(BuilderContext bc, ElementContext c) {
-		}
+            String date = b.getString(key);
+            try {
+                Date d = mUpdateDateFmt.parse(date);
+                date = DateUtils.toSqlDateTime(d);
+                b.putString(key, date);
+            } catch (Exception e) {
+                b.remove(key);
+            }
+        }
+    }
 
-		@Override
-		public void onFinish(BuilderContext bc, ElementContext c) {
-			date2Sql(bc.getData(), UPDATED);
-		}
-	};
-
-	/**
-	 * Listener to handle the contents of the date_added field. We only
-	 * keep it if it is a valid date, and we store it in SQL format using 
-	 * UTC TZ so comparisons work.
-	 */
-    private final XmlListener mAddedListener = new XmlListener() {
-		@Override
-		public void onStart(BuilderContext bc, ElementContext c) {
-		}
-
-		@Override
-		public void onFinish(BuilderContext bc, ElementContext c) {
-			date2Sql(bc.getData(), ADDED);
-		}
-	};
+    /**
+     * Field names we add to the bundle based on parsed XML data.
+     *
+     * We duplicate the CatalogueDBAdapter names (and give them a DB_ prefix) so
+     * that (a) it is clear which fields are provided by this call, and (b) it is clear
+     * which fields directly relate to DB fields.
+     *
+     * @author Philip Warner
+     */
+    public static final class ListReviewsFieldNames {
+        public static final String START = "__start";
+        public static final String END = "__end";
+        public static final String TOTAL = "__total";
+        public static final String GR_BOOK_ID = "__gr_book_id";
+        public static final String GR_REVIEW_ID = "__gr_review_id";
+        public static final String ISBN13 = "__isbn13";
+        public static final String SMALL_IMAGE = "__smallImage";
+        public static final String LARGE_IMAGE = "__largeImage";
+        public static final String PUB_DAY = "__pubDay";
+        public static final String PUB_YEAR = "__pubYear";
+        public static final String PUB_MONTH = "__pubMonth";
+        public static final String ADDED = "__added";
+        public static final String UPDATED = "__updated";
+        public static final String REVIEWS = "__reviews";
+        public static final String AUTHORS = "__authors";
+        public static final String SHELF = "__shelf";
+        public static final String SHELVES = "__shelves";
+        public static final String DB_PAGES = DatabaseDefinitions.DOM_BOOK_PAGES.name;
+        public static final String DB_ISBN = DatabaseDefinitions.DOM_BOOK_ISBN.name;
+        public static final String DB_TITLE = DatabaseDefinitions.DOM_TITLE.name;
+        public static final String DB_NOTES = DatabaseDefinitions.DOM_BOOK_NOTES.name;
+        public static final String DB_FORMAT = DatabaseDefinitions.DOM_BOOK_FORMAT.name;
+        public static final String DB_PUBLISHER = DatabaseDefinitions.DOM_BOOK_PUBLISHER.name;
+        public static final String DB_DESCRIPTION = DatabaseDefinitions.DOM_DESCRIPTION.name;
+        public static final String DB_AUTHOR_ID = DatabaseDefinitions.DOM_AUTHOR_ID.name;
+        public static final String DB_AUTHOR_NAME = DatabaseDefinitions.DOM_AUTHOR_NAME.name;
+        public static final String DB_RATING = DatabaseDefinitions.DOM_BOOK_RATING.name;
+        public static final String DB_READ_START = DatabaseDefinitions.DOM_BOOK_READ_START.name;
+        public static final String DB_READ_END = DatabaseDefinitions.DOM_BOOK_READ_END.name;
+    }
 }

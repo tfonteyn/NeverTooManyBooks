@@ -75,7 +75,7 @@ public class BackupChooser extends FileChooser implements
         if (savedInstanceState != null && savedInstanceState.containsKey(BKEY_FILENAME)) {
             String fileSpec = savedInstanceState.getString(BKEY_FILENAME);
             if (fileSpec == null) {
-                throw new RuntimeException("No BKEY_FILENAME passed in ?");
+                throw new IllegalArgumentException("No BKEY_FILENAME passed in ?");
             }
             mBackupFile = new File(fileSpec);
         }

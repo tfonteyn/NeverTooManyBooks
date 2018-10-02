@@ -2,13 +2,13 @@ package com.eleybourn.bookcatalogue.database;
 
 import android.support.annotation.Nullable;
 
-class DBExceptions {
+public class DBExceptions {
 
     /**
      * Should NOT be used when the a search MAY fail.
-     * Only use when the Search MUST NOT fail
+     * Only use when the Search MUST NOT fail as this would indicate an integrity failure
      */
-    public static class NotFoundException extends RuntimeException {
+    static class NotFoundException extends RuntimeException {
         NotFoundException(@Nullable final String msg) {
             super(msg);
         }
@@ -19,37 +19,37 @@ class DBExceptions {
 
 
     /** should only be used from INSIDE a transaction so the caller can rollback */
-    static class InsertFailedException extends RuntimeException {
-        InsertFailedException(@Nullable final String msg, @Nullable final Exception inner) {
+    static class InsertException extends RuntimeException {
+        InsertException(@Nullable final String msg, @Nullable final Exception inner) {
             super(msg, inner);
         }
     }
 
 
-    static class UpdateFailedException extends RuntimeException {
-        UpdateFailedException() {
+    static class UpdateException extends RuntimeException {
+        UpdateException() {
             super();
         }
-        UpdateFailedException(@Nullable final String msg) {
+        UpdateException(@Nullable final String msg) {
             super(msg);
         }
-        UpdateFailedException(@Nullable final Exception inner) {
+        UpdateException(@Nullable final Exception inner) {
             super(inner);
         }
-        UpdateFailedException(@Nullable final String msg, @Nullable final Exception inner) {
+        UpdateException(@Nullable final String msg, @Nullable final Exception inner) {
             super(msg, inner);
         }
     }
 
 //    // left as a reminder: don't bother, just return a '0' for nothing deleted
-//    static class DeleteFailedException extends RuntimeException {
-//        DeleteFailedException() {
+//    static class DeleteException extends RuntimeException {
+//        DeleteException() {
 //            super();
 //        }
-//        DeleteFailedException(@Nullable final Exception inner) {
+//        DeleteException(@Nullable final Exception inner) {
 //            super(inner);
 //        }
-//        DeleteFailedException(@Nullable final String msg, @Nullable final Exception inner) {
+//        DeleteException(@Nullable final String msg, @Nullable final Exception inner) {
 //            super(msg, inner);
 //        }
 //    }
@@ -66,11 +66,9 @@ class DBExceptions {
         }
     }
     static class LockException extends RuntimeException {
-
         LockException(@Nullable final String msg) {
             super(msg);
         }
-
         LockException(@Nullable final String msg, @Nullable final Exception inner) {
             super(msg, inner);
         }

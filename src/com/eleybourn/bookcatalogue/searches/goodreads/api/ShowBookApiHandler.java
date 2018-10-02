@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -80,13 +81,13 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private final boolean mSignRequest;
     private final XmlHandler mHandleSeriesStart = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             //mCurrSeries = new Series();
         }
     };
     private final XmlHandler mHandleSeriesId = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
 			/*
 			try {
 				mCurrSeriesId = Integer.parseInt(context.body.trim());
@@ -97,13 +98,13 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     };
     private final XmlHandler mHandleAuthorStart = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             //mCurrAuthor = new Author();
         }
     };
     private final XmlHandler mHandleAuthorId = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
 			/*
 			try {
 				mCurrAuthorId = Long.parseLong(context.body.trim());
@@ -122,7 +123,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private final XmlHandler mHandleText = new XmlHandler() {
 
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             final String name = (String) context.userArg;
             mBook.putString(name, context.body.trim());
         }
@@ -130,7 +131,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private final XmlHandler mHandleLong = new XmlHandler() {
 
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             final String name = (String) context.userArg;
             try {
                 long l = Long.parseLong(context.body.trim());
@@ -146,7 +147,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private final XmlHandler mHandleFloat = new XmlHandler() {
 
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             final String name = (String) context.userArg;
             try {
                 double d = Double.parseDouble(context.body.trim());
@@ -159,7 +160,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private final XmlHandler mHandleBoolean = new XmlHandler() {
 
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             final String name = (String) context.userArg;
             try {
                 String s = context.body.trim();
@@ -352,7 +353,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
      */
     private final XmlHandler mHandleShelvesStart = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             mShelves = new ArrayList<>();
         }
     };
@@ -361,7 +362,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
      */
     private final XmlHandler mHandleShelf = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             String name;
             try {
                 name = context.attributes.getValue("name");
@@ -377,7 +378,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private String mCurrAuthorName = null;
     private final XmlHandler mHandleAuthorEnd = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             if (mCurrAuthorName != null && mCurrAuthorName.length() > 0) {
                 if (mAuthors == null) {
                     mAuthors = new ArrayList<>();
@@ -389,7 +390,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     };
     private final XmlHandler mHandleAuthorName = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             mCurrAuthorName = context.body.trim();
         }
     };
@@ -399,7 +400,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private String mCurrSeriesName = null;
     private final XmlHandler mHandleSeriesName = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             mCurrSeriesName = context.body.trim();
         }
     };
@@ -409,7 +410,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private Integer mCurrSeriesPosition = null;
     private final XmlHandler mHandleSeriesEnd = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             if (mCurrSeriesName != null && mCurrSeriesName.length() > 0) {
                 if (mSeries == null) {
                     mSeries = new ArrayList<>();
@@ -426,7 +427,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     };
     private final XmlHandler mHandleSeriesPosition = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             try {
                 mCurrSeriesPosition = Integer.parseInt(context.body.trim());
             } catch (Exception ignore) {
@@ -435,7 +436,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     };
 
 
-    ShowBookApiHandler(GoodreadsManager manager, @SuppressWarnings("SameParameterValue") boolean signRequest) {
+    ShowBookApiHandler(@NonNull final GoodreadsManager manager, @SuppressWarnings("SameParameterValue") final boolean signRequest) {
         super(manager);
         mSignRequest = signRequest;
         // Build the XML filters needed to get the data we're interested in.
@@ -450,7 +451,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
      *
      * @return the Bundle of data.
      */
-    Bundle sendRequest(HttpGet request, boolean fetchThumbnail) throws
+    Bundle sendRequest(@NonNull final HttpGet request, final boolean fetchThumbnail) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 
@@ -661,7 +662,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "publication_day")
                 .setEndAction(mHandleLong, PUBLICATION_DAY);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "publisher")
-                .setEndAction(mHandleText, UniqueId.KEY_PUBLISHER);
+                .setEndAction(mHandleText, UniqueId.KEY_BOOK_PUBLISHER);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "is_ebook")
                 .setEndAction(mHandleBoolean, IS_EBOOK);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "description")

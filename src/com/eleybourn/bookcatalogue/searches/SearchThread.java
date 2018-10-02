@@ -28,10 +28,9 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.Series.SeriesDetails;
-import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,26 +77,22 @@ abstract public class SearchThread extends ManagedTask {
      * next lookup will overwrite with a possibly new title.
      */
     protected void checkForSeriesName() {
-        try {
-            if (mBookInfo.containsKey(UniqueId.KEY_TITLE)) {
-                String thisTitle = mBookInfo.getString(UniqueId.KEY_TITLE);
-                if (thisTitle != null) {
-                    SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
-                    if (details != null && !details.name.isEmpty()) {
-                        List<Series> sl;
-                        if (mBookInfo.containsKey(UniqueId.BKEY_SERIES_DETAILS)) {
-                            sl = ArrayUtils.getSeriesUtils().decodeList('|', mBookInfo.getString(UniqueId.BKEY_SERIES_DETAILS), false);
-                        } else {
-                            sl = new ArrayList<>();
-                        }
-                        sl.add(new Series(details.name, details.position));
-                        mBookInfo.putString(UniqueId.BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList('|', sl));
-                        mBookInfo.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1).trim());
+        if (mBookInfo.containsKey(UniqueId.KEY_TITLE)) {
+            String thisTitle = mBookInfo.getString(UniqueId.KEY_TITLE);
+            if (thisTitle != null) {
+                SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
+                if (details != null && !details.name.isEmpty()) {
+                    List<Series> sl;
+                    if (mBookInfo.containsKey(UniqueId.BKEY_SERIES_DETAILS)) {
+                        sl = ArrayUtils.getSeriesUtils().decodeList('|', mBookInfo.getString(UniqueId.BKEY_SERIES_DETAILS), false);
+                    } else {
+                        sl = new ArrayList<>();
                     }
+                    sl.add(new Series(details.name, details.position));
+                    mBookInfo.putString(UniqueId.BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList('|', sl));
+                    mBookInfo.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1).trim());
                 }
             }
-        } catch (Exception e) {
-            Logger.logError(e);
         }
     }
 

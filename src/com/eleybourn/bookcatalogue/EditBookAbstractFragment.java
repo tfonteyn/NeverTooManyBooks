@@ -20,7 +20,9 @@
 package com.eleybourn.bookcatalogue;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -55,11 +57,7 @@ import java.util.Map;
  * @author pjw
  */
 public abstract class EditBookAbstractFragment extends Fragment implements DataEditor {
-    protected static final int THUMBNAIL_OPTIONS_ID = 5;
-    private static final int DELETE_ID = 1;
-    private static final int DUPLICATE_ID = 3; //2 is taken by populate in anthology
-    private static final int SHARE_ID = 4;
-    private static final int EDIT_OPTIONS_ID = 6;
+    /** */
     protected Fields mFields;
 
     /** A link to the {@link BookEditManager} for this fragment (the activity) */
@@ -98,23 +96,26 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         //menu.clear();
-        final long currRow = mEditManager.getBookData().getRowId();
+        final long currRow = mEditManager.getBookData().getBookId();
         if (currRow != 0) {
-            menu.add(Menu.NONE, DELETE_ID, 0, R.string.menu_delete)
+            menu.add(Menu.NONE, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete)
                     .setIcon(R.drawable.ic_mode_edit);
 
-            menu.add(Menu.NONE, DUPLICATE_ID, 0, R.string.menu_duplicate)
+            menu.add(Menu.NONE, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
                     .setIcon(R.drawable.ic_content_copy);
 
+//            menu.add(Menu.NONE, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.internet_update_fields)
+//                    .setIcon(R.drawable.ic_search);
+
             // TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books.
-            menu.add(Menu.NONE, SHARE_ID, 0, R.string.menu_share_this)
+            menu.add(Menu.NONE, R.id.MENU_SHARE, 0, R.string.menu_share_this)
                     .setIcon(R.drawable.ic_share);
             // Very rarely used, and easy to miss-click, so do not add as action_if_room!
             //.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
         if (this instanceof BookDetailsFragment) {
-            MenuItem item = menu.add(Menu.NONE, EDIT_OPTIONS_ID, 0, R.string.edit_book)
+            MenuItem item = menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.edit_book)
                     .setIcon(R.drawable.ic_mode_edit);
             item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
@@ -141,20 +142,22 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      */
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final long currRow = mEditManager.getBookData().getRowId();
+        final long currRow = mEditManager.getBookData().getBookId();
 
         try {
             switch (item.getItemId()) {
-                case THUMBNAIL_OPTIONS_ID:
+                case R.id.SUBMENU_REPLACE_THUMB:
                     if (this instanceof EditBookFieldsFragment) {
                         ((EditBookFieldsFragment) this).showCoverContextMenu();
                         return true;
                     }
-                    break;
-                case SHARE_ID:
+                    return false;
+
+                case R.id.MENU_SHARE:
                     BookUtils.shareBook(getActivity(), mDb, currRow);
                     return true;
-                case DELETE_ID:
+
+                case R.id.MENU_BOOK_DELETE:
                     BookUtils.deleteBook(getActivity(), mDb, currRow,
                             new Runnable() {
                                 @Override
@@ -163,28 +166,34 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
                                 }
                             });
                     return true;
-                case DUPLICATE_ID:
+
+                case R.id.MENU_BOOK_DUPLICATE:
                     BookUtils.duplicateBook(getActivity(), mDb, currRow);
                     return true;
-                case EDIT_OPTIONS_ID:
+
+//                case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
+//                    updateFromInternet();
+//                    return true;
+
+                case R.id.MENU_BOOK_EDIT:
                     BookDetailsActivity.startEditMode(getActivity(), currRow, BookDetailsActivity.TAB_EDIT);
                     return true;
 
                 case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
                     String author = getAuthorFromBook();
-                    AmazonUtils.openAmazonSearchPage(getActivity(), author, null);
+                    AmazonUtils.openSearchPage(getActivity(), author, null);
                     return true;
                 }
                 case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
                     String series = getSeriesFromBook();
-                    AmazonUtils.openAmazonSearchPage(getActivity(), null, series);
+                    AmazonUtils.openSearchPage(getActivity(), null, series);
                     return true;
                 }
 
                 case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
                     String author = getAuthorFromBook();
                     String series = getSeriesFromBook();
-                    AmazonUtils.openAmazonSearchPage(getActivity(), author, series);
+                    AmazonUtils.openSearchPage(getActivity(), author, series);
                     return true;
                 }
             }
@@ -194,6 +203,23 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         }
         return false;
     }
+
+//    private void updateFromInternet() {
+//        Intent i = new Intent(getActivity(), UpdateFromInternet.class);
+//        i.putExtra(UniqueId.KEY_ID, mEditManager.getBookData().getBookId());
+//        i.putExtra(UniqueId.KEY_TITLE, mEditManager.getBookData().get(UniqueId.KEY_TITLE).toString());
+//        i.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, mEditManager.getBookData().get(UniqueId.KEY_AUTHOR_FORMATTED).toString());
+//        startActivityForResult(i,1);
+//    }
+//
+//    @Override
+//    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+//        if (requestCode == 1) {
+//            if(resultCode == Activity.RESULT_OK){
+//                String result=data.getStringExtra("result");
+//            }
+//        }
+//    }
 
     @Nullable
     private String getAuthorFromBook() {

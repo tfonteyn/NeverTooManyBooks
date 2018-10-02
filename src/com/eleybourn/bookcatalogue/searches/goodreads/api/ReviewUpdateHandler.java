@@ -35,6 +35,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
@@ -75,7 +76,7 @@ public class ReviewUpdateHandler extends ApiHandler {
 
         // Set the 'read' or 'to-read' shelf based on status.
         // Note a lot of point...it does not update goodreads!
-        ArrayList<NameValuePair> parameters = new ArrayList<>();
+        List<NameValuePair> parameters = new ArrayList<>();
         if (isRead)
             parameters.add(new BasicNameValuePair("shelf", "read"));
         else

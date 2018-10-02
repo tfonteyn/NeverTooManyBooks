@@ -86,7 +86,7 @@ public class BookshelfDialogFragment extends DialogFragment {
         super.onAttach(a);
 
         if (!(a instanceof OnBookshelfCheckChangeListener))
-            throw new RuntimeException("Activity " + a.getClass().getSimpleName() + " must implement OnBookshelfCheckChangeListener");
+            throw new IllegalStateException("Activity " + a.getClass().getSimpleName() + " must implement OnBookshelfCheckChangeListener");
 
     }
 

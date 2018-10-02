@@ -76,8 +76,8 @@ class DbHelper extends SQLiteOpenHelper {
     static final String TBL_QUEUE = "queue";
     private static final String TBL_QUEUE_DEFN = DOM_ID + " integer primary key autoincrement,\n"
             + DOM_NAME + " String";
-    private static final String[] TBL_QUEUE_IX1 = new String[] { TBL_QUEUE, "unique", DOM_ID };
-    private static final String[] TBL_QUEUE_IX2 = new String[] { TBL_QUEUE, "unique", DOM_NAME};
+    private static final String[] TBL_QUEUE_IX1 = new String[] { TBL_QUEUE, "UNIQUE", DOM_ID };
+    private static final String[] TBL_QUEUE_IX2 = new String[] { TBL_QUEUE, "UNIQUE", DOM_NAME};
 
     // Scheduled task definition.
     static final String TBL_TASK = "task";
@@ -93,7 +93,7 @@ class DbHelper extends SQLiteOpenHelper {
             + DOM_EXCEPTION + " blob,\n"
             + DOM_TASK + " blob not null";
 
-    private static final String[] TBL_TASK_IX1 = new String[] { TBL_TASK, "unique", DOM_ID };
+    private static final String[] TBL_TASK_IX1 = new String[] { TBL_TASK, "UNIQUE", DOM_ID };
     private static final String[] TBL_TASK_IX2 = new String[] { TBL_TASK, "", DOM_STATUS_CODE, DOM_QUEUE_ID, DOM_RETRY_DATE};
     private static final String[] TBL_TASK_IX3 = new String[] { TBL_TASK, "", DOM_STATUS_CODE, DOM_QUEUE_ID, DOM_RETRY_DATE, DOM_PRIORITY};
 
@@ -105,8 +105,8 @@ class DbHelper extends SQLiteOpenHelper {
             + DOM_EVENT_DATE + " datetime default current_timestamp"
             ;
 
-    private static final String[] TBL_EVENTS_IX1 = new String[] { TBL_EVENT, "unique", DOM_ID };
-    private static final String[] TBL_EVENTS_IX2 = new String[] { TBL_EVENT, "unique", DOM_EVENT_DATE, DOM_ID };
+    private static final String[] TBL_EVENTS_IX1 = new String[] { TBL_EVENT, "UNIQUE", DOM_ID };
+    private static final String[] TBL_EVENTS_IX2 = new String[] { TBL_EVENT, "UNIQUE", DOM_EVENT_DATE, DOM_ID };
     private static final String[] TBL_EVENTS_IX3 = new String[] { TBL_EVENT, "", DOM_TASK_ID, DOM_ID };
 
     // Collection of all table definitions
@@ -144,7 +144,7 @@ class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         for(int i = 0; i < m_tables.length; i=i+2 ) {
-            db.execSQL("Create Table " + m_tables[i] + "(" + m_tables[i+1] + ")");
+            db.execSQL("CREATE TABLE " + m_tables[i] + "(" + m_tables[i+1] + ")");
         }
         // Turn on foreign key support so that CASCADE works.
         db.execSQL("PRAGMA foreign_keys = ON");
@@ -169,7 +169,7 @@ class DbHelper extends SQLiteOpenHelper {
             counters.put(tbl, cnt);
 
             // Start definition using first field.
-            StringBuilder sql = new StringBuilder("Create " + qualifier + " Index " + tbl + "_IX" + cnt + " On " + tbl + "(\n");
+            StringBuilder sql = new StringBuilder("CREATE " + qualifier + " INDEX " + tbl + "_IX" + cnt + " ON " + tbl + "(\n");
             sql.append("    ").append(defn[2]);
             // Loop through remaining fields, if any
             for(int i = 3; i < defn.length; i++) {
@@ -190,7 +190,7 @@ class DbHelper extends SQLiteOpenHelper {
 
         if (currVersion == 1) {
             currVersion++;
-            String sql = "Alter Table " + TBL_TASK + " Add " + DOM_CATEGORY + " int default 0";
+            String sql = "Alter TABLE " + TBL_TASK + " Add " + DOM_CATEGORY + " int default 0";
             db.execSQL(sql);
         }
 

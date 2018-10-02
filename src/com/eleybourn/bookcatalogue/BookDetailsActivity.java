@@ -222,15 +222,15 @@ public class BookDetailsActivity extends BookCatalogueActivity
         Bundle extras = getIntent().getExtras();
 
         // We need the row ID
-        long rowId = 0;
+        long bookId = 0;
         if (savedInstanceState != null) {
-            rowId = savedInstanceState.getLong(UniqueId.KEY_ID);
+            bookId = savedInstanceState.getLong(UniqueId.KEY_ID);
         }
 
-        if ((rowId == 0) && (extras != null)) {
-            rowId = extras.getLong(UniqueId.KEY_ID);
+        if ((bookId == 0) && (extras != null)) {
+            bookId = extras.getLong(UniqueId.KEY_ID);
         }
-        mRowId = rowId;
+        mRowId = bookId;
 
         boolean isExistingBook = (mRowId > 0);
 
@@ -293,7 +293,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
                 mTabLayout.addTab(tab);
                 mAllTabs.add(tab);
 
-                boolean isAnthology = (mBookData.getRowId() > 0) && (mBookData.getInt(BookData.IS_ANTHOLOGY) != DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY);
+                boolean isAnthology = (mBookData.getBookId() > 0) && (mBookData.getInt(BookData.IS_ANTHOLOGY) != DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY);
                 showAnthologyTab(isAnthology);
             }
         } catch (InstantiationException | IllegalAccessException e) {
@@ -357,13 +357,13 @@ public class BookDetailsActivity extends BookCatalogueActivity
      *
      * 3. It will leave the fields blank for new books.
      */
-    private void initBookData(final long rowId, @Nullable final Bundle bestBundle) {
+    private void initBookData(final long bookId, @Nullable final Bundle bestBundle) {
         if (bestBundle != null && bestBundle.containsKey(UniqueId.BKEY_BOOK_DATA)) {
             // If we have saved book data, use it
-            mBookData = new BookData(rowId, bestBundle.getBundle(UniqueId.BKEY_BOOK_DATA));
+            mBookData = new BookData(bookId, bestBundle.getBundle(UniqueId.BKEY_BOOK_DATA));
         } else {
             // Just load based on rowId
-            mBookData = new BookData(rowId);
+            mBookData = new BookData(bookId);
         }
     }
 
@@ -421,7 +421,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
                 bar.setTitle(this.getResources().getString(R.string.book_details));
                 bar.setSubtitle(null);
 
-            } else if (mBookData.getRowId() > 0) {
+            } else if (mBookData.getBookId() > 0) {
                 // editing an existing book
                 bar.setTitle(mBookData.getString(UniqueId.KEY_TITLE));
                 bar.setSubtitle(mBookData.getAuthorTextShort());
@@ -530,7 +530,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
      */
     private void finishAndSendIntent() {
         Intent intent = new Intent();
-        intent.putExtra(UniqueId.KEY_ID, mBookData.getRowId());
+        intent.putExtra(UniqueId.KEY_ID, mBookData.getBookId());
         setResult(Activity.RESULT_OK, intent);
         finish();
     }
@@ -929,7 +929,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
 
         public void success() {
             Intent intent = new Intent();
-            intent.putExtra(UniqueId.KEY_ID, mBookData.getRowId());
+            intent.putExtra(UniqueId.KEY_ID, mBookData.getBookId());
             setResult(Activity.RESULT_OK, intent);
             finish();
         }

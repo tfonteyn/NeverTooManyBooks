@@ -21,11 +21,13 @@
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class layered on top of XmlFilter to implement a simple set of XML filters to extract
@@ -36,7 +38,7 @@ import java.util.ArrayList;
 public class SimpleXmlFilter {
     private static final XmlHandler mHandleStart = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             BuilderContext bc = (BuilderContext) context.userArg;
 
             if (bc.isArray()) {
@@ -46,10 +48,11 @@ public class SimpleXmlFilter {
                 bc.pushBundle();
             }
 
-            if (bc.listener != null)
+            if (bc.listener != null) {
                 bc.listener.onStart(bc, context);
+            }
 
-            ArrayList<AttrFilter> attrs = bc.attrs;
+            List<AttrFilter> attrs = bc.attrs;
             if (attrs != null) {
                 for (AttrFilter f : attrs) {
                     final String name = f.name;
@@ -68,7 +71,7 @@ public class SimpleXmlFilter {
     };
     private static final XmlHandler mHandleFinish = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             final BuilderContext bc = (BuilderContext) context.userArg;
             if (bc.finishHandler != null) {
                 bc.finishHandler.process(context);
@@ -91,7 +94,7 @@ public class SimpleXmlFilter {
     };
     private static final XmlHandler mTextHandler = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             final BuilderContext c = (BuilderContext) context.userArg;
             c.getData().putString(c.collectField, context.body.trim());
         }
@@ -99,7 +102,7 @@ public class SimpleXmlFilter {
     private static final XmlHandler mLongHandler = new XmlHandler() {
 
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             final BuilderContext c = (BuilderContext) context.userArg;
             final String name = c.collectField;
             try {
@@ -113,7 +116,7 @@ public class SimpleXmlFilter {
     private static final XmlHandler mDoubleHandler = new XmlHandler() {
 
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             final BuilderContext c = (BuilderContext) context.userArg;
             final String name = c.collectField;
             try {
@@ -127,7 +130,7 @@ public class SimpleXmlFilter {
     private static final XmlHandler mBooleanHandler = new XmlHandler() {
 
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             final BuilderContext c = (BuilderContext) context.userArg;
             final String name = c.collectField;
             try {
@@ -143,7 +146,7 @@ public class SimpleXmlFilter {
     private final ArrayList<String> mTags = new ArrayList<>();
     private final DataStore mRootData = new DataStore();
 
-    SimpleXmlFilter(XmlFilter root) {
+    SimpleXmlFilter(@NonNull final XmlFilter root) {
         mRootFilter = root;
     }
 
@@ -165,7 +168,7 @@ public class SimpleXmlFilter {
         }
     }
 
-    public SimpleXmlFilter isArray(String arrayName) {
+    public SimpleXmlFilter isArray(@NonNull final String arrayName) {
         mContexts.get(mContexts.size() - 1).setArray(arrayName);
         return this;
     }
@@ -175,16 +178,17 @@ public class SimpleXmlFilter {
         return this;
     }
 
-    public SimpleXmlFilter s(String tag) {
+    public SimpleXmlFilter s(@NonNull final String tag) {
         DataStoreProvider parent;
 
         mTags.add(tag);
         int size = mContexts.size();
 
-        if (size == 0)
+        if (size == 0) {
             parent = mRootData;
-        else
+        } else {
             parent = mContexts.get(size - 1);
+        }
 
         mContexts.add(new BuilderContext(mRootFilter, parent, mTags));
 
@@ -202,7 +206,7 @@ public class SimpleXmlFilter {
         return mRootData.getData();
     }
 
-    private ArrayList<AttrFilter> getAttrFilters() {
+    private List<AttrFilter> getAttrFilters() {
         BuilderContext c = mContexts.get(mContexts.size() - 1);
         if (c.attrs == null) {
             c.attrs = new ArrayList<>();
@@ -222,11 +226,12 @@ public class SimpleXmlFilter {
         return this;
     }
 
-    public SimpleXmlFilter popTo(String tag) {
+    public SimpleXmlFilter popTo(@NonNull final String tag) {
         int last = mTags.size() - 1;
         while (!mTags.get(last).equalsIgnoreCase(tag)) {
-            if (last == 0)
+            if (last == 0) {
                 throw new RuntimeException("Unable to find parent tag :" + tag);
+            }
             mContexts.remove(last);
             mTags.remove(last);
             last--;
@@ -234,90 +239,90 @@ public class SimpleXmlFilter {
         return this;
     }
 
-    public SimpleXmlFilter booleanAttr(String key, String attrName) {
-        ArrayList<AttrFilter> attrs = getAttrFilters();
+    public SimpleXmlFilter booleanAttr(@NonNull final String key, @NonNull final String attrName) {
+        List<AttrFilter> attrs = getAttrFilters();
         attrs.add(new BooleanAttrFilter(key, attrName));
         return this;
     }
 
-    public SimpleXmlFilter doubleAttr(String attrName, String key) {
-        ArrayList<AttrFilter> attrs = getAttrFilters();
+    public SimpleXmlFilter doubleAttr(@NonNull final String attrName, @NonNull final String key) {
+        List<AttrFilter> attrs = getAttrFilters();
         attrs.add(new DoubleAttrFilter(key, attrName));
         return this;
     }
 
-    public SimpleXmlFilter longAttr(String attrName, String key) {
-        ArrayList<AttrFilter> attrs = getAttrFilters();
+    public SimpleXmlFilter longAttr(@NonNull final String attrName, @NonNull final String key) {
+        List<AttrFilter> attrs = getAttrFilters();
         attrs.add(new LongAttrFilter(key, attrName));
         return this;
     }
 
-    public SimpleXmlFilter stringAttr(String attrName, String key) {
-        ArrayList<AttrFilter> attrs = getAttrFilters();
+    public SimpleXmlFilter stringAttr(@NonNull final String attrName, @NonNull final String key) {
+        List<AttrFilter> attrs = getAttrFilters();
         attrs.add(new StringAttrFilter(key, attrName));
         return this;
     }
 
-    private void setCollector(String tag, XmlHandler handler, String fieldName) {
+    private void setCollector(@NonNull final String tag, XmlHandler handler, @NonNull final String fieldName) {
         s(tag);
         setCollector(handler, fieldName);
         pop();
     }
 
-    private void setCollector(XmlHandler handler, String fieldName) {
+    private void setCollector(@NonNull final XmlHandler handler, @NonNull final String fieldName) {
         BuilderContext c = mContexts.get(mContexts.size() - 1);
         c.collectField = fieldName;
         c.finishHandler = handler;
     }
 
-    public SimpleXmlFilter booleanBody(String fieldName) {
+    public SimpleXmlFilter booleanBody(@NonNull final String fieldName) {
         setCollector(mBooleanHandler, fieldName);
         return this;
     }
 
-    public SimpleXmlFilter booleanBody(String tag, String fieldName) {
+    public SimpleXmlFilter booleanBody(@NonNull final String tag, @NonNull final String fieldName) {
         setCollector(tag, mBooleanHandler, fieldName);
         return this;
     }
 
-    public SimpleXmlFilter doubleBody(String fieldName) {
+    public SimpleXmlFilter doubleBody(@NonNull final String fieldName) {
         setCollector(mDoubleHandler, fieldName);
         return this;
     }
 
-    public SimpleXmlFilter doubleBody(String tag, String fieldName) {
+    public SimpleXmlFilter doubleBody(@NonNull final String tag, @NonNull final String fieldName) {
         setCollector(tag, mDoubleHandler, fieldName);
         return this;
     }
 
-    public SimpleXmlFilter longBody(String fieldName) {
+    public SimpleXmlFilter longBody(@NonNull final String fieldName) {
         setCollector(mLongHandler, fieldName);
         return this;
     }
 
-    public SimpleXmlFilter longBody(String tag, String fieldName) {
+    public SimpleXmlFilter longBody(@NonNull final String tag, @NonNull final String fieldName) {
         setCollector(tag, mLongHandler, fieldName);
         return this;
     }
 
-    public SimpleXmlFilter stringBody(String fieldName) {
+    public SimpleXmlFilter stringBody(@NonNull final String fieldName) {
         setCollector(mTextHandler, fieldName);
         return this;
     }
 
-    public SimpleXmlFilter stringBody(String tag, String fieldName) {
+    public SimpleXmlFilter stringBody(@NonNull final String tag, @NonNull final String fieldName) {
         setCollector(tag, mTextHandler, fieldName);
         return this;
     }
 
     public interface XmlListener {
-        void onStart(SimpleXmlFilter.BuilderContext bc, ElementContext c);
+        void onStart(@NonNull final SimpleXmlFilter.BuilderContext bc, @NonNull final ElementContext c);
 
-        void onFinish(SimpleXmlFilter.BuilderContext bc, ElementContext c);
+        void onFinish(@NonNull final SimpleXmlFilter.BuilderContext bc, @NonNull final ElementContext c);
     }
 
     public interface DataStoreProvider {
-        void addArrayItem(Bundle b);
+        void addArrayItem(@NonNull final Bundle b);
 
         Bundle getData();
     }
@@ -326,7 +331,7 @@ public class SimpleXmlFilter {
         public DataStoreProvider parent;
 
         String collectField;
-        ArrayList<AttrFilter> attrs = null;
+        List<AttrFilter> attrs = null;
         XmlListener listener = null;
         XmlHandler finishHandler = null;
         private final XmlFilter mFilter;
@@ -338,10 +343,7 @@ public class SimpleXmlFilter {
 
         private boolean mIsArrayItem = false;
 
-        BuilderContext(XmlFilter root, DataStoreProvider parent, ArrayList<String> tags) {
-            if (parent == null)
-                throw new RuntimeException("Parent can not be null");
-
+        BuilderContext(@NonNull final XmlFilter root, @NonNull final DataStoreProvider parent, @NonNull final List<String> tags) {
             this.parent = parent;
             mFilter = XmlFilter.buildFilter(root, tags);
             if (mFilter != null) {
@@ -350,11 +352,12 @@ public class SimpleXmlFilter {
             }
         }
 
-        public void addArrayItem(Bundle b) {
-            if (mArrayItems != null)
-                mArrayItems.add(b);
-            else
-                parent.addArrayItem(b);
+        public void addArrayItem(@NonNull final Bundle bundle) {
+            if (mArrayItems != null) {
+                mArrayItems.add(bundle);
+            } else {
+                parent.addArrayItem(bundle);
+            }
         }
 
         public void initArray() {
@@ -371,21 +374,24 @@ public class SimpleXmlFilter {
         }
 
         public Bundle getData() {
-            if (mLocalBundle != null)
+            if (mLocalBundle != null) {
                 return mLocalBundle;
-            else
+            } else {
                 return parent.getData();
+            }
         }
 
         public void pushBundle() {
-            if (mLocalBundle != null)
-                throw new RuntimeException("Bundle already pushed!");
+            if (mLocalBundle != null) {
+                throw new IllegalStateException("Bundle already pushed!");
+            }
             mLocalBundle = new Bundle();
         }
 
         public Bundle popBundle() {
-            if (mLocalBundle == null)
-                throw new RuntimeException("Bundle not pushed!");
+            if (mLocalBundle == null) {
+                throw new IllegalStateException("Bundle not pushed!");
+            }
             Bundle b = mLocalBundle;
             mLocalBundle = null;
             return b;
@@ -417,8 +423,8 @@ public class SimpleXmlFilter {
         }
 
         @Override
-        public void addArrayItem(Bundle b) {
-            throw new RuntimeException("Attempt to store array at root");
+        public void addArrayItem(@NonNull final Bundle b) {
+            throw new IllegalStateException("Attempt to store array at root");
         }
 
         @Override
@@ -432,50 +438,50 @@ public class SimpleXmlFilter {
         public final String name;
         public final String key;
 
-        AttrFilter(String key, String name) {
+        AttrFilter(@NonNull final String key, @NonNull final String name) {
             this.name = name;
             this.key = key;
         }
 
-        protected abstract void put(BuilderContext context, String value);
+        protected abstract void put(@NonNull final BuilderContext context, @NonNull final String value);
     }
 
     private class StringAttrFilter extends AttrFilter {
-        StringAttrFilter(String key, String name) {
+        StringAttrFilter(@NonNull final String key, @NonNull final String name) {
             super(key, name);
         }
 
-        public void put(BuilderContext context, String value) {
+        public void put(@NonNull final BuilderContext context, @NonNull final String value) {
             context.getData().putString(this.key, value);
         }
     }
 
     private class LongAttrFilter extends AttrFilter {
-        LongAttrFilter(String key, String name) {
+        LongAttrFilter(@NonNull final String key, @NonNull final String name) {
             super(key, name);
         }
 
-        public void put(BuilderContext context, String value) {
+        public void put(@NonNull final BuilderContext context, @NonNull final String value) {
             context.getData().putLong(this.key, Long.parseLong(value));
         }
     }
 
     private class DoubleAttrFilter extends AttrFilter {
-        DoubleAttrFilter(String key, String name) {
+        DoubleAttrFilter(@NonNull final String key, @NonNull final String name) {
             super(key, name);
         }
 
-        public void put(BuilderContext context, String value) {
+        public void put(@NonNull final BuilderContext context, @NonNull final String value) {
             context.getData().putDouble(this.key, Double.parseDouble(value));
         }
     }
 
     private class BooleanAttrFilter extends AttrFilter {
-        BooleanAttrFilter(String key, String name) {
+        BooleanAttrFilter(@NonNull final String key, @NonNull final String name) {
             super(key, name);
         }
 
-        public void put(BuilderContext context, String value) {
+        public void put(@NonNull final BuilderContext context, @NonNull final String value) {
             boolean b = textToBoolean(value.trim());
             context.getData().putBoolean(this.key, b);
         }

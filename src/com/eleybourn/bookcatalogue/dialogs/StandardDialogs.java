@@ -185,19 +185,19 @@ public class StandardDialogs {
      * @return the resource id for a string in case of error, 0 for ok
      */
     public static int deleteBookAlert(@NonNull final Context context,
-                                      @NonNull final CatalogueDBAdapter dba,
+                                      @NonNull final CatalogueDBAdapter db,
                                       final long id,
                                       @NonNull final Runnable onDeleted) {
 
-        List<Author> authorList = dba.getBookAuthorList(id);
+        List<Author> authorList = db.getBookAuthorList(id);
 
         String title;
-        try (Cursor cur = dba.fetchBookById(id)) {
-            if (cur == null || !cur.moveToFirst()) {
+        try (Cursor cursor = db.fetchBookById(id)) {
+            if (cursor == null || !cursor.moveToFirst()) {
                 return R.string.unable_to_find_book;
             }
 
-            title = cur.getString(cur.getColumnIndex(DOM_TITLE.name));
+            title = cursor.getString(cursor.getColumnIndex(DOM_TITLE.name));
             if (title == null || title.isEmpty()) {
                 title = UNKNOWN;
             }
@@ -226,7 +226,7 @@ public class StandardDialogs {
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
-                        dba.deleteBook(id);
+                        db.deleteBook(id);
                         dialog.dismiss();
                         onDeleted.run();
                     }

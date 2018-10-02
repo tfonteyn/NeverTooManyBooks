@@ -319,7 +319,7 @@ public class SearchAmazonHandler extends DefaultHandler {
                         mBookData.putString(UniqueId.KEY_ISBN, tmp);
                     }
                 } else if (localName.equalsIgnoreCase(PUBLISHER)) {
-                    addIfNotPresent(UniqueId.KEY_PUBLISHER);
+                    addIfNotPresent(UniqueId.KEY_BOOK_PUBLISHER);
                 } else if (localName.equalsIgnoreCase(DATE_PUBLISHED)) {
                     addIfNotPresent(UniqueId.KEY_BOOK_DATE_PUBLISHED);
                 } else if (localName.equalsIgnoreCase(PAGES)) {

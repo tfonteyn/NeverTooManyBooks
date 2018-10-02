@@ -110,7 +110,7 @@ public class DbAdapter {
      * @return The ID of the queue, 0 if no match
      */
     private long getQueueId(@NonNull final String name) {
-        final String sql = "select " + DOM_ID + " from " + TBL_QUEUE + " Where " + DOM_NAME + " = ?";
+        final String sql = "SELECT " + DOM_ID + " FROM " + TBL_QUEUE + " WHERE " + DOM_NAME + " = ?";
         SQLiteDatabase db = getDb();
 
         try (Cursor c = db.rawQuery(sql, new String[]{name})) {
@@ -131,7 +131,7 @@ public class DbAdapter {
      * @param manager Owner of the created Queue objects
      */
     void getAllQueues(@NonNull final QueueManager manager) {
-        String sql = "select " + DOM_NAME + " from " + TBL_QUEUE + " Order by " + DOM_NAME;
+        String sql = "SELECT " + DOM_NAME + " FROM " + TBL_QUEUE + " ORDER BY " + DOM_NAME;
         SQLiteDatabase db = getDb();
 
         try (Cursor cursor = db.rawQuery(sql, new String[]{})) {
@@ -162,17 +162,17 @@ public class DbAdapter {
         String currTimeStr = DateUtils.toSqlDateTime(currentTime);
         SQLiteDatabase db = getDb();
 
-        String baseSql = "Select j.* from " + TBL_QUEUE + " q"
-                + " join " + TBL_TASK + " j on j." + DOM_QUEUE_ID + " = q." + DOM_ID
-                + " where "
+        String baseSql = "SELECT j.* FROM " + TBL_QUEUE + " q"
+                + " JOIN " + TBL_TASK + " j ON j." + DOM_QUEUE_ID + " = q." + DOM_ID
+                + " WHERE "
                 + "  j." + DOM_STATUS_CODE + "= 'Q'"
-                + "  and q." + DOM_NAME + " = ?";
+                + "  AND q." + DOM_NAME + " = ?";
 
         // Query to check for any task that CAN run now, sorted by priority then date/id
         String canRunSql = baseSql
-                + "  and j." + DOM_RETRY_DATE + " <= ?"
-                + "  Order by " + DOM_PRIORITY + " asc, " + DOM_RETRY_DATE + " asc," + DOM_ID + " asc"
-                + " Limit 1";
+                + "  AND j." + DOM_RETRY_DATE + " <= ?"
+                + "  ORDER BY " + DOM_PRIORITY + " ASC, " + DOM_RETRY_DATE + " ASC," + DOM_ID + " ASC"
+                + " LIMIT 1";
 
         // Get next task that CAN RUN NOW
         Cursor c = db.rawQuery(canRunSql, new String[]{queueName, currTimeStr});
@@ -181,9 +181,9 @@ public class DbAdapter {
             c.close();
             // There is no task available now. Look for one that is waiting.
             String sql = baseSql
-                    + "  and j." + DOM_RETRY_DATE + " > ?"
-                    + "  Order by " + DOM_RETRY_DATE + " asc, " + DOM_PRIORITY + " asc, " + DOM_ID + " asc"
-                    + " Limit 1";
+                    + "  AND j." + DOM_RETRY_DATE + " > ?"
+                    + "  ORDER BY " + DOM_RETRY_DATE + " ASC, " + DOM_PRIORITY + " ASC, " + DOM_ID + " ASC"
+                    + " LIMIT 1";
             c = db.rawQuery(sql, new String[]{queueName, currTimeStr});
         }
 
@@ -280,14 +280,14 @@ public class DbAdapter {
         String sql;
 
         // See if the task has any Events recorded
-        sql = "Select count(*) from " + TBL_EVENT + " where " + DOM_TASK_ID + " = " + task.getId();
+        sql = "SELECT COUNT(*) FROM " + TBL_EVENT + " WHERE " + DOM_TASK_ID + " = " + task.getId();
         try (Cursor cursor = db.rawQuery(sql, new String[]{})) {
             if (cursor.moveToFirst() && cursor.getLong(0) == 0) {
                 // Delete successful tasks with no events
                 db.delete(TBL_TASK, DOM_ID + " = " + task.getId(), new String[]{});
             } else {
                 // Just mark is as successful
-                sql = "Update " + TBL_TASK + " set " + DOM_STATUS_CODE + "= 'S' where " + DOM_ID + " = " + task.getId();
+                sql = "UPDATE " + TBL_TASK + " SET " + DOM_STATUS_CODE + "= 'S' WHERE " + DOM_ID + " = " + task.getId();
                 getDb().execSQL(sql);
             }
         }
@@ -304,8 +304,8 @@ public class DbAdapter {
         try {
             // Remove Events attached to old tasks
             sql = DOM_TASK_ID + " In ("
-                    + "Select t." + DOM_ID + " from " + TBL_TASK + " t "
-                    + " Where t." + DOM_RETRY_DATE + " < '" + oneWeekAgo + "')";
+                    + "SELECT t." + DOM_ID + " FROM " + TBL_TASK + " t "
+                    + " WHERE t." + DOM_RETRY_DATE + " < '" + oneWeekAgo + "')";
             db.delete(TBL_EVENT, sql, new String[]{});
 
             // Remove old Tasks
@@ -342,12 +342,12 @@ public class DbAdapter {
         try {
             // Remove orphaned events -- should never be needed
             sql = "Not " + DOM_TASK_ID + " is NULL"
-                    + " And Not Exists(Select * From " + TBL_TASK + " t Where " + TBL_EVENT + "." + DOM_TASK_ID + " = t." + DOM_ID + ")";
+                    + " AND Not Exists(SELECT * FROM " + TBL_TASK + " t WHERE " + TBL_EVENT + "." + DOM_TASK_ID + " = t." + DOM_ID + ")";
             db.delete(TBL_EVENT, sql, new String[]{});
 
             // Remove orphaned tasks THAT WERE SUCCESSFUL
-            sql = "Not Exists(Select * From " + TBL_EVENT + " e Where e." + DOM_TASK_ID + " = " + TBL_TASK + "." + DOM_ID + ")"
-                    + " and " + DOM_STATUS_CODE + " = 'S'";
+            sql = "Not Exists(SELECT * FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + " = " + TBL_TASK + "." + DOM_ID + ")"
+                    + " AND " + DOM_STATUS_CODE + " = 'S'";
             db.delete(TBL_TASK, sql, new String[]{});
             db.setTransactionSuccessful();
         } finally {
@@ -423,7 +423,7 @@ public class DbAdapter {
 
         // Construct statements we want
         if (m_checkTaskExistsStmt == null) {
-            String sql = "Select Count(*) From " + TBL_TASK + " Where " + DOM_ID + " = ?";
+            String sql = "SELECT COUNT(*) FROM " + TBL_TASK + " WHERE " + DOM_ID + " = ?";
             m_checkTaskExistsStmt = db.compileStatement(sql);
             m_statements.add(m_checkTaskExistsStmt);
         }
@@ -452,9 +452,9 @@ public class DbAdapter {
      * @return A new TaskExceptionsCursor
      */
     private EventsCursor fetchTaskEvents(@NonNull final SQLiteDatabase db, final long taskId) {
-        String m_taskEventsQuery = "Select e.* From " + TBL_EVENT + " e "
-                + " Where e." + DOM_TASK_ID + " = ? "
-                + " Order by e." + DOM_ID + " asc";
+        String m_taskEventsQuery = "SELECT e.* FROM " + TBL_EVENT + " e "
+                + " WHERE e." + DOM_TASK_ID + " = ? "
+                + " ORDER BY e." + DOM_ID + " ASC";
         return (EventsCursor) db.rawQueryWithFactory(m_EventsCursorFactory, m_taskEventsQuery, new String[]{taskId + ""}, "");
     }
 
@@ -464,7 +464,7 @@ public class DbAdapter {
      * @return A new TaskExceptionsCursor
      */
     private EventsCursor fetchAllEvents(@NonNull final SQLiteDatabase db) {
-        String m_eventsQuery = "Select * From " + TBL_EVENT + " Order by " + DOM_ID + " asc";
+        String m_eventsQuery = "SELECT * FROM " + TBL_EVENT + " ORDER BY " + DOM_ID + " ASC";
         return (EventsCursor) db.rawQueryWithFactory(m_EventsCursorFactory, m_eventsQuery, new String[]{}, "");
     }
 

@@ -36,7 +36,9 @@ public class ArrayUtils<T> {
 
     public static final char MULTI_STRING_SEPARATOR = '|';
 
+    @Nullable
     private static ArrayUtils<Author> mAuthorUtils = null;
+    @Nullable
     private static ArrayUtils<Series> mSeriesUtils = null;
 
     private Factory<T> mFactory;
@@ -436,6 +438,7 @@ public class ArrayUtils<T> {
     }
 
     public interface Factory<T> {
+        @NonNull
         T get(@NonNull final String source);
     }
 }

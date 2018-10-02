@@ -163,7 +163,7 @@ public class BooklistRowView {
      * Checks if list displays series numbers anywhere.
      */
     public boolean hasSeries() {
-        return hasColumn(UniqueId.KEY_SERIES_NUM);
+        return mCursor.getColumnIndex(UniqueId.KEY_SERIES_NUM) >= 0;
     }
 
     /**
@@ -257,13 +257,6 @@ public class BooklistRowView {
                 break;
         }
         return s;
-    }
-
-    /**
-     * Check if a given column is present in underlying cursor.
-     */
-    private boolean hasColumn(@SuppressWarnings("SameParameterValue") @NonNull final String name) {
-        return mCursor.getColumnIndex(name) >= 0;
     }
 
     /**

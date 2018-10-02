@@ -223,7 +223,8 @@ public class CoversDbHelper implements AutoCloseable {
      * @param db     Blank database
      * @param tables Table list
      */
-    private static void createTables(@NonNull final SynchronizedDb db, @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition[] tables) {
+    private static void createTables(@NonNull final SynchronizedDb db,
+                                     @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition[] tables) {
         for (TableDefinition t : tables) {
             t.create(db, true);
             for (IndexDefinition i : t.getIndexes()) {
@@ -275,7 +276,7 @@ public class CoversDbHelper implements AutoCloseable {
         }
 
         if (mDeleteBookCoversStmt == null) {
-            String sql = "Delete From " + TBL_IMAGE + " Where " + DOM_FILENAME + " LIKE ?";
+            String sql = "DELETE FROM " + TBL_IMAGE + " WHERE " + DOM_FILENAME + " LIKE ?";
             mDeleteBookCoversStmt = mStatements.add(mSyncedDb, "mDeleteBookCoversStmt", sql);
         }
 
@@ -303,7 +304,7 @@ public class CoversDbHelper implements AutoCloseable {
 
         try (Cursor c = mSyncedDb.query(TBL_IMAGE.getName(),
                 new String[]{DOM_IMAGE.name},
-                DOM_FILENAME + "=? and " + DOM_DATE + " > ?",
+                DOM_FILENAME + "=? AND " + DOM_DATE + " > ?",
                 new String[]{filename, DateUtils.toSqlDateTime(lastModified)},
                 null,
                 null,
@@ -370,7 +371,7 @@ public class CoversDbHelper implements AutoCloseable {
         }
         if (mEraseCoverCacheStmt == null) {
             mEraseCoverCacheStmt = mStatements.add(mSyncedDb, "mEraseCoverCacheStmt",
-                    "Delete From " + TBL_IMAGE);
+                    "DELETE FROM " + TBL_IMAGE);
         }
         mEraseCoverCacheStmt.execute();
     }

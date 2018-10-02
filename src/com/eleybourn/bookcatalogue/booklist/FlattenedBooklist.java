@@ -132,10 +132,10 @@ public class FlattenedBooklist implements AutoCloseable {
     public boolean moveNext() {
         SynchronizedStatement stmt = mStatements.get(NEXT_STMT_NAME);
         if (stmt == null) {
-            String sql = "Select " + mTable.dot(DatabaseDefinitions.DOM_ID) + "|| '/' || " + mTable.dot(DatabaseDefinitions.DOM_BOOK_ID)
-                    + " From " + mTable.ref()
-                    + " Where " + mTable.dot(DatabaseDefinitions.DOM_ID) + " > ? and " + mTable.dot(DatabaseDefinitions.DOM_BOOK_ID) + " <> Coalesce(?,-1)"
-                    + " Order by " + mTable.dot(DatabaseDefinitions.DOM_ID) + " Asc Limit 1";
+            String sql = "SELECT " + mTable.dot(DatabaseDefinitions.DOM_ID) + "|| '/' || " + mTable.dot(DatabaseDefinitions.DOM_BOOK_ID)
+                    + " FROM " + mTable.ref()
+                    + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_ID) + " > ? AND " + mTable.dot(DatabaseDefinitions.DOM_BOOK_ID) + " <> Coalesce(?,-1)"
+                    + " ORDER BY " + mTable.dot(DatabaseDefinitions.DOM_ID) + " ASC LIMIT 1";
             stmt = mStatements.add(NEXT_STMT_NAME, sql);
         }
         stmt.bindLong(1, mPosition);
@@ -156,10 +156,10 @@ public class FlattenedBooklist implements AutoCloseable {
     public boolean movePrev() {
         SynchronizedStatement stmt = mStatements.get(PREV_STMT_NAME);
         if (stmt == null) {
-            String sql = "Select " + mTable.dot(DatabaseDefinitions.DOM_ID) + "|| '/' || " + mTable.dot(DatabaseDefinitions.DOM_BOOK_ID)
-                    + " From " + mTable.ref()
-                    + " Where " + mTable.dot(DatabaseDefinitions.DOM_ID) + " < ? and " + mTable.dot(DatabaseDefinitions.DOM_BOOK_ID) + " <> Coalesce(?,-1)"
-                    + " Order by " + mTable.dot(DatabaseDefinitions.DOM_ID) + " Desc Limit 1";
+            String sql = "SELECT " + mTable.dot(DatabaseDefinitions.DOM_ID) + "|| '/' || " + mTable.dot(DatabaseDefinitions.DOM_BOOK_ID)
+                    + " FROM " + mTable.ref()
+                    + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_ID) + " < ? AND " + mTable.dot(DatabaseDefinitions.DOM_BOOK_ID) + " <> Coalesce(?,-1)"
+                    + " ORDER BY " + mTable.dot(DatabaseDefinitions.DOM_ID) + " DESC LIMIT 1";
             stmt = mStatements.add(PREV_STMT_NAME, sql);
         }
         stmt.bindLong(1, mPosition);
@@ -182,8 +182,8 @@ public class FlattenedBooklist implements AutoCloseable {
     public boolean moveTo(final int pos) {
         SynchronizedStatement stmt = mStatements.get(MOVE_STMT_NAME);
         if (stmt == null) {
-            String sql = "Select " + mTable.dot(DatabaseDefinitions.DOM_ID) + "|| '/' || " + mTable.dot(DatabaseDefinitions.DOM_BOOK_ID) +
-                    " From " + mTable.ref() + " Where " + mTable.dot(DatabaseDefinitions.DOM_ID) + " = ?";
+            String sql = "SELECT " + mTable.dot(DatabaseDefinitions.DOM_ID) + "|| '/' || " + mTable.dot(DatabaseDefinitions.DOM_BOOK_ID) +
+                    " FROM " + mTable.ref() + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_ID) + " = ?";
             stmt = mStatements.add(MOVE_STMT_NAME, sql);
         }
         stmt.bindLong(1, pos);

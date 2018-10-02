@@ -244,8 +244,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             return db.getAuthor(rowView.getAuthorId()).getDisplayName();
         } else if (rowView.getKind() == RowKinds.ROW_KIND_BOOK) {
             List<Author> authors = db.getBookAuthorList(rowView.getBookId());
-            if (authors.size() > 0)
+            if (authors.size() > 0) {
                 return authors.get(0).getDisplayName();
+            }
         }
         return null;
     }
@@ -259,8 +260,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
         } else if (rowView.getKind() == RowKinds.ROW_KIND_BOOK) {
             ArrayList<Series> series = db.getBookSeriesList(rowView.getBookId());
-            if (series != null && series.size() > 0)
+            if (series != null && series.size() > 0) {
                 return series.get(0).name;
+            }
         }
         return null;
     }
@@ -316,7 +318,6 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                     }
                     break;
                 }
-
                 case RowKinds.ROW_KIND_PUBLISHER: {
                     String s = rowView.getPublisherName();
                     if (!s.isEmpty()) {
@@ -409,8 +410,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                     }
                 });
                 // Display an error, if any
-                if (res != 0)
+                if (res != 0) {
                     Toast.makeText(context, res, Toast.LENGTH_LONG).show();
+                }
                 return true;
             }
             case R.id.MENU_BOOK_EDIT: {
@@ -430,18 +432,18 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
                 String author = getAuthorFromRow(db, rowView);
-                AmazonUtils.openAmazonSearchPage(context, author, null);
+                AmazonUtils.openSearchPage(context, author, null);
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
                 String series = getSeriesFromRow(db, rowView);
-                AmazonUtils.openAmazonSearchPage(context, null, series);
+                AmazonUtils.openSearchPage(context, null, series);
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
                 String author = getAuthorFromRow(db, rowView);
                 String series = getSeriesFromRow(db, rowView);
-                AmazonUtils.openAmazonSearchPage(context, author, series);
+                AmazonUtils.openSearchPage(context, author, series);
                 return true;
             }
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
@@ -698,15 +700,20 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      */
     private static class GetBookExtrasTask implements SimpleTask {
 
-        public static final int BKEY_HANDLED = BooklistStyle.EXTRAS_AUTHOR | BooklistStyle.EXTRAS_LOCATION
-                | BooklistStyle.EXTRAS_PUBLISHER | BooklistStyle.EXTRAS_FORMAT | BooklistStyle.EXTRAS_BOOKSHELVES;
+        public static final int BKEY_HANDLED =
+                BooklistStyle.EXTRAS_AUTHOR |
+                        BooklistStyle.EXTRAS_LOCATION |
+                        BooklistStyle.EXTRAS_PUBLISHER |
+                        BooklistStyle.EXTRAS_FORMAT |
+                        BooklistStyle.EXTRAS_BOOKSHELVES;
 
         /** Location resource string */
-        static String mLocationRes = null;
+        static final String mLocationRes = BookCatalogueApp.getResourceString(R.string.location);
         /** Publisher resource string */
-        static String mPublisherRes = null;
+        static final String mPublisherRes = BookCatalogueApp.getResourceString(R.string.publisher);
         /** Format resource string */
-        static String mFormatRes = null;
+        static final String mFormatRes = BookCatalogueApp.getResourceString(R.string.format);
+
         /** The filled-in view holder for the book view. */
         final BookHolder mHolder;
         /** The book ID to fetch */
@@ -743,8 +750,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
          * @param holder View holder of view for the book
          */
         GetBookExtrasTask(final long bookId, @NonNull final BookHolder holder, final int flags) {
-            if ((flags & BKEY_HANDLED) == 0)
-                throw new RuntimeException("GetBookExtrasTask called for unhandled extras");
+            if ((flags & BKEY_HANDLED) == 0) {
+                throw new IllegalArgumentException("GetBookExtrasTask called for unhandled extras");
+            }
 
             mHolder = holder;
             mBookId = bookId;
@@ -771,11 +779,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                     if (c.moveToFirst()) {
 
                         if ((mFlags & BooklistStyle.EXTRAS_AUTHOR) != 0) {
-                            if (mAuthorCol < 0)
+                            if (mAuthorCol < 0) {
                                 mAuthorCol = c.getColumnIndex(DOM_AUTHOR_FORMATTED.name);
-                            //if (mLocationRes == null)
-                            //	mLocationRes = BookCatalogueApp.getResourceString(R.string.location);
-
+                            }
                             mAuthor = c.getString(mAuthorCol);
                         }
 
@@ -783,10 +789,6 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                             if (mLocationCol < 0) {
                                 mLocationCol = c.getColumnIndex(DOM_BOOK_LOCATION.name);
                             }
-                            if (mLocationRes == null) {
-                                mLocationRes = BookCatalogueApp.getResourceString(R.string.location);
-                            }
-
                             mLocation = mLocationRes + ": " + c.getString(mLocationCol);
                         }
 
@@ -794,10 +796,6 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                             if (mPublisherCol < 0) {
                                 mPublisherCol = c.getColumnIndex(DOM_BOOK_PUBLISHER.name);
                             }
-                            if (mPublisherRes == null) {
-                                mPublisherRes = BookCatalogueApp.getResourceString(R.string.publisher);
-                            }
-
                             mPublisher = mPublisherRes + ": " + c.getString(mPublisherCol);
                         }
 
@@ -805,10 +803,6 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                             if (mFormatCol < 0) {
                                 mFormatCol = c.getColumnIndex(DOM_BOOK_FORMAT.name);
                             }
-                            if (mFormatRes == null) {
-                                mFormatRes = BookCatalogueApp.getResourceString(R.string.format);
-                            }
-
                             mFormat = mFormatRes + ": " + c.getString(mFormatCol);
                         }
                         if ((mFlags & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
@@ -846,16 +840,21 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                     return;
                 }
 
-                if ((mFlags & BooklistStyle.EXTRAS_BOOKSHELVES) != 0)
+                if ((mFlags & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
                     mHolder.shelves.setText(mShelves);
-                if ((mFlags & BooklistStyle.EXTRAS_AUTHOR) != 0)
+                }
+                if ((mFlags & BooklistStyle.EXTRAS_AUTHOR) != 0) {
                     mHolder.author.setText(mAuthor);
-                if ((mFlags & BooklistStyle.EXTRAS_LOCATION) != 0)
+                }
+                if ((mFlags & BooklistStyle.EXTRAS_LOCATION) != 0) {
                     mHolder.location.setText(mLocation);
-                if ((mFlags & BooklistStyle.EXTRAS_PUBLISHER) != 0)
+                }
+                if ((mFlags & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
                     mHolder.publisher.setText(mPublisher);
-                if ((mFlags & BooklistStyle.EXTRAS_FORMAT) != 0)
+                }
+                if ((mFlags & BooklistStyle.EXTRAS_FORMAT) != 0) {
                     mHolder.format.setText(mFormat);
+                }
             }
         }
     }
@@ -910,8 +909,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 }
                 view.setText(BookCatalogueApp.getResourceString(emptyStringId));
             } else {
-                if (rowInfo != null)
+                if (rowInfo != null) {
                     rowInfo.setVisibility(View.VISIBLE);
+                }
                 view.setText(s);
             }
         }
@@ -1027,8 +1027,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             // The default is to indent all views based on the level, but with book covers on
             // the far left, it looks better if we 'outdent' one step.
             int level = rowView.getLevel();
-            if (level > 0)
+            if (level > 0) {
                 --level;
+            }
             bookView.setPadding(level * 5, 0, 0, 0);
         }
 
@@ -1253,8 +1254,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                                     @NonNull final DomainDefinition domain,
                                     final int noDataId) {
             mColIndex = rowView.getColumnIndex(domain.name);
-            if (mColIndex < 0)
+            if (mColIndex < 0) {
                 throw new RuntimeException("Domain '" + domain.name + "'not found in row view");
+            }
             mNoDataId = noDataId;
         }
 

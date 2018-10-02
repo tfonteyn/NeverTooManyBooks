@@ -92,7 +92,7 @@ public class PartialDatePickerFragment extends DialogFragment {
         super.onAttach(a);
 
         if (!(a instanceof OnPartialDatePickerListener)) {
-            throw new RuntimeException("Activity " + a.getClass().getSimpleName() + " must implement OnPartialDatePickerListener");
+            throw new IllegalStateException("Activity " + a.getClass().getSimpleName() + " must implement OnPartialDatePickerListener");
         }
 
     }

@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
@@ -38,7 +40,7 @@ public class AuthUserApiHandler extends ApiHandler {
 	/**
 	 * Constructor. Setup the filters.
 	 */
-	public AuthUserApiHandler(GoodreadsManager manager) {
+	public AuthUserApiHandler(@NonNull final GoodreadsManager manager) {
 		super(manager);
 		buildFilters();
 	}
@@ -96,13 +98,13 @@ public class AuthUserApiHandler extends ApiHandler {
 
 	private final XmlHandler mHandleUserStart = new XmlHandler(){
 		@Override
-		public void process(ElementContext context) {
+		public void process(@NonNull ElementContext context) {
 			mUserId = Long.parseLong(context.attributes.getValue("", "id"));
 		}
 	};
 	private final XmlHandler mHandleUsernameEnd = new XmlHandler(){
 		@Override
-		public void process(ElementContext context) {
+		public void process(@NonNull ElementContext context) {
 			mUsername = context.body;
 		}
 	};

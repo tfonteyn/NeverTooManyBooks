@@ -316,7 +316,7 @@ public class CropCropImage extends CropMonitoredActivity {
 
             String imagePath = extras.getString(BKEY_IMAGE_PATH);
             if (imagePath == null) {
-                throw new RuntimeException("imagePath was null");
+                throw new NullPointerException("imagePath was null");
             }
             mBitmap = getBitmap(imagePath);
 

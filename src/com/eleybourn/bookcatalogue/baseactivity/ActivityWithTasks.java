@@ -178,7 +178,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
                 if (c != null) {
                     mTaskManager = c.getManager();
                 } else {
-                    Logger.logError(new RuntimeException("Have ID("+mTaskManagerId+"), but can not find controller getting TaskManager"));
+                    Logger.logError(new IllegalStateException("Have ID("+mTaskManagerId+"), but can not find controller getting TaskManager"));
                 }
             } //else {
             //Logger.logError(new RuntimeException("Task manager requested, but no ID available"));

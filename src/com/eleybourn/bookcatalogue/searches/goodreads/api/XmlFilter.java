@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -76,8 +77,9 @@ public class XmlFilter {
      */
     @Nullable
     public static XmlFilter buildFilter(@NonNull final XmlFilter root, final String... filters) {
-        if (filters.length <= 0)
+        if (filters.length <= 0) {
             return null;
+        }
         return buildFilter(root, 0, Arrays.asList(filters).iterator());
     }
 
@@ -90,9 +92,10 @@ public class XmlFilter {
      * @return The filter matching the final tag name passed.
      */
     @Nullable
-    public static XmlFilter buildFilter(@NonNull final XmlFilter root, @NonNull final ArrayList<String> filters) {
-        if (filters.size() <= 0)
+    public static XmlFilter buildFilter(@NonNull final XmlFilter root, @NonNull final List<String> filters) {
+        if (filters.size() <= 0) {
             return null;
+        }
         return buildFilter(root, 0, filters.iterator());
     }
 
@@ -154,8 +157,9 @@ public class XmlFilter {
     @Nullable
     private XmlFilter getSubFilter(@Nullable final String name) {
         for (XmlFilter f : mSubFilters) {
-            if (f.matches(name))
+            if (f.matches(name)) {
                 return f;
+            }
         }
         return null;
     }
@@ -202,8 +206,9 @@ public class XmlFilter {
 
     @NonNull
     public XmlFilter setEndAction(@NonNull final XmlHandler endAction, @Nullable final Object userArg) {
-        if (mEndAction != null)
+        if (mEndAction != null) {
             throw new RuntimeException("End Action already set");
+        }
         mEndAction = endAction;
         mEndArg = userArg;
         return this;
@@ -223,8 +228,9 @@ public class XmlFilter {
 
     @NonNull
     public XmlFilter setStartAction(@NonNull final XmlHandler startAction, @Nullable final Object userArg) {
-        if (mStartAction != null)
+        if (mStartAction != null) {
             throw new RuntimeException("Start Action already set");
+        }
         mStartAction = startAction;
         mStartArg = userArg;
         return this;
@@ -237,20 +243,21 @@ public class XmlFilter {
      */
     private void addFilter(@NonNull final XmlFilter filter) {
         String lcPat = filter.getTagName().toLowerCase();
-        if (mSubFilterHash.containsKey(lcPat))
+        if (mSubFilterHash.containsKey(lcPat)) {
             throw new RuntimeException("Filter " + filter.getTagName() + " already exists");
+        }
         mSubFilterHash.put(lcPat, filter);
         mSubFilters.add(filter);
     }
 
     /** Interface definition for filter handlers */
     public interface XmlHandler {
-        void process(ElementContext context);
+        void process(@NonNull final ElementContext context);
     }
 
     /** Interface definition for filter handlers */
     public interface XmlHandlerExt<T> {
-        void process(ElementContext context, T arg);
+        void process(@NonNull final ElementContext context, @NonNull final T arg);
     }
 
     /**

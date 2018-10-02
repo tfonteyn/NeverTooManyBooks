@@ -111,12 +111,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /* Database creation sql statement */
     static final String DATABASE_CREATE_AUTHORS =
-            "create table " + TBL_AUTHORS + " (_id integer primary key autoincrement, " +
+            "CREATE table " + TBL_AUTHORS + " (_id integer primary key autoincrement, " +
                     DOM_AUTHOR_FAMILY_NAME + " text not null, " +
                     DOM_AUTHOR_GIVEN_NAMES + " text not null" +
                     ")";
     static final String DATABASE_CREATE_BOOKSHELF =
-            "create table " + TBL_BOOKSHELF + " (_id integer primary key autoincrement, " +
+            "CREATE table " + TBL_BOOKSHELF + " (_id integer primary key autoincrement, " +
                     DOM_BOOKSHELF + " text not null " +
                     ")";
 
@@ -125,21 +125,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "INSERT INTO " + TBL_BOOKSHELF + " (" + DOM_BOOKSHELF + ") VALUES ('" + BookCatalogueApp.getResourceString(R.string.initial_bookshelf) +
                     "')";
     static final String DATABASE_CREATE_LOAN =
-            "create table " + TBL_LOAN + " (_id integer primary key autoincrement, " +
+            "CREATE TABLE " + TBL_LOAN + " (_id integer primary key autoincrement, " +
                     DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
                     DOM_LOANED_TO + " text " +
                     ")";
     static final String DATABASE_CREATE_BOOK_BOOKSHELF_WEAK =
-            "create table " + TBL_BOOK_BOOKSHELF + "(" +
+            "CREATE TABLE " + TBL_BOOK_BOOKSHELF + "(" +
                     DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
                     DOM_BOOKSHELF_ID + " integer REFERENCES " + TBL_BOOKSHELF + " ON DELETE SET NULL ON UPDATE SET NULL" +
                     ")";
     static final String DATABASE_CREATE_SERIES =
-            "create table " + TBL_SERIES + " (_id integer primary key autoincrement, " +
+            "CREATE TABLE " + TBL_SERIES + " (_id integer primary key autoincrement, " +
                     DOM_SERIES_NAME + " text not null " +
                     ")";
     static final String DATABASE_CREATE_BOOK_SERIES =
-            "create table " + TBL_BOOK_SERIES + "(" +
+            "CREATE TABLE " + TBL_BOOK_SERIES + "(" +
                     DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
                     DOM_SERIES_ID + " integer REFERENCES " + TBL_SERIES + " ON DELETE SET NULL ON UPDATE CASCADE, " +
                     DOM_BOOK_SERIES_NUM + " text, " +
@@ -147,26 +147,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "PRIMARY KEY(" + DOM_BOOK_ID + ", " + DOM_BOOK_SERIES_POSITION + ")" +
                     ")";
     static final String DATABASE_CREATE_BOOK_AUTHOR =
-            "create table " + TBL_BOOK_AUTHOR + "(" +
+            "CREATE TABLE " + TBL_BOOK_AUTHOR + "(" +
                     DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
                     DOM_AUTHOR_ID + " integer REFERENCES " + TBL_AUTHORS + " ON DELETE SET NULL ON UPDATE CASCADE, " +
                     DOM_AUTHOR_POSITION + " integer NOT NULL, " +
                     "PRIMARY KEY(" + DOM_BOOK_ID + ", " + DOM_AUTHOR_POSITION + ")" +
                     ")";
     private static final String DATABASE_CREATE_ANTHOLOGY =
-            "create table " + TBL_ANTHOLOGY + " (_id integer primary key autoincrement, " +
+            "CREATE TABLE " + TBL_ANTHOLOGY + " (_id integer primary key autoincrement, " +
                     DOM_AUTHOR_ID + " integer not null REFERENCES " + TBL_AUTHORS + ", " +
                     DOM_TITLE + " text not null, " +
                     DOM_FIRST_PUBLICATION + " date" +
                     ")";
     private static final String DATABASE_CREATE_BOOK_ANTHOLOGY =
-            "create table " + TBL_BOOK_ANTHOLOGY + "(_id integer primary key autoincrement, " +
+            "CREATE TABLE " + TBL_BOOK_ANTHOLOGY + "(_id integer primary key autoincrement, " +
                     DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
                     DOM_ANTHOLOGY_ID + " integer REFERENCES " + TBL_ANTHOLOGY + " ON DELETE CASCADE ON UPDATE CASCADE, " +
                     DOM_BOOK_ANTHOLOGY_POSITION + " integer" +
                     ")";
     static final String DATABASE_CREATE_BOOKS =
-            "create table " + TBL_BOOKS + " (_id integer primary key autoincrement, " +
+            "CREATE TABLE " + TBL_BOOKS + " (_id integer primary key autoincrement, " +
                     DOM_TITLE + " text not null, " +
                     DOM_BOOK_ISBN + " text, " +
                     DOM_BOOK_PUBLISHER + " text, " +
@@ -251,7 +251,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * This routine renames all files, if they exist.
      */
     private static void v83_moveCoversToDedicatedDirectory(@NonNull final DbSync.SynchronizedDb db) {
-        String sql = "select " + DOM_BOOK_UUID + " from " + TBL_BOOKS;
+        String sql = "SELECT " + DOM_BOOK_UUID + " FROM " + TBL_BOOKS;
 
         try (Cursor cur = db.rawQuery(sql)) {
             while (cur.moveToNext()) {
@@ -311,22 +311,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private void createTriggers(DbSync.SynchronizedDb db) {
         String name = "books_tg_reset_goodreads";
-        String body = " after update of isbn on books for each row\n" +
+        String body = " after update of isbn ON books for each row\n" +
                 " When New." + DOM_BOOK_ISBN + " <> Old." + DOM_BOOK_ISBN + "\n" +
                 "	Begin \n" +
-                "		Update books Set \n" +
+                "		UPDATE books SET \n" +
                 "		    goodreads_book_id = 0,\n" +
                 "		    last_goodreads_sync_date = ''\n" +
-                "		Where\n" +
+                "		WHERE\n" +
                 "			" + DOM_ID + " = new." + DOM_ID + ";\n" +
                 "	End";
-        db.execSQL("Drop Trigger if Exists " + name);
-        db.execSQL("Create Trigger " + name + body);
+        db.execSQL("DROP TRIGGER if Exists " + name);
+        db.execSQL("CREATE TRIGGER " + name + body);
     }
 
     private void createIndices(SQLiteDatabase db) {
         //delete all indices first
-        String sql = "select name from sqlite_master where type = 'index' and sql is not null;";
+        String sql = "SELECT name FROM sqlite_master WHERE type = 'index' AND sql is not null;";
         try (Cursor current = db.rawQuery(sql, new String[]{})) {
             while (current.moveToNext()) {
                 String index_name = current.getString(0);

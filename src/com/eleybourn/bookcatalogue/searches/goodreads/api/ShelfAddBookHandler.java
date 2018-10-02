@@ -60,7 +60,7 @@ import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GO
  */
 public class ShelfAddBookHandler extends ApiHandler {
 
-	public ShelfAddBookHandler(GoodreadsManager manager) {
+	public ShelfAddBookHandler(@NonNull final GoodreadsManager manager) {
 		super(manager);
 		buildFilters();
 	}
@@ -145,7 +145,7 @@ public class ShelfAddBookHandler extends ApiHandler {
 
 	private final XmlHandler mHandleReviewId = new XmlHandler() {
 		@Override
-		public void process(ElementContext context) {
+		public void process(@NonNull ElementContext context) {
 			try {
 				mReviewId = Long.parseLong(context.body.trim());
 			} catch (Exception ignore) {

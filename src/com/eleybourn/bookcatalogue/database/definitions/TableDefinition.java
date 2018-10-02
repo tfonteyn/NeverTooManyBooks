@@ -24,8 +24,8 @@ import java.util.Set;
  */
 public class TableDefinition implements AutoCloseable {
     private final static String mExistsSql =
-            "Select (SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?) + " +
-            "(SELECT count(*) FROM sqlite_temp_master WHERE type='table' AND name=?)";
+            "SELECT (SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?) + " +
+            "(SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?)";
     /** List of index definitions for this table */
     private final Map<String, IndexDefinition> mIndexes = Collections.synchronizedMap(new HashMap<String, IndexDefinition>());
     /** List of domains in this table */
@@ -73,9 +73,9 @@ public class TableDefinition implements AutoCloseable {
      */
     private static void drop(@NonNull final DbSync.SynchronizedDb db, @NonNull final String name) {
         if (BuildConfig.DEBUG) {
-            System.out.println("Dropping Table " + name);
+            System.out.println("Dropping TABLE " + name);
         }
-        db.execSQL("Drop Table If Exists " + name);
+        db.execSQL("DROP TABLE If Exists " + name);
     }
 
     /**
@@ -184,10 +184,11 @@ public class TableDefinition implements AutoCloseable {
      */
     @NonNull
     public String getAlias() {
-        if (mAlias == null || mAlias.isEmpty())
+        if (mAlias == null || mAlias.isEmpty()) {
             return getName();
-        else
+        } else {
             return mAlias;
+        }
     }
 
     /**
@@ -227,7 +228,7 @@ public class TableDefinition implements AutoCloseable {
     @SuppressWarnings("unused")
     @NonNull
     public String dotAs(@NonNull final DomainDefinition d) {
-        return getAlias() + "." + d.name + " as " + d.name;
+        return getAlias() + "." + d.name + " AS " + d.name;
     }
 
     /**
@@ -240,7 +241,7 @@ public class TableDefinition implements AutoCloseable {
      */
     @NonNull
     public String dotAs(@NonNull final DomainDefinition d, @NonNull final DomainDefinition asDomain) {
-        return getAlias() + "." + d.name + " as " + asDomain.name;
+        return getAlias() + "." + d.name + " AS " + asDomain.name;
     }
 
     /**
@@ -278,8 +279,9 @@ public class TableDefinition implements AutoCloseable {
      */
     @NonNull
     private TableDefinition addReference(@NonNull final FkReference fk) {
-        if (fk.child != this)
+        if (fk.child != this) {
             throw new IllegalStateException("Foreign key does not include this table as child");
+        }
         mParents.put(fk.parent, fk);
         fk.parent.addChild(this, fk);
         return this;
@@ -339,8 +341,9 @@ public class TableDefinition implements AutoCloseable {
      */
     @SuppressWarnings("UnusedReturnValue")
     private TableDefinition addChild(@NonNull final TableDefinition child, @NonNull final FkReference fk) {
-        if (!mChildren.containsKey(child))
+        if (!mChildren.containsKey(child)) {
             mChildren.put(child, fk);
+        }
         return this;
     }
 
@@ -369,11 +372,13 @@ public class TableDefinition implements AutoCloseable {
     @NonNull
     public TableDefinition addDomain(@NonNull final DomainDefinition domain) {
         // Make sure it's not already in the table
-        if (mDomainCheck.contains(domain))
+        if (mDomainCheck.contains(domain)) {
             return this;
+        }
         // Make sure one with same name is not already in table
-        if (mDomainNameCheck.containsKey(domain.name.toLowerCase()))
+        if (mDomainNameCheck.containsKey(domain.name.toLowerCase())) {
             throw new IllegalStateException("A domain with that name has already been added");
+        }
         // Add it
         mDomains.add(domain);
         mDomainCheck.add(domain);
@@ -390,8 +395,9 @@ public class TableDefinition implements AutoCloseable {
      */
     @NonNull
     public TableDefinition addDomains(@NonNull final DomainDefinition... domains) {
-        for (DomainDefinition d : domains)
+        for (DomainDefinition d : domains) {
             addDomain(d);
+        }
         return this;
     }
 
@@ -405,8 +411,9 @@ public class TableDefinition implements AutoCloseable {
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     private TableDefinition addDomains(@NonNull final List<DomainDefinition> domains) {
-        for (DomainDefinition d : domains)
+        for (DomainDefinition d : domains) {
             addDomain(d);
+        }
         return this;
     }
 
@@ -422,8 +429,9 @@ public class TableDefinition implements AutoCloseable {
     @NonNull
     public TableDefinition addIndex(@NonNull final String localKey, final boolean unique, @NonNull final DomainDefinition... domains) {
         // Make sure not already defined
-        if (mIndexes.containsKey(localKey))
+        if (mIndexes.containsKey(localKey)) {
             throw new IllegalStateException("Index with local name '" + localKey + "' already defined");
+        }
         // Construct the full index name
         String name = this.mName + "_IX" + (mIndexes.size() + 1) + "_" + localKey;
         mIndexes.put(localKey, new IndexDefinition(name, unique, this, domains));
@@ -504,7 +512,7 @@ public class TableDefinition implements AutoCloseable {
      */
     @NonNull
     public String getInsert(@NonNull final DomainDefinition... domains) {
-        StringBuilder s = new StringBuilder("Insert Into ");
+        StringBuilder s = new StringBuilder("Insert INTO ");
         s.append(mName);
         s.append(" (\n");
 
@@ -519,6 +527,28 @@ public class TableDefinition implements AutoCloseable {
     }
 
     /**
+     * Get a base list of registered domain fields for this table. Returns partial
+     * SQL of the form: '[alias].[domain-1], ..., [alias].[domain-n]'.
+     *
+     * Keep in mind that not all tables are fully registered in {@link com.eleybourn.bookcatalogue.database.DatabaseDefinitions}
+     * Add domains there when needed. Eventually the lists will get semi-complete.
+     *
+     * @return SQL fragment
+     */
+    @NonNull
+    public String refAll() {
+        final String aliasDot = getAlias() + ".";
+        final StringBuilder s = new StringBuilder(aliasDot);
+        s.append(mDomains.get(0).name);
+
+        for (int i = 1; i < mDomains.size(); i++) {
+            s.append(",\n");
+            s.append(aliasDot);
+            s.append(mDomains.get(i).name);
+        }
+        return s.toString();
+    }
+    /**
      * Get a base list of fields for this table using the passed list of domains. Returns partial
      * SQL of the form: '[alias].[domain-1], ..., [alias].[domain-n]'.
      *
@@ -528,8 +558,9 @@ public class TableDefinition implements AutoCloseable {
      */
     @NonNull
     public String ref(@Nullable final DomainDefinition... domains) {
-        if (domains == null || domains.length == 0)
+        if (domains == null || domains.length == 0) {
             return "";
+        }
 
         final String aliasDot = getAlias() + ".";
         final StringBuilder s = new StringBuilder(aliasDot);
@@ -553,9 +584,9 @@ public class TableDefinition implements AutoCloseable {
      */
     @NonNull
     public String getUpdate(@NonNull final DomainDefinition... domains) {
-        StringBuilder s = new StringBuilder("Update ");
+        StringBuilder s = new StringBuilder("UPDATE ");
         s.append(mName);
-        s.append(" Set\n");
+        s.append(" SET\n");
 
         s.append("	");
         s.append(domains[0]);
@@ -579,7 +610,7 @@ public class TableDefinition implements AutoCloseable {
      */
     @NonNull
     public String getInsertOrReplaceValues(@NonNull final DomainDefinition... domains) {
-        StringBuilder s = new StringBuilder("Insert or Replace Into ");
+        StringBuilder s = new StringBuilder("Insert or Replace INTO ");
         StringBuilder sPlaceholders = new StringBuilder("?");
         s.append(mName);
         s.append(" ( ");
@@ -628,7 +659,7 @@ public class TableDefinition implements AutoCloseable {
      */
     @NonNull
     private String getSql(@NonNull final String name, final boolean withConstraints, final boolean ifNecessary) {
-        StringBuilder sql = new StringBuilder("Create ");
+        StringBuilder sql = new StringBuilder("CREATE ");
         switch (mType) {
             case Standard:
                 break;
@@ -641,10 +672,11 @@ public class TableDefinition implements AutoCloseable {
                 break;
         }
 
-        sql.append("Table ");
+        sql.append("TABLE ");
         if (ifNecessary) {
-            if (mType == TableTypes.FTS3 || mType == TableTypes.FTS4)
+            if (mType == TableTypes.FTS3 || mType == TableTypes.FTS4) {
                 throw new IllegalStateException("'if not exists' can not be used when creating virtual tables");
+            }
             sql.append("if not exists ");
         }
 
@@ -680,7 +712,7 @@ public class TableDefinition implements AutoCloseable {
      */
     @NonNull
     public String join(@NonNull final TableDefinition to) {
-        return " join " + to.ref() + " On (" + fkMatch(to) + ")";
+        return " JOIN " + to.ref() + " ON (" + fkMatch(to) + ")";
     }
 
     /**
@@ -698,8 +730,9 @@ public class TableDefinition implements AutoCloseable {
         } else {
             fk = mParents.get(to);
         }
-        if (fk == null)
-            throw new IllegalStateException("No foreign key between '" + this.getName() + "' and '" + to.getName() + "'");
+        if (fk == null) {
+            throw new IllegalStateException("No foreign key between '" + this.getName() + "' AND '" + to.getName() + "'");
+        }
 
         return fk.getPredicate();
     }
@@ -819,8 +852,9 @@ public class TableDefinition implements AutoCloseable {
             List<DomainDefinition> pk = parent.getPrimaryKey();
             StringBuilder sql = new StringBuilder();
             for (int i = 0; i < pk.size(); i++) {
-                if (i > 0)
-                    sql.append(" and ");
+                if (i > 0) {
+                    sql.append(" AND ");
+                }
                 sql.append(parent.getAlias());
                 sql.append(".");
                 sql.append(pk.get(i).name);

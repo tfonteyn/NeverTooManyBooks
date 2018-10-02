@@ -87,7 +87,8 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  * Class to wrap all GoodReads API calls and manage an API connection.
  *
  * ENHANCE: Add 'send to goodreads'/'update from internet' option in book edit menu
- * ENHANCE: Change 'update from internet' to allow source selection and single-book execution
+ * ENHANCE: Change {@link com.eleybourn.bookcatalogue.UpdateFromInternet} to allow source selection and single-book execution
+ *
  * ENHANCE: Link an Event to a book, and display in book list with exclamation triangle overwriting cover.
  * ENHANCE: MAYBE Replace Events with something similar in local DB?
  *
@@ -212,7 +213,7 @@ public class GoodreadsManager {
     /**
      * Create canonical representation based on the best guess as to the goodreads rules.
      */
-    static String canonicalizeBookshelfName(String name) {
+    static String canonicalizeBookshelfName(@NonNull String name) {
         StringBuilder canonical = new StringBuilder();
         name = name.toLowerCase();
         for (int i = 0; i < name.length(); i++) {
@@ -901,7 +902,7 @@ public class GoodreadsManager {
     /**
      * Wrapper to search for a book.
      *
-     * @return Array of GoodreadsWork objects
+     * @return Bundle of GoodreadsWork objects
      */
     Bundle getBookById(final long bookId) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
@@ -911,7 +912,7 @@ public class GoodreadsManager {
             // Run the search
             return api.get(bookId, true);
         } else {
-            throw new RuntimeException("No bookId specified");
+            throw new IllegalArgumentException("No bookId specified");
         }
 
     }
@@ -924,12 +925,12 @@ public class GoodreadsManager {
     Bundle getBookByIsbn(@Nullable final String isbn) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
-        if (isbn != null && isbn.length() > 0) {
+        if (IsbnUtils.isValid(isbn)) {
             ShowBookByIsbnApiHandler api = new ShowBookByIsbnApiHandler(this);
             // Run the search
             return api.get(isbn, true);
         } else {
-            throw new RuntimeException("No isbn specified");
+            throw new IllegalArgumentException("No isbn specified");
         }
 
     }

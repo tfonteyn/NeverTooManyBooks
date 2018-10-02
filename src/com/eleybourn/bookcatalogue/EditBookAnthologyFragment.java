@@ -64,7 +64,8 @@ import java.util.regex.Matcher;
 
 public class EditBookAnthologyFragment extends EditBookAbstractFragment {
 
-    private static final int POPULATE_ISFDB = Menu.FIRST + 1;
+    // context menu specific for Anthology
+    private static final int MENU_POPULATE_ISFDB = 100;
 
     /**
      * Trim extraneous punctuation and whitespace from the titles and authors
@@ -148,7 +149,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         final BookData bookData = mEditManager.getBookData();
         mBookAuthor = bookData.getString(UniqueId.KEY_AUTHOR_FORMATTED);
         mIsbn = bookData.getString(UniqueId.KEY_ISBN);
-        mBookId = bookData.getRowId();
+        mBookId = bookData.getBookId();
 
         // Setup the same author field
         mSame = getView().findViewById(R.id.same_author);
@@ -182,7 +183,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
                 AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing) EditBookAnthologyFragment.this.getListView().getAdapter());
 
                 if (mEditPosition == null) {
-                    AnthologyTitle anthology = new AnthologyTitle(new Author(author), title, pubDate, bookData.getRowId());
+                    AnthologyTitle anthology = new AnthologyTitle(new Author(author), title, pubDate, bookData.getBookId());
                     adapter.add(anthology);
                 } else {
                     AnthologyTitle anthology = adapter.getItem(mEditPosition);
@@ -339,7 +340,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.clear();
-        menu.add(Menu.NONE, POPULATE_ISFDB, 0, R.string.populate_anthology_titles)
+        menu.add(Menu.NONE, MENU_POPULATE_ISFDB, 0, R.string.populate_anthology_titles)
                 .setIcon(R.drawable.ic_autorenew);
         super.onPrepareOptionsMenu(menu);
     }
@@ -351,7 +352,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case POPULATE_ISFDB:
+            case MENU_POPULATE_ISFDB:
                 searchISFDB();
                 return true;
         }

@@ -27,10 +27,10 @@ import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
-import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
@@ -48,11 +48,26 @@ import java.lang.ref.WeakReference;
  */
 public class GetThumbnailTask implements SimpleTask {
 
-    // Queue for background thumbnail retrieval; allow 2 threads. More is nice, but with
-    // many books to process it introduces what looks like lag when scrolling: 5 tasks
-    // building now-invisible views is pointless.
-    //TODO: experiment with Runtime.getRuntime().availableProcessors();
-    private static final SimpleTaskQueue mQueue = new SimpleTaskQueue("thumbnails", 1);
+    /**
+     * Queue for background thumbnail retrieval; allow 2 threads. More is nice, but with
+     * many books to process it introduces what looks like lag when scrolling: 5 tasks
+     * building now-invisible views is pointless.
+     *
+     * Despite above 'allow 2 threads', original code had '1' set so I presume even 2 was to much.
+     * Given the number of cores has gone up these days, let's see what we can do....
+     */
+    private static final SimpleTaskQueue mQueue;
+
+    static {
+        int maxTasks = 1;
+        int cpus = Runtime.getRuntime().availableProcessors();
+        if (cpus > 4) {
+            maxTasks = 3; // just a poke in the dark TODO: experiment more
+        }
+
+        mQueue = new SimpleTaskQueue("thumbnails", maxTasks);
+    }
+
     /**
      * Reference to the view we are using
      */
@@ -73,6 +88,7 @@ public class GetThumbnailTask implements SimpleTask {
      * The height of the thumbnail retrieved (based on preferences)
      */
     private final int mHeight;
+    private final Context mContext;
     /**
      * Resulting bitmap object
      */
@@ -85,7 +101,7 @@ public class GetThumbnailTask implements SimpleTask {
      * Indicated we want the queue manager to call the finished() method.
      */
     private boolean mWantFinished = true;
-    private final Context mContext;
+
     /**
      * Constructor. Clean the view and save the details of what we want.
      */

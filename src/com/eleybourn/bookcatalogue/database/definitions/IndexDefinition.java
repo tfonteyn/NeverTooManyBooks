@@ -54,7 +54,7 @@ public class IndexDefinition {
      * @return IndexDefinition (for chaining)
      */
     public IndexDefinition drop(DbSync.SynchronizedDb db) {
-        db.execSQL("Drop Index If Exists " + mName);
+        db.execSQL("DROP INDEX If Exists " + mName);
         return this;
     }
 
@@ -76,12 +76,12 @@ public class IndexDefinition {
      * @return SQL Fragment
      */
     public String getSql() {
-        StringBuilder sql = new StringBuilder("Create ");
+        StringBuilder sql = new StringBuilder("CREATE ");
         if (mIsUnique)
-            sql.append(" Unique");
-        sql.append(" Index ");
+            sql.append(" UNIQUE");
+        sql.append(" INDEX ");
         sql.append(mName);
-        sql.append(" on ").append(mTable.getName()).append("(\n");
+        sql.append(" ON ").append(mTable.getName()).append("(\n");
         boolean first = true;
         for (DomainDefinition d : mDomains) {
             if (first) {

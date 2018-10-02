@@ -129,7 +129,7 @@ public class ImageUtils {
                 if (tmpBm == null) {
                     // We ran out of memory, most likely
                     // TODO: Need a way to try loading images after GC(). Otherwise, covers in cover browser wil stay blank.
-                    Logger.logError(new RuntimeException("Unexpectedly failed to decode bitmap; memory exhausted?"));
+                    Logger.logError("Unexpectedly failed to decode bitmap; memory exhausted?");
                     return null;
                 }
 
@@ -364,8 +364,8 @@ public class ImageUtils {
             c.connect();
             in = c.getInputStream();
             if (c.getResponseCode() >= 300) {
-                Logger.logError(new RuntimeException("URL lookup failed: " + c.getResponseCode() +
-                        " " + c.getResponseMessage() + ", URL: " + u));
+                Logger.logError("URL lookup failed: " + c.getResponseCode() +
+                        " " + c.getResponseMessage() + ", URL: " + u);
                 return null;
             }
 

@@ -141,7 +141,7 @@ public class LibraryThingManager {
         // Base path for an ISBN search
         String path = String.format(EDITIONS_URL, isbn);
         if (!IsbnUtils.isValid(isbn)) {
-            throw new RuntimeException("Can not get editions without an ISBN");
+            throw new IllegalArgumentException("Can not get editions without an ISBN");
         }
 
         List<String> editions = new ArrayList<>();
@@ -168,8 +168,7 @@ public class LibraryThingManager {
 
     /**
      * Search LibraryThing for an ISBN using the Web API.
-     *
-     * @param isbn     ISBN to lookup
+     *  @param isbn     ISBN to lookup
      * @param bookInfo Collection to save results in
      *
      *                 A typical (and thorough) LibraryThing ISBN response looks like (with formatting added):
@@ -462,7 +461,7 @@ public class LibraryThingManager {
      *
      * call {@link #isAvailable()} before calling this method
      */
-    void searchByIsbn(@NonNull final String isbn, final boolean fetchThumbnail, @NonNull final Bundle bookInfo) {
+    void search(@NonNull final String isbn, @NonNull final Bundle bookInfo, final boolean fetchThumbnail) {
         String devKey = getDevKey();
         if (devKey.isEmpty()) {
             throw new RuntimeException("Developer Key not available");

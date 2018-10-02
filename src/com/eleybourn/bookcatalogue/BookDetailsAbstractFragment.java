@@ -110,7 +110,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         public void onImageSelected(@NonNull final String fileSpec) {
             if (mCoverBrowser != null) {
                 // Get the current file
-                File bookFile = getCoverFile(mEditManager.getBookData().getRowId());
+                File bookFile = getCoverFile(mEditManager.getBookData().getBookId());
                 // Get the new file
                 File newFile = new File(fileSpec);
                 // Overwrite with new file
@@ -146,7 +146,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                     }
                     return;
                 case UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_EXTERNAL: {
-                    File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
+                    File thumbFile = getCoverFile(mEditManager.getBookData().getBookId());
                     File cropped = this.getCroppedTempCoverFile();
                     if (resultCode == Activity.RESULT_OK) {
                         if (cropped.exists()) {
@@ -163,7 +163,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                     return;
                 }
                 case UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_INTERNAL: {
-                    File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
+                    File thumbFile = getCoverFile(mEditManager.getBookData().getBookId());
                     File cropped = this.getCroppedTempCoverFile();
                     if (resultCode == Activity.RESULT_OK) {
                         if (cropped.exists()) {
@@ -188,7 +188,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             // If no 'content' scheme, then use the content resolver.
             try {
                 InputStream in = getContext().getContentResolver().openInputStream(selectedImageUri);
-                imageOk = StorageUtils.saveInputStreamToFile(in, getCoverFile(mEditManager.getBookData().getRowId()));
+                imageOk = StorageUtils.saveInputStreamToFile(in, getCoverFile(mEditManager.getBookData().getBookId()));
             } catch (FileNotFoundException e) {
                 Logger.logError(e, "Unable to copy content to file");
             }
@@ -250,8 +250,8 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
 
             @Override
             public void onClick(View v) {
-                long rowId = mEditManager.getBookData().getRowId();
-                ImageUtils.showZoomedThumb(getActivity(), getCoverFile(rowId));
+                long bookId = mEditManager.getBookData().getBookId();
+                ImageUtils.showZoomedThumb(getActivity(), getCoverFile(bookId));
             }
         });
     }
@@ -290,7 +290,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
 
         try {
             ImageView thumbView = getView().findViewById(R.id.image);
-            File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
+            File thumbFile = getCoverFile(mEditManager.getBookData().getBookId());
 
             switch (item.getItemId()) {
                 case R.id.MENU_DELETE_THUMB:
@@ -422,7 +422,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      */
     private void deleteThumbnail() {
         try {
-            File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
+            File thumbFile = getCoverFile(mEditManager.getBookData().getBookId());
             StorageUtils.deleteFile(thumbFile);
         } catch (Exception e) {
             Logger.logError(e);
@@ -435,11 +435,11 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      * Get the File object for the cover of the book we are editing.
      * If the book is new (0), return the standard temp file.
      */
-    private File getCoverFile(final long rowId) {
-        if (rowId == 0) {
+    private File getCoverFile(final long bookId) {
+        if (bookId == 0) {
             return StorageUtils.getTempCoverFile();
         } else {
-            return StorageUtils.getCoverFile(mDb.getBookUuid(rowId));
+            return StorageUtils.getCoverFile(mDb.getBookUuid(bookId));
         }
     }
 
@@ -507,7 +507,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         boolean retry = true;
         while (retry) {
             try {
-                File thumbFile = getCoverFile(mEditManager.getBookData().getRowId());
+                File thumbFile = getCoverFile(mEditManager.getBookData().getBookId());
 
                 Bitmap bitmap = ImageUtils.fetchFileIntoImageView(null, thumbFile,
                         mThumper.zoomed * 2, mThumper.zoomed * 2, true);
@@ -547,10 +547,10 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      * Ensure that the cached thumbnails for this book are deleted (if present)
      */
     private void invalidateCachedThumbnail() {
-        final long rowId = mEditManager.getBookData().getRowId();
-        if (rowId != 0) {
+        final long bookId = mEditManager.getBookData().getBookId();
+        if (bookId != 0) {
             try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(getContext())) {
-                coversDbHelper.deleteBookCover(mDb.getBookUuid(rowId));
+                coversDbHelper.deleteBookCover(mDb.getBookUuid(bookId));
             } catch (Exception e) {
                 Logger.logError(e, "Error cleaning up cached cover images");
             }
@@ -581,7 +581,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         }
 
         if (getView().findViewById(R.id.publisher) != null) {
-            mFields.add(R.id.publisher, UniqueId.KEY_PUBLISHER, null);
+            mFields.add(R.id.publisher, UniqueId.KEY_BOOK_PUBLISHER, null);
         }
 
         if (getView().findViewById(R.id.date_published) != null) {
@@ -616,7 +616,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         // From the database (edit)
         try {
             populateBookDetailsFields(book);
-            setBookThumbnail(book.getRowId(), mThumper.normal, mThumper.normal);
+            setBookThumbnail(book.getBookId(), mThumper.normal, mThumper.normal);
 
         } catch (Exception e) {
             Logger.logError(e);
@@ -641,10 +641,10 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     /**
      * Sets book thumbnail
      */
-    protected void setBookThumbnail(final long rowId, final int maxWidth, final int maxHeight) {
+    protected void setBookThumbnail(final long bookId, final int maxWidth, final int maxHeight) {
         // Sets book thumbnail
         ImageView iv = getView().findViewById(R.id.image);
-        ImageUtils.fetchFileIntoImageView(iv, getCoverFile(rowId), maxWidth, maxHeight, true);
+        ImageUtils.fetchFileIntoImageView(iv, getCoverFile(bookId), maxWidth, maxHeight, true);
     }
 
     /**
@@ -673,7 +673,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
 
     protected void setCoverImage() {
         ImageView iv = getView().findViewById(R.id.image);
-        ImageUtils.fetchFileIntoImageView(iv, getCoverFile(mEditManager.getBookData().getRowId()), mThumper.normal, mThumper.normal, true);
+        ImageUtils.fetchFileIntoImageView(iv, getCoverFile(mEditManager.getBookData().getBookId()), mThumper.normal, mThumper.normal, true);
         // Make sure the cached thumbnails (if present) are deleted
         invalidateCachedThumbnail();
     }

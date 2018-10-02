@@ -97,6 +97,7 @@ public class IsbnUtils {
      *
      * If the isbn was invalid, simply returns the same
      */
+    @NonNull
     public static String isbn2isbn(@NonNull final String isbn) {
         try {
             ISBNNumber info = new ISBNNumber(isbn);

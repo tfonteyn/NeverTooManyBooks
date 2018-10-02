@@ -1,44 +1,51 @@
 package com.eleybourn.bookcatalogue.searches.googlebooks;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.SearchThread;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
-import com.eleybourn.bookcatalogue.debug.Logger;
 
 public class SearchGoogleBooksThread extends SearchThread {
 
-	public SearchGoogleBooksThread(TaskManager manager,
-								   String author, String title, String isbn, boolean fetchThumbnail) {
-		super(manager, author, title, isbn, fetchThumbnail);
-	}
+    public SearchGoogleBooksThread(@NonNull final TaskManager manager,
+                                   @NonNull final String author,
+                                   @NonNull final String title,
+                                   @NonNull final String isbn,
+                                   final boolean fetchThumbnail) {
+        super(manager, author, title, isbn, fetchThumbnail);
+    }
 
-	@Override
-	protected void onRun() {
-		try {
-			doProgress(getString(R.string.searching_google_books), 0);
-			try {
-				GoogleBooksManager.searchGoogle(mIsbn, mAuthor, mTitle, mBookInfo, mFetchThumbnail);
-			} catch (Exception e) {
-				Logger.logError(e);
-				showException(R.string.searching_google_books, e);
-			}
+    @Override
+    protected void onRun() {
+        try {
+            doProgress(getString(R.string.searching_google_books), 0);
+            try {
+                GoogleBooksManager.search(mIsbn, mAuthor, mTitle, mBookInfo, mFetchThumbnail);
+                if (mBookInfo.size() > 0) {
+                    // Look for series name and clear KEY_TITLE
+                    checkForSeriesName();
+                }
+            } catch (Exception e) {
+                Logger.logError(e);
+                showException(R.string.searching_google_books, e);
+            }
 
-			// Look for series name and clear KEY_TITLE
-			checkForSeriesName();
 
-		} catch (Exception e) {
-			Logger.logError(e);
-			showException(R.string.search_fail, e);
-		}
-	}
+        } catch (Exception e) {
+            Logger.logError(e);
+            showException(R.string.search_fail, e);
+        }
+    }
 
-	/**
-	 * Return the global ID for this searcher
-	 */
-	@Override
-	public int getSearchId() {
-		return SearchManager.SEARCH_GOOGLE;
-	}
+    /**
+     * Return the global ID for this searcher
+     */
+    @Override
+    public int getSearchId() {
+        return SearchManager.SEARCH_GOOGLE;
+    }
 
 }

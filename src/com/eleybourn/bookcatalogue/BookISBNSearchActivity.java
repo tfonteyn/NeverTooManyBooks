@@ -116,8 +116,8 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     private long mSearchManagerId = 0;
     private final SearchManager.SearchListener mSearchHandler = new SearchManager.SearchListener() {
         @Override
-        public boolean onSearchFinished(Bundle bookData, boolean cancelled) {
-            return BookISBNSearchActivity.this.onSearchFinished(bookData, cancelled);
+        public boolean onSearchFinished(Bundle book, boolean cancelled) {
+            return BookISBNSearchActivity.this.onSearchFinished(book, cancelled);
         }
     };
 
@@ -695,16 +695,16 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     }
 
     @SuppressWarnings("SameReturnValue")
-    private boolean onSearchFinished(@Nullable final Bundle bookData, final boolean cancelled) {
+    private boolean onSearchFinished(@Nullable final Bundle book, final boolean cancelled) {
         Tracker.handleEvent(this, "onSearchFinished" + mSearchManagerId, Tracker.States.Running);
         try {
-            if (cancelled || bookData == null) {
+            if (cancelled || book == null) {
                 if (mMode == MODE_SCAN) {
                     startScannerActivity();
                 }
             } else {
                 getTaskManager().doProgress(getString(R.string.adding_book_elipsis));
-                createBook(bookData);
+                createBook(book);
                 // Clear the data entry fields ready for the next one
                 clearFields();
             }

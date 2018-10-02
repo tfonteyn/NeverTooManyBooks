@@ -91,7 +91,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
     public void onAttach(Context context) {
         super.onAttach(context);
         if (!(PathChangedListener.class.isInstance(context)))
-            throw new RuntimeException("Class " + context.getClass().getSimpleName() + " must implement " + PathChangedListener.class.getSimpleName());
+            throw new IllegalStateException("Class " + context.getClass().getSimpleName() + " must implement " + PathChangedListener.class.getSimpleName());
     }
 
     @Override

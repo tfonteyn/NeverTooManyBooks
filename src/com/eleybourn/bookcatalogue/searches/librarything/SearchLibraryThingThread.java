@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.searches.librarything;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -9,27 +11,31 @@ import com.eleybourn.bookcatalogue.tasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 
 
+/**
+ * LibraryThing
+ *
+ * We always contact LibraryThing because it is a good source of Series data and thumbnails.
+ * But it does require an ISBN AND a developer key.
+*/
 public class SearchLibraryThingThread extends SearchThread {
 
-    public SearchLibraryThingThread(TaskManager manager,
-                                    String author, String title, String isbn, boolean fetchThumbnail) {
+    public SearchLibraryThingThread(@NonNull final TaskManager manager,
+                                    @NonNull final String author,
+                                    @NonNull final String title,
+                                    @NonNull final String isbn,
+                                    final boolean fetchThumbnail) {
         super(manager, author, title, isbn, fetchThumbnail);
     }
 
     @Override
     protected void onRun() {
-        //
-        //	LibraryThing
-        //
-        //	We always contact LibraryThing because it is a good source of Series data and thumbnails.
-        // But it does require an ISBN AND a developer key.
-        //
+
         if (IsbnUtils.isValid(mIsbn)) {
             this.doProgress(getString(R.string.searching_library_thing), 0);
             LibraryThingManager ltm = new LibraryThingManager(BookCatalogueApp.getAppContext());
             if (ltm.isAvailable()) {
                 try {
-                    ltm.searchByIsbn(mIsbn, mFetchThumbnail, mBookInfo);
+                    ltm.search(mIsbn, mBookInfo, mFetchThumbnail);
                     // Look for series name and clear KEY_TITLE
                     checkForSeriesName();
                 } catch (Exception e) {

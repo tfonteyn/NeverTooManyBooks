@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -54,14 +55,14 @@ public class BookData extends DataManager {
     /** Key for special field */
     private static final String BOOKSHELF_TEXT = "+BookshelfText";
     /** Row ID for book */
-    private long mRowId;
+    private long mBookId;
 
     public BookData() {
-        this(0, null);
+        this(0, (Bundle) null);
     }
 
-    public BookData(final long rowId) {
-        this(rowId, null);
+    public BookData(final long bookId) {
+        this(bookId, (Bundle) null);
     }
 
     /**
@@ -76,16 +77,25 @@ public class BookData extends DataManager {
     /**
      * Constructor
      *
-     * @param rowId     of book (may be 0 for new)
-     * @param bundle    Bundle with book data (may be null)
+     * @param cursor with book data
      */
-    public BookData(final long rowId, @Nullable final Bundle bundle) {
-        mRowId = rowId;
+    public BookData(@NonNull final Cursor cursor) {
+        putAll(cursor);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param bookId of book (may be 0 for new)
+     * @param bundle Bundle with book data (may be null)
+     */
+    public BookData(final long bookId, @Nullable final Bundle bundle) {
+        this.mBookId = bookId;
 
         // Load from bundle or database
         if (bundle != null) {
             putAll(bundle);
-        } else if (mRowId > 0) {
+        } else if (this.mBookId > 0) {
             reload();
         }
         // Create special validators
@@ -137,8 +147,8 @@ public class BookData extends DataManager {
     /**
      * Accessor
      */
-    public long getRowId() {
-        return mRowId;
+    public long getBookId() {
+        return mBookId;
     }
 
     /**
@@ -146,26 +156,24 @@ public class BookData extends DataManager {
      */
     public void reload() {
         // If ID = 0, no details in DB
-        if (getRowId() == 0)
+        if (mBookId == 0)
             return;
 
         // Connect to DB and get cursor for book details
         CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         db.open();
-        try {
-            try (BooksCursor book = db.fetchBookById(getRowId())) {
-                // Put all cursor fields in collection
-                putAll(book);
+        try (BooksCursor book = db.fetchBookById(mBookId)) {
+            // Put all cursor fields in collection
+            putAll(book);
 
-                // Get author, series, bookshelf and anthology title lists
-                setAuthorList(db.getBookAuthorList(getRowId()));
-                setSeriesList(db.getBookSeriesList(getRowId()));
-                setAnthologyTitles(db.getBookAnthologyTitleList(getRowId()));
-                setBookshelfList(db.getBookshelvesByBookIdAsStringList(getRowId()));
+            // Get author, series, bookshelf and anthology title lists
+            setAuthorList(db.getBookAuthorList(mBookId));
+            setSeriesList(db.getBookSeriesList(mBookId));
+            setAnthologyTitles(db.getBookAnthologyTitleList(mBookId));
+            setBookshelfList(db.getBookshelvesByBookIdAsStringList(mBookId));
 
-            } catch (Exception e) {
-                Logger.logError(e);
-            }
+        } catch (Exception e) {
+            Logger.logError(e);
         } finally {
             db.close();
         }
@@ -372,7 +380,7 @@ public class BookData extends DataManager {
             }
         });
 
-        // Whenever the row ID is written, make sure mRowId is updated.
+        // Whenever the row ID is written, make sure mBookId is updated.
         addAccessor(UniqueId.KEY_ID, new DataAccessor() {
             @Override
             public Object get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
@@ -382,7 +390,7 @@ public class BookData extends DataManager {
             @Override
             public void set(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData, @NonNull final Object value) {
                 rawData.putLong(datum.getKey(), Datum.toLong(value));
-                mRowId = rawData.getLong(datum.getKey());
+                mBookId = rawData.getLong(datum.getKey());
             }
 
             @Override

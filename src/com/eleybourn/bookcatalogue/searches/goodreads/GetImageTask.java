@@ -49,9 +49,9 @@ public class GetImageTask implements SimpleTask {
 	/**
 	 * Constructor. Save the stuff we need.
 	 * 
-	 * @param url		URL to retrieve.
+	 * @param url to retrieve.
 	 */
-	GetImageTask(String url, GoodreadsWork work) {
+	GetImageTask(@NonNull final String url, @NonNull final GoodreadsWork work) {
 		mUrl = url;
 		mWork = work;
 	}

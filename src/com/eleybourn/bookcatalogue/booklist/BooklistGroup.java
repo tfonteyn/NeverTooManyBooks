@@ -264,7 +264,7 @@ public class BooklistGroup implements Serializable {
         @NonNull
         public V add(@NonNull final K key, @NonNull final V value) {
             if (super.put(key, value) != null) {
-                throw new RuntimeException("Map already contains key value" + key);
+                throw new IllegalArgumentException("Map already contains key value" + key);
             }
             return value;
         }

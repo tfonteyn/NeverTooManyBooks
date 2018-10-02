@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -72,7 +73,7 @@ public class BookshelfListApiHandler extends ApiHandler {
 
 	private SimpleXmlFilter mFilters;
 
-	public BookshelfListApiHandler(GoodreadsManager manager) {
+	public BookshelfListApiHandler(@NonNull final GoodreadsManager manager) {
 		super(manager);
 		if (!manager.hasValidCredentials())
 			throw new RuntimeException("Goodreads credentials not valid");
@@ -80,7 +81,7 @@ public class BookshelfListApiHandler extends ApiHandler {
 		buildFilters();
 	}
 
-	public Bundle run(int page)
+	public Bundle run(final int page)
 			throws OAuthMessageSignerException, OAuthExpectationFailedException,
 					OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException 
 	{

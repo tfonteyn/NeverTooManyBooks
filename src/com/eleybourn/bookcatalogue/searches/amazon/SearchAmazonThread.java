@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.searches.amazon;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
@@ -8,8 +10,11 @@ import com.eleybourn.bookcatalogue.tasks.TaskManager;
 
 public class SearchAmazonThread extends SearchThread {
 
-    public SearchAmazonThread(TaskManager manager,
-                              String author, String title, String isbn, boolean fetchThumbnail) {
+    public SearchAmazonThread(@NonNull final TaskManager manager,
+                              @NonNull final String author,
+                              @NonNull final String title,
+                              @NonNull final String isbn,
+                              final boolean fetchThumbnail) {
         super(manager, author, title, isbn, fetchThumbnail);
     }
 
@@ -18,12 +23,11 @@ public class SearchAmazonThread extends SearchThread {
         this.doProgress(getString(R.string.searching_amazon_books), 0);
 
         try {
-            AmazonManager.searchAmazon(mIsbn, mAuthor, mTitle, mBookInfo, mFetchThumbnail);
-            if (mBookInfo.size() == 0) {
-                Logger.logError(new RuntimeException("No data found for " + mIsbn + "/" + mAuthor + "/" + mTitle));
+            AmazonManager.search(mIsbn, mAuthor, mTitle, mBookInfo, mFetchThumbnail);
+            if (mBookInfo.size() > 0) {
+                // Look for series name and clear KEY_TITLE
+                checkForSeriesName();
             }
-            // Look for series name and clear KEY_TITLE
-            checkForSeriesName();
         } catch (Exception e) {
             Logger.logError(e);
             showException(R.string.searching_amazon_books, e);

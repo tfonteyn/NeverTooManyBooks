@@ -78,14 +78,14 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
             StringBuilder criteria = new StringBuilder();
 
             setViewVisibility(R.id.original_details, true);
-            final BooksCursor c = mDb.fetchBookById(mBookId);
-            final BooksRow book = c.getRowView();
-            try {
-                if (!c.moveToFirst()) {
+
+            try (BooksCursor cursor = mDb.fetchBookById(mBookId)){
+                if (!cursor.moveToFirst()) {
                     Toast.makeText(this, getString(R.string.book_no_longer_exists), Toast.LENGTH_LONG).show();
                     finish();
                     return;
                 }
+                final BooksRow book = cursor.getRowView();
                 {
                     String s = book.getPrimaryAuthorNameFormatted();
                     setViewText(R.id.author, s);
@@ -101,8 +101,6 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
                     setViewText(R.id.isbn, s);
                     criteria.append(s).append(" ");
                 }
-            } finally {
-                c.close();
             }
 
             setViewText(R.id.search_text, criteria.toString().trim());
@@ -123,13 +121,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
      * Set the visibility of the passed view.
      */
     private void setViewVisibility(@SuppressWarnings("SameParameterValue") @IdRes final int id, final boolean visible) {
-        int flag;
-        if (visible) {
-            flag = View.VISIBLE;
-        } else {
-            flag = View.GONE;
-        }
-        this.findViewById(id).setVisibility(flag);
+        this.findViewById(id).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -158,7 +150,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
      * Start the search results activity.
      */
     private void doSearch() {
-        String criteria = getViewText(R.id.search_text).trim();
+        String criteria = getViewText(R.id.search_text);
 
         if (criteria.isEmpty()) {
             Toast.makeText(this, getString(R.string.please_enter_search_criteria), Toast.LENGTH_LONG).show();

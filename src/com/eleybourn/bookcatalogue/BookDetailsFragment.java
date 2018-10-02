@@ -101,12 +101,12 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
             populateBookDetailsFields(book);
 
             // Set maximum aspect ratio width : height = 1 : 2
-            setBookThumbnail(book.getRowId(), mThumper.normal, mThumper.normal * 2);
+            setBookThumbnail(book.getBookId(), mThumper.normal, mThumper.normal * 2);
 
             // Additional fields for read-only mode which are not initialized automatically
             showReadStatus(book);
             // XXX: Use the data!
-            showLoanedInfo(book.getRowId());
+            showLoanedInfo(book.getBookId());
             showSignedStatus(book);
             formatFormatSection(book);
             formatPublishingSection(book);
@@ -259,7 +259,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION, null);
         // Make sure the label is hidden when the ISBN is
         mFields.add(R.id.isbn_label, "", UniqueId.KEY_ISBN, null);
-        mFields.add(R.id.publisher, "", UniqueId.KEY_PUBLISHER, null);
+        mFields.add(R.id.publisher, "", UniqueId.KEY_BOOK_PUBLISHER, null);
     }
 
     /**
@@ -299,7 +299,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     private void formatPublishingSection(BookData book) {
         String date = book.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED);
         boolean hasDate = date != null && !date.isEmpty();
-        String pub = book.getString(UniqueId.KEY_PUBLISHER);
+        String pub = book.getString(UniqueId.KEY_BOOK_PUBLISHER);
         boolean hasPub = pub != null && !pub.isEmpty();
         String value;
 
@@ -330,10 +330,10 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
      * Inflates 'Loaned' field showing a person the book loaned to.
      * If book is not loaned field is invisible.
      *
-     * @param rowId Database row _id of the loaned book
+     * @param bookId the loaned book
      */
-    private void showLoanedInfo(final long rowId) {
-        String personLoanedTo = mDb.getLoanByBookId(rowId);
+    private void showLoanedInfo(final long bookId) {
+        String personLoanedTo = mDb.getLoanByBookId(bookId);
         TextView textView = getView().findViewById(R.id.who);
         if (personLoanedTo != null) {
             textView.setVisibility(View.VISIBLE);
@@ -406,7 +406,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     public void onResume() {
         // If we are read-only, returning here from somewhere else and have an ID...reload!
         BookData bookData = mEditManager.getBookData();
-        if (bookData.getRowId() != 0) {
+        if (bookData.getBookId() != 0) {
             bookData.reload();
         }
         super.onResume();

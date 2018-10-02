@@ -89,7 +89,6 @@ public class PartialDatePicker extends AlertDialog {
      * @param month   Starting month
      * @param day     Starting day
      */
-    @SuppressWarnings("SameParameterValue")
     private PartialDatePicker(@NonNull final Context context,
                               @Nullable final Integer year,
                               @Nullable final Integer month,

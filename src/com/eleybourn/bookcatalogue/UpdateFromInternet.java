@@ -33,12 +33,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
+import com.eleybourn.bookcatalogue.taskqueue.DbAdapter;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
@@ -67,10 +69,24 @@ public class UpdateFromInternet extends ActivityWithTasks {
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
-            this.setTitle(R.string.update_fields);
+
+            Bundle extras = getIntent().getExtras();
+            long bookId = 0;
+            if (extras != null) {
+                bookId = extras.getLong(UniqueId.KEY_ID, 0L);
+            }
+            if (bookId > 0) {
+                TextView authorView = findViewById(R.id.author);
+                authorView.setText(extras.getString(UniqueId.KEY_AUTHOR_FORMATTED));
+                TextView titleView = findViewById(R.id.title);
+                titleView.setText(extras.getString(UniqueId.KEY_TITLE));
+                findViewById(R.id.book_row).setVisibility(View.VISIBLE);
+            }
+
+            this.setTitle(R.string.select_fields_to_update);
             LibraryThingManager.showLtAlertIfNecessary(this, false, "update_from_internet");
             mPrefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
-            setupFields();
+            setupFields(bookId);
         } catch (Exception e) {
             Logger.logError(e);
         }
@@ -102,13 +118,13 @@ public class UpdateFromInternet extends ActivityWithTasks {
      * This function builds the manage field visibility by adding onClick events
      * to each field checkbox
      */
-    private void setupFields() {
+    private void setupFields(final long bookId) {
         addIfVisible(UniqueId.BKEY_AUTHOR_ARRAY, UniqueId.KEY_AUTHOR_ID, R.string.author, FieldUsages.Usages.ADD_EXTRA, true);
         addIfVisible(UniqueId.KEY_TITLE, null, R.string.title, FieldUsages.Usages.COPY_IF_BLANK, false);
         addIfVisible(UniqueId.KEY_ISBN, null, R.string.isbn, FieldUsages.Usages.COPY_IF_BLANK, false);
         addIfVisible(UniqueId.BKEY_THUMBNAIL, null, R.string.thumbnail, FieldUsages.Usages.COPY_IF_BLANK, false);
         addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES_NAME, R.string.series, FieldUsages.Usages.ADD_EXTRA, true);
-        addIfVisible(UniqueId.KEY_PUBLISHER, null, R.string.publisher, FieldUsages.Usages.COPY_IF_BLANK, false);
+        addIfVisible(UniqueId.KEY_BOOK_PUBLISHER, null, R.string.publisher, FieldUsages.Usages.COPY_IF_BLANK, false);
         addIfVisible(UniqueId.KEY_BOOK_DATE_PUBLISHED, null, R.string.date_published, FieldUsages.Usages.COPY_IF_BLANK, false);
         addIfVisible(UniqueId.KEY_BOOK_PAGES, null, R.string.pages, FieldUsages.Usages.COPY_IF_BLANK, false);
         addIfVisible(UniqueId.KEY_BOOK_LIST_PRICE, null, R.string.list_price, FieldUsages.Usages.COPY_IF_BLANK, false);
@@ -208,30 +224,35 @@ public class UpdateFromInternet extends ActivityWithTasks {
                 }
                 if (thumbnail_check) {
                     // Verify - this can be a dangerous operation
-                    AlertDialog alertDialog = new AlertDialog.Builder(UpdateFromInternet.this).setMessage(R.string.overwrite_thumbnail).create();
-                    alertDialog.setTitle(R.string.update_fields);
-                    alertDialog.setIcon(R.drawable.ic_info_outline);
-                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternet.this.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    AlertDialog dialog = new AlertDialog.Builder(UpdateFromInternet.this)
+                            .setMessage(R.string.overwrite_thumbnail)
+                            .setTitle(R.string.update_fields)
+                            .setIcon(R.drawable.ic_info_outline)
+                            .create();
+                    dialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternet.this.getResources().getString(R.string.yes),
+                            new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
                             mFieldUsages.get(UniqueId.BKEY_THUMBNAIL).usage = FieldUsages.Usages.OVERWRITE;
-                            startUpdate();
+                            startUpdate(bookId);
                         }
                     });
-                    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, UpdateFromInternet.this.getResources().getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                    dialog.setButton(AlertDialog.BUTTON_NEGATIVE, UpdateFromInternet.this.getResources().getString(android.R.string.cancel),
+                            new DialogInterface.OnClickListener() {
                         @SuppressWarnings("EmptyMethod")
                         public void onClick(final DialogInterface dialog, final int which) {
                             //do nothing
                         }
                     });
-                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, UpdateFromInternet.this.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                    dialog.setButton(AlertDialog.BUTTON_NEUTRAL, UpdateFromInternet.this.getResources().getString(R.string.no),
+                            new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
                             mFieldUsages.get(UniqueId.BKEY_THUMBNAIL).usage = FieldUsages.Usages.COPY_IF_BLANK;
-                            startUpdate();
+                            startUpdate(bookId);
                         }
                     });
-                    alertDialog.show();
+                    dialog.show();
                 } else {
-                    startUpdate();
+                    startUpdate(bookId);
                 }
             }
         });
@@ -263,10 +284,17 @@ public class UpdateFromInternet extends ActivityWithTasks {
         return nSelected;
     }
 
-    private void startUpdate() {
-        UpdateThumbnailsThread t = new UpdateThumbnailsThread(getTaskManager(), mFieldUsages, mThumbnailsHandler);
+    /**
+     * @param bookId    0 for all book, or a valid book id for one book
+     */
+    private void startUpdate(final long bookId) {
+        UpdateFromInternetThread t = new UpdateFromInternetThread(getTaskManager(), mFieldUsages, mThumbnailsHandler);
+        if (bookId > 0) {
+            t.setBookId(bookId);
+        }
+
         mUpdateSenderId = t.getSenderId();
-        UpdateThumbnailsThread.getMessageSwitch().addListener(mUpdateSenderId, mThumbnailsHandler, false);
+        UpdateFromInternetThread.getMessageSwitch().addListener(mUpdateSenderId, mThumbnailsHandler, false);
         t.start();
     }
 
@@ -275,7 +303,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
         Tracker.enterOnPause(this);
         super.onPause();
         if (mUpdateSenderId != 0) {
-            UpdateThumbnailsThread.getMessageSwitch().removeListener(mUpdateSenderId, mThumbnailsHandler);
+            UpdateFromInternetThread.getMessageSwitch().removeListener(mUpdateSenderId, mThumbnailsHandler);
         }
         Tracker.exitOnPause(this);
     }
@@ -285,7 +313,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
         Tracker.enterOnResume(this);
         super.onResume();
         if (mUpdateSenderId != 0) {
-            UpdateThumbnailsThread.getMessageSwitch().addListener(mUpdateSenderId, mThumbnailsHandler, true);
+            UpdateFromInternetThread.getMessageSwitch().addListener(mUpdateSenderId, mThumbnailsHandler, true);
         }
         Tracker.exitOnResume(this);
     }

@@ -50,7 +50,7 @@ class GoodreadsAuthorizationResultCheck extends GenericTask {
 	}
 
 	@Override
-	public boolean run(@NonNull QueueManager manager, @NonNull Context context) {
+	public boolean run(@NonNull final QueueManager manager, @NonNull final Context context) {
 		GoodreadsManager grMgr = new GoodreadsManager();
 		// Bring the app to the front using the launcher intent
 		Intent intent = new Intent(context, StartupActivity.class);

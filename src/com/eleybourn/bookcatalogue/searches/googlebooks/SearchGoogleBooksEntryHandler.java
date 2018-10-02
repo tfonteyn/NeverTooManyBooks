@@ -160,7 +160,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
 		} else if (localName.equalsIgnoreCase(AUTHOR)){
 			ArrayUtils.appendOrAdd(mValues, UniqueId.BKEY_AUTHOR_DETAILS, builder.toString());
 		} else if (localName.equalsIgnoreCase(PUBLISHER)){
-			addIfNotPresent(UniqueId.KEY_PUBLISHER);
+			addIfNotPresent(UniqueId.KEY_BOOK_PUBLISHER);
 		} else if (localName.equalsIgnoreCase(DATE_PUBLISHED)){
 			addIfNotPresent(UniqueId.KEY_BOOK_DATE_PUBLISHED);
 		} else if (localName.equalsIgnoreCase(PAGES)){

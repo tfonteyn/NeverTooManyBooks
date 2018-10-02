@@ -154,7 +154,7 @@ public class BackupUtils {
         }
         filter.setStartAction(new XmlHandler() {
             @Override
-            public void process(ElementContext context) {
+            public void process(@NonNull ElementContext context) {
                 info.name = context.attributes.getValue(NAME);
                 info.type = context.attributes.getValue(TYPE);
             }
@@ -162,7 +162,7 @@ public class BackupUtils {
 
         filter.setEndAction(new XmlHandler() {
             @Override
-            public void process(ElementContext context) {
+            public void process(@NonNull ElementContext context) {
                 try {
                     accessor.putItem(bundle, info.name, info.type, context.body);
                 } catch (IOException e) {

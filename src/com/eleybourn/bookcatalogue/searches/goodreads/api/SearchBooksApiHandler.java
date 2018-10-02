@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -60,7 +62,7 @@ public class SearchBooksApiHandler extends ApiHandler {
     private Long mResultsStart;
     private final XmlHandler mHandleResultsStart = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             mResultsStart = Long.parseLong(context.body);
         }
     };
@@ -68,7 +70,7 @@ public class SearchBooksApiHandler extends ApiHandler {
     private Long mResultsEnd;
     private final XmlHandler mHandleResultsEnd = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             mResultsEnd = Long.parseLong(context.body);
         }
     };
@@ -220,7 +222,7 @@ public class SearchBooksApiHandler extends ApiHandler {
     private Long mTotalResults;
     private final XmlHandler mHandleTotalResults = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             mTotalResults = Long.parseLong(context.body);
         }
     };
@@ -231,7 +233,7 @@ public class SearchBooksApiHandler extends ApiHandler {
      */
     private final XmlHandler mHandleWorkStart = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             mCurrentWork = new GoodreadsWork();
         }
     };
@@ -240,7 +242,7 @@ public class SearchBooksApiHandler extends ApiHandler {
      */
     private final XmlHandler mHandleWorkEnd = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             //mCurrentWork.requestImage();
             mWorks.add(mCurrentWork);
             mCurrentWork = null;
@@ -248,13 +250,13 @@ public class SearchBooksApiHandler extends ApiHandler {
     };
     private final XmlHandler mHandleWorkId = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             mCurrentWork.workId = Long.parseLong(context.body);
         }
     };
     private final XmlHandler mHandlePubDay = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             try {
                 mCurrentWork.pubDay = Long.parseLong(context.body);
             } catch (Exception ignored) {
@@ -263,7 +265,7 @@ public class SearchBooksApiHandler extends ApiHandler {
     };
     private final XmlHandler mHandlePubMonth = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             try {
                 mCurrentWork.pubMonth = Long.parseLong(context.body);
             } catch (Exception ignored) {
@@ -272,7 +274,7 @@ public class SearchBooksApiHandler extends ApiHandler {
     };
     private final XmlHandler mHandlePubYear = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             try {
                 mCurrentWork.pubYear = Long.parseLong(context.body);
             } catch (Exception ignored) {
@@ -281,37 +283,37 @@ public class SearchBooksApiHandler extends ApiHandler {
     };
     private final XmlHandler mHandleBookId = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             mCurrentWork.bookId = Long.parseLong(context.body);
         }
     };
     private final XmlHandler mHandleBookTitle = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             mCurrentWork.title = context.body;
         }
     };
     private final XmlHandler mHandleAuthorId = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             mCurrentWork.authorId = Long.parseLong(context.body);
         }
     };
     private final XmlHandler mHandleAuthorName = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             mCurrentWork.authorName = context.body;
         }
     };
     private final XmlHandler mHandleImageUrl = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             mCurrentWork.imageUrl = context.body;
         }
     };
     private final XmlHandler mHandleSmallImageUrl = new XmlHandler() {
         @Override
-        public void process(ElementContext context) {
+        public void process(@NonNull ElementContext context) {
             mCurrentWork.smallImageUrl = context.body;
         }
     };
@@ -326,7 +328,7 @@ public class SearchBooksApiHandler extends ApiHandler {
      *
      * @return the array of GoodreadsWork objects.
      */
-    public ArrayList<GoodreadsWork> search(String query) throws
+    public ArrayList<GoodreadsWork> search(@NonNull String query) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 

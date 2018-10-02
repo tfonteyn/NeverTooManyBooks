@@ -66,7 +66,6 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
 
     private static final String TAG_BOOKSHELVES_DIALOG = "bookshelves_dialog";
 
-
     /**
      * Display the edit fields page
      */
@@ -125,7 +124,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
             mFields.setListener(R.id.bookshelf, new View.OnClickListener() {
                 public void onClick(View v) {
                     BookshelfDialogFragment frag = BookshelfDialogFragment.newInstance(
-                            mEditManager.getBookData().getRowId(),
+                            mEditManager.getBookData().getBookId(),
                             mEditManager.getBookData().getBookshelfText(),
                             mEditManager.getBookData().getBookshelfList()
                     );
@@ -138,7 +137,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                 public void onClick(View v) {
                     Intent i = new Intent(getActivity(), EditAuthorListActivity.class);
                     i.putExtra(UniqueId.BKEY_AUTHOR_ARRAY, mEditManager.getBookData().getAuthors());
-                    i.putExtra(UniqueId.KEY_ID, mEditManager.getBookData().getRowId());
+                    i.putExtra(UniqueId.KEY_ID, mEditManager.getBookData().getBookId());
                     i.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
                     startActivityForResult(i, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_AUTHORS);
                 }
@@ -149,7 +148,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                 public void onClick(View v) {
                     Intent i = new Intent(getActivity(), EditSeriesListActivity.class);
                     i.putExtra(UniqueId.BKEY_SERIES_ARRAY, mEditManager.getBookData().getSeries());
-                    i.putExtra(UniqueId.KEY_ID, mEditManager.getBookData().getRowId());
+                    i.putExtra(UniqueId.KEY_ID, mEditManager.getBookData().getBookId());
                     i.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
                     startActivityForResult(i, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_SERIES);
                 }
@@ -232,7 +231,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         }
         final BookData bookData = mEditManager.getBookData();
         populateFieldsFromBook(bookData);
-        if (bookData.getRowId() <= 0) {
+        if (bookData.getBookId() <= 0) {
             Bundle extras = getActivity().getIntent().getExtras();
             if (extras != null) {
                 // From the ISBN Search (add)
@@ -342,8 +341,8 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
      * Show the context menu for the cover thumbnail
      */
     public void showCoverContextMenu() {
-        View v = getView().findViewById(R.id.image);
-        v.showContextMenu();
+        View view = getView().findViewById(R.id.image);
+        view.showContextMenu();
     }
 
     @Override
@@ -357,7 +356,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
         if (FieldVisibilityActivity.isVisible(UniqueId.BKEY_THUMBNAIL)) {
-            menu.add(Menu.NONE, EditBookAbstractFragment.THUMBNAIL_OPTIONS_ID, 0, R.string.cover_options_cc_ellipsis)
+            menu.add(Menu.NONE, R.id.SUBMENU_REPLACE_THUMB, 0, R.string.cover_options_cc_ellipsis)
                     .setIcon(R.drawable.ic_add_a_photo)
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }

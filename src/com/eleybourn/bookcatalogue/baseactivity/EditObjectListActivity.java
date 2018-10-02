@@ -289,7 +289,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
             }
             // sigh... give up
             if (mList == null) {
-                throw new RuntimeException("Unable to find list key '" + mBKey + "' in passed intent extras");
+                throw new IllegalArgumentException("Unable to find list key '" + mBKey + "' in passed intent extras");
             }
 
             // Set up list handling
