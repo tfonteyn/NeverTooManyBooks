@@ -47,8 +47,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogFileItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickListener;
 import com.eleybourn.bookcatalogue.filechooser.BackupChooser;
-import com.eleybourn.bookcatalogue.searches.SearchAdminHosts;
-import com.eleybourn.bookcatalogue.searches.SearchAdminOrder;
+import com.eleybourn.bookcatalogue.searches.SearchAdmin;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegister;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.searches.librarything.AdministrationLibraryThing;
@@ -288,29 +287,15 @@ public class AdministrationFunctions extends ActivityWithTasks {
             });
         }
 
-        /* Website urls */
+        /* Search sites */
         {
-            View v = findViewById(R.id.local_websites_urls);
+            View v = findViewById(R.id.search_sites);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(AdministrationFunctions.this, SearchAdminHosts.class);
-                    startActivity(i);
-                }
-            });
-        }
-
-        /* Search order */
-        {
-            View v = findViewById(R.id.search_order);
-            // Make line flash when clicked.
-            v.setBackgroundResource(android.R.drawable.list_selector_background);
-            v.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(AdministrationFunctions.this, SearchAdminOrder.class);
+                    Intent i = new Intent(AdministrationFunctions.this, SearchAdmin.class);
                     startActivity(i);
                 }
             });

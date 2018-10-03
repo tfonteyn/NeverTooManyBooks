@@ -44,7 +44,9 @@ import android.widget.ViewSwitcher.ViewFactory;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
+import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager.ImageSizes;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
@@ -61,7 +63,7 @@ import java.util.List;
 
 /**
  * Class to display and manage a cover image browser in a dialog.
- * <p>
+ *
  * ENHANCE: For each ISBN returned by LT, add TWO images and get the second from GoodReads
  * ENHANCE: (Somehow) remove non-existent images from ImageSelector. Probably start with 1 image and GROW it.
  *
@@ -87,6 +89,7 @@ public class CoverBrowser {
     private FileManager mFileManager;
     /** Indicates a 'shutdown()' has been requested */
     private boolean mShutdown = false;
+
 
     /**
      * Constructor
@@ -392,8 +395,8 @@ public class CoverBrowser {
         private String mFilename;
 
         /**
-         * @param isbn  ISBN on requested cover.
-         * @param view  to update
+         * @param isbn ISBN on requested cover.
+         * @param view to update
          */
         GetThumbnailTask(@NonNull final String isbn,
                          @NonNull final ImageView view,
@@ -409,7 +412,7 @@ public class CoverBrowser {
         public void run(@NonNull final SimpleTaskContext taskContext) {
             // Try SMALL
             mFilename = mFileManager.download(mIsbn, ImageSizes.SMALL);
-            if (mFilename != null &&  new File(mFilename).length() >= 50) {
+            if (new File(mFilename).length() >= 50) {
                 return;
             }
 
@@ -460,8 +463,8 @@ public class CoverBrowser {
 
             // Download the file, try LARGE first
             mFileSpec = mFileManager.download(mIsbn, ImageSizes.LARGE);
-            if (mFileSpec != null && new File(mFileSpec).length() >= 50) {
-                return; // got a large
+            if (new File(mFileSpec).length() >= 50) {
+                return;
             }
             // Try SMALL (or silently give up)
             mFileSpec = mFileManager.download(mIsbn, ImageSizes.SMALL);
@@ -530,9 +533,9 @@ public class CoverBrowser {
          * @param isbn ISBN of file
          * @param size Size of image required
          *
-         * @return the fileSpec, or "" when not found
+         * @return the fileSpec, or null when not found
          */
-        @Nullable
+        @NonNull
         public String download(@NonNull final String isbn, @NonNull final ImageSizes size) {
             String fileSpec;
             String key = isbn + "_" + size;
@@ -548,30 +551,50 @@ public class CoverBrowser {
                 mFiles.remove(key);
             }
 
-            //ENHANCE allow the user to prioritize the order
-
-            // Try LibraryThing
-            fileSpec = mLibraryThing.getCoverImage(isbn, null, size);
-            if (isGood(new File(fileSpec))) {
-                synchronized (mFiles) {
-                    mFiles.putString(key, fileSpec);
-                    return fileSpec;
-                }
-            }
-
-            // Try google
-            File file = GoogleBooksManager.getThumbnailFromIsbn(isbn);
-            if (file != null && isGood(file)) {
-                fileSpec = file.getAbsolutePath();
-                synchronized (mFiles) {
-                    mFiles.putString(key, fileSpec);
-                    return fileSpec;
+            // allow the user to prioritize the order
+            for (SearchManager.SearchSite site : SearchManager.getSiteCoverSearchOrder()) {
+                if (site.enabled) {
+                    switch (site.id) {
+                        case SearchManager.SEARCH_LIBRARY_THING: {
+                            File file = mLibraryThing.getCoverImage(isbn, null, size);
+                            if (file != null && isGood(file)) {
+                                fileSpec = file.getAbsolutePath();
+                                synchronized (mFiles) {
+                                    mFiles.putString(key, fileSpec);
+                                    return fileSpec;
+                                }
+                            }
+                            break;
+                        }
+                        case SearchManager.SEARCH_GOOGLE: {
+                            File file = GoogleBooksManager.getCoverImage(isbn);
+                            if (file != null && isGood(file)) {
+                                fileSpec = file.getAbsolutePath();
+                                synchronized (mFiles) {
+                                    mFiles.putString(key, fileSpec);
+                                    return fileSpec;
+                                }
+                            }
+                            break;
+                        }
+                        case SearchManager.SEARCH_ISFDB: {
+                            File file = ISFDBManager.getCoverImage(isbn);
+                            if (file != null && isGood(file)) {
+                                fileSpec = file.getAbsolutePath();
+                                synchronized (mFiles) {
+                                    mFiles.putString(key, fileSpec);
+                                    return fileSpec;
+                                }
+                            }
+                            break;
+                        }
+                    }
                 }
             }
 
             // give up
             mFiles.remove(key);
-            return null;
+            return ""; //don't return nul.
         }
 
         /**

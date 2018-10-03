@@ -1093,8 +1093,10 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="share">Share</string>
     <string name="share_book_im_reading">I\'m reading %1$s by %2$s %3$s %4$s</string>
     <string name="done">Done</string>
-    <string name="search_hosts">Search Sites</string>
-    <string name="search_site_order">Search Site Order</string>
+    <string name="search_sites">Search Sites</string>
+    <string name="search_site_order">Site Order</string>
+    <string name="search_site_cover_order">Cover Search Order</string>
+
     <string name="starting">Starting</string>
     <string name="send_mail">Send mail…</string>
 
@@ -1112,6 +1114,7 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="table_of_content">Content</string>
     <string name="populate_anthology_titles">Automatically Populate (ISFDB only)</string>
     <string name="first_publication">First Publication</string>
+    <string name="searching_isfdb">Searching ISFDB</string>
 
     <string name="new_in_600">
 		<![CDATA[

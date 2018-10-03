@@ -14,8 +14,7 @@
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            style="@style/toolbar"
-            tools:text="TOOLBAR" />
+            style="@style/toolbar"/>
 
         <!-- digits: 0..9X for ISBN, but ASIN allows more -->
         <EditText

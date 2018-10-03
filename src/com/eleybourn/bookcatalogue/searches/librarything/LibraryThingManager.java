@@ -41,6 +41,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -535,10 +536,10 @@ public class LibraryThingManager {
     /**
      * Get the cover image using the ISBN
      *
-     * @return the fileSpec
+     * @return the file
      **/
-    @NonNull
-    public String getCoverImage(@NonNull final String isbn, @Nullable final Bundle bookInfo, @NonNull final ImageSizes size) {
+    @Nullable
+    public File getCoverImage(@NonNull final String isbn, @Nullable final Bundle bookInfo, @NonNull final ImageSizes size) {
         String url = getCoverImageUrl(isbn, size);
         if (DEBUG_SWITCHES.LIBRARYTHING && BuildConfig.DEBUG) {
             System.out.println("LTM: " + url + " " + isbn + " " + size);
@@ -549,10 +550,10 @@ public class LibraryThingManager {
 
         // Save it with an _LT suffix
         String fileSpec = ImageUtils.saveThumbnailFromUrl(url, "_LT_" + size + "_" + isbn);
-        if (fileSpec.length() > 0 && bookInfo != null) {
+        if (!fileSpec.isEmpty() && bookInfo != null) {
             ArrayUtils.appendOrAdd(bookInfo, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
         }
-        return fileSpec;
+        return fileSpec.isEmpty() ? null : new File(fileSpec);
     }
 
     /**

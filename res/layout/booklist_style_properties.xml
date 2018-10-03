@@ -9,8 +9,7 @@
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar"
-        tools:text="TOOLBAR" />
+        style="@style/toolbar" />
 
     <include
         android:id="@+id/buttonbar_cancel_save"

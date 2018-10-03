@@ -7,13 +7,13 @@ package com.eleybourn.bookcatalogue;
  *
  * So use something like this:
  *
- *         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
- *              System.out.println("some debug info);
- *         }
+ *    if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+ *          System.out.println("some debug info);
+ *    }
  *
- *         RELEASE: set all these to false !
+ *    RELEASE: set all to false ! in case you forgot to 'and' with BuildConfig.DEBUG anywhere...
  *
- *         The compiler should remove all code between dead if() blocks
+ *    The compiler should remove all code between dead if() blocks
  */
 public final class DEBUG_SWITCHES {
 

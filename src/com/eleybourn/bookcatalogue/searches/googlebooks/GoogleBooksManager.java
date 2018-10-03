@@ -34,7 +34,7 @@ public class GoogleBooksManager {
     }
 
     @Nullable
-    static public File getThumbnailFromIsbn(@NonNull final String isbn) {
+    static public File getCoverImage(@NonNull final String isbn) {
         Bundle bookData = new Bundle();
         try {
             search(isbn, "", "", bookData, true);

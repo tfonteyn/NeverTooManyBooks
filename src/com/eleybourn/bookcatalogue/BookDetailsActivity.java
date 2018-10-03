@@ -457,8 +457,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
     }
 
     /**
-     * We override the dispatcher because the ScrollView will consume
-     * all events otherwise.
+     * We override the dispatcher because the ScrollView will consume all events otherwise.
      */
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {

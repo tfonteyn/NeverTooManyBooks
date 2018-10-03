@@ -430,7 +430,7 @@ class ImportAllTask extends GenericTask {
                 thumbnail = null;
             }
             if (thumbnail != null) {
-                String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, UniqueId.GOODREADS_FILENAME_SUFFIX);
+                String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, GoodreadsUtils.GOODREADS_FILENAME_SUFFIX);
                 if (fileSpec.length() > 0)
                     bookData.appendOrAdd(UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
                 bookData.cleanupThumbnails();

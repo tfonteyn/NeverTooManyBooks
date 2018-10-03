@@ -8,8 +8,7 @@
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar"
-        tools:text="TOOLBAR" />
+        style="@style/toolbar"/>
 
     <ScrollView
         android:layout_width="match_parent"

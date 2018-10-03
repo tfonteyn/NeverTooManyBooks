@@ -20,9 +20,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -302,30 +300,30 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      * Don't show a field if it is already hidden (assumed by user preference)
      *
      * @param hideIfEmpty   hide if empty
-     * @param resId         layout resource id of the field
+     * @param fieldId         layout resource id of the field
      * @param relatedFields list of fields whose visibility will also be set based on the first field
      *
      * @return The resulting visibility setting value (VISIBLE or GONE)
      */
     @SuppressWarnings("UnusedReturnValue")
-    int showHideField(final boolean hideIfEmpty, @IdRes final int resId, @IdRes final int... relatedFields) {
+    int showHideField(final boolean hideIfEmpty, @IdRes final int fieldId, @IdRes final int... relatedFields) {
         // Get the base view
-        final View v = getView().findViewById(resId);
+        final View view = getView().findViewById(fieldId);
         int visibility;
-        if (v == null) {
+        if (view == null) {
             visibility = View.GONE;
         } else {
-            visibility = v.getVisibility();
+            visibility = view.getVisibility();
             if (hideIfEmpty) {
-                if (v.getVisibility() != View.GONE) {
+                if (view.getVisibility() != View.GONE) {
                     // Determine if we should hide it
-                    if (v instanceof ImageView) {
-                        visibility = v.getVisibility();
+                    if (view instanceof ImageView) {
+                        visibility = view.getVisibility();
                     } else {
-                        final String value = mFields.getField(resId).getValue().toString();
+                        final String value = mFields.getField(fieldId).getValue().toString();
                         final boolean isExist = value != null && !value.isEmpty();
                         visibility = isExist ? View.VISIBLE : View.GONE;
-                        v.setVisibility(visibility);
+                        view.setVisibility(visibility);
                     }
                 }
             }

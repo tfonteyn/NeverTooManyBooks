@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/padding_border_double"
+    android:orientation="vertical">
+<!-- paddingTop is there to stop the overspill from the TabLayout (bug?)-->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/amazon" />
+
+    <EditText
+        android:id="@+id/amazon_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="http://www.amazon.com"
+        android:inputType="textUri"
+        tools:ignore="Autofill,HardcodedText" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/google_books" />
+
+    <EditText
+        android:id="@+id/google_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="http://books.google.com"
+        android:inputType="textUri"
+        tools:ignore="Autofill,HardcodedText" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/ISFDB"
+        android:visibility="gone" />
+
+    <EditText
+        android:id="@+id/isfdb_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="http://www.isfdb.org/"
+        android:inputType="textUri"
+        android:visibility="gone"
+        tools:ignore="Autofill,HardcodedText" />
+</LinearLayout>

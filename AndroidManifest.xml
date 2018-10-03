@@ -12,8 +12,6 @@
     <!--android:versionName="5.2.2"-->
 
 
-
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -78,8 +76,8 @@
         <activity
             android:name=".StartupActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:noHistory="true"
             android:launchMode="singleInstance"
+            android:noHistory="true"
             android:theme="@style/Invisible">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -143,10 +141,8 @@
 
         <!-- AdministrationFunctions: Search configuration -->
         <activity
-            android:name=".searches.SearchAdminHosts"
+            android:name=".searches.SearchAdmin"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".searches.SearchAdminOrder" />
-
         <!-- *********************************************************************************** -->
         <!-- END admin pages -->
         <!-- *********************************************************************************** -->
@@ -252,8 +248,6 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-
-
     </application>
 
 </manifest>

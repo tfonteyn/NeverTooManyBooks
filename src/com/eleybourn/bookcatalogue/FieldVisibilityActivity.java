@@ -40,6 +40,8 @@ import java.util.List;
  * This is the Field Visibility page. It contains a list of all fields and a
  * checkbox to enable or disable the field on the main edit book screen.
  *
+ * ENHANCE: add 'loan' to the list and let the code hide 'loan' functionality when needed.
+ *
  * @author Evan Leybourn
  */
 public class FieldVisibilityActivity extends BookCatalogueActivity {

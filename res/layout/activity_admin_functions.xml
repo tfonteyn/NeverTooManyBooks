@@ -8,8 +8,7 @@
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar"
-        tools:text="TOOLBAR" />
+        style="@style/toolbar" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -82,13 +81,13 @@
             <TextView
                 android:id="@+id/update_internet_label"
                 style="@style/prefsItem"
-                android:drawableStart="@drawable/ic_autorenew"
+                android:drawableStart="@drawable/ic_content_copy"
                 android:text="@string/update_fields" />
 
             <TextView
                 android:id="@+id/sync_with_goodreads_label"
                 style="@style/prefsItem"
-                android:drawableStart="@drawable/ic_refresh"
+                android:drawableStart="@drawable/ic_autorenew"
                 android:text="@string/sync_with_goodreads" />
 
             <TextView
@@ -121,28 +120,17 @@
                 android:drawableStart="@drawable/ic_security"
                 android:text="@string/library_thing" />
 
-            <!-- Search options -->
-            <TextView
-                style="@style/prefsHeader"
-                android:text="@string/search_internet" />
-
-            <TextView
-                android:id="@+id/local_websites_urls"
-                style="@style/prefsItem"
-                android:drawableStart="@drawable/ic_search"
-                android:text="@string/search_hosts" />
-
-            <TextView
-                android:id="@+id/search_order"
-                style="@style/prefsItem"
-                android:drawableStart="@drawable/ic_search"
-                android:text="@string/search_site_order" />
-
             <!-- ADVANCED OPTIONS Header -->
 
             <TextView
                 style="@style/prefsHeader"
                 android:text="@string/advanced_options" />
+
+            <TextView
+                android:id="@+id/search_sites"
+                style="@style/prefsItem"
+                android:drawableStart="@drawable/ic_search"
+                android:text="@string/search_sites" />
 
             <TextView
                 android:id="@+id/background_tasks_label"

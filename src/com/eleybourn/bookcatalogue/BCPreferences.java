@@ -39,6 +39,7 @@ public class BCPreferences {
     public static final String PREF_APP_THEME = TAG + ".Theme";
     /** Force list construction to compatible mode (compatible with Android 1.6) */
     public static final String PREF_BOOKLIST_GENERATION_MODE = TAG + ".BooklistGenerationMode";
+    public static final String JSOUP_USER_AGENT = "Mozilla";
 
     private BCPreferences() {
     }

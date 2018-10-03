@@ -31,6 +31,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
@@ -494,7 +495,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
                 }
             }
             if (bestImage != null) {
-                String filename = ImageUtils.saveThumbnailFromUrl(bestImage, UniqueId.GOODREADS_FILENAME_SUFFIX);
+                String filename = ImageUtils.saveThumbnailFromUrl(bestImage, GoodreadsUtils.GOODREADS_FILENAME_SUFFIX);
                 if (filename.length() > 0) {
                     ArrayUtils.appendOrAdd(mBook, UniqueId.BKEY_THUMBNAIL_USCORE, filename);
                 }

@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue;
 
+import com.eleybourn.bookcatalogue.backup.CsvImporter;
+
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_MASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
@@ -93,14 +95,17 @@ public class UniqueId {
 
     // the ones below still need checking
 
+    /** used in {@link CsvImporter} (maybe from old versions?) + {@link BookDetailsAbstractFragment} seems not used. */
     public static final String BKEY_BOOKSHELF_TEXT = "bookshelf_text";
+
     public static final String BKEY_BOOK_DATA = "bookData";
-    public static final String BKEY_DIRTY = "Dirty";
+
+    //TODO: why two....
     public static final String BKEY_THUMBNAIL = "thumbnail";
     public static final String BKEY_THUMBNAIL_USCORE = "__thumbnail";
 
-    /* other global constants */
-    public static final String GOODREADS_FILENAME_SUFFIX = "_GR";
+    /** seems to be only ever read as a boolean in savedInstanceState, but never set TODO: find out why in original code, and if needed ? */
+    public static final String BKEY_DIRTY = "Dirty";
 
 
     //TODO: migrate to calling these BKEY once we cleaned up the over-use of the DOM equiv
@@ -150,6 +155,6 @@ public class UniqueId {
     public static final String KEY_ISBN = DOM_BOOK_ISBN.name;
     public static final String KEY_GOODREADS_LAST_SYNC_DATE = DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name;
     public static final String KEY_LAST_UPDATE_DATE = DOM_LAST_UPDATE_DATE.name;
-    /** If GoodReads returns a (numeric) if indicating it's an eBook, we store it as KEY_BOOK_FORMAT with "EBook" */
-    public static final String BVAL_GOODREADS_FORMAT_EBOOK = "Ebook";
+    /** If GoodReads returns a (numeric) if indicating it's an eBook, we store it as KEY_BOOK_FORMAT with "eBook" */
+    public static final String BVAL_GOODREADS_FORMAT_EBOOK = "eBook";
 }

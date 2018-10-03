@@ -21,6 +21,8 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.Fragmen
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTaskAbstract;
 
 public class GoodreadsUtils {
+    public static final String GOODREADS_FILENAME_SUFFIX = "_GR";
+
     /**
      * Show the goodreads options list
      */

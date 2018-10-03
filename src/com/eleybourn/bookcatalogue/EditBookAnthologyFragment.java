@@ -45,52 +45,21 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.searches.isfdb.HandlesISFDB;
+import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 
-public class EditBookAnthologyFragment extends EditBookAbstractFragment {
-
+public class EditBookAnthologyFragment extends EditBookAbstractFragment implements HandlesISFDB {
     // context menu specific for Anthology
     private static final int MENU_POPULATE_ISFDB = 100;
-
-    /**
-     * Trim extraneous punctuation and whitespace from the titles and authors
-     *
-     * Original code had:
-     * CLEANUP_REGEX = "[\\,\\.\\'\\:\\;\\`\\~\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\_\\+]*$";
-     *
-     * Android Studio:
-     * Reports character escapes that are replaceable with the unescaped character without a
-     * change in meaning. Note that inside the square brackets of a character class, many
-     * escapes are unnecessary that would be necessary outside of a character class.
-     * For example the regex [\.] is identical to [.]
-     *
-     * So that became:
-     * private static final String CLEANUP_REGEX = "[,.':;`~@#$%^&*()\\-=_+]*$";
-     *
-     * But given a title like "Introduction (The Father-Thing)"
-     * you loose the ")" at the end, so remove that from the regex, see below
-     */
-    private static final String CLEANUP_REGEX = "[,.':;`~@#$%^&*(\\-=_+]*$";
 
     private EditText mTitleText;
     private EditText mPubDateText;
     private AutoCompleteTextView mAuthorText;
-    private long mBookId;
     private String mIsbn;
     private String mBookAuthor;
     private Button mAdd;
@@ -98,16 +67,13 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     private Integer mEditPosition = null;
     private ArrayList<AnthologyTitle> mList;
 
-    /**
-     * task queue for the searching/parsing of content (ant titles)
-     */
-    private SimpleTaskQueue mAntFetcher = null;
+
 
     /**
-     * ISFDB
-     * book urls for all editions found in the isbn search. We'll try them one by one if the user asks for a re-try
+     * ISFDB editions (url's) of a book(isbn)
+     * We'll try them one by one if the user asks for a re-try
      */
-    private List<String> mISFDBUrls;
+    private List<String> mEditions;
 
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
@@ -149,7 +115,6 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         final BookData bookData = mEditManager.getBookData();
         mBookAuthor = bookData.getString(UniqueId.KEY_AUTHOR_FORMATTED);
         mIsbn = bookData.getString(UniqueId.KEY_ISBN);
-        mBookId = bookData.getBookId();
 
         // Setup the same author field
         mSame = getView().findViewById(R.id.same_author);
@@ -241,50 +206,43 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     }
 
     /**
-     * First step, get all editions for the ISBN (or maybe just the one)
+     * we got one or more editions from ISFDB
      */
-    private void searchISFDB() {
-        // Setup the background fetcher
-        if (mAntFetcher == null) {
-            mAntFetcher = new SimpleTaskQueue("isfdb-editions");
+    @Override
+    public void onGotISFDBEditions(@NonNull final List<String> editions) {
+        mEditions = editions;
+        if (mEditions.size() > 0) {
+            ISFDBManager.search(mEditions.get(0), this);
         }
-        Toast.makeText(EditBookAnthologyFragment.this.getContext(), R.string.connecting_to_web_site, Toast.LENGTH_LONG).show();
-        mAntFetcher.enqueue(new ISFDBEditionsTask(mIsbn));
     }
 
     /**
-     * We now have all editions, see which one to use
+     * we got a book
+     *
+     * @param bookInfo our book from ISFDB
      */
-    private void handleISFDBBook(@NonNull final String bookUrl) {
-        // Setup the background fetcher
-        if (mAntFetcher == null) {
-            mAntFetcher = new SimpleTaskQueue("isfdb-book");
+    @Override
+    public void onGotISFDBBook(@NonNull final Bundle bookInfo) {
+        @SuppressWarnings("unchecked")
+        final List<AnthologyTitle> results = (List<AnthologyTitle>)bookInfo.get(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
+
+        if (results == null) {
+            Toast.makeText(EditBookAnthologyFragment.this.getContext(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();
+            return;
         }
-        mAntFetcher.enqueue(new ISFDBBookTask(bookUrl));
-    }
 
-    private String cleanUpName(@NonNull final String s) {
-        return s.trim()
-                .replace("\n", " ")
-                .replaceAll(CLEANUP_REGEX, "")
-                .trim();
-
-    }
-
-    private void showAnthologyConfirm(@NonNull final List<AnthologyTitle> results) {
         StringBuilder msg = new StringBuilder();
-        if (results.isEmpty()) {
-            msg.append(getString(R.string.automatic_population_failed));
-        } else {
+        if (!results.isEmpty()) {
             //FIXME: this is usually to much to display as a Message in the dialog
             for (AnthologyTitle t : results) {
                 msg.append(t.getTitle()).append(", ");
             }
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(getActivity()).setMessage(msg)
-                .setTitle(R.string.anthology_confirm)
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setTitle(results.isEmpty() ? R.string.automatic_population_failed : R.string.anthology_confirm)
                 .setIcon(R.drawable.ic_info_outline)
+                .setMessage(msg)
                 .create();
 
         if (!results.isEmpty()) {
@@ -312,13 +270,13 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         }
 
         // if we found multiple editions, allow a re-try with the next inline
-        if (mISFDBUrls.size() > 1) {
+        if (mEditions.size() > 1) {
             dialog.setButton(AlertDialog.BUTTON_NEUTRAL,
                     this.getResources().getString(R.string.try_another),
                     new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
-                            mISFDBUrls.remove(0);
-                            handleISFDBBook(mISFDBUrls.get(0));
+                            mEditions.remove(0);
+                            ISFDBManager.search(mEditions.get(0), EditBookAnthologyFragment.this);
                         }
                     });
         }
@@ -353,7 +311,8 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case MENU_POPULATE_ISFDB:
-                searchISFDB();
+                Toast.makeText(EditBookAnthologyFragment.this.getContext(), R.string.connecting_to_web_site, Toast.LENGTH_LONG).show();
+                ISFDBManager.searchEditions(mIsbn, this);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -393,10 +352,6 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (mAntFetcher != null) {
-            mAntFetcher.finish();
-            mAntFetcher = null;
-        }
         saveState(mEditManager.getBookData());
     }
 
@@ -413,134 +368,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment {
         saveState(bookData);
     }
 
-    private class ISFDBEditionsTask implements SimpleTaskQueue.SimpleTask {
-
-        private static final String EDITIONS_URL = "http://www.isfdb.org/cgi-bin/se.cgi?arg=%s&type=ISBN";
-        private final List<String> editions = new ArrayList<>();
-        private String isbn;
-
-        ISFDBEditionsTask(@NonNull final String isbn) {
-            if (isbn.isEmpty()) {
-                throw new RuntimeException("Can not get editions without an ISBN");
-            }
-            this.isbn = isbn;
-        }
-
-        @Override
-        public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) {
-            String path = String.format(EDITIONS_URL, isbn);
-            try {
-                Document doc = Jsoup.connect(path)
-                        .userAgent("Mozilla")
-                        .followRedirects(true)
-                        .get();
-                getEntries(doc, "tr.table0");
-                getEntries(doc, "tr.table1");
-                // if no editions, we were redirected to the book itself
-                if (editions.size() == 0) {
-                    editions.add(doc.location());
-                }
-            } catch (IOException e) {
-                Logger.logError(e, path);
-            }
-        }
-
-        private void getEntries(@NonNull final Document doc, @NonNull final String selector) {
-            Elements entries = doc.select(selector);
-            for (Element entry : entries) {
-                Element edLink = entry.select("a").first(); // first column has the book link
-                if (edLink != null) {
-                    String url = edLink.attr("href");
-                    if (url != null) {
-                        editions.add(url);
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void onFinish(@Nullable final Exception e) {
-            mISFDBUrls = editions;
-            if (editions.size() > 0) {
-                handleISFDBBook(editions.get(0));
-            }
-        }
-    }
-
-    private class ISFDBBookTask implements SimpleTaskQueue.SimpleTask {
-        private final String bookUrl;
-        private final List<AnthologyTitle> results = new ArrayList<>();
-
-        ISFDBBookTask(@NonNull final String bookUrl) {
-            this.bookUrl = bookUrl;
-        }
-
-        @Override
-        public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) {
-            try {
-                Connection isfdb = Jsoup
-                        .connect(bookUrl)
-                        .userAgent("Mozilla")
-                        .followRedirects(true);
-                Document doc = isfdb.get();
-
-                // <div class="ContentBox"> but there are two, so get last one
-                Element contentbox = doc.select("div.contentbox").last();
-                Elements lis = contentbox.select("li");
-                for (Element li : lis) {
-
-                    /* LI entries, 4 possibilities:
-
-                    7 &#8226;
-                    <a href="http://www.isfdb.org/cgi-bin/title.cgi?118799" dir="ltr">Introduction (The Days of Perky Pat)</a>
-                    &#8226; [
-                    <a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226" dir="ltr">Introductions to the Collected Stories of Philip K. Dick</a>
-                    &#8226; 4] &#8226; (1987) &#8226; essay by
-                    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?57" dir="ltr">James Tiptree, Jr.</a>
-
-
-                    11 &#8226;
-                    <a href="http://www.isfdb.org/cgi-bin/title.cgi?53646" dir="ltr">Autofac</a>
-                    &#8226; (1955) &#8226; novelette by
-                    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-
-
-                    <a href="http://www.isfdb.org/cgi-bin/title.cgi?41613" dir="ltr">Beyond Lies the Wub</a>
-                    &#8226; (1952) &#8226; short story by
-                    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-
-
-                    <a href="http://www.isfdb.org/cgi-bin/title.cgi?118803" dir="ltr">Introduction (Beyond Lies the Wub)</a>
-                    &#8226; [
-                    <a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226" dir="ltr">Introductions to the Collected Stories of Philip K. Dick</a>
-                    &#8226; 1] &#8226; (1987) &#8226; essay by
-                    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?69" dir="ltr">Roger Zelazny</a>
-
-                    So the year is always previous from last, but there is a non-visible 'text' node at the end, hence 'len-3'
-                     */
-                    int len = li.childNodeSize();
-                    Node y = li.childNode(len - 3);
-                    Matcher matcher = AnthologyTitle.YEAR_FROM_STRING.matcher(y.toString());
-                    String year = matcher.find() ? matcher.group(1) : "";
-
-                    /* See above for LI examples. The title is the first a element, the author is the last a element */
-                    Elements a = li.select("a");
-                    String title = cleanUpName(a.get(0).text());
-                    String author = cleanUpName(a.get(a.size() - 1).text());
-                    results.add(new AnthologyTitle(new Author(author), title, year, mBookId));
-                }
-            } catch (IOException e) {
-                Logger.logError(e, bookUrl);
-            }
-        }
-
-        @Override
-        public void onFinish(@Nullable final Exception e) {
-            showAnthologyConfirm(results);
-        }
-    }
-
-    protected class AnthologyTitleListAdapterForEditing extends AnthologyTitleListAdapter {
+    private class AnthologyTitleListAdapterForEditing extends AnthologyTitleListAdapter {
 
         AnthologyTitleListAdapterForEditing(@NonNull final Context context,
                                             final int rowViewId,

@@ -70,6 +70,7 @@ public class CropCropImage extends CropMonitoredActivity {
     private static final String BKEY_WHOLE_IMAGE = "whole-image";
     private static final int NO_STORAGE_ERROR = -1;
     private static final int CANNOT_STAT_ERROR = -2;
+    public static final String BKEY_DATA = "data";
     @SuppressWarnings("FieldCanBeLocal")
     private final boolean DO_FACE_DETECTION = false;
     // These are various options can be specified in the intent.
@@ -509,10 +510,10 @@ public class CropCropImage extends CropMonitoredActivity {
         // Return the cropped image directly or save it to the specified URI.
         Bundle myExtras = getIntent().getExtras();
         if (myExtras != null
-                && (myExtras.getParcelable("data") != null || myExtras
+                && (myExtras.getParcelable(BKEY_DATA) != null || myExtras
                 .getBoolean("return-data"))) {
             Bundle extras = new Bundle();
-            extras.putParcelable("data", croppedImage);
+            extras.putParcelable(BKEY_DATA, croppedImage);
             setResult(RESULT_OK, (new Intent()).setAction("inline-data")
                     .putExtras(extras));
             finish();

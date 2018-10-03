@@ -405,7 +405,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             mMessage += "* Moved to base Android 5.0 bringing lots of new UI goodies.";
             mMessage += "* Removed the old 'Classic' view (sorry)\n";
             mMessage += "* Cover thumbnails are moved to a 'covers' sub folder to clean up the root folder.\n\n";
-            mMessage += "* Better Anthology support\n";
+            mMessage += "* Configurable website search order.\n";
+            mMessage += "* Better Anthology support (Edit/View)\n";
+            mMessage += "* Anthology titles auto populated (ISFDB site only!)\n";
             mMessage += "* Books & Anthology titles now have a 'first published' year\n";
 
             v83_moveCoversToDedicatedDirectory(syncedDb);

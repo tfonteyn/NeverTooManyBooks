@@ -1,7 +1,7 @@
 /*
  * @copyright 2010 Evan Leybourn
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -31,9 +31,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-/* 
- * An XML handler for the Google Books entry return 
- * 
+/*
+ * An XML handler for the Google Books entry return
+ *
  * <?xml version='1.0' encoding='UTF-8'?>
  * <entry xmlns='http://www.w3.org/2005/Atom' xmlns:gbs='http://schemas.google.com/books/2008' xmlns:dc='http://purl.org/dc/terms' xmlns:batch='http://schemas.google.com/gdata/batch' xmlns:gd='http://schemas.google.com/g/2005'>
  * 		<id>http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ</id>
@@ -63,7 +63,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * 		<dc:subject>Fiction / War &amp; Military</dc:subject>
  * 		<dc:title>The trigger</dc:title>
  * </entry>
- * 
+ *
  * <?xml version='1.0' encoding='UTF-8'?>
  * <entry xmlns='http://www.w3.org/2005/Atom' xmlns:gbs='http://schemas.google.com/books/2008' xmlns:dc='http://purl.org/dc/terms' xmlns:batch='http://schemas.google.com/gdata/batch' xmlns:gd='http://schemas.google.com/g/2005'>
  * 		<id>http://www.google.com/books/feeds/volumes/lf2EMetoLugC</id>
@@ -105,95 +105,119 @@ import org.xml.sax.helpers.DefaultHandler;
  * 		<dc:title>The Geeks' Guide to World Domination</dc:title>
  * 		<dc:title>Be Afraid, Beautiful People</dc:title>
  * </entry>
- * 
+ *
  */
 class SearchGoogleBooksEntryHandler extends DefaultHandler {
-	private StringBuilder builder;
-	
-	private final Bundle mValues;
-	private static boolean mFetchThumbnail;
-
-//	private static final String ID = "id";
+    //	private static final String ID = "id";
 //	private static final String TOTAL_RESULTS = "totalResults";
 //	private static final String ENTRY = "entry";
-	private static final String AUTHOR = "creator";
-	private static final String TITLE = "title";
-	private static final String ISBN = "identifier";
-	private static final String DATE_PUBLISHED = "date";
-	private static final String PUBLISHER = "publisher";
-	private static final String PAGES = "format";
-	private static final String THUMBNAIL = "link";
-	private static final String GENRE = "subject";
-	private static final String DESCRIPTION = "description";
+    private static final String AUTHOR = "creator";
+    private static final String TITLE = "title";
+    private static final String ISBN = "identifier";
+    private static final String DATE_PUBLISHED = "date";
+    private static final String PUBLISHER = "publisher";
+    private static final String PAGES = "format"; // yes, 'format'
+    private static final String LINK = "link";
+    private static final String GENRE = "subject";
+    private static final String DESCRIPTION = "description";
+    private static boolean mFetchThumbnail;
+    private final Bundle mValues;
+    private StringBuilder builder;
 
 
-	SearchGoogleBooksEntryHandler(Bundle values, boolean fetchThumbnail) {
-		mValues = values;
-		mFetchThumbnail = fetchThumbnail;
-	}
+    SearchGoogleBooksEntryHandler(@NonNull final Bundle values, final boolean fetchThumbnail) {
+        mValues = values;
+        mFetchThumbnail = fetchThumbnail;
+    }
 
-	@Override
-	public void characters(@NonNull final char[] ch, final int start, final int length) throws SAXException {
-		super.characters(ch, start, length);
-		builder.append(ch, start, length);
-	}
+    @Override
+    public void characters(@NonNull final char[] ch, final int start, final int length) throws SAXException {
+        super.characters(ch, start, length);
+        builder.append(ch, start, length);
+    }
 
-	private void addIfNotPresent(String key) {
-		if (!mValues.containsKey(key) || mValues.getString(key).isEmpty()) {
-			mValues.putString(key, builder.toString());
-		}		
-	}
+    private void addIfNotPresent(@NonNull final String key) {
+        if (!mValues.containsKey(key) || mValues.getString(key).isEmpty()) {
+            mValues.putString(key, builder.toString());
+        }
+    }
 
-	@Override
-	public void endElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name) throws SAXException {
-		super.endElement(uri, localName, name);
-		if (localName.equalsIgnoreCase(TITLE)){
-			addIfNotPresent(UniqueId.KEY_TITLE);
-		} else if (localName.equalsIgnoreCase(ISBN)){
-			String tmp = builder.toString(); 
-			if (tmp.indexOf("ISBN:") == 0) {
-				tmp = tmp.substring(5); 
-				if (!mValues.containsKey(UniqueId.KEY_ISBN) || tmp.length() > mValues.getString(UniqueId.KEY_ISBN).length()) {
-					mValues.putString(UniqueId.KEY_ISBN, tmp);
-				}
-			}
-		} else if (localName.equalsIgnoreCase(AUTHOR)){
-			ArrayUtils.appendOrAdd(mValues, UniqueId.BKEY_AUTHOR_DETAILS, builder.toString());
-		} else if (localName.equalsIgnoreCase(PUBLISHER)){
-			addIfNotPresent(UniqueId.KEY_BOOK_PUBLISHER);
-		} else if (localName.equalsIgnoreCase(DATE_PUBLISHED)){
-			addIfNotPresent(UniqueId.KEY_BOOK_DATE_PUBLISHED);
-		} else if (localName.equalsIgnoreCase(PAGES)){
-			String tmp = builder.toString();
-			int index = tmp.indexOf(" pages");
-			if (index > -1) {
-				tmp = tmp.substring(0, index).trim(); 
-				mValues.putString(UniqueId.KEY_BOOK_PAGES, tmp);
-			}
-		} else if (localName.equalsIgnoreCase(GENRE)){
-			mValues.putString(UniqueId.KEY_BOOK_GENRE, builder.toString());
-		} else if (localName.equalsIgnoreCase(DESCRIPTION)){
-			addIfNotPresent(UniqueId.KEY_DESCRIPTION);
-		}
-		builder.setLength(0);
-	}
+    @Override
+    public void endElement(@NonNull final String uri,
+                           @NonNull final String localName,
+                           @NonNull final String name) throws SAXException {
+        super.endElement(uri, localName, name);
 
-	@Override
-	public void startDocument() throws SAXException {
-		super.startDocument();
-		builder = new StringBuilder();
-	}
+        switch(localName.toLowerCase()) {
+            case TITLE: {
+                addIfNotPresent(UniqueId.KEY_TITLE);
+                break;
+            }
+            case ISBN: {
+                String tmp = builder.toString();
+                if (tmp.indexOf("ISBN:") == 0) {
+                    tmp = tmp.substring(5);
+                    if (!mValues.containsKey(UniqueId.KEY_ISBN) || tmp.length() > mValues.getString(UniqueId.KEY_ISBN).length()) {
+                        mValues.putString(UniqueId.KEY_ISBN, tmp);
+                    }
+                }
+                break;
+            }
+            case AUTHOR: {
+                ArrayUtils.appendOrAdd(mValues, UniqueId.BKEY_AUTHOR_DETAILS, builder.toString());
+                break;
+            }
+            case PUBLISHER: {
+                addIfNotPresent(UniqueId.KEY_BOOK_PUBLISHER);
+                break;
+            }
+            case DATE_PUBLISHED: {
+                addIfNotPresent(UniqueId.KEY_BOOK_DATE_PUBLISHED);
+                break;
+            }
+            case PAGES: {
+                String tmp = builder.toString();
+                int index = tmp.indexOf(" pages");
+                if (index > -1) {
+                    tmp = tmp.substring(0, index).trim();
+                    mValues.putString(UniqueId.KEY_BOOK_PAGES, tmp);
+                }
+                break;
+            }
+            case GENRE: {
+                //ENHANCE: only the 'last' genre is taken, but that means a book/genre needs to be restructured to have a separate 'genres' table
+                mValues.putString(UniqueId.KEY_BOOK_GENRE, builder.toString());
+                break;
+            }
+            case DESCRIPTION: {
+                addIfNotPresent(UniqueId.KEY_DESCRIPTION);
+                break;
+            }
+        }
 
-	@Override
-	public void startElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name, @NonNull final Attributes attributes) throws SAXException {
-		super.startElement(uri, localName, name, attributes);
-		if (mFetchThumbnail && localName.equalsIgnoreCase(THUMBNAIL)){
-			if (("http://schemas.google.com/books/2008/thumbnail").equals(attributes.getValue("", "rel"))) {
-				String thumbnail = attributes.getValue("", "href");
-				String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, "_GB");
-				if (fileSpec.length() > 0)
-					ArrayUtils.appendOrAdd(mValues, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
-			}
-		}
-	}
+        builder.setLength(0);
+    }
+
+    @Override
+    public void startDocument() throws SAXException {
+        super.startDocument();
+        builder = new StringBuilder();
+    }
+
+    @Override
+    public void startElement(@NonNull final String uri,
+                             @NonNull final String localName,
+                             @NonNull final String name,
+                             @NonNull final Attributes attributes) throws SAXException {
+        super.startElement(uri, localName, name, attributes);
+        if (mFetchThumbnail && LINK.equalsIgnoreCase(localName)) {
+            if (("http://schemas.google.com/books/2008/thumbnail").equals(attributes.getValue("", "rel"))) {
+                String thumbnail = attributes.getValue("", "href");
+                String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, "_GB");
+                if (fileSpec.length() > 0) {
+                    ArrayUtils.appendOrAdd(mValues, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
+                }
+            }
+        }
+    }
 }

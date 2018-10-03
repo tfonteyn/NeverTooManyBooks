@@ -49,7 +49,9 @@ import java.util.Date;
 public class EditBookNotesFragment extends EditBookAbstractFragment implements OnPartialDatePickerListener {
 
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_edit_book_notes, container, false);
     }
 
