@@ -113,27 +113,23 @@ public class GoodreadsManager {
     private final static String DEV_KEY = BookCatalogueApp.getManifestString(GOODREADS_DEV_KEY);
     private final static String DEV_SECRET = BookCatalogueApp.getManifestString(GOODREADS_DEV_SECRET);
 
-    // Set to true when the credentials have been successfully verified.
+    /** Set to true when the credentials have been successfully verified. */
     private static boolean mHhasValidCredentials = false;
-    // Cached when credentials have been verified.
+    /** Cached when credentials have been verified. */
     private static String mAccessToken = null;
     private static String mAccessSecret = null;
-    // Local copies of user data retrieved when the credentials were verified
+    /** Local copies of user data retrieved when the credentials were verified */
     private static String mUsername = null;
     private static long mUserId = 0;
-    // Stores the last time an API request was made to avoid breaking API rules.
+    /** Stores the last time an API request was made to avoid breaking API rules. */
     private static Long mLastRequestTime = 0L;
-    // OAuth helpers
+    /** OAuth helpers */
     private CommonsHttpOAuthConsumer mConsumer;
     private OAuthProvider mProvider;
-    /**
-     * Local API object
-     */
+    /** Local API object */
     private IsbnToId mIsbnToId = null;
     private GoodreadsBookshelves mBookshelfList = null;
-    /**
-     * Local API object
-     */
+    /** Local API object */
     private ShelfAddBookHandler mAddBookHandler = null;
     private ReviewUpdateHandler mReviewUpdater = null;
 
@@ -162,10 +158,8 @@ public class GoodreadsManager {
      * Utility method to check if the access tokens are available (not if they are valid).
      */
     static boolean hasCredentials() {
-        if (mAccessToken != null
-                && mAccessSecret != null
-                && !mAccessToken.isEmpty()
-                && !mAccessSecret.isEmpty()) {
+        if (mAccessToken != null && !mAccessToken.isEmpty()
+                && mAccessSecret != null && !mAccessSecret.isEmpty()) {
             return true;
         }
 
@@ -180,7 +174,7 @@ public class GoodreadsManager {
     /**
      * Use mLastRequestTime to determine how long until the next request is allowed; and
      * update mLastRequestTime this needs to be synchronized across threads.
-     * <p>
+     *
      * Note that as a result of this approach mLastRequestTime may in fact be
      * in the future; callers to this routine effectively allocate time slots.
      *
@@ -193,10 +187,9 @@ public class GoodreadsManager {
         long wait;
         synchronized (mLastRequestTime) {
             wait = 1000 - (now - mLastRequestTime);
-            //
+
             // mLastRequestTime must be updated while synchronized. As soon as this
             // block is left, another block may perform another update.
-            //
             if (wait < 0) {
                 wait = 0;
             }
@@ -279,11 +272,7 @@ public class GoodreadsManager {
      * @param d Last date
      */
     static void setLastSyncDate(@Nullable final Date d) {
-        if (d == null) {
-            BCPreferences.setString(LAST_SYNC_DATE, null);
-        } else {
-            BCPreferences.setString(LAST_SYNC_DATE, DateUtils.toSqlDateTime(d));
-        }
+        BCPreferences.setString(LAST_SYNC_DATE, d == null ? null : DateUtils.toSqlDateTime(d));
     }
 
     /**
@@ -292,6 +281,13 @@ public class GoodreadsManager {
      * @author Philip Warner
      */
     private void sharedInit() {
+        // protection against forgetful developers (me!)
+        if (DEV_KEY.isEmpty()) {
+            throw new IllegalStateException("GoodReads dev key not set in manifest");
+        }
+        if (DEV_SECRET.isEmpty()) {
+            throw new IllegalStateException("GoodReads secret key not set in manifest");
+        }
 
         mConsumer = new CommonsHttpOAuthConsumer(DEV_KEY, DEV_SECRET);
         mProvider = new CommonsHttpOAuthProvider(
@@ -315,8 +311,8 @@ public class GoodreadsManager {
     }
 
     /**
-     * Check if the current credentials (either cached or in prefs) are valid. If they
-     * have been previously checked and were valid, just use that result.
+     * Check if the current credentials (either cached or in prefs) are valid.
+     * If they have been previously checked and were valid, just use that result.
      *
      * @author Philip Warner
      */
@@ -327,11 +323,8 @@ public class GoodreadsManager {
     }
 
     /**
-     * Check if the current credentials (either cached or in prefs) are valid, and
-     * cache the result.
-     * <p>
-     * If cached credentials were used, call recursively after clearing the cached
-     * values.
+     * Check if the current credentials (either cached or in prefs) are valid, and cache the result.
+     * If cached credentials were used, call recursively after clearing the cached values.
      *
      * @author Philip Warner
      */
@@ -372,7 +365,7 @@ public class GoodreadsManager {
      *
      * @author Philip Warner
      */
-    public void requestAuthorization(@NonNull final Context ctx) throws NetworkException {
+    public void requestAuthorization(@NonNull final Context context) throws NetworkException {
         String authUrl;
 
         // Don't do this; this is just part of OAuth and not the API
@@ -388,10 +381,16 @@ public class GoodreadsManager {
             throw new RuntimeException(e);
         }
 
-        // Make a valid URL for the parser (some come back without a schema)
+        if (BuildConfig.DEBUG) {
+            System.out.println("GR requestAuthorization authUrl: " + authUrl);
+        }
         //FIXME: double check if this ever gives issues!
         if (!authUrl.startsWith("http://") && !authUrl.startsWith("https://")) {
+            // Make a valid URL for the parser (some come back without a schema)
             authUrl = "http://" + authUrl;
+            if (BuildConfig.DEBUG) {
+                System.out.println("GR requestAuthorization: replacing with: " + authUrl);
+            }
         }
 
         // Save the token; this object may well be destroyed before the web page has returned.
@@ -402,7 +401,7 @@ public class GoodreadsManager {
 
         // Open the web page
         android.content.Intent browserIntent = new android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(authUrl));
-        ctx.startActivity(browserIntent);
+        context.startActivity(browserIntent);
     }
 
     /**

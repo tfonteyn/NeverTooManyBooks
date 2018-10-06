@@ -160,7 +160,6 @@ public class SimpleTaskQueue {
     public long enqueue(@NonNull final SimpleTask task) {
         SimpleTaskWrapper wrapper = new SimpleTaskWrapper(this, task);
 
-
         synchronized (this) {
             mExecutionStack.push(wrapper);
             mManagedTaskCount++;
@@ -456,6 +455,7 @@ public class SimpleTaskQueue {
                     //System.out.println("SimpleTaskQueue(run): " + mQueue.size());
                     handleRequest(this, req);
                 }
+            } catch (InterruptedException ignore) {
             } catch (Exception e) {
                 Logger.logError(e);
             } finally {

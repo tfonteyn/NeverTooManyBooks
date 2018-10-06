@@ -36,10 +36,10 @@
             android:value="my_amazon_key" />
         <meta-data
             android:name="goodreads.dev_key"
-            android:value="my_goodreads_key" />
+            android:value="ZWx0GvfCNvQxqPmbBdsNQ" />
         <meta-data
             android:name="goodreads.dev_secret"
-            android:value="my_goodreads_secret" />
+            android:value="A6gLqqm5Jxf6TKTvcBMjkXnq3k31jNzYmthfRWUA" />
 
         <provider
             android:name=".searches.SearchSuggestionProvider"
