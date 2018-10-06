@@ -61,7 +61,6 @@ public abstract class BackupWriterAbstract implements BackupWriter {
      */
     @Override
     public void backup(@NonNull final BackupWriterListener listener, final int backupFlags, @Nullable Date since) throws IOException {
-
         try {
             // Estimate the total steps
             int estTotal = 1;

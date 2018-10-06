@@ -152,7 +152,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      *
      * @param target The view that was clicked ('add' button).
      */
-    abstract protected void onAdd(View target);
+    abstract protected void onAdd(@NonNull final View target);
 
     /**
      * Call to set up the row view.

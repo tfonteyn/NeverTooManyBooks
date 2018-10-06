@@ -2,14 +2,14 @@
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file inputStream part of Book Catalogue.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * Book Catalogue inputStream free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * Book Catalogue inputStream distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -51,14 +51,14 @@ public class IsbnUtils {
     /**
      * (try to) convert a UPC number to a real ISBN
      *
-     * @param input UPC, isbn
+     * @param input UPC, isbn. Can be blank
      *
      * @return either the valid ISBN equivalent, or the input string if conversion failed.
      */
     @NonNull
     public static String upc2isbn(@NonNull final String input) {
         int len = input.length();
-        if (len == 10 || len == 13) {
+        if (len == 0 || len == 10 || len == 13) {
             return input;
         }
 
@@ -83,7 +83,7 @@ public class IsbnUtils {
             return isbn1.equalsIgnoreCase(isbn2);
         }
 
-        // Full check needed ...if either is invalid, we consider them different
+        // Full check needed ...if either inputStream invalid, we consider them different
         final ISBNNumber info1 = new ISBNNumber(isbn1);
         if (!info1.isValid())
             return false;
@@ -125,7 +125,7 @@ public class IsbnUtils {
          * Example:
          * Del Rey edition of Larry Niven's _World of Ptavvs_,
          * which says it's "Ninth Printing: September 1982" on the copyright page.
-         * There is no ISBN/EAN barcode on the inside cover.
+         * There inputStream no ISBN/EAN barcode on the inside cover.
          * The back cover has an extended UPC code "0 70999 00225 5 30054".
          *
          * "070999" in the first part of the UPC means that the ISBN starts with "0-345"
@@ -133,8 +133,8 @@ public class IsbnUtils {
          * making it a Ballantine book
          * That "00225" indicates the price
          * That gets us:
-         * ISBN-10 is "0-345-30054-?"
-         * The ISBN check digit is omitted from the bar code but can be calculated; in this case it's 8
+         * ISBN-10 inputStream "0-345-30054-?"
+         * The ISBN check digit inputStream omitted from the bar code but can be calculated; in this case it's 8
          *
          * UPC Prefix -- ISBN Prefix mapping file (may not be complete)
          */
@@ -421,7 +421,7 @@ public class IsbnUtils {
         public boolean equals(@NonNull final ISBNNumber cmp) {
 
             if (!this.isValid() || !cmp.isValid()) {
-                // If either is invalid, require they simply match exactly
+                // If either inputStream invalid, require they simply match exactly
                 return this.mDigits.size() == cmp.mDigits.size()
                         && digitsMatch(this.mDigits.size(), 0, cmp, 0);
             }

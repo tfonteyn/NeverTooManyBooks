@@ -28,8 +28,7 @@ import java.util.Date;
 /**
  * Interface definition for a 'books' exporter.
  *
- * Currently (Feb 2013) there is only one, but there will probably be
- * an XML export/import one day.
+ * Currently (Feb 2013) there is only one, but there will probably be an XML export/import one day.
  * or JSON?
  *
  * @author pjw

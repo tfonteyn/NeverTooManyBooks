@@ -92,7 +92,7 @@ public class XmlFilter {
      * @return The filter matching the final tag name passed.
      */
     @Nullable
-    public static XmlFilter buildFilter(@NonNull final XmlFilter root, @NonNull final List<String> filters) {
+    static XmlFilter buildFilter(@NonNull final XmlFilter root, @NonNull final List<String> filters) {
         if (filters.size() <= 0) {
             return null;
         }
@@ -143,7 +143,7 @@ public class XmlFilter {
      * Find a sub-filter for the passed context.
      * Currently just used local_name from the context.
      */
-    public XmlFilter getSubFilter(@NonNull final ElementContext context) {
+    XmlFilter getSubFilter(@NonNull final ElementContext context) {
         return getSubFilter(context.localName);
     }
 
@@ -167,7 +167,7 @@ public class XmlFilter {
     /**
      * Called when associated tag is started.
      */
-    public void processStart(@NonNull final ElementContext context) {
+    void processStart(@NonNull final ElementContext context) {
         if (mStartAction != null) {
             context.userArg = mStartArg;
             mStartAction.process(context);
@@ -177,7 +177,7 @@ public class XmlFilter {
     /**
      * Called when associated tag is finished.
      */
-    public void processEnd(@NonNull final ElementContext context) {
+    void processEnd(@NonNull final ElementContext context) {
         if (mEndAction != null) {
             context.userArg = mEndArg;
             mEndAction.process(context);
@@ -200,7 +200,7 @@ public class XmlFilter {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public XmlFilter setEndAction(@NonNull final XmlHandler endAction) {
+    XmlFilter setEndAction(@NonNull final XmlHandler endAction) {
         return setEndAction(endAction, null);
     }
 
@@ -222,7 +222,7 @@ public class XmlFilter {
      * @return This XmlFilter, to allow chaining
      */
     @NonNull
-    public XmlFilter setStartAction(@NonNull final XmlHandler startAction) {
+    XmlFilter setStartAction(@NonNull final XmlHandler startAction) {
         return setStartAction(startAction, null);
     }
 

@@ -73,7 +73,7 @@ public class BackupManager {
                                        @Nullable final Date since) {
         final int flags = backupFlags & Exporter.EXPORT_MASK;
         if (flags == 0) {
-            throw new RuntimeException("Backup flags must be specified");
+            throw new IllegalArgumentException("Backup flags must be specified");
         }
         //if (flags == (Exporter.EXPORT_ALL | Exporter.EXPORT_NEW_OR_UPDATED) ) {
         //	throw new RuntimeException("Illegal backup flag combination: ALL and NEW_OR_UPDATED");

@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.properties;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,10 +44,9 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
  */
 public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> implements BooleanValue {
 
-
     public BooleanProperty(@NonNull final String uniqueId,
                            @NonNull final PropertyGroup group,
-                           final int nameResourceId) {
+                           @StringRes final int nameResourceId) {
         super(uniqueId, group, nameResourceId, false);
     }
 

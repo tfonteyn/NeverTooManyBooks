@@ -26,13 +26,12 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Serializable;
@@ -48,34 +47,17 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
     @Override
     public void saveToDirectory(@NonNull final File dir) throws IOException {
         if (!dir.isDirectory()) {
-            throw new RuntimeException("Specified path is not a directory");
+            throw new IllegalStateException("Not a directory");
         }
 
         // Build the new File and save
-        final File outFile = new File(dir.getAbsoluteFile() + File.separator + getName());
-        final byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
-
-        //FIXME: use channels, much faster
-        // Open output and copy bytes.
-        final FileOutputStream out = new FileOutputStream(outFile);
+        File dstFile = new File(dir.getAbsoluteFile() + File.separator + getName());
         try {
-            final InputStream in = getStream();
-            while (true) {
-                int cnt = in.read(buffer);
-                if (cnt <= 0) {
-                    break;
-                }
-                out.write(buffer, 0, cnt);
-            }
+            StorageUtils.copyFile(getStream(), TarBackupContainer.BUFFER_SIZE, dstFile);
         } finally {
-            if (out.getChannel().isOpen()) {
-                out.close();
-            }
-            try {
+            if (dstFile.exists()) {
                 //noinspection ResultOfMethodCallIgnored
-                outFile.setLastModified(this.getDateModified().getTime());
-            } catch (Exception ignore) {
-                // Ignore...it's nice to set the date, but not mandatory
+                dstFile.setLastModified(this.getDateModified().getTime());
             }
         }
     }
@@ -99,7 +81,7 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
     @Override
     public Serializable getSerializable() throws IOException, DeserializationException {
         // Turn the input into a byte array
-        final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         final byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
 
@@ -108,11 +90,10 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
             if (cnt <= 0) {
                 break;
             }
-            byteStream.write(buffer);
+            out.write(buffer);
         }
-        byteStream.close();
-        // Deserialize the byte array
-        return SerializationUtils.deserializeObject(byteStream.toByteArray());
+        out.close();
+        return SerializationUtils.deserializeObject(out.toByteArray());
     }
 
     /**

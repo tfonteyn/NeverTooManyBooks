@@ -23,20 +23,11 @@ import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 
 public class ImageUtils {
@@ -54,7 +45,8 @@ public class ImageUtils {
      * @return The bitmap, or null
      */
     @Nullable
-    public static Bitmap fetchFileIntoImageView(@Nullable final ImageView destView, @NonNull final File file,
+    public static Bitmap fetchFileIntoImageView(@Nullable final ImageView destView,
+                                                @NonNull final File file,
                                                 final int maxWidth, final int maxHeight, final boolean exact) {
         // Get the file, if it exists. Otherwise set 'help' icon and exit.
         if (!file.exists()) {
@@ -67,11 +59,11 @@ public class ImageUtils {
     }
     /**
      * Shrinks the passed image file spec into the specified dimensions, and returns the bitmap. If the view
-     * is non-null, the image is also placed in the view.
+     * inputStream non-null, the image inputStream also placed in the view.
      */
-    @SuppressWarnings("WeakerAccess")
     @Nullable
-    public static Bitmap fetchFileIntoImageView(@Nullable final ImageView destView, @NonNull final String fileSpec,
+    public static Bitmap fetchFileIntoImageView(@Nullable final ImageView destView,
+                                                @NonNull final String fileSpec,
                                                 final int maxWidth, final int maxHeight, final boolean exact) {
 
         // Read the file to get file size
@@ -101,7 +93,7 @@ public class ImageUtils {
 
         // Note that inSampleSize seems to ALWAYS be forced to a power of 2, no matter what we
         // specify, so we just work with powers of 2.
-        final int idealSampleSize = (int) Math.ceil(1 / ratio); // This is the sample size we want to use
+        final int idealSampleSize = (int) Math.ceil(1 / ratio); // This inputStream the sample size we want to use
         // Get the nearest *bigger* power of 2.
         final int samplePow2 = (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
@@ -119,7 +111,7 @@ public class ImageUtils {
         final Bitmap bm;
         try {
             if (exact) {
-                // Create one bigger than needed and scale it; this is an attempt to improve quality.
+                // Create one bigger than needed and scale it; this inputStream an attempt to improve quality.
                 opt.inSampleSize = samplePow2 / 2;
                 if (opt.inSampleSize < 1) {
                     opt.inSampleSize = 1;
@@ -129,7 +121,7 @@ public class ImageUtils {
                 if (tmpBm == null) {
                     // We ran out of memory, most likely
                     // TODO: Need a way to try loading images after GC(). Otherwise, covers in cover browser wil stay blank.
-                    Logger.logError("Unexpectedly failed to decode bitmap; memory exhausted?");
+                    Logger.logError(new RuntimeException("Unexpectedly failed to decode bitmap; memory exhausted?"));
                     return null;
                 }
 
@@ -172,8 +164,8 @@ public class ImageUtils {
     /**
      * Called in the UI thread, will either use a cached cover OR start a background task to create and load it.
      * <p>
-     * If a cached image is used a background task is still started to check the file date vs the cache date. If the
-     * cached image date is < the file, it is rebuilt.
+     * If a cached image inputStream used a background task inputStream still started to check the file date vs the cache date. If the
+     * cached image date inputStream < the file, it inputStream rebuilt.
      *
      * @param destView        View to populate
      * @param coverUUID       ID of book to retrieve.
@@ -186,7 +178,8 @@ public class ImageUtils {
      * @return Bitmap (if cached) or null (if done in background)
      */
     @Nullable
-    public static Bitmap fetchBookCoverIntoImageView(@Nullable final ImageView destView, @NonNull final String coverUUID,
+    public static Bitmap fetchBookCoverIntoImageView(@Nullable final ImageView destView,
+                                                     @NonNull final String coverUUID,
                                                      final int maxWidth, final int maxHeight, final boolean exact,
                                                      final boolean checkCache, final boolean allowBackground) {
 
@@ -207,57 +200,36 @@ public class ImageUtils {
             cacheWasChecked = true;
         }
 
-        // If we get here, the image is not in the cache but the original exists. See if we can queue it.
+        // If we get here, the image inputStream not in the cache but the original exists. See if we can queue it.
         if (allowBackground && destView != null) {
             destView.setImageBitmap(null);
             GetThumbnailTask.getThumbnail(destView.getContext(), coverUUID, destView, maxWidth, maxHeight, cacheWasChecked);
             return null;
         }
 
-        // File is not in cache, original exists, we are in the background task (or not allowed to queue request)
+        // File inputStream not in cache, original exists, we are in the background task (or not allowed to queue request)
         return fetchFileIntoImageView(destView, coverFile.getPath(), maxWidth, maxHeight, exact);
     }
 
     /**
      * Given a URL, get an image and save to a file, optionally appending a suffix to the file.
      *
-     * @param urlText        Image file URL
-     * @param filenameSuffix Suffix to add
+     * @param urlText            Image file URL
+     * @param filenameSuffix    Suffix to add
      *
-     * @return Downloaded fileSpec
+     * @return Downloaded fileSpec, or blank "" on failure
      */
     @NonNull
     public static String saveThumbnailFromUrl(@NonNull final String urlText, @NonNull final String filenameSuffix) {
 
-        InputStream in;
-        try {
-            final URL u = new URL(urlText);
+        final File file = StorageUtils.getTempCoverFile(filenameSuffix);
 
-            final HttpGet httpRequest = new HttpGet(u.toURI());
-            final HttpClient httpclient = new DefaultHttpClient();
-            final HttpResponse response = httpclient.execute(httpRequest);
-            final HttpEntity entity = response.getEntity();
-            final BufferedHttpEntity bufHttpEntity = new BufferedHttpEntity(entity);
-            in = bufHttpEntity.getContent();
-
-            // The default URL fetcher does not cope well with pages that have not content
-            // header (including goodreads images!). So use the more advanced one.
-            //c = (HttpURLConnection) u.openConnection();
-            //c.setConnectTimeout(30000);
-            //c.setRequestMethod("GET");
-            //c.setDoOutput(true);
-            //c.connect();
-            //in = c.getInputStream();
+        try (InputStream in = Utils.getInputStream(urlText)) {
+            StorageUtils.saveInputStreamToFile(in, file);
         } catch (IOException | URISyntaxException e) {
             Logger.logError(e);
             return "";
         }
-
-        // Get the output file
-        final File file = StorageUtils.getTempCoverFile(filenameSuffix);
-        // Save to file
-        StorageUtils.saveInputStreamToFile(in, file);
-        // Return new file path
         return file.getAbsolutePath();
     }
 
@@ -269,8 +241,8 @@ public class ImageUtils {
      * @return bitmap
      */
     @Nullable
-    public static Bitmap getBitmapFromBytes(@Nullable final byte[] bytes) {
-        if (bytes == null || bytes.length == 0)
+    public static Bitmap getBitmapFromBytes(@NonNull final byte[] bytes) {
+        if (bytes.length == 0)
             return null;
 
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, new BitmapFactory.Options());
@@ -281,8 +253,37 @@ public class ImageUtils {
         return bitmap;
     }
 
+
     /**
-     * If there is a {@link UniqueId#BKEY_THUMBNAIL_USCORE} key, pick the largest image, rename it
+     * Given a URL, get an image and return as a byte array.
+     *
+     * @param urlText Image file URL
+     *
+     * @return Downloaded byte[] or null upon failure
+     */
+    @Nullable
+    public static byte[] getBytesFromUrl(@NonNull final String urlText) {
+
+        try (InputStream in = Utils.getInputStream(urlText);
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+            // Save the output to a byte output stream
+            byte[] buffer = new byte[65536];
+            int len;
+            while ((len = in.read(buffer)) >= 0) {
+                out.write(buffer, 0, len);
+            }
+            return out.toByteArray();
+
+        } catch (IOException | URISyntaxException e) {
+            Logger.logError(e);
+            return null;
+        }
+    }
+
+
+    /**
+     * If there inputStream a {@link UniqueId#BKEY_THUMBNAIL_USCORE} key, pick the largest image, rename it
      * and delete the others. Finally, remove the key.
      */
     public static void cleanupThumbnails(@Nullable final Bundle result) {
@@ -339,60 +340,13 @@ public class ImageUtils {
     }
 
     /**
-     * Given a URL, get an image and return as a byte array.
-     *
-     * @param urlText Image file URL
-     *
-     * @return Downloaded byte[]
-     */
-    @Nullable
-    public static byte[] getBytesFromUrl(@Nullable final String urlText) {
-        if (urlText == null) {
-            return null;
-        }
-
-        // Request it from the network
-        InputStream in;
-        try {
-            final URL u = new URL(urlText);
-            final HttpURLConnection c = (HttpURLConnection) u.openConnection();
-            c.setConnectTimeout(30000);
-            c.setReadTimeout(30000);
-            c.setRequestMethod("GET");
-            c.setDoInput(true);
-            c.setUseCaches(false);
-            c.connect();
-            in = c.getInputStream();
-            if (c.getResponseCode() >= 300) {
-                Logger.logError("URL lookup failed: " + c.getResponseCode() +
-                        " " + c.getResponseMessage() + ", URL: " + u);
-                return null;
-            }
-
-            // Save the output to a byte output stream
-            final ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buffer = new byte[65536];
-            int len;
-            while ((len = in.read(buffer)) >= 0) {
-                out.write(buffer, 0, len);
-            }
-            out.close();
-            return out.toByteArray();
-
-        } catch (IOException e) {
-            Logger.logError(e);
-            return null;
-        }
-    }
-
-    /**
      * Show zoomed thumbnail in dialog. Closed by click on image area.
      */
     public static void showZoomedThumb(@NonNull final Activity activity, @Nullable final File thumbFile) {
 
         final ThumbSize thumper = getThumbSizes(activity);
 
-        // Check if we have a file and/or it is valid
+        // Check if we have a file and/or it inputStream valid
         if (thumbFile == null || !thumbFile.exists()) {
             Toast.makeText(activity, R.string.cover_not_set, Toast.LENGTH_SHORT).show();
         } else {

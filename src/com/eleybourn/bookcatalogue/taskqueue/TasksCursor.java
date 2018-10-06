@@ -34,17 +34,16 @@ import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
 
 import java.util.Date;
 
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_CATEGORY;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_EVENT_COUNT;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_ID;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_QUEUED_DATE;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_RETRY_DATE;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_STATUS_CODE;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_TASK;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_TASK_ID;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.TBL_EVENT;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.TBL_TASK;
-import static com.eleybourn.bookcatalogue.utils.SerializationUtils.deserializeObject;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_CATEGORY;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EVENT_COUNT;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_ID;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_QUEUED_DATE;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_RETRY_DATE;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_STATUS_CODE;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_TASK;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_TASK_ID;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.TBL_EVENT;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.TBL_TASK;
 
 /**
  * Cursor subclass used to make accessing Tasks a little easier.
@@ -54,7 +53,7 @@ import static com.eleybourn.bookcatalogue.utils.SerializationUtils.deserializeOb
 public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
 
     /** Static Factory object to create the custom cursor */
-    private static final CursorFactory m_factory = new CursorFactory() {
+    private static final CursorFactory mFactory = new CursorFactory() {
         @Override
         public Cursor newCursor(SQLiteDatabase db,
                                 SQLiteCursorDriver masterQuery, String editTable,
@@ -63,38 +62,38 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         }
     };
 
-    private static final String m_failedTasksQuery = "SELECT *, "
+    private static final String mFailedTasksQuery = "SELECT *, "
             + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
             + " FROM " + TBL_TASK + " t "
             + " WHERE " + DOM_STATUS_CODE + " = 'F' %1$s ORDER BY " + DOM_ID + " DESC";
 
-    private static final String m_allTasksQuery = "SELECT *, "
+    private static final String mAllTasksQuery = "SELECT *, "
             + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
             + " FROM " + TBL_TASK + " t WHERE 1 = 1 %1$s"
             + " ORDER BY " + DOM_ID + " DESC";
 
-    private static final String m_activeTasksQuery = "SELECT *, "
+    private static final String mActiveTasksQuery = "SELECT *, "
             + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
             + " FROM " + TBL_TASK + " t "
             + " WHERE Not " + DOM_STATUS_CODE + " In ('S','F') %1$s ORDER BY " + DOM_ID + " DESC";
 
-    private static final String m_queuedTasksQuery = "SELECT *, "
+    private static final String mQueuedTasksQuery = "SELECT *, "
             + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
             + " FROM " + TBL_TASK + " t "
             + " WHERE " + DOM_STATUS_CODE + " = 'Q' %1$s ORDER BY " + DOM_ID + " DESC";
     /** Column number of ID column. */
-    private static int m_idCol = -1;
+    private static int mIdCol = -1;
 
     /** Column number of date column. */
-    private static int m_queuedDateCol = -1;
+    private static int mQueuedDateCol = -2;
     /** Column number of retry date column. */
-    private static int m_retryDateCol = -1;
+    private static int mRetryDateCol = -2;
     /** Column number of retry count column. */
-    private static int m_statusCodeCol = -1;
+    private static int mStatusCodeCol = -2;
     /** Column number of Exception column. */
-    private static int m_taskCol = -2;
+    private static int mTaskCol = -2;
     /** Column number of NoteCount column. */
-    private static int m_noteCountCol = -1;
+    private static int mNoteCountCol = -2;
 
     /**
      * Constructor, based on SQLiteCursor constructor
@@ -110,68 +109,70 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
      *
      * @return A new TaskExceptionsCursor
      */
+    @NonNull
     static TasksCursor fetchTasks(@NonNull final SQLiteDatabase db,
                                   final long category,
                                   @NonNull final TaskCursorSubtype type) {
         String query;
         switch (type) {
             case all:
-                query = m_allTasksQuery;
+                query = mAllTasksQuery;
                 break;
             case queued:
-                query = m_queuedTasksQuery;
+                query = mQueuedTasksQuery;
                 break;
             case failed:
-                query = m_failedTasksQuery;
+                query = mFailedTasksQuery;
                 break;
             case active:
-                query = m_activeTasksQuery;
+                query = mActiveTasksQuery;
                 break;
             default:
                 throw new IllegalStateException("Unexpected cursor subtype specified: " + type);
         }
         // Add extra 'where' clause
-        query = String.format(query, " AND " + DOM_CATEGORY + " = " + category);
-        return (TasksCursor) db.rawQueryWithFactory(m_factory, query, new String[]{}, "");
+        query = String.format(query, " AND " + DOM_CATEGORY + "=?");
+        return (TasksCursor) db.rawQueryWithFactory(mFactory, query, new String[]{Long.toString(category)}, "");
     }
 
-    static TasksCursor fetchTasks(SQLiteDatabase db, TaskCursorSubtype type) {
+    @NonNull
+    static TasksCursor fetchTasks(@NonNull final SQLiteDatabase db, @NonNull final TaskCursorSubtype type) {
         String query;
         switch (type) {
             case all:
-                query = m_allTasksQuery;
+                query = mAllTasksQuery;
                 break;
             case queued:
-                query = m_queuedTasksQuery;
+                query = mQueuedTasksQuery;
                 break;
             case failed:
-                query = m_failedTasksQuery;
+                query = mFailedTasksQuery;
                 break;
             case active:
-                query = m_activeTasksQuery;
+                query = mActiveTasksQuery;
                 break;
             default:
                 throw new IllegalStateException("Unexpected cursor subtype specified: " + type);
         }
         // No extra 'where' clause
         query = String.format(query, "");
-        return (TasksCursor) db.rawQueryWithFactory(m_factory, query, new String[]{}, "");
+        return (TasksCursor) db.rawQueryWithFactory(mFactory, query, null, "");
     }
 
     @Override
     public long getId() {
-        if (m_idCol == -1) {
-            m_idCol = this.getColumnIndex(DOM_ID);
+        if (mIdCol < 0) {
+            mIdCol = this.getColumnIndex(DOM_ID);
         }
-        return getLong(m_idCol);
+        return getLong(mIdCol);
     }
 
     public Date getQueuedDate() {
-        if (m_queuedDateCol == -1) {
-            m_queuedDateCol = this.getColumnIndex(DOM_QUEUED_DATE);
+        if (mQueuedDateCol < 0) {
+            mQueuedDateCol = this.getColumnIndex(DOM_QUEUED_DATE);
         }
 
-        Date date = DateUtils.parseDate(getString(m_queuedDateCol));
+        Date date = DateUtils.parseDate(getString(mQueuedDateCol));
         if (date == null) {
             date = new Date();
         }
@@ -179,46 +180,45 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
     }
 
     public Date getRetryDate() {
-        if (m_retryDateCol == -1) {
-            m_retryDateCol = this.getColumnIndex(DOM_RETRY_DATE);
+        if (mRetryDateCol < 0) {
+            mRetryDateCol = this.getColumnIndex(DOM_RETRY_DATE);
         }
 
-        Date date = DateUtils.parseDate(getString(m_retryDateCol));
+        Date date = DateUtils.parseDate(getString(mRetryDateCol));
         if (date == null) {
             date = new Date();
         }
         return date;
-
-
     }
 
     public String getStatusCode() {
-        if (m_statusCodeCol == -1) {
-            m_statusCodeCol = this.getColumnIndex(DOM_STATUS_CODE);
+        if (mStatusCodeCol < 0) {
+            mStatusCodeCol = this.getColumnIndex(DOM_STATUS_CODE);
         }
-        return getString(m_statusCodeCol);
+        return getString(mStatusCodeCol);
     }
 
+    @NonNull
     private Task getTask() {
-        if (m_taskCol == -2) {
-            m_taskCol = this.getColumnIndex(DOM_TASK);
+        if (mTaskCol < 0) {
+            mTaskCol = this.getColumnIndex(DOM_TASK);
         }
-        Task t;
-        byte[] blob = getBlob(m_taskCol);
+        Task task;
+        byte[] blob = getBlob(mTaskCol);
         try {
-            t = deserializeObject(blob);
+            task = SerializationUtils.deserializeObject(blob);
         } catch (SerializationUtils.DeserializationException de) {
-            t = QueueManager.getQueueManager().newLegacyTask();
+            task = QueueManager.getQueueManager().newLegacyTask();
         }
-        t.setId(this.getId());
-        return t;
+        task.setId(this.getId());
+        return task;
     }
 
     public int getNoteCount() {
-        if (m_noteCountCol == -1) {
-            m_noteCountCol = this.getColumnIndex(DOM_EVENT_COUNT);
+        if (mNoteCountCol < 0) {
+            mNoteCountCol = this.getColumnIndex(DOM_EVENT_COUNT);
         }
-        return getInt(m_noteCountCol);
+        return getInt(mNoteCountCol);
     }
 
     @Override

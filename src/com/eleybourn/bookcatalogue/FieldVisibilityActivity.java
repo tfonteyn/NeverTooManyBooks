@@ -25,6 +25,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
@@ -100,7 +101,7 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
     }
 
     /**
-     * This function builds the manage field visibility by adding onClick events to each field checkbox
+     * Build the manage field visibility by adding onClick events to each field checkbox
      */
     private void setupFields() {
 
@@ -114,8 +115,7 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
             CheckBox cb = new CheckBox(this);
             cb.setChecked(mPrefs.getBoolean(prefs_name, true));
             cb.setTextAppearance(this, android.R.style.TextAppearance_Large);
-            cb.setText(field.resId);
-            //cb.setPadding(0, 5, 0, 0);
+            cb.setText(field.stringId);
 
             if (field.compulsory) {
                 cb.setTextColor(Color.GRAY);
@@ -145,12 +145,13 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
 
     private static class FieldInfo {
         final String name;
-        final int resId;
+        @StringRes
+        final int stringId;
         final boolean compulsory;
 
-         FieldInfo(@NonNull final String name, final int resId, final boolean compulsory) {
+         FieldInfo(@NonNull final String name, @StringRes final int stringId, final boolean compulsory) {
             this.name = name;
-            this.resId = resId;
+            this.stringId = stringId;
             this.compulsory = compulsory;
         }
     }

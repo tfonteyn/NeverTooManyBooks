@@ -40,8 +40,6 @@ import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 
 import java.util.List;
 
-import static com.eleybourn.bookcatalogue.entities.Bookshelf.SEPARATOR;
-
 /**
  * Fragment wrapper for the Bookshelf list
  *
@@ -183,37 +181,38 @@ public class BookshelfDialogFragment extends DialogFragment {
         // Get the root view for the list of checkboxes
         LinearLayout cbRoot = rootView.findViewById(R.id.bookshelf_dialog_root);
 
-        final String shelves = SEPARATOR + mCurrList + SEPARATOR;
+        final String shelves = Bookshelf.SEPARATOR + mCurrList + Bookshelf.SEPARATOR;
+
         // Loop through all bookshelves and build the checkbox list
         CatalogueDBAdapter db = new CatalogueDBAdapter(getContext());
         db.open();
         List<Bookshelf> allBookshelves = db.getBookshelves();
         db.close();
 
-        final List<String> currentShelves = ArrayUtils.decodeList(SEPARATOR, mCurrList);
+        final List<String> currentShelves = ArrayUtils.decodeList(Bookshelf.SEPARATOR, mCurrList);
 
-        for (Bookshelf b : allBookshelves) {
-            String db_encoded_bookshelf = ArrayUtils.encodeListItem(SEPARATOR, b.name);
+        for (Bookshelf bookshelf : allBookshelves) {
+            String db_encoded_bookshelf = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, bookshelf.name);
 
             final CheckBox cb = new CheckBox(getActivity());
-            cb.setChecked((shelves.contains(SEPARATOR + db_encoded_bookshelf + SEPARATOR)));
+            cb.setChecked((shelves.contains(Bookshelf.SEPARATOR + db_encoded_bookshelf + Bookshelf.SEPARATOR)));
             cb.setHintTextColor(Color.WHITE);
-            cb.setHint(b.name);
+            cb.setHint(bookshelf.name);
             // Setup a click listener that sends all clicks back to the calling activity and maintains the two lists
             cb.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String hint = cb.getHint() + "";
                     String name = hint.trim();
-                    String encoded_name = ArrayUtils.encodeListItem(SEPARATOR, name);
+                    String encoded_name = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, name);
                     // If box is checked, then we just append to list
                     if (cb.isChecked()) {
                         if (mCurrText == null || mCurrText.isEmpty()) {
                             mCurrText = name;
                             mCurrList = encoded_name;
                         } else {
-                            mCurrText += SEPARATOR + " " + name;
-                            mCurrList += SEPARATOR + encoded_name;
+                            mCurrText += Bookshelf.SEPARATOR + " " + name;
+                            mCurrList += Bookshelf.SEPARATOR + encoded_name;
                         }
                     } else {
                         StringBuilder newList = new StringBuilder();
@@ -223,13 +222,13 @@ public class BookshelfDialogFragment extends DialogFragment {
                             // If item in underlying list is non-blank, and does not match
                             if (shelf != null && !shelf.isEmpty() && !shelf.equalsIgnoreCase(name)) {
                                 // Append to list (or set to only element if list empty)
-                                String encoded_shelf = ArrayUtils.encodeListItem(SEPARATOR, shelf);
+                                String encoded_shelf = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, shelf);
                                 if (newList.length() == 0) {
                                     newList.append(encoded_shelf);
                                     newText.append(shelf);
                                 } else {
-                                    newList.append(SEPARATOR).append(encoded_shelf);
-                                    newText.append(SEPARATOR).append(" ").append(shelf);
+                                    newList.append(Bookshelf.SEPARATOR).append(encoded_shelf);
+                                    newText.append(Bookshelf.SEPARATOR).append(" ").append(shelf);
                                 }
 
                             }

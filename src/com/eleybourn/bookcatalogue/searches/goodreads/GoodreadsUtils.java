@@ -126,7 +126,7 @@ public class GoodreadsUtils {
     /**
      * Check that goodreads is authorized for this app, and optionally allow user to request auth or more info
      *
-     * This does network comms and should not be called in the UI thread.
+     * This does network access and should not be called in the UI thread.
      *
      * @return Flag indicating OK
      */
@@ -144,7 +144,7 @@ public class GoodreadsUtils {
     /**
      * Check that no other sync-related jobs are queued, and that goodreads is authorized for this app.
      *
-     * This does network comms and should not be called in the UI thread.
+     * This does network access and should not be called in the UI thread.
      *
      * @return Flag indicating OK
      */

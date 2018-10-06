@@ -45,8 +45,8 @@ public class GoodreadsAuthorizationActivity extends BookCatalogueActivity {
 		super.onCreate(savedInstanceState);
 
 		// Get the payload and make sure it is what we expect
-		Intent i = this.getIntent();
-		android.net.Uri uri = i.getData();
+		Intent intent = this.getIntent();
+		android.net.Uri uri = intent.getData();
 		if (uri != null) {// && uri.toString().startsWith("BookCatalogue")) {  
 			// GoodReads does not set the verifier...but we may as well check for it.
 			// The verifier was added in API version 1.0A, and GoodReads seems to 

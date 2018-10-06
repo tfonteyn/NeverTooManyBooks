@@ -109,7 +109,7 @@ public class BooklistGroup implements Serializable {
         // Sanity check
         for (int i = 0; i <= ROW_KIND_MAX; i++) {
             if (!mRowKindNames.containsKey(i))
-                throw new RuntimeException("Missing row kind name for row kind " + i);
+                throw new IllegalArgumentException("Missing row kind name for row kind " + i);
         }
     }
 
@@ -190,7 +190,7 @@ public class BooklistGroup implements Serializable {
     }
 
     /**
-     * Custom serialization support.
+     * Custom serialization support. The signature of this method should never be changed.
      * @see Serializable
      */
     private void writeObject(ObjectOutputStream out) throws IOException {
@@ -198,7 +198,7 @@ public class BooklistGroup implements Serializable {
     }
 
     /**
-     * Pseudo-constructor for custom serialization support.
+     * Custom serialization support. The signature of this method should never be changed.
      * @see Serializable
      */
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -316,7 +316,7 @@ public class BooklistGroup implements Serializable {
         }
 
         /**
-         * Custom serialization support.
+         * Custom serialization support. The signature of this method should never be changed.
          * @see Serializable
          */
         private void writeObject(ObjectOutputStream out) throws IOException {
@@ -326,8 +326,9 @@ public class BooklistGroup implements Serializable {
         }
 
         /**
-         * Custom serialization support.
          * We need to set the name resource ID for the properties since these may change across versions.
+         *
+         * Custom serialization support. The signature of this method should never be changed.
          * @see Serializable
          */
         private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -400,7 +401,7 @@ public class BooklistGroup implements Serializable {
         }
 
         /**
-         * Custom serialization support.
+         * Custom serialization support. The signature of this method should never be changed.
          * @see Serializable
          */
         private void writeObject(ObjectOutputStream out) throws IOException {
@@ -411,9 +412,10 @@ public class BooklistGroup implements Serializable {
         }
 
         /**
-         * Pseudo-constructor for custom serialization support.
          * We need to set the name resource ID for the properties since these may change across versions.
          *
+         * Custom serialization support. The signature of this method should never be changed.
+         * @see Serializable
          */
         private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
             in.defaultReadObject();

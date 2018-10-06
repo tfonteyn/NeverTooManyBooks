@@ -46,37 +46,6 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GOODREADS_API_ROOT;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.ADDED;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.AUTHORS;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_AUTHOR_NAME;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_FORMAT;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_ISBN;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_NOTES;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_PAGES;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_PUBLISHER;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_RATING;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_READ_END;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_READ_START;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.DB_TITLE;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.END;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.GR_BOOK_ID;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.GR_REVIEW_ID;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.ISBN13;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.LARGE_IMAGE;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.PUB_DAY;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.PUB_MONTH;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.PUB_YEAR;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.REVIEWS;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.SHELF;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.SHELVES;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.SMALL_IMAGE;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.START;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.TOTAL;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames.UPDATED;
-
 /**
  * Class to implement the reviews.list api call. It queries based on the passed parameters and returns
  * a single Bundle containing all results. The Bundle itself will contain other bundles: typically an
@@ -104,7 +73,7 @@ public class ListReviewsApiHandler extends ApiHandler {
 
         @Override
         public void onFinish(@NonNull BuilderContext bc, @NonNull ElementContext c) {
-            date2Sql(bc.getData(), UPDATED);
+            date2Sql(bc.getData(), ListReviewsFieldNames.UPDATED);
         }
     };
     /**
@@ -119,7 +88,7 @@ public class ListReviewsApiHandler extends ApiHandler {
 
         @Override
         public void onFinish(@NonNull BuilderContext bc, @NonNull ElementContext c) {
-            date2Sql(bc.getData(), ADDED);
+            date2Sql(bc.getData(), ListReviewsFieldNames.ADDED);
         }
     };
     private SimpleXmlFilter mFilters;
@@ -298,7 +267,7 @@ public class ListReviewsApiHandler extends ApiHandler {
 
         // Sort by update_dte (descending) so sync is faster. Specify 'shelf=all' because it seems goodreads returns
         // the shelf that is selected in 'My Books' on the web interface by default.
-        final String urlBase = GOODREADS_API_ROOT + "/review/list/%4$s.xml?key=%1$s&v=2&page=%2$s&per_page=%3$s&sort=date_updated&order=d&shelf=all";
+        final String urlBase = GoodreadsManager.GOODREADS_API_ROOT + "/review/list/%4$s.xml?key=%1$s&v=2&page=%2$s&per_page=%3$s&sort=date_updated&order=d&shelf=all";
         final String url = String.format(urlBase, mManager.getDeveloperKey(), page, perPage, mManager.getUserId());
         HttpGet get = new HttpGet(url);
 
@@ -311,11 +280,9 @@ public class ListReviewsApiHandler extends ApiHandler {
         Bundle results = mFilters.getData();
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            long t1 = System.currentTimeMillis();
-            System.out.println("Found " + results.getLong(TOTAL) + " books in " + (t1 - t0) + "ms");
+            System.out.println("Found " + results.getLong(ListReviewsFieldNames.TOTAL) + " books in " + (System.currentTimeMillis() - t0) + "ms");
         }
 
-        // Return parsed results.
         return results;
     }
 
@@ -335,56 +302,56 @@ public class ListReviewsApiHandler extends ApiHandler {
                 //		...
                 //	</Request>
                 //	<reviews start="3" end="4" total="933">
-                .s("reviews").isArray(REVIEWS)
-                .longAttr("start", START)
-                .longAttr("end", END)
-                .longAttr("total", TOTAL)
+                .s("reviews").isArray(ListReviewsFieldNames.REVIEWS)
+                .longAttr("start", ListReviewsFieldNames.START)
+                .longAttr("end", ListReviewsFieldNames.END)
+                .longAttr("total", ListReviewsFieldNames.TOTAL)
                 //		<review>
                 .s("review").isArrayItem()
                 //			<id>276860380</id>
-                .longBody("id", GR_REVIEW_ID)
+                .longBody("id", ListReviewsFieldNames.GR_REVIEW_ID)
                 //			<book>
                 .s("book")
                 //				<id type="integer">951750</id>
-                .longBody("id", GR_BOOK_ID)
+                .longBody("id", ListReviewsFieldNames.GR_BOOK_ID)
                 //				<isbn>0583120911</isbn>
-                .stringBody("isbn", DB_ISBN)
+                .stringBody("isbn", ListReviewsFieldNames.DB_ISBN)
                 //				<isbn13>9780583120913</isbn13>
-                .stringBody("isbn13", ISBN13)
+                .stringBody("isbn13", ListReviewsFieldNames.ISBN13)
                 //				...
                 //				<title><![CDATA[The Dying Earth]]></title>
-                .stringBody("title", DB_TITLE)
+                .stringBody("title", ListReviewsFieldNames.DB_TITLE)
                 //				<image_url>http://photo.goodreads.com/books/1294108593m/951750.jpg</image_url>
-                .stringBody("image_url", LARGE_IMAGE)
+                .stringBody("image_url", ListReviewsFieldNames.LARGE_IMAGE)
                 //				<small_image_url>http://photo.goodreads.com/books/1294108593s/951750.jpg</small_image_url>
-                .stringBody("small_image_url", SMALL_IMAGE)
+                .stringBody("small_image_url", ListReviewsFieldNames.SMALL_IMAGE)
                 //				...
                 //				<num_pages>159</num_pages>
-                .longBody("num_pages", DB_PAGES)
+                .longBody("num_pages", ListReviewsFieldNames.DB_PAGES)
                 //				<format></format>
-                .stringBody("format", DB_FORMAT)
+                .stringBody("format", ListReviewsFieldNames.DB_FORMAT)
                 //				<publisher></publisher>
-                .stringBody("publisher", DB_PUBLISHER)
+                .stringBody("publisher", ListReviewsFieldNames.DB_PUBLISHER)
                 //				<publication_day>20</publication_day>
-                .longBody("publication_day", PUB_DAY)
+                .longBody("publication_day", ListReviewsFieldNames.PUB_DAY)
                 //				<publication_year>1972</publication_year>
-                .longBody("publication_year", PUB_YEAR)
+                .longBody("publication_year", ListReviewsFieldNames.PUB_YEAR)
                 //				<publication_month>4</publication_month>
-                .longBody("publication_month", PUB_MONTH)
+                .longBody("publication_month", ListReviewsFieldNames.PUB_MONTH)
                 //				<description><![CDATA[]]></description>
-                .stringBody("description", DB_DESCRIPTION)
+                .stringBody("description", ListReviewsFieldNames.DB_DESCRIPTION)
                 //				...
                 //
                 //				<authors>
                 .s("authors")
-                .isArray(AUTHORS)
+                .isArray(ListReviewsFieldNames.AUTHORS)
                 //					<author>
                 .s("author")
                 .isArrayItem()
                 //						<id>5376</id>
-                .longBody("id", DB_AUTHOR_ID)
+                .longBody("id", ListReviewsFieldNames.DB_AUTHOR_ID)
                 //						<name><![CDATA[Jack Vance]]></name>
-                .stringBody("name", DB_AUTHOR_NAME)
+                .stringBody("name", ListReviewsFieldNames.DB_AUTHOR_NAME)
                 //						...
                 //					</author>
                 //				</authors>
@@ -393,31 +360,31 @@ public class ListReviewsApiHandler extends ApiHandler {
                 .popTo("review")
                 //
                 //			<rating>0</rating>
-                .doubleBody("rating", DB_RATING)
+                .doubleBody("rating", ListReviewsFieldNames.DB_RATING)
                 //			...
                 //			<shelves>
                 .s("shelves")
-                .isArray(SHELVES)
+                .isArray(ListReviewsFieldNames.SHELVES)
                 //				<shelf name="sci-fi-fantasy" />
                 .s("shelf")
                 .isArrayItem()
-                .stringAttr("name", SHELF)
+                .stringAttr("name", ListReviewsFieldNames.SHELF)
                 .popTo("review")
                 //				<shelf name="to-read" />
                 //			</shelves>
                 //			...
                 //			<started_at></started_at>
-                .stringBody("started_at", DB_READ_START)
+                .stringBody("started_at", ListReviewsFieldNames.DB_READ_START)
                 //			<read_at></read_at>
-                .stringBody("read_at", DB_READ_END)
+                .stringBody("read_at", ListReviewsFieldNames.DB_READ_END)
                 //			<date_added>Mon Feb 13 05:32:30 -0800 2012</date_added>
                 //.stringBody("date_added", ADDED)
-                .s("date_added").stringBody(ADDED).setListener(mAddedListener).pop()
+                .s("date_added").stringBody(ListReviewsFieldNames.ADDED).setListener(mAddedListener).pop()
                 //			<date_updated>Mon Feb 13 05:32:31 -0800 2012</date_updated>
-                .s("date_updated").stringBody(UPDATED).setListener(mUpdatedListener).pop()
+                .s("date_updated").stringBody(ListReviewsFieldNames.UPDATED).setListener(mUpdatedListener).pop()
                 //			...
                 //			<body><![CDATA[]]></body>
-                .stringBody("body", DB_NOTES).pop()
+                .stringBody("body", ListReviewsFieldNames.DB_NOTES).pop()
                 //			...
                 //			<owned>0</owned>
                 //		</review>

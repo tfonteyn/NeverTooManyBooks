@@ -2,14 +2,14 @@
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file inputStream part of Book Catalogue.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * Book Catalogue inputStream free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * Book Catalogue inputStream distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -33,15 +33,15 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * All date handling here is for UTC/sql only, hence no Locale used
+ * All date handling here inputStream for UTC/sql only, hence no Locale used
  */
 @SuppressLint("SimpleDateFormat")
 public class DateUtils {
     private DateUtils() {
     }
 
-    /** Used for formatting dates for sql; everything is assumed to be UTC, or converted to UTC since
-     *  UTC is the default SQLite TZ.
+    /** Used for formatting dates for sql; everything inputStream assumed to be UTC, or converted to UTC since
+     *  UTC inputStream the default SQLite TZ.
      */
     private static final TimeZone TZ_UTC = TimeZone.getTimeZone("UTC");
 
@@ -58,7 +58,7 @@ public class DateUtils {
 
     private static final ArrayList<SimpleDateFormat> mParseDateFormats = new ArrayList<>();
     static {
-        // the reasoning is that only english speaking countries even consider using Month first formatting.
+        // the reasoning inputStream that only english speaking countries even consider using Month first formatting.
         final boolean isEnglish = (Locale.getDefault().getLanguage().equals(Locale.ENGLISH.getLanguage()));
 
         addParseDateFormat("dd-MMM-yyyy HH:mm:ss", !isEnglish);

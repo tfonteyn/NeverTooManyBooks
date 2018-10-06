@@ -26,7 +26,7 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookEvents.GrNoIsbnEvent;
 import com.eleybourn.bookcatalogue.BookEvents.GrNoMatchEvent;
-import com.eleybourn.bookcatalogue.BooksRow;
+import com.eleybourn.bookcatalogue.entities.BookRow;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
@@ -62,12 +62,12 @@ public class SendOneBookTask extends GenericTask {
      * Run the task, log exceptions.
      */
     @Override
-    public boolean run(@NonNull final QueueManager manager, @NonNull final Context c) {
+    public boolean run(@NonNull final QueueManager manager, @NonNull final Context context) {
         boolean result = false;
         try {
-            result = sendBook(manager, c);
+            result = sendBook(manager, context);
         } catch (NotAuthorizedException ignore) {
-            Logger.logError("Not Authorized to send books to GoodReads");
+            Logger.logError(new RuntimeException("Not Authorized to send books to GoodReads"));
         }
         return result;
     }
@@ -102,7 +102,7 @@ public class SendOneBookTask extends GenericTask {
         db.open();
 
         try (BooksCursor books = db.getBookForGoodreadsCursor(mBookId)) {
-            final BooksRow book = books.getRowView();
+            final BookRow book = books.getRowView();
             while (books.moveToNext()) {
                 // Try to export one book
                 ExportDisposition disposition;

@@ -10,10 +10,14 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
+import org.xml.sax.SAXException;
+
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -56,42 +60,41 @@ public class GoogleBooksManager {
     public static void search(@NonNull final String isbn,
                               @NonNull String author,
                               @NonNull String title,
-                              @NonNull final Bundle bookInfo,
+                              @NonNull final Bundle book,
                               final boolean fetchThumbnail) {
-        //replace spaces with %20
-        author = author.replace(" ", "%20");
-        title = title.replace(" ", "%20");
 
         String path = getBaseURL() + "/books/feeds/volumes";
-        if (isbn.isEmpty()) {
-            path += "?q=" + "intitle%3A" + title + "%2Binauthor%3A" + author + "";
-        } else {
+        if (!isbn.isEmpty()) {
             path += "?q=ISBN%3C" + isbn + "%3E";
+        } else {
+            // if both empty, no search
+            if (author.isEmpty() && title.isEmpty()) {
+                return;
+            }
+            //replace spaces with %20
+            author = author.replace(" ", "%20");
+            title = title.replace(" ", "%20");
+            path += "?q=" + "intitle%3A" + title + "%2Binauthor%3A" + author + "";
         }
-        URL url;
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
-        SAXParser parser;
         SearchGoogleBooksHandler handler = new SearchGoogleBooksHandler();
-        SearchGoogleBooksEntryHandler entryHandler = new SearchGoogleBooksEntryHandler(bookInfo, fetchThumbnail);
+        SearchGoogleBooksEntryHandler entryHandler = new SearchGoogleBooksEntryHandler(book, fetchThumbnail);
 
         try {
-            url = new URL(path);
-            parser = factory.newSAXParser();
-            int count;
-            // We can't Toast anything from here; it no longer runs in UI thread. So let the caller deal
-            // with any exceptions.
-            parser.parse(Utils.getInputStream(url), handler);
-            count = handler.getCount();
-            if (count > 0) {
+            URL url = new URL(path);
+            SAXParser parser = factory.newSAXParser();
+            parser.parse(Utils.getInputStreamWithTerminator(url), handler);
+
+            if (handler.getCount() > 0) {
                 String id = handler.getId();
                 url = new URL(id);
                 parser = factory.newSAXParser();
-                parser.parse(Utils.getInputStream(url), entryHandler);
+                parser.parse(Utils.getInputStreamWithTerminator(url), entryHandler);
             }
-        } catch (Exception e) {
+            // Don't bother catching general exceptions, they will be caught by the caller.
+        } catch (ParserConfigurationException | IOException | SAXException e) {
             Logger.logError(e);
         }
     }
-
 }

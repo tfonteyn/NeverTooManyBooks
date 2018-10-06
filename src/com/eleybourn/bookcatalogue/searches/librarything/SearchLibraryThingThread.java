@@ -35,7 +35,7 @@ public class SearchLibraryThingThread extends SearchThread {
             LibraryThingManager ltm = new LibraryThingManager(BookCatalogueApp.getAppContext());
             if (ltm.isAvailable()) {
                 try {
-                    ltm.search(mIsbn, mBookInfo, mFetchThumbnail);
+                    ltm.search(mIsbn, mBook, mFetchThumbnail);
                     // Look for series name and clear KEY_TITLE
                     checkForSeriesName();
                 } catch (Exception e) {

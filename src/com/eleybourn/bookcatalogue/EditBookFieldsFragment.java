@@ -53,6 +53,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickLi
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEditorListener;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.BookData;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -104,8 +105,8 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
             getView().findViewById(R.id.description_edit_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
-                    Object o = mFields.getField(R.id.description).getValue();
-                    String description = (o == null ? null : o.toString());
+                    Object object = mFields.getField(R.id.description).getValue();
+                    String description = (object == null ? null : object.toString());
                     TextFieldEditorFragment.newInstance(R.id.description, R.string.description, description)
                             .show(getFragmentManager(), null);
                 }
@@ -187,35 +188,40 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
 
     }
 
-    //TODO: if field not visible, skip
-    private void setupMenuMoreButton(@IdRes final int resId, @IdRes final int buttonResId, @NonNull final List<String> list, @StringRes final int dialogTitleResId) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_dropdown_item_1line, list);
-        mFields.setAdapter(resId, adapter);
+    private void setupMenuMoreButton(@IdRes final int resId,
+                                     @IdRes final int buttonResId,
+                                     @NonNull final List<String> list,
+                                     @StringRes final int dialogTitleResId) {
 
         final Field field = mFields.getField(resId);
-        // Get the list to use in the AutoComplete stuff
-        AutoCompleteTextView textView = (AutoCompleteTextView) field.getView();
-        textView.setAdapter(new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_dropdown_item_1line,
-                list));
-        // Get the drop-down button for the list and setup dialog
-        ImageView button = getView().findViewById(buttonResId);
-        button.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                StandardDialogs.selectStringDialog(getActivity().getLayoutInflater(),
-                        getString(dialogTitleResId),
-                        list, field.getValue().toString(),
-                        new SimpleDialogOnClickListener() {
-                            @Override
-                            public void onClick(@NonNull final SimpleDialogItem item) {
-                                field.setValue(item.toString());
-                            }
-                        });
-            }
-        });
+        // only bother when visible
+        if (field.visible) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
+                    android.R.layout.simple_dropdown_item_1line, list);
+            mFields.setAdapter(resId, adapter);
 
+            // Get the list to use in the AutoComplete stuff
+            AutoCompleteTextView textView = (AutoCompleteTextView) field.getView();
+            textView.setAdapter(new ArrayAdapter<>(getActivity(),
+                    android.R.layout.simple_dropdown_item_1line,
+                    list));
+            // Get the drop-down button for the list and setup dialog
+            ImageView button = getView().findViewById(buttonResId);
+            button.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    StandardDialogs.selectStringDialog(getActivity().getLayoutInflater(),
+                            getString(dialogTitleResId),
+                            list, field.getValue().toString(),
+                            new SimpleDialogOnClickListener() {
+                                @Override
+                                public void onClick(@NonNull final SimpleDialogItem item) {
+                                    field.setValue(item.toString());
+                                }
+                            });
+                }
+            });
+        }
     }
 
     /**

@@ -53,7 +53,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
      * "anthology title * author "
      */
     public static final char TITLE_AUTHOR_DELIM = '*';
-    //TODO: see if this matters, I don't think we serialise this to external/blob
+    //TODO: see if this matters, I don't think we serialize this to external/blob
     //private static final long serialVersionUID = -8715364898312204329L;
     private static final long serialVersionUID = 2L;
 

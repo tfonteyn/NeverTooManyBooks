@@ -313,7 +313,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
             if (mMessage != null) {
                 dialog.setMessage(mMessage);
             }
-            setDialogNumberFormat(dialog);
+            dialog.setProgressNumberFormat(mNumberFormat);
         }
 
         return dialog;
@@ -398,35 +398,30 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      * Method, run in the UI thread, that updates the various dialog fields.
      */
     private void updateProgress() {
-        ProgressDialog d = (ProgressDialog) getDialog();
-        if (d != null) {
+        ProgressDialog dialog = (ProgressDialog) getDialog();
+        if (dialog != null) {
             synchronized (this) {
                 if (mMaxChanged) {
-                    d.setMax(mMax);
+                    dialog.setMax(mMax);
                     mMaxChanged = false;
                 }
                 if (mNumberFormatChanged) {
                     // Called in a separate function so we can set API attributes
-                    setDialogNumberFormat(d);
+                    dialog.setProgressNumberFormat(mNumberFormat);
                     mNumberFormatChanged = false;
                 }
                 if (mMessageChanged) {
-                    d.setMessage(mMessage);
+                    dialog.setMessage(mMessage);
                     mMessageChanged = false;
                 }
 
                 if (mProgressChanged) {
-                    d.setProgress(mProgress);
+                    dialog.setProgress(mProgress);
                     mProgressChanged = false;
                 }
 
             }
         }
-    }
-
-    private void setDialogNumberFormat(@NonNull final ProgressDialog d) {
-        // previously seen null issue fixed in .. at least API 21 probably earlier
-        d.setProgressNumberFormat(mNumberFormat);
     }
 
     /**
@@ -439,7 +434,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     }
 
     /**
-     * Set the progress number format, if the API will support it
+     * Set the progress number format
      */
     public void setNumberFormat(@Nullable final String format) {
         synchronized (this) {
@@ -450,9 +445,11 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     }
 
     /**
-     * Work-around for bug in compatibility library:
+     * FIXME Work-around for bug in compatibility library:
      *
      * http://code.google.com/p/android/issues/detail?id=17423
+     *
+     * Still not fixed in September 2018
      */
     @Override
     public void onDestroyView() {

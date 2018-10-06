@@ -31,12 +31,12 @@ import java.util.Map;
  *
  * @author Philip Warner
  */
-class DbHelper extends SQLiteOpenHelper {
+class DBHelper extends SQLiteOpenHelper {
 
-    // File name for database
-    private static final String DB_NAME = "net.philipwarner.taskqueue.database.db";
-    // TODO: Update on new release
-    private static final int DB_VERSION = 2;
+    /** File name for database */
+    private static final String DATABASE_NAME = "net.philipwarner.taskqueue.database.db";
+    /** TODO: Update on new release */
+    private static final int DATABASE_VERSION = 2;
 
     // Domain names for fields in tables. Yes, I mix nomenclatures.
 
@@ -110,14 +110,14 @@ class DbHelper extends SQLiteOpenHelper {
     private static final String[] TBL_EVENTS_IX3 = new String[] { TBL_EVENT, "", DOM_TASK_ID, DOM_ID };
 
     // Collection of all table definitions
-    private static final String[] m_tables = new String[] {
+    private static final String[] mTables = new String[] {
             TBL_CONFIG, TBL_CONFIG_DEFN,
             TBL_QUEUE, TBL_QUEUE_DEFN,
             TBL_TASK, TBL_TASK_DEFN,
             TBL_EVENT, TBL_EVENT_DEFN,
     };
 
-    private static final String[][] m_indices = new String[][] {
+    private static final String[][] mIndices = new String[][] {
             TBL_QUEUE_IX1,
             TBL_QUEUE_IX2,
             TBL_TASK_IX1,
@@ -133,8 +133,8 @@ class DbHelper extends SQLiteOpenHelper {
      *
      * @param context Context
      */
-    DbHelper(Context context) {
-        super(context, DB_NAME, null, DB_VERSION);
+    DBHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     /**
@@ -143,18 +143,16 @@ class DbHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        for(int i = 0; i < m_tables.length; i=i+2 ) {
-            db.execSQL("CREATE TABLE " + m_tables[i] + "(" + m_tables[i+1] + ")");
+        for(int i = 0; i < mTables.length; i=i+2 ) {
+            db.execSQL("CREATE TABLE " + mTables[i] + "(" + mTables[i+1] + ")");
         }
         // Turn on foreign key support so that CASCADE works.
         db.execSQL("PRAGMA foreign_keys = ON");
 
-        // Indices
-
         // We have one counter per table to manage index numeric suffixes.
         Map<String,Integer> counters = new Hashtable<>();
         // Loop through definitions.
-        for(String[] defn : m_indices) {
+        for(String[] defn : mIndices) {
             // Get prefix fields
             final String tbl = defn[0];
             final String qualifier = defn[1];

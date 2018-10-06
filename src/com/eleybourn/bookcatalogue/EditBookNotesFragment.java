@@ -39,6 +39,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment.OnPartialDatePickerListener;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.entities.BookData;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import java.util.Date;
@@ -178,11 +179,11 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
     }
 
     private String getDateFrom(final int fieldResId) {
-        Object o = mFields.getField(fieldResId).getValue();
-        if (o == null || o.toString().isEmpty()) {
+        Object value = mFields.getField(fieldResId).getValue();
+        if (value == null || value.toString().isEmpty()) {
             return DateUtils.toSqlDateTime(new Date());
         } else {
-            return o.toString();
+            return value.toString();
         }
     }
 

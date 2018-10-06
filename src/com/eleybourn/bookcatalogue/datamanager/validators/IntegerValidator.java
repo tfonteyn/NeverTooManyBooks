@@ -47,17 +47,15 @@ public class IntegerValidator extends DefaultFieldValidator {
             return;
 
         super.validate(data, datum, false);
-
-        Object o;
         try {
-            o = data.get(datum);
-            Integer v;
+            Integer value;
+            Object o = data.get(datum);
             if (o instanceof Integer) {
-                v = (Integer) o;
+                value = (Integer) o;
             } else {
-                v = Integer.parseInt(o.toString());
+                value = Integer.parseInt(o.toString());
             }
-            data.putInt(datum, v);
+            data.putInt(datum, value);
         } catch (Exception e) {
             throw new ValidatorException(R.string.vldt_integer_expected, new Object[]{datum.getKey()});
         }

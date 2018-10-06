@@ -23,15 +23,11 @@ import com.eleybourn.bookcatalogue.R;
 abstract public class BookCatalogueActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    /**
-     * The side/navigation panel
-     */
+    /** The side/navigation panel */
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
 
-    /**
-     * when a locale or theme is changed, a restart of the activity is needed
-     */
+    /** when a locale or theme is changed, a restart of the activity is needed */
     private boolean mReloadOnResume = false;
 
     protected int getLayoutId(){
@@ -70,17 +66,11 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
             bar.setHomeButtonEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);
 
-            // Only display the 'back' decoration if we are at the top
             if (isTaskRoot()) {
                 bar.setDisplayShowHomeEnabled(true);
                 bar.setHomeAsUpIndicator(R.drawable.ic_menu);
             }
         }
-    }
-
-    @SuppressWarnings("unused")
-    protected NavigationView getNavigationView() {
-        return mNavigationView;
     }
 
     private void setNavigationView(@Nullable final NavigationView navigationView) {

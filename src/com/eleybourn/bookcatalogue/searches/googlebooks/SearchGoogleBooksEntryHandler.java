@@ -124,7 +124,6 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
     private final Bundle mValues;
     private StringBuilder builder;
 
-
     SearchGoogleBooksEntryHandler(@NonNull final Bundle values, final boolean fetchThumbnail) {
         mValues = values;
         mFetchThumbnail = fetchThumbnail;
@@ -185,7 +184,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
                 break;
             }
             case GENRE: {
-                //ENHANCE: only the 'last' genre is taken, but that means a book/genre needs to be restructured to have a separate 'genres' table
+                //ENHANCE: only the 'last' genre is taken, but a book/genre needs to be restructured to have a separate 'genres' table
                 mValues.putString(UniqueId.KEY_BOOK_GENRE, builder.toString());
                 break;
             }
@@ -214,7 +213,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
             if (("http://schemas.google.com/books/2008/thumbnail").equals(attributes.getValue("", "rel"))) {
                 String thumbnail = attributes.getValue("", "href");
                 String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, "_GB");
-                if (fileSpec.length() > 0) {
+                if (!fileSpec.isEmpty()) {
                     ArrayUtils.appendOrAdd(mValues, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
                 }
             }

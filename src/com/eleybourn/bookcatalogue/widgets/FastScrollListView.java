@@ -45,17 +45,20 @@ public class FastScrollListView extends ListView {
     private OnScrollListener mOnScrollListener = null;
     private final OnScrollListener mOnScrollDispatcher = new OnScrollListener() {
         @Override
-        public void onScroll(final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
-            if (mScroller != null)
+        public void onScroll(@NonNull final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
+            if (mScroller != null) {
                 mScroller.onScroll(firstVisibleItem, visibleItemCount, totalItemCount);
-            if (mOnScrollListener != null)
+            }
+            if (mOnScrollListener != null) {
                 mOnScrollListener.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+            }
         }
 
         @Override
-        public void onScrollStateChanged(final AbsListView view, final int scrollState) {
-            if (mOnScrollListener != null)
+        public void onScrollStateChanged(@NonNull final AbsListView view, final int scrollState) {
+            if (mOnScrollListener != null) {
                 mOnScrollListener.onScrollStateChanged(view, scrollState);
+            }
         }
     };
 
@@ -84,8 +87,9 @@ public class FastScrollListView extends ListView {
      * Called to create and start a new FastScroller if none already exists.
      */
     private void initScroller() {
-        if (mScroller != null)
+        if (mScroller != null) {
             return;
+        }
 
         mScroller = new FastScroller(this.getContext(), this);
     }
@@ -105,8 +109,9 @@ public class FastScrollListView extends ListView {
     @Override
     protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        if (mScroller != null)
+        if (mScroller != null) {
             mScroller.onSizeChanged(w, h);
+        }
     }
 
     /**
@@ -124,8 +129,9 @@ public class FastScrollListView extends ListView {
     @Override
     public void draw(final Canvas canvas) {
         super.draw(canvas);
-        if (mScroller != null)
+        if (mScroller != null) {
             mScroller.draw(canvas);
+        }
     }
 
     /**

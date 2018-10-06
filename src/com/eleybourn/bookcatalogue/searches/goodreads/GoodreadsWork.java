@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
+import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.R;
@@ -50,7 +51,6 @@ public class GoodreadsWork {
 	public String authorName;
 	private byte[] imageBytes = null;
 	private GetImageTask mTask;
-	//private static Integer mIdCounter = 0;
 	private WeakReference<ImageView> mImageView = null;
 
 	public GoodreadsWork() {
@@ -60,15 +60,15 @@ public class GoodreadsWork {
 	/**
 	 * Called in UI thread by background task when it has finished
 	 */
-	public void handleTaskFinished(byte[] bytes) {
+	void handleTaskFinished(@NonNull final byte[] bytes) {
 		imageBytes = bytes;
 
-		ImageView imageView = mImageView.get();
+		final ImageView imageView = mImageView.get();
 		if (imageView != null) {
 			synchronized(imageView) {
 				// Make sure our view is still associated with us
 				if (this.equals(ViewTagger.getTag(imageView, R.id.TAG_GOODREADS_WORK))) {
-					imageView.setImageBitmap( ImageUtils.getBitmapFromBytes(imageBytes) );
+					imageView.setImageBitmap(ImageUtils.getBitmapFromBytes(imageBytes) );
 				}
 			}						
 		}
@@ -78,15 +78,15 @@ public class GoodreadsWork {
 	 * If the cover image has already been retrieved, put it in the passed view. Otherwise, request
 	 * its retrieval and store a reference to the view for use when the image becomes available.
 	 * 
-	 * @param v		ImageView to display cover image
+	 * @param imageView		ImageView to display cover image
 	 */
-	public void fillImageView(SimpleTaskQueue queue, ImageView v) {
+	void fillImageView(@NonNull final SimpleTaskQueue queue, @NonNull final ImageView imageView) {
 		synchronized(this) {
 			if (this.imageBytes == null) {
 				// Image not retrieved yet, so clear any existing image
-				v.setImageBitmap(null);
+				imageView.setImageBitmap(null);
 				// Save the view so we know where the image is going to be displayed
-				mImageView = new WeakReference<>(v);
+				mImageView = new WeakReference<>(imageView);
 				// If we don't have a task already, start one.
 				if (mTask == null) {
 					// No task running, so Queue the task to get the image
@@ -98,13 +98,13 @@ public class GoodreadsWork {
 					}
 				}
 				// Save the work in the View for verification
-				ViewTagger.setTag(v, R.id.TAG_GOODREADS_WORK, this);
+				ViewTagger.setTag(imageView, R.id.TAG_GOODREADS_WORK, this);
 				//QueueManager.getQueueManager().bringTaskToFront(this.imageTaskId);
 			} else {
 				// We already have an image, so just expand it.
-				v.setImageBitmap( ImageUtils.getBitmapFromBytes(this.imageBytes) );
+				imageView.setImageBitmap( ImageUtils.getBitmapFromBytes(this.imageBytes) );
 				// Clear the work in the View, in case some other job was running
-				ViewTagger.setTag(v, R.id.TAG_GOODREADS_WORK, null);
+				ViewTagger.setTag(imageView, R.id.TAG_GOODREADS_WORK, null);
 			}
 		}
 	}
@@ -113,9 +113,10 @@ public class GoodreadsWork {
 	 * @return the 'best' (largest image) URL we have.
 	 */
 	private String getBestUrl() {
-		if (imageUrl != null && !imageUrl.isEmpty())
+		if (imageUrl != null && !imageUrl.isEmpty()) {
 			return imageUrl;
-		else
-			return smallImageUrl;		
+		} else {
+			return smallImageUrl;
+		}
 	}
 }

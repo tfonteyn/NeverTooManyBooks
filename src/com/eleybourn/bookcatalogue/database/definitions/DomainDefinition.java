@@ -54,12 +54,6 @@ public class DomainDefinition {
 
     /** Get the SQL used to define this domain */
     @NonNull
-    public String getDefinition() {
-        return name + " " + type + " " + extra + " " + constraint;
-    }
-
-    /** Get the SQL used to define this domain */
-    @NonNull
     public String getDefinition(boolean withConstraints) {
         String s = name + " " + type + " " + extra;
         if (withConstraints) {

@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnKeyListener;
@@ -43,59 +42,47 @@ import com.eleybourn.bookcatalogue.tasks.TaskManager.TaskManagerListener;
 
 /**
  * TODO: Remove this!!!! Fragments makes ActivityWithTasks mostly redundant.
- * <p>
- * Class to used as a base class for any Activity that wants to run one or more threads that
- * use a ProgressDialog.
- * <p>
+ *
+ * Base class for handling tasks in background while displaying a {@link ProgressDialog}.
+ *
  * Part of three components that make this easier:
- * - TaskManager -- handles the management of multiple threads sharing a progressDialog
- * - ActivityWithTasks -- uses a TaskManager (and communicates with it) to handle progress
- * messages for threads. Deals with orientation changes in cooperation with TaskManager.
- * - ManagedTask -- Background task that is managed by TaskManager and uses TaskManager to
- * do all display activities.
+ *
+ * {@link TaskManager}
+ * handles the management of multiple threads sharing a progressDialog
+ *
+ * {@link ActivityWithTasks}
+ * Uses a TaskManager (and communicates with it) to handle progress messages for threads.
+ * Deals with orientation changes in cooperation with TaskManager.
+ *
+ * {@link ManagedTask}
+ * Background task that is managed by TaskManager and uses TaskManager to do all display activities.
  *
  * @author Philip Warner
  */
 abstract public class ActivityWithTasks extends BookCatalogueActivity {
     private static final String BKEY_TASK_MANAGER_ID = "TaskManagerId";
-    /**
-     * ID of associated TaskManager
-     */
+    /** ID of associated TaskManager */
     private long mTaskManagerId = 0;
-    /**
-     * ProgressDialog for this activity
-     */
-    private ProgressBase mProgressDialog = null;
-    /**
-     * Associated TaskManager
-     */
+    /** ProgressDialog for this activity */
+    private ProgressDialog mProgressDialog = null;
+    /** Associated TaskManager */
     private TaskManager mTaskManager = null;
-    /**
-     * Max value for ProgressDialog
-     */
+    /** Max value for ProgressDialog */
     private int mProgressMax = 0;
-    /**
-     * Current value for ProgressDialog
-     */
+    /** Current value for ProgressDialog */
     private int mProgressCount = 0;
-    /**
-     * Message for ProgressDialog
-     */
+    /** Message for ProgressDialog */
     private String mProgressMessage = "";
+
     /**
      * Wait for the 'Back' key and cancel all tasks on keyUp.
      */
     private final OnKeyListener mDialogKeyListener = new OnKeyListener() {
         @Override
         public boolean onKey(final DialogInterface dialog, final int keyCode, final KeyEvent event) {
-            if (event.getAction() == KeyEvent.ACTION_UP) {
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    // Toasting a message here makes the app look less responsive, because
-                    // the final 'Cancelled...' message is delayed too much.
-                    //Toast.makeText(ActivityWithTasks.this, R.string.cancelling, Toast.LENGTH_LONG).show();
-                    cancelAndUpdateProgress();
-                    return true;
-                }
+            if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                cancelAndUpdateProgress();
+                return true;
             }
             return false;
         }
@@ -108,6 +95,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
             cancelAndUpdateProgress();
         }
     };
+
     /**
      * Object to handle all TaskManager events
      */
@@ -129,10 +117,10 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
             // Save the details
             mProgressCount = count;
             mProgressMax = max;
-            mProgressMessage = message;
+            mProgressMessage = message.trim();
 
             // If empty, close any dialog
-            if ((mProgressMessage.trim().isEmpty()) && mProgressMax == mProgressCount) {
+            if ((mProgressMessage.isEmpty()) && mProgressMax == mProgressCount) {
                 closeProgressDialog();
             } else {
                 updateProgress();
@@ -171,6 +159,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
     /**
      * Utility routine to get the task manager for this activity
      */
+    @Nullable
     protected TaskManager getTaskManager() {
         if (mTaskManager == null) {
             if (mTaskManagerId != 0) {
@@ -203,14 +192,12 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
             // If it's finishing, the remove all tasks and cleanup
             if (isFinishing()) {
                 TaskManager tm = getTaskManager();
-                if (tm != null)
+                if (tm != null) {
                     tm.close();
+                }
             }
         }
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
+        closeProgressDialog();
     }
 
     @Override
@@ -230,33 +217,21 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
     /**
      * Method to allow subclasses easy access to terminating tasks
      */
-    protected void onTaskEnded(ManagedTask task) {
+    protected void onTaskEnded(@NonNull final ManagedTask task) {
     }
 
-    private void closeProgressDialog() {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
-    }
 
-    /**
-     * Utility routine to standardize checking for desired dialog type.
-     *
-     * @return true if dialog should be determinate
-     */
-    private boolean wantDeterminateProgress() {
-        return (mProgressMax > 0);
-    }
 
     /**
      * Setup the ProgressDialog according to our needs
      */
     private void updateProgress() {
-        boolean wantDet = wantDeterminateProgress();
+        boolean wantInDeterminate = (mProgressMax == 0);
 
+        // if currently shown, but no longer suitable type due to a change of mProgressMax, dismiss it.
         if (mProgressDialog != null) {
-            if ((wantDet && mProgressDialog instanceof ProgressIndeterminateState) || (!wantDet && mProgressDialog instanceof ProgressDet)) {
+            if ((!wantInDeterminate && mProgressDialog.isIndeterminate())
+                    || (wantInDeterminate && !mProgressDialog.isIndeterminate())) {
                 mProgressDialog.dismiss();
                 mProgressDialog = null;
             }
@@ -264,17 +239,13 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
 
         // Create dialog if necessary
         if (mProgressDialog == null) {
-            if (wantDet) {
-                mProgressDialog = new ProgressDet(ActivityWithTasks.this);
-            } else {
-                mProgressDialog = new ProgressIndeterminateState(ActivityWithTasks.this);
-            }
+            createProgressDialog(wantInDeterminate);
         }
 
-        // Set style
         if (mProgressMax > 0) {
             mProgressDialog.setMax(mProgressMax);
         }
+        mProgressDialog.setProgress(mProgressCount);
 
         // Set message; if we are cancelling we override the message
         if (mTaskManager.isCancelling()) {
@@ -283,12 +254,27 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
             mProgressDialog.setMessage(mProgressMessage);
         }
 
-        // Set other attrs
-        mProgressDialog.setOnKeyListener(mDialogKeyListener);
-        mProgressDialog.setOnCancelListener(mCancelHandler);
         // Show it if necessary
         mProgressDialog.show();
-        mProgressDialog.setProgress(mProgressCount);
+    }
+
+    private void createProgressDialog(final boolean wantInDeterminate) {
+        mProgressDialog = new ProgressDialog(ActivityWithTasks.this);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setCanceledOnTouchOutside(false);
+
+        mProgressDialog.setIndeterminate(wantInDeterminate);
+        mProgressDialog.setProgressStyle(wantInDeterminate ? ProgressDialog.STYLE_SPINNER : ProgressDialog.STYLE_HORIZONTAL);
+
+        mProgressDialog.setOnKeyListener(mDialogKeyListener);
+        mProgressDialog.setOnCancelListener(mCancelHandler);
+    }
+
+    private void closeProgressDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
     }
 
     /**
@@ -314,47 +300,6 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
 
         if (mTaskManagerId != 0) {
             outState.putLong(ActivityWithTasks.BKEY_TASK_MANAGER_ID, mTaskManagerId);
-        }
-    }
-
-    /**
-     * Trivial internal class to implement our base progress object
-     *
-     * @author pjw
-     */
-    private class ProgressBase extends ProgressDialog {
-        ProgressBase(Context context) {
-            super(context);
-            this.setCancelable(false);
-            this.setCanceledOnTouchOutside(false);
-        }
-    }
-
-    /**
-     * ProgressDialog for Indeterminate states.
-     *
-     * @author pjw
-     */
-    private class ProgressIndeterminateState extends ProgressBase {
-
-        ProgressIndeterminateState(Context context) {
-            super(context);
-            this.setIndeterminate(true);
-            this.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        }
-    }
-
-    /**
-     * ProgressDialog for Determinate states.
-     *
-     * @author pjw
-     */
-    private class ProgressDet extends ProgressBase {
-
-        ProgressDet(Context context) {
-            super(context);
-            this.setIndeterminate(false);
-            this.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         }
     }
 }

@@ -18,25 +18,27 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue;
+package com.eleybourn.bookcatalogue.entities;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 
 /**
  * Convenience class to avoid having to write the same code in more than one place. This
  * class has get*() methods for the most common book-related fields. Passed a Cursor object
  * it will retrieve the specified value using the current cursor row.
  *
- * Both BooksCursor and BooksSnapshotCursor implement a getRowView() method that returns
- * a cached BookRowView based on the cursor.
+ * {@link BooksCursor} implement a getRowView() method that returns
+ * a cached {@link BookRow} based on the Cursor.
  *
  * @author Philip Warner
  */
-public class BooksRow {
+public class BookRow {
 
     /** Associated cursor object */
     private final Cursor mCursor;
@@ -72,7 +74,7 @@ public class BooksRow {
     private int mSignedCol = -2;
     private int mTitleCol = -2;
 
-    public BooksRow(@NonNull final Cursor cursor) {
+    public BookRow(@NonNull final Cursor cursor) {
         mCursor = cursor;
     }
 
@@ -81,7 +83,7 @@ public class BooksRow {
     public String getString(@NonNull final String columnName) {
         final int position = mCursor.getColumnIndex(columnName);
         if (position < 0) {
-            throw new IllegalArgumentException(columnName + " column not in result set");
+            throw new DBExceptions.ColumnNotPresent(columnName);
         }
         return mCursor.isNull(position) ? null : mCursor.getString(position);
     }
@@ -90,7 +92,7 @@ public class BooksRow {
         if (mIdCol < 0) {
             mIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
             if (mIdCol < 0) {
-                throw new IllegalArgumentException("DOM_ID column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_ID.name);
             }
         }
         return mCursor.getLong(mIdCol);
@@ -100,7 +102,7 @@ public class BooksRow {
         if (mBookUuidCol < 0) {
             mBookUuidCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_UUID.name);
             if (mBookUuidCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_UUID column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_UUID.name);
             }
         }
         return mCursor.getString(mBookUuidCol);
@@ -110,7 +112,7 @@ public class BooksRow {
         if (mAnthologyMaskCol < 0) {
             mAnthologyMaskCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_MASK.name);
             if (mAnthologyMaskCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_ANTHOLOGY_MASK column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_MASK.name);
             }
         }
         return mCursor.getLong(mAnthologyMaskCol);
@@ -120,7 +122,7 @@ public class BooksRow {
         if (mDateAddedCol < 0) {
             mDateAddedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_DATE_ADDED.name);
             if (mDateAddedCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_DATE_ADDED column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_DATE_ADDED.name);
             }
         }
         return mCursor.getString(mDateAddedCol);
@@ -130,7 +132,7 @@ public class BooksRow {
         if (mDateLastUpdatedCol < 0) {
             mDateLastUpdatedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_LAST_UPDATE_DATE.name);
             if (mDateLastUpdatedCol < 0) {
-                throw new IllegalArgumentException("DOM_LAST_UPDATE_DATE column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_LAST_UPDATE_DATE.name);
             }
         }
         return mCursor.getString(mDateLastUpdatedCol);
@@ -139,7 +141,7 @@ public class BooksRow {
         if (mDateLastSyncedWithGoodReadsCol < 0) {
             mDateLastSyncedWithGoodReadsCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name);
             if (mDateLastSyncedWithGoodReadsCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_GOODREADS_LAST_SYNC_DATE column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name);
             }
         }
         return mCursor.getString(mDateLastSyncedWithGoodReadsCol);
@@ -150,7 +152,7 @@ public class BooksRow {
         if (mDatePublishedCol < 0) {
             mDatePublishedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED.name);
             if (mDatePublishedCol < 0) {
-                throw new IllegalArgumentException("DATE_PUBLISHED column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED.name);
             }
         }
         return mCursor.getString(mDatePublishedCol);
@@ -160,7 +162,7 @@ public class BooksRow {
         if (mFirstPublicationCol < 0) {
             mFirstPublicationCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_FIRST_PUBLICATION.name);
             if (mFirstPublicationCol < 0) {
-                throw new IllegalArgumentException("DOM_FIRST_PUBLICATION column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_FIRST_PUBLICATION.name);
             }
         }
         return mCursor.getString(mFirstPublicationCol);
@@ -170,7 +172,7 @@ public class BooksRow {
         if (mDescriptionCol < 0) {
             mDescriptionCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_DESCRIPTION.name);
             if (mDescriptionCol < 0) {
-                throw new IllegalArgumentException("DOM_DESCRIPTION column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_DESCRIPTION.name);
             }
         }
         return mCursor.getString(mDescriptionCol);
@@ -180,7 +182,7 @@ public class BooksRow {
         if (mFormatCol < 0) {
             mFormatCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_FORMAT.name);
             if (mFormatCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_FORMAT column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_FORMAT.name);
             }
         }
         return mCursor.getString(mFormatCol);
@@ -190,7 +192,7 @@ public class BooksRow {
         if (mGenreCol < 0) {
             mGenreCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GENRE.name);
             if (mGenreCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_GENRE column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_GENRE.name);
             }
         }
         return mCursor.getString(mGenreCol);
@@ -200,7 +202,7 @@ public class BooksRow {
         if (mGoodreadsBookIdCol < 0) {
             mGoodreadsBookIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
             if (mGoodreadsBookIdCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_GOODREADS_BOOK_ID column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
             }
         }
         return mCursor.getLong(mGoodreadsBookIdCol);
@@ -210,7 +212,7 @@ public class BooksRow {
         if (mIsbnCol < 0) {
             mIsbnCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_ISBN.name);
             if (mIsbnCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_ISBN column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_ISBN.name);
             }
         }
         return mCursor.getString(mIsbnCol);
@@ -220,7 +222,7 @@ public class BooksRow {
         if (mLanguageCol < 0) {
             mLanguageCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LANGUAGE.name);
             if (mLanguageCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_LANGUAGE column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_LANGUAGE.name);
             }
         }
         return mCursor.getString(mLanguageCol);
@@ -230,7 +232,7 @@ public class BooksRow {
         if (mLocationCol < 0) {
             mLocationCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LOCATION.name);
             if (mLocationCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_LOCATION column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_LOCATION.name);
             }
         }
         return mCursor.getString(mLocationCol);
@@ -240,7 +242,7 @@ public class BooksRow {
         if (mNotesCol < 0) {
             mNotesCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_NOTES.name);
             if (mNotesCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_NOTES column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_NOTES.name);
             }
         }
         return mCursor.getString(mNotesCol);
@@ -250,7 +252,7 @@ public class BooksRow {
         if (mPrimaryAuthorCol < 0) {
             mPrimaryAuthorCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
             if (mPrimaryAuthorCol < 0) {
-                throw new IllegalArgumentException("DOM_AUTHOR_FORMATTED_GIVEN_FIRST column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
             }
         }
         return mCursor.getString(mPrimaryAuthorCol);
@@ -260,7 +262,7 @@ public class BooksRow {
         if (mPrimarySeriesCol < 0) {
             mPrimarySeriesCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_SERIES_FORMATTED.name);
             if (mPrimarySeriesCol < 0) {
-                throw new IllegalArgumentException("DOM_SERIES_FORMATTED column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_SERIES_FORMATTED.name);
             }
         }
         return mCursor.getString(mPrimarySeriesCol);
@@ -270,7 +272,7 @@ public class BooksRow {
         if (mPagesCol < 0) {
             mPagesCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PAGES.name);
             if (mPagesCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_PAGES column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_PAGES.name);
             }
         }
         return mCursor.getString(mPagesCol);
@@ -279,7 +281,7 @@ public class BooksRow {
         if (mPublisherCol < 0) {
             mPublisherCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PUBLISHER.name);
             if (mPublisherCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_PUBLISHER column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_PUBLISHER.name);
             }
         }
         return mCursor.getString(mPublisherCol);
@@ -289,7 +291,7 @@ public class BooksRow {
         if (mRatingCol < 0) {
             mRatingCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_RATING.name);
             if (mRatingCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_RATING column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_RATING.name);
             }
         }
         return mCursor.getDouble(mRatingCol);
@@ -299,7 +301,7 @@ public class BooksRow {
         if (mReadStartCol < 0) {
             mReadStartCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_READ_START.name);
             if (mReadStartCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_READ_START column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_READ_START.name);
             }
         }
         return mCursor.getString(mReadStartCol);
@@ -309,7 +311,7 @@ public class BooksRow {
         if (mReadEndCol < 0) {
             mReadEndCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_READ_END.name);
             if (mReadEndCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_READ_END column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_READ_END.name);
             }
         }
         return mCursor.getString(mReadEndCol);
@@ -323,7 +325,7 @@ public class BooksRow {
         if (mReadCol < 0) {
             mReadCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_READ.name);
             if (mReadCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_READ column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_READ.name);
             }
         }
         return mCursor.getInt(mReadCol);
@@ -333,7 +335,7 @@ public class BooksRow {
         if (mSeriesCol < 0) {
             mSeriesCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_SERIES_NAME.name);
             if (mSeriesCol < 0) {
-                throw new IllegalArgumentException("DOM_SERIES_NAME column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_SERIES_NAME.name);
             }
         }
         return mCursor.getString(mSeriesCol);
@@ -342,7 +344,7 @@ public class BooksRow {
         if (mLoanedToCol < 0) {
             mLoanedToCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_LOANED_TO.name);
             if (mLoanedToCol < 0) {
-                throw new IllegalArgumentException("DOM_LOANED_TO column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_LOANED_TO.name);
             }
         }
         return mCursor.getString(mLoanedToCol);
@@ -351,21 +353,17 @@ public class BooksRow {
         if (mListPriceCol < 0) {
             mListPriceCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LIST_PRICE.name);
             if (mListPriceCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_LIST_PRICE column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_LIST_PRICE.name);
             }
         }
         return mCursor.getString(mListPriceCol);
-    }
-
-    public final boolean isSigned() {
-        return getSigned() != 0;
     }
 
     public int getSigned() {
         if (mSignedCol < 0) {
             mSignedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_SIGNED.name);
             if (mSignedCol < 0) {
-                throw new IllegalArgumentException("DOM_BOOK_SIGNED column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_SIGNED.name);
             }
         }
         return mCursor.getInt(mSignedCol);
@@ -375,7 +373,7 @@ public class BooksRow {
         if (mTitleCol < 0) {
             mTitleCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_TITLE.name);
             if (mTitleCol < 0) {
-                throw new IllegalArgumentException("DOM_TITLE column not in result set");
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_TITLE.name);
             }
         }
         return mCursor.getString(mTitleCol);

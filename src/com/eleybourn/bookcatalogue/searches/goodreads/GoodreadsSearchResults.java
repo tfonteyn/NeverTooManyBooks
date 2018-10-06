@@ -42,179 +42,176 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Search goodreads for a book and display the list of results. Use background tasks to get thumbnails and update when retrieved.
+ * Search goodreads for a book and display the list of results.
+ * Use background tasks to get thumbnails and update when retrieved.
  *
  * @author Philip Warner
  */
 public class GoodreadsSearchResults extends BookCatalogueListActivity {
 
-	public static final String SEARCH_CRITERIA = "criteria";
+    public static final String BKEY_SEARCH_CRITERIA = "criteria";
+    private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("gr-covers");
+    private CatalogueDBAdapter mDb;
+    private List<GoodreadsWork> mList = new ArrayList<>();
 
-	private CatalogueDBAdapter mDb;
-	private ArrayList<GoodreadsWork> mList = new ArrayList<>();
-	private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("gr-covers");
+    @Override
+    protected int getLayoutId() {
+        return R.layout.goodreads_work_list;
+    }
 
-	@Override
-	protected int getLayoutId() {
-		return R.layout.goodreads_work_list;
-	}
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-	@Override
-	public void onCreate(@Nullable final Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        mDb = new CatalogueDBAdapter(this);
+        mDb.open();
 
-		mDb = new CatalogueDBAdapter(this);
-		mDb.open();
+        // Look for search criteria
+        String criteria = getIntent().getStringExtra(BKEY_SEARCH_CRITERIA);
 
-		// Look for search criteria
-		String criteria = getIntent().getStringExtra(SEARCH_CRITERIA);
+        // If we have criteria, do a search. Otherwise complain and finish.
+        if (criteria != null && !criteria.isEmpty()) {
+            doSearch(criteria);
+        } else {
+            Toast.makeText(this, getString(R.string.please_enter_search_criteria), Toast.LENGTH_LONG).show();
+            finish();
+        }
+    }
 
-		// If we have criteria, do a search. Otherwise complain and finish.
-		if (criteria != null && !criteria.isEmpty()) {
-			doSearch(criteria);
-		} else {
-			Toast.makeText(this, getString(R.string.please_enter_search_criteria), Toast.LENGTH_LONG).show();
-			finish();
-		}
-	}
+    /**
+     * Perform the search.
+     */
+    private void doSearch(@NonNull final String criteria) {
+        // Get the GR stuff we need
+        GoodreadsManager grMgr = new GoodreadsManager();
+        SearchBooksApiHandler searcher = new SearchBooksApiHandler(grMgr);
 
-	/**
-	 * Perform the search.
-	 */
-	private void doSearch(@NonNull final String criteria) {
-		// Get the GR stuff we need
-		GoodreadsManager grMgr = new GoodreadsManager();
-		SearchBooksApiHandler searcher = new SearchBooksApiHandler(grMgr);
+        // Run the search
+        List<GoodreadsWork> works;
+        try {
+            works = searcher.search(criteria.trim());
+        } catch (Exception e) {
+            Logger.logError(e, "Failed when searching goodreads");
+            Toast.makeText(this, getString(R.string.error_while_searching) + " " + getString(R.string.if_the_problem_persists), Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
 
-		// Run the search
-		ArrayList<GoodreadsWork> works;
-		try {
-			works = searcher.search(criteria.trim());
-		} catch (Exception e) {
-			Logger.logError(e, "Failed when searching goodreads");
-			Toast.makeText(this, getString(R.string.error_while_searching) + " " + getString(R.string.if_the_problem_persists), Toast.LENGTH_LONG).show();
-			finish();
-			return;
-		}
+        // Finish if no results, otherwise display them
+        if (works.size() == 0) {
+            Toast.makeText(this, getString(R.string.no_matching_book_found), Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
 
-		// Finish if no results, otherwise display them
-		if (works == null || works.size() == 0) {
-			Toast.makeText(this, getString(R.string.no_matching_book_found), Toast.LENGTH_LONG).show();
-			finish();
-			return;
-		}
+        mList = works;
+        ArrayAdapter<GoodreadsWork> adapter = new ResultsAdapter();
+        setListAdapter(adapter);
+    }
 
-		mList = works;
-        ArrayAdapter<GoodreadsWork> mAdapter = new ResultsAdapter();
-		setListAdapter(mAdapter);
-	}
+    /**
+     * Handle user clicking on a book. This should show editions and allow the user to select a specific edition.
+     * Waiting on approval for API access.
+     *
+     * @param view View that was clicked.
+     */
+    private void doItemClick(@NonNull final View view) {
+        ListHolder holder = (ListHolder) ViewTagger.getTag(view);
+        // TODO: Implement edition lookup - requires access to work.editions API from GR
+        Toast.makeText(this, "Not implemented: see " + holder.title + " by " + holder.author, Toast.LENGTH_LONG).show();
+        //Intent i = new Intent(this, GoodreadsW)
+    }
 
-	/**
-	 * Class used in implementing holder pattern for search results.
-	 *
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mDb != null) {
+            mDb.close();
+        }
+    }
+
+    /**
+     * Class used in implementing holder pattern for search results.
+     *
      * cover made final for use as lock
      *
-	 * @author Philip Warner
-	 */
-	private class ListHolder {
-		ListHolder(@NonNull final ImageView cover) {
-			this.cover = cover;
-		}
+     * @author Philip Warner
+     */
+    private class ListHolder {
+        final ImageView cover;
+        GoodreadsWork work;
+        TextView title;
+        TextView author;
+        ListHolder(@NonNull final ImageView cover) {
+            this.cover = cover;
+        }
+    }
 
-		GoodreadsWork work;
-		TextView title;
-		TextView author;
-		final ImageView cover;
-	}
-
-	/**
-	 * Handle user clicking on a book. This should show editions and allow the user to select a specific edition.
-	 * Waiting on approval for API access.
-	 *
-	 * @param v		View that was clicked.
-	 */
-	private void doItemClick(@NonNull final View v) {
-		ListHolder holder = (ListHolder)ViewTagger.getTag(v);
-		// TODO: Implement edition lookup - requires access to work.editions API from GR
-		Toast.makeText(this, "Not implemented: see " + holder.title + " by " + holder.author, Toast.LENGTH_LONG).show();
-		//Intent i = new Intent(this, GoodreadsW)
-	}
-
-	/**
-	 * ArrayAdapter that uses holder pattern to display goodreads books and allows for background image retrieval.
-	 *
-	 * @author Philip Warner
-	 *
-	 */
-	private class ResultsAdapter extends ArrayAdapter<GoodreadsWork> {
-		/** Used in building views when needed */
+    /**
+     * ArrayAdapter that uses holder pattern to display goodreads books and allows for background image retrieval.
+     *
+     * @author Philip Warner
+     */
+    private class ResultsAdapter extends ArrayAdapter<GoodreadsWork> {
+        /** Used in building views when needed */
         final LayoutInflater mInflater;
 
-		ResultsAdapter() {
-			super(GoodreadsSearchResults.this, 0, mList);
-			// Save Inflater for later use
-			mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		}
+        ResultsAdapter() {
+            super(GoodreadsSearchResults.this, 0, mList);
+            // Save Inflater for later use
+            mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
 
-		@NonNull
-		public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
-			ListHolder holder;
-			if(convertView == null) {
-				// Not recycling
-				try {
-					// Get a new View and make the holder for it.
-					convertView = mInflater.inflate(R.layout.goodreads_work_item, parent, false);
+        @NonNull
+        public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
+            ListHolder holder;
+            if (convertView == null) {
+                // Not recycling
+                try {
+                    // Get a new View and make the holder for it.
+                    convertView = mInflater.inflate(R.layout.goodreads_work_item, parent, false);
 
-					holder = new ListHolder((ImageView)convertView.findViewById(R.id.cover));
-					holder.author = convertView.findViewById(R.id.author);
-					holder.title = convertView.findViewById(R.id.title);
+                    holder = new ListHolder((ImageView) convertView.findViewById(R.id.cover));
+                    holder.author = convertView.findViewById(R.id.author);
+                    holder.title = convertView.findViewById(R.id.title);
 
-					// Save the holder
-					ViewTagger.setTag(convertView, holder);
+                    // Save the holder
+                    ViewTagger.setTag(convertView, holder);
 
-					// Set the click listener
-					convertView.setOnClickListener(new OnClickListener(){
-						@Override
-						public void onClick(View v) {
-							doItemClick(v);
-						}});
+                    // Set the click listener
+                    convertView.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            doItemClick(v);
+                        }
+                    });
 
-				} catch (Exception e) {
-					Logger.logError(e);
-					throw new RuntimeException(e);
-				}
-	        } else {
-	        	// Recycling: just get the holder
-	        	holder = (ListHolder)ViewTagger.getTag(convertView);
-	        }
+                } catch (Exception e) {
+                    Logger.logError(e);
+                    throw new RuntimeException(e);
+                }
+            } else {
+                // Recycling: just get the holder
+                holder = (ListHolder) ViewTagger.getTag(convertView);
+            }
 
-			synchronized(convertView){
-				synchronized(holder.cover) {
-					// Save the work details
-					holder.work = mList.get(position);
-					// get the cover (or put it in background task)
-					holder.work.fillImageView(mTaskQueue, holder.cover);
+            synchronized (convertView) {
+                synchronized (holder.cover) {
+                    // Save the work details
+                    holder.work = mList.get(position);
+                    // get the cover (or put it in background task)
+                    holder.work.fillImageView(mTaskQueue, holder.cover);
 
-					// Update the views based on the work
-					holder.author.setText(holder.work.authorName);
-					holder.title.setText(holder.work.title);
-				}
-			}
+                    // Update the views based on the work
+                    holder.author.setText(holder.work.authorName);
+                    holder.title.setText(holder.work.title);
+                }
+            }
 
-			return convertView;
-		}
-	}
-
-	/**
-	 * Cleanup
-	 */
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		if (mDb != null)
-			mDb.close();
-	}
-
+            return convertView;
+        }
+    }
 }

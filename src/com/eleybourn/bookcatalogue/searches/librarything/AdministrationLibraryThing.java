@@ -75,7 +75,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
         register.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(LibraryThingManager.BASE_URL + "/"));
+                Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(LibraryThingManager.getBaseURL() + "/"));
                 startActivity(loadweb);
             }
         });
@@ -85,7 +85,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
         devkeyLink.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(LibraryThingManager.BASE_URL + "/services/keys.php"));
+                Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(LibraryThingManager.getBaseURL() + "/services/keys.php"));
                 startActivity(loadweb);
             }
         });
@@ -158,7 +158,5 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
                 ed.apply();
             }
         });
-
     }
-
 }

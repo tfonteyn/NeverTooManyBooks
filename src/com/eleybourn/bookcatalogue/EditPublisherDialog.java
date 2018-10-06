@@ -32,9 +32,6 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 
-/**
- * TODO: unify with {@link EditAuthorDialog}
- */
 public class EditPublisherDialog {
     private final Context mContext;
     private final CatalogueDBAdapter mDb;

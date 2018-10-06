@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.properties;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.properties.Property.IntegerValue;
@@ -34,8 +35,9 @@ import com.eleybourn.bookcatalogue.properties.Property.IntegerValue;
 public class IntegerListProperty extends ListProperty<Integer> implements IntegerValue {
 
     public IntegerListProperty(@NonNull final ItemEntries<Integer> list,
-                               @NonNull final String uniqueId, @NonNull final PropertyGroup group,
-                               final int nameResourceId) {
+                               @NonNull final String uniqueId,
+                               @NonNull final PropertyGroup group,
+                               @StringRes final int nameResourceId) {
         super(list, uniqueId, group, nameResourceId);
     }
 

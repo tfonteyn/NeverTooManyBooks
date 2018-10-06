@@ -34,20 +34,19 @@ import com.eleybourn.bookcatalogue.messaging.MessageSwitch.Message;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * Class used to manager a collection of background threads for a
- * {@link ActivityWithTasks} subclass.
+ * Class used to manager a collection of background threads for a {@link ActivityWithTasks} subclass.
  *
  * Part of three components that make this easier:
- * - {@link TaskManager}
- * handles the management of multiple threads sharing a progressDialog
  *
- * - {@link ActivityWithTasks}
- * uses a TaskManager (and communicates with it) to handle progress messages for threads.
+ * {@link TaskManager}
+ * handles the management of multiple threads sharing a ProgressDialog
+ *
+ * {@link ActivityWithTasks}
+ * Uses a TaskManager (and communicates with it) to handle progress messages for threads.
  * Deals with orientation changes in cooperation with TaskManager.
  *
- * - {@link ManagedTask}
+ * {@link ManagedTask}
  * Background task that is managed by TaskManager and uses TaskManager to do all display activities.
  *
  * @author Philip Warner
@@ -80,12 +79,14 @@ public class TaskManager implements AutoCloseable {
         }
 
         @Override
+        @NonNull
         public TaskManager getManager() {
             return TaskManager.this;
         }
     });
     /** Flag indicating the TaskManager is terminating; will close after last task exits */
     private boolean mIsClosing = false;
+
     /* ====================================================================================================
      *  OnTaskManagerListener handling
      */
@@ -103,14 +104,16 @@ public class TaskManager implements AutoCloseable {
     /**
      * Constructor.
      */
-    public TaskManager(Context context) {
+    public TaskManager(@NonNull final Context context) {
         mContext = context;
     }
 
+    @NonNull
     public static MessageSwitch<TaskManagerListener, TaskManagerController> getMessageSwitch() {
         return mMessageSwitch;
     }
 
+    @NonNull
     public Long getSenderId() {
         return mMessageSenderId;
     }
@@ -122,18 +125,18 @@ public class TaskManager implements AutoCloseable {
     /**
      * Add a task to this object. Ignores duplicates if already present.
      *
-     * @param t Task to add
+     * @param task Task to add
      */
-    public void addTask(@NonNull final ManagedTask t) {
+    public void addTask(@NonNull final ManagedTask task) {
         if (mIsClosing)
             throw new RuntimeException("Can not add a task when closing down");
 
         mCancelling = false;
 
         synchronized (mTasks) {
-            if (getTaskInfo(t) == null) {
-                mTasks.add(new TaskInfo(t));
-                ManagedTask.getMessageSwitch().addListener(t.getSenderId(), mTaskListener, true);
+            if (getTaskInfo(task) == null) {
+                mTasks.add(new TaskInfo(task));
+                ManagedTask.getMessageSwitch().addListener(task.getSenderId(), mTaskListener, true);
             }
         }
     }
@@ -205,10 +208,10 @@ public class TaskManager implements AutoCloseable {
      * @param count   Counter for progress
      */
     public void doProgress(@NonNull final ManagedTask task, @Nullable final String message, final int count) {
-        TaskInfo t = getTaskInfo(task);
-        if (t != null) {
-            t.progressMessage = message;
-            t.progressCurrent = count;
+        TaskInfo taskInfo = getTaskInfo(task);
+        if (taskInfo != null) {
+            taskInfo.progressMessage = message;
+            taskInfo.progressCurrent = count;
             updateProgressDialog();
         }
     }
@@ -219,23 +222,23 @@ public class TaskManager implements AutoCloseable {
     private void updateProgressDialog() {
         try {
             // Start with the base message if present
-            String mProgressMessage;
-            if (mBaseMessage != null && mBaseMessage.length() > 0) {
-                mProgressMessage = mBaseMessage;
+            String progressMessage;
+            if (mBaseMessage != null && !mBaseMessage.isEmpty()) {
+                progressMessage = mBaseMessage;
             } else {
-                mProgressMessage = "";
+                progressMessage = "";
             }
 
             synchronized (mTasks) {
                 // Append each task message
                 if (mTasks.size() > 0) {
-                    if (!mProgressMessage.isEmpty()) {
-                        mProgressMessage += "\n";
+                    if (!progressMessage.isEmpty()) {
+                        progressMessage += "\n";
                     }
                     if (mTasks.size() == 1) {
                         String oneMsg = mTasks.get(0).progressMessage;
                         if (oneMsg != null && !oneMsg.trim().isEmpty()) {
-                            mProgressMessage += oneMsg;
+                            progressMessage += oneMsg;
                         }
                     } else {
                         final StringBuilder message = new StringBuilder();
@@ -253,7 +256,7 @@ public class TaskManager implements AutoCloseable {
                             }
                         }
                         if (message.length() > 0) {
-                            mProgressMessage += message;
+                            progressMessage += message;
                         }
                     }
                 }
@@ -270,7 +273,7 @@ public class TaskManager implements AutoCloseable {
             }
 
             // Now, display it if we have a context; if it is empty and complete, delete the progress.
-            mMessageSwitch.send(mMessageSenderId, new OnProgressMessage(progressCount, progressMax, mProgressMessage));
+            mMessageSwitch.send(mMessageSenderId, new OnProgressMessage(progressCount, progressMax, progressMessage));
         } catch (Exception e) {
             Logger.logError(e, "Error updating progress");
         }
@@ -427,13 +430,13 @@ public class TaskManager implements AutoCloseable {
         int progressMax;
         int progressCurrent;
 
-        TaskInfo(@NonNull final ManagedTask t) {
-            this(t, 0, 0, "");
+        TaskInfo(@NonNull final ManagedTask task) {
+            this(task, 0, 0, "");
         }
 
         @SuppressWarnings("SameParameterValue")
-        TaskInfo(@NonNull final ManagedTask t, final int max, final int curr, @NonNull final String message) {
-            task = t;
+        TaskInfo(@NonNull final ManagedTask task, final int max, final int curr, @NonNull final String message) {
+            this.task = task;
             progressMax = max;
             progressCurrent = curr;
             progressMessage = message;

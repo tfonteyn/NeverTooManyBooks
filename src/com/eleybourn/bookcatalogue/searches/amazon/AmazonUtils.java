@@ -31,7 +31,7 @@ public class AmazonUtils {
     private static final String SUFFIX_BASE_URL = "/gp/search?index=books";
     private static final String SUFFIX_EXTRAS = "&tag=bookcatalogue-20&linkCode=da5";
 
-    // key into the Manifest meta-data
+    /** key into the Manifest meta-data */
     private static final String AMAZON_KEY = "amazon.appkey";
 
     private static void openLink(@NonNull final Context context, @Nullable String author, @Nullable String series) {

@@ -148,8 +148,7 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
                     itemArray[item].handler.run();
                 }
             });
-            AlertDialog alert = builder.create();
-            alert.show();
+            builder.create().show();
         }
     }
 

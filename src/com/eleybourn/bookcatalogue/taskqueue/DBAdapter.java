@@ -36,43 +36,42 @@ import com.eleybourn.bookcatalogue.taskqueue.TasksCursor.TaskCursorSubtype;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_CATEGORY;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_EVENT;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_EVENT_DATE;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_EXCEPTION;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_FAILURE_REASON;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_ID;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_NAME;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_PRIORITY;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_QUEUE_ID;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_RETRY_COUNT;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_RETRY_DATE;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_STATUS_CODE;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_TASK;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_TASK_ID;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.TBL_EVENT;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.TBL_QUEUE;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.TBL_TASK;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_CATEGORY;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EVENT;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EVENT_DATE;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EXCEPTION;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_FAILURE_REASON;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_ID;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_NAME;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_PRIORITY;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_QUEUE_ID;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_RETRY_COUNT;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_RETRY_DATE;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_STATUS_CODE;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_TASK;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_TASK_ID;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.TBL_EVENT;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.TBL_QUEUE;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.TBL_TASK;
 
 /**
  * Database layer. Implements all direct database access.
  *
  * @author Philip Warner
  */
-public class DbAdapter {
-    private final DbHelper m_dbHelper;
-    private final Context m_appContext;
+public class DBAdapter {
+    private final DBHelper mDBHelper;
+    private final Context mApplicationContext;
 
     /** List of statements build by this adapter so that they can be removed on close */
-    private final ArrayList<SQLiteStatement> m_statements = new ArrayList<>();
+    private final ArrayList<SQLiteStatement> mStatements = new ArrayList<>();
+
     /** Static Factory object to create the custom cursor */
-    private final CursorFactory m_EventsCursorFactory = new CursorFactory() {
+    private final CursorFactory mEventsCursorFactory = new CursorFactory() {
         @Override
         public Cursor newCursor(
                 SQLiteDatabase db,
@@ -82,14 +81,14 @@ public class DbAdapter {
             return new EventsCursor(masterQuery, editTable, query);
         }
     };
-    private SQLiteStatement m_checkTaskExistsStmt = null;
+    private SQLiteStatement mCheckTaskExistsStmt = null;
 
     /**
      * Constructor
      */
-    DbAdapter(@NonNull final Context context) {
-        m_appContext = context.getApplicationContext();
-        m_dbHelper = new DbHelper(m_appContext);
+    DBAdapter(@NonNull final Context context) {
+        mApplicationContext = context.getApplicationContext();
+        mDBHelper = new DBHelper(mApplicationContext);
     }
 
     /**
@@ -99,7 +98,7 @@ public class DbAdapter {
      */
     @NonNull
     protected SQLiteDatabase getDb() {
-        return m_dbHelper.getWritableDatabase();
+        return mDBHelper.getWritableDatabase();
     }
 
     /**
@@ -110,12 +109,11 @@ public class DbAdapter {
      * @return The ID of the queue, 0 if no match
      */
     private long getQueueId(@NonNull final String name) {
-        final String sql = "SELECT " + DOM_ID + " FROM " + TBL_QUEUE + " WHERE " + DOM_NAME + " = ?";
-        SQLiteDatabase db = getDb();
+        final String sql = "SELECT " + DOM_ID + " FROM " + TBL_QUEUE + " WHERE " + DOM_NAME + "=?";
 
-        try (Cursor c = db.rawQuery(sql, new String[]{name})) {
-            if (c.moveToFirst()) {
-                return c.getInt(0);
+        try (Cursor cursor =  getDb().rawQuery(sql, new String[]{name})) {
+            if (cursor.moveToFirst()) {
+                return cursor.getInt(0);
             } else {
                 return 0;
             }
@@ -132,13 +130,11 @@ public class DbAdapter {
      */
     void getAllQueues(@NonNull final QueueManager manager) {
         String sql = "SELECT " + DOM_NAME + " FROM " + TBL_QUEUE + " ORDER BY " + DOM_NAME;
-        SQLiteDatabase db = getDb();
 
-        try (Cursor cursor = db.rawQuery(sql, new String[]{})) {
+        try (Cursor cursor = getDb().rawQuery(sql, null)) {
             while (cursor.moveToNext()) {
-                String name = cursor.getString(0);
                 // Create the Queue. It will register itself with its QueueManager.
-                new Queue(m_appContext, manager, name);
+                new Queue(mApplicationContext, manager, cursor.getString(0));
             }
         }
     }
@@ -157,16 +153,13 @@ public class DbAdapter {
     @Nullable
     ScheduledTask getNextTask(@NonNull final String queueName) {
         Date currentTime = new Date();
-        long timeToNext;
-
         String currTimeStr = DateUtils.toSqlDateTime(currentTime);
+
         SQLiteDatabase db = getDb();
 
         String baseSql = "SELECT j.* FROM " + TBL_QUEUE + " q"
                 + " JOIN " + TBL_TASK + " j ON j." + DOM_QUEUE_ID + " = q." + DOM_ID
-                + " WHERE "
-                + "  j." + DOM_STATUS_CODE + "= 'Q'"
-                + "  AND q." + DOM_NAME + " = ?";
+                + " WHERE j." + DOM_STATUS_CODE + "= 'Q'  AND q." + DOM_NAME + "=?";
 
         // Query to check for any task that CAN run now, sorted by priority then date/id
         String canRunSql = baseSql
@@ -175,30 +168,31 @@ public class DbAdapter {
                 + " LIMIT 1";
 
         // Get next task that CAN RUN NOW
-        Cursor c = db.rawQuery(canRunSql, new String[]{queueName, currTimeStr});
-        if (!c.moveToFirst()) {
+        Cursor cursor = db.rawQuery(canRunSql, new String[]{queueName, currTimeStr});
+        if (!cursor.moveToFirst()) {
             // Close this cursor.
-            c.close();
+            cursor.close();
             // There is no task available now. Look for one that is waiting.
             String sql = baseSql
                     + "  AND j." + DOM_RETRY_DATE + " > ?"
                     + "  ORDER BY " + DOM_RETRY_DATE + " ASC, " + DOM_PRIORITY + " ASC, " + DOM_ID + " ASC"
                     + " LIMIT 1";
-            c = db.rawQuery(sql, new String[]{queueName, currTimeStr});
+            cursor = db.rawQuery(sql, new String[]{queueName, currTimeStr});
         }
 
         try {
-            // If no matching row, return NULL
-            if (!c.moveToFirst()) {
+            if (!cursor.moveToFirst()) {
                 return null;
             }
 
             // Find task details and create ScheduledTask object
-            int dateCol = c.getColumnIndex(DOM_RETRY_DATE);
-            Date retryDate = DateUtils.parseDate(c.getString(dateCol));
+            int dateCol = cursor.getColumnIndex(DOM_RETRY_DATE);
+            Date retryDate = DateUtils.parseDate(cursor.getString(dateCol));
             if (retryDate == null) {
                 retryDate = new Date();
             }
+
+            long timeToNext;
             if (retryDate.after(currentTime)) {
                 // set timeToNext to let called know queue is not empty
                 timeToNext = (retryDate.getTime() - currentTime.getTime());
@@ -207,11 +201,11 @@ public class DbAdapter {
                 timeToNext = 0;
             }
 
-            return new ScheduledTask(timeToNext, c);
+            return new ScheduledTask(timeToNext, cursor);
 
         } finally {
-            if (c != null) {
-                c.close();
+            if (cursor != null) {
+                cursor.close();
             }
         }
     }
@@ -242,8 +236,7 @@ public class DbAdapter {
         ContentValues cv = new ContentValues();
         cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
         cv.put(DOM_CATEGORY, task.getCategory());
-        SQLiteDatabase db = getDb();
-        db.update(TBL_TASK, cv, DOM_ID + " = " + task.getId(), new String[]{});
+        getDb().update(TBL_TASK, cv, DOM_ID + "=?", new String[]{Long.toString(task.getId())});
     }
 
     /**
@@ -255,15 +248,14 @@ public class DbAdapter {
     void enqueueTask(@NonNull final Task task, @NonNull final String queueName) {
         long queueId = getQueueId(queueName);
         if (queueId == 0) {
-            throw new RuntimeException("Queue '" + queueName + "' does not exist; unable to queue request");
+            throw new IllegalArgumentException("Queue '" + queueName + "' does not exist");
         }
 
         ContentValues cv = new ContentValues();
         cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
         cv.put(DOM_CATEGORY, task.getCategory());
         cv.put(DOM_QUEUE_ID, queueId);
-        SQLiteDatabase db = getDb();
-        long jobId = db.insert(TBL_TASK, null, cv);
+        long jobId = getDb().insert(TBL_TASK, null, cv);
         task.setId(jobId);
 
     }
@@ -277,18 +269,17 @@ public class DbAdapter {
      */
     void setTaskOk(@NonNull final Task task) {
         SQLiteDatabase db = getDb();
-        String sql;
 
         // See if the task has any Events recorded
-        sql = "SELECT COUNT(*) FROM " + TBL_EVENT + " WHERE " + DOM_TASK_ID + " = " + task.getId();
-        try (Cursor cursor = db.rawQuery(sql, new String[]{})) {
+        String sql = "SELECT COUNT(*) FROM " + TBL_EVENT + " WHERE " + DOM_TASK_ID + "=?";
+        try (Cursor cursor = db.rawQuery(sql, new String[]{Long.toString(task.getId())})) {
             if (cursor.moveToFirst() && cursor.getLong(0) == 0) {
                 // Delete successful tasks with no events
-                db.delete(TBL_TASK, DOM_ID + " = " + task.getId(), new String[]{});
+                db.delete(TBL_TASK, DOM_ID + " =?" , new String[]{Long.toString(task.getId())});
             } else {
                 // Just mark is as successful
-                sql = "UPDATE " + TBL_TASK + " SET " + DOM_STATUS_CODE + "= 'S' WHERE " + DOM_ID + " = " + task.getId();
-                getDb().execSQL(sql);
+                sql = "UPDATE " + TBL_TASK + " SET " + DOM_STATUS_CODE + "= 'S' WHERE " + DOM_ID + "=" + task.getId();
+                db.execSQL(sql);
             }
         }
     }
@@ -298,19 +289,18 @@ public class DbAdapter {
         cal.add(Calendar.DATE, -ageInDays);
         String oneWeekAgo = DateUtils.toSqlDateTime(cal.getTime());
         SQLiteDatabase db = getDb();
-        String sql;
+
 
         db.beginTransaction();
         try {
             // Remove Events attached to old tasks
-            sql = DOM_TASK_ID + " In ("
+            String whereClause = DOM_TASK_ID + " IN ("
                     + "SELECT t." + DOM_ID + " FROM " + TBL_TASK + " t "
-                    + " WHERE t." + DOM_RETRY_DATE + " < '" + oneWeekAgo + "')";
-            db.delete(TBL_EVENT, sql, new String[]{});
+                    + " WHERE t." + DOM_RETRY_DATE + " < ?)";
+            db.delete(TBL_EVENT, whereClause, new String[]{oneWeekAgo});
 
             // Remove old Tasks
-            sql = DOM_RETRY_DATE + " < '" + oneWeekAgo + "'";
-            db.delete(TBL_TASK, sql, new String[]{});
+            db.delete(TBL_TASK, DOM_RETRY_DATE + " < ?", new String[]{oneWeekAgo});
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
@@ -327,7 +317,7 @@ public class DbAdapter {
 
         db.beginTransaction();
         try {
-            db.delete(TBL_EVENT, DOM_EVENT_DATE + " < '" + oneWeekAgo + "'", new String[]{});
+            db.delete(TBL_EVENT, DOM_EVENT_DATE + " < ?", new String[]{oneWeekAgo});
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
@@ -338,17 +328,16 @@ public class DbAdapter {
     void cleanupOrphans() {
         SQLiteDatabase db = getDb();
         db.beginTransaction();
-        String sql;
         try {
             // Remove orphaned events -- should never be needed
-            sql = "Not " + DOM_TASK_ID + " is NULL"
-                    + " AND Not Exists(SELECT * FROM " + TBL_TASK + " t WHERE " + TBL_EVENT + "." + DOM_TASK_ID + " = t." + DOM_ID + ")";
-            db.delete(TBL_EVENT, sql, new String[]{});
+            String whereClause = "NOT " + DOM_TASK_ID + " IS NULL"
+                    + " AND NOT EXISTS(SELECT * FROM " + TBL_TASK + " t WHERE " + TBL_EVENT + "." + DOM_TASK_ID + "=t." + DOM_ID + ")";
+            db.delete(TBL_EVENT, whereClause, null);
 
             // Remove orphaned tasks THAT WERE SUCCESSFUL
-            sql = "Not Exists(SELECT * FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + " = " + TBL_TASK + "." + DOM_ID + ")"
+            whereClause = "NOT EXISTS(SELECT * FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=" + TBL_TASK + "." + DOM_ID + ")"
                     + " AND " + DOM_STATUS_CODE + " = 'S'";
-            db.delete(TBL_TASK, sql, new String[]{});
+            db.delete(TBL_TASK, whereClause, null);
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
@@ -363,7 +352,6 @@ public class DbAdapter {
      * @param task task object to requeue.
      */
     void setTaskRequeue(@NonNull final Task task) {
-        int waitSecs;
         if (!task.canRetry()) {
             // We have waited a lot already; just give up.
             setTaskFail(task, "Retry limit exceeded");
@@ -371,16 +359,13 @@ public class DbAdapter {
             task.setState(TaskState.waiting);
             // Compute time Task can next be run
             Calendar cal = Calendar.getInstance();
-            waitSecs = task.getRetryDelay();
-            cal.add(Calendar.SECOND, waitSecs);
-            // Convert to String
-            String retryDate = DateUtils.toSqlDateTime(cal.getTime());
+            cal.add(Calendar.SECOND, task.getRetryDelay());
             // Update record
             ContentValues cv = new ContentValues();
-            cv.put(DOM_RETRY_DATE, retryDate);
+            cv.put(DOM_RETRY_DATE, DateUtils.toSqlDateTime(cal.getTime()));
             cv.put(DOM_RETRY_COUNT, task.getRetries() + 1);
             cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
-            getDb().update(TBL_TASK, cv, DOM_ID + " = " + task.getId(), new String[]{});
+            getDb().update(TBL_TASK, cv, DOM_ID + "=?",  new String[]{Long.toString(task.getId())});
         }
     }
 
@@ -401,7 +386,7 @@ public class DbAdapter {
         cv.put(DOM_EXCEPTION, SerializationUtils.serializeObject(task.getException()));
         cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
 
-        getDb().update(TBL_TASK, cv, DOM_ID + " = " + task.getId(), new String[]{});
+        getDb().update(TBL_TASK, cv, DOM_ID + "=?",  new String[]{Long.toString(task.getId())});
     }
 
     /**
@@ -409,34 +394,31 @@ public class DbAdapter {
      * analogous to writing a line to the 'log file' for the task.
      *
      * NOTE: this code must not assume the task exists. IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
-     *
-     * @param t Related task
-     * @param e Event (usually subclassed)
      */
-    void storeTaskEvent(@NonNull final Task t, @NonNull final Event e) {
+    void storeTaskEvent(@NonNull final Task task, @NonNull final Event event) {
         SQLiteDatabase db = getDb();
 
         // Setup parameters for insert
         ContentValues cv = new ContentValues();
-        cv.put(DOM_TASK_ID, t.getId());
-        cv.put(DOM_EVENT, SerializationUtils.serializeObject(e));
+        cv.put(DOM_TASK_ID, task.getId());
+        cv.put(DOM_EVENT, SerializationUtils.serializeObject(event));
 
         // Construct statements we want
-        if (m_checkTaskExistsStmt == null) {
-            String sql = "SELECT COUNT(*) FROM " + TBL_TASK + " WHERE " + DOM_ID + " = ?";
-            m_checkTaskExistsStmt = db.compileStatement(sql);
-            m_statements.add(m_checkTaskExistsStmt);
+        if (mCheckTaskExistsStmt == null) {
+            String sql = "SELECT COUNT(*) FROM " + TBL_TASK + " WHERE " + DOM_ID + "=?";
+            mCheckTaskExistsStmt = db.compileStatement(sql);
+            mStatements.add(mCheckTaskExistsStmt);
         }
 
         db.beginTransaction();
         try {
             // Check task exists
-            m_checkTaskExistsStmt.bindLong(1, t.getId());
-            long count = m_checkTaskExistsStmt.simpleQueryForLong();
+            mCheckTaskExistsStmt.bindLong(1, task.getId());
+            long count = mCheckTaskExistsStmt.simpleQueryForLong();
             if (count > 0) {
                 long eventId = db.insert(TBL_EVENT, null, cv);
                 db.setTransactionSuccessful();
-                e.setId(eventId);
+                event.setId(eventId);
             }
         } finally {
             db.endTransaction();
@@ -444,48 +426,29 @@ public class DbAdapter {
     }
 
     /**
-     * Static method to get an Events Cursor returning all events for the passed task.
+     * Get an Events Cursor returning all events for the passed task.
      *
-     * @param db     Database
      * @param taskId ID of the task whose exceptions we want
      *
-     * @return A new TaskExceptionsCursor
+     * @return A new EventsCursor
      */
-    private EventsCursor fetchTaskEvents(@NonNull final SQLiteDatabase db, final long taskId) {
-        String m_taskEventsQuery = "SELECT e.* FROM " + TBL_EVENT + " e "
-                + " WHERE e." + DOM_TASK_ID + " = ? "
-                + " ORDER BY e." + DOM_ID + " ASC";
-        return (EventsCursor) db.rawQueryWithFactory(m_EventsCursorFactory, m_taskEventsQuery, new String[]{taskId + ""}, "");
-    }
-
-    /**
-     * Static method to get an Events Cursor returning all events
-     *
-     * @return A new TaskExceptionsCursor
-     */
-    private EventsCursor fetchAllEvents(@NonNull final SQLiteDatabase db) {
-        String m_eventsQuery = "SELECT * FROM " + TBL_EVENT + " ORDER BY " + DOM_ID + " ASC";
-        return (EventsCursor) db.rawQueryWithFactory(m_EventsCursorFactory, m_eventsQuery, new String[]{}, "");
-    }
-
-    /**
-     * Return an EventsCursor for all events related to the specified task ID.
-     *
-     * @param taskId ID of the task
-     *
-     * @return Cursor of exceptions
-     */
+    @NonNull
     EventsCursor getTaskEvents(final long taskId) {
-        return fetchTaskEvents(getDb(), taskId);
+        String sql = "SELECT e.* FROM " + TBL_EVENT + " e "
+                + " WHERE e." + DOM_TASK_ID + "=?"
+                + " ORDER BY e." + DOM_ID + " ASC";
+        return (EventsCursor) getDb().rawQueryWithFactory(mEventsCursorFactory, sql, new String[]{Long.toString(taskId)}, "");
     }
 
     /**
-     * Return an EventsCursor for all events.
+     * Get an Events Cursor returning all events
      *
-     * @return Cursor of exceptions
+     * @return A new EventsCursor
      */
+    @NonNull
     EventsCursor getAllEvents() {
-        return fetchAllEvents(getDb());
+        String sql = "SELECT * FROM " + TBL_EVENT + " ORDER BY " + DOM_ID + " ASC";
+        return (EventsCursor) getDb().rawQueryWithFactory(mEventsCursorFactory, sql, null, "");
     }
 
     /**
@@ -495,6 +458,7 @@ public class DbAdapter {
      *
      * @return Cursor of exceptions
      */
+    @NonNull
     TasksCursor getTasks(@NonNull final TaskCursorSubtype type) {
         return TasksCursor.fetchTasks(getDb(), type);
     }
@@ -507,8 +471,8 @@ public class DbAdapter {
      *
      * @return Cursor of exceptions
      */
-    TasksCursor getTasks(final long category,
-                         @SuppressWarnings("SameParameterValue") @NonNull final TaskCursorSubtype type) {
+    @NonNull
+    TasksCursor getTasks(final long category, @SuppressWarnings("SameParameterValue") @NonNull final TaskCursorSubtype type) {
         return TasksCursor.fetchTasks(getDb(), category, type);
     }
 
@@ -518,10 +482,7 @@ public class DbAdapter {
      * @param id ID of Event to delete.
      */
     void deleteEvent(final long id) {
-        //String sql = "Delete from " + TBL_TASK_EXCEPTIONS + " Where " + DOM_ID + " = ?";
-        //ContentValues cv = new ContentValues();
-        //cv.put(DOM_EVENT_ID, id);
-        getDb().delete(TBL_EVENT, DOM_ID + " = ?", new String[]{id + ""});
+        getDb().delete(TBL_EVENT, DOM_ID + "=?", new String[]{Long.toString(id)});
         cleanupOrphans();
     }
 
@@ -534,9 +495,8 @@ public class DbAdapter {
         SQLiteDatabase db = getDb();
         db.beginTransaction();
         try {
-            String[] args = new String[]{Long.toString(id)};
-            db.delete(TBL_EVENT, DOM_TASK_ID + " = ?", args);
-            db.delete(TBL_TASK, DOM_ID + " = ?", new String[]{id + ""});
+            db.delete(TBL_EVENT, DOM_TASK_ID + "=?", new String[]{Long.toString(id)});
+            db.delete(TBL_TASK, DOM_ID + "=?", new String[]{Long.toString(id)});
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
@@ -548,17 +508,16 @@ public class DbAdapter {
      */
     public void close() {
         try {
-            for (SQLiteStatement s : m_statements) {
+            for (SQLiteStatement s : mStatements) {
                 try {
                     s.close();
                 } catch (Exception ignore) {
                 }
             }
-            m_dbHelper.close();
-
+            mDBHelper.close();
         } catch (Exception ignore) {
         } finally {
-            m_statements.clear();
+            mStatements.clear();
         }
     }
 
@@ -570,10 +529,10 @@ public class DbAdapter {
     protected class ScheduledTask {
         /** Time, in milliseconds, until Task needs to be executed. */
         final long timeUntilRunnable;
-        /** Blob for TAsk retrieved from DB. We do not deserialize until necessary. */
-        final byte[] m_blob;
+        /** Blob for Task retrieved from DB. We do not deserializeObject until necessary. */
+        final byte[] mBlob;
         /** Retry count retrieved from DB. */
-        final int m_retries;
+        final int mRetries;
         /** ID of Task. */
         final int id;
 
@@ -585,10 +544,9 @@ public class DbAdapter {
          */
         ScheduledTask(final long timeUntilRunnable, @NonNull final Cursor cursor) {
             this.timeUntilRunnable = timeUntilRunnable;
-            int taskCol = cursor.getColumnIndex(DOM_TASK);
-            m_retries = cursor.getInt(cursor.getColumnIndex(DOM_RETRY_COUNT));
+            mRetries = cursor.getInt(cursor.getColumnIndex(DOM_RETRY_COUNT));
             this.id = cursor.getInt(cursor.getColumnIndex(DOM_ID));
-            m_blob = cursor.getBlob(taskCol);
+            mBlob = cursor.getBlob(cursor.getColumnIndex(DOM_TASK));
         }
 
         /**
@@ -596,24 +554,20 @@ public class DbAdapter {
          *
          * @return related Task object
          */
+        @Nullable
         protected Task getTask() {
             Task task;
 
-            // Deserialize
             try {
-                ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(m_blob));
-                Object object = in.readObject();
-                task = (Task) object;
-            } catch (Exception e) {
-                task = null;
+                task = SerializationUtils.deserializeObject(mBlob);
+            } catch (SerializationUtils.DeserializationException e) {
+                return null;
             }
 
-            if (task != null) {
-                task.setId(id);
-                task.setRetries(m_retries);
-                // Set this here so that it can be adjusted by the task when it is run.
-                task.setRetryDelay();
-            }
+            task.setId(id);
+            task.setRetries(mRetries);
+            // Set this here so that it can be adjusted by the task when it is run.
+            task.setRetryDelay();
 
             return task;
         }

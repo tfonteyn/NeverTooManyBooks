@@ -2,14 +2,14 @@
  * @copyright 2011 Philip Warner
  * @license GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file inputStream part of Book Catalogue.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * Book Catalogue inputStream free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * Book Catalogue inputStream distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -35,19 +35,23 @@ import android.text.util.Linkify;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.Terminator;
 
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.BufferedHttpEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
@@ -56,25 +60,44 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 public class Utils {
+    private static final Object lock = new Object();
+
     private Utils() {
     }
 
-    private static final Object lock = new Object();
     /**
-     * Utility routine to get the data from a URL. Makes sure timeout is set to avoid application
-     * stalling.
+     * TODO: unify with {@link #getInputStreamWithTerminator}
+     */
+    @NonNull
+    public static InputStream getInputStream(@NonNull final String urlText) throws UnknownHostException, IOException, URISyntaxException {
+        final URL url = new URL(urlText);
+        final HttpGet httpRequest = new HttpGet(url.toURI());
+        final HttpClient httpclient = new DefaultHttpClient();
+        final HttpResponse response = httpclient.execute(httpRequest);
+
+        if (response.getStatusLine().getStatusCode() >= 300) {
+            String msg = "URL lookup failed: " + response.getStatusLine().getStatusCode() +
+                    " " + response.getStatusLine().getReasonPhrase() + ", URL: " + url;
+            Logger.logError(new RuntimeException(msg));
+            throw new IOException();
+        }
+
+        final HttpEntity entity = response.getEntity();
+        final BufferedHttpEntity bufHttpEntity = new BufferedHttpEntity(entity);
+        return bufHttpEntity.getContent();
+    }
+
+    /**
+     * Utility routine to get the data from a URL. Makes sure timeout inputStream set to
+     * avoid application stalling.
      *
      * @param url URL to retrieve
      *
      * @return InputStream
      */
     @Nullable
-    public static InputStream getInputStream(@NonNull final URL url) throws UnknownHostException {
+    public static InputStream getInputStreamWithTerminator(@NonNull final URL url) throws UnknownHostException {
 
         synchronized (lock) {
 
@@ -82,11 +105,11 @@ public class Utils {
             while (true) {
                 try {
                     /*
-                     * This is quite nasty; there seems to be a bug with URL.openConnection
+                     * This inputStream quite nasty; there seems to be a bug with URL.openConnection
                      *
                      * It CAN be reduced by doing the following:
                      *
-                     *     ((HttpURLConnection)conn).setRequestMethod("GET");
+                     *     ((HttpURLConnection)connection).setRequestMethod("GET");
                      *
                      * but I worry about future-proofing and the assumption that URL.openConnection
                      * will always return a HttpURLConnection. OFC, it probably will...until it doesn't.
@@ -94,71 +117,74 @@ public class Utils {
                      * Using HttpClient and HttpGet explicitly seems to bypass the casting
                      * problem but still does not allow the timeouts to work, or only works intermittently.
                      *
-                     * Finally, there is another problem with failed timeouts:
+                     * Finally, there inputStream another problem with failed timeouts:
                      *
                      *     http://thushw.blogspot.hu/2010/10/java-urlconnection-provides-no-fail.html
                      *
-                     * So...we are forced to use a background thread to kill it.
+                     * So...we are forced to use a background thread to be able to kill it.
                      */
 
                     // If at some stage in the future the casting code breaks...use the Apache one.
+                    //TODO: do this anyhow, the jdk one is 'not really good'
                     //final HttpClient client = new DefaultHttpClient();
                     //final HttpParams httpParameters = client.getParams();
                     //
                     //HttpConnectionParams.setConnectionTimeout(httpParameters, 30 * 1000);
                     //HttpConnectionParams.setSoTimeout        (httpParameters, 30 * 1000);
                     //
-                    //final HttpGet conn = new HttpGet(url.toString());
+                    //final HttpGet connection = new HttpGet(url.toString());
                     //
-                    //HttpResponse response = client.execute(conn);
-                    //InputStream is = response.getEntity().getContent();
-                    //return new BufferedInputStream(is);
+                    //HttpResponse response = client.execute(connection);
+                    //InputStream inputStream = response.getEntity().getContent();
+                    //return new BufferedInputStream(inputStream);
 
                     final ConnectionInfo connInfo = new ConnectionInfo();
 
-                    connInfo.conn = url.openConnection();
-                    connInfo.conn.setUseCaches(false);
-                    connInfo.conn.setDoInput(true);
-                    connInfo.conn.setDoOutput(false);
+                    connInfo.connection = url.openConnection();
+                    connInfo.connection.setUseCaches(false);
+                    connInfo.connection.setDoInput(true);
+                    connInfo.connection.setDoOutput(false);
 
-                    HttpURLConnection c;
-                    if (connInfo.conn instanceof HttpURLConnection) {
-                        c = (HttpURLConnection) connInfo.conn;
-                        c.setRequestMethod("GET");
+                    HttpURLConnection connection;
+                    if (connInfo.connection instanceof HttpURLConnection) {
+                        connection = (HttpURLConnection) connInfo.connection;
+                        connection.setRequestMethod("GET");
                     } else {
-                        c = null;
+                        connection = null;
                     }
 
-                    connInfo.conn.setConnectTimeout(30000);
-                    connInfo.conn.setReadTimeout(30000);
+                    connInfo.connection.setConnectTimeout(30000);
+                    connInfo.connection.setReadTimeout(30000);
 
+                    // start the connection as a background task, so that we can cancel any runaway timeouts.
                     Terminator.enqueue(new Runnable() {
                         @Override
                         public void run() {
-                            if (connInfo.is != null) {
-                                if (connInfo.is.isOpen()) {
+                            if (connInfo.inputStream != null) {
+                                if (connInfo.inputStream.isOpen()) {
                                     try {
-                                        connInfo.is.close();
-                                        ((HttpURLConnection) connInfo.conn).disconnect();
+                                        connInfo.inputStream.close();
+                                        ((HttpURLConnection) connInfo.connection).disconnect();
                                     } catch (IOException e) {
                                         Logger.logError(e);
                                     }
                                 }
                             } else {
-                                ((HttpURLConnection) connInfo.conn).disconnect();
+                                ((HttpURLConnection) connInfo.connection).disconnect();
                             }
 
                         }
                     }, 30000);
-                    connInfo.is = new StatefulBufferedInputStream(connInfo.conn.getInputStream());
 
-                    if (c != null && c.getResponseCode() >= 300) {
-                        Logger.logError("URL lookup failed: " + c.getResponseCode()
-                                + " " + c.getResponseMessage() + ", URL: " + url);
+                    connInfo.inputStream = new StatefulBufferedInputStream(connInfo.connection.getInputStream());
+
+                    if (connection != null && connection.getResponseCode() >= 300) {
+                        Logger.logError(new RuntimeException("URL lookup failed: " + connection.getResponseCode()
+                                + " " + connection.getResponseMessage() + ", URL: " + url));
                         return null;
                     }
 
-                    return connInfo.is;
+                    return connInfo.inputStream;
 
                 } catch (java.net.UnknownHostException e) {
                     Logger.logError(e);
@@ -198,15 +224,15 @@ public class Utils {
     /**
      * Check if passed bundle contains a non-blank string at key k.
      *
-     * @param b   Bundle to check
-     * @param key Key to check for
+     * @param bundle Bundle to check
+     * @param key    Key to check for
      *
      * @return Present/absent
      */
-    public static boolean isNonBlankString(@NonNull final Bundle b,
+    public static boolean isNonBlankString(@NonNull final Bundle bundle,
                                            @NonNull final String key) {
-        if (b.containsKey(key)) {
-            String s = b.getString(key);
+        if (bundle.containsKey(key)) {
+            String s = bundle.getString(key);
             return (s != null && !s.isEmpty());
         } else {
             return false;
@@ -228,7 +254,7 @@ public class Utils {
         @SuppressLint("UseSparseArrays")
         Map<Long, Boolean> ids = new HashMap<>();
 
-        // We have to go forwards through the list because 'first item' is important,
+        // We have to go forwards through the list because 'first item' inputStream important,
         // but we also can't delete things as we traverse if we are going forward. So
         // we build a list of items to delete.
         ArrayList<Integer> toDelete = new ArrayList<>();
@@ -254,81 +280,6 @@ public class Utils {
         for (int i = toDelete.size() - 1; i >= 0; i--)
             list.remove(toDelete.get(i).intValue());
         return toDelete.size() > 0;
-    }
-
-    /**
-     * Remove series from the list where the names are the same, but one entry has a null or empty position.
-     * eg. the following list should be processed as indicated:
-     *
-     * fred(5)
-     * fred <-- delete
-     * bill <-- delete
-     * bill <-- delete
-     * bill(1)
-     */
-    public static boolean pruneSeriesList(List<Series> list) {
-        List<Series> toDelete = new ArrayList<>();
-        Map<String, Series> index = new HashMap<>();
-
-        for (Series s : list) {
-            final boolean emptyNum = (s.number == null || s.number.trim().isEmpty());
-            final String lcName = s.name.trim().toLowerCase();
-            final boolean inNames = index.containsKey(lcName);
-            if (!inNames) {
-                // Just add and continue
-                index.put(lcName, s);
-            } else {
-                // See if we can purge either
-                if (emptyNum) {
-                    // Always delete series with empty numbers if an equally or more specific one exists
-                    toDelete.add(s);
-                } else {
-                    // See if the one in 'index' also has a num
-                    Series orig = index.get(lcName);
-                    if (orig.number == null || orig.number.trim().isEmpty()) {
-                        // Replace with this one, and mark orig for delete
-                        index.put(lcName, s);
-                        toDelete.add(orig);
-                    } else {
-                        // Both have numbers. See if they are the same.
-                        if (s.number.trim().toLowerCase().equals(orig.number.trim().toLowerCase())) {
-                            // Same exact series, delete this one
-                            toDelete.add(s);
-                        } //else {
-                        // Nothing to do: this is a different series position
-                        //}
-                    }
-                }
-            }
-        }
-
-        for (Series s : toDelete)
-            list.remove(s);
-
-        return (toDelete.size() > 0);
-
-    }
-
-    // TODO: Make sure all URL getters use this if possible.
-    static public void parseUrlOutput(@NonNull final String path,
-                                      @NonNull final SAXParserFactory factory,
-                                      @NonNull final DefaultHandler handler) {
-        SAXParser parser;
-        URL url;
-
-        try {
-            url = new URL(path);
-            parser = factory.newSAXParser();
-            parser.parse(Utils.getInputStream(url), handler);
-            // Don't bother catching general exceptions, they will be caught by the caller.
-        } catch (ParserConfigurationException | IOException | SAXException e) {
-            String s = "unknown";
-            try {
-                s = e.getMessage();
-            } catch (Exception ignored) {
-            }
-            Logger.logError(e, s);
-        }
     }
 
     /**
@@ -364,7 +315,7 @@ public class Utils {
     /**
      * Join the passed array of strings, with 'delim' between them.
      *
-     * API 26 needed for {@link String#join(CharSequence, Iterable)} }
+     * ENHANCE: API 26 needed for {@link String#join(CharSequence, Iterable)} }
      *
      * @param delim Delimiter to place between entries
      * @param sa    Array of strings to join
@@ -394,26 +345,25 @@ public class Utils {
     /**
      * Get a value from a bundle and convert to a long.
      *
-     * @param b   Bundle
+     * @param bundle   Bundle
      * @param key Key in bundle
      *
      * @return Result
      *
      * @throws NumberFormatException if it was a string with an invalid format
      */
-    public static long getLongFromBundle(@NonNull final Bundle b, @Nullable final String key)
+    public static long getLongFromBundle(@NonNull final Bundle bundle, @Nullable final String key)
             throws NumberFormatException {
-        Object o = b.get(key);
-        if (o instanceof Long) {
-            return (Long) o;
-        }
+        Object value = bundle.get(key);
 
-        if (o instanceof String) {
-            return Long.parseLong((String) o);
-        } else if (o instanceof Integer) {
-            return ((Integer) o).longValue();
+        if (value instanceof Long) {
+            return (Long) value;
+        } else if (value instanceof String) {
+            return Long.parseLong((String) value);
+        } else if (value instanceof Integer) {
+            return ((Integer) value).longValue();
         } else {
-            throw new NumberFormatException("Not a long value");
+            throw new NumberFormatException("Not a long value: " + value);
         }
     }
 
@@ -500,11 +450,11 @@ public class Utils {
 //	}
 
     private static class ConnectionInfo {
-        URLConnection conn = null;
-        StatefulBufferedInputStream is = null;
+        URLConnection connection = null;
+        StatefulBufferedInputStream inputStream = null;
     }
 
-    public static class StatefulBufferedInputStream extends BufferedInputStream implements Closeable{
+    public static class StatefulBufferedInputStream extends BufferedInputStream implements Closeable {
         private boolean mIsOpen = true;
 
         StatefulBufferedInputStream(@NonNull final InputStream in) {

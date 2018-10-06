@@ -53,10 +53,12 @@ public class PreferencesActivity extends PreferencesBaseActivity {
             .add(90, R.string.menu_rotate_thumb_cw)
             .add(-90, R.string.menu_rotate_thumb_ccw)
             .add(180, R.string.menu_rotate_thumb_180);
+
     /** List of supported locales */
     private static final ItemEntries<String> mLocalesListItems = getLocalesListItems();
     /** List of supported themes */
     private static final ItemEntries<Integer> mAppThemeItems = getThemeListItems();
+
     /** Booklist Compatibility mode property values */
     private static final ItemEntries<Integer> mListGenerationOptionsListItems = new ItemEntries<Integer>()
             .add(null, R.string.use_default_setting)
@@ -124,7 +126,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
                     .setWeight(300))
 
             .add(new IntegerListProperty(mScannerListItems, ScannerManager.PREF_PREFERRED_SCANNER,
-                    PropertyGroup.GRP_SCANNER,R.string.preferred_scanner)
+                    PropertyGroup.GRP_SCANNER, R.string.preferred_scanner)
                     .setDefaultValue(ScannerManager.SCANNER_ZXING_COMPATIBLE)
                     .setPreferenceKey(ScannerManager.PREF_PREFERRED_SCANNER)
                     .setGlobal(true))
@@ -179,6 +181,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
      *
      * @return List of preference items
      */
+    @NonNull
     private static ItemEntries<String> getLocalesListItems() {
         ItemEntries<String> items = new ItemEntries<>();
 
@@ -197,6 +200,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
      *
      * @return List of preference themes
      */
+    @NonNull
     private static ItemEntries<Integer> getThemeListItems() {
         ItemEntries<Integer> items = new ItemEntries<>();
 

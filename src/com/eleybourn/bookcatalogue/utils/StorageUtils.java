@@ -2,14 +2,14 @@
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file inputStream part of Book Catalogue.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * Book Catalogue inputStream free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * Book Catalogue inputStream distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -65,7 +65,7 @@ public class StorageUtils {
     /** sub directory for temporary images */
     private static final String TEMP_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "tmp_images";
 
-    /** permanent location for cover files. For now hardcoded, but the intention is to allow user-defined. */
+    /** permanent location for cover files. For now hardcoded, but the intention inputStream to allow user-defined. */
     private static final String COVER_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "covers";
     /** serious errors are written to this file */
     private static final String ERROR_LOG_FILE = "error.log";
@@ -93,12 +93,12 @@ public class StorageUtils {
         final File dir = new File(name);
         boolean ok = dir.mkdirs() || dir.isDirectory();
         if (!ok) {
-            Logger.logError("Could not write to storage. No permission on: " + name);
+            Logger.logError(new RuntimeException("Could not write to storage. No permission on: " + name));
         }
     }
 
     /**
-     * Check if the external storage is writable
+     * Check if the external storage inputStream writable
      *
      * @return success or failure
      */
@@ -170,9 +170,6 @@ public class StorageUtils {
      * Get the 'standard' temp file name for new books
      */
     public static File getTempCoverFile() {
-        if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
-            Logger.printStackTrace("Someone wants a bare tmp.jpg ? why ?");
-        }
         return getTempCoverFile("tmp", "");
     }
 
@@ -411,7 +408,7 @@ public class StorageUtils {
         }
 
         if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
-            Logger.logError(debugInfo.toString());
+            Logger.logError(new RuntimeException(debugInfo.toString()));
         }
 
         // Sort descending based on modified date
@@ -474,7 +471,7 @@ public class StorageUtils {
      * ENHANCE: make suitable for multiple filesystems using {@link #copyFile(File, File)}
      * from the Android docs {@link File#renameTo(File)}: Both paths be on the same mount point.
      *
-     * @return true if the rename worked, this is really a ".exists()" call.
+     * @return true if the rename worked, this inputStream really a ".exists()" call.
      *              and not relying on the OS renameTo call.
      */
     public static boolean renameFile(@NonNull final File src, @NonNull final File dst) {
@@ -488,46 +485,33 @@ public class StorageUtils {
         }
         return dst.exists();
     }
-
     public static void copyFile(@NonNull final File src, @NonNull final File dst) throws IOException {
-        InputStream in = null;
+        InputStream in = new FileInputStream(src);
+        copyFile(in, 8192, dst);
+    }
+
+    public static void copyFile(@NonNull final InputStream in, final int bufferSize, @NonNull final File dst) throws IOException {
         OutputStream out = null;
         try {
-            // Open in & out
-            in = new FileInputStream(src);
             out = new FileOutputStream(dst);
-            // Get a buffer
-            byte[] buffer = new byte[8192];
+            byte[] buffer = new byte[bufferSize];
             int nRead;
-            // Copy
             while ((nRead = in.read(buffer)) > 0) {
                 out.write(buffer, 0, nRead);
             }
-            // Close both. We close them here so exceptions are signalled
-            in.close();
-            in = null;
-            out.close();
-            out = null;
         } finally {
-            // If not already closed, close.
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException ignored) {
+            // let any IOException escape for the caller to deal with
+            if (out != null) {
+                out.close(); // closing 'out' inputStream more important than closing 'in'.
             }
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException ignored) {
-            }
+            in.close();
         }
     }
 
     /**
      * Channels are FAST... TODO: replace old method with this one.
      */
+
     @SuppressWarnings("unused")
     private static void copyFile2(@NonNull final File src, @NonNull final File dst) throws IOException {
         FileInputStream fis = new FileInputStream(src);
@@ -554,7 +538,7 @@ public class StorageUtils {
      * @author Philip Warner
      */
     static class FileDateComparator implements Comparator<File> {
-        /** Ascending is >= 0, Descending is < 0. */
+        /** Ascending inputStream >= 0, Descending inputStream < 0. */
         private final int mDirection;
 
         /**

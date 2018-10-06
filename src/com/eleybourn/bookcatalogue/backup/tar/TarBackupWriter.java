@@ -27,7 +27,6 @@ import com.eleybourn.bookcatalogue.backup.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.BackupUtils;
 import com.eleybourn.bookcatalogue.backup.BackupWriterAbstract;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -114,19 +113,15 @@ public class TarBackupWriter extends BackupWriterAbstract {
      */
     @Override
     public void putBooklistStyle(@NonNull final BooklistStyle style) throws IOException {
+        mStyleCounter++;
         // Turn the object into a byte array
         final byte[] blob = SerializationUtils.serializeObject(style);
-        if (blob == null) {
-            Logger.logError("serializeObject failed?");
-            throw new IllegalStateException("serializeObject failed?");
-        }
-        mStyleCounter++;
         bytesToArchive(TarBackupContainer.STYLE_PREFIX + mStyleCounter, blob);
     }
 
     /**
      * Save the preferences.
-     * <p>
+     *
      * It would be nice to support groups (ie. more than one preference name), but ... we don't need it.
      */
     @Override
@@ -136,7 +131,6 @@ public class TarBackupWriter extends BackupWriterAbstract {
         final BufferedWriter infoOut = new BufferedWriter(new OutputStreamWriter(infoData, TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
         BackupUtils.preferencesToXml(infoOut, prefs);
         infoOut.close();
-        // Save them
         bytesToArchive(TarBackupContainer.PREFERENCES, infoData.toByteArray());
     }
 

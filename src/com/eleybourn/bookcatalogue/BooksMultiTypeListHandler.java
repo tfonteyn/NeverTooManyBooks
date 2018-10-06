@@ -23,6 +23,9 @@ package com.eleybourn.bookcatalogue;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.IdRes;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -43,6 +46,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistRowView;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistSupportProvider;
+import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
@@ -276,9 +280,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      * @param iconId   icon of menu item
      */
     private void addMenuItem(@NonNull final List<SimpleDialogItem> items,
-                             final int id,
+                             @IdRes final int id,
                              @StringRes final int stringId,
-                             final int iconId) {
+                             @DrawableRes final int iconId) {
         SimpleDialogMenuItem i = new SimpleDialogMenuItem(BookCatalogueApp.getResourceString(stringId), id, iconId);
         items.add(i);
     }
@@ -500,7 +504,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         }
                     });
                 } else {
-                    Logger.logError("Series " + id + " not found in database?");
+                    Logger.logError(new RuntimeException("Series " + id + " not found in database?"));
                 }
                 return true;
             }
@@ -676,7 +680,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 return new RatingHolder(rowView, DOM_BOOK_RATING.name);
 
             default:
-                throw new RuntimeException("Invalid row kind " + k);
+                throw new IllegalStateException("Invalid row kind " + k);
         }
     }
 
@@ -877,20 +881,16 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
          *
          * @return Layout ID
          */
+        @LayoutRes
         static int getDefaultLayoutId(final int level) {
-            int id;
             switch (level) {
                 case 1:
-                    id = R.layout.booksonbookshelf_row_level_1;
-                    break;
+                    return R.layout.booksonbookshelf_row_level_1;
                 case 2:
-                    id = R.layout.booksonbookshelf_row_level_2;
-                    break;
+                    return R.layout.booksonbookshelf_row_level_2;
                 default:
-                    id = R.layout.booksonbookshelf_row_level_3;
-                    break;
+                    return R.layout.booksonbookshelf_row_level_3;
             }
-            return id;
         }
 
         /**
@@ -1255,19 +1255,19 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                                     final int noDataId) {
             mColIndex = rowView.getColumnIndex(domain.name);
             if (mColIndex < 0) {
-                throw new RuntimeException("Domain '" + domain.name + "'not found in row view");
+                throw new DBExceptions.ColumnNotPresent(domain.name);
             }
             mNoDataId = noDataId;
         }
 
         @Override
-        public void map(@NonNull final BooklistRowView rowView, @NonNull final View v) {
-            rowInfo = v.findViewById(R.id.ROW_INFO);
-            text = v.findViewById(R.id.name);
+        public void map(@NonNull final BooklistRowView rowView, @NonNull final View view) {
+            rowInfo = view.findViewById(R.id.ROW_INFO);
+            text = view.findViewById(R.id.name);
         }
 
         @Override
-        public void set(@NonNull final BooklistRowView rowView, @NonNull final View v, final int level) {
+        public void set(@NonNull final BooklistRowView rowView, @NonNull final View view, final int level) {
             String s = rowView.getString(mColIndex);
             setText(text, s, mNoDataId, level);
         }

@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.tasks;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
+import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 
@@ -30,11 +31,16 @@ import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
  * Base class for handling tasks in background while displaying a ProgressDialog.
  *
  * Part of three components that make this easier:
- * - TaskManager -- handles the management of multiple threads sharing a progressDialog
- * - ActivityWithTasks -- uses a TaskManager (and communicates with it) to handle progress
- * messages for threads. Deals with orientation changes in cooperation with TaskManager.
- * - ManagedTask -- Background task that is managed by TaskManager and uses TaskManager to
- * do all display activities.
+ *
+ * {@link TaskManager}
+ * handles the management of multiple threads sharing a ProgressDialog
+ *
+ * {@link ActivityWithTasks}
+ * Uses a TaskManager (and communicates with it) to handle progress messages for threads.
+ * Deals with orientation changes in cooperation with TaskManager.
+ *
+ * {@link ManagedTask}
+ * Background task that is managed by TaskManager and uses TaskManager to do all display activities.
  *
  * @author Philip Warner
  */
@@ -68,7 +74,7 @@ abstract public class ManagedTask extends Thread {
      * @param manager Associated task manager
      */
     protected ManagedTask(@NonNull final TaskManager manager) {
-        // Save the stuff for mater
+        // Save the stuff for later
         mManager = manager;
         // Add to my manager
         mManager.addTask(this);

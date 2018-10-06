@@ -39,6 +39,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -55,8 +56,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
 public class StandardDialogs {
 
@@ -197,7 +196,7 @@ public class StandardDialogs {
                 return R.string.unable_to_find_book;
             }
 
-            title = cursor.getString(cursor.getColumnIndex(DOM_TITLE.name));
+            title = cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_TITLE.name));
             if (title == null || title.isEmpty()) {
                 title = UNKNOWN;
             }
@@ -386,9 +385,9 @@ public class StandardDialogs {
                                               @NonNull final SimpleDialogOnClickListener handler) {
         List<SimpleDialogItem> items = new ArrayList<>();
         SimpleDialogItem selectedItem = null;
-        for (T o : objects) {
-            SimpleDialogObjectItem item = new SimpleDialogObjectItem(o);
-            if (current != null && o.toString().equalsIgnoreCase(current))
+        for (T object : objects) {
+            SimpleDialogObjectItem item = new SimpleDialogObjectItem(object);
+            if (current != null && object.toString().equalsIgnoreCase(current))
                 selectedItem = item;
             items.add(item);
         }
@@ -417,7 +416,6 @@ public class StandardDialogs {
     public static class SimpleDialogFileItem implements SimpleDialogItem {
         private final File mFile;
 
-        @SuppressWarnings("WeakerAccess")
         public SimpleDialogFileItem(@NonNull final File file) {
             mFile = file;
         }

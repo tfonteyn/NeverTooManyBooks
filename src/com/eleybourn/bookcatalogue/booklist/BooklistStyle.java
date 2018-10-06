@@ -105,7 +105,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
 
     private static final long serialVersionUID = 6615877148246388549L;
 
-    /** version field used in serialised data reading from file, see {@link #readObject} */
+    /** version field used in serialized data reading from file, see {@link #readObject} */
     private static final long realSerialVersion = 5;
 
     private static final String SFX_SHOW_AUTHOR = "ShowAuthor";
@@ -192,28 +192,21 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /** List of groups */
     private final ArrayList<BooklistGroup> mGroups;
     /** ID if string representing name of this style. Used for standard system-defined styles */
+    @StringRes
     private int mNameStringId;
     /** User-defined name of this style. */
-    @SuppressWarnings("unused")
-    private String mName; // TODO: Legacy field designed for backward serialization compatibility
-    /** replaces mName */
     private transient StringProperty mNameProperty;
 
     /** Row id of database row from which this object comes */
     private long mRowId = 0;
+
     /** Extra details to show on book rows */
     private transient BooleanProperty mXtraShowThumbnails;
-    /** Extra details to show on book rows */
     private transient BooleanProperty mXtraLargeThumbnails;
-    /** Extra details to show on book rows */
     private transient BooleanProperty mXtraShowBookshelves;
-    /** Extra details to show on book rows */
     private transient BooleanProperty mXtraShowLocation;
-    /** Extra details to show on book rows */
     private transient BooleanProperty mXtraShowPublisher;
-    /** Extra details to show on book rows */
     private transient BooleanProperty mXtraShowFormat;
-    /** Extra details to show on book rows */
     private transient BooleanProperty mXtraShowAuthor;
 
     /** filters */
@@ -328,7 +321,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         }
     }
 
-    public void addGroup(BooklistGroup group) {
+    public void addGroup(@NonNull final BooklistGroup group) {
         mGroups.add(group);
     }
 
@@ -338,8 +331,8 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      * @param kind Kind of group to add.
      */
     public void addGroup(final int kind) {
-        BooklistGroup g = BooklistGroup.newGroup(kind);
-        addGroup(g);
+        BooklistGroup group = BooklistGroup.newGroup(kind);
+        mGroups.add(group);
     }
 
     /**
@@ -349,8 +342,8 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      */
     public void addGroups(@NonNull final int... kinds) {
         for (int kind : kinds) {
-            BooklistGroup g = BooklistGroup.newGroup(kind);
-            addGroup(g);
+            BooklistGroup group = BooklistGroup.newGroup(kind);
+            mGroups.add(group);
         }
     }
 
@@ -397,19 +390,24 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
                 .setPreferenceKey(PREF_LARGE_THUMBNAILS)
                 .setWeight(-99);
 
-        mXtraShowBookshelves = new BooleanProperty("XBookshelves", PropertyGroup.GRP_EXTRA_BOOK_DETAILS, R.string.bookshelves)
+        mXtraShowBookshelves = new BooleanProperty("XBookshelves",
+                PropertyGroup.GRP_EXTRA_BOOK_DETAILS, R.string.bookshelves)
                 .setPreferenceKey(PREF_SHOW_BOOKSHELVES);
 
-        mXtraShowLocation = new BooleanProperty("XLocation", PropertyGroup.GRP_EXTRA_BOOK_DETAILS, R.string.location)
+        mXtraShowLocation = new BooleanProperty("XLocation",
+                PropertyGroup.GRP_EXTRA_BOOK_DETAILS, R.string.location)
                 .setPreferenceKey(PREF_SHOW_LOCATION);
 
-        mXtraShowPublisher = new BooleanProperty("XPublisher", PropertyGroup.GRP_EXTRA_BOOK_DETAILS, R.string.publisher)
+        mXtraShowPublisher = new BooleanProperty("XPublisher",
+                PropertyGroup.GRP_EXTRA_BOOK_DETAILS, R.string.publisher)
                 .setPreferenceKey(PREF_SHOW_PUBLISHER);
 
-        mXtraShowFormat = new BooleanProperty("XFormat",PropertyGroup.GRP_EXTRA_BOOK_DETAILS, R.string.format)
+        mXtraShowFormat = new BooleanProperty("XFormat",
+                PropertyGroup.GRP_EXTRA_BOOK_DETAILS, R.string.format)
                 .setPreferenceKey(PREF_SHOW_FORMAT);
 
-        mXtraShowAuthor = new BooleanProperty("XAuthor",PropertyGroup.GRP_EXTRA_BOOK_DETAILS,R.string.author)
+        mXtraShowAuthor = new BooleanProperty("XAuthor",
+                PropertyGroup.GRP_EXTRA_BOOK_DETAILS,R.string.author)
                 .setPreferenceKey(PREF_SHOW_AUTHOR);
 
         mNameProperty = new StringProperty("StyleName",
@@ -502,13 +500,13 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         }
         // Clear the current groups, and rebuild, reusing old values where possible
         mGroups.clear();
-        for (BooklistGroup g : fromStyle) {
-            BooklistGroup saved = oldGroups.get(g.kind);
+        for (BooklistGroup group : fromStyle) {
+            BooklistGroup saved = oldGroups.get(group.kind);
             if (saved != null) {
-                this.addGroup(saved);
+                mGroups.add(saved);
             } else {
-                g.getStyleProperties(newProps);
-                this.addGroup(g.kind);
+                group.getStyleProperties(newProps);
+                this.addGroup(group.kind);
             }
         }
         // Copy any properties from new groups.
@@ -626,16 +624,16 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         initProperties();
-        Object o = in.readObject();
+        Object object = in.readObject();
         long version = 0;
-        if (o instanceof Long) {
+        if (object instanceof Long) {
             // It's the version
-            version = ((Long) o);
+            version = ((Long) object);
             // Get the next object
-            o = in.readObject();
+            object = in.readObject();
         } // else it's a pre-version object...just use it
 
-        mXtraShowThumbnails.set((Boolean) o);
+        mXtraShowThumbnails.set((Boolean) object);
         mXtraLargeThumbnails.set((Boolean) in.readObject());
         mXtraShowBookshelves.set((Boolean) in.readObject());
         mXtraShowLocation.set((Boolean) in.readObject());
@@ -648,7 +646,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         if (version > 1) {
             mNameProperty.set((String) in.readObject());
         } else {
-            mNameProperty.set(mName);
+            mNameProperty.set("Name");
         }
         // Added mShowHeaderInfo as a Boolean in version 3
         if (version == 3) {
@@ -709,7 +707,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      */
     public void delete(@NonNull final CatalogueDBAdapter db) {
         if (getRowId() == 0) {
-            throw new RuntimeException("Style is not stored in the database, can not be deleted");
+            throw new IllegalArgumentException("Style is not stored in the database, can not be deleted");
         }
         db.deleteBooklistStyle(this.getRowId());
     }

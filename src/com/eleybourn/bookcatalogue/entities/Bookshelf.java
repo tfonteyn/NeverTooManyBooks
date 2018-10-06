@@ -24,7 +24,7 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
      *
      * @param id     ID of Bookshelf in DB (0 if not in DB)
      */
-    public Bookshelf(long id, @NonNull final String name) {
+    public Bookshelf(final long id, @NonNull final String name) {
         this.id = id;
         this.name = name.trim();
     }

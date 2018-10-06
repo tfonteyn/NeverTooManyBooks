@@ -49,8 +49,6 @@ import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.eleybourn.bookcatalogue.DEBUG_SWITCHES.DB_SYNC_QUERY_FOR_LONG;
-
 /**
  * Classes used to help synchronize database access across threads.
  *
@@ -287,6 +285,7 @@ public class DbSync {
      * @author Philip Warner
      */
     public static class SynchronizedDb {
+        static final String ERROR_UPDATE_INSIDE_SHARED_TX = "Update inside shared TX";
         /** Underlying database */
         final SQLiteDatabase mDb;
         /** Sync object to use */
@@ -450,7 +449,7 @@ public class DbSync {
 
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive) {
-                    throw new DBExceptions.TransactionException("Update inside shared TX");
+                    throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
                 }
                 mDb.execSQL(sql);
             } else {
@@ -498,7 +497,7 @@ public class DbSync {
             SyncLock syncLock = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive) {
-                    throw new DBExceptions.TransactionException("Update inside shared TX");
+                    throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
                 }
             } else {
                 syncLock = mSync.getExclusiveLock();
@@ -527,7 +526,7 @@ public class DbSync {
             SyncLock syncLock = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive) {
-                    throw new DBExceptions.TransactionException("Update inside shared TX");
+                    throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
                 }
             } else {
                 syncLock = mSync.getExclusiveLock();
@@ -552,12 +551,12 @@ public class DbSync {
          * whereClause.
          */
         public int delete(@NonNull final String table,
-                          @NonNull final String whereClause,
+                          @Nullable final String whereClause,
                           @Nullable final String[] whereArgs) {
             SyncLock syncLock = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive) {
-                    throw new DBExceptions.TransactionException("Update inside shared TX");
+                    throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
                 }
             } else {
                 syncLock = mSync.getExclusiveLock();
@@ -794,7 +793,7 @@ public class DbSync {
         public void bindString(final int index, final String value) {
             if (value == null) {
                 if (BuildConfig.DEBUG) {
-                    Logger.printStackTrace("binding NULL");
+                    Logger.logError(new RuntimeException("binding NULL"));
                 }
                 mStatement.bindNull(index);
             } else {
@@ -849,8 +848,8 @@ public class DbSync {
             SyncLock sharedLock = mSync.getSharedLock();
             try {
                 long result = mStatement.simpleQueryForLong();
-                if (DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG && result <= 0) {
-                    Logger.printStackTrace("simpleQueryForLong got: " + result);
+                if (DEBUG_SWITCHES.DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG && result <= 0) {
+                    Logger.logError(new RuntimeException("simpleQueryForLong got: " + result));
                 }
                 return result;
             } finally {
@@ -871,8 +870,8 @@ public class DbSync {
             SyncLock sharedLock = mSync.getSharedLock();
             try {
                 long result = mStatement.simpleQueryForLong();
-                if (DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG && result <= 0) {
-                    Logger.printStackTrace("simpleQueryForLongOrZero got: " + result);
+                if (DEBUG_SWITCHES.DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG && result <= 0) {
+                    Logger.logError(new RuntimeException("simpleQueryForLongOrZero got: " + result));
                 }
                 return result;
             } catch (SQLiteDoneException ignore) {
@@ -893,9 +892,9 @@ public class DbSync {
          * @return The result of the query.
          */
         public long count() {
-            if (DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG) {
                 if (!mSql.toUpperCase().startsWith("SELECT COUNT(")) {
-                    Logger.printStackTrace("count statement not a count?");
+                    Logger.logError(new IllegalArgumentException("count statement not a count?"));
                 }
             }
             return this.simpleQueryForLongOrZero();
@@ -979,7 +978,7 @@ public class DbSync {
          *
          * @throws android.database.SQLException If the SQL string is invalid for some reason
          */
-        long executeInsert() throws SQLException {
+        public long executeInsert() throws SQLException {
             SyncLock exclusiveLock = mSync.getExclusiveLock();
             try {
                 return mStatement.executeInsert();
@@ -990,7 +989,7 @@ public class DbSync {
 
         public void finalize() {
             if (!mIsClosed && DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
-                Logger.logError("DbSync.SynchronizedStatement: Finalizing non-closed statement (potential error/normal)");
+                Logger.logError(new RuntimeException("DbSync.SynchronizedStatement: Finalizing non-closed statement (potential error/normal)"));
                 if (DEBUG_SWITCHES.SQL) {
                     System.out.println(mSql);
                 }

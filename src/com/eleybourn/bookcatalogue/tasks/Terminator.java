@@ -21,7 +21,6 @@ package com.eleybourn.bookcatalogue.tasks;
 
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
@@ -44,32 +43,30 @@ public class Terminator {
     /** Queue of Event objects currently awaiting execution */
     private static final PriorityQueue<Event> mEvents = new PriorityQueue<>(10, new EventComparator());
     /**
-     * Flag indicating the main thread process is still running and waiting for
-     * a timer to elapse.
+     * Flag indicating the main thread process is still running and waiting for a timer to elapse.
      */
     private static boolean mIsRunning = false;
 
     /**
-     * Dummy method to make sure static initialization is done. Need to be
+     * Dummy method to make sure static initialization is done. Needs to be
      * called from main thread (usually at app startup).
      */
     public static void init() {
-        System.out.println("Nice night for a walk");
     }
 
     /**
      * Enqueue the passed runnable to be run after the specified delay.
      *
-     * @param r     Runnable to execute
-     * @param delay Delay before execution
+     * @param runnable      Runnable to execute
+     * @param delay         Delay before execution
      */
-    public static void enqueue(Runnable r, long delay) {
+    public static void enqueue(@NonNull final Runnable runnable, final long delay) {
         // Compute actual time
         long time = System.currentTimeMillis() + delay;
         // Create Event and add to queue.
-        Event e = new Event(r, time);
+        Event event = new Event(runnable, time);
         synchronized (mTaskQueue) {
-            mEvents.add(e);
+            mEvents.add(event);
             // Make sure task is actually running
             if (!mIsRunning) {
                 mTaskQueue.enqueue(new TerminatorTask());
@@ -88,8 +85,8 @@ public class Terminator {
         public final Runnable runnable;
         final long time;
 
-        public Event(Runnable r, long time) {
-            runnable = r;
+        public Event(@NonNull final Runnable runnable, final long time) {
+            this.runnable = runnable;
             this.time = time;
         }
     }
@@ -113,29 +110,28 @@ public class Terminator {
 
         @Override
         public void run(@NonNull final SimpleTaskContext taskContext) {
-            if (BuildConfig.DEBUG) {
-                System.out.println("Terminator starting");
-            }
+            System.out.println("Terminator: Nice night for a walk.");
             do {
-                Event e;
+                Event event;
                 long delay;
                 // Check when next task due
                 synchronized (mTaskQueue) {
-                    // Lok for a task; if exception or none found, abort.
+                    // Look for a task; if exception or none found, abort.
                     try {
-                        e = mEvents.peek();
+                        event = mEvents.peek();
                     } catch (Exception ex) {
-                        e = null;
+                        event = null;
                     }
-                    if (e == null) {
+                    // none ? quit running task. Will be restarted if/when needed.
+                    if (event == null) {
                         mIsRunning = false;
                         return;
                     }
                     // Check how long until it should run
-                    delay = e.time - System.currentTimeMillis();
+                    delay = event.time - System.currentTimeMillis();
                     // If it's due now, then remove it from the queue.
                     if (delay <= 0)
-                        mEvents.remove(e);
+                        mEvents.remove(event);
                 }
 
                 if (delay > 0) {
@@ -153,7 +149,7 @@ public class Terminator {
                     // Should probably be another thread.
                     // But...not for now.
                     try {
-                        e.runnable.run();
+                        event.runnable.run();
                     } catch (Exception ex) {
                         Logger.logError(ex);
                     }
@@ -163,7 +159,7 @@ public class Terminator {
 
         @Override
         public void onFinish(Exception e) {
-            System.out.println("Terminator terminating. I'll be back.");
+            System.out.println("Terminator: I'll be back.");
             if (e != null) {
                 Logger.logError(e);
             }

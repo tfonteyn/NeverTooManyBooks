@@ -23,7 +23,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BookData;
+import com.eleybourn.bookcatalogue.entities.BookData;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.ImportThread.ImportException;
@@ -264,7 +264,6 @@ public class CsvImporter implements Importer {
         if (!hasUuid && !hasNumericId) {
             // Always import empty IDs...even if they are duplicates.
             long id = mDb.insertBookWithId(0, bookData);
-            //FIXME: ignoring failure
             bookData.putLong(UniqueId.KEY_ID, id);
             // Would be nice to import a cover, but with no ID/UUID that is not possible
         } else {
@@ -393,7 +392,7 @@ public class CsvImporter implements Importer {
         }
         // Handle the series
         final ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList(ArrayUtils.MULTI_STRING_SEPARATOR, seriesDetails, false);
-        Utils.pruneSeriesList(sa);
+        Series.pruneSeriesList(sa);
         Utils.pruneList(db, sa);
         bookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, sa);
     }

@@ -24,7 +24,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BooksRow;
+import com.eleybourn.bookcatalogue.entities.BookRow;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -182,7 +182,7 @@ public class CsvExporter implements Exporter {
         try (BooksCursor bookCursor = db.exportBooks(since);
              BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream, UTF8), BUFFER_SIZE)) {
 
-            final BooksRow rowView = bookCursor.getRowView();
+            final BookRow rowView = bookCursor.getRowView();
             final int totalBooks = bookCursor.getCount();
 
             if (listener.isCancelled()) {
@@ -289,7 +289,7 @@ public class CsvExporter implements Exporter {
      * // V83: Giants In The Sky (1952) * Blish, James|We, The Marauders (1958) * Silverberg, Robert|
      */
     @NonNull
-    private String getAnthologyTitlesForExport(final CatalogueDBAdapter db, final long bookId, final BooksRow rowView) {
+    private String getAnthologyTitlesForExport(final CatalogueDBAdapter db, final long bookId, final BookRow rowView) {
         StringBuilder anthology_titles = new StringBuilder();
         if (rowView.getAnthologyMask() != 0) {
             try (Cursor titles = db.fetchAnthologyTitlesByBookId(bookId)) {

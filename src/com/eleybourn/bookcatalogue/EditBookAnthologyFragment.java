@@ -47,6 +47,7 @@ import android.widget.Toast;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.BookData;
 import com.eleybourn.bookcatalogue.searches.isfdb.HandlesISFDB;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 
@@ -219,12 +220,12 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
     /**
      * we got a book
      *
-     * @param bookInfo our book from ISFDB
+     * @param book our book from ISFDB
      */
     @Override
-    public void onGotISFDBBook(@NonNull final Bundle bookInfo) {
+    public void onGotISFDBBook(@NonNull final Bundle book) {
         @SuppressWarnings("unchecked")
-        final List<AnthologyTitle> results = (List<AnthologyTitle>)bookInfo.get(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
+        final List<AnthologyTitle> results = (List<AnthologyTitle>)book.get(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
 
         if (results == null) {
             Toast.makeText(EditBookAnthologyFragment.this.getContext(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();

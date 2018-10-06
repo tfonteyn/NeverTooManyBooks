@@ -6,7 +6,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.SearchThread;
-import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 
 public class SearchISFDBThread extends SearchThread {
@@ -24,8 +23,8 @@ public class SearchISFDBThread extends SearchThread {
         try {
             doProgress(getString(R.string.searching_isfdb), 0);
             try {
-                ISFDBManager.search(mIsbn, mAuthor, mTitle, mBookInfo, mFetchThumbnail);
-                if (mBookInfo.size() > 0) {
+                ISFDBManager.search(mIsbn, mAuthor, mTitle, mBook, mFetchThumbnail);
+                if (mBook.size() > 0) {
                     // Look for series name and clear KEY_TITLE
                     checkForSeriesName();
                 }

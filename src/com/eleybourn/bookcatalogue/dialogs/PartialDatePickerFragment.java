@@ -39,29 +39,18 @@ public class PartialDatePickerFragment extends DialogFragment {
     private static final String BKEY_DAY = "day";
     private static final String BKEY_TITLE = "title";
 
-    /**
-     * Currently displayed year; null if empty/invalid
-     */
+    /** Currently displayed year; null if empty/invalid */
     private Integer mYear;
-    /**
-     * Currently displayed month; null if empty/invalid
-     */
+    /** Currently displayed month; null if empty/invalid */
     private Integer mMonth;
-    /**
-     * Currently displayed day; null if empty/invalid
-     */
+    /** Currently displayed day; null if empty/invalid */
     private Integer mDay;
-    /**
-     * Title id
-     */
+    /** Title id */
     private int mTitleId;
-    /**
-     * ID passed from caller to identify this dialog
-     */
+    /** ID passed from caller to identify this dialog */
     private int mDialogId;
     /**
      * The callback received when the user "sets" the date in the dialog.
-     * <p>
      * The event is passed on the the calling activity
      */
     private final PartialDatePicker.OnDateSetListener mDialogListener = new PartialDatePicker.OnDateSetListener() {

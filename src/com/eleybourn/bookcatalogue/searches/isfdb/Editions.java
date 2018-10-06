@@ -18,7 +18,7 @@ class Editions extends AbstractBase {
      * We assume the isbn is already checked & valid!
      */
     Editions(@NonNull final String isbn) {
-        mPath = ISFDBManager.getBaseURL() + String.format(ISFDBManager.getBaseURL() + EDITIONS_URL, isbn);
+        mPath = ISFDBManager.getBaseURL() + String.format(EDITIONS_URL, isbn);
     }
 
     /**

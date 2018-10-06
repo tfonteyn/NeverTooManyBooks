@@ -23,10 +23,10 @@ package com.eleybourn.bookcatalogue.searches.goodreads.api;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -46,24 +46,6 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.BOOK_ID;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.BOOK_URL;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.IMAGE;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.ISBN13;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.IS_EBOOK;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.ORIG_PUBLICATION_DAY;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.ORIG_PUBLICATION_MONTH;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.ORIG_PUBLICATION_YEAR;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.ORIG_TITLE;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.PUBLICATION_DAY;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.PUBLICATION_MONTH;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.PUBLICATION_YEAR;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.RATING;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.REVIEW_ID;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.SHELVES;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.SMALL_IMAGE;
-import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames.WORK_ID;
-
 /**
  * Class to query and response to search.books api call. This is an abstract class
  * designed to be used by other classes that implement specific search methods. It does
@@ -72,6 +54,16 @@ import static com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHand
  * @author Philip Warner
  */
 public abstract class ShowBookApiHandler extends ApiHandler {
+
+    private static final String WORK = "work";
+    private static final String AUTHORS = "authors";
+    private static final String MY_REVIEW = "my_review";
+    private static final String SERIES_WORKS = "series_works";
+    private static final String SERIES_WORK = "series_work";
+    private static final String SERIES = "series";
+    private static final String AUTHOR = "author";
+    private static final String ID = "id";
+    private static final String TITLE = "title";
 
     private static final String GOODREADS_RESPONSE = "GoodreadsResponse";
     private static final String XML_BOOK = "book";
@@ -114,9 +106,8 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 			*/
         }
     };
-    /**
-     * Transient global data for current work in search results.
-     */
+
+    /** Transient global data for current work in search results. */
     private Bundle mBook;
 
     // Current author being processed
@@ -185,10 +176,6 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             }
         }
     };
-    /**
-     * Local storage for series book appears in
-     */
-    private ArrayList<Series> mSeries = null;
 
 	/*
 	 * Typical result:
@@ -341,13 +328,12 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 			</GoodreadsResponse>
 
 	 */
-    /**
-     * Local storage for series book appears in
-     */
+
+    /** Local storage for series book appears in */
+    private ArrayList<Series> mSeries = null;
+    /** Local storage for series book appears in */
     private ArrayList<Author> mAuthors = null;
-    /**
-     * Local storage for shelf names
-     */
+    /** Local storage for shelf names */
     private ArrayList<String> mShelves = null;
     /**
      * Create a new shelves collection when the "shelves" tag is encountered.
@@ -358,6 +344,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             mShelves = new ArrayList<>();
         }
     };
+
     /**
      * Add a shelf to the array
      */
@@ -373,14 +360,13 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             }
         }
     };
-    /**
-     * Current author being processed
-     */
+
+    /** Current author being processed */
     private String mCurrAuthorName = null;
     private final XmlHandler mHandleAuthorEnd = new XmlHandler() {
         @Override
         public void process(@NonNull ElementContext context) {
-            if (mCurrAuthorName != null && mCurrAuthorName.length() > 0) {
+            if (mCurrAuthorName != null && !mCurrAuthorName.isEmpty()) {
                 if (mAuthors == null) {
                     mAuthors = new ArrayList<>();
                 }
@@ -389,15 +375,15 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             }
         }
     };
+
     private final XmlHandler mHandleAuthorName = new XmlHandler() {
         @Override
         public void process(@NonNull ElementContext context) {
             mCurrAuthorName = context.body.trim();
         }
     };
-    /**
-     * Current series being processed
-     */
+
+    /** Current series being processed */
     private String mCurrSeriesName = null;
     private final XmlHandler mHandleSeriesName = new XmlHandler() {
         @Override
@@ -405,14 +391,14 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             mCurrSeriesName = context.body.trim();
         }
     };
-    /**
-     * Current series being processed
-     */
+
+    /** Current series being processed */
     private Integer mCurrSeriesPosition = null;
+
     private final XmlHandler mHandleSeriesEnd = new XmlHandler() {
         @Override
         public void process(@NonNull ElementContext context) {
-            if (mCurrSeriesName != null && mCurrSeriesName.length() > 0) {
+            if (mCurrSeriesName != null && !mCurrSeriesName.isEmpty()) {
                 if (mSeries == null) {
                     mSeries = new ArrayList<>();
                 }
@@ -426,6 +412,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             }
         }
     };
+
     private final XmlHandler mHandleSeriesPosition = new XmlHandler() {
         @Override
         public void process(@NonNull ElementContext context) {
@@ -435,7 +422,6 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             }
         }
     };
-
 
     ShowBookApiHandler(@NonNull final GoodreadsManager manager, @SuppressWarnings("SameParameterValue") final boolean signRequest) {
         super(manager);
@@ -452,12 +438,12 @@ public abstract class ShowBookApiHandler extends ApiHandler {
      *
      * @return the Bundle of data.
      */
+    @NonNull
     Bundle sendRequest(@NonNull final HttpGet request, final boolean fetchThumbnail) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 
         mBook = new Bundle();
-
         mShelves = null;
 
         // Get a handler and run query.
@@ -468,8 +454,8 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         // When we get here, the data has been collected but needs to be processed into standard form.
 
         // Use ISBN13 by preference
-        if (mBook.containsKey(ISBN13)) {
-            String s = mBook.getString(ISBN13);
+        if (mBook.containsKey(ShowBookFieldNames.ISBN13)) {
+            String s = mBook.getString(ShowBookFieldNames.ISBN13);
             if (s != null && s.length() == 13) {
                 mBook.putString(UniqueId.KEY_ISBN, s);
             }
@@ -485,10 +471,10 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 
         if (fetchThumbnail) {
             String bestImage = null;
-            if (mBook.containsKey(IMAGE)) {
-                bestImage = mBook.getString(IMAGE);
-                if (bestImage != null && bestImage.contains(UniqueId.BKEY_NOCOVER) && mBook.containsKey(SMALL_IMAGE)) {
-                    bestImage = mBook.getString(SMALL_IMAGE);
+            if (mBook.containsKey(ShowBookFieldNames.IMAGE)) {
+                bestImage = mBook.getString(ShowBookFieldNames.IMAGE);
+                if (bestImage != null && bestImage.contains(UniqueId.BKEY_NOCOVER) && mBook.containsKey(ShowBookFieldNames.SMALL_IMAGE)) {
+                    bestImage = mBook.getString(ShowBookFieldNames.SMALL_IMAGE);
                     if (bestImage != null && bestImage.contains(UniqueId.BKEY_NOCOVER)) {
                         bestImage = null;
                     }
@@ -503,9 +489,9 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         }
 
         /* Build the pub date based on the components */
-        GoodreadsManager.buildDate(mBook, PUBLICATION_YEAR, PUBLICATION_MONTH, PUBLICATION_DAY, UniqueId.KEY_BOOK_DATE_PUBLISHED);
+        GoodreadsManager.buildDate(mBook, ShowBookFieldNames.PUBLICATION_YEAR, ShowBookFieldNames.PUBLICATION_MONTH, ShowBookFieldNames.PUBLICATION_DAY, UniqueId.KEY_BOOK_DATE_PUBLISHED);
 
-        if (mBook.containsKey(IS_EBOOK) && mBook.getBoolean(IS_EBOOK)) {
+        if (mBook.containsKey(ShowBookFieldNames.IS_EBOOK) && mBook.getBoolean(ShowBookFieldNames.IS_EBOOK)) {
             mBook.putString(UniqueId.KEY_BOOK_FORMAT, UniqueId.BVAL_GOODREADS_FORMAT_EBOOK);
         }
 
@@ -515,7 +501,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         if (mBook.containsKey(UniqueId.KEY_TITLE)) {
             String thisTitle = mBook.getString(UniqueId.KEY_TITLE);
             Series.SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
-            if (details != null && details.name.length() > 0) {
+            if (details != null && !details.name.isEmpty()) {
                 if (mSeries == null) {
                     mSeries = new ArrayList<>();
                 }
@@ -528,8 +514,8 @@ public abstract class ShowBookApiHandler extends ApiHandler {
                 //	mBook.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar-1));
                 //}
             }
-        } else if (mBook.containsKey(ORIG_TITLE)) {
-            mBook.putString(UniqueId.KEY_TITLE, mBook.getString(ORIG_TITLE));
+        } else if (mBook.containsKey(ShowBookFieldNames.ORIG_TITLE)) {
+            mBook.putString(UniqueId.KEY_TITLE, mBook.getString(ShowBookFieldNames.ORIG_TITLE));
         }
 
         // ENHANCE Store WORK_ID = "__work_id" into GR_WORK_ID;
@@ -537,8 +523,8 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 
         // If no published date, try original date
         if (!mBook.containsKey(UniqueId.KEY_BOOK_DATE_PUBLISHED)) {
-            String origDate = GoodreadsManager.buildDate(mBook, ORIG_PUBLICATION_YEAR, ORIG_PUBLICATION_MONTH, ORIG_PUBLICATION_DAY, null);
-            if (origDate != null && origDate.length() > 0) {
+            String origDate = GoodreadsManager.buildDate(mBook, ShowBookFieldNames.ORIG_PUBLICATION_YEAR, ShowBookFieldNames.ORIG_PUBLICATION_MONTH, ShowBookFieldNames.ORIG_PUBLICATION_DAY, null);
+            if (origDate != null && !origDate.isEmpty()) {
                 mBook.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, origDate);
             }
         }
@@ -555,7 +541,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         }
 
         if (mShelves != null && mShelves.size() > 0) {
-            mBook.putStringArrayList(SHELVES, mShelves);
+            mBook.putStringArrayList(ShowBookFieldNames.SHELVES, mShelves);
         }
         // Return parsed results.
         return mBook;
@@ -644,69 +630,69 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 			</GoodreadsResponse>
 		 */
 
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "id")
-                .setEndAction(mHandleLong, BOOK_ID);
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "title")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, ID)
+                .setEndAction(mHandleLong, ShowBookFieldNames.BOOK_ID);
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, TITLE)
                 .setEndAction(mHandleText, UniqueId.KEY_TITLE);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "isbn")
                 .setEndAction(mHandleText, UniqueId.KEY_ISBN);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "isbn13")
-                .setEndAction(mHandleText, ISBN13);
+                .setEndAction(mHandleText, ShowBookFieldNames.ISBN13);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "image_url")
-                .setEndAction(mHandleText, IMAGE);
+                .setEndAction(mHandleText, ShowBookFieldNames.IMAGE);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "small_image_url")
-                .setEndAction(mHandleText, SMALL_IMAGE);
+                .setEndAction(mHandleText, ShowBookFieldNames.SMALL_IMAGE);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "publication_year")
-                .setEndAction(mHandleLong, PUBLICATION_YEAR);
+                .setEndAction(mHandleLong, ShowBookFieldNames.PUBLICATION_YEAR);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "publication_month")
-                .setEndAction(mHandleLong, PUBLICATION_MONTH);
+                .setEndAction(mHandleLong, ShowBookFieldNames.PUBLICATION_MONTH);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "publication_day")
-                .setEndAction(mHandleLong, PUBLICATION_DAY);
+                .setEndAction(mHandleLong, ShowBookFieldNames.PUBLICATION_DAY);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "publisher")
                 .setEndAction(mHandleText, UniqueId.KEY_BOOK_PUBLISHER);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "is_ebook")
-                .setEndAction(mHandleBoolean, IS_EBOOK);
+                .setEndAction(mHandleBoolean, ShowBookFieldNames.IS_EBOOK);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "description")
                 .setEndAction(mHandleText, UniqueId.KEY_DESCRIPTION);
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "work", "id")
-                .setEndAction(mHandleLong, WORK_ID);
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "work", "original_publication_day")
-                .setEndAction(mHandleLong, ORIG_PUBLICATION_DAY);
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "work", "original_publication_month")
-                .setEndAction(mHandleLong, ORIG_PUBLICATION_MONTH);
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "work", "original_publication_year")
-                .setEndAction(mHandleLong, ORIG_PUBLICATION_YEAR);
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "work", "original_title")
-                .setEndAction(mHandleText, ORIG_TITLE);
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, WORK, ID)
+                .setEndAction(mHandleLong, ShowBookFieldNames.WORK_ID);
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, WORK, "original_publication_day")
+                .setEndAction(mHandleLong, ShowBookFieldNames.ORIG_PUBLICATION_DAY);
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, WORK, "original_publication_month")
+                .setEndAction(mHandleLong, ShowBookFieldNames.ORIG_PUBLICATION_MONTH);
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, WORK, "original_publication_year")
+                .setEndAction(mHandleLong, ShowBookFieldNames.ORIG_PUBLICATION_YEAR);
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, WORK, "original_title")
+                .setEndAction(mHandleText, ShowBookFieldNames.ORIG_TITLE);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "average_rating")
-                .setEndAction(mHandleFloat, RATING);
+                .setEndAction(mHandleFloat, ShowBookFieldNames.RATING);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "num_pages")
                 .setEndAction(mHandleLong, UniqueId.KEY_BOOK_PAGES);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "format")
                 .setEndAction(mHandleText, UniqueId.KEY_BOOK_FORMAT);
         XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "url")
-                .setEndAction(mHandleText, BOOK_URL);
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "authors", "author")
+                .setEndAction(mHandleText, ShowBookFieldNames.BOOK_URL);
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, AUTHORS, AUTHOR)
                 .setStartAction(mHandleAuthorStart)
                 .setEndAction(mHandleAuthorEnd);
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "authors", "author", "id")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, AUTHORS, AUTHOR, ID)
                 .setEndAction(mHandleAuthorId);
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "authors", "author", "name")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, AUTHORS, AUTHOR, "name")
                 .setEndAction(mHandleAuthorName);
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "my_review", "id")
-                .setEndAction(mHandleLong, REVIEW_ID);
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "my_review", "shelves")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, MY_REVIEW, ID)
+                .setEndAction(mHandleLong, ShowBookFieldNames.REVIEW_ID);
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, MY_REVIEW, "shelves")
                 .setStartAction(mHandleShelvesStart);
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "my_review", "shelves", "shelf")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, MY_REVIEW, "shelves", "shelf")
                 .setStartAction(mHandleShelf);
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "series_works", "series_work")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, SERIES_WORKS, SERIES_WORK)
                 .setStartAction(mHandleSeriesStart)
                 .setEndAction(mHandleSeriesEnd);
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "series_works", "series_work", "user_position")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, SERIES_WORKS, SERIES_WORK, "user_position")
                 .setEndAction(mHandleSeriesPosition);
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "series_works", "series_work", "series", "id")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, SERIES_WORKS, SERIES_WORK, SERIES, ID)
                 .setEndAction(mHandleSeriesId);
-        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, "series_works", "series_work", "series", "title")
+        XmlFilter.buildFilter(mRootFilter, GOODREADS_RESPONSE, XML_BOOK, SERIES_WORKS, SERIES_WORK, SERIES, TITLE)
                 .setEndAction(mHandleSeriesName);
     }
 
@@ -716,6 +702,10 @@ public abstract class ShowBookApiHandler extends ApiHandler {
      * @author Philip Warner
      */
     public static final class ShowBookFieldNames {
+
+        public static final String SHELVES = "__shelves";
+        public static final String BOOK_ID = "__book_id";
+        public static final String REVIEW_ID = "__review_id";
 
         static final String ISBN13 = "__isbn13";
         static final String IMAGE = "__image";
@@ -731,9 +721,5 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         static final String ORIG_TITLE = "__orig_title";
         static final String RATING = "__rating";
         static final String BOOK_URL = "__url";
-
-        public static final String SHELVES = "__shelves";
-        public static final String BOOK_ID = "__book_id";
-        public static final String REVIEW_ID = "__review_id";    }
-
+    }
 }

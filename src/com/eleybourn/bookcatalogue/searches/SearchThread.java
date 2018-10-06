@@ -22,7 +22,7 @@ package com.eleybourn.bookcatalogue.searches;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -41,7 +41,7 @@ abstract public class SearchThread extends ManagedTask {
     protected final String mTitle;
     protected final String mIsbn;
     // Accumulated book info.
-    protected Bundle mBookInfo = new Bundle();
+    protected Bundle mBook = new Bundle();
 
     /**
      * Constructor. Will search according to passed parameters. If an ISBN
@@ -53,14 +53,15 @@ abstract public class SearchThread extends ManagedTask {
      * @param isbn    ISBN to search for.
      */
     protected SearchThread(@NonNull final TaskManager manager,
-                           @Nullable final String author,
-                           @Nullable final String title,
-                           @Nullable final String isbn,
+                           @NonNull final String author,
+                           @NonNull final String title,
+                           @NonNull final String isbn,
                            final boolean fetchThumbnail) {
         super(manager);
-        mAuthor = author;
-        mTitle = title;
-        mIsbn = isbn;
+        // trims might not be needed, but heck.
+        mAuthor = author.trim();
+        mTitle = title.trim();
+        mIsbn = isbn.trim();
         mFetchThumbnail = fetchThumbnail;
     }
 
@@ -77,26 +78,26 @@ abstract public class SearchThread extends ManagedTask {
      * next lookup will overwrite with a possibly new title.
      */
     protected void checkForSeriesName() {
-        if (mBookInfo.containsKey(UniqueId.KEY_TITLE)) {
-            String thisTitle = mBookInfo.getString(UniqueId.KEY_TITLE);
+        if (mBook.containsKey(UniqueId.KEY_TITLE)) {
+            String thisTitle = mBook.getString(UniqueId.KEY_TITLE);
             if (thisTitle != null) {
                 SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
                 if (details != null && !details.name.isEmpty()) {
                     List<Series> sl;
-                    if (mBookInfo.containsKey(UniqueId.BKEY_SERIES_DETAILS)) {
-                        sl = ArrayUtils.getSeriesUtils().decodeList('|', mBookInfo.getString(UniqueId.BKEY_SERIES_DETAILS), false);
+                    if (mBook.containsKey(UniqueId.BKEY_SERIES_DETAILS)) {
+                        sl = ArrayUtils.getSeriesUtils().decodeList('|', mBook.getString(UniqueId.BKEY_SERIES_DETAILS), false);
                     } else {
                         sl = new ArrayList<>();
                     }
                     sl.add(new Series(details.name, details.position));
-                    mBookInfo.putString(UniqueId.BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList('|', sl));
-                    mBookInfo.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1).trim());
+                    mBook.putString(UniqueId.BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList('|', sl));
+                    mBook.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1).trim());
                 }
             }
         }
     }
 
-    protected void showException(int id, Exception e) {
+    protected void showException(@StringRes final int id, @NonNull final Exception e) {
         String s;
         try {
             s = e.getMessage();
@@ -110,7 +111,8 @@ abstract public class SearchThread extends ManagedTask {
     /**
      * Accessor, so when thread has finished, data can be retrieved.
      */
+    @NonNull
     public Bundle getBookData() {
-        return mBookInfo;
+        return mBook;
     }
 }

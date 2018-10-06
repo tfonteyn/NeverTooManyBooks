@@ -25,7 +25,7 @@ public class BCPreferences {
     /** Last full backup file path */
     private static final String PREF_LAST_BACKUP_FILE = "Backup.LastFile";
 
-    // All new prefs should start with TAG
+    /** All new prefs should start with TAG */
     private static final String TAG = "App";
     public static final String PREF_USE_EXTERNAL_IMAGE_CROPPER = TAG + ".UseExternalImageCropper";
     public static final String PREF_CROP_FRAME_WHOLE_IMAGE = TAG + ".CropFrameWholeImage";
@@ -199,8 +199,8 @@ public class BCPreferences {
             Arrays.sort(keys);
 
             for (String key : keys) {
-                Object o = map.get(key);
-                sb.append("\n").append(key).append("=").append(o);
+                Object value = map.get(key);
+                sb.append("\n").append(key).append("=").append(value);
             }
             sb.append("\n\n");
             System.out.println(sb);

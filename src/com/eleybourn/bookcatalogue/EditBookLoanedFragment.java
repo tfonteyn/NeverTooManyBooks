@@ -26,6 +26,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -41,6 +42,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.entities.BookData;
 
 import java.util.ArrayList;
 
@@ -132,7 +134,7 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
     }
 
     @NonNull
-    private ScrollView loadFragmentIntoScrollView(final int resId) {
+    private ScrollView loadFragmentIntoScrollView(@LayoutRes final int resId) {
         ScrollView sv = getView().findViewById(R.id.root);
         sv.removeAllViews();
         getActivity().getLayoutInflater().inflate(resId, sv);

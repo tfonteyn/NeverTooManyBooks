@@ -20,21 +20,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <!-- digits: 0..9X for ISBN, but ASIN allows more -->
             <EditText
                 android:id="@+id/isbn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:digits="1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
-                android:hint="@string/isbn"
-                android:inputType="text"
-                android:padding="@dimen/padding_border_double"
+                android:digits="1234567890xX"
                 android:gravity="start"
+                android:hint="@string/isbn"
+                android:windowSoftInputMode="stateAlwaysHidden"
+                android:inputType="textCapCharacters|textNoSuggestions"
+                android:padding="@dimen/padding_border_double"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                tools:ignore="Autofill">
-                <requestFocus/>
-            </EditText>
+                tools:ignore="Autofill" />
             <Button
                 android:id="@+id/search"
                 android:layout_width="wrap_content"

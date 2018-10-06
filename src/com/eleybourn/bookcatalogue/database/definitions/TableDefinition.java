@@ -79,6 +79,21 @@ public class TableDefinition implements AutoCloseable {
     }
 
     /**
+     * Given arrays of table and index definitions, create the database.
+     *
+     * @param db     Blank database
+     * @param tables Table list
+     */
+    public static void createTables(@NonNull final DbSync.SynchronizedDb db, @NonNull final TableDefinition... tables) {
+        for (TableDefinition table : tables) {
+            table.create(db, true);
+            for (IndexDefinition index : table.getIndexes()) {
+                db.execSQL(index.getSql());
+            }
+        }
+    }
+
+    /**
      * @return list of domains.
      */
     @NonNull
@@ -377,7 +392,7 @@ public class TableDefinition implements AutoCloseable {
         }
         // Make sure one with same name is not already in table
         if (mDomainNameCheck.containsKey(domain.name.toLowerCase())) {
-            throw new IllegalStateException("A domain with that name has already been added");
+            throw new IllegalArgumentException("A domain '"+ domain +"' has already been added");
         }
         // Add it
         mDomains.add(domain);

@@ -16,20 +16,14 @@ import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Based on ISBN:
- *
- * Editions: with "%s" the isbn
- * http://www.isfdb.org/cgi-bin/se.cgi?arg=%s&type=ISBN
- * Book: with %s the bookId (a long really)
- * http://www.isfdb.org/cgi-bin/pl.cgi?%s
- */
 public class ISFDBManager {
 
     private static final String PREFS_HOST_URL = "ISFDBManager.hostUrl";
     /**
      * task queue for the searching/parsing of content (ant titles)
      * specifically used for direct search calls from {@link EditBookAnthologyFragment}
+     *
+     * Not used for 'normal' search
      */
     private static SimpleTaskQueue taskQueue = null;
 
@@ -58,7 +52,7 @@ public class ISFDBManager {
                 return null;
             }
         } catch (Exception e) {
-            Logger.logError(e, "Error getting thumbnail from Google");
+            Logger.logError(e, "Error getting thumbnail from ISFDB");
             return null;
         }
     }
@@ -66,7 +60,7 @@ public class ISFDBManager {
     public static void search(@NonNull final String isbn,
                               @NonNull String author,
                               @NonNull String title,
-                              @NonNull final Bundle /* out */ bookInfo,
+                              @NonNull final Bundle /* out */ book,
                               final boolean fetchThumbnail) {
         //replace spaces with %20
         author = author.replace(" ", "%20");
@@ -75,12 +69,12 @@ public class ISFDBManager {
         if (IsbnUtils.isValid(isbn)) {
             List<String> editions = new Editions(isbn).fetchEditions();
             if (editions.size() > 0) {
-                new ISFDBBook(editions.get(0), bookInfo, fetchThumbnail);
+                ISFDBBook isfdbBook = new ISFDBBook(editions.get(0), book, fetchThumbnail);
+                isfdbBook.fetchBook();
             }
         } else {
             //TODO: implement ISFDB search by author/title
             String path = getBaseURL() + "/cgi-bin/adv_search_results.cgi?title_title%3A" + title + "%2Bauthor_canonical%3A" + author;
-            throw new IllegalStateException("TODO: implement ISFDB search by author/title");
         }
     }
 
@@ -111,56 +105,5 @@ public class ISFDBManager {
             taskQueue = new SimpleTaskQueue("isfdb-book");
         }
         taskQueue.enqueue(new ISFDBBookTask(bookUrl, false, callback));
-    }
-
-    private static class ISFDBEditionsTask implements SimpleTaskQueue.SimpleTask {
-
-        private List<String> editions;
-        private String isbn;
-        private HandlesISFDB callback;
-
-        ISFDBEditionsTask(@NonNull final String isbn, HandlesISFDB callback) {
-            if (!IsbnUtils.isValid(isbn)) {
-                throw new IllegalArgumentException("Can not get editions without an ISBN");
-            }
-            this.isbn = isbn;
-            this.callback = callback;
-        }
-
-        @Override
-        public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) {
-            Editions bookEditions = new Editions(isbn);
-            editions = bookEditions.fetchEditions();
-        }
-
-        @Override
-        public void onFinish(@Nullable final Exception e) {
-            callback.onGotISFDBEditions(editions);
-        }
-    }
-
-    private static class ISFDBBookTask implements SimpleTaskQueue.SimpleTask {
-        private HandlesISFDB callback;
-        private final String bookUrl;
-        private Bundle mBookInfo = new Bundle();
-        private boolean fetchThumbnail;
-
-        ISFDBBookTask(@NonNull final String bookUrl,
-                      final boolean fetchThumbnail,
-                      @NonNull final HandlesISFDB callback) {
-            this.callback = callback;
-            this.bookUrl = bookUrl;
-            this.fetchThumbnail = fetchThumbnail;
-        }
-
-        @Override
-        public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) {
-            new ISFDBBook(bookUrl, mBookInfo, fetchThumbnail);
-        }
-
-        @Override
-        public void onFinish(@Nullable final Exception e) {
-            callback.onGotISFDBBook(mBookInfo);
-        }
     }
 }

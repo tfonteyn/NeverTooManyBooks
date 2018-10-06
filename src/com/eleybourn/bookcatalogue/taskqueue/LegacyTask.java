@@ -52,6 +52,7 @@ public class LegacyTask extends Task {
     public int getCategory() {
         return CAT_LEGACY;
     }
+
     @Override
     public View newListItemView(@NonNull final LayoutInflater inflater,
                                 @NonNull final Context context,

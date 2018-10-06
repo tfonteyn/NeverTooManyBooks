@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -46,11 +47,13 @@ import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import java.lang.ref.WeakReference;
 import java.text.ParseException;
@@ -61,7 +64,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * This is the class that manages data and views for an activity; access to the data that
+ * This is the class that manages data and views for an Activity; access to the data that
  * each view represents should be handled via this class (and its related classes) where
  * possible.
  *
@@ -69,14 +72,14 @@ import java.util.Objects;
  * <ul>
  * <li> handling of visibility via preferences
  * <li> handling of 'group' visibility via the 'group' property of a field.
- * <li> understanding of kinds of views (setting a checkbox value to 'true' will work as
+ * <li> understanding of kinds of views (setting a Checkbox value to 'true' will work as
  * expected as will setting the value of a Spinner). As new view types are added, it
- * will be necessary to add new FieldAccessor implementations.
+ * will be necessary to add new {@link FieldDataAccessor} implementations.
  * <li> Custom data accessors and formatters to provide application-specific data rules.
  * <li> validation: calling validate will call user-defined or predefined validation routines and
  * return success or failure. The text of any exceptions will be available after the call.
- * <li> simplified loading of data from a cursor.
- * <li> simplified extraction of data to a ContentValues collection.
+ * <li> simplified loading of data from a Cursor.
+ * <li> simplified extraction of data to a {@link ContentValues} collection.
  * </ul>
  *
  * Formatters and Accessors
@@ -113,10 +116,10 @@ import java.util.Objects;
  *
  * 2. Handlers?
  *
- * The add() method of Fields returns a new Field object which exposes the 'view' member; this
- * can be used to perform view-specific tasks like setting onClick() handlers.
+ * The add() method of Fields returns a new {@link Field} object which exposes the 'View' member;
+ * this can be used to perform view-specific tasks like setting onClick() handlers.
  *
- * TODO: Rationalize the use of this collection with the DataManager.
+ * TODO: Rationalize the use of this collection with the {@link DataManager}.
  *
  * @author Philip Warner
  */
@@ -162,6 +165,8 @@ public class Fields extends ArrayList<Fields.Field> {
     /**
      * Utility routine to parse a date. Parses YYYY-MM-DD and DD-MMM-YYYY format.
      * Could be generalized even further if desired by supporting more formats.
+     *
+     * FIXME: move/use the one from {@link DateUtils}.
      *
      * @param s String to parse
      *
@@ -476,6 +481,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @return res The resource manager to use when looking up strings.
      */
+    @SuppressWarnings("unused")
     public String getValidationExceptionMessage(@NonNull final Resources res) {
         if (mValidationExceptions.size() == 0) {
             return "No error";
@@ -723,27 +729,27 @@ public class Fields extends ArrayList<Fields.Field> {
             if (v == null) {
                 // Log the error. Not much more we can do.
                 String msg = "NULL View: col=" + field.column + ", id=" + field.id + ", group=" + field.group;
-                Fields fs = field.getFields();
-                if (fs == null) {
+                Fields fields = field.getFields();
+                if (fields == null) {
                     msg += ". Fields is NULL.";
                 } else {
                     msg += ". Fields is valid.";
-                    FieldsContext ctx = fs.getContext();
-                    if (ctx == null) {
+                    FieldsContext context = fields.getContext();
+                    if (context == null) {
                         msg += ". Context is NULL.";
                     } else {
-                        msg += ". Context is " + ctx.getClass().getSimpleName() + ".";
-                        Object o = ctx.dbgGetOwnerContext();
-                        if (o == null) {
+                        msg += ". Context is " + context.getClass().getSimpleName() + ".";
+                        Object ownerContext = context.dbgGetOwnerContext();
+                        if (ownerContext == null) {
                             msg += ". Owner is NULL.";
                         } else {
-                            msg += ". Owner is " + o.getClass().getSimpleName() + " (" + o + ")";
+                            msg += ". Owner is " + ownerContext.getClass().getSimpleName() + " (" + ownerContext + ")";
                         }
                     }
                 }
                 Tracker.handleEvent(this, msg, Tracker.States.Running);
                 // This should NEVER happen, but it does. So we need more info about why & when.
-                throw new RuntimeException("Unable to get associated View object");
+                throw new IllegalStateException("Unable to get associated View object");
             } else {
                 if (mFormatHtml && s != null) {
                     v.setText(Html.fromHtml(field.format(s)));
@@ -808,21 +814,21 @@ public class Fields extends ArrayList<Fields.Field> {
             }
             try {
                 TextView view = (TextView) field.getView();
-                //
-                // Every field MUST have an associated View object, but sometimes it is not found.
-                // When not found, the app crashes.
-                //
-                // The following code is to help diagnose these cases, not avoid them.
-                //
-                // NOTE: 	This does NOT entirely fix the problem, it gathers debug info. but
-                //			we have implemented one work-around
-                //
-                // Work-around #1:
-                //
-                // It seems that sometimes the afterTextChanged() event fires after the text field
-                // is removed from the screen. In this case, there is no need to synchronize the values 
-                // since the view is gone.
-                //
+                /*
+                 Every field MUST have an associated View object, but sometimes it is not found.
+                 When not found, the app crashes.
+
+                 The following code is to help diagnose these cases, not avoid them.
+
+                 NOTE: 	This does NOT entirely fix the problem, it gathers debug info.
+                        but we have implemented one work-around
+
+                 Work-around #1:
+
+                 It seems that sometimes the afterTextChanged() event fires after the text field
+                 is removed from the screen. In this case, there is no need to synchronize the values
+                 since the view is gone.
+                */
                 if (view == null) {
                     String msg = "NULL View: col=" + field.column + ", id=" + field.id + ", group=" + field.group;
                     Fields fs = field.getFields();
@@ -871,7 +877,7 @@ public class Fields extends ArrayList<Fields.Field> {
         }
 
         @Override
-        public void get(@NonNull final Field field, @NonNull final DataManager values) {
+        public void get(@NonNull final Field field, @NonNull final DataManager dataManager) {
             try {
                 TextView view = (TextView) field.getView();
                 if (view == null) {
@@ -880,14 +886,14 @@ public class Fields extends ArrayList<Fields.Field> {
                 if (view.getText() == null) {
                     throw new RuntimeException("Text is NULL for field " + field.column);
                 }
-                values.putString(field.column, field.extract(view.getText().toString()).trim());
+                dataManager.putString(field.column, field.extract(view.getText().toString()).trim());
             } catch (Exception e) {
                 throw new RuntimeException("Unable to save data", e);
             }
         }
 
         public Object get(@NonNull final Field field) {
-            return field.extract(((TextView) field.getView()).getText().toString());
+            return field.extract(((TextView) field.getView()).getText().toString().trim());
         }
     }
 
@@ -897,23 +903,23 @@ public class Fields extends ArrayList<Fields.Field> {
      * @author Philip Warner
      */
     static public class CheckBoxAccessor implements FieldDataAccessor {
-        public void set(@NonNull final Field field, @NonNull final Cursor c) {
-            set(field, c.getString(c.getColumnIndex(field.column)));
+        public void set(@NonNull final Field field, @NonNull final Cursor cursor) {
+            set(field, cursor.getString(cursor.getColumnIndex(field.column)));
         }
 
-        public void set(@NonNull final Field field, @NonNull final Bundle b) {
-            set(field, b.getString(field.column));
+        public void set(@NonNull final Field field, @NonNull final Bundle bundle) {
+            set(field, bundle.getString(field.column));
         }
 
-        public void set(@NonNull final Field field, @NonNull final DataManager data) {
-            set(field, data.getString(field.column));
+        public void set(@NonNull final Field field, @NonNull final DataManager dataManager) {
+            set(field, dataManager.getString(field.column));
         }
 
-        public void set(@NonNull final Field field, @Nullable final String s) {
+        public void set(@NonNull final Field field, @Nullable final String value) {
             CheckBox cb = (CheckBox) field.getView();
-            if (s != null) {
+            if (value != null) {
                 try {
-                    cb.setChecked(Datum.toBoolean(field.format(s), true));
+                    cb.setChecked(Datum.toBoolean(field.format(value), true));
                 } catch (Exception e) {
                     cb.setChecked(false);
                 }
@@ -932,12 +938,12 @@ public class Fields extends ArrayList<Fields.Field> {
         }
 
         @Override
-        public void get(@NonNull final Field field, @NonNull final DataManager values) {
+        public void get(@NonNull final Field field, @NonNull final DataManager dataManager) {
             CheckBox v = (CheckBox) field.getView();
             if (field.formatter != null) {
-                values.putString(field.column, field.extract(v.isChecked() ? "1" : "0"));
+                dataManager.putString(field.column, field.extract(v.isChecked() ? "1" : "0"));
             } else {
-                values.putBoolean(field.column, v.isChecked());
+                dataManager.putBoolean(field.column, v.isChecked());
             }
         }
 
@@ -956,54 +962,54 @@ public class Fields extends ArrayList<Fields.Field> {
      * @author Philip Warner
      */
     static public class RatingBarAccessor implements FieldDataAccessor {
-        public void set(@NonNull final Field field, @NonNull final Cursor c) {
-            RatingBar v = (RatingBar) field.getView();
+        public void set(@NonNull final Field field, @NonNull final Cursor cursor) {
+            RatingBar ratingBar = (RatingBar) field.getView();
             if (field.formatter != null) {
-                v.setRating(Float.parseFloat(field.formatter.format(field, c.getString(c.getColumnIndex(field.column)))));
+                ratingBar.setRating(Float.parseFloat(field.formatter.format(field, cursor.getString(cursor.getColumnIndex(field.column)))));
             } else {
-                v.setRating(c.getFloat(c.getColumnIndex(field.column)));
+                ratingBar.setRating(cursor.getFloat(cursor.getColumnIndex(field.column)));
             }
         }
 
-        public void set(@NonNull final Field field, @NonNull final Bundle b) {
-            set(field, b.getString(field.column));
+        public void set(@NonNull final Field field, @NonNull final Bundle bundle) {
+            set(field, bundle.getString(field.column));
         }
 
-        public void set(@NonNull final Field field, @NonNull final DataManager data) {
-            set(field, data.getString(field.column));
+        public void set(@NonNull final Field field, @NonNull final DataManager dataManager) {
+            set(field, dataManager.getString(field.column));
         }
 
         public void set(@NonNull final Field field, @Nullable final String s) {
-            RatingBar v = (RatingBar) field.getView();
+            RatingBar ratingBar = (RatingBar) field.getView();
             Float f = 0.0f;
             try {
                 f = Float.parseFloat(field.format(s));
-            } catch (Exception ignored) {
+            } catch (NumberFormatException ignored) {
             }
-            v.setRating(f);
+            ratingBar.setRating(f);
         }
 
-        public void get(@NonNull final Field field, @NonNull final Bundle values) {
-            RatingBar v = (RatingBar) field.getView();
+        public void get(@NonNull final Field field, @NonNull final Bundle bundle) {
+            RatingBar ratingBar = (RatingBar) field.getView();
             if (field.formatter != null) {
-                values.putString(field.column, field.extract("" + v.getRating()));
+                bundle.putString(field.column, field.extract("" + ratingBar.getRating()));
             } else {
-                values.putFloat(field.column, v.getRating());
+                bundle.putFloat(field.column, ratingBar.getRating());
             }
         }
 
-        public void get(@NonNull final Field field, @NonNull final DataManager values) {
-            RatingBar v = (RatingBar) field.getView();
+        public void get(@NonNull final Field field, @NonNull final DataManager dataManager) {
+            RatingBar ratingBar = (RatingBar) field.getView();
             if (field.formatter != null) {
-                values.putString(field.column, field.extract("" + v.getRating()));
+                dataManager.putString(field.column, field.extract("" + ratingBar.getRating()));
             } else {
-                values.putFloat(field.column, v.getRating());
+                dataManager.putFloat(field.column, ratingBar.getRating());
             }
         }
 
         public Object get(@NonNull final Field field) {
-            RatingBar v = (RatingBar) field.getView();
-            return v.getRating();
+            RatingBar ratingBar = (RatingBar) field.getView();
+            return ratingBar.getRating();
         }
     }
 
@@ -1014,16 +1020,16 @@ public class Fields extends ArrayList<Fields.Field> {
      * @author Philip Warner
      */
     static public class SpinnerAccessor implements FieldDataAccessor {
-        public void set(@NonNull final Field field, @NonNull final Cursor c) {
-            set(field, c.getString(c.getColumnIndex(field.column)));
+        public void set(@NonNull final Field field, @NonNull final Cursor cursor) {
+            set(field, cursor.getString(cursor.getColumnIndex(field.column)));
         }
 
-        public void set(@NonNull final Field field, @NonNull final Bundle b) {
-            set(field, b.getString(field.column));
+        public void set(@NonNull final Field field, @NonNull final Bundle bundle) {
+            set(field, bundle.getString(field.column));
         }
 
-        public void set(@NonNull final Field field, @NonNull final DataManager data) {
-            set(field, data.getString(field.column));
+        public void set(@NonNull final Field field, @NonNull final DataManager dataManager) {
+            set(field, dataManager.getString(field.column));
         }
 
         public void set(@NonNull final Field field, @Nullable final String value) {
@@ -1193,9 +1199,6 @@ public class Fields extends ArrayList<Fields.Field> {
         public final FieldValidator validator;
         /** Owning collection */
         final WeakReference<Fields> mFields;
-        /** FieldFormatter to use (can be null) */
-        @Nullable
-        FieldFormatter formatter;
         /** Has the field been set to invisible **/
         public boolean visible;
         /**
@@ -1203,7 +1206,9 @@ public class Fields extends ArrayList<Fields.Field> {
          * Cursor. This is usually done for synthetic fields needed when saving the data
          */
         public boolean doNoFetch = false;
-
+        /** FieldFormatter to use (can be null) */
+        @Nullable
+        FieldFormatter formatter;
         /** Accessor to use (automatically defined) */
         private FieldDataAccessor mAccessor = null;
 
@@ -1244,13 +1249,13 @@ public class Fields extends ArrayList<Fields.Field> {
             /*
              * Load the layout from the passed Activity based on the ID and set visibility and accessor.
              */
-            FieldsContext c = fields.getContext();
-            if (c == null) {
+            FieldsContext context = fields.getContext();
+            if (context == null) {
                 return;
             }
 
             // Lookup the view
-            final View view = c.findViewById(this.id);
+            final View view = context.findViewById(this.id);
 
             // Set the appropriate accessor
             if (view == null) {
@@ -1466,12 +1471,12 @@ public class Fields extends ArrayList<Fields.Field> {
          * Set the value of this field from the passed cursor. Useful for getting access to
          * raw data values from the database.
          */
-        public void set(@NonNull final Cursor c) {
+        public void set(@NonNull final Cursor cursor) {
             if (!column.isEmpty() && !doNoFetch) {
                 try {
-                    mAccessor.set(this, c);
+                    mAccessor.set(this, cursor);
                 } catch (android.database.CursorIndexOutOfBoundsException e) {
-                    throw new RuntimeException("Column '" + this.column + "' not found in cursor", e);
+                    throw new DBExceptions.ColumnNotPresent(column, e);
                 }
             }
         }
@@ -1480,12 +1485,12 @@ public class Fields extends ArrayList<Fields.Field> {
          * Set the value of this field from the passed Bundle. Useful for getting access to
          * raw data values from a saved data bundle.
          */
-        public void set(@NonNull final Bundle b) {
+        public void set(@NonNull final Bundle bundle) {
             if (!column.isEmpty() && !doNoFetch) {
                 try {
-                    mAccessor.set(this, b);
+                    mAccessor.set(this, bundle);
                 } catch (android.database.CursorIndexOutOfBoundsException e) {
-                    throw new RuntimeException("Column '" + this.column + "' not found in cursor", e);
+                    throw new DBExceptions.ColumnNotPresent(column, e);
                 }
             }
         }
@@ -1494,12 +1499,12 @@ public class Fields extends ArrayList<Fields.Field> {
          * Set the value of this field from the passed Bundle. Useful for getting access to
          * raw data values from a saved data bundle.
          */
-        public void set(@NonNull final DataManager data) {
+        public void set(@NonNull final DataManager dataManager) {
             if (!column.isEmpty() && !doNoFetch) {
                 try {
-                    mAccessor.set(this, data);
+                    mAccessor.set(this, dataManager);
                 } catch (android.database.CursorIndexOutOfBoundsException e) {
-                    throw new RuntimeException("Column '" + this.column + "' not found in data", e);
+                    throw new DBExceptions.ColumnNotPresent(column, e);
                 }
             }
         }

@@ -108,7 +108,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
                             mExportOnStartup = true;
                             break;
                         default:
-                            Logger.logError("Unsupported DO_AUTO option: " + val);
+                            Logger.logError(new IllegalArgumentException("Unsupported DO_AUTO option: " + val));
                             break;
                     }
                 }
@@ -485,14 +485,14 @@ public class AdministrationFunctions extends ActivityWithTasks {
      * Called when any background task completes
      */
     @Override
-    public void onTaskEnded(ManagedTask task) {
+    public void onTaskEnded(@NonNull final ManagedTask task) {
         // If it's an export, handle it
         if (task instanceof ExportThread) {
             onExportFinished((ExportThread) task);
         }
     }
 
-    private void onExportFinished(ExportThread task) {
+    private void onExportFinished(@NonNull final ExportThread task) {
         if (task.isCancelled()) {
             if (finish_after)
                 finish();

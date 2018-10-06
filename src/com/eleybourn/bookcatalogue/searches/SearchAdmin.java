@@ -13,8 +13,6 @@ import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 
 import java.util.ArrayList;
 
-import static com.eleybourn.bookcatalogue.searches.SearchManager.BKEY_SEARCH_SITES;
-
 public class SearchAdmin extends BookCatalogueActivity {
 
     private static final int TAB_HOSTS = 0;
@@ -41,7 +39,7 @@ public class SearchAdmin extends BookCatalogueActivity {
         Bundle args = new Bundle();
         holder = new Holder();
         holder.fragment = new AdminSearchOrderFragment();
-        args.putSerializable(BKEY_SEARCH_SITES, SearchManager.getSiteSearchOrder());
+        args.putSerializable(SearchManager.BKEY_SEARCH_SITES, SearchManager.getSiteSearchOrder());
         holder.fragment.setArguments(args);
         tab = mTabLayout.newTab().setText(R.string.search_site_order).setTag(holder);
         mTabLayout.addTab(tab); //TAB_SEARCH_ORDER
@@ -50,7 +48,7 @@ public class SearchAdmin extends BookCatalogueActivity {
         args = new Bundle();
         holder = new Holder();
         holder.fragment = new AdminSearchOrderFragment();
-        args.putSerializable(BKEY_SEARCH_SITES, SearchManager.getSiteCoverSearchOrder());
+        args.putSerializable(SearchManager.BKEY_SEARCH_SITES, SearchManager.getSiteCoverSearchOrder());
         holder.fragment.setArguments(args);
         tab = mTabLayout.newTab().setText(R.string.search_site_cover_order).setTag(holder);
         mTabLayout.addTab(tab); //TAB_SEARCH_COVER_ORDER

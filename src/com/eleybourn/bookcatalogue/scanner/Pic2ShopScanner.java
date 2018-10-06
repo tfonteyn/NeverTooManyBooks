@@ -58,15 +58,15 @@ public class Pic2ShopScanner implements Scanner {
      */
     @Override
     public void startActivityForResult(@NonNull final  Activity activity, final int requestCode) {
-        Intent i;
+        Intent intent;
         if (isFreeScannerAppInstalled(activity)) {
-            i = new Intent(Free.ACTION);
+            intent = new Intent(Free.ACTION);
             //i.putExtra(FORMATS, BARCODE_FORMAT);
         } else {
-            i = new Intent(Pro.ACTION);
-            i.putExtra(FORMATS, BARCODE_FORMAT);
+            intent = new Intent(Pro.ACTION);
+            //intent.putExtra(FORMATS, BARCODE_FORMAT);
         }
-        activity.startActivityForResult(i, requestCode);
+        activity.startActivityForResult(intent, requestCode);
     }
 
     /**
@@ -103,7 +103,7 @@ public class Pic2ShopScanner implements Scanner {
 //			Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + pkgName));
 //			ctx.startActivity(intent);
 //		} catch (ActivityNotFoundException e) {
-//			Log.e(Utils.class.getName(), "Android Market aka Play Market not installed.", e);
+//			Logger.showError(e, Utils.class.getName() + ": Google Play not installed.");
 //			//Toast.makeText(ctx, R.string.error, Toast.LENGTH_SHORT).show();
 //		}
 //	}

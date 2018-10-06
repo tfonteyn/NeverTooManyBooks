@@ -29,6 +29,10 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -171,6 +175,59 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
         }
     }
 
+    /**
+     * Remove series from the list where the names are the same, but one entry has a null or empty position.
+     * eg. the following list should be processed as indicated:
+     *
+     * fred(5)
+     * fred <-- delete
+     * bill <-- delete
+     * bill <-- delete
+     * bill(1)
+     */
+    public static boolean pruneSeriesList(@NonNull final List<Series> list) {
+        List<Series> toDelete = new ArrayList<>();
+        Map<String, Series> index = new HashMap<>();
+
+        for (Series s : list) {
+            final boolean emptyNum = (s.number == null || s.number.trim().isEmpty());
+            final String lcName = s.name.trim().toLowerCase();
+            final boolean inNames = index.containsKey(lcName);
+            if (!inNames) {
+                // Just add and continue
+                index.put(lcName, s);
+            } else {
+                // See if we can purge either
+                if (emptyNum) {
+                    // Always delete series with empty numbers if an equally or more specific one exists
+                    toDelete.add(s);
+                } else {
+                    // See if the one in 'index' also has a num
+                    Series orig = index.get(lcName);
+                    if (orig.number == null || orig.number.trim().isEmpty()) {
+                        // Replace with this one, and mark orig for delete
+                        index.put(lcName, s);
+                        toDelete.add(orig);
+                    } else {
+                        // Both have numbers. See if they are the same.
+                        if (s.number.trim().toLowerCase().equals(orig.number.trim().toLowerCase())) {
+                            // Same exact series, delete this one
+                            toDelete.add(s);
+                        } //else {
+                        // Nothing to do: this inputStream a different series position
+                        //}
+                    }
+                }
+            }
+        }
+
+        for (Series s : toDelete)
+            list.remove(s);
+
+        return (toDelete.size() > 0);
+
+    }
+
     @NonNull
     public String getDisplayName() {
         if (number != null && !number.isEmpty()) {
@@ -252,4 +309,5 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
         public String position = null;
         public int startChar;
     }
+
 }

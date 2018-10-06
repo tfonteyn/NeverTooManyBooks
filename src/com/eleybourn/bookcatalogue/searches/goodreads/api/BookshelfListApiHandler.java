@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -38,68 +38,47 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GOODREADS_API_ROOT;
 
 /**
  * Class to implement the reviews.list api call. It queries based on the passed parameters and returns
- * a single Bundle containing all results. The Bundle itself will contain other bundles: typically an 
+ * a single Bundle containing all results. The Bundle itself will contain other bundles: typically an
  * array of 'Review' bundles, each of which will contains arrays of 'author' bundles.
- * 
+ *
  * Processing this data is up to the caller, but it is guaranteed to be type-safe if present, with the
  * exception of dates, which are collected as text strings.
- * 
+ *
  * @author Philip Warner
  */
 public class BookshelfListApiHandler extends ApiHandler {
 
-	/**
-	 * Field names we add to the bundle based on parsed XML data.
-	 * 
-	 * We duplicate the CatalogueDBAdapter names (and give them a DB_ prefix) so
-	 * that (a) it is clear which fields are provided by this call, and (b) it is clear
-	 * which fields directly relate to DB fields.
-	 * 
-	 * @author Philip Warner
-	 */
-	public static final class BookshelfListFieldNames {
-		public static final String SHELVES = "shelves";
-		public static final String START = "start";
-		public static final String END = "end";
-		public static final String TOTAL = "total";
-		public static final String EXCLUSIVE = "exclusive";
-		public static final String ID = "id";
-		public static final String NAME = "name";
-	}
+    private SimpleXmlFilter mFilters;
 
-	private SimpleXmlFilter mFilters;
+    public BookshelfListApiHandler(@NonNull final GoodreadsManager manager) {
+        super(manager);
+        if (!manager.hasValidCredentials())
+            throw new RuntimeException("Goodreads credentials not valid");
+        // Build the XML filters needed to get the data we're interested in.
+        buildFilters();
+    }
 
-	public BookshelfListApiHandler(@NonNull final GoodreadsManager manager) {
-		super(manager);
-		if (!manager.hasValidCredentials())
-			throw new RuntimeException("Goodreads credentials not valid");
-		// Build the XML filters needed to get the data we're interested in.
-		buildFilters();
-	}
+    public Bundle run(final int page)
+            throws OAuthMessageSignerException, OAuthExpectationFailedException,
+            OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
+        long t0 = System.currentTimeMillis();
 
-	public Bundle run(final int page)
-			throws OAuthMessageSignerException, OAuthExpectationFailedException,
-					OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException 
-	{
-		long t0 = System.currentTimeMillis();
+        // Sort by update_dte (descending) so sync is faster. Specify 'shelf=all' because it seems goodreads returns
+        // the shelf that is selected in 'My Books' on the web interface by default.
+        final String urlBase = GoodreadsManager.GOODREADS_API_ROOT + "/shelf/list.xml?key=%1$s&page=%2$s&user_id=%3$s";
+        final String url = String.format(urlBase, mManager.getDeveloperKey(), page, mManager.getUserId());
+        HttpGet get = new HttpGet(url);
 
-		// Sort by update_dte (descending) so sync is faster. Specify 'shelf=all' because it seems goodreads returns 
-		// the shelf that is selected in 'My Books' on the web interface by default.
-		final String urlBase = GOODREADS_API_ROOT + "/shelf/list.xml?key=%1$s&page=%2$s&user_id=%3$s";
-		final String url = String.format(urlBase, mManager.getDeveloperKey(), page, mManager.getUserId());
-		HttpGet get = new HttpGet(url);
+        // Initial debug code:
+        //TrivialParser handler = new TrivialParser();
+        //mManager.execute(get, handler, true);
+        //String s = handler.getHtml();
+        //System.out.println(s);
 
-		// Inital debug code:
-		//TrivialParser handler = new TrivialParser();
-		//mManager.execute(get, handler, true);
-		//String s = handler.getHtml();
-		//System.out.println(s);
-
-		// Get a handler and run query.
+        // Get a handler and run query.
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);
 
         // Even thought it's only a GET, it needs a signature.
@@ -108,14 +87,43 @@ public class BookshelfListApiHandler extends ApiHandler {
         // When we get here, the data has been collected but needs to be processed into standard form.
         Bundle results = mFilters.getData();
 
-		if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-			long t1 = System.currentTimeMillis();
-			System.out.println("Found " + results.getLong(BookshelfListFieldNames.TOTAL) + " shelves in " + (t1 - t0) + "ms");
-		}
+        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+            System.out.println("Found " + results.getLong(BookshelfListFieldNames.TOTAL) + " shelves in " + (System.currentTimeMillis() - t0) + "ms");
+        }
 
-		// Return parsed results.
-		return results;
-	}
+        return results;
+    }
+
+    /**
+     * Setup filters to process the XML parts we care about.
+     */
+    private void buildFilters() {
+        mFilters = new SimpleXmlFilter(mRootFilter);
+
+        mFilters
+                //<GoodreadsResponse>
+                .s("GoodreadsResponse")
+                //	<Request>
+                //		...
+                //	</Request>
+                //	<reviews start="3" end="4" total="933">
+                //  <shelves start='1' end='29' total='29'>
+                .s("shelves").isArray(BookshelfListFieldNames.SHELVES)
+                .longAttr("start", BookshelfListFieldNames.START)
+                .longAttr("end", BookshelfListFieldNames.END)
+                .longAttr("total", BookshelfListFieldNames.TOTAL)
+
+                //  <user_shelf>
+                .s("user_shelf").isArrayItem()
+                //	  <exclusive_flag type='boolean'>false</exclusive_flag>
+                .booleanBody("exclusive_flag", BookshelfListFieldNames.EXCLUSIVE)
+
+                //	  <id type='integer'>26567684</id>
+                .longBody("id", BookshelfListFieldNames.ID)
+                .stringBody("name", BookshelfListFieldNames.NAME)
+                .pop()
+                .done();
+    }
 
 	/*
 	 * Typical result:
@@ -206,39 +214,24 @@ public class BookshelfListApiHandler extends ApiHandler {
 
 	 */
 
-	/**
-	 * Setup filters to process the XML parts we care about.
-	 */
-	private void buildFilters() {
-		/*
-		 * Process the stuff we care about
-		 */
-		mFilters = new SimpleXmlFilter(mRootFilter);
-
-		mFilters
-		//<GoodreadsResponse>
-		  .s("GoodreadsResponse")
-		//	<Request>
-		//		...
-		//	</Request>
-		//	<reviews start="3" end="4" total="933">
-		//  <shelves start='1' end='29' total='29'>
-			.s("shelves").isArray(BookshelfListFieldNames.SHELVES)
-				.longAttr("start", BookshelfListFieldNames.START)
-				.longAttr("end", BookshelfListFieldNames.END)
-				.longAttr("total", BookshelfListFieldNames.TOTAL)
-
-				//  <user_shelf>
-				.s("user_shelf").isArrayItem()
-					//	  <exclusive_flag type='boolean'>false</exclusive_flag>
-					.booleanBody("exclusive_flag", BookshelfListFieldNames.EXCLUSIVE)
-
-					//	  <id type='integer'>26567684</id>
-					.longBody("id", BookshelfListFieldNames.ID)
-					.stringBody("name", BookshelfListFieldNames.NAME)
-					.pop()
-		.done();
-	}
+    /**
+     * Field names we add to the bundle based on parsed XML data.
+     *
+     * We duplicate the CatalogueDBAdapter names (and give them a DB_ prefix) so
+     * that (a) it is clear which fields are provided by this call, and (b) it is clear
+     * which fields directly relate to DB fields.
+     *
+     * @author Philip Warner
+     */
+    public static final class BookshelfListFieldNames {
+        public static final String SHELVES = "shelves";
+        public static final String START = "start";
+        public static final String END = "end";
+        public static final String TOTAL = "total";
+        public static final String EXCLUSIVE = "exclusive";
+        public static final String ID = "id";
+        public static final String NAME = "name";
+    }
 
 //	/**
 //	 * Listener to handle the contents of the date_updated field. We only

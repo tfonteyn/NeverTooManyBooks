@@ -157,6 +157,8 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIE
  * display books in a ListView control and perform operation like 'expand/collapse' on pseudo nodes
  * in the list.
  *
+ * TODO: [0123456789] replace by [0..9]
+ *
  * @author Philip Warner
  */
 public class BooklistBuilder implements AutoCloseable {
@@ -336,7 +338,7 @@ public class BooklistBuilder implements AutoCloseable {
             boolean ok;
             ExtraDomainDetails oldInfo = mExtraDomains.get(domain.name);
             if (oldInfo.sourceExpression == null) {
-                ok = info.sourceExpression == null || "".equals(info.sourceExpression);
+                ok = info.sourceExpression == null || info.sourceExpression.isEmpty();
             } else {
                 if (info.sourceExpression == null) {
                     ok = oldInfo.sourceExpression.isEmpty();
@@ -1079,9 +1081,8 @@ public class BooklistBuilder implements AutoCloseable {
                     // triggers to build the summary rows in the correct place.
                     String tgt = makeTriggers(summary, flatTriggers);
                     mBaseBuildStmt = mStatements.add("mBaseBuildStmt",
-                            "Insert INTO " + tgt + "(" + sqlCmp.destinationColumns + ") " + sqlCmp.select +
+                            "INSERT INTO " + tgt + "(" + sqlCmp.destinationColumns + ") " + sqlCmp.select +
                                     "\n FROM\n" + sqlCmp.join + sqlCmp.where + " ORDER BY " + sortColNameList);
-                    //System.out.println("Base Build:\n" + sql);
                     mBaseBuildStmt.execute();
                     t2 = System.currentTimeMillis();
                     t3 = t2;
@@ -1893,7 +1894,7 @@ public class BooklistBuilder implements AutoCloseable {
      */
     int getUniqueBookCount() {
         return pseudoCount("ListTableUniqueBooks",
-                "SELECT COUNT(distinct " + DOM_BOOK_ID + ") FROM " + mListTable + " WHERE " + DOM_LEVEL + "=" + (mStyle.size() + 1));
+                "SELECT COUNT(DISTINCT " + DOM_BOOK_ID + ") FROM " + mListTable + " WHERE " + DOM_LEVEL + "=" + (mStyle.size() + 1));
     }
 
     /**
@@ -1901,7 +1902,7 @@ public class BooklistBuilder implements AutoCloseable {
      */
     private int pseudoCount(@NonNull final String name, @NonNull final String countSql) {
         long tc0 = System.currentTimeMillis();
-        int cnt = 0;
+        int cnt;
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(countSql)) {
             cnt = (int) stmt.count();
         }

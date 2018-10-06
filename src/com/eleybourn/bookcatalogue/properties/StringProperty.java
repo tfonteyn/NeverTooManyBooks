@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.properties;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -46,7 +47,7 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
 
     public StringProperty(@NonNull final String uniqueId,
                           @NonNull final PropertyGroup group,
-                          final int nameResourceId) {
+                          @StringRes final int nameResourceId) {
         super(uniqueId, group, nameResourceId, "");
     }
 

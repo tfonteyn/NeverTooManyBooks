@@ -95,7 +95,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
                 case Info:
                     break;
                 default:
-                    throw new RuntimeException("Unknown Entity type: " + entity.getType());
+                    throw new IllegalArgumentException("Unknown Entity type: " + entity.getType());
             }
             entity = nextEntity();
         }

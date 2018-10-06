@@ -20,7 +20,9 @@
 package com.eleybourn.bookcatalogue;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -38,8 +40,8 @@ import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.BookData;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
@@ -101,7 +103,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
 
             menu.add(Menu.NONE, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
                     .setIcon(R.drawable.ic_content_copy);
-
+//TODO: enable when done
 //            menu.add(Menu.NONE, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.internet_update_fields)
 //                    .setIcon(R.drawable.ic_search);
 
@@ -129,8 +131,8 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
                 menu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0, R.string.amazon_books_by_author_in_series)
                         .setIcon(R.drawable.ic_search);
             }
-             menu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0, R.string.amazon_books_in_series)
-                        .setIcon(R.drawable.ic_search);
+            menu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0, R.string.amazon_books_in_series)
+                    .setIcon(R.drawable.ic_search);
         }
     }
 
@@ -141,83 +143,80 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         final long currRow = mEditManager.getBookData().getBookId();
-
-        try {
-            switch (item.getItemId()) {
-                case R.id.SUBMENU_REPLACE_THUMB:
-                    if (this instanceof EditBookFieldsFragment) {
-                        ((EditBookFieldsFragment) this).showCoverContextMenu();
-                        return true;
-                    }
-                    return false;
-
-                case R.id.MENU_SHARE:
-                    BookUtils.shareBook(getActivity(), mDb, currRow);
+        switch (item.getItemId()) {
+            case R.id.SUBMENU_REPLACE_THUMB:
+                if (this instanceof EditBookFieldsFragment) {
+                    ((EditBookFieldsFragment) this).showCoverContextMenu();
                     return true;
+                }
+                return false;
 
-                case R.id.MENU_BOOK_DELETE:
-                    BookUtils.deleteBook(getActivity(), mDb, currRow,
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    getActivity().finish();
-                                }
-                            });
-                    return true;
+            case R.id.MENU_SHARE:
+                BookUtils.shareBook(getActivity(), mDb, currRow);
+                return true;
 
-                case R.id.MENU_BOOK_DUPLICATE:
-                    BookUtils.duplicateBook(getActivity(), mDb, currRow);
-                    return true;
+            case R.id.MENU_BOOK_DELETE:
+                BookUtils.deleteBook(getActivity(), mDb, currRow,
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                getActivity().finish();
+                            }
+                        });
+                return true;
 
+            case R.id.MENU_BOOK_DUPLICATE:
+                BookUtils.duplicateBook(getActivity(), mDb, currRow);
+                return true;
+
+            //TODO: enable when done
 //                case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
 //                    updateFromInternet();
 //                    return true;
 
-                case R.id.MENU_BOOK_EDIT:
-                    BookDetailsActivity.startEditMode(getActivity(), currRow, BookDetailsActivity.TAB_EDIT);
-                    return true;
+            case R.id.MENU_BOOK_EDIT:
+                BookDetailsActivity.startEditMode(getActivity(), currRow, BookDetailsActivity.TAB_EDIT);
+                return true;
 
-                case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
-                    String author = getAuthorFromBook();
-                    AmazonUtils.openSearchPage(getActivity(), author, null);
-                    return true;
-                }
-                case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
-                    String series = getSeriesFromBook();
-                    AmazonUtils.openSearchPage(getActivity(), null, series);
-                    return true;
-                }
-
-                case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
-                    String author = getAuthorFromBook();
-                    String series = getSeriesFromBook();
-                    AmazonUtils.openSearchPage(getActivity(), author, series);
-                    return true;
-                }
+            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
+                String author = getAuthorFromBook();
+                AmazonUtils.openSearchPage(getActivity(), author, null);
+                return true;
+            }
+            case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
+                String series = getSeriesFromBook();
+                AmazonUtils.openSearchPage(getActivity(), null, series);
+                return true;
             }
 
-        } catch (NullPointerException e) {
-            Logger.logError(e);
+            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
+                String author = getAuthorFromBook();
+                String series = getSeriesFromBook();
+                AmazonUtils.openSearchPage(getActivity(), author, series);
+                return true;
+            }
         }
         return false;
     }
 
-//    private void updateFromInternet() {
-//        Intent i = new Intent(getActivity(), UpdateFromInternet.class);
-//        i.putExtra(UniqueId.KEY_ID, mEditManager.getBookData().getBookId());
-//        i.putExtra(UniqueId.KEY_TITLE, mEditManager.getBookData().get(UniqueId.KEY_TITLE).toString());
-//        i.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, mEditManager.getBookData().get(UniqueId.KEY_AUTHOR_FORMATTED).toString());
-//        startActivityForResult(i,1);
-//    }
-//
-//    @Override
-//    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-//        if (requestCode == 1) {
-//            if(resultCode == Activity.RESULT_OK){
-//                String result=data.getStringExtra("result");
-//            }
-//        }
-//    }
+    //TODO: enable when done
+    private void updateFromInternet() {
+        Intent intent = new Intent(getActivity(), UpdateFromInternet.class);
+        intent.putExtra(UniqueId.KEY_ID, mEditManager.getBookData().getBookId());
+        intent.putExtra(UniqueId.KEY_TITLE, mEditManager.getBookData().get(UniqueId.KEY_TITLE).toString());
+        intent.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, mEditManager.getBookData().get(UniqueId.KEY_AUTHOR_FORMATTED).toString());
+        startActivityForResult(intent, 1);
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent intent) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                String result = intent.getStringExtra("result");
+                //TODO: implement this, then enable menu handling
+            }
+        }
+    }
 
     @Nullable
     private String getAuthorFromBook() {
@@ -241,8 +240,8 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     /**
      * Called to load data from the BookData object when needed.
      *
-     * @param bookData      to load from
-     * @param setAllDone    Flag indicating setAll() has already been called on the mFields object
+     * @param bookData   to load from
+     * @param setAllDone Flag indicating setAll() has already been called on the mFields object
      */
     abstract protected void onLoadBookDetails(@NonNull final BookData bookData,
                                               @SuppressWarnings("SameParameterValue") final boolean setAllDone);
@@ -300,13 +299,10 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      * Don't show a field if it is already hidden (assumed by user preference)
      *
      * @param hideIfEmpty   hide if empty
-     * @param fieldId         layout resource id of the field
+     * @param fieldId       layout resource id of the field
      * @param relatedFields list of fields whose visibility will also be set based on the first field
-     *
-     * @return The resulting visibility setting value (VISIBLE or GONE)
      */
-    @SuppressWarnings("UnusedReturnValue")
-    int showHideField(final boolean hideIfEmpty, @IdRes final int fieldId, @IdRes final int... relatedFields) {
+    void showHideField(final boolean hideIfEmpty, @IdRes final int fieldId, @IdRes final int... relatedFields) {
         // Get the base view
         final View view = getView().findViewById(fieldId);
         int visibility;
@@ -334,7 +330,6 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
                     rv.setVisibility(visibility);
             }
         }
-        return visibility;
     }
 
     /**
@@ -408,7 +403,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
                 }
 
                 @Override
-                public void setNext(@NonNull final View v, final int id) {
+                public void setNext(@NonNull final View v, @IdRes final int id) {
                     v.setNextFocusDownId(id);
                 }
             };
@@ -419,7 +414,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
                 }
 
                 @Override
-                public void setNext(@NonNull final View v, final int id) {
+                public void setNext(@NonNull final View v, @IdRes final int id) {
                     v.setNextFocusUpId(id);
                 }
             };
@@ -430,7 +425,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
                 }
 
                 @Override
-                public void setNext(@NonNull final View v, final int id) {
+                public void setNext(@NonNull final View v, @IdRes final int id) {
                     v.setNextFocusLeftId(id);
                 }
             };
@@ -441,7 +436,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
                 }
 
                 @Override
-                public void setNext(@NonNull final View v, final int id) {
+                public void setNext(@NonNull final View v, @IdRes final int id) {
                     v.setNextFocusRightId(id);
                 }
             };
@@ -465,8 +460,8 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
          * Passed a collection of views, a specific View and an INextView, ensure that the
          * currently set 'next' view is actually a visible view, updating it if necessary.
          *
-         * @param list     Collection of all views
-         * @param view      View to check
+         * @param list   Collection of all views
+         * @param view   View to check
          * @param getter Methods to get/set 'next' view
          */
         private static void fixNextView(@NonNull final HashMap<Integer, View> list,
@@ -484,7 +479,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
          * Passed a collection of views, a specific view and an INextView object find the
          * first VISIBLE object returned by INextView when called recursively.
          *
-         * @param list     Collection of all views
+         * @param list   Collection of all views
          * @param nextId ID of 'next' view to get
          * @param getter Interface to lookup 'next' ID given a view
          *
@@ -506,12 +501,13 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         /**
          * Passed a parent view, add it and all children view (if any) to the passed collection
          *
-         * @param parent  Parent View
-         * @param list Collection
+         * @param parent Parent View
+         * @param list   Collection
          */
         private static void getViews(@NonNull final View parent,
                                      @NonNull final HashMap<Integer, View> list) {
             // Get the view ID and add it to collection if not already present.
+            @IdRes
             final int id = parent.getId();
             if (id != View.NO_ID && !list.containsKey(id)) {
                 list.put(id, parent);
@@ -529,7 +525,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         private interface INextView {
             int getNext(@NonNull final View v);
 
-            void setNext(@NonNull final View v, final int id);
+            void setNext(@NonNull final View v, @IdRes final int id);
         }
 
         /*

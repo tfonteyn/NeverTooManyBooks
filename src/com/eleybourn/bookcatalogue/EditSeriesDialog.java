@@ -30,7 +30,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Series;
 
@@ -53,11 +52,7 @@ public class EditSeriesDialog {
         dialog.setTitle(R.string.edit_series);
 
         AutoCompleteTextView seriesView = dialog.findViewById(R.id.series);
-        try {
-            seriesView.setText(series.name);
-        } catch (NullPointerException e) {
-            Logger.logError(e);
-        }
+        seriesView.setText(series.name);
         seriesView.setAdapter(mSeriesAdapter);
 
         Button saveButton = dialog.findViewById(R.id.confirm);
@@ -74,6 +69,7 @@ public class EditSeriesDialog {
                 dialog.dismiss();
             }
         });
+        
         Button cancelButton = dialog.findViewById(R.id.cancel);
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override

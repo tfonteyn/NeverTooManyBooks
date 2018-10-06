@@ -353,7 +353,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         mList.moveToPosition(info.position);
         return
                 mListHandler.onContextItemSelected(mDb, info.targetView, mList.getRowView(), this, item.getItemId())
-                || super.onContextItemSelected(item);
+                        || super.onContextItemSelected(item);
     }
 
     /**
@@ -467,7 +467,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     Logger.logError(e);
                 }
                 break;
-                // not in use
+            // not in use
             case UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_PROPERTIES:
                 try {
                     if (intent != null && intent.hasExtra(BooklistStylePropertiesActivity.BKEY_STYLE)) {
@@ -681,7 +681,6 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     // Code below does not behave as expected. Results in items often being near bottom.
                     //lv.setSelectionFromTop(best.listPosition, lv.getHeight() / 2);
 
-                    // smoothScrollToPosition is only available at API level 8.
                     // Without this call some positioning may be off by one row (see above).
                     final int newPos = best.listPosition;
                     getListView().post(new Runnable() {
@@ -769,15 +768,19 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     private void setupBookList(final boolean isFullRebuild) {
         mTaskQueue.enqueue(new GetListTask(isFullRebuild));
         if (mListDialog == null) {
-            mListDialog = ProgressDialog.show(this, "", getString(R.string.getting_books_ellipsis), true, true, new OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    // Cancelling the list cancels the activity.
-                    BooksOnBookshelf.this.finish();
-                    dialog.dismiss();
-                    mListDialog = null;
-                }
-            });
+            mListDialog = ProgressDialog.show(this,
+                    "",
+                    getString(R.string.getting_books_ellipsis),
+                    true,
+                    true, new OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            // Cancelling the list cancels the activity.
+                            BooksOnBookshelf.this.finish();
+                            dialog.dismiss();
+                            mListDialog = null;
+                        }
+                    });
         }
     }
 
@@ -983,7 +986,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                         getString(R.string.sort_author_series)));
 
         @SuppressWarnings("ConstantConditions") // styleName is never null, see above, always a default available.
-        BooklistStyle style = styles.findCanonical(styleName);
+                BooklistStyle style = styles.findCanonical(styleName);
 
         if (style == null) {
             style = styles.get(0);
@@ -992,8 +995,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     }
 
     /**
-     *
-     * @param flags  bitmask
+     * @param flags bitmask
      */
     @Override
     public void onBooklistChange(final int flags) {
@@ -1011,7 +1013,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     private void doSortMenu(final boolean showAll) {
         LayoutInflater inf = this.getLayoutInflater();
         @SuppressLint("InflateParams") // root==null as it's a dialog
-        View dialogView = inf.inflate(R.layout.booklist_style_menu, null);
+                View dialogView = inf.inflate(R.layout.booklist_style_menu, null);
         RadioGroup group = dialogView.findViewById(R.id.radio_buttons);
         LinearLayout main = dialogView.findViewById(R.id.menu);
 
@@ -1085,13 +1087,14 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                           @StringRes final int stringId,
                           @NonNull final OnClickListener listener) {
         @SuppressLint("InflateParams") // it's a dialog -> root==null
-        TextView view = (TextView) inf.inflate(R.layout.booklist_style_menu_text, null);
+                TextView view = (TextView) inf.inflate(R.layout.booklist_style_menu_text, null);
         Typeface tf = view.getTypeface();
         view.setTypeface(tf, Typeface.ITALIC);
         view.setText(stringId);
         view.setOnClickListener(listener);
         parent.addView(view);
     }
+
     /**
      * Handle the style that a user has selected.
      *
@@ -1182,7 +1185,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
          */
         GetListTask(final boolean isFullRebuild) {
             if (!isFullRebuild && BuildConfig.DEBUG) {
-                Logger.printStackTrace("GetListTask constructor, isFullRebuild=false");
+                Logger.logError(new RuntimeException("GetListTask constructor, isFullRebuild=false"));
             }
             //TOMF FIXME
             //mIsFullRebuild = isFullRebuild;

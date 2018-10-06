@@ -87,7 +87,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected void onAdd(final View target) {
+    protected void onAdd(@NonNull final View target) {
         AutoCompleteTextView seriesField = EditSeriesListActivity.this.findViewById(R.id.series);
         String seriesTitle = seriesField.getText().toString().trim();
 
@@ -161,7 +161,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         if ((to.name.compareTo(from.name) == 0)) {
             // Same name, different number... just update
             from.copyFrom(to);
-            Utils.pruneSeriesList(mList);
+            Series.pruneSeriesList(mList);
             Utils.pruneList(mDb, mList);
             mAdapter.notifyDataSetChanged();
             return;
@@ -179,7 +179,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         if (to.id == from.id || !oldHasOthers) {
             // Just update with the most recent spelling and format
             from.copyFrom(to);
-            Utils.pruneSeriesList(mList);
+            Series.pruneSeriesList(mList);
             Utils.pruneList(mDb, mList);
             mDb.sendSeries(from);
             mAdapter.notifyDataSetChanged();
@@ -190,34 +190,35 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         String format = getResources().getString(R.string.changed_series_how_apply);
         String allBooks = getResources().getString(R.string.all_books);
         String thisBook = getResources().getString(R.string.this_book);
-        String message = String.format(format, from.name, to.name, allBooks);
 
-        final AlertDialog alertDialog = new AlertDialog.Builder(this).setMessage(message).create();
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setMessage(String.format(format, from.name, to.name, allBooks))
+                .setTitle(getResources().getString(R.string.scope_of_change))
+                .setIcon(R.drawable.ic_info_outline)
+                .create();
 
-        alertDialog.setTitle(getResources().getString(R.string.scope_of_change));
-        alertDialog.setIcon(R.drawable.ic_info_outline);
-        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, thisBook, new DialogInterface.OnClickListener() {
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, thisBook, new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, final int which) {
                 from.copyFrom(to);
-                Utils.pruneSeriesList(mList);
+                Series.pruneSeriesList(mList);
                 Utils.pruneList(mDb, mList);
                 mAdapter.notifyDataSetChanged();
-                alertDialog.dismiss();
+                dialog.dismiss();
             }
         });
 
-        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, new DialogInterface.OnClickListener() {
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, final int which) {
                 mDb.globalReplaceSeries(from, to);
                 from.copyFrom(to);
-                Utils.pruneSeriesList(mList);
+                Series.pruneSeriesList(mList);
                 Utils.pruneList(mDb, mList);
                 mAdapter.notifyDataSetChanged();
-                alertDialog.dismiss();
+                dialog.dismiss();
             }
         });
 
-        alertDialog.show();
+        dialog.show();
     }
 
     @Override
@@ -226,24 +227,26 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         Resources res = this.getResources();
         String s = t.getText().toString().trim();
         if (!s.isEmpty()) {
-            final AlertDialog alertDialog = new AlertDialog.Builder(this).setMessage(res.getText(R.string.unsaved_edits)).create();
+            final AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setMessage(res.getText(R.string.unsaved_edits))
+                    .setTitle(res.getText(R.string.unsaved_edits_title))
+                    .setIcon(R.drawable.ic_info_outline)
+                    .create();
 
-            alertDialog.setTitle(res.getText(R.string.unsaved_edits_title));
-            alertDialog.setIcon(R.drawable.ic_info_outline);
-            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, res.getText(R.string.yes), new DialogInterface.OnClickListener() {
+            dialog.setButton(DialogInterface.BUTTON_POSITIVE, res.getText(R.string.yes), new DialogInterface.OnClickListener() {
                 public void onClick(final DialogInterface dialog, final int which) {
                     t.setText("");
                     findViewById(R.id.confirm).performClick();
                 }
             });
 
-            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, res.getText(R.string.no), new DialogInterface.OnClickListener() {
+            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, res.getText(R.string.no), new DialogInterface.OnClickListener() {
                 public void onClick(final DialogInterface dialog, final int which) {
                     //do nothing
                 }
             });
 
-            alertDialog.show();
+            dialog.show();
             return false;
         } else {
             return true;

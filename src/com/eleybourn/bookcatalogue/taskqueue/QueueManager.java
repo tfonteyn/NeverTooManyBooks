@@ -56,92 +56,96 @@ import java.util.Map;
  */
 public abstract class QueueManager {
 
+    private static final String INTERNAL = "__internal";
+    private static final String MESSAGE = "message";
+    private static final String TOAST = "toast";
+
     /** Static reference to the active QueueManager */
-    private static QueueManager m_queueManager;
+    private static QueueManager mQueueManager;
     /** Database access layer */
-    private final DbAdapter m_dba;
+    private final DBAdapter mDb;
     /** Collection of currently active queues */
-    private final Map<String, Queue> m_activeQueues = new Hashtable<>();
+    private final Map<String, Queue> mActiveQueues = new Hashtable<>();
     /** The UI thread */
-    private final WeakReference<Thread> m_uiThread;
+    private final WeakReference<Thread> mUIThread;
     /** Handle inter-thread messages */
-    private final MessageHandler m_messageHandler;
+    private final MessageHandler mMessageHandler;
     /** Objects listening for Event operations */
-    private final List<WeakReference<OnEventChangeListener>> m_eventChangeListeners = new ArrayList<>();
+    private final List<WeakReference<OnEventChangeListener>> mEventChangeListeners = new ArrayList<>();
     /** Objects listening for Task operations */
-    private final List<WeakReference<OnTaskChangeListener>> m_taskChangeListeners;
+    private final List<WeakReference<OnTaskChangeListener>> mTaskChangeListeners;
 
 
     protected QueueManager(@NonNull final Context context) {
         super();
-        if (m_queueManager != null) {
+        if (mQueueManager != null) {
             // This is an essential requirement because (a) synchronization will not work with more than one
             // and (b) we want to store a static reference in the class.
             throw new IllegalStateException("Only one QueueManager can be present");
         }
-        m_queueManager = this;
+        mQueueManager = this;
 
         // Save the thread ... it is the UI thread
-        m_uiThread = new WeakReference<>(Thread.currentThread());
-        m_messageHandler = new MessageHandler();
+        mUIThread = new WeakReference<>(Thread.currentThread());
+        mMessageHandler = new MessageHandler();
 
-        m_dba = new DbAdapter(context.getApplicationContext());
+        mDb = new DBAdapter(context.getApplicationContext());
 
         // Get active queues.
         synchronized (this) {
-            m_dba.getAllQueues(this);
+            mDb.getAllQueues(this);
         }
-        m_taskChangeListeners = new ArrayList<>();
+        mTaskChangeListeners = new ArrayList<>();
     }
 
     public static QueueManager getQueueManager() {
-        return m_queueManager;
+        return mQueueManager;
     }
 
     public void registerEventListener(@NonNull final OnEventChangeListener listener) {
-        synchronized (m_eventChangeListeners) {
-            for (WeakReference<OnEventChangeListener> lr : m_eventChangeListeners) {
+        synchronized (mEventChangeListeners) {
+            for (WeakReference<OnEventChangeListener> lr : mEventChangeListeners) {
                 OnEventChangeListener l = lr.get();
                 if (l != null && l.equals(listener))
                     return;
             }
-            m_eventChangeListeners.add(new WeakReference<>(listener));
+            mEventChangeListeners.add(new WeakReference<>(listener));
         }
     }
 
     public void unregisterEventListener(@NonNull final OnEventChangeListener listener) {
-        synchronized (m_eventChangeListeners) {
+        synchronized (mEventChangeListeners) {
             List<WeakReference<OnEventChangeListener>> ll = new ArrayList<>();
-            for (WeakReference<OnEventChangeListener> l : m_eventChangeListeners) {
+            for (WeakReference<OnEventChangeListener> l : mEventChangeListeners) {
                 if (l.get().equals(listener))
                     ll.add(l);
             }
             for (WeakReference<OnEventChangeListener> l : ll) {
-                m_eventChangeListeners.remove(l);
+                mEventChangeListeners.remove(l);
             }
         }
     }
 
     public void registerTaskListener(@NonNull final OnTaskChangeListener listener) {
-        synchronized (m_taskChangeListeners) {
-            for (WeakReference<OnTaskChangeListener> lr : m_taskChangeListeners) {
+        synchronized (mTaskChangeListeners) {
+            for (WeakReference<OnTaskChangeListener> lr : mTaskChangeListeners) {
                 OnTaskChangeListener l = lr.get();
                 if (l != null && l.equals(listener))
                     return;
             }
-            m_taskChangeListeners.add(new WeakReference<>(listener));
+            mTaskChangeListeners.add(new WeakReference<>(listener));
         }
     }
 
     public void unregisterTaskListener(@NonNull final OnTaskChangeListener listener) {
-        synchronized (m_taskChangeListeners) {
+        synchronized (mTaskChangeListeners) {
             List<WeakReference<OnTaskChangeListener>> ll = new ArrayList<>();
-            for (WeakReference<OnTaskChangeListener> l : m_taskChangeListeners) {
+            for (WeakReference<OnTaskChangeListener> l : mTaskChangeListeners) {
                 if (l.get().equals(listener))
                     ll.add(l);
             }
             for (WeakReference<OnTaskChangeListener> l : ll) {
-                m_taskChangeListeners.remove(l);
+                mTaskChangeListeners.remove(l);
             }
         }
     }
@@ -149,15 +153,15 @@ public abstract class QueueManager {
     void notifyTaskChange(@Nullable final Task task, @NonNull final TaskActions action) {
         // Make a copy of the list so we can cull dead elements from the original
         List<WeakReference<OnTaskChangeListener>> list;
-        synchronized (m_taskChangeListeners) {
-            list = new ArrayList<>(m_taskChangeListeners);
+        synchronized (mTaskChangeListeners) {
+            list = new ArrayList<>(mTaskChangeListeners);
         }
         // Scan through the list. If the ref is dead, delete from original, otherwise call it.
         for (WeakReference<OnTaskChangeListener> wl : list) {
             final OnTaskChangeListener l = wl.get();
             if (l == null) {
-                synchronized (m_taskChangeListeners) {
-                    m_taskChangeListeners.remove(wl);
+                synchronized (mTaskChangeListeners) {
+                    mTaskChangeListeners.remove(wl);
                 }
             } else {
                 try {
@@ -167,7 +171,7 @@ public abstract class QueueManager {
                             l.onTaskChange(task, action);
                         }
                     };
-                    m_messageHandler.post(r);
+                    mMessageHandler.post(r);
                 } catch (Exception e) {
                     // Throw away errors.
                 }
@@ -178,15 +182,15 @@ public abstract class QueueManager {
     private void notifyEventChange(@Nullable final Event event, @NonNull final EventActions action) {
         // Make a copy of the list so we can cull dead elements from the original
         List<WeakReference<OnEventChangeListener>> list;
-        synchronized (m_eventChangeListeners) {
-            list = new ArrayList<>(m_eventChangeListeners);
+        synchronized (mEventChangeListeners) {
+            list = new ArrayList<>(mEventChangeListeners);
         }
         // Scan through the list. If the ref is dead, delete from original, otherwise call it.
         for (WeakReference<OnEventChangeListener> wl : list) {
             final OnEventChangeListener l = wl.get();
             if (l == null) {
-                synchronized (m_eventChangeListeners) {
-                    m_eventChangeListeners.remove(wl);
+                synchronized (mEventChangeListeners) {
+                    mEventChangeListeners.remove(wl);
                 }
             } else {
                 try {
@@ -196,7 +200,7 @@ public abstract class QueueManager {
                             l.onEventChange(event, action);
                         }
                     };
-                    m_messageHandler.post(r);
+                    mMessageHandler.post(r);
                 } catch (Exception ignore) {
                 }
             }
@@ -212,9 +216,9 @@ public abstract class QueueManager {
     public void enqueueTask(@NonNull final Task task, @NonNull final String queueName) {
         synchronized (this) {
             // Save it
-            m_dba.enqueueTask(task, queueName);
-            if (m_activeQueues.containsKey(queueName)) {
-                Queue queue = m_activeQueues.get(queueName);
+            mDb.enqueueTask(task, queueName);
+            if (mActiveQueues.containsKey(queueName)) {
+                Queue queue = mActiveQueues.get(queueName);
                 synchronized (queue) {
                     queue.notify();
                 }
@@ -232,7 +236,7 @@ public abstract class QueueManager {
      * @param name Name of the queue
      */
     protected void initializeQueue(@NonNull final String name) {
-        m_dba.createQueue(name);
+        mDb.createQueue(name);
     }
 
     /**
@@ -242,7 +246,7 @@ public abstract class QueueManager {
      */
     void queueStarting(@NonNull final Queue queue) {
         synchronized (this) {
-            m_activeQueues.put(queue.getQueueName(), queue);
+            mActiveQueues.put(queue.getQueueName(), queue);
         }
     }
 
@@ -256,9 +260,9 @@ public abstract class QueueManager {
             try {
                 // It's possible that a queue terminated and another started; make sure we are removing
                 // the one that called us.
-                Queue q = m_activeQueues.get(queue.getQueueName());
+                Queue q = mActiveQueues.get(queue.getQueueName());
                 if (q.equals(queue))
-                    m_activeQueues.remove(queue.getQueueName());
+                    mActiveQueues.remove(queue.getQueueName());
             } catch (Exception e) {
                 // Ignore failures.
             }
@@ -277,7 +281,8 @@ public abstract class QueueManager {
         if (task instanceof RunnableTask) {
             return ((RunnableTask) task).run(this, this.getApplicationContext());
         } else {
-            throw new IllegalStateException("Can not handle tasks that are not RunnableTasks. Either extend RunnableTask, or override QueueManager.runOneTask()");
+            // Either extend RunnableTask, or override QueueManager.runOneTask()
+            throw new IllegalStateException("Can not handle tasks that are not RunnableTasks");
         }
     }
 
@@ -288,26 +293,26 @@ public abstract class QueueManager {
      * @param task The task to be saved. Must exist in database.
      */
     public void saveTask(@NonNull final Task task) {
-        m_dba.updateTask(task);
+        mDb.updateTask(task);
         this.notifyTaskChange(task, TaskActions.updated);
     }
 
     /**
      * Make a toast message for the caller. Queue in UI thread if necessary.
      */
-    private void doToast(String message) {
-        if (Thread.currentThread() == m_uiThread.get()) {
+    private void doToast(@NonNull final String message) {
+        if (Thread.currentThread() == mUIThread.get()) {
             synchronized (this) {
                 Toast.makeText(this.getApplicationContext(), message, android.widget.Toast.LENGTH_LONG).show();
             }
         } else {
             /* Send message to the handler */
-            Message msg = m_messageHandler.obtainMessage();
-            Bundle b = new Bundle();
-            b.putString("__internal", "toast");
-            b.putString("message", message);
-            msg.setData(b);
-            m_messageHandler.sendMessage(msg);
+            Message msg = mMessageHandler.obtainMessage();
+            Bundle bundle = new Bundle();
+            bundle.putString(INTERNAL, TOAST);
+            bundle.putString(MESSAGE, message);
+            msg.setData(bundle);
+            mMessageHandler.sendMessage(msg);
         }
     }
 
@@ -319,7 +324,7 @@ public abstract class QueueManager {
      * @param e Exception (usually subclassed)
      */
     void storeTaskEvent(@NonNull final Task t, @NonNull final Event e) {
-        m_dba.storeTaskEvent(t, e);
+        mDb.storeTaskEvent(t, e);
         this.notifyEventChange(e, EventActions.created);
     }
 
@@ -329,7 +334,7 @@ public abstract class QueueManager {
      * @return Cursor of exceptions
      */
     public EventsCursor getAllEvents() {
-        return m_dba.getAllEvents();
+        return mDb.getAllEvents();
     }
 
     /**
@@ -340,7 +345,7 @@ public abstract class QueueManager {
      * @return Cursor of exceptions
      */
     public EventsCursor getTaskEvents(final long taskId) {
-        return m_dba.getTaskEvents(taskId);
+        return mDb.getTaskEvents(taskId);
     }
 
     /**
@@ -351,7 +356,7 @@ public abstract class QueueManager {
      * @return Cursor of exceptions
      */
     public TasksCursor getTasks(@NonNull final TaskCursorSubtype type) {
-        return m_dba.getTasks(type);
+        return mDb.getTasks(type);
     }
 
     /**
@@ -362,7 +367,7 @@ public abstract class QueueManager {
      * @return Cursor of exceptions
      */
     public boolean hasActiveTasks(final long category) {
-        try (TasksCursor c = m_dba.getTasks(category, TaskCursorSubtype.active)) {
+        try (TasksCursor c = mDb.getTasks(category, TaskCursorSubtype.active)) {
             return c.moveToFirst();
         }
     }
@@ -377,7 +382,7 @@ public abstract class QueueManager {
         // Check if the task is running in a queue.
         synchronized (this) {
             // Synchronize so that no queue will be able to get another task while we are deleting
-            for (Queue q : m_activeQueues.values()) {
+            for (Queue q : mActiveQueues.values()) {
                 Task t = q.getTask();
                 if (t != null && t.getId() == id) {
                     // Abort it, don't delete from DB...it will do that WHEN it aborts
@@ -386,7 +391,7 @@ public abstract class QueueManager {
                 }
             }
             if (!isActive)
-                m_dba.deleteTask(id);
+                mDb.deleteTask(id);
         }
         if (isActive) {
             this.notifyEventChange(null, EventActions.updated);
@@ -404,10 +409,10 @@ public abstract class QueueManager {
     /**
      * Delete the specified Event object.
      *
-     * @param id ID of TaskException to delete.
+     * @param eventId ID of TaskException to delete.
      */
-    public void deleteEvent(final long id) {
-        m_dba.deleteEvent(id);
+    public void deleteEvent(final long eventId) {
+        mDb.deleteEvent(eventId);
         this.notifyEventChange(null, EventActions.deleted);
         // This is non-optimal, but ... it's easy and clear.
         // Deleting an event MAY result in an orphan task being deleted.
@@ -420,8 +425,8 @@ public abstract class QueueManager {
      * @param ageInDays Age in days for stale records
      */
     public void cleanupOldEvents(final int ageInDays) {
-        m_dba.cleanupOldEvents(ageInDays);
-        m_dba.cleanupOrphans();
+        mDb.cleanupOldEvents(ageInDays);
+        mDb.cleanupOrphans();
         // This is non-optimal, but ... it's easy and clear.
         this.notifyEventChange(null, EventActions.deleted);
         this.notifyTaskChange(null, TaskActions.deleted);
@@ -433,8 +438,8 @@ public abstract class QueueManager {
      * @param ageInDays Age in days for stale records
      */
     public void cleanupOldTasks(final int ageInDays) {
-        m_dba.cleanupOldTasks(ageInDays);
-        m_dba.cleanupOrphans();
+        mDb.cleanupOldTasks(ageInDays);
+        mDb.cleanupOrphans();
         // This is non-optimal, but ... it's easy and clear.
         this.notifyEventChange(null, EventActions.deleted);
         this.notifyTaskChange(null, TaskActions.deleted);
@@ -466,15 +471,15 @@ public abstract class QueueManager {
      * FIXME TOMF must be static or leaks. See doToast... UI thread or not. investigate
      */
     private class MessageHandler extends Handler {
-        public void handleMessage(Message msg) {
-            Bundle b = msg.getData();
-            if (b.containsKey("__internal")) {
-                String kind = b.getString("__internal");
-                if ("toast".equals(kind)) {
-                    doToast(b.getString("message"));
+        public void handleMessage(@NonNull final Message msg) {
+            Bundle bundle = msg.getData();
+            if (bundle.containsKey(INTERNAL)) {
+                String kind = bundle.getString(INTERNAL);
+                if (TOAST.equals(kind)) {
+                    doToast(bundle.getString(MESSAGE));
                 }
             } else {
-                throw new RuntimeException("Unknown message");
+                throw new IllegalArgumentException("Unknown message");
             }
         }
     }

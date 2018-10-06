@@ -54,16 +54,13 @@ import java.util.TimerTask;
  * @author Philip Warner
  */
 public class SearchCatalogue extends BookCatalogueActivity {
-    /**
-     * Handle inter-thread messages
-     */
+    /** Handle inter-thread messages */
     private final Handler mSCHandler = new Handler();
     private CatalogueDBAdapter mDb;
 
-    /**
-     * Handle the 'Search' button.
-     */
+    /** Handle the 'Search' button. */
     private TextView mBooksFound;
+
     private final OnClickListener mShowResultsListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -72,30 +69,22 @@ public class SearchCatalogue extends BookCatalogueActivity {
             mBooksFound.setText("Oopsie... still to implement");
         }
     };
-    /**
-     * Handle the 'FTS Rebuild' button.
-     */
+
+    /** Handle the 'FTS Rebuild' button. */
     private final OnClickListener mFtsRebuildListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
             mDb.rebuildFts();
         }
     };
-    /**
-     * Indicates user has changed something since the last search.
-     */
+    /** Indicates user has changed something since the last search. */
     private boolean mSearchDirty = false;
-    /**
-     * Timer reset each time the user clicks, in order to detect an idle time
-     */
+    /** Timer reset each time the user clicks, in order to detect an idle time */
     private long mIdleStart = 0;
-    /**
-     * Timer object for background idle searches
-     */
+    /** Timer object for background idle searches */
     private Timer mTimer;
-    /**
-     * Detect when user touches something, just so we know they are 'busy'.
-     */
+
+    /** Detect when user touches something, just so we know they are 'busy'. */
     private final OnTouchListener mOnTouchListener = new OnTouchListener() {
 
         @Override

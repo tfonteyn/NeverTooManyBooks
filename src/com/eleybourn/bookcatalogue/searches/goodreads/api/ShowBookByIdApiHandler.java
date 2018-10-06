@@ -36,8 +36,6 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GOODREADS_API_ROOT;
-
 /**
  * Class to call the search.books api (using a goodreads work ID).
  * 
@@ -54,11 +52,12 @@ public class ShowBookByIdApiHandler extends ShowBookApiHandler {
 	 *
 	 * @return	the array of GoodreadsWork objects.
 	 */
+	@NonNull
 	public Bundle get(final long workId, final boolean fetchThumbnail) throws
 			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
 			NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 		// Setup API call
-		final String urlBase = GOODREADS_API_ROOT + "/book/show/%1$s.xml?key=%2$s";
+		final String urlBase = GoodreadsManager.GOODREADS_API_ROOT + "/book/show/%1$s.xml?key=%2$s";
 		final String url = String.format(urlBase, workId, mManager.getDeveloperKey());
 		HttpGet get = new HttpGet(url);
 

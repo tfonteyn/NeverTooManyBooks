@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.searches;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -63,9 +62,6 @@ import java.util.List;
  * @author Philip Warner
  */
 public class SearchManager implements TaskManagerListener {
-    /** */
-    public static final String BKEY_SEARCH_SITES = "searchSitesList";
-
     /** Flag indicating a search source to use */
     public static final int SEARCH_GOOGLE = 1;
     /** Flag indicating a search source to use */
@@ -78,7 +74,8 @@ public class SearchManager implements TaskManagerListener {
     public static final int SEARCH_ISFDB = 16;
     /** Mask including all search sources */
     public static final int SEARCH_ALL = SEARCH_GOOGLE | SEARCH_AMAZON | SEARCH_LIBRARY_THING | SEARCH_GOODREADS | SEARCH_ISFDB;
-
+    /** */
+    static final String BKEY_SEARCH_SITES = "searchSitesList";
     private static final String TAG = "SearchManager";
 
     /** the default search site order */
@@ -87,12 +84,13 @@ public class SearchManager implements TaskManagerListener {
     private static final List<SearchSite> mCoverSearchOrderDefaults = new ArrayList<>();
     /** TODO: not user configurable for now, but plumbing installed */
     private static final List<SearchSite> mReliabilityOrder;
-    /** see {@link TaskSwitch}*/
+    /** see {@link TaskSwitch} */
     private static final TaskSwitch mMessageSwitch = new TaskSwitch();
     /** the users preferred search site order */
     private static ArrayList<SearchSite> mPreferredSearchOrder;
     /** the users preferred search site order */
     private static ArrayList<SearchSite> mPreferredCoverSearchOrder;
+
     static {
         /*ENHANCE: note to self... redo this mess. To complicated for what it is doing.
 
@@ -111,7 +109,7 @@ public class SearchManager implements TaskManagerListener {
 
         mCoverSearchOrderDefaults.add(new SearchSite(SEARCH_GOOGLE, "Google", 0, true));
         mCoverSearchOrderDefaults.add(new SearchSite(SEARCH_LIBRARY_THING, "LibraryThing", 1, true));
-        mCoverSearchOrderDefaults.add(new SearchSite(SEARCH_ISFDB, "ISFDB",  2, false));
+        mCoverSearchOrderDefaults.add(new SearchSite(SEARCH_ISFDB, "ISFDB", 2, false));
 
 
         // we're going to use set(index,...), so make them big enough
@@ -170,8 +168,8 @@ public class SearchManager implements TaskManagerListener {
     private String mTitle;
     /** Original ISBN for search */
     private String mIsbn;
-    /** Indicates original ISBN is really present */
-    private boolean mHasIsbn;
+    /** Indicates original ISBN is really present and valid */
+    private boolean mHasValidIsbn;
     /** Whether of not to fetch thumbnails */
     private boolean mFetchThumbnail;
     /** Output from search threads */
@@ -183,12 +181,13 @@ public class SearchManager implements TaskManagerListener {
      * @param taskManager TaskManager to use
      * @param taskHandler SearchHandler to send results
      */
-    public SearchManager(@NonNull final TaskManager taskManager, SearchListener taskHandler) {
+    public SearchManager(@NonNull final TaskManager taskManager,
+                         @NonNull final SearchListener taskHandler) {
         mTaskManager = taskManager;
         getMessageSwitch().addListener(getSenderId(), taskHandler, false);
     }
 
-
+    @NonNull
     static ArrayList<SearchSite> getSiteSearchOrder() {
         return mPreferredSearchOrder;
     }
@@ -204,11 +203,12 @@ public class SearchManager implements TaskManagerListener {
         e.apply();
     }
 
+    @NonNull
     public static ArrayList<SearchSite> getSiteCoverSearchOrder() {
         return mPreferredCoverSearchOrder;
     }
 
-    public static void setCoverSearchOrder(@NonNull final ArrayList<SearchSite> newList) {
+    static void setCoverSearchOrder(@NonNull final ArrayList<SearchSite> newList) {
         mPreferredCoverSearchOrder = newList;
         SharedPreferences.Editor e = BookCatalogueApp.getSharedPreferences().edit();
         for (SearchSite site : newList) {
@@ -323,7 +323,7 @@ public class SearchManager implements TaskManagerListener {
      * Start an Amazon search
      */
     private boolean startLibraryThing() {
-        if (!mCancelledFlg && mHasIsbn) {
+        if (!mCancelledFlg && mHasValidIsbn) {
             startOne(new SearchLibraryThingThread(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
             return true;
         } else {
@@ -358,13 +358,15 @@ public class SearchManager implements TaskManagerListener {
     /**
      * Start a search
      *
+     * ONE of the three parameters must be !.isEmpty
+     *
      * @param author Author to search for
      * @param title  Title to search for
      * @param isbn   ISBN to search for
      */
-    public void search(@Nullable final String author,
+    public void search(@NonNull final String author,
                        @NonNull final String title,
-                       @Nullable final String isbn,
+                       @NonNull final String isbn,
                        final boolean fetchThumbnail,
                        final int searchFlags) {
         if ((searchFlags & SEARCH_ALL) == 0) {
@@ -388,7 +390,7 @@ public class SearchManager implements TaskManagerListener {
         mAuthor = author;
         mTitle = title;
         mIsbn = isbn;
-        mHasIsbn = mIsbn != null && !mIsbn.isEmpty() && IsbnUtils.isValid(mIsbn);
+        mHasValidIsbn = IsbnUtils.isValid(mIsbn);
 
         mFetchThumbnail = fetchThumbnail;
 
@@ -404,11 +406,11 @@ public class SearchManager implements TaskManagerListener {
         boolean tasksStarted = false;
         mSearchingAsin = false;
         try {
-            if (mIsbn != null && mIsbn.length() > 0) {
-                if (IsbnUtils.isValid(mIsbn)) {
-                    // We have an ISBN, just do the search
+            if (mIsbn != null && !mIsbn.isEmpty()) {
+                if (mHasValidIsbn) {
+                    // We have a valid ISBN, just do the search
                     mWaitingForIsbn = false;
-                    tasksStarted = this.startSearches(mSearchFlags);
+                    tasksStarted = startSearches(mSearchFlags);
                 } else {
                     // Assume it's an ASIN, and just search Amazon
                     mSearchingAsin = true;
@@ -462,32 +464,32 @@ public class SearchManager implements TaskManagerListener {
             return;
         }
 
-        for (String k : bookData.keySet()) {
+        for (String key : bookData.keySet()) {
             // If its not there, copy it.
-            if (!mBookData.containsKey(k) || mBookData.getString(k) == null || mBookData.getString(k).isEmpty()) {
-                mBookData.putString(k, bookData.get(k).toString());
+            if (!mBookData.containsKey(key) || mBookData.getString(key) == null || mBookData.getString(key).isEmpty()) {
+                mBookData.putString(key, bookData.get(key).toString());
             } else {
                 // Copy, append or update data as appropriate.
-                if (UniqueId.BKEY_AUTHOR_DETAILS.equals(k)) {
-                    appendData(k, bookData, mBookData);
+                if (UniqueId.BKEY_AUTHOR_DETAILS.equals(key)) {
+                    appendData(key, bookData, mBookData);
 
-                } else if (UniqueId.BKEY_SERIES_DETAILS.equals(k)) {
-                    appendData(k, bookData, mBookData);
+                } else if (UniqueId.BKEY_SERIES_DETAILS.equals(key)) {
+                    appendData(key, bookData, mBookData);
 
-                } else if (UniqueId.KEY_BOOK_DATE_PUBLISHED.equals(k)) {// Grab a different date if we can parse it.
-                    String pd = bookData.getString(k);
+                } else if (UniqueId.KEY_BOOK_DATE_PUBLISHED.equals(key)) {// Grab a different date if we can parse it.
+                    String pd = bookData.getString(key);
                     if (pd != null) {
                         Date newDate = DateUtils.parseDate(pd);
                         if (newDate != null) {
-                            String curr = mBookData.getString(k);
+                            String curr = mBookData.getString(key);
                             if (curr != null && DateUtils.parseDate(curr) == null) {
-                                mBookData.putString(k, DateUtils.toSqlDateOnly(newDate));
+                                mBookData.putString(key, DateUtils.toSqlDateOnly(newDate));
                             }
                         }
                     }
 
-                } else if (UniqueId.BKEY_THUMBNAIL_USCORE.equals(k)) {
-                    appendData(k, bookData, mBookData);
+                } else if (UniqueId.BKEY_THUMBNAIL_USCORE.equals(key)) {
+                    appendData(key, bookData, mBookData);
 
                 }
             }
@@ -502,7 +504,7 @@ public class SearchManager implements TaskManagerListener {
         // actual results and the default order.
         final List<Integer> results = new ArrayList<>();
 
-        if (mHasIsbn) {
+        if (mHasValidIsbn) {
             // If ISBN was passed, ignore entries with the wrong ISBN, and put entries with no ISBN at the end
             final List<Integer> uncertain = new ArrayList<>();
             for (SearchSite site : mReliabilityOrder) {
@@ -521,7 +523,7 @@ public class SearchManager implements TaskManagerListener {
             // Add the passed ISBN first; avoid overwriting
             mBookData.putString(UniqueId.KEY_ISBN, mIsbn);
         } else {
-            // If ISBN was not passed, then just used the default order
+            // If ISBN was not passed, then just use the default order
             for (SearchSite site : mReliabilityOrder) {
                 results.add(site.id);
             }
@@ -637,14 +639,13 @@ public class SearchManager implements TaskManagerListener {
     /**
      * Start all searches listed in passed parameter that have not been run yet.
      */
-    private boolean startSearches(int sources) {
-        // Scan searches in priority order
+    private boolean startSearches(final int sources) {
         boolean started = false;
+        // Scan searches in priority order
         for (SearchSite source : mPreferredSearchOrder) {
             // If requested search contains this source...
-            if (source.enabled && ((sources & source.id) != 0))
-            // If we have not run this search...
-            {
+            if (source.enabled && ((sources & source.id) != 0)) {
+                // If we have not run this search...
                 if (!mSearchResults.containsKey(source.id)) {
                     // Run it now
                     if (startOneSearch(source.id)) {
@@ -659,7 +660,7 @@ public class SearchManager implements TaskManagerListener {
     /**
      * Start specific search listed in passed parameter.
      */
-    private boolean startOneSearch(int source) {
+    private boolean startOneSearch(final int source) {
         switch (source) {
             case SEARCH_GOOGLE:
                 return startGoogle();
@@ -679,10 +680,10 @@ public class SearchManager implements TaskManagerListener {
     /**
      * Handle task search results; start another task if necessary.
      */
-    private void handleSearchTaskFinished(@NonNull final SearchThread t) {
-        mCancelledFlg = t.isCancelled();
-        Bundle bookData = t.getBookData();
-        mSearchResults.put(t.getSearchId(), bookData);
+    private void handleSearchTaskFinished(@NonNull final SearchThread searchThread) {
+        mCancelledFlg = searchThread.isCancelled();
+        final Bundle bookData = searchThread.getBookData();
+        mSearchResults.put(searchThread.getSearchId(), bookData);
         if (mCancelledFlg) {
             mWaitingForIsbn = false;
         } else {

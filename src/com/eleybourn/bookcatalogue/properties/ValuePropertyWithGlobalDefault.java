@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.properties;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 /**
  * Implements a property with a default value stored in preferences or provided locally.
@@ -50,7 +51,7 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
      */
     ValuePropertyWithGlobalDefault(@NonNull final String uniqueId,
                                    @NonNull final PropertyGroup group,
-                                   final int nameResourceId) {
+                                   @StringRes final int nameResourceId) {
         super(uniqueId, group, nameResourceId);
     }
 
@@ -65,7 +66,7 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
      */
     ValuePropertyWithGlobalDefault(@NonNull final String uniqueId,
                                    @NonNull final PropertyGroup group,
-                                   final int nameResourceId,
+                                   @StringRes final int nameResourceId,
                                    @NonNull final T defaultValue) {
         super(uniqueId, group, nameResourceId);
         mDefaultValue = defaultValue;
@@ -82,7 +83,7 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
      */
     ValuePropertyWithGlobalDefault(@NonNull final String uniqueId,
                                    @NonNull final PropertyGroup group,
-                                   final int nameResourceId,
+                                   @StringRes final int nameResourceId,
                                    @Nullable final T defaultValue,
                                    @Nullable final T value) {
         super(uniqueId, group, nameResourceId);

@@ -30,7 +30,6 @@ import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlResponseParser;
-import com.eleybourn.bookcatalogue.utils.Base64;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -260,8 +259,11 @@ public class BackupUtils {
                     mBundle.putBoolean(key, Boolean.parseBoolean(value));
                     break;
                 case TYPE_SERIALIZABLE:
-                    Serializable s = Base64.decode(value);
-                    mBundle.putSerializable(key, s);
+                   //ENHANCE API 26
+                   // byte[] blob = java.util.Base64.getDecoder().decode(value);
+
+                    byte[] blob = Base64.decode(value);
+                    mBundle.putSerializable(key, blob);
                     break;
             }
         }

@@ -79,7 +79,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIE
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    /** TODO: Update database version RELEASE: Update database version */
+    /** RELEASE: Update database version */
     private static final int DATABASE_VERSION = 83; // last official version was 82
     /** the one and only */
     private static final String DATABASE_NAME = "book_catalogue";
@@ -90,7 +90,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * We now use Collate LOCALE and check to see if it is case sensitive. We *hope* in the
      * future Android will add LOCALE_CI (or equivalent).
      *
-     * public static final String COLLATION = "Collate NOCASE";
+     * public static final String COLLATION = " Collate NOCASE ";
      * public static final String COLLATION = " Collate UNICODE ";
      *
      * NOTE: Important to have start/end spaces!
@@ -124,6 +124,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     static final String DATABASE_CREATE_BOOKSHELF_DATA =
             "INSERT INTO " + TBL_BOOKSHELF + " (" + DOM_BOOKSHELF + ") VALUES ('" + BookCatalogueApp.getResourceString(R.string.initial_bookshelf) +
                     "')";
+
     static final String DATABASE_CREATE_LOAN =
             "CREATE TABLE " + TBL_LOAN + " (_id integer primary key autoincrement, " +
                     DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
@@ -429,7 +430,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         createIndices(db);
         // Rebuild all triggers
         createTriggers(syncedDb);
-
-        //TODO: NOTE: END OF UPDATE
     }
 }

@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -17,7 +18,6 @@ import java.util.List;
 
 abstract class EditStringDialog {
     protected final CatalogueDBAdapter mDb;
-    @SuppressWarnings("WeakerAccess")
     protected final Runnable mOnChanged;
     private final Context mContext;
     private ArrayAdapter<String> mAdapter;
@@ -38,7 +38,7 @@ abstract class EditStringDialog {
     EditStringDialog(@NonNull final Context context,
                      @NonNull final CatalogueDBAdapter db,
                      @NonNull final Runnable onChanged,
-                     final int adapterResId,
+                     @LayoutRes final int adapterResId,
                      @NonNull final List<String> list) {
         mContext = context;
         mOnChanged = onChanged;
@@ -46,7 +46,7 @@ abstract class EditStringDialog {
         mAdapter = new ArrayAdapter<>(context, adapterResId, list);
     }
 
-    protected void edit(@NonNull final String s, final int layout, final int title) {
+    protected void edit(@NonNull final String s, @LayoutRes final int layout, final int title) {
         mDialog = new StandardDialogs.BasicDialog(mContext);
         mDialog.setContentView(layout);
         mDialog.setTitle(title);

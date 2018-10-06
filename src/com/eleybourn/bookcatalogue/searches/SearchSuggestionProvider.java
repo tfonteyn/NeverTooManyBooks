@@ -38,8 +38,7 @@ public class SearchSuggestionProvider extends SearchRecentSuggestionsProvider {
     public SearchSuggestionProvider() {
         setupSuggestions(AUTHORITY, MODE);
     }
-
-
+    
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         if (selectionArgs[0].isEmpty()) {

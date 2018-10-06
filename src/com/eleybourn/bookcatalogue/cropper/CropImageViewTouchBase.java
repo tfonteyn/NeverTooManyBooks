@@ -16,7 +16,6 @@
 
 package com.eleybourn.bookcatalogue.cropper;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -237,13 +236,13 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     }
 
     /**
-     * We get 'unsupported feature' crshes if the option to always use GL is turned on.
+     * We get 'unsupported feature' crashes if the option to always use GL is turned on.
      * See:
      * http://developer.android.com/guide/topics/graphics/hardware-accel.html
      * http://stackoverflow.com/questions/13676059/android-unsupportedoperationexception-at-canvas-clippath
      * so for API level > 11, we turn it off manually.
      */
-    @SuppressLint("NewApi")
+    //@SuppressLint("NewApi")
     private void forceSoftwareRenderer() {
         this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }

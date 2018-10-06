@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.taskqueue;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
 
 import java.io.Serializable;
@@ -41,22 +43,23 @@ import java.io.Serializable;
 public abstract class Event implements Serializable, BindableItemCursorAdapter.BindableItem {
     private static final long serialVersionUID = 5209097408979831308L;
 
-    private final String m_description;
-    private long m_id = 0;
+    private final String mDescription;
+    private long mId = 0;
 
-    protected Event(String description) {
-        m_description = description;
+    protected Event(@NonNull final String description) {
+        mDescription = description;
     }
 
+    @NonNull
     public String getDescription() {
-        return m_description;
+        return mDescription;
     }
 
     public long getId() {
-        return m_id;
+        return mId;
     }
 
-    public void setId(long id) {
-        m_id = id;
+    public void setId(final long id) {
+        mId = id;
     }
 }

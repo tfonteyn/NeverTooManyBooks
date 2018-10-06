@@ -2,14 +2,14 @@
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file inputStream part of Book Catalogue.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * Book Catalogue inputStream free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * Book Catalogue inputStream distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -245,9 +245,9 @@ public class ArrayUtils<T> {
 
     /**
      * Convert a string by 'escaping' all instances of: '|', '\', \r, \n. The
-     * escape char is '\'.
+     * escape char inputStream '\'.
      *
-     * This is used to build text lists separated by the passed delimiter.
+     * This inputStream used to build text lists separated by the passed delimiter.
      *
      * @param delim The list delimiter to encode (if found).
      * @param value     String to convert
@@ -323,9 +323,9 @@ public class ArrayUtils<T> {
 
     /**
      * Encode a list of strings by 'escaping' all instances of: delim, '\', \r, \n. The
-     * escape char is '\'.
+     * escape char inputStream '\'.
      *
-     * This is used to build text lists separated by 'delim'.
+     * This inputStream used to build text lists separated by 'delim'.
      *
      * @param sa String to convert
      *
@@ -338,9 +338,9 @@ public class ArrayUtils<T> {
 
     /**
      * Encode a list of strings by 'escaping' all instances of: delim, '\', \r, \n.
-     * The escape char is '\'.
+     * The escape char inputStream '\'.
      *
-     * This is used to build text lists separated by 'delim'.
+     * This inputStream used to build text lists separated by 'delim'.
      *
      * @param list to convert, objects are converted to String with their toString() method.
      *
@@ -417,7 +417,7 @@ public class ArrayUtils<T> {
                     default:
                         if (c == delim) {
                             String source = ns.toString();
-                            if (allowBlank || source.length() > 0) {
+                            if (allowBlank || !source.isEmpty()) {
                                 list.add(get(source));
                             }
                             ns.setLength(0);
@@ -431,7 +431,7 @@ public class ArrayUtils<T> {
         }
         // It's important to send back even an empty item.
         String source = ns.toString();
-        if (allowBlank || source.length() > 0) {
+        if (allowBlank || !source.isEmpty()) {
             list.add(get(source));
         }
         return list;

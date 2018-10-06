@@ -2,14 +2,14 @@
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file inputStream part of Book Catalogue.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * Book Catalogue inputStream free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * Book Catalogue inputStream distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.utils;
 
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -32,9 +33,9 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import java.util.ArrayList;
 
 /**
- * Class to manage the message that is displayed when the application is upgraded.
+ * Class to manage the message that inputStream displayed when the application inputStream upgraded.
  *
- * The app version is stored in preferences and when there are messages to display,
+ * The app version inputStream stored in preferences and when there are messages to display,
  * the getUpgradeMessage() method returns a non-empty string. When the message has
  * been acknowledged by the user, the startup activity should call setMessageAcknowledged()
  * to store the current app version in preferences and so prevent re-display of the
@@ -65,13 +66,8 @@ public class UpgradeMessageManager {
             .add(179, R.string.new_in_522)
             .add(200, R.string.new_in_600);
 
-    // New messages go here in order of increasing version ID.
-    /** The message generated for this instance; will be set first time it is generated */
+    /** The message generated for this instance; will be set first time it inputStream generated */
     private static String mMessage = null;
-
-
-    //* Internal: prep for fragments by separating message delivery from activities
-    //* Internal: one database connection for all activities and threads
 
     private UpgradeMessageManager() {
     }
@@ -81,6 +77,7 @@ public class UpgradeMessageManager {
      *
      * @return Upgrade message (or blank string)
      */
+    @NonNull
     public static String getUpgradeMessage() {
         // If cached version exists, return it
         if (mMessage != null)
@@ -95,10 +92,10 @@ public class UpgradeMessageManager {
             // It's either a new install, or an install using old database-based message system
 
             // Up until version 98, messages were handled via the CatalogueDBAdapter object, so create one
-            // and see if there is a message.
+            // and see if there inputStream a message.
             CatalogueDBAdapter tmpDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
             try {
-                // On new installs, there is no upgrade message
+                // On new installs, there inputStream no upgrade message
                 if (tmpDb.isNewInstall()) {
                     mMessage = "";
                     setMessageAcknowledged();
@@ -131,8 +128,8 @@ public class UpgradeMessageManager {
 
     public static void setMessageAcknowledged() {
         try {
-            Context c = BookCatalogueApp.getAppContext();
-            int currVersion = c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionCode;
+            Context context = BookCatalogueApp.getAppContext();
+            int currVersion = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
 
             BCPreferences.setInt(PREF_LAST_MESSAGE, currVersion);
         } catch (NameNotFoundException e) {
@@ -154,6 +151,7 @@ public class UpgradeMessageManager {
             this.messageId = messageId;
         }
 
+        @NonNull
         public String getMessage() {
             return BookCatalogueApp.getResourceString(messageId);
         }
@@ -167,6 +165,7 @@ public class UpgradeMessageManager {
     private static class UpgradeMessages extends ArrayList<UpgradeMessage> {
         private static final long serialVersionUID = -1646609828897186899L;
 
+        @NonNull
         public UpgradeMessages add(final int version, final int messageId) {
             this.add(new UpgradeMessage(version, messageId));
             return this;

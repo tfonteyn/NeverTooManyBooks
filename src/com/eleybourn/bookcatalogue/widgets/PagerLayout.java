@@ -60,8 +60,7 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
         //Disable clipping of children so non-selected pages are visible
         setClipChildren(false);
 
-        //RELEASE
-        // Child clipping doesn't work with hardware acceleration in Android 3.x/4.x
+        //RELEASE: Child clipping doesn't work with hardware acceleration in Android 3.x/4.x => is this relevant ? or just remove this comment ?
         //You need to set this value here if using hardware acceleration in an
         // application targeted at these releases.
 

@@ -33,8 +33,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BookData;
-import com.eleybourn.bookcatalogue.BooksRow;
+import com.eleybourn.bookcatalogue.entities.BookData;
+import com.eleybourn.bookcatalogue.entities.BookRow;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -152,7 +152,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseHelper.COLLATION;
  * - instead of string encoding of lists, use JSON ?
  * pro: easier / (sort of) foolproof / FLEXIBLE!
  * con: fools / fields will be bigger due to json labels
- * => or... do a specific JSON Exporter / Importer as an alternative to the Csv model
+ * => or... do a specific JSON Exporter / Importer as an alternative to the Csv model (con: not easy to get 'others' to provide import files)
  *
  * - anthology titles can be in series... ouch....
  *
@@ -163,7 +163,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseHelper.COLLATION;
  *
  *
  *
- * - table aliases hardcoded
  * - bind variables versus string concat
  *
  *
@@ -281,7 +280,7 @@ public class CatalogueDBAdapter {
      * If no given name -> family name
      * otherwise -> family, given
      */
-    private static String SQL_FIELDS_AUTHOR_FORMATTED =
+    private static final String SQL_FIELDS_AUTHOR_FORMATTED =
             " Case When " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "='' Then " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) +
                     " Else " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " || ',' || " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " End AS " + DOM_AUTHOR_FORMATTED;
 
@@ -289,7 +288,7 @@ public class CatalogueDBAdapter {
      * If no given name -> family name
      * otherwise -> given family
      */
-    private static String SQL_FIELDS_AUTHOR_FORMATTED_GIVEN_FIRST =
+    private static final String SQL_FIELDS_AUTHOR_FORMATTED_GIVEN_FIRST =
             " Case When " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "='' Then " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) +
                     " Else " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " || ' ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " End AS " + DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
 
@@ -1580,18 +1579,26 @@ public class CatalogueDBAdapter {
                             + " VALUES(?,?,?,?)");
         }
 
-        //FIXME: is this still true ?
-        // Setup the book in the ADD statement. This was once good enough, but
-        // Android 4 (at least) causes the bindings to clean when executed. So
-        // now we do it each time in loop.
-        // mAddBookSeriesStmt.bindLong(1, bookId);
-        // See call to releaseAndUnlock in:
-        // 		http://grepcode.com/file/repository.grepcode.com/java/ext/com.google.android/android/4.0.1_r1/android/database/sqlite/SQLiteStatement.java#SQLiteStatement.executeUpdateDelete%28%29
-        // which calls clearBindings():
-        //		http://grepcode.com/file/repository.grepcode.com/java/ext/com.google.android/android/4.0.1_r1/android/database/sqlite/SQLiteStatement.java#SQLiteStatement.releaseAndUnlock%28%29
-        //
+        /*
 
-        // Get the authors and turn into a list of names
+        FIXME: is this still true ?
+             mAddBookSeriesStmt.bindLong(1, bookId);
+        can in theory be outside of the for loop. This was once good enough, but Android 4 (at least)
+        causes the bindings to clean when executed. So now we do it each time in loop.
+
+            2018-10-05: call stack show that in theory clearBindings() is only called when ALL references are gone.
+
+            https://android.googlesource.com/platform/frameworks/base/+/android-5.0.0_r7/core/java/android/database/sqlite/SQLiteStatement.java#77
+                executeInsert()
+            https://android.googlesource.com/platform/frameworks/base/+/android-5.0.0_r7/core/java/android/database/sqlite/SQLiteClosable.java#65
+                releaseReference()
+            https://android.googlesource.com/platform/frameworks/base/+/android-5.0.0_r7/core/java/android/database/sqlite/SQLiteProgram.java#207
+                onAllReferencesReleased()
+            https://android.googlesource.com/platform/frameworks/base/+/android-5.0.0_r7/core/java/android/database/sqlite/SQLiteProgram.java#180
+                clearBindings() {
+
+         */
+
         // The list MAY contain duplicates (eg. from Internet lookups of multiple
         // sources), so we track them in a hash map
         final HashMap<String, Boolean> idHash = new HashMap<>();
@@ -1613,7 +1620,7 @@ public class CatalogueDBAdapter {
                     mAddBookSeriesStmt.bindLong(2, seriesId);
                     mAddBookSeriesStmt.bindString(3, entry.number);
                     mAddBookSeriesStmt.bindLong(4, pos);
-                    mAddBookSeriesStmt.execute();
+                    mAddBookSeriesStmt.executeInsert();
                 }
             } catch (Exception e) {
                 Logger.logError(e);
@@ -1799,7 +1806,7 @@ public class CatalogueDBAdapter {
                                                  final long to) {
 
         if (!mSyncedDb.inTransaction()) {
-            throw new DBExceptions.TransactionException("globalReplacePositionedBookItem must be called in a transaction");
+            throw new DBExceptions.TransactionException();
         }
 
         // Update books but prevent duplicate index errors - update books for which the new ID is not already present
@@ -2409,7 +2416,7 @@ public class CatalogueDBAdapter {
      */
     @NonNull
     public ArrayList<String> getFormats() {
-        String sql = "SELECT distinct " + DOM_BOOK_FORMAT + " FROM " + TBL_BOOKS
+        String sql = "SELECT DISTINCT " + DOM_BOOK_FORMAT + " FROM " + TBL_BOOKS
                 + " ORDER BY lower(" + DOM_BOOK_FORMAT + ") " + COLLATION;
 
         try (Cursor cursor = mSyncedDb.rawQuery(sql)) {
@@ -2443,7 +2450,7 @@ public class CatalogueDBAdapter {
      */
     @NonNull
     public ArrayList<String> getGenres() {
-        String sql = "SELECT distinct " + DOM_BOOK_GENRE + " FROM " + TBL_BOOKS
+        String sql = "SELECT DISTINCT " + DOM_BOOK_GENRE + " FROM " + TBL_BOOKS
                 + " ORDER BY lower(" + DOM_BOOK_GENRE + ") " + COLLATION;
 
         try (Cursor c = mSyncedDb.rawQuery(sql)) {
@@ -2477,7 +2484,7 @@ public class CatalogueDBAdapter {
      */
     @NonNull
     public ArrayList<String> getLanguages() {
-        String sql = "SELECT distinct " + DOM_BOOK_LANGUAGE + " FROM " + TBL_BOOKS
+        String sql = "SELECT DISTINCT " + DOM_BOOK_LANGUAGE + " FROM " + TBL_BOOKS
                 + " ORDER BY lower(" + DOM_BOOK_LANGUAGE + ") " + COLLATION;
 
         try (Cursor c = mSyncedDb.rawQuery(sql)) {
@@ -2589,7 +2596,7 @@ public class CatalogueDBAdapter {
      */
     @NonNull
     public ArrayList<String> getLocations() {
-        String sql = "SELECT distinct " + DOM_BOOK_LOCATION + " FROM " + TBL_BOOKS
+        String sql = "SELECT DISTINCT " + DOM_BOOK_LOCATION + " FROM " + TBL_BOOKS
                 + " ORDER BY lower(" + DOM_BOOK_LOCATION + ") " + COLLATION;
 
         try (Cursor c = mSyncedDb.rawQuery(sql)) {
@@ -2623,7 +2630,7 @@ public class CatalogueDBAdapter {
      */
     @NonNull
     public ArrayList<String> getPublishers() {
-        String sql = "SELECT distinct " + DOM_BOOK_PUBLISHER + " FROM " + TBL_BOOKS
+        String sql = "SELECT DISTINCT " + DOM_BOOK_PUBLISHER + " FROM " + TBL_BOOKS
                 + " ORDER BY lower(" + DOM_BOOK_PUBLISHER + ") " + COLLATION;
 
         try (Cursor c = mSyncedDb.rawQuery(sql)) {
@@ -3220,7 +3227,7 @@ public class CatalogueDBAdapter {
             throw new DBExceptions.TransactionException();
         }
 
-        final BooksRow book = books.getRowView();
+        final BookRow book = books.getRowView();
         // Build the SQL to get author details for a book.
 
         // ... all authors
@@ -3456,7 +3463,7 @@ public class CatalogueDBAdapter {
     public void rebuildFts() {
 
         if (mSyncedDb.inTransaction()) {
-            throw new DBExceptions.TransactionException("Should not be called in a transaction");
+            throw new DBExceptions.TransactionException();
         }
 
         long t0;
@@ -3657,7 +3664,7 @@ public class CatalogueDBAdapter {
      */
     public void fixupAuthorsAndSeries() {
         if (mSyncedDb.inTransaction()) {
-            throw new DBExceptions.TransactionException("Should not be called in a transaction");
+            throw new DBExceptions.TransactionException();
         }
 
         SyncLock syncLock = mSyncedDb.beginTransaction(true);

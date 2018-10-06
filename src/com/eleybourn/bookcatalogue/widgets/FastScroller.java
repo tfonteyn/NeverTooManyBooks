@@ -128,8 +128,8 @@ public class FastScroller {
     private ScrollFade mScrollFade;
     private int mState;
     private BaseAdapter mListAdapter;
-    private SectionIndexer mSectionIndexerV1;
-    private SectionIndexerV2 mSectionIndexerV2;
+    private SectionIndexer mSectionIndexerV1; // android.widget.SectionIndexer
+    private SectionIndexerV2 mSectionIndexerV2; // our own
     private boolean mChangedBounds;
 
     FastScroller(@NonNull final Context context, @NonNull final AbsListView listView) {
@@ -301,7 +301,8 @@ public class FastScroller {
             }
 
             // Draw the first line
-            final String text1 = TextUtils.ellipsize(line1, paint, (mOverlayPos.right - mOverlayPos.left) * 0.8f, TextUtils.TruncateAt.END).toString();
+            final String text1 = TextUtils.ellipsize(line1, paint,
+                    (mOverlayPos.right - mOverlayPos.left) * 0.8f, TextUtils.TruncateAt.END).toString();
             canvas.drawText(text1, (int) (rectF.left + rectF.right) / 2,
                     // Base of text at: (middle) + (half text height) - descent : so it is vertically centred
                     (int) (rectF.bottom + rectF.top) / 2 + mOverlaySize / 6 - descent,
@@ -311,7 +312,8 @@ public class FastScroller {
                 // Draw the second line, but smaller than first
                 float s = paint.getTextSize();
                 paint.setTextSize(s * 0.7f);
-                final String text2 = TextUtils.ellipsize(line2, paint, (mOverlayPos.right - mOverlayPos.left) * 0.8f, TextUtils.TruncateAt.END).toString();
+                final String text2 = TextUtils.ellipsize(line2, paint,
+                        (mOverlayPos.right - mOverlayPos.left) * 0.8f, TextUtils.TruncateAt.END).toString();
                 canvas.drawText(text2, (int) (rectF.left + rectF.right) / 2,
                         // Base of text at: (middle) + (half text height) - descent : so it is vertically centred
                         (int) (rectF.bottom + rectF.top) / 2 + mOverlaySize / 6 + s,
@@ -344,8 +346,7 @@ public class FastScroller {
         }
     }
 
-    void onScroll(final int firstVisibleItem, final int visibleItemCount,
-                  int totalItemCount) {
+    void onScroll(final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
         // Are there enough pages to require fast scroll? Recompute only if total count changes
         if (mItemCount != totalItemCount && visibleItemCount > 0) {
             mItemCount = totalItemCount;
@@ -436,7 +437,7 @@ public class FastScroller {
             }
         }
 
-        mDrawOverlay = (mSectionTextV2 != null) || (mSectionTextV1 != null && mSectionTextV1.length() > 0);
+        mDrawOverlay = (mSectionTextV2 != null) || (mSectionTextV1 != null && !mSectionTextV1.isEmpty());
     }
 
     private void cancelFling() {

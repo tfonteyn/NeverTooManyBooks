@@ -34,11 +34,12 @@ import android.widget.CheckedTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
@@ -101,7 +102,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
      * Required, not used
      */
     @Override
-    protected void onAdd(View v) {
+    protected void onAdd(@NonNull View v) {
     }
 
     @Override
@@ -208,11 +209,12 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
         mEditedRow = position;
 
         if (!style.isUserDefined() || alwaysClone) {
+
             try {
                 style = style.getClone();
                 style.setRowId(0);
                 style.setName(style.getDisplayName());
-            } catch (Exception e) {
+            } catch (SerializationUtils.DeserializationException e) {
                 Logger.logError(e);
                 Toast.makeText(this, R.string.unexpected_error, Toast.LENGTH_LONG).show();
                 return;
@@ -310,19 +312,15 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
 
     /**
      * Class used for an item in the pseudo-context menu.
-     * <p>
+     *
      * Context menus don't seem to work for EditObject subclasses, perhaps because we consume click events.
      *
      * @author Philip Warner
      */
     private class ContextItem implements CharSequence {
-        /**
-         * String for this item
-         */
+        /** String for this item */
         private final String mString;
-        /**
-         * ID of this item
-         */
+        /** ID of this item */
         private final int mId;
 
         /**

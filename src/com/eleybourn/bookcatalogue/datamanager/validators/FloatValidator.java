@@ -48,18 +48,18 @@ public class FloatValidator extends DefaultFieldValidator {
 
         super.validate(data, datum, false);
         try {
-            Float v;
+            Float value;
             Object o = data.get(datum);
             if (o instanceof Float) {
-                v = (Float) o;
+                value = (Float) o;
             } else if (o instanceof Double) {
-                v = ((Double) o).floatValue();
+                value = ((Double) o).floatValue();
             } else if (o instanceof Integer) {
-                v = ((Integer) o).floatValue();
+                value = ((Integer) o).floatValue();
             } else {
-                v = Float.parseFloat(o.toString());
+                value = Float.parseFloat(o.toString());
             }
-            data.putFloat(datum, v);
+            data.putFloat(datum, value);
         } catch (Exception e) {
             throw new ValidatorException(R.string.vldt_real_expected, new Object[]{datum.getKey()});
         }

@@ -52,6 +52,7 @@ import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment.OnPartialDa
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEditorListener;
+import com.eleybourn.bookcatalogue.entities.BookData;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
@@ -80,8 +81,8 @@ public class BookDetailsActivity extends BookCatalogueActivity
     public static final int TAB_EDIT_FRIENDS = 2;
     public static final int TAB_EDIT_ANTHOLOGY = 3;
 
-    private static final String FLATTENED_BOOKLIST_POSITION = "FlattenedBooklistPosition";
-    private static final String FLATTENED_BOOKLIST = "FlattenedBooklist";
+    private static final String BKEY_FLATTENED_BOOKLIST_POSITION = "FlattenedBooklistPosition";
+    private static final String BKEY_FLATTENED_BOOKLIST = "FlattenedBooklist";
     /**
      * Key using in intent to start this class in read-only mode
      */
@@ -195,9 +196,9 @@ public class BookDetailsActivity extends BookCatalogueActivity
                                           @Nullable final String listTable,
                                           @Nullable final Integer position) {
         Intent intent = new Intent(activity, BookDetailsActivity.class);
-        intent.putExtra(FLATTENED_BOOKLIST, listTable);
+        intent.putExtra(BKEY_FLATTENED_BOOKLIST, listTable);
         if (position != null) {
-            intent.putExtra(FLATTENED_BOOKLIST_POSITION, position);
+            intent.putExtra(BKEY_FLATTENED_BOOKLIST_POSITION, position);
         }
         intent.putExtra(UniqueId.KEY_ID, id);
         intent.putExtra(BookDetailsActivity.TAB, BookDetailsActivity.TAB_EDIT); // needed extra for creating BookDetailsActivity
@@ -280,16 +281,22 @@ public class BookDetailsActivity extends BookCatalogueActivity
 
         mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         try {
-            TabLayout.Tab tab = mTabLayout.newTab().setText(R.string.details).setTag(mTabClasses[TAB_EDIT].newInstance());
+            Holder holder = new Holder();
+            holder.fragment = (Fragment)mTabClasses[TAB_EDIT].newInstance();
+            TabLayout.Tab tab = mTabLayout.newTab().setText(R.string.details).setTag(holder);
             mTabLayout.addTab(tab);
             mAllTabs.add(tab);
 
-            tab = mTabLayout.newTab().setText(R.string.notes).setTag(mTabClasses[TAB_EDIT_NOTES].newInstance());
+            holder = new Holder();
+            holder.fragment = (Fragment)mTabClasses[TAB_EDIT_NOTES].newInstance();
+            tab = mTabLayout.newTab().setText(R.string.notes).setTag(holder);
             mTabLayout.addTab(tab);
             mAllTabs.add(tab);
 
             if (isExistingBook) {
-                tab = mTabLayout.newTab().setText(R.string.loan).setTag(mTabClasses[TAB_EDIT_FRIENDS].newInstance());
+                holder = new Holder();
+                holder.fragment = (Fragment)mTabClasses[TAB_EDIT_FRIENDS].newInstance();
+                tab = mTabLayout.newTab().setText(R.string.loan).setTag(holder);
                 mTabLayout.addTab(tab);
                 mAllTabs.add(tab);
 
@@ -297,7 +304,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
                 showAnthologyTab(isAnthology);
             }
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException("Creating BookDetailsActivity tabs failed?");
+            throw new IllegalStateException("Creating BookDetailsActivity tabs failed?");
         }
 
 
@@ -373,7 +380,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
     private void initBooklist(@Nullable final Bundle extras,
                               @Nullable final Bundle savedInstanceState) {
         if (extras != null) {
-            String list = extras.getString(FLATTENED_BOOKLIST);
+            String list = extras.getString(BKEY_FLATTENED_BOOKLIST);
             if (list != null && !list.isEmpty()) {
                 mList = new FlattenedBooklist(mDb, list);
                 // Check to see it really exists. The underlying table disappeared once in testing
@@ -381,10 +388,10 @@ public class BookDetailsActivity extends BookCatalogueActivity
                 // the database or if the activity pauses with 'isFinishing()' returning true.
                 if (mList.exists()) {
                     int pos;
-                    if (savedInstanceState != null && savedInstanceState.containsKey(FLATTENED_BOOKLIST_POSITION)) {
-                        pos = savedInstanceState.getInt(FLATTENED_BOOKLIST_POSITION);
-                    } else if (extras.containsKey(FLATTENED_BOOKLIST_POSITION)) {
-                        pos = extras.getInt(FLATTENED_BOOKLIST_POSITION);
+                    if (savedInstanceState != null && savedInstanceState.containsKey(BKEY_FLATTENED_BOOKLIST_POSITION)) {
+                        pos = savedInstanceState.getInt(BKEY_FLATTENED_BOOKLIST_POSITION);
+                    } else if (extras.containsKey(BKEY_FLATTENED_BOOKLIST_POSITION)) {
+                        pos = extras.getInt(BKEY_FLATTENED_BOOKLIST_POSITION);
                     } else {
                         pos = 0;
                     }
@@ -503,7 +510,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         outState.putLong(UniqueId.KEY_ID, mRowId);
         outState.putBundle(UniqueId.BKEY_BOOK_DATA, mBookData.getRawData());
         if (mList != null) {
-            outState.putInt(FLATTENED_BOOKLIST_POSITION, (int) mList.getPosition());
+            outState.putInt(BKEY_FLATTENED_BOOKLIST_POSITION, (int) mList.getPosition());
         }
         outState.putInt(BookDetailsActivity.TAB, mTabLayout.getSelectedTabPosition());
         Tracker.exitOnSaveInstanceState(this);
@@ -777,10 +784,12 @@ public class BookDetailsActivity extends BookCatalogueActivity
     public void showAnthologyTab(final boolean showAnthology) {
         if (showAnthology) {
             if (mAnthologyTab == null) {
+                Holder holder = new Holder();
                 try {
+                    holder.fragment = (Fragment)mTabClasses[TAB_EDIT_ANTHOLOGY].newInstance();
                     mAnthologyTab = mTabLayout.newTab()
                             .setText(R.string.anthology)
-                            .setTag(mTabClasses[TAB_EDIT_ANTHOLOGY].newInstance());
+                            .setTag(holder);
                 } catch (InstantiationException | IllegalAccessException ignore) {
                 }
             }
@@ -909,7 +918,8 @@ public class BookDetailsActivity extends BookCatalogueActivity
     private class TabListener implements TabLayout.OnTabSelectedListener {
         @Override
         public void onTabSelected(final TabLayout.Tab tab) {
-            replaceTab((Fragment) tab.getTag()); //TOMF: fragment sits in tag... rethink ?
+            Holder holder = (Holder) tab.getTag();
+            replaceTab(holder.fragment);
         }
 
         @Override
@@ -919,6 +929,10 @@ public class BookDetailsActivity extends BookCatalogueActivity
         @Override
         public void onTabReselected(final TabLayout.Tab tab) {
         }
+    }
+
+    private class Holder {
+        Fragment fragment;
     }
 
     private class DoConfirmAction implements PostSaveAction {

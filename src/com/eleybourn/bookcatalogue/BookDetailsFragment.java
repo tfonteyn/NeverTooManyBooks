@@ -15,12 +15,14 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.BookData;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -29,8 +31,6 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Date;
-
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY;
 
 /**
  * Class for representing read-only book details.
@@ -42,8 +42,9 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     /**
      * ok, so why an Adapter and not handle this just like Series is currently handled....
      *
-     * TODO the idea is to have a new Activity: AnthologyTitle -> books containing the story
-     * TODO once done, retrofit the same to Series.
+     * TODO the idea is to have a new Activity: {@link AnthologyTitle} -> books containing the story
+     * There is not much point in doing this in the Builder. The amount of entries is expected to be small.
+     * Main goal: the collector who wants *everything* of a certain author.
      */
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
@@ -96,22 +97,21 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     @Override
     /* The only difference from super class method is initializing of additional
      * fields needed for read-only mode (user notes, loaned, etc.) */
-    protected void populateFieldsFromBook(@NonNull final BookData book) {
+    protected void populateFieldsFromBook(@NonNull final BookData bookData) {
         try {
-            populateBookDetailsFields(book);
+            populateBookDetailsFields(bookData);
 
             // Set maximum aspect ratio width : height = 1 : 2
-            setBookThumbnail(book.getBookId(), mThumper.normal, mThumper.normal * 2);
+            setBookThumbnail(bookData.getBookId(), mThumper.normal, mThumper.normal * 2);
 
             // Additional fields for read-only mode which are not initialized automatically
-            showReadStatus(book);
-            // XXX: Use the data!
-            showLoanedInfo(book.getBookId());
-            showSignedStatus(book);
-            formatFormatSection(book);
-            formatPublishingSection(book);
-            if (book.getInt(BookData.IS_ANTHOLOGY) != DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY) {
-                showAnthologySection(book);
+            showReadStatus(bookData);
+            showLoanedInfo(bookData.getBookId());
+            showSignedStatus(bookData.isSigned());
+            formatFormatSection(bookData);
+            formatPublishingSection(bookData);
+            if (bookData.getInt(BookData.IS_ANTHOLOGY) != DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY) {
+                showTOC(bookData);
             }
 
             // Restore default visibility and hide unused/unwanted and empty fields
@@ -121,17 +121,14 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         }
 
         // Populate bookshelves and hide the field if bookshelves are not set.
-        if (!populateBookshelvesField(mFields, book)) {
+        if (!populateBookshelvesField(mFields, bookData)) {
             getView().findViewById(R.id.lbl_bookshelves).setVisibility(View.GONE);
         }
     }
 
-    /**
-     * FIXME: use a background task to build the list instead of on the UI thread !
-     */
-    private void showAnthologySection(@NonNull final BookData book) {
-        View section = getView().findViewById(R.id.anthology_section);
-        final ArrayList<AnthologyTitle> list = book.getAnthologyTitles();
+    private void showTOC(@NonNull final BookData bookData) {
+        View section = getView().findViewById(R.id.toc_row);
+        final ArrayList<AnthologyTitle> list = bookData.getAnthologyTitles();
         if (list.isEmpty()) {
             // book is an Anthology, but the user has not added any titles (yet)
             section.setVisibility(View.GONE);
@@ -141,10 +138,10 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         section.setVisibility(View.VISIBLE);
 
         AnthologyTitleListAdapter adapter = new AnthologyTitleListAdapter(getActivity(), R.layout.row_anthology, list);
-        final ListView titles = getView().findViewById(R.id.anthology_titlelist);
+        final ListView titles = getView().findViewById(R.id.toc);
         titles.setAdapter(adapter);
 
-        Button btn = getView().findViewById(R.id.anthology_button);
+        Button btn = getView().findViewById(R.id.toc_button);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -162,7 +159,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
      * Gets the total number of rows from the adapter, then use that to set the ListView to the
      * full height so all rows are visible (no scrolling)
      */
-    private void justifyListViewHeightBasedOnChildren(final ListView listView) {
+    private void justifyListViewHeightBasedOnChildren(@NonNull final ListView listView) {
         ListAdapter adapter = listView.getAdapter();
         if (adapter == null) {
             return;
@@ -208,13 +205,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     protected void populateSeriesListField() {
         ArrayList<Series> series = mEditManager.getBookData().getSeries();
 
-        int size;
-        try {
-            size = series.size();
-        } catch (NullPointerException e) {
-            size = 0;
-        }
-        if (size == 0 || !mFields.getField(R.id.series).visible) {
+        if (series.size() == 0 || !mFields.getField(R.id.series).visible) {
             // Hide 'Series' label and data
             getView().findViewById(R.id.lbl_series).setVisibility(View.GONE);
             getView().findViewById(R.id.series).setVisibility(View.GONE);
@@ -224,7 +215,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
             getView().findViewById(R.id.series).setVisibility(View.VISIBLE);
 
             String newText = "";
-            Utils.pruneSeriesList(series);
+            Series.pruneSeriesList(series);
             Utils.pruneList(mDb, series);
             int seriesCount = series.size();
             if (seriesCount > 0) {
@@ -266,12 +257,12 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
      * Formats 'format' section of the book depending on values
      * of 'pages' and 'format' fields.
      */
-    private void formatFormatSection(BookData book) {
+    private void formatFormatSection(@NonNull final BookData bookData) {
         // Number of pages
         boolean hasPages = false;
         if (FieldVisibilityActivity.isVisible(UniqueId.KEY_BOOK_PAGES)) {
             Field pagesField = mFields.getField(R.id.pages);
-            String pages = book.getString(UniqueId.KEY_BOOK_PAGES);
+            String pages = bookData.getString(UniqueId.KEY_BOOK_PAGES);
             hasPages = pages != null && !pages.isEmpty();
             if (hasPages) {
                 pagesField.setValue(getString(R.string.book_details_readonly_pages, pages));
@@ -280,7 +271,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         // 'format' field
         if (FieldVisibilityActivity.isVisible(UniqueId.KEY_BOOK_FORMAT)) {
             Field formatField = mFields.getField(R.id.format);
-            String format = book.getString(UniqueId.KEY_BOOK_FORMAT);
+            String format = bookData.getString(UniqueId.KEY_BOOK_FORMAT);
             boolean hasFormat = format != null && !format.isEmpty();
             if (hasFormat) {
                 if (hasPages && FieldVisibilityActivity.isVisible(UniqueId.KEY_BOOK_PAGES)) {
@@ -296,13 +287,9 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
      * Formats 'Publishing' section of the book depending on values
      * of 'publisher' and 'date published' fields.
      */
-    private void formatPublishingSection(BookData book) {
-        String date = book.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED);
+    private void formatPublishingSection(@NonNull final BookData bookData) {
+        String date = bookData.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED);
         boolean hasDate = date != null && !date.isEmpty();
-        String pub = book.getString(UniqueId.KEY_BOOK_PUBLISHER);
-        boolean hasPub = pub != null && !pub.isEmpty();
-        String value;
-
         if (hasDate) {
             Date d = DateUtils.parseDate(date);
             if (d != null) {
@@ -310,7 +297,9 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
             }
         }
 
-        if (hasPub) {
+        String value;
+        String pub = bookData.getString(UniqueId.KEY_BOOK_PUBLISHER);
+        if (pub != null && !pub.isEmpty()) {
             if (hasDate) {
                 value = pub + "; " + date;
             } else {
@@ -372,10 +361,9 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     /**
      * Show signed status of the book. Set text 'yes' if signed. Otherwise it is 'No'.
      *
-     * @param bookData Cursor containing information of the book from database
      */
-    private void showSignedStatus(@NonNull final BookData bookData) {
-        if (bookData.isSigned()) {
+    private void showSignedStatus(final boolean isSigned) {
+        if (isSigned) {
             TextView v = getView().findViewById(R.id.signed);
             v.setText(getResources().getString(R.string.yes));
         }

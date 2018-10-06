@@ -42,8 +42,6 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GOODREADS_API_ROOT;
-
 /**
  * Class to add a book to a shelf. In this case, we do not care about the data returned.
  * 
@@ -108,7 +106,7 @@ public class ShelfAddBookHandler extends ApiHandler {
 	{
 		mReviewId = 0;
 
-		HttpPost post = new HttpPost(GOODREADS_API_ROOT + "/shelf/add_to_shelf.xml");
+		HttpPost post = new HttpPost(GoodreadsManager.GOODREADS_API_ROOT + "/shelf/add_to_shelf.xml");
 
 		ArrayList<NameValuePair> parameters = new ArrayList<>();
         if (isRemove)
@@ -145,7 +143,7 @@ public class ShelfAddBookHandler extends ApiHandler {
 
 	private final XmlHandler mHandleReviewId = new XmlHandler() {
 		@Override
-		public void process(@NonNull ElementContext context) {
+		public void process(@NonNull final ElementContext context) {
 			try {
 				mReviewId = Long.parseLong(context.body.trim());
 			} catch (Exception ignore) {

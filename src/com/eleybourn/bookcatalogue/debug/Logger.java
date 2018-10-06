@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.debug;
 import android.annotation.SuppressLint;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -39,25 +38,27 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Logger {
+
+    public static final String TAG = "BC Logger";
+
     private Logger() {
     }
 
-    public static void logError(@NonNull final String msg) {
-        logError(null, msg);
-    }
-
-    public static void logError(@Nullable final Exception e) {
+    public static void logError(@NonNull final Exception e) {
         logError(e, "");
     }
-    public static void logError(@Nullable final Error e) {
+
+    public static void logError(@NonNull final Error e) {
         logError(new RuntimeException(e), "");
     }
+
     /**
      * Write the exception stacktrace to the error log file
      *
-     * @param e The exception to log
+     * @param e       The exception to log
+     * @param message extra message (don't pass e.getMessage(), that one is logged automatically)
      */
-    public static void logError(@Nullable final Exception e, @NonNull final String msg) {
+    public static void logError(@NonNull final Exception e, @NonNull final String message) {
         @SuppressLint("SimpleDateFormat")
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String now = dateFormat.format(new Date());
@@ -65,20 +66,18 @@ public class Logger {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
 
-        if (e != null) {
-            e.printStackTrace(pw);
-        } else {
-            printStackTrace(null);
-        }
+        e.printStackTrace(pw);
 
+        String exMsg = e.getMessage();
         String error = "An Exception/Error Occurred @ " + now + "\n" +
+                (exMsg != null ? exMsg + "\n" : "") +
                 "In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ") \n" +
-                msg + "\n" +
+                message + "\n" +
                 sw;
 
         try {
-            // RELEASE Remove Log.e! Replace with ACRA?
-            Log.e("BC Logger", error);
+            // FIXME Remove Log.e! Replace with ACRA?
+            Log.e(TAG, error);
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
             out.write(error);
             out.close();
@@ -106,16 +105,6 @@ public class Logger {
             out.close();
         } catch (Exception ignore) {
             // do nothing - we can't log an error in the error logger. (and we don't want to FC the app)
-        }
-    }
-
-    public static void printStackTrace(@Nullable final String msg) {
-        if (msg != null) {
-            System.out.println(msg);
-        }
-        StackTraceElement[] all = Thread.currentThread().getStackTrace();
-        for (StackTraceElement element : all) {
-            System.out.println(element);
         }
     }
 }

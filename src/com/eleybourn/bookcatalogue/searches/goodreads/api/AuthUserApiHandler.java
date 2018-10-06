@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -28,85 +28,86 @@ import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
 
 import org.apache.http.client.methods.HttpPost;
 
-import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GOODREADS_API_ROOT;
-
 /**
  * API handler for the authUser call. Just gets the current user details.
- * 
+ *
  * @author Philip Warner
  */
 public class AuthUserApiHandler extends ApiHandler {
 
-	/**
-	 * Constructor. Setup the filters.
-	 */
-	public AuthUserApiHandler(@NonNull final GoodreadsManager manager) {
-		super(manager);
-		buildFilters();
-	}
+    private long mUserId = 0;
 
-	/**
-	 * Call the API.
-	 * 
-	 * @return		Resulting User ID, 0 if error/none.
-	 */
-	public long getAuthUser() {
-		// Setup API call
-		HttpPost post = new HttpPost(GOODREADS_API_ROOT + "/api/auth_user");
+    private final XmlHandler mHandleUserStart = new XmlHandler() {
+        @Override
+        public void process(@NonNull ElementContext context) {
+            mUserId = Long.parseLong(context.attributes.getValue("", "id"));
+        }
+    };
 
-		mUserId = 0;
-		try {
-	        // Get a handler and run query.
-	        XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-	        mManager.execute(post, handler, true);			
-	        // Return user found.
-	        return mUserId;
-		} catch (Exception e) {
-			return 0;
-		}
-	}
-	/**
-	 * Typical response:
-	 * 
-	 *	<GoodreadsResponse>
-	 *	  <Request>
-	 *	    <authentication>true</authentication>
-	 *	      <key><![CDATA[KEY]]></key>
-	 *	    <method><![CDATA[api_auth_user]]></method>
-	 *	  </Request>
-	 *	  <user id="5129458">
-	 *		<name><![CDATA[Grunthos]]></name>
-	 *		<link><![CDATA[http://www.goodreads.com/user/show/5129458-grunthos?utm_medium=api]]></link>
-	 *	  </user>
-	 *	</GoodreadsResponse>
-	 */
-	private void buildFilters() {
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "user").setStartAction(mHandleUserStart);
-		XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "user", "name").setEndAction(mHandleUsernameEnd);		
-	}
+    private String mUsername = null;
 
-	public String getUsername() {
-		return mUsername;
-	}
+    private final XmlHandler mHandleUsernameEnd = new XmlHandler() {
+        @Override
+        public void process(@NonNull ElementContext context) {
+            mUsername = context.body;
+        }
+    };
 
-	public long getUserid() {
-		return mUserId;
-	}
+    /**
+     * Constructor. Setup the filters.
+     */
+    public AuthUserApiHandler(@NonNull final GoodreadsManager manager) {
+        super(manager);
+        buildFilters();
+    }
 
-	private long mUserId = 0;
-	private String mUsername = null;
+    /**
+     * Call the API.
+     *
+     * @return Resulting User ID, 0 if error/none.
+     */
+    public long getAuthUser() {
+        // Setup API call
+        HttpPost post = new HttpPost(GoodreadsManager.GOODREADS_API_ROOT + "/api/auth_user");
 
-	private final XmlHandler mHandleUserStart = new XmlHandler(){
-		@Override
-		public void process(@NonNull ElementContext context) {
-			mUserId = Long.parseLong(context.attributes.getValue("", "id"));
-		}
-	};
-	private final XmlHandler mHandleUsernameEnd = new XmlHandler(){
-		@Override
-		public void process(@NonNull ElementContext context) {
-			mUsername = context.body;
-		}
-	};
-	
+        mUserId = 0;
+        try {
+            // Get a handler and run query.
+            XmlResponseParser handler = new XmlResponseParser(mRootFilter);
+            mManager.execute(post, handler, true);
+            // Return user found.
+            return mUserId;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Typical response:
+     *
+     * <GoodreadsResponse>
+     * <Request>
+     * <authentication>true</authentication>
+     * <key><![CDATA[KEY]]></key>
+     * <method><![CDATA[api_auth_user]]></method>
+     * </Request>
+     * <user id="5129458">
+     * <name><![CDATA[Grunthos]]></name>
+     * <link><![CDATA[http://www.goodreads.com/user/show/5129458-grunthos?utm_medium=api]]></link>
+     * </user>
+     * </GoodreadsResponse>
+     */
+    private void buildFilters() {
+        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "user").setStartAction(mHandleUserStart);
+        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "user", "name").setEndAction(mHandleUsernameEnd);
+    }
+
+    public String getUsername() {
+        return mUsername;
+    }
+
+    public long getUserid() {
+        return mUserId;
+    }
+
 }

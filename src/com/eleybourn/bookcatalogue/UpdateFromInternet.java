@@ -40,7 +40,6 @@ import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
-import com.eleybourn.bookcatalogue.taskqueue.DbAdapter;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
@@ -216,13 +215,8 @@ public class UpdateFromInternet extends ActivityWithTasks {
                 }
 
                 // If they have selected thumbnails, check if they want to download ALL.
-                boolean thumbnail_check = false;
-                try {
-                    thumbnail_check = mFieldUsages.get(UniqueId.BKEY_THUMBNAIL).selected;
-                } catch (NullPointerException e) {
-                    Logger.logError(e);
-                }
-                if (thumbnail_check) {
+                FieldUsages.FieldUsage coversWanted = mFieldUsages.get(UniqueId.BKEY_THUMBNAIL);
+                if (coversWanted.selected) {
                     // Verify - this can be a dangerous operation
                     AlertDialog dialog = new AlertDialog.Builder(UpdateFromInternet.this)
                             .setMessage(R.string.overwrite_thumbnail)

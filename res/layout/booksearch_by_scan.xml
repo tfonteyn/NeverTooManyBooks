@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:padding="@dimen/padding_border">
-
+<!-- this is never actually displayed... I think... -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,10 +18,10 @@
             android:layout_weight="1"
             android:digits="0123456789Xx"
             android:hint="@string/isbn"
-            android:inputType="number"
+            android:inputType="text|number"
             android:padding="@dimen/padding_border_double"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            tools:ignore="Autofill"/>
+            tools:ignore="Autofill" />
     </LinearLayout>
 
 </ScrollView>

@@ -37,12 +37,11 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
-
-import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GOODREADS_API_ROOT;
 
 /**
  * Class to query and response to search.books api call.
@@ -50,15 +49,14 @@ import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GO
  * @author Philip Warner
  */
 public class SearchBooksApiHandler extends ApiHandler {
-    // prevent duplication of strings in jvm, or am I paranoid ?
     private static final String GR_RESP = "GoodreadsResponse";
     private static final String GR_SEARCH = "search";
     private static final String GR_RESULT = "results";
     private static final String GR_WORK = "work";
     private static final String GR_BEST_BOOK = "best_book";
     /** List of GoodreadsWork objects that result from a search */
-    private ArrayList<GoodreadsWork> mWorks = null;
-    /** Starting result # (for multi-page result sets). We dont use (yet). */
+    private List<GoodreadsWork> mWorks = null;
+    /** Starting result # (for multi-page result sets). We don't use it (yet). */
     private Long mResultsStart;
     private final XmlHandler mHandleResultsStart = new XmlHandler() {
         @Override
@@ -66,7 +64,7 @@ public class SearchBooksApiHandler extends ApiHandler {
             mResultsStart = Long.parseLong(context.body);
         }
     };
-    /** Ending result # (for multi-page result sets). We dont use (yet). */
+    /** Ending result # (for multi-page result sets). We don't use it (yet). */
     private Long mResultsEnd;
     private final XmlHandler mHandleResultsEnd = new XmlHandler() {
         @Override
@@ -328,16 +326,15 @@ public class SearchBooksApiHandler extends ApiHandler {
      *
      * @return the array of GoodreadsWork objects.
      */
-    public ArrayList<GoodreadsWork> search(@NonNull String query) throws
+    @NonNull
+    public List<GoodreadsWork> search(@NonNull final String query) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 
-        query = query.trim();
-
         // Setup API call
-        HttpPost post = new HttpPost(GOODREADS_API_ROOT + "/search/index.xml");
-        ArrayList<NameValuePair> parameters = new ArrayList<>();
-        parameters.add(new BasicNameValuePair("q", query));
+        HttpPost post = new HttpPost(GoodreadsManager.GOODREADS_API_ROOT + "/search/index.xml");
+        List<NameValuePair> parameters = new ArrayList<>();
+        parameters.add(new BasicNameValuePair("q", query.trim()));
         parameters.add(new BasicNameValuePair("key", mManager.getDeveloperKey()));
 
         post.setEntity(new UrlEncodedFormEntity(parameters));

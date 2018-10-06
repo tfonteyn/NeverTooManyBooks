@@ -202,8 +202,8 @@ public class CropUtil {
                                           @NonNull final Handler handler) {
         // Make the progress dialog not-cancelable, so that we can guarantee
         // the thread will be done before the activity getting destroyed.
-        ProgressDialog dialog = ProgressDialog.show(activity, title, message,
-                true, false);
+        ProgressDialog dialog = ProgressDialog.show(activity,
+                title, message,true, false);
         new Thread(new BackgroundJob(activity, job, dialog, handler)).start();
     }
 

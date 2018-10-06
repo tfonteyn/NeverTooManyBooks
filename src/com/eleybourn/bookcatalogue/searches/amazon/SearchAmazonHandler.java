@@ -262,9 +262,9 @@ public class SearchAmazonHandler extends DefaultHandler {
      */
     @Override
     public void endDocument() {
-        if (mFetchThumbnail && mThumbnailUrl.length() > 0) {
+        if (mFetchThumbnail && !mThumbnailUrl.isEmpty()) {
             String fileSpec = ImageUtils.saveThumbnailFromUrl(mThumbnailUrl, "_AM");
-            if (fileSpec.length() > 0)
+            if (!fileSpec.isEmpty())
                 ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
         }
     }

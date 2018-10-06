@@ -2,14 +2,14 @@
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
  *
- * This file is part of Book Catalogue.
+ * This file inputStream part of Book Catalogue.
  *
- * Book Catalogue is free software: you can redistribute it and/or modify
+ * Book Catalogue inputStream free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue is distributed in the hope that it will be useful,
+ * Book Catalogue inputStream distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -30,15 +30,15 @@ import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BookData;
 import com.eleybourn.bookcatalogue.BookDetailsActivity;
-import com.eleybourn.bookcatalogue.BooksRow;
+import com.eleybourn.bookcatalogue.entities.BookRow;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.entities.BookData;
 
 import java.io.File;
 
@@ -54,7 +54,7 @@ public class BookUtils {
 
     /**
      * Open a new book editing activity with fields copied from saved book.
-     * Saved book (original of duplicating) is defined by its row _id in database.
+     * Saved book (original of duplicating) inputStream defined by its row _id in database.
      *
      * @param bookId The id of the book to copy fields
      */
@@ -64,7 +64,7 @@ public class BookUtils {
         Intent intent = new Intent(activity, BookDetailsActivity.class);
         final Bundle book = new Bundle();
         try (BooksCursor cursor = db.fetchBookById(bookId)) {
-            BooksRow bookRow = cursor.getRowView();
+            BookRow bookRow = cursor.getRowView();
 
             cursor.moveToFirst();
 
@@ -142,11 +142,11 @@ public class BookUtils {
 
         try (BooksCursor cursor = db.fetchBookById(bookId)) {
             cursor.moveToFirst();
-            BooksRow booksRow = cursor.getRowView();
-            title = booksRow.getTitle();
-            rating = booksRow.getRating();
-            author = booksRow.getPrimaryAuthorNameFormatted();
-            series = booksRow.getPrimarySeriesFormatted();
+            BookRow bookRow = cursor.getRowView();
+            title = bookRow.getTitle();
+            rating = bookRow.getRating();
+            author = bookRow.getPrimaryAuthorNameFormatted();
+            series = bookRow.getPrimarySeriesFormatted();
         }
 
         File image = StorageUtils.getCoverFile(db.getBookUuid(bookId));

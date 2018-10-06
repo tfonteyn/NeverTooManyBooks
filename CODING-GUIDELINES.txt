@@ -21,7 +21,7 @@ Small notes in addition:
   getSharedPreferences string
   not checked yet.
 
-  The database (as of v82) will/can contain untrimmed string.
+  The database (as of v82) will/can contain untrimmed strings.
   Best to add .trim() to al locations where a getString is done.
   Eventually the database will then be trim-proof.
   TODO: perhaps run a batch correction on all fields as an update ? bit brutal...
@@ -31,3 +31,10 @@ Small notes in addition:
 
 * pedantic but I hope polite request:
   Single character variables names are best left to BASIC style from the 1980's
+
+* TODO tags used
+  - TODO
+  - FIXME
+  - ENHANCE
+  - RELEASE : things that must be checked before doing a public release
+  - NEWKIND : where a list of 'items' is processed -> where you can/should add 'items' to that list

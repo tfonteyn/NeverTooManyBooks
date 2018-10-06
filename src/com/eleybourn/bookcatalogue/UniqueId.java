@@ -66,6 +66,9 @@ public class UniqueId {
     public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_GROUPS = 504;
 
     public static final int ACTIVITY_REQUEST_CODE_GOODREADS_EXPORT_FAILURES = 601;
+
+    public static final int ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST = 701;
+
     // END Codes used for startActivityForResult / onActivityResult
 
     /* Bundle keys for entire ArrayLists */

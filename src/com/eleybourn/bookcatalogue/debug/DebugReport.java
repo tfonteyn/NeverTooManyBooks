@@ -37,7 +37,7 @@ public class DebugReport {
      *
      * No longer caching as only needed at a crash anyhow
      */
-    public static String signedBy(Context context) {
+    public static String signedBy(@NonNull final Context context) {
         StringBuilder signedBy = new StringBuilder();
 
         try {

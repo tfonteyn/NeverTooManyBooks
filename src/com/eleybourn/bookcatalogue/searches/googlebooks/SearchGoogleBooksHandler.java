@@ -1,7 +1,7 @@
 /*
  * @copyright 2010 Evan Leybourn
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -26,9 +26,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-/* 
- * An XML handler for the Google Books return 
- * 
+/*
+ * An XML handler for the Google Books return
+ *
  * An example response looks like;
  * <?xml version='1.0' encoding='UTF-8'?>
  * <feed xmlns='http://www.w3.org/2005/Atom' xmlns:openSearch='http://a9.com/-/spec/opensearchrss/1.0/' xmlns:gbs='http://schemas.google.com/books/2008' xmlns:dc='http://purl.org/dc/terms' xmlns:batch='http://schemas.google.com/gdata/batch' xmlns:gd='http://schemas.google.com/g/2005'>
@@ -72,7 +72,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * 			<dc:title>The trigger</dc:title>
  * 		</entry>
  * </feed>
- * 
+ *
  * <?xml version='1.0' encoding='UTF-8'?>
  * <feed xmlns='http://www.w3.org/2005/Atom' xmlns:openSearch='http://a9.com/-/spec/opensearchrss/1.0/' xmlns:gbs='http://schemas.google.com/books/2008' xmlns:dc='http://purl.org/dc/terms' xmlns:batch='http://schemas.google.com/gdata/batch' xmlns:gd='http://schemas.google.com/g/2005'>
  * 		<id>http://www.google.com/books/feeds/volumes</id>
@@ -118,72 +118,76 @@ import org.xml.sax.helpers.DefaultHandler;
  *			<dc:title>Be Afraid, Beautiful People</dc:title>
  *		</entry>
  * </feed>
- * 
+ *
  */
 class SearchGoogleBooksHandler extends DefaultHandler {
-	private StringBuilder builder;
-	private String id = "";
-	private int count = 0;
-	private boolean entry = false;
-	private boolean done = false;
-	
-	private static final String ID = "id";
-	private static final String TOTALRESULTS = "totalResults";
-	private static final String ENTRY = "entry";
-	
-	/**
-	 * Return the id of the first book found
-	 * 
-	 * @return The book id (to be passed to the entry handler)
-	 */
-	public String getId(){
-		return id;
-	}
-	
-	/**
-	 * How many books were found?
-	 * 
-	 * @return The number of books found
-	 */
-	public int getCount(){
-		return count;
-	}
-	
-	@Override
-	public void characters(@NonNull final char[] ch, final int start, final int length) throws SAXException {
-		super.characters(ch, start, length);
-		builder.append(ch, start, length);
-	}
-	
-	@Override
-	public void endElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name) throws SAXException {
-		super.endElement(uri, localName, name);
-		if (localName.equalsIgnoreCase(TOTALRESULTS)){
-			count = Integer.parseInt(builder.toString());
-		}
-		if (localName.equalsIgnoreCase(ENTRY)){
-			entry = false;
-			done = true;
-		}
-		if (entry && id.isEmpty()) {
-			if (localName.equalsIgnoreCase(ID)){
-				id = builder.toString();
-			}
-		}
-		builder.setLength(0);
-	}
-	
-	@Override
-	public void startDocument() throws SAXException {
-		super.startDocument();
-		builder = new StringBuilder();
-	}
-	
-	@Override
-	public void startElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name, @NonNull final Attributes attributes) throws SAXException {
-		super.startElement(uri, localName, name, attributes);
-		if (!done && localName.equalsIgnoreCase(ENTRY)){
-			entry = true;
-		}
-	}
+    private static final String ID = "id";
+    private static final String TOTALRESULTS = "totalResults";
+    private static final String ENTRY = "entry";
+    private StringBuilder builder;
+    private String id = "";
+    private int count = 0;
+    private boolean entry = false;
+    private boolean done = false;
+
+    /**
+     * Return the id of the first book found
+     *
+     * @return The book id (to be passed to the entry handler)
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * How many books were found?
+     *
+     * @return The number of books found
+     */
+    public int getCount() {
+        return count;
+    }
+
+    @Override
+    public void characters(@NonNull final char[] ch, final int start, final int length) throws SAXException {
+        super.characters(ch, start, length);
+        builder.append(ch, start, length);
+    }
+
+    @Override
+    public void endElement(@NonNull final String uri,
+                           @NonNull final String localName,
+                           @NonNull final String name) throws SAXException {
+        super.endElement(uri, localName, name);
+        if (localName.equalsIgnoreCase(TOTALRESULTS)) {
+            count = Integer.parseInt(builder.toString());
+        }
+        if (localName.equalsIgnoreCase(ENTRY)) {
+            entry = false;
+            done = true;
+        }
+        if (entry && id.isEmpty()) {
+            if (localName.equalsIgnoreCase(ID)) {
+                id = builder.toString();
+            }
+        }
+        builder.setLength(0);
+    }
+
+    @Override
+    public void startDocument() throws SAXException {
+        super.startDocument();
+        builder = new StringBuilder();
+    }
+
+    @Override
+    public void startElement(@NonNull final String uri,
+                             @NonNull final String localName,
+                             @NonNull final String name,
+                             @NonNull final Attributes attributes) throws SAXException {
+        super.startElement(uri, localName, name, attributes);
+        if (!done && localName.equalsIgnoreCase(ENTRY)) {
+            entry = true;
+        }
+    }
 }

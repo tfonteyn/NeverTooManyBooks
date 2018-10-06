@@ -50,19 +50,18 @@ public class BooleanValidator extends DefaultFieldValidator {
             return;
 
         super.validate(data, datum, false);
-
         try {
+            Boolean value;
             Object o = data.get(datum);
-            Boolean v;
             if (o instanceof Boolean) {
-                v = (Boolean) o;
+                value = (Boolean) o;
             } else if (o instanceof Integer) {
-                v = (((Integer) o) != 0);
+                value = (((Integer) o) != 0);
             } else {
                 String s = o.toString();
-                v = Datum.toBoolean(s, true);
+                value = Datum.toBoolean(s, true);
             }
-            data.putBoolean(datum, v);
+            data.putBoolean(datum, value);
         } catch (Exception e) {
             throw new ValidatorException(R.string.vldt_boolean_expected, new Object[]{datum.getKey()});
         }

@@ -160,7 +160,9 @@
         <activity android:name=".PreferencesActivity" />
 
         <!-- Add Book; this activity then sub divides Add by scan,isbn,internet, or add manually -->
-        <activity android:name=".BookISBNSearchActivity" />
+        <activity
+            android:name=".BookISBNSearchActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <!-- Edit a book + the related author/series -->
         <activity android:name=".BookDetailsActivity" />
@@ -178,7 +180,7 @@
             android:name=".searches.goodreads.GoodreadsAuthorizationActivity"
             android:launchMode="singleInstance">
 
-            <!-- RELEASE: Work out which of these filters we don't need! -->
+            <!-- TODO: Work out which of these filters we don't need! -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 

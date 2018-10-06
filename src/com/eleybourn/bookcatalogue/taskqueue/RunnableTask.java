@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * TaskQueue is free software: you can redistribute it and/or modify
@@ -24,20 +24,19 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 /**
- * Extends the Task object to add a run(...) method that avoids the need to implement a runOneTask() method
- * in a subclassed QueueManager.
- * 
- * @author Philip Warner
+ * Extends the Task object to add a run(...) method that avoids the need to implement
+ * a runOneTask() method in a subclassed QueueManager.
  *
+ * @author Philip Warner
  */
 public abstract class RunnableTask extends Task {
 
-	protected RunnableTask(@NonNull final String description) {
-		super(description);
-	}
+    private static final long serialVersionUID = 5399775565316896935L;
 
-	private static final long serialVersionUID = 5399775565316896935L;
+    protected RunnableTask(@NonNull final String description) {
+        super(description);
+    }
 
-	public abstract boolean run(@NonNull final QueueManager manager, @NonNull final Context c);
+    public abstract boolean run(@NonNull final QueueManager manager, @NonNull final Context context);
 
 }

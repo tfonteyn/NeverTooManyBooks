@@ -50,6 +50,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -58,6 +59,7 @@ import java.util.concurrent.CountDownLatch;
 public class CropCropImage extends CropMonitoredActivity {
     // private static final String TAG = "CropImage";
 
+    public static final String BKEY_DATA = "data";
     private static final String BKEY_CIRCLE_CROP = "circleCrop";
     private static final String BKEY_IMAGE_PATH = "image-path";
     private static final String BKEY_OUTPUT = "output";
@@ -70,7 +72,6 @@ public class CropCropImage extends CropMonitoredActivity {
     private static final String BKEY_WHOLE_IMAGE = "whole-image";
     private static final int NO_STORAGE_ERROR = -1;
     private static final int CANNOT_STAT_ERROR = -2;
-    public static final String BKEY_DATA = "data";
     @SuppressWarnings("FieldCanBeLocal")
     private final boolean DO_FACE_DETECTION = false;
     // These are various options can be specified in the intent.
@@ -316,9 +317,8 @@ public class CropCropImage extends CropMonitoredActivity {
             }
 
             String imagePath = extras.getString(BKEY_IMAGE_PATH);
-            if (imagePath == null) {
-                throw new NullPointerException("imagePath was null");
-            }
+            Objects.requireNonNull(imagePath, "imagePath was null");
+
             mBitmap = getBitmap(imagePath);
 
             // Use the "output" parameter if present, otherwise overwrite
@@ -509,20 +509,17 @@ public class CropCropImage extends CropMonitoredActivity {
 
         // Return the cropped image directly or save it to the specified URI.
         Bundle myExtras = getIntent().getExtras();
-        if (myExtras != null
-                && (myExtras.getParcelable(BKEY_DATA) != null || myExtras
-                .getBoolean("return-data"))) {
+        if (myExtras != null && (myExtras.getParcelable(BKEY_DATA) != null || myExtras.getBoolean("return-data"))) {
             Bundle extras = new Bundle();
             extras.putParcelable(BKEY_DATA, croppedImage);
-            setResult(RESULT_OK, (new Intent()).setAction("inline-data")
-                    .putExtras(extras));
+            setResult(RESULT_OK, (new Intent()).setAction("inline-data").putExtras(extras));
             finish();
         } else {
-            final Bitmap b = croppedImage;
+            final Bitmap bitmap = croppedImage;
             CropUtil.startBackgroundJob(this, null, "Saving image",
                     new Runnable() {
                         public void run() {
-                            saveOutput(b);
+                            saveOutput(bitmap);
                         }
                     }, mHandler);
         }
@@ -540,43 +537,43 @@ public class CropCropImage extends CropMonitoredActivity {
             }
 
             Bundle extras = new Bundle();
-            setResult(RESULT_OK,
-                    new Intent(mSaveUri.toString()).putExtras(extras));
+            setResult(RESULT_OK, new Intent(mSaveUri.toString()).putExtras(extras));
         }
-		/* else {
-			 * Bundle extras = new Bundle(); extras.putString("rect",
-			 * mCrop.getCropRect().toString());
-			 *
-			 * File oldPath = new File(mImage.getDataPath()); File directory =
-			 * new File(oldPath.getParent());
-			 *
-			 * int x = 0; String fileName = oldPath.getName(); fileName =
-			 * fileName.substring(0, fileName.lastIndexOf("."));
-			 *
-			 * // Try file-1.jpg, file-2.jpg, ... until we find a filename which
-			 * // does not exist yet. while (true) { x += 1; String candidate =
-			 * directory.toString() + "/" + fileName + "-" + x + ".jpg"; boolean
-			 * exists = (new File(candidate)).exists(); if (!exists) { break; }
-			 * }
-			 *
-			 * try { Uri newUri = ImageManager.addImage( mContentResolver,
-			 * mImage.getTitle(), mImage.getDateTaken(), null, // TODO this null
-			 * is going to cause us to lose // the location (gps). 0, // TODO
-			 * this is going to cause the orientation // to reset.
-			 * directory.toString(), fileName + "-" + x + ".jpg");
-			 *
-			 * Cancelable<Void> cancelable = ImageManager.storeImage( newUri,
-			 * mContentResolver, 0, // TODO fix this orientation croppedImage,
-			 * null);
-			 *
-			 * cancelable.get(); setResult(RESULT_OK, new Intent()
-			 * .setAction(newUri.toString()) .putExtras(extras)); } catch
-			 * (Exception ex) { // basically ignore this or put up // some ui
-			 * saying we failed Log.e(TAG, "store image fail, continue anyway",
-			 * ex); }
+//        else {
+//            File oldPath = new File(mImage.getDataPath());
+//            File directory = new File(oldPath.getParent());
+//
+//            String fileName = oldPath.getName();
+//            fileName = fileName.substring(0, fileName.lastIndexOf("."));
+//
+//            // Try file-1.jpg, file-2.jpg, ... until we find a filename which does not exist yet.
+//            int x = 0;
+//            while (true) {
+//                x += 1;
+//                String candidate = directory.toString() + File.separator + fileName + "-" + x + ".jpg";
+//                if (!(new File(candidate)).exists()) {
+//                    break;
+//                }
+//            }
+//
+//            try {
+//                // TODO null: is going to cause us to lose the location (gps).
+//                // TODO 0: is going to cause the orientation to reset.
+//                Uri newUri = ImageManager.addImage(mContentResolver, mImage.getTitle(), mImage.getDateTaken(),
+//                        null, 0, directory.toString(), fileName + "-" + x + ".jpg");
+//
+//                // TODO 0: is going to cause the orientation to reset.
+//                ImageManager.storeImage(newUri, mContentResolver, 0, croppedImage, null).get();
+//
+//                Bundle extras = new Bundle();
+//                extras.putString("rect", mCrop.getCropRect().toString());
+//                setResult(RESULT_OK, new Intent().setAction(newUri.toString()).putExtras(extras));
+//            } catch (Exception e) {
+//                // basically ignore this or put up some ui saying we failed
+//                Logger.logError(e, "store image fail, continue anyway");
+//            }
+//        }
 
-		}
-		*/
         croppedImage.recycle();
         finish();
     }

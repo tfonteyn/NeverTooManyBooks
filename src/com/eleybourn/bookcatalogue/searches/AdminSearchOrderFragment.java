@@ -18,8 +18,6 @@ import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eleybourn.bookcatalogue.searches.SearchManager.BKEY_SEARCH_SITES;
-
 public class AdminSearchOrderFragment extends Fragment {
 
     private ListView mListView;
@@ -32,7 +30,7 @@ public class AdminSearchOrderFragment extends Fragment {
     @Override
     public void setArguments(@Nullable final Bundle args) {
         //noinspection ConstantConditions
-        mList = (ArrayList<SearchManager.SearchSite>)args.getSerializable(BKEY_SEARCH_SITES);
+        mList = (ArrayList<SearchManager.SearchSite>)args.getSerializable(SearchManager.BKEY_SEARCH_SITES);
     }
 
     @Nullable

@@ -63,8 +63,9 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if (!(context instanceof OnExportTypeSelectionDialogResultListener))
+        if (!(context instanceof OnExportTypeSelectionDialogResultListener)) {
             throw new IllegalArgumentException("Activity " + context.getClass().getSimpleName() + " must implement OnExportTypeSelectionDialogResultListener");
+        }
 
     }
 
@@ -146,7 +147,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    private void handleClick(@SuppressWarnings("unused") View v) {
+    private void handleClick(@SuppressWarnings("unused") View view) {
         try {
             OnExportTypeSelectionDialogResultListener a = (OnExportTypeSelectionDialogResultListener) getActivity();
             if (a != null) {
@@ -171,19 +172,22 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         settings.options = 0;
         settings.dateFrom = null;
 
-        Dialog v = this.getDialog();
-        if (((CheckBox) v.findViewById(R.id.books_check)).isChecked())
+        Dialog dialog = this.getDialog();
+        if (((CheckBox) dialog.findViewById(R.id.books_check)).isChecked()) {
             settings.options |= Exporter.EXPORT_DETAILS;
-        if (((CheckBox) v.findViewById(R.id.covers_check)).isChecked())
+        }
+        if (((CheckBox) dialog.findViewById(R.id.covers_check)).isChecked()) {
             settings.options |= Exporter.EXPORT_COVERS;
-        if (((CheckBox) v.findViewById(R.id.preferences_check)).isChecked())
+        }
+        if (((CheckBox) dialog.findViewById(R.id.preferences_check)).isChecked()) {
             settings.options |= Exporter.EXPORT_PREFERENCES | Exporter.EXPORT_STYLES;
+        }
 
-        if (((RadioButton) v.findViewById(R.id.radioSinceLast)).isChecked()) {
+        if (((RadioButton) dialog.findViewById(R.id.radioSinceLast)).isChecked()) {
             settings.options |= Exporter.EXPORT_SINCE;
             settings.dateFrom = null;
-        } else if (((RadioButton) v.findViewById(R.id.radioSinceDate)).isChecked()) {
-            String s = v.findViewById(R.id.txtDate).toString();
+        } else if (((RadioButton) dialog.findViewById(R.id.radioSinceDate)).isChecked()) {
+            String s = dialog.findViewById(R.id.txtDate).toString();
             try {
                 settings.options |= Exporter.EXPORT_SINCE;
                 settings.dateFrom = DateUtils.parseDate(s);

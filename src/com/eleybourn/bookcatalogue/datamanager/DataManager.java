@@ -25,7 +25,6 @@ import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.datamanager.validators.BlankValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.DataCrossValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.DataValidator;
@@ -263,23 +262,23 @@ public class DataManager {
     @SuppressWarnings("UnusedReturnValue")
     protected DataManager putAll(@NonNull final Bundle src) {
         for (String key : src.keySet()) {
-            Object o = src.get(key);
-            if (o instanceof String) {
-                putString(key, (String) o);
-            } else if (o instanceof Integer) {
-                putInt(key, (Integer) o);
-            } else if (o instanceof Long) {
-                putLong(key, (Long) o);
-            } else if (o instanceof Double) {
-                putDouble(key, (Double) o);
-            } else if (o instanceof Float) {
-                putFloat(key, (Float) o);
-            } else if (o instanceof Serializable) {
-                this.putSerializable(key, (Serializable) o);
+            Object value = src.get(key);
+            if (value instanceof String) {
+                putString(key, (String) value);
+            } else if (value instanceof Integer) {
+                putInt(key, (Integer) value);
+            } else if (value instanceof Long) {
+                putLong(key, (Long) value);
+            } else if (value instanceof Double) {
+                putDouble(key, (Double) value);
+            } else if (value instanceof Float) {
+                putFloat(key, (Float) value);
+            } else if (value instanceof Serializable) {
+                this.putSerializable(key, (Serializable) value);
             } else {
                 // THIS IS NOT IDEAL!
-                if (o != null) {
-                    putString(key, o.toString());
+                if (value != null) {
+                    putString(key, value.toString());
                 } else {
                     System.out.println("NULL value for key '" + key + "'");
                 }

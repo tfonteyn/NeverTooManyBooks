@@ -42,6 +42,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,6 @@ public class LibraryThingManager {
     public static final String PREFS_LT_HIDE_ALERT = "lt_hide_alert";
     /** Name of preference that contains the dev key for the user */
     static final String PREFS_LT_DEV_KEY = "lt_devkey";
-    static final String BASE_URL = "https://www.librarything.com";
 
     private static final String AUTHOR = "author";
     private static final String FIELD = "field";
@@ -80,6 +80,7 @@ public class LibraryThingManager {
     private static final String PLACES = "placesmentioned";
     private static final String CHARACTERS = "characternames";
 
+    private static final String BASE_URL = "https://www.librarything.com";
     private static final String BASE_URL_COVERS = "https://covers.librarything.com";
     private static final String COVER_URL_LARGE = BASE_URL_COVERS + "/devkey/%1$s/large/isbn/%2$s";
     private static final String COVER_URL_MEDIUM = BASE_URL_COVERS + "/devkey/%1$s/medium/isbn/%2$s";
@@ -97,9 +98,15 @@ public class LibraryThingManager {
     /** App context (for prefs) */
     private final Context mAppContext;
 
+    @NonNull
+    public static String getBaseURL() {
+        return BASE_URL;
+    }
+
     public LibraryThingManager(@NonNull final Context context) {
         mAppContext = context.getApplicationContext();
     }
+
 
     /**
      * Use mLastRequestTime to determine how long until the next request is allowed; and
@@ -136,11 +143,13 @@ public class LibraryThingManager {
 
     /**
      * Search for edition data.
-     * *
+     *
      */
+    @NonNull
     public static List<String> searchEditions(@NonNull final String isbn) {
         // Base path for an ISBN search
         String path = String.format(EDITIONS_URL, isbn);
+        // static publicEntry point to LT, so check
         if (!IsbnUtils.isValid(isbn)) {
             throw new IllegalArgumentException("Can not get editions without an ISBN");
         }
@@ -155,7 +164,14 @@ public class LibraryThingManager {
         waitUntilRequestAllowed();
 
         // Get it
-        Utils.parseUrlOutput(path, factory, entryHandler);
+        try {
+            URL url = new URL(path);
+            SAXParser parser = factory.newSAXParser();
+            parser.parse(Utils.getInputStreamWithTerminator(url), entryHandler);
+            // Don't bother catching general exceptions, they will be caught by the caller.
+        } catch (ParserConfigurationException | IOException | SAXException e) {
+            Logger.logError(e);
+        }
 
         return editions;
     }
@@ -170,7 +186,7 @@ public class LibraryThingManager {
     /**
      * Search LibraryThing for an ISBN using the Web API.
      *  @param isbn     ISBN to lookup
-     * @param bookInfo Collection to save results in
+     * @param book Collection to save results in
      *
      *                 A typical (and thorough) LibraryThing ISBN response looks like (with formatting added):
      *
@@ -462,7 +478,7 @@ public class LibraryThingManager {
      *
      * call {@link #isAvailable()} before calling this method
      */
-    void search(@NonNull final String isbn, @NonNull final Bundle bookInfo, final boolean fetchThumbnail) {
+    void search(@NonNull final String isbn, @NonNull final Bundle book, final boolean fetchThumbnail) {
         String devKey = getDevKey();
         if (devKey.isEmpty()) {
             throw new RuntimeException("Developer Key not available");
@@ -480,7 +496,7 @@ public class LibraryThingManager {
         // Setup the parser
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser;
-        SearchLibraryThingEntryHandler entryHandler = new LibraryThingManager.SearchLibraryThingEntryHandler(bookInfo);
+        SearchLibraryThingEntryHandler entryHandler = new LibraryThingManager.SearchLibraryThingEntryHandler(book);
 
         try {
             url = new URL(path);
@@ -489,7 +505,7 @@ public class LibraryThingManager {
             // Make sure we follow LibraryThing ToS (no more than 1 request/second).
             waitUntilRequestAllowed();
 
-            parser.parse(Utils.getInputStream(url), entryHandler);
+            parser.parse(Utils.getInputStreamWithTerminator(url), entryHandler);
 
             // Don't bother catching general exceptions, they will be caught by the caller.
         } catch (ParserConfigurationException | SAXException | java.io.IOException e) {
@@ -497,7 +513,7 @@ public class LibraryThingManager {
         }
 
         if (fetchThumbnail) {
-            getCoverImage(isbn, bookInfo, ImageSizes.LARGE);
+            getCoverImage(isbn, book, ImageSizes.LARGE);
         }
 
     }
@@ -539,7 +555,7 @@ public class LibraryThingManager {
      * @return the file
      **/
     @Nullable
-    public File getCoverImage(@NonNull final String isbn, @Nullable final Bundle bookInfo, @NonNull final ImageSizes size) {
+    public File getCoverImage(@NonNull final String isbn, @Nullable final Bundle book, @NonNull final ImageSizes size) {
         String url = getCoverImageUrl(isbn, size);
         if (DEBUG_SWITCHES.LIBRARYTHING && BuildConfig.DEBUG) {
             System.out.println("LTM: " + url + " " + isbn + " " + size);
@@ -550,8 +566,8 @@ public class LibraryThingManager {
 
         // Save it with an _LT suffix
         String fileSpec = ImageUtils.saveThumbnailFromUrl(url, "_LT_" + size + "_" + isbn);
-        if (!fileSpec.isEmpty() && bookInfo != null) {
-            ArrayUtils.appendOrAdd(bookInfo, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
+        if (!fileSpec.isEmpty() && book != null) {
+            ArrayUtils.appendOrAdd(book, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
         }
         return fileSpec.isEmpty() ? null : new File(fileSpec);
     }
@@ -641,13 +657,13 @@ public class LibraryThingManager {
      * @author Philip Warner
      */
     private class SearchLibraryThingEntryHandler extends DefaultHandler {
-        private final Bundle mBookInfo;
+        private final Bundle mBook;
         private final StringBuilder mBuilder = new StringBuilder();
 
         private FieldTypes mFieldType = FieldTypes.OTHER;
 
-        SearchLibraryThingEntryHandler(@NonNull final Bundle bookInfo) {
-            mBookInfo = bookInfo;
+        SearchLibraryThingEntryHandler(@NonNull final Bundle book) {
+            mBook = book;
         }
 
         @Override
@@ -662,8 +678,8 @@ public class LibraryThingManager {
          * @param key Key for data to add
          */
         private void addIfNotPresent(@SuppressWarnings("SameParameterValue") @NonNull final String key) {
-            if (!mBookInfo.containsKey(key) || mBookInfo.getString(key).isEmpty()) {
-                mBookInfo.putString(key, mBuilder.toString().trim());
+            if (!mBook.containsKey(key) || mBook.getString(key).isEmpty()) {
+                mBook.putString(key, mBuilder.toString().trim());
             }
         }
 
@@ -674,7 +690,7 @@ public class LibraryThingManager {
          * @param key Key for data to add
          */
         private void appendOrAdd(@NonNull final String key) {
-            ArrayUtils.appendOrAdd(mBookInfo, key, mBuilder.toString());
+            ArrayUtils.appendOrAdd(mBook, key, mBuilder.toString());
         }
 
         @Override
@@ -722,7 +738,7 @@ public class LibraryThingManager {
 
             } else if (localName.equalsIgnoreCase(AUTHOR)) {
                 // Add the author
-                ArrayUtils.appendOrAdd(mBookInfo, UniqueId.BKEY_AUTHOR_DETAILS, mBuilder.toString());
+                ArrayUtils.appendOrAdd(mBook, UniqueId.BKEY_AUTHOR_DETAILS, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(FACT)) {
                 // Process the FACT according to the active FIELD type.
@@ -753,6 +769,5 @@ public class LibraryThingManager {
             // popped as each startElement/endElement is called. But lets not be pedantic for now.
             mBuilder.setLength(0);
         }
-
     }
 }

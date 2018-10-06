@@ -1111,7 +1111,7 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="select_loaned_no">Select non-loaned only</string>
     <string name="initial_bookshelf">Default</string>
     <string name="try_another">Try again</string>
-    <string name="table_of_content">Content</string>
+    <string name="table_of_content">Table Of Content</string>
     <string name="populate_anthology_titles">Automatically Populate (ISFDB only)</string>
     <string name="first_publication">First Publication</string>
     <string name="searching_isfdb">Searching ISFDB</string>

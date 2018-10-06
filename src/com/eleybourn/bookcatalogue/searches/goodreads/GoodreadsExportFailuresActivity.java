@@ -64,6 +64,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
     /** DB connection */
     private CatalogueDBAdapter mDb = null;
     private BindableItemCursor mCursor;
+
     /**
      * Listener to handle Event add/change/delete.
      */
@@ -73,6 +74,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
             GoodreadsExportFailuresActivity.this.refreshData();
         }
     };
+
     /** Task ID, if provided in intent */
     private long mTaskId = 0;
 
@@ -176,7 +178,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         final List<ContextDialogItem> items = new ArrayList<>();
 
         if (event == null) {
-            Logger.logError("event was null");
+            Logger.logError(new RuntimeException("event was null"));
             return;
         }
         event.addContextMenuItems(this, parent, v, position, id, items, mDb);

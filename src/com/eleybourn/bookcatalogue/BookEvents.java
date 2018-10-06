@@ -34,6 +34,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.entities.BookRow;
 import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -69,8 +70,8 @@ public class BookEvents {
      */
     private static final OnClickListener mRetryButtonListener = new OnClickListener() {
         @Override
-        public void onClick(View v) {
-            BookEvent.BookEventHolder holder = ViewTagger.getTag(v, R.id.TAG_BOOK_EVENT_HOLDER);
+        public void onClick(View view) {
+            BookEvent.BookEventHolder holder = ViewTagger.getTag(view, R.id.TAG_BOOK_EVENT_HOLDER);
             ((GrSendBookEvent) holder.event).retry();
         }
     };
@@ -78,11 +79,11 @@ public class BookEvents {
     /**
      * Method to edit a book details.
      */
-    private static void editBook(@NonNull final Context ctx, final long bookId) {
-        Intent i = new Intent(ctx, BookDetailsActivity.class);
-        i.putExtra(UniqueId.KEY_ID, bookId);
-        i.putExtra(BookDetailsActivity.TAB, BookDetailsActivity.TAB_EDIT);
-        ctx.startActivity(i);
+    private static void editBook(@NonNull final Context context, final long bookId) {
+        Intent intent = new Intent(context, BookDetailsActivity.class);
+        intent.putExtra(UniqueId.KEY_ID, bookId);
+        intent.putExtra(BookDetailsActivity.TAB, BookDetailsActivity.TAB_EDIT);
+        context.startActivity(intent);
     }
 
     /**
@@ -203,21 +204,22 @@ public class BookEvents {
          * Subclass can override this and add items at end/start or just replace these completely.
          */
         @Override
-        public void addContextMenuItems(@NonNull final Context ctx,
+        public void addContextMenuItems(@NonNull final Context context,
                                         @NonNull final AdapterView<?> parent,
-                                        @NonNull final View v,
-                                        final int position, final long id,
+                                        @NonNull final View view,
+                                        final int position,
+                                        final long eventId,
                                         @NonNull final List<ContextDialogItem> items,
                                         @NonNull final Object appInfo) {
 
             // EDIT BOOK
-            items.add(new ContextDialogItem(ctx.getString(R.string.edit_book), new Runnable() {
+            items.add(new ContextDialogItem(context.getString(R.string.edit_book), new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        GrSendBookEvent event = ViewTagger.getTag(v, R.id.TAG_EVENT);
+                        GrSendBookEvent event = ViewTagger.getTag(view, R.id.TAG_EVENT);
                         if (event != null) {
-                            editBook(ctx, event.getBookId());
+                            editBook(context, event.getBookId());
                         }
                     } catch (Exception ignore) {
                         // not a book event?
@@ -235,10 +237,10 @@ public class BookEvents {
             //		ctx.startActivity(i);
             //	}}));
             // DELETE EVENT
-            items.add(new ContextDialogItem(ctx.getString(R.string.delete_event), new Runnable() {
+            items.add(new ContextDialogItem(context.getString(R.string.delete_event), new Runnable() {
                 @Override
                 public void run() {
-                    BookCatalogueApp.getQueueManager().deleteEvent(id);
+                    BookCatalogueApp.getQueueManager().deleteEvent(eventId);
                 }
             }));
         }
@@ -300,7 +302,7 @@ public class BookEvents {
             final BookEventHolder holder = ViewTagger.getTag(view, R.id.TAG_BOOK_EVENT_HOLDER);
             final CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;
             final BooksCursor booksCursor = db.getBookForGoodreadsCursor(mBookId);
-            final BooksRow book = booksCursor.getRowView();
+            final BookRow book = booksCursor.getRowView();
             try {
                 // Hide parts of view based on current book details.
                 if (booksCursor.moveToFirst()) {
@@ -324,27 +326,27 @@ public class BookEvents {
          * Override to allow a new context menu item.
          */
         @Override
-        public void addContextMenuItems(@NonNull final Context ctx,
+        public void addContextMenuItems(@NonNull final Context context,
                                         @NonNull final AdapterView<?> parent,
-                                        @NonNull final View v,
-                                        final int position, final long id,
+                                        @NonNull final View view,
+                                        final int position, final long eventId,
                                         @NonNull List<ContextDialogItem> items,
                                         @NonNull Object appInfo) {
-            super.addContextMenuItems(ctx, parent, v, position, id, items, appInfo);
+            super.addContextMenuItems(context, parent, view, position, eventId, items, appInfo);
 
             final CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;
             try (BooksCursor booksCursor = db.getBookForGoodreadsCursor(mBookId)) {
-                final BooksRow book = booksCursor.getRowView();
+                final BookRow book = booksCursor.getRowView();
                 if (booksCursor.moveToFirst()) {
                     if (!book.getIsbn().isEmpty()) {
-                        items.add(new ContextDialogItem(ctx.getString(R.string.retry_task), new Runnable() {
+                        items.add(new ContextDialogItem(context.getString(R.string.retry_task), new Runnable() {
                             @Override
                             public void run() {
                                 try {
-                                    GrSendBookEvent event = ViewTagger.getTag(v, R.id.TAG_EVENT);
+                                    GrSendBookEvent event = ViewTagger.getTag(view, R.id.TAG_EVENT);
                                     if (event != null) {
                                         event.retry();
-                                        QueueManager.getQueueManager().deleteEvent(id);
+                                        QueueManager.getQueueManager().deleteEvent(eventId);
                                     }
                                 } catch (Exception ignore) {
                                     // not a book event?

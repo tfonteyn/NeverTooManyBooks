@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.properties;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -54,6 +55,7 @@ public abstract class Property {
     @NonNull
     private transient PropertyGroup mGroup;
     /** Resource ID for name of this property */
+    @StringRes
     private final transient int mNameResourceId;
 
     /** Property weight (for sorting). Most will remain set at 0. */
@@ -68,13 +70,10 @@ public abstract class Property {
      * @param group          PropertyGroup in which this property belongs
      * @param nameResourceId Resource ID for name of this property
      */
-    public Property(@NonNull final String uniqueId, @NonNull final PropertyGroup group, final int nameResourceId) {
+    public Property(@NonNull final String uniqueId, @NonNull final PropertyGroup group, @StringRes final int nameResourceId) {
         mUniqueId = uniqueId;
         mGroup = group;
         mNameResourceId = nameResourceId;
-        if (nameResourceId == 0) {
-            throw new NullPointerException("nameResourceId was =0");
-        }
     }
 
     /** Increment and return the view counter */
@@ -116,7 +115,8 @@ public abstract class Property {
         return this;
     }
 
-    public int getNameResourceId() {
+    @StringRes
+    int getNameResourceId() {
         return mNameResourceId;
     }
 

@@ -69,6 +69,7 @@ public abstract class GenericTask extends RunnableTask {
                                 @NonNull final ViewGroup parent) {
         View view = inflater.inflate(R.layout.task_info, parent, false);
         ViewTagger.setTag(view, R.id.TAG_TASK, this);
+
         TaskHolder holder = new TaskHolder();
         holder.description = view.findViewById(R.id.description);
         holder.state = view.findViewById(R.id.state);
@@ -154,15 +155,15 @@ public abstract class GenericTask extends RunnableTask {
      * - Allow task deletion
      */
     @Override
-    public void addContextMenuItems(@NonNull final Context ctx,
+    public void addContextMenuItems(@NonNull final Context context,
                                     @NonNull final AdapterView<?> parent,
-                                    @NonNull final View v,
+                                    @NonNull final View view,
                                     final int position,
                                     final long id,
                                     @NonNull final List<ContextDialogItem> items,
                                     @NonNull final Object appInfo) {
 
-        items.add(new ContextDialogItem(ctx.getString(R.string.delete_task), new Runnable() {
+        items.add(new ContextDialogItem(context.getString(R.string.delete_task), new Runnable() {
                     @Override
                     public void run() {
                         QueueManager.getQueueManager().deleteTask(id);

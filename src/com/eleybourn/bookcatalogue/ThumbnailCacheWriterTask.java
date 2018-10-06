@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -33,89 +33,90 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
  * Background task to save a bitmap into the covers thumbnail database. Runs in background
  * because it involves compression and IO, and can be safely queued. Failures can be ignored
  * because it is just writing to a cache used solely for optimization.
- * 
+ *
  * This class also has its own static SimpleTaskQueue.
- * 
+ *
  * @author Philip Warner
  */
 public class ThumbnailCacheWriterTask implements SimpleTask {
 
-	// ******** STATIC Data ******** //
-	
-	/** 
-	 * Single-thread queue for writing data. There is no point in more than one thread since
-	 * the database will force serialization of the updates.
-	 */
-	private static final SimpleTaskQueue mQueue = new SimpleTaskQueue("cache-writer", 1);
+    /**
+     * Single-thread queue for writing data. There is no point in more than one thread since
+     * the database will force serialization of the updates.
+     */
+    private static final SimpleTaskQueue mQueue = new SimpleTaskQueue("cache-writer", 1);
+    private final Context mContext;
+    /** Indicates if Bitmap can be recycled when no longer needed */
+    private final boolean mCanRecycle;
 
-	/**
-	 * Queue the passed bitmap to be compressed and written to the database, will be recycled if
-	 * flag is set.
-	 *
-	 * @param  context		context to use for database access
-	 * @param cacheId		Cache ID to use
-	 * @param source		Raw bitmap to store
-	 * @param canRecycle	Indicates bitmap should be recycled after use
-	 */
-	public static void writeToCache(Context context, String cacheId, Bitmap source, boolean canRecycle) {
-		ThumbnailCacheWriterTask t = new ThumbnailCacheWriterTask(context, cacheId, source, canRecycle);
-		mQueue.enqueue(t);
-	}
+    /** Cache ID of this object */
+    private String mCacheId;
+    /** Bitmap to store */
+    private Bitmap mBitmap;
 
-	/**
-	 * Check if there is an active task in the queue.
-	 */
-	public static boolean hasActiveTasks() {
-		return mQueue.hasActiveTasks();
-	}
+    /**
+     * Create a task that will compress the passed bitmap and write it to the database,
+     * it will also be recycled if flag is set.
+     *
+     * @param cacheId    Cache ID to use
+     * @param source     Raw bitmap to store
+     * @param canRecycle Indicates bitmap should be recycled after use
+     */
+    private ThumbnailCacheWriterTask(@NonNull final Context context,
+                                     @NonNull final String cacheId,
+                                     @NonNull final Bitmap source,
+                                     final boolean canRecycle) {
+        mContext = context;
+        mCacheId = cacheId;
+        mBitmap = source;
+        mCanRecycle = canRecycle;
+    }
 
-	// ******** INSTANCE Data ******** //
+    /**
+     * Queue the passed bitmap to be compressed and written to the database, will be recycled if
+     * flag is set.
+     *
+     * @param context    context to use for database access
+     * @param cacheId    Cache ID to use
+     * @param source     Raw bitmap to store
+     * @param canRecycle Indicates bitmap should be recycled after use
+     */
+    public static void writeToCache(@NonNull final Context context,
+                                    @NonNull final String cacheId,
+                                    @NonNull final Bitmap source,
+                                    final boolean canRecycle) {
+        ThumbnailCacheWriterTask t = new ThumbnailCacheWriterTask(context, cacheId, source, canRecycle);
+        mQueue.enqueue(t);
+    }
 
-	private final Context mContext;
-	/** Cache ID of this object */
-	private String mCacheId;
-	/** Indicates if Bitmap can be recycled when no longer needed */
-	private final boolean mCanRecycle;
-	/** Bitmap to store */
-	private Bitmap mBitmap;
+    /**
+     * Check if there is an active task in the queue.
+     */
+    public static boolean hasActiveTasks() {
+        return mQueue.hasActiveTasks();
+    }
 
-	/**
-	 * Create a task that will compress the passed bitmap and write it to the database, 
-	 * it will also be recycled if flag is set.
-	 * 
-	 * @param cacheId		Cache ID to use
-	 * @param source		Raw bitmap to store
-	 * @param canRecycle	Indicates bitmap should be recycled after use
-	 */
-	private ThumbnailCacheWriterTask(Context context, String cacheId, Bitmap source, boolean canRecycle) {
-		mContext = context;
-		mCacheId = cacheId;
-		mBitmap = source;
-		mCanRecycle = canRecycle;
-	}
-
-	/**
-	 * Do the main work in the background thread.
-	 */
-	@Override
-	public void run(@NonNull final SimpleTaskContext taskContext) {
-		if (mBitmap.isRecycled()) {
-			// Was probably recycled by rapid scrolling of view
-			mBitmap = null;
-		} else {
-            try(CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(mContext)) {
+    /**
+     * Do the main work in the background thread.
+     */
+    @Override
+    public void run(@NonNull final SimpleTaskContext taskContext) {
+        if (mBitmap.isRecycled()) {
+            // Was probably recycled by rapid scrolling of view
+            mBitmap = null;
+        } else {
+            try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(mContext)) {
                 coversDbHelper.saveFile(mBitmap, mCacheId);
             }
-			if (mCanRecycle) {
-				mBitmap.recycle();
-				mBitmap = null;
-			}
-		}
-		mCacheId = null;
-	}
+            if (mCanRecycle) {
+                mBitmap.recycle();
+                mBitmap = null;
+            }
+        }
+        mCacheId = null;
+    }
 
-	@Override
-	public void onFinish(Exception e) {
-	}
-
+    @Override
+    public void onFinish(Exception e) {
+    }
 }

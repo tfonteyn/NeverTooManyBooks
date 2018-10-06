@@ -158,9 +158,9 @@
             android:textIsSelectable="true"
             tools:text="Series name (1)\nSeries name (2)" />
 
-        <!-- Anthology -->
+        <!-- Table Of Content (TOC, Anthology) -->
         <LinearLayout
-            android:id="@+id/anthology_section"
+            android:id="@+id/toc_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -174,7 +174,7 @@
                 android:text="@string/table_of_content" />
 
             <CheckBox
-                android:id="@+id/anthology_button"
+                android:id="@+id/toc_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/expander"
@@ -185,7 +185,7 @@
         </LinearLayout>
 
         <ListView
-            android:id="@+id/anthology_titlelist"
+            android:id="@+id/toc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"

@@ -80,8 +80,7 @@ public class StartupActivity extends AppCompatActivity {
 
     /** Number of app startup's between displaying the Amazon hint */
     private static final int AMAZON_PROMPT_WAIT = 7;
-    /** The result code used when requesting permissions */
-    private static final int PERMISSIONS_REQUEST = 1234;
+
     /** Indicates the upgrade message has been shown */
     private static boolean mUpgradeMessageShown = false;
     /** Flag set to true on first call */
@@ -93,7 +92,12 @@ public class StartupActivity extends AppCompatActivity {
     private final Handler mHandler = new Handler();
     /** Queue for executing startup tasks, if any */
     private SimpleTaskQueue mTaskQueue = null;
-    /** Progress Dialog for startup tasks */
+    /** Progress Dialog for startup tasks
+     *  ENHANCE: this is a global requirement: ProgressDialog is deprecated in API 26
+     *  https://developer.android.com/reference/android/app/ProgressDialog
+     *  Suggested: ProgressBar or Notification.
+     *  Alternative maybe: SnackBar (recommended replacement for Toast)
+     */
     private ProgressDialog mProgress = null;
     /** Flag indicating an export is required after startup */
     private boolean mExportRequired = false;
@@ -134,7 +138,7 @@ public class StartupActivity extends AppCompatActivity {
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // request Permissions (Android 6+)
+        // request Permissions (Android 6+) ENHANCE
         if (Build.VERSION.SDK_INT >= 23) {
             checkPermissions();
         } else {
@@ -148,15 +152,16 @@ public class StartupActivity extends AppCompatActivity {
     private void startNextStage() {
         // onCreate being stage 0
         mStartupStage++;
-        if (BuildConfig.DEBUG) {
-            System.out.println("Starting stage " + mStartupStage);
-        }
+        System.out.println("Starting stage " + mStartupStage);
+
         switch (mStartupStage) {
             case 1: {
                 // Create a progress dialog; we may not use it...but we need it to be created in the UI thread.
-                //FIXME: see startup logs
-                mProgress = ProgressDialog.show(this, getString(R.string.book_catalogue_startup), getString(R.string.starting_up),
-                        true, true, new OnCancelListener() {
+                mProgress = ProgressDialog.show(this,
+                        getString(R.string.book_catalogue_startup),
+                        getString(R.string.starting_up),
+                        true,
+                        true, new OnCancelListener() {
                             @Override
                             public void onCancel(DialogInterface dialog) {
                                 // Cancelling the list cancels the activity.
@@ -423,7 +428,7 @@ public class StartupActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(final int requestCode,
                                            @NonNull final String permissions[],
                                            @NonNull final int[] grantResults) {
-        if (requestCode == PERMISSIONS_REQUEST) {
+        if (requestCode == UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST) {
             checkPermissions();
         }
     }
@@ -435,7 +440,7 @@ public class StartupActivity extends AppCompatActivity {
         Collections.addAll(permissions, getRequiredPermissions());
 
         for (Iterator<String> i = permissions.iterator(); i.hasNext(); ) {
-            //TODO: when going to API 23+, use native call
+            //ENHANCE: when going to API 23+, use native call
             if (ContextCompat.checkSelfPermission(this, i.next()) == PackageManager.PERMISSION_GRANTED) {
                 i.remove();
             }
@@ -445,9 +450,9 @@ public class StartupActivity extends AppCompatActivity {
         if (missing.length == 0) {
             startNextStage();
         } else {
-            ActivityCompat.requestPermissions(this, missing, PERMISSIONS_REQUEST);
-            //TODO: when going to API 23+, use native call
-            //requestPermissions(missing, PERMISSIONS_REQUEST);
+            ActivityCompat.requestPermissions(this, missing, UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST);
+            //ENHANCE: when going to API 23+, use native call
+            //requestPermissions(missing, UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST);
         }
     }
 

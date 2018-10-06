@@ -16,20 +16,17 @@
             android:id="@+id/toolbar"
             style="@style/toolbar"/>
 
-        <!-- digits: 0..9X for ISBN, but ASIN allows more -->
         <EditText
             android:id="@+id/isbn"
             android:layout_width="match_parent"
-            android:layout_height="0dip"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:digits="1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
+            android:digits="1234567890xX"
             android:hint="@string/isbn"
-            android:inputType="text"
+            android:inputType="textCapCharacters|textNoSuggestions"
             android:padding="@dimen/padding_border_double"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            tools:ignore="Autofill" >
-            <requestFocus/>
-        </EditText>
+            tools:ignore="Autofill" />
 
         <LinearLayout
             android:layout_width="match_parent"

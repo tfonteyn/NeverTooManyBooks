@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,13 +34,8 @@ import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
-import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
-
-import java.util.List;
 
 /**
  * This is the Administration page. It contains details about the app, links

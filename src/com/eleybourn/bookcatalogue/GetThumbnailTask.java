@@ -40,7 +40,7 @@ import java.lang.ref.WeakReference;
 /**
  * Task to get a thumbnail from the sdcard or cover database. It will resize it as required and
  * apply the resulting Bitmap to the related view.
- * <p>
+ *
  * This object also has it's own statically defined SimpleTaskQueue for getting thumbnails in
  * background.
  *
@@ -57,49 +57,35 @@ public class GetThumbnailTask implements SimpleTask {
      * Given the number of cores has gone up these days, let's see what we can do....
      */
     private static final SimpleTaskQueue mQueue;
-
     static {
         int maxTasks = 1;
         int cpus = Runtime.getRuntime().availableProcessors();
         if (cpus > 4) {
             maxTasks = 3; // just a poke in the dark TODO: experiment more
         }
-
+        if (BuildConfig.DEBUG) {
+            System.out.println("GetThumbnailTask: #cpu     : " + cpus);
+            System.out.println("GetThumbnailTask: #maxTasks: " + maxTasks);
+        }
         mQueue = new SimpleTaskQueue("thumbnails", maxTasks);
     }
 
-    /**
-     * Reference to the view we are using
-     */
+    /** Reference to the view we are using */
     private final WeakReference<ImageView> mView;
-    /**
-     * ID of book whose cover we are getting
-     */
+    /** ID of book whose cover we are getting */
     private final String mBookHash;
-    /**
-     * Flag indicating original caller had checked cache
-     */
+    /** Flag indicating original caller had checked cache */
     private final boolean mCacheWasChecked;
-    /**
-     * The width of the thumbnail retrieved (based on preferences)
-     */
+    /** The width of the thumbnail retrieved (based on preferences) */
     private final int mWidth;
-    /**
-     * The height of the thumbnail retrieved (based on preferences)
-     */
+    /** The height of the thumbnail retrieved (based on preferences) */
     private final int mHeight;
     private final Context mContext;
-    /**
-     * Resulting bitmap object
-     */
+    /** Resulting bitmap object */
     private Bitmap mBitmap = null;
-    /**
-     * Flag indicating image was found in the cache
-     */
+    /** Flag indicating image was found in the cache */
     private boolean mWasInCache = false;
-    /**
-     * Indicated we want the queue manager to call the finished() method.
-     */
+    /** Indicated we want the queue manager to call the finished() method. */
     private boolean mWantFinished = true;
 
     /**
@@ -148,7 +134,7 @@ public class GetThumbnailTask implements SimpleTask {
     /**
      * Allow other tasks (or subclasses tasks) to be queued.
      *
-     * @param t Task to a[put in queue
+     * @param t Task to put in queue
      */
     public static void enqueue(@NonNull final SimpleTask t) {
         mQueue.enqueue(t);
@@ -160,7 +146,7 @@ public class GetThumbnailTask implements SimpleTask {
 
     /**
      * Utility routine to remove any record of a prior thumbnail task from a View object.
-     * <p>
+     *
      * Used internally and from Utils.fetchFileIntoImageView to ensure that nothing
      * overwrites the view.
      */
@@ -196,16 +182,16 @@ public class GetThumbnailTask implements SimpleTask {
             return;
         }
 
-        // Make sure the view is still associated with this task. We don't want to overwrite the wrong image
-        // in a recycled view.
+        // Make sure the view is still associated with this task.
+        // We don't want to overwrite the wrong image in a recycled view.
         if (!this.equals(ViewTagger.getTag(v, R.id.TAG_GET_THUMBNAIL_TASK))) {
             mWantFinished = false;
             return;
         }
 
-        File originalFile = StorageUtils.getCoverFile(mBookHash);
 
         if (!mCacheWasChecked) {
+            File originalFile = StorageUtils.getCoverFile(mBookHash);
             try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(mContext)) {
                 mBitmap = coversDbHelper.fetchCachedImageIntoImageView(originalFile,
                         null, mBookHash, mWidth, mHeight);
@@ -213,9 +199,11 @@ public class GetThumbnailTask implements SimpleTask {
             mWasInCache = (mBitmap != null);
         }
 
-        if (mBitmap == null)
-            mBitmap = ImageUtils.fetchBookCoverIntoImageView(null, mBookHash, mWidth, mHeight, true, false, false);
-        //}
+        if (mBitmap == null) {
+            mBitmap = ImageUtils.fetchBookCoverIntoImageView(null, mBookHash,
+                    mWidth, mHeight, true, false, false);
+        }
+
 
         taskContext.setRequiresFinish(mWantFinished);
     }
@@ -225,43 +213,42 @@ public class GetThumbnailTask implements SimpleTask {
      */
     @Override
     public void onFinish(Exception e) {
-
-        if (!mWantFinished)
+        if (!mWantFinished) {
             return;
+        }
 
         // Get the view we are targeting and make sure it is valid
-        ImageView v = mView.get();
-        // Make sure the view is still associated with this task. We don't want to overwrite the wrong image
-        // in a recycled view.
-        final boolean viewIsValid = (v != null && this.equals(ViewTagger.getTag(v, R.id.TAG_GET_THUMBNAIL_TASK)));
+        ImageView view = mView.get();
+        // Make sure the view is still associated with this task.
+        // We don't want to overwrite the wrong image in a recycled view.
+        final boolean viewIsValid = (view != null && this.equals(ViewTagger.getTag(view, R.id.TAG_GET_THUMBNAIL_TASK)));
 
         // Clear the view tag
-        if (viewIsValid)
-            ViewTagger.setTag(v, R.id.TAG_GET_THUMBNAIL_TASK, null);
+        if (viewIsValid) {
+            ViewTagger.setTag(view, R.id.TAG_GET_THUMBNAIL_TASK, null);
+        }
 
         if (mBitmap != null) {
             if (!mWasInCache && BooklistPreferencesActivity.isThumbnailCacheEnabled()) {
-                // Queue the image to be written to the cache. Do it in a separate queue to avoid delays in displaying image
-                // and to avoid contention -- the cache queue only has one thread. Tell the cache write it can be recycled
-                // if we don't have a valid view.
+                // Queue the image to be written to the cache. Do it in a separate queue to avoid
+                // delays in displaying image and to avoid contention -- the cache queue only has
+                // one thread. Tell the cache write it can be recycled if we don't have a valid view.
                 ThumbnailCacheWriterTask.writeToCache(mContext, CoversDbHelper.getThumbnailCoverCacheId(mBookHash, mWidth, mHeight), mBitmap, !viewIsValid);
             }
             if (viewIsValid) {
                 //LayoutParams lp = new LayoutParams(mBitmap.getWidth(), mBitmap.getHeight());
                 //v.setLayoutParams(lp);
-                v.setImageBitmap(mBitmap);
+                view.setImageBitmap(mBitmap);
             } else {
                 mBitmap.recycle();
                 mBitmap = null;
             }
         } else {
-            if (v != null) {
-                v.setImageResource(R.drawable.ic_warning);
+            if (view != null) {
+                view.setImageResource(R.drawable.ic_warning);
             }
         }
 
         mView.clear();
-        //System.out.println("Set image for ID " + mBookId);
     }
-
 }

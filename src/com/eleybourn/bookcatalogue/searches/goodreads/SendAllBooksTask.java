@@ -26,7 +26,7 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookEvents.GrNoIsbnEvent;
 import com.eleybourn.bookcatalogue.BookEvents.GrNoMatchEvent;
-import com.eleybourn.bookcatalogue.BooksRow;
+import com.eleybourn.bookcatalogue.entities.BookRow;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
@@ -114,7 +114,7 @@ public class SendAllBooksTask extends GenericTask {
         db.open();
 
         try (BooksCursor books = db.getAllBooksForGoodreadsCursor(mLastId, mUpdatesOnly)) {
-            final BooksRow book = books.getRowView();
+            final BookRow book = books.getRowView();
             mTotalBooks = books.getCount() + mCount;
 
             while (books.moveToNext()) {
@@ -199,6 +199,7 @@ public class SendAllBooksTask extends GenericTask {
     /**
      * Make a more informative description
      */
+    @NonNull
     @Override
     public String getDescription() {
         return super.getDescription() + " (" + BookCatalogueApp.getResourceString(R.string.x_of_y, mCount, mTotalBooks) + ")";

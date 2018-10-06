@@ -58,12 +58,15 @@ public class LegacyEvent extends Event {
         LinearLayout root = new LinearLayout(context);
         root.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams margins = new LinearLayout.LayoutParams(ViewGroup.MarginLayoutParams.MATCH_PARENT, ViewGroup.MarginLayoutParams.WRAP_CONTENT);
+
         TextView tv = new TextView(context);
         tv.setId(TEXT_FIELD_1);
         root.addView(tv, margins);
+
         tv = new TextView(context);
         tv.setId(TEXT_FIELD_2);
         root.addView(tv, margins);
+
         return root;
     }
 

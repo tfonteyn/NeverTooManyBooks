@@ -41,8 +41,6 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GOODREADS_API_ROOT;
-
 /**
  * TODO: ReviewUpdateHandler WORK IN PROGRESS
  *
@@ -61,7 +59,7 @@ public class ReviewUpdateHandler extends ApiHandler {
                        final int rating)
             throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
             NotAuthorizedException, BookNotFoundException, NetworkException {
-        HttpPost post = new HttpPost(GOODREADS_API_ROOT + "/review/" + reviewId + ".xml");
+        HttpPost post = new HttpPost(GoodreadsManager.GOODREADS_API_ROOT + "/review/" + reviewId + ".xml");
 
         //StringBuilder shelvesString = null;
         //if (shelves != null && shelves.size() > 0) {
@@ -77,21 +75,25 @@ public class ReviewUpdateHandler extends ApiHandler {
         // Set the 'read' or 'to-read' shelf based on status.
         // Note a lot of point...it does not update goodreads!
         List<NameValuePair> parameters = new ArrayList<>();
-        if (isRead)
+        if (isRead) {
             parameters.add(new BasicNameValuePair("shelf", "read"));
-        else
+        } else {
             parameters.add(new BasicNameValuePair("shelf", "to-read"));
+        }
         //if (shelvesString != null)
         //    parameters.add(new BasicNameValuePair("shelf", shelvesString.toString()));
 
-        if (review != null)
+        if (review != null) {
             parameters.add(new BasicNameValuePair("review[review]", review));
+        }
 
-        if (readAt != null && !readAt.isEmpty())
+        if (readAt != null && !readAt.isEmpty()) {
             parameters.add(new BasicNameValuePair("review[read_at]", readAt));
+        }
 
-        if (rating >= 0)
+        if (rating >= 0) {
             parameters.add(new BasicNameValuePair("review[rating]", Integer.toString(rating)));
+        }
 
         post.setEntity(new UrlEncodedFormEntity(parameters, "UTF8"));
 

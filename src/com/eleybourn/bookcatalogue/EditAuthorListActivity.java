@@ -91,7 +91,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     /**
      * Do the work of the onClickListener for the 'Add' button.
      */
-    protected void onAdd(final View target) {
+    protected void onAdd(@NonNull final View target) {
         AutoCompleteTextView authorField = findViewById(R.id.author);
         String authorName = authorField.getText().toString().trim();
         if (!authorName.isEmpty()) {

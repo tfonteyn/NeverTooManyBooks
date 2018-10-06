@@ -58,7 +58,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
     ListProperty(@NonNull final ItemEntries<T> list,
                  @NonNull final String uniqueId,
                  @NonNull final PropertyGroup group,
-                 final int nameResourceId) {
+                 @StringRes final int nameResourceId) {
         super(uniqueId, group, nameResourceId);
         mList = list;
     }
@@ -66,14 +66,14 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
     ListProperty(@NonNull final ItemEntries<T> list,
                  @NonNull final String uniqueId,
                  @NonNull final PropertyGroup group,
-                 final int nameResourceId,
+                 @StringRes final int nameResourceId,
                  @Nullable final T defaultValue,
                  @Nullable final T value) {
         super(uniqueId, group, nameResourceId, defaultValue, value);
         mList = list;
     }
 
-    @SuppressWarnings("WeakerAccess")
+    @NonNull
     public ItemEntries<T> getListItems() {
         return mList;
     }
@@ -189,7 +189,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
                     selected = true;
 
                 // Make the view for this item
-                View line = inflater.inflate(R.layout.property_value_list_item, null);
+                View line = inflater.inflate(R.layout.property_value_list_item, radioGroup,false); //TOMF? test
                 RadioButton sel = line.findViewById(R.id.selector);
 
                 //Set the various values
@@ -233,18 +233,18 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         /** Actual value */
         final T value;
         /** Test description of the meaning of that value */
-        int textId;
+        int stringId;
         Object[] textArgs;
 
         /** Constructor. Instantiates string. */
-        ItemEntry(@Nullable final T value, final int resourceId, final Object... args) {
+        ItemEntry(@Nullable final T value, @StringRes final int stringId, final Object... args) {
             this.value = value;
-            this.textId = resourceId;
+            this.stringId = stringId;
             this.textArgs = args;
         }
 
         public String getString() {
-            return BookCatalogueApp.getResourceString(textId, textArgs);
+            return BookCatalogueApp.getResourceString(stringId, textArgs);
         }
 
         @Nullable
@@ -253,7 +253,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         }
 
         public void setString(int value, Object... args) {
-            textId = value;
+            stringId = value;
             textArgs = args;
         }
 

@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 

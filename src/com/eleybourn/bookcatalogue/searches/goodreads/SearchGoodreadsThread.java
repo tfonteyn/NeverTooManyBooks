@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -36,50 +38,57 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 
 /**
  * SearchManager for goodreads.
- * 
+ *
  * @author Philip Warner
  */
 public class SearchGoodreadsThread extends SearchThread {
 
-	public SearchGoodreadsThread(TaskManager manager,
-			String author, String title, String isbn, boolean fetchThumbnail) {
-		super(manager, author, title, isbn, fetchThumbnail);
-	}
+    public SearchGoodreadsThread(@NonNull final TaskManager manager,
+                                 @NonNull final String author,
+                                 @NonNull final String title,
+                                 @NonNull final String isbn,
+                                 final boolean fetchThumbnail) {
+        super(manager, author, title, isbn, fetchThumbnail);
+    }
 
-	@Override
-	protected void onRun() {
-		this.doProgress(getString(R.string.searching_goodreads), 0);
+    @Override
+    protected void onRun() {
+        this.doProgress(getString(R.string.searching_goodreads), 0);
 
-		GoodreadsManager grMgr = new GoodreadsManager();
-		try {
-			if (mIsbn != null && mIsbn.trim().length() > 0) {
-				mBookInfo = grMgr.getBookByIsbn(mIsbn);
-			} else {
-				List<GoodreadsWork> list = grMgr.search(mAuthor + " " + mTitle);
-				if (list != null && list.size() > 0) {
-					GoodreadsWork w = list.get(0);
-					mBookInfo = grMgr.getBookById(w.bookId);
-				}
-			}
-		} catch (BookNotFoundException ignore) {
+        GoodreadsManager grMgr = new GoodreadsManager();
+        try {
+            if (!mIsbn.isEmpty()) {
+                mBook = grMgr.getBookByIsbn(mIsbn);
+            } else {
+                // if both empty, no search
+                if (mAuthor.isEmpty() && mTitle.isEmpty()) {
+                    return;
+                }
+                List<GoodreadsWork> list = grMgr.search(mAuthor + " " + mTitle);
+                if (list.size() > 0) {
+                    GoodreadsWork w = list.get(0);
+                    mBook = grMgr.getBookById(w.bookId);
+                }
+            }
+        } catch (BookNotFoundException ignore) {
         } catch (OAuthMessageSignerException | OAuthExpectationFailedException | OAuthCommunicationException
                 | GoodreadsManager.Exceptions.NotAuthorizedException e) {
-		    // Added to stop confusing a new developer (me!).... the dev keys need to be in the manifest
+            // Added to stop confusing a new developer (me!).... the dev keys need to be in the manifest
             if (BuildConfig.DEBUG) {
                 Logger.logError(e);
                 showException(R.string.searching_goodreads, e);
             }
-		} catch (Exception e) {
-			Logger.logError(e);
-			showException(R.string.searching_goodreads, e);
+        } catch (Exception e) {
+            Logger.logError(e);
+            showException(R.string.searching_goodreads, e);
         }
-	}
+    }
 
-	/**
-	 * Get the global ID for the goodreads search manager
-	 */
-	@Override
-	public int getSearchId() {
-		return SearchManager.SEARCH_GOODREADS;
-	}
+    /**
+     * Get the global ID for the goodreads search manager
+     */
+    @Override
+    public int getSearchId() {
+        return SearchManager.SEARCH_GOODREADS;
+    }
 }

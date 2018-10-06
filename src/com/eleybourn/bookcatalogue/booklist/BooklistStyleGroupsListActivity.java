@@ -110,7 +110,7 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
     }
 
     @Override
-    protected void onAdd(final View v) {
+    protected void onAdd(@NonNull final View view) {
         throw new IllegalStateException("Unexpected call to 'onAdd'");
     }
 

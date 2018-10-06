@@ -107,8 +107,8 @@ public class Tracker {
 	}
 	public static void enterFunction(@NonNull final Object a, @NonNull final String name, @NonNull final Object... params) {
 		StringBuilder fullName = new StringBuilder(name + "(");
-		for (Object o : params) {
-			fullName.append(o).append(",");
+		for (Object parameter : params) {
+			fullName.append(parameter).append(",");
 		}
 		fullName.append(")");
 

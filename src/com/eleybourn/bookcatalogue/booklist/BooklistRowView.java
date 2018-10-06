@@ -31,6 +31,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
+import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ABSOLUTE_POSITION;
@@ -190,7 +191,7 @@ public class BooklistRowView {
             final String name = mBuilder.getDisplayDomain(1).name;
             mLevel1Col = mCursor.getColumnIndex(name);
             if (mLevel1Col < 0) {
-                throw new RuntimeException("Column " + name + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(name);
             }
         }
         return formatRowGroup(0, mCursor.getString(mLevel1Col));
@@ -209,7 +210,7 @@ public class BooklistRowView {
             final String name = mBuilder.getDisplayDomain(2).name;
             mLevel2Col = mCursor.getColumnIndex(name);
             if (mLevel2Col < 0) {
-                throw new RuntimeException("Column " + name + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(name);
             }
         }
         return formatRowGroup(1, mCursor.getString(mLevel2Col));
@@ -265,10 +266,9 @@ public class BooklistRowView {
      */
     public int getAbsolutePosition() {
         if (mAbsPosCol < 0) {
-            final String name = DOM_ABSOLUTE_POSITION.name;
-            mAbsPosCol = mCursor.getColumnIndex(name);
+            mAbsPosCol = mCursor.getColumnIndex(DOM_ABSOLUTE_POSITION.name);
             if (mAbsPosCol < 0) {
-                throw new RuntimeException("Column " + name + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(DOM_ABSOLUTE_POSITION.name);
             }
         }
         return mCursor.getInt(mAbsPosCol);
@@ -281,7 +281,7 @@ public class BooklistRowView {
         if (mBookIdCol < 0) {
             mBookIdCol = mCursor.getColumnIndex(DOM_BOOK_ID.name);
             if (mBookIdCol < 0) {
-                throw new RuntimeException("Column " + DOM_BOOK_ID + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_ID.name);
             }
         }
         return mCursor.getLong(mBookIdCol);
@@ -295,7 +295,7 @@ public class BooklistRowView {
         if (mBookUuidCol < 0) {
             mBookUuidCol = mCursor.getColumnIndex(DOM_BOOK_UUID.name);
             if (mBookUuidCol < 0) {
-                throw new RuntimeException("Column " + DOM_BOOK_UUID + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_UUID.name);
             }
         }
         return mCursor.getString(mBookUuidCol);
@@ -308,7 +308,7 @@ public class BooklistRowView {
         if (mSeriesIdCol < 0) {
             mSeriesIdCol = mCursor.getColumnIndex(DOM_SERIES_ID.name);
             if (mSeriesIdCol < 0) {
-                throw new RuntimeException("Column " + DOM_SERIES_ID + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(DOM_SERIES_ID.name);
             }
         }
         return mCursor.getLong(mSeriesIdCol);
@@ -329,7 +329,7 @@ public class BooklistRowView {
         if (mAuthorIdCol < 0) {
             mAuthorIdCol = mCursor.getColumnIndex(DOM_AUTHOR_ID.name);
             if (mAuthorIdCol < 0) {
-                throw new RuntimeException("Column " + DOM_AUTHOR_ID + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(DOM_AUTHOR_ID.name);
             }
         }
         return mCursor.getLong(mAuthorIdCol);
@@ -350,7 +350,7 @@ public class BooklistRowView {
         if (mKindCol < 0) {
             mKindCol = mCursor.getColumnIndex(DOM_ROW_KIND.name);
             if (mKindCol < 0) {
-                throw new RuntimeException("Column " + DOM_ROW_KIND + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(DOM_ROW_KIND.name);
             }
         }
         return mCursor.getInt(mKindCol);
@@ -364,7 +364,7 @@ public class BooklistRowView {
         if (mTitleCol < 0) {
             mTitleCol = mCursor.getColumnIndex(DOM_TITLE.name);
             if (mTitleCol < 0) {
-                throw new RuntimeException("Column " + DOM_TITLE + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(DOM_TITLE.name);
             }
         }
         return mCursor.getString(mTitleCol);
@@ -378,7 +378,7 @@ public class BooklistRowView {
         if (mPublisherCol < 0) {
             mPublisherCol = mCursor.getColumnIndex(DOM_BOOK_PUBLISHER.name);
             if (mPublisherCol < 0) {
-                throw new RuntimeException("Column " + DOM_BOOK_PUBLISHER + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_PUBLISHER.name);
             }
         }
         return mCursor.getString(mPublisherCol);
@@ -392,7 +392,7 @@ public class BooklistRowView {
         if (mLanguageCol < 0) {
             mLanguageCol = mCursor.getColumnIndex(DOM_BOOK_LANGUAGE.name);
             if (mLanguageCol < 0) {
-                throw new RuntimeException("Column " + DOM_BOOK_LANGUAGE + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_LANGUAGE.name);
             }
         }
         return mCursor.getString(mLanguageCol);
@@ -405,7 +405,7 @@ public class BooklistRowView {
         if (mLevelCol < 0) {
             mLevelCol = mCursor.getColumnIndex(DOM_LEVEL.name);
             if (mLevelCol < 0) {
-                throw new RuntimeException("Column " + DOM_LEVEL + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(DOM_LEVEL.name);
             }
         }
         return mCursor.getInt(mLevelCol);
@@ -419,7 +419,7 @@ public class BooklistRowView {
         if (mFormatCol < 0) {
             mFormatCol = mCursor.getColumnIndex(DOM_BOOK_FORMAT.name);
             if (mFormatCol < 0) {
-                throw new RuntimeException("Column " + DOM_BOOK_FORMAT + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_FORMAT.name);
             }
         }
         return mCursor.getString(mFormatCol);
@@ -433,7 +433,7 @@ public class BooklistRowView {
         if (mGenreCol < 0) {
             mGenreCol = mCursor.getColumnIndex(DOM_BOOK_GENRE.name);
             if (mGenreCol < 0) {
-                throw new RuntimeException("Column " + DOM_BOOK_GENRE + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_GENRE.name);
             }
         }
         return mCursor.getString(mGenreCol);
@@ -447,7 +447,7 @@ public class BooklistRowView {
         if (mLocationCol < 0) {
             mLocationCol = mCursor.getColumnIndex(DOM_BOOK_LOCATION.name);
             if (mLocationCol < 0) {
-                throw new RuntimeException("Column " + DOM_BOOK_LOCATION + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_LOCATION.name);
             }
         }
         return mCursor.getString(mLocationCol);
@@ -462,7 +462,7 @@ public class BooklistRowView {
         if (mSeriesNameCol < 0) {
             mSeriesNameCol = mCursor.getColumnIndex(DOM_SERIES_NAME.name);
             if (mSeriesNameCol < 0) {
-                throw new RuntimeException("Column " + DOM_SERIES_NAME + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(DOM_SERIES_NAME.name);
             }
         }
         return mCursor.getString(mSeriesNameCol);
@@ -477,7 +477,7 @@ public class BooklistRowView {
         if (mSeriesNumberCol < 0) {
             mSeriesNumberCol = mCursor.getColumnIndex(DOM_BOOK_SERIES_NUM.name);
             if (mSeriesNumberCol < 0) {
-                throw new RuntimeException("Column " + DOM_BOOK_SERIES_NUM + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_SERIES_NUM.name);
             }
         }
         return mCursor.getString(mSeriesNumberCol);
@@ -490,7 +490,7 @@ public class BooklistRowView {
         if (mReadCol < 0) {
             mReadCol = mCursor.getColumnIndex(DOM_BOOK_READ.name);
             if (mReadCol < 0) {
-                throw new RuntimeException("Column " + DOM_BOOK_READ + " not present in cursor");
+                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_READ.name);
             }
         }
         return mCursor.getLong(mReadCol) == 1;

@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.taskqueue;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
@@ -32,10 +33,9 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_EVENT;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_EVENT_DATE;
-import static com.eleybourn.bookcatalogue.taskqueue.DbHelper.DOM_ID;
-import static com.eleybourn.bookcatalogue.utils.SerializationUtils.deserializeObject;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EVENT;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EVENT_DATE;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_ID;
 
 /**
  * Cursor subclass used to make accessing TaskExceptions a little easier.
@@ -45,19 +45,19 @@ import static com.eleybourn.bookcatalogue.utils.SerializationUtils.deserializeOb
 public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
 
     /** Column number of ID column. */
-    private static int m_idCol = -1;
+    private static int mIdCol = -2;
     /** Column number of date column. */
-    private static int m_dateCol = -1;
+    private static int mDateCol = -2;
     /** Column number of Exception column. */
-    private static int m_eventCol = -1;
+    private static int mEeventCol = -2;
 
-    private final Map<Long, Boolean> m_selections = new Hashtable<>();
+    private final Map<Long, Boolean> mSelections = new Hashtable<>();
 
 
     /**
      * Constructor, based on SQLiteCursor constructor
      */
-    EventsCursor(SQLiteCursorDriver driver, String editTable, SQLiteQuery query) {
+    EventsCursor(@NonNull final SQLiteCursorDriver driver, @NonNull final String editTable, @NonNull final SQLiteQuery query) {
         super(driver, editTable, query);
     }
 
@@ -67,9 +67,10 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
      * @return row id
      */
     public long getId() {
-        if (m_idCol == -1)
-            m_idCol = this.getColumnIndex(DOM_ID);
-        return getLong(m_idCol);
+        if (mIdCol < 0) {
+            mIdCol = this.getColumnIndex(DOM_ID);
+        }
+        return getLong(mIdCol);
     }
 
     /**
@@ -77,10 +78,12 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
      *
      * @return Exception date
      */
+    @NonNull
     public Date getEventDate() {
-        if (m_dateCol == -1)
-            m_dateCol = this.getColumnIndex(DOM_EVENT_DATE);
-        Date date = DateUtils.parseDate(getString(m_dateCol));
+        if (mDateCol < 0) {
+            mDateCol = this.getColumnIndex(DOM_EVENT_DATE);
+        }
+        Date date = DateUtils.parseDate(getString(mDateCol));
         if (date == null) {
             date = new Date();
         }
@@ -92,18 +95,20 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
      *
      * @return TaskException object
      */
+    @NonNull
     private Event getEvent() {
-        if (m_eventCol == -1)
-            m_eventCol = this.getColumnIndex(DOM_EVENT);
-        byte[] blob = getBlob(m_eventCol);
-        Event e;
-        try {
-            e = deserializeObject(blob);
-        } catch (SerializationUtils.DeserializationException de) {
-            e = QueueManager.getQueueManager().newLegacyEvent();
+        if (mEeventCol < 0) {
+            mEeventCol = this.getColumnIndex(DOM_EVENT);
         }
-        e.setId(this.getId());
-        return e;
+        byte[] blob = getBlob(mEeventCol);
+        Event event;
+        try {
+            event = SerializationUtils.deserializeObject(blob);
+        } catch (SerializationUtils.DeserializationException de) {
+            event = QueueManager.getQueueManager().newLegacyEvent();
+        }
+        event.setId(this.getId());
+        return event;
     }
 
     /**
@@ -115,19 +120,20 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
         return getIsSelected(getId());
     }
 
-    private boolean getIsSelected(long id) {
-        if (m_selections.containsKey(id)) {
-            return m_selections.get(id);
+    private boolean getIsSelected(final long id) {
+        if (mSelections.containsKey(id)) {
+            return mSelections.get(id);
         } else {
             return false;
         }
     }
 
-    public void setIsSelected(long id, boolean selected) {
-        m_selections.put(id, selected);
+    public void setIsSelected(final long id, final boolean selected) {
+        mSelections.put(id, selected);
     }
 
     @Override
+    @NonNull
     public BindableItemCursorAdapter.BindableItem getBindableItem() {
         return getEvent();
     }

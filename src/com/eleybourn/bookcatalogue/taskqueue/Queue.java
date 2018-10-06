@@ -21,9 +21,10 @@
 package com.eleybourn.bookcatalogue.taskqueue;
 
 import android.content.Context;
-import android.util.Log;
+import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.taskqueue.DbAdapter.ScheduledTask;
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.taskqueue.DBAdapter.ScheduledTask;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.TaskActions;
 import com.eleybourn.bookcatalogue.taskqueue.Task.TaskState;
 
@@ -36,39 +37,37 @@ import java.lang.ref.WeakReference;
  */
 public class Queue extends Thread {
     /** Application context. Needed for DB access */
-    private final Context m_appContext;
+    private final Context mApplicationContext;
     /** QueueManager that owns this Queue object */
-    private final QueueManager m_manager;
+    private final QueueManager mManager;
     /** Name of this Queue */
-    private final String m_name;
-    /** DbAdapter used internally */
-    private DbAdapter m_dba;
+    private final String mName;
+    /** DBAdapter used internally */
+    private DBAdapter mDb;
 
     /** Currently running task */
-    private WeakReference<Task> m_task = null;
+    private WeakReference<Task> mTask = null;
 
     /** Flag to indicate process is terminating */
     private boolean mTerminate = false;
 
     /**
-     * Constructor. Nothing to see here, move along. Just save the properties
-     * and start the thread.
+     * Constructor. Nothing to see here, move along. Just save the properties and start the thread.
      *
      * @author Philip Warner
      */
-    public Queue(Context context, QueueManager manager, String queueName) {
-        m_appContext = context.getApplicationContext();
-        m_name = queueName;
-        m_manager = manager;
+    public Queue(@NonNull final Context context, @NonNull final QueueManager manager, @NonNull final String queueName) {
+        mApplicationContext = context.getApplicationContext();
+        mName = queueName;
+        mManager = manager;
         // Set the thread name to something helpful. This is distinct from the Queue name.
         this.setName("Queue " + queueName);
 
         // Add this object to the active queues list in the manager. It is important
         // that this is done in the constructor AND that new queues are created inside
         // code synchronized on the manager.
-        m_manager.queueStarting(this);
+        mManager.queueStarting(this);
 
-        // Run the thread
         start();
     }
 
@@ -76,7 +75,7 @@ public class Queue extends Thread {
      * Return the bare queue name, as opposed to the thread name
      */
     String getQueueName() {
-        return m_name;
+        return mName;
     }
 
     /**
@@ -93,34 +92,34 @@ public class Queue extends Thread {
     public void run() {
         try {
             // Get a database adapter
-            m_dba = new DbAdapter(m_appContext);
+            mDb = new DBAdapter(mApplicationContext);
             // Run until we're told not to or until we decide no to.
             while (!mTerminate) {
                 ScheduledTask scheduledTask;
                 Task task;
                 // All queue manipulation needs to be synchronized on the manager, as does
                 // assignments of 'active' tasks in queues.
-                synchronized (m_manager) {
-                    scheduledTask = m_dba.getNextTask(m_name);
+                synchronized (mManager) {
+                    scheduledTask = mDb.getNextTask(mName);
                     if (scheduledTask == null) {
                         // No more tasks. Remove from manager and terminate.
                         mTerminate = true;
-                        m_manager.queueTerminating(this);
+                        mManager.queueTerminating(this);
                         return;
                     }
                     if (scheduledTask.timeUntilRunnable == 0) {
                         // Ready to run now.
                         task = scheduledTask.getTask();
-                        m_task = new WeakReference<>(task);
+                        mTask = new WeakReference<>(task);
                     } else {
-                        m_task = null;
+                        mTask = null;
                         task = null;
                     }
                 }
 
                 // If we get here, we have a task, or know that there is one waiting to run. Just wait.
-                // ENHANCE: A future optimization might be to put an Alarm in the QueueManager for any wait that
-                // is longer than a minute.
+                // ENHANCE: A future optimization might be to put an Alarm in the QueueManager
+                // for any wait that is longer than a minute.
                 if (task != null) {
                     handleTask(task);
                 } else {
@@ -131,17 +130,16 @@ public class Queue extends Thread {
                 }
             }
         } catch (Exception e) {
-            Log.e("Queue", e.getMessage());
-            //Logger.logError(e);
+            Logger.logError(e);
         } finally {
             try {
                 // Close the DB. SQLite will complain otherwise.
-                if (m_dba != null) {
-                    m_dba.getDb().close();
+                if (mDb != null) {
+                    mDb.getDb().close();
                 }
                 // Just in case (the queue manager does check the queue before doing the delete).
-                synchronized (m_manager) {
-                    m_manager.queueTerminating(this);
+                synchronized (mManager) {
+                    mManager.queueTerminating(this);
                 }
             } catch (Exception ignore) {
             }
@@ -151,21 +149,21 @@ public class Queue extends Thread {
     /**
      * Run the task then save the results.
      */
-    private void handleTask(final Task task) {
+    private void handleTask(@NonNull final Task task) {
         boolean result = false;
         boolean requeue = false;
         try {
             task.setException(null);
             task.setState(TaskState.running);
-            m_manager.notifyTaskChange(task, TaskActions.running);
-            result = m_manager.runOneTask(task);
+            mManager.notifyTaskChange(task, TaskActions.running);
+            result = mManager.runOneTask(task);
             requeue = !result;
         } catch (Exception e) {
             // Don't overwrite exception set by handler
             if (task.getException() == null) {
                 task.setException(e);
             }
-            Log.e("Error running task " + task.getId(), e.getMessage());
+            Logger.logError(e,"Error running task " + task.getId());
         }
         handleResult(task, result, requeue);
     }
@@ -179,31 +177,31 @@ public class Queue extends Thread {
      */
     private void handleResult(Task task, boolean result, boolean requeue) {
         TaskActions message;
-        synchronized (m_manager) {
+        synchronized (mManager) {
             if (task.isAborting()) {
-                m_dba.deleteTask(task.getId());
+                mDb.deleteTask(task.getId());
                 message = TaskActions.completed;
             } else if (result) {
-                m_dba.setTaskOk(task);
+                mDb.setTaskOk(task);
                 message = TaskActions.completed;
             } else if (requeue) {
-                m_dba.setTaskRequeue(task);
+                mDb.setTaskRequeue(task);
                 message = TaskActions.waiting;
             } else {
-                m_dba.setTaskFail(task, "Unhandled exception while running task: " + task.getException().getMessage());
+                mDb.setTaskFail(task, "Unhandled exception while running task: " + task.getException().getMessage());
                 message = TaskActions.completed;
             }
-            m_task.clear();
-            m_task = null;
+            mTask.clear();
+            mTask = null;
         }
-        m_manager.notifyTaskChange(task, message);
+        mManager.notifyTaskChange(task, message);
     }
 
     public Task getTask() {
-        if (m_task == null) {
+        if (mTask == null) {
             return null;
         } else {
-            return m_task.get();
+            return mTask.get();
         }
     }
 

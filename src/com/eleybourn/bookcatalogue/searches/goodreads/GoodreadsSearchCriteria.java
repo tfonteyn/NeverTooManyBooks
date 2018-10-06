@@ -30,7 +30,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eleybourn.bookcatalogue.BooksRow;
+import com.eleybourn.bookcatalogue.entities.BookRow;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -64,7 +64,6 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
         mDb = new CatalogueDBAdapter(this);
         mDb.open();
 
-
         Bundle extras = this.getIntent().getExtras();
 
         // Look for a book ID
@@ -85,7 +84,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
                     finish();
                     return;
                 }
-                final BooksRow book = cursor.getRowView();
+                final BookRow book = cursor.getRowView();
                 {
                     String s = book.getPrimaryAuthorNameFormatted();
                     setViewText(R.id.author, s);
@@ -158,7 +157,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
         }
 
         Intent i = new Intent(this, GoodreadsSearchResults.class);
-        i.putExtra(GoodreadsSearchResults.SEARCH_CRITERIA, criteria);
+        i.putExtra(GoodreadsSearchResults.BKEY_SEARCH_CRITERIA, criteria);
         this.startActivity(i);
     }
 

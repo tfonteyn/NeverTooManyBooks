@@ -43,8 +43,6 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import static com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.GOODREADS_API_ROOT;
-
 /**
  * TODO: OwnedBookCreateHandler WORK IN PROGRESS
  * 
@@ -171,7 +169,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 			throw new InvalidIsbnException();
 		}
 
-		HttpPost post = new HttpPost(GOODREADS_API_ROOT + "/owned_books.xml");
+		HttpPost post = new HttpPost(GoodreadsManager.GOODREADS_API_ROOT + "/owned_books.xml");
 
 		List<NameValuePair> parameters = new ArrayList<>();
         parameters.add(new BasicNameValuePair("owned_book[book_id]", Long.toString(id)));

@@ -70,22 +70,22 @@ import java.util.List;
  * @author Philip Warner
  */
 public class CoverBrowser {
-    // Handler when an image is finally selected.
+    /** Handler when an image is finally selected. */
     private final OnImageSelectedListener mOnImageSelectedListener;
-    // ISBN of book to lookup
+    /** ISBN of book to lookup */
     private final String mIsbn;
-    // Calling context
+    /** Calling context */
     private final Activity mActivity;
     private final int mPreviewSizeWidth;
     private final int mPreviewSizeHeight;
-    // The Dialog
+    /** The Dialog */
     private final Dialog mDialog;
     private final android.util.DisplayMetrics mMetric;
-    // Task queue for images
+    /** Task queue for images */
     private SimpleTaskQueue mImageFetcher = null;
-    // List of all editions for the given ISBN
+    /** List of all editions for the given ISBN */
     private List<String> mEditions;
-    // Object to ensure files are cleaned up.
+    /** Object to ensure files are cleaned up. */
     private FileManager mFileManager;
     /** Indicates a 'shutdown()' has been requested */
     private boolean mShutdown = false;
@@ -256,7 +256,7 @@ public class CoverBrowser {
 
     /**
      * //FIXME: use RecyclerView ? to research....
-     * <p>
+     *
      * ImageAdapter for gallery. Queues image requests.
      *
      * @author Philip Warner
@@ -594,7 +594,7 @@ public class CoverBrowser {
 
             // give up
             mFiles.remove(key);
-            return ""; //don't return nul.
+            return ""; //don't return null.
         }
 
         /**

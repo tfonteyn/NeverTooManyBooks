@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.properties;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.properties.Property.BooleanValue;
@@ -35,9 +36,9 @@ import com.eleybourn.bookcatalogue.properties.Property.BooleanValue;
 public class BooleanListProperty extends ListProperty<Boolean> implements BooleanValue {
 
     public BooleanListProperty(@NonNull final ItemEntries<Boolean> list,
-                                @NonNull final String uniqueId,
-                               final PropertyGroup group,
-                               final int nameResourceId) {
+                               @NonNull final String uniqueId,
+                               @NonNull final PropertyGroup group,
+                               @StringRes final int nameResourceId) {
         super(list, uniqueId, group, nameResourceId, false, false);
     }
 
@@ -101,8 +102,8 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
     }
 
     public boolean isTrue() {
-        Boolean b =  super.getResolvedValue();
-        return (b != null ? b: false);
+        Boolean b = super.getResolvedValue();
+        return (b != null ? b : false);
     }
 }
 
