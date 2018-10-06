@@ -387,7 +387,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      * @param db        CatalogueDBAdapter
      * @param bookView  The view on which was clicked
      * @param rowView   Row view for affected cursor row
-     * @param context   Calling Activity
+     * @param activity   Calling Activity
      * @param itemId    Related MenuItem
      *
      * @return True, if handled.
@@ -395,59 +395,59 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
     public boolean onContextItemSelected(@NonNull final CatalogueDBAdapter db,
                                          @NonNull final View bookView,
                                          @NonNull final BooklistRowView rowView,
-                                         @NonNull final Activity context,
+                                         @NonNull final Activity activity,
                                          final int itemId) {
         switch (itemId) {
 
             case R.id.MENU_BOOK_DELETE: {
                 // Show the standard dialog
-                int res = StandardDialogs.deleteBookAlert(context, db, rowView.getBookId(), new Runnable() {
+                int res = StandardDialogs.deleteBookAlert(activity, db, rowView.getBookId(), new Runnable() {
                     @Override
                     public void run() {
                         db.purgeAuthors();
                         db.purgeSeries();
                         // Let the activity know
-                        if (context instanceof BooklistChangeListener) {
-                            final BooklistChangeListener listener = (BooklistChangeListener) context;
+                        if (activity instanceof BooklistChangeListener) {
+                            final BooklistChangeListener listener = (BooklistChangeListener) activity;
                             listener.onBooklistChange(BooklistChangeListener.FLAG_AUTHOR | BooklistChangeListener.FLAG_SERIES);
                         }
                     }
                 });
                 // Display an error, if any
                 if (res != 0) {
-                    Toast.makeText(context, res, Toast.LENGTH_LONG).show();
+                    StandardDialogs.showQuickNotice(activity, res);
                 }
                 return true;
             }
             case R.id.MENU_BOOK_EDIT: {
                 // Start the activity in the correct tab
-                BookDetailsActivity.startEditMode(context, rowView.getBookId(), BookDetailsActivity.TAB_EDIT);
+                BookDetailsActivity.startEditMode(activity, rowView.getBookId(), BookDetailsActivity.TAB_EDIT);
                 return true;
             }
             case R.id.MENU_BOOK_EDIT_NOTES: {
                 // Start the activity in the correct tab
-                BookDetailsActivity.startEditMode(context, rowView.getBookId(), BookDetailsActivity.TAB_EDIT_NOTES);
+                BookDetailsActivity.startEditMode(activity, rowView.getBookId(), BookDetailsActivity.TAB_EDIT_NOTES);
                 return true;
             }
             case R.id.MENU_BOOK_EDIT_LOANS: {
                 // Start the activity in the correct tab
-                BookDetailsActivity.startEditMode(context, rowView.getBookId(), BookDetailsActivity.TAB_EDIT_FRIENDS);
+                BookDetailsActivity.startEditMode(activity, rowView.getBookId(), BookDetailsActivity.TAB_EDIT_FRIENDS);
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
                 String author = getAuthorFromRow(db, rowView);
-                AmazonUtils.openSearchPage(context, author, null);
+                AmazonUtils.openSearchPage(activity, author, null);
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
                 String series = getSeriesFromRow(db, rowView);
-                AmazonUtils.openSearchPage(context, null, series);
+                AmazonUtils.openSearchPage(activity, null, series);
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
                 String author = getAuthorFromRow(db, rowView);
                 String series = getSeriesFromRow(db, rowView);
-                AmazonUtils.openSearchPage(context, author, series);
+                AmazonUtils.openSearchPage(activity, author, series);
                 return true;
             }
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
@@ -456,9 +456,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 GoodreadsManager grMgr = new GoodreadsManager();
                 if (!grMgr.hasValidCredentials()) {
                     try {
-                        grMgr.requestAuthorization(context);
+                        grMgr.requestAuthorization(activity);
                     } catch (NetworkException e) {
-                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                        StandardDialogs.showQuickNotice(activity, e.getLocalizedMessage());
                     }
                 }
                 // get a QueueManager and queue the task.
@@ -470,17 +470,17 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             case R.id.MENU_SERIES_EDIT: {
                 long id = rowView.getSeriesId();
                 if (id == -1) {
-                    Toast.makeText(context, R.string.cannot_edit_system, Toast.LENGTH_LONG).show();
+                    StandardDialogs.showQuickNotice(activity, R.string.cannot_edit_system);
                     System.out.println("FIXME id==-1, ... how? why? R.string.cannot_edit_system)");
                 } else {
                     Series s = db.getSeriesById(id);
-                    EditSeriesDialog d = new EditSeriesDialog(context, db, new Runnable() {
+                    EditSeriesDialog d = new EditSeriesDialog(activity, db, new Runnable() {
                         @Override
                         public void run() {
                             db.purgeSeries();
                             // Let the Activity know
-                            if (context instanceof BooklistChangeListener) {
-                                final BooklistChangeListener listener = (BooklistChangeListener) context;
+                            if (activity instanceof BooklistChangeListener) {
+                                final BooklistChangeListener listener = (BooklistChangeListener) activity;
                                 listener.onBooklistChange(BooklistChangeListener.FLAG_SERIES);
                             }
                         }
@@ -493,12 +493,12 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 long id = rowView.getSeriesId();
                 Series series = db.getSeriesById(id);
                 if (series != null) {
-                    StandardDialogs.deleteSeriesAlert(context, db, series, new Runnable() {
+                    StandardDialogs.deleteSeriesAlert(activity, db, series, new Runnable() {
                         @Override
                         public void run() {
                             // Let the Activity know
-                            if (context instanceof BooklistChangeListener) {
-                                final BooklistChangeListener listener = (BooklistChangeListener) context;
+                            if (activity instanceof BooklistChangeListener) {
+                                final BooklistChangeListener listener = (BooklistChangeListener) activity;
                                 listener.onBooklistChange(BooklistChangeListener.FLAG_SERIES);
                             }
                         }
@@ -510,13 +510,13 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
             case R.id.MENU_AUTHOR_EDIT: {
                 Author s = db.getAuthor(rowView.getAuthorId());
-                EditAuthorDialog d = new EditAuthorDialog(context, db, new Runnable() {
+                EditAuthorDialog d = new EditAuthorDialog(activity, db, new Runnable() {
                     @Override
                     public void run() {
                         db.purgeAuthors();
                         // Let the Activity know
-                        if (context instanceof BooklistChangeListener) {
-                            final BooklistChangeListener listener = (BooklistChangeListener) context;
+                        if (activity instanceof BooklistChangeListener) {
+                            final BooklistChangeListener listener = (BooklistChangeListener) activity;
                             listener.onBooklistChange(BooklistChangeListener.FLAG_AUTHOR);
                         }
                     }
@@ -526,12 +526,12 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
             case R.id.MENU_PUBLISHER_EDIT: {
                 Publisher s = new Publisher(rowView.getPublisherName());
-                EditPublisherDialog d = new EditPublisherDialog(context, db, new Runnable() {
+                EditPublisherDialog d = new EditPublisherDialog(activity, db, new Runnable() {
                     @Override
                     public void run() {
                         // Let the Activity know
-                        if (context instanceof BooklistChangeListener) {
-                            final BooklistChangeListener listener = (BooklistChangeListener) context;
+                        if (activity instanceof BooklistChangeListener) {
+                            final BooklistChangeListener listener = (BooklistChangeListener) activity;
                             listener.onBooklistChange(BooklistChangeListener.FLAG_PUBLISHER);
                         }
                     }
@@ -541,12 +541,12 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
             case R.id.MENU_LANGUAGE_EDIT: {
                 String s = rowView.getLanguage();
-                EditLanguageDialog d = new EditLanguageDialog(context, db, new Runnable() {
+                EditLanguageDialog d = new EditLanguageDialog(activity, db, new Runnable() {
                     @Override
                     public void run() {
                         // Let the Activity know
-                        if (context instanceof BooklistChangeListener) {
-                            final BooklistChangeListener listener = (BooklistChangeListener) context;
+                        if (activity instanceof BooklistChangeListener) {
+                            final BooklistChangeListener listener = (BooklistChangeListener) activity;
                             listener.onBooklistChange(BooklistChangeListener.FLAG_LANGUAGE);
                         }
                     }
@@ -556,12 +556,12 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
             case R.id.MENU_LOCATION_EDIT: {
                 String s = rowView.getLocation();
-                EditLocationDialog d = new EditLocationDialog(context, db, new Runnable() {
+                EditLocationDialog d = new EditLocationDialog(activity, db, new Runnable() {
                     @Override
                     public void run() {
                         // Let the Activity know
-                        if (context instanceof BooklistChangeListener) {
-                            final BooklistChangeListener listener = (BooklistChangeListener) context;
+                        if (activity instanceof BooklistChangeListener) {
+                            final BooklistChangeListener listener = (BooklistChangeListener) activity;
                             listener.onBooklistChange(BooklistChangeListener.FLAG_LOCATION);
                         }
                     }
@@ -571,12 +571,12 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
             case R.id.MENU_GENRE_EDIT: {
                 String s = rowView.getGenre();
-                EditGenreDialog d = new EditGenreDialog(context, db, new Runnable() {
+                EditGenreDialog d = new EditGenreDialog(activity, db, new Runnable() {
                     @Override
                     public void run() {
                         // Let the Activity know
-                        if (context instanceof BooklistChangeListener) {
-                            final BooklistChangeListener listener = (BooklistChangeListener) context;
+                        if (activity instanceof BooklistChangeListener) {
+                            final BooklistChangeListener listener = (BooklistChangeListener) activity;
                             listener.onBooklistChange(BooklistChangeListener.FLAG_GENRE);
                         }
                     }
@@ -586,12 +586,12 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
             case R.id.MENU_FORMAT_EDIT: {
                 String s = rowView.getFormat();
-                EditFormatDialog d = new EditFormatDialog(context, db, new Runnable() {
+                EditFormatDialog d = new EditFormatDialog(activity, db, new Runnable() {
                     @Override
                     public void run() {
                         // Let the Activity know
-                        if (context instanceof BooklistChangeListener) {
-                            final BooklistChangeListener listener = (BooklistChangeListener) context;
+                        if (activity instanceof BooklistChangeListener) {
+                            final BooklistChangeListener listener = (BooklistChangeListener) activity;
                             listener.onBooklistChange(BooklistChangeListener.FLAG_FORMAT);
                         }
                     }

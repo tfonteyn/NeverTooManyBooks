@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -187,12 +188,13 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
             settings.options |= Exporter.EXPORT_SINCE;
             settings.dateFrom = null;
         } else if (((RadioButton) dialog.findViewById(R.id.radioSinceDate)).isChecked()) {
-            String s = dialog.findViewById(R.id.txtDate).toString();
+            View v = dialog.findViewById(R.id.txtDate);
             try {
                 settings.options |= Exporter.EXPORT_SINCE;
-                settings.dateFrom = DateUtils.parseDate(s);
+                settings.dateFrom = DateUtils.parseDate(v.toString());
             } catch (Exception e) {
-                Toast.makeText(getActivity(), R.string.no_date, Toast.LENGTH_LONG).show();
+                //Snackbar.make(v, R.string.no_date, Snackbar.LENGTH_LONG).show();
+                StandardDialogs.showQuickNotice(getActivity(), R.string.no_date);
                 return null;
             }
         }

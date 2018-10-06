@@ -45,6 +45,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.BookData;
@@ -228,7 +229,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
         final List<AnthologyTitle> results = (List<AnthologyTitle>)book.get(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
 
         if (results == null) {
-            Toast.makeText(EditBookAnthologyFragment.this.getContext(), R.string.automatic_population_failed, Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(EditBookAnthologyFragment.this.getActivity(), R.string.automatic_population_failed);
             return;
         }
 
@@ -312,7 +313,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case MENU_POPULATE_ISFDB:
-                Toast.makeText(EditBookAnthologyFragment.this.getContext(), R.string.connecting_to_web_site, Toast.LENGTH_LONG).show();
+                StandardDialogs.showQuickNotice(EditBookAnthologyFragment.this.getActivity(), R.string.connecting_to_web_site);
                 ISFDBManager.searchEditions(mIsbn, this);
                 return true;
         }

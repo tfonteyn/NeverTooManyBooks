@@ -27,6 +27,7 @@ import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.debug.Tracker.States;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 import com.eleybourn.bookcatalogue.tasks.TaskManager.TaskManagerController;
@@ -132,7 +134,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
          */
         @Override
         public void onToast(@NonNull final String message) {
-            Toast.makeText(ActivityWithTasks.this, message, Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(ActivityWithTasks.this, message);
         }
 
         /**

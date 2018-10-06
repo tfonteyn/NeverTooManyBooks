@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -28,6 +29,7 @@ import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.BookData;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
@@ -204,13 +206,13 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                 setCoverImage();
             } else {
                 String s = getResources().getString(R.string.could_not_copy_image) + ". " + getResources().getString(R.string.if_the_problem_persists);
-                Toast.makeText(getContext(), s, Toast.LENGTH_LONG).show();
+                StandardDialogs.showQuickNotice(this.getActivity(), s);
             }
         } else {
             /* Deal with the case where the chooser returns a null intent. This seems to happen
              * when the filename is not properly understood by the choose (eg. an apostrophe in
              * the file name confuses ES File Explorer in the current version as of 23-Sep-2012. */
-            Toast.makeText(getContext(), R.string.could_not_copy_image, Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(this.getActivity(), R.string.could_not_copy_image);
         }
     }
 
@@ -355,12 +357,14 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                     return true;
 
                 case R.id.MENU_ADD_THUMB_ALT_EDITIONS:
-                    String isbn = mFields.getField(R.id.isbn).getValue().toString();
+                    Field isbnField = mFields.getField(R.id.isbn);
+                    String isbn = isbnField.getValue().toString();
                     if (IsbnUtils.isValid(isbn)) {
                         mCoverBrowser = new CoverBrowser(getActivity(), isbn, mOnImageSelectedListener);
                         mCoverBrowser.showEditionCovers();
                     } else {
-                        Toast.makeText(getActivity(), getResources().getString(R.string.editions_require_isbn), Toast.LENGTH_LONG).show();
+                        //Snackbar.make(isbnField.getView(), R.string.editions_require_isbn, Snackbar.LENGTH_LONG).show();
+                        StandardDialogs.showQuickNotice(getActivity(),R.string.editions_require_isbn);
                     }
                     return true;
             }
@@ -422,7 +426,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             List<ResolveInfo> list = getActivity().getPackageManager().queryIntentActivities(intent, 0);
             int size = list.size();
             if (size == 0) {
-                Toast.makeText(getActivity(), "Can not find image crop app", Toast.LENGTH_SHORT).show();
+                StandardDialogs.showQuickNotice(getActivity(), R.string.no_external_crop_app);
             } else {
                 startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_EXTERNAL);
             }

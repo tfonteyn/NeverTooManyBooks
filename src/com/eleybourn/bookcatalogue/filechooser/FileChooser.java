@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.filechooser;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
@@ -31,6 +32,7 @@ import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.PathChangedListener;
 import com.eleybourn.bookcatalogue.filechooser.FileLister.FileListerListener;
@@ -151,7 +153,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
             FileChooserFragment bf = (FileChooserFragment) frag;
             File file = bf.getSelectedFile();
             if (file == null || !file.exists() || !file.isFile()) {
-                Toast.makeText(this, R.string.please_select_an_existing_file, Toast.LENGTH_LONG).show();
+                StandardDialogs.showQuickNotice(this, R.string.please_select_an_existing_file);
                 return;
             }
             onOpen(file);
@@ -167,7 +169,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
             FileChooserFragment bf = (FileChooserFragment) frag;
             File file = bf.getSelectedFile();
             if (file == null || (file.exists() && !file.isFile())) {
-                Toast.makeText(this, R.string.please_select_a_non_directory, Toast.LENGTH_LONG).show();
+                StandardDialogs.showQuickNotice(this, R.string.please_select_a_non_directory);
                 return;
             }
             onSave(file);

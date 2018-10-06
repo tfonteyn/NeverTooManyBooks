@@ -20,31 +20,30 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Author;
 
 public class EditAuthorDialog {
-	private final Context mContext;
+	private final Activity mActivity;
 	private final CatalogueDBAdapter mDb;
 	private final Runnable mOnChanged;
 
-	EditAuthorDialog(@NonNull final Context context, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
+	EditAuthorDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
 		mDb = db;
-		mContext = context;
+		this.mActivity = activity;
 		mOnChanged = onChanged;
 	}
 
 	public void edit(@NonNull final Author author) {
-		final Dialog dialog = new StandardDialogs.BasicDialog(mContext);
+		final Dialog dialog = new StandardDialogs.BasicDialog(mActivity);
 		dialog.setContentView(R.layout.dialog_edit_author);
 		dialog.setTitle(R.string.edit_author_details);
 
@@ -61,7 +60,7 @@ public class EditAuthorDialog {
 				EditText givenView = dialog.findViewById(R.id.given_names);
 				String newFamily = familyView.getText().toString().trim();
 				if (newFamily.isEmpty()) {
-					Toast.makeText(mContext, R.string.author_is_blank, Toast.LENGTH_LONG).show();
+					StandardDialogs.showQuickNotice(mActivity, R.string.author_is_blank);
 					return;
 				}
 				String newGiven = givenView.getText().toString().trim();

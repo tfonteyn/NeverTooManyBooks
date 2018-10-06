@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -39,6 +40,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
@@ -216,7 +218,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
                 style.setName(style.getDisplayName());
             } catch (SerializationUtils.DeserializationException e) {
                 Logger.logError(e);
-                Toast.makeText(this, R.string.unexpected_error, Toast.LENGTH_LONG).show();
+                StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
                 return;
             }
         }

@@ -20,7 +20,7 @@
 package com.eleybourn.bookcatalogue.dialogs;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -55,7 +55,7 @@ public class PartialDatePicker extends AlertDialog {
     private static final String UNKNOWN_MONTH = "---";
     private static final String UNKNOWN_DAY = "--";
     /** Calling context */
-    private final Context mContext;
+    private final Activity mActivity;
     /** Local ref to month spinner */
     private final Spinner mMonthSpinner;
     /** Local ref to day spinner */
@@ -76,26 +76,26 @@ public class PartialDatePicker extends AlertDialog {
     /**
      * Constructor
      *
-     * @param context Calling context
+     * @param activity Calling context
      */
-    PartialDatePicker(@NonNull final Context context) {
-        this(context, null, null, null);
+    PartialDatePicker(@NonNull final Activity activity) {
+        this(activity, null, null, null);
     }
 
     /**
      * Constructor
-     *  @param context Calling context
+     *  @param activity Calling context
      * @param year    Starting year
      * @param month   Starting month
      * @param day     Starting day
      */
-    private PartialDatePicker(@NonNull final Context context,
+    private PartialDatePicker(@NonNull final Activity activity,
                               @Nullable final Integer year,
                               @Nullable final Integer month,
                               @Nullable final Integer day) {
-        super(context);
+        super(activity);
 
-        mContext = context;
+        mActivity = activity;
 
         mYear = year;
         mMonth = month;
@@ -118,12 +118,12 @@ public class PartialDatePicker extends AlertDialog {
         mDaySpinner = root.findViewById(R.id.day);
 
         // Create month spinner adapter
-        ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_spinner_item);
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mMonthSpinner.setAdapter(monthAdapter);
 
         // Create day spinner adapter
-        mDayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
+        mDayAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_spinner_item);
         mDayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mDaySpinner.setAdapter(mDayAdapter);
 
@@ -293,9 +293,9 @@ public class PartialDatePicker extends AlertDialog {
                             public void onClick(final View v) {
                                 // Ensure the date is 'hierarchically valid'; require year, if month is non-null, require month if day non-null
                                 if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
-                                    Toast.makeText(mContext, R.string.if_day_is_specified_month_and_year_must_be, Toast.LENGTH_LONG).show();
+                                    StandardDialogs.showQuickNotice(mActivity, R.string.if_day_is_specified_month_and_year_must_be);
                                 } else if (mMonth != null && mMonth > 0 && mYear == null) {
-                                    Toast.makeText(mContext, R.string.if_month_is_specified_year_must_be, Toast.LENGTH_LONG).show();
+                                    StandardDialogs.showQuickNotice(mActivity, R.string.if_month_is_specified_year_must_be);
                                 } else {
                                     if (mListener != null)
                                         mListener.onDateSet(PartialDatePicker.this, mYear, mMonth, mDay);
@@ -517,7 +517,7 @@ public class PartialDatePicker extends AlertDialog {
             // the locale-specific date format has the day name (EEE) in it. So we exit and
             // just use our default order in these cases.
             // See Issue 712.
-            order = DateFormat.getDateFormatOrder(mContext);
+            order = DateFormat.getDateFormatOrder(mActivity);
         } catch (Exception e) {
             return;
         }

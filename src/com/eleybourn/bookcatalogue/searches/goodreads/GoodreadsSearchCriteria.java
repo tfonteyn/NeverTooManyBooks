@@ -30,6 +30,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.BookRow;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
@@ -80,7 +81,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
 
             try (BooksCursor cursor = mDb.fetchBookById(mBookId)){
                 if (!cursor.moveToFirst()) {
-                    Toast.makeText(this, getString(R.string.book_no_longer_exists), Toast.LENGTH_LONG).show();
+                    StandardDialogs.showQuickNotice(this, R.string.book_no_longer_exists);
                     finish();
                     return;
                 }
@@ -152,7 +153,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
         String criteria = getViewText(R.id.search_text);
 
         if (criteria.isEmpty()) {
-            Toast.makeText(this, getString(R.string.please_enter_search_criteria), Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(this, R.string.please_enter_search_criteria);
             return;
         }
 

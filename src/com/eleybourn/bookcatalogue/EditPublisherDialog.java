@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -33,18 +34,18 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 
 public class EditPublisherDialog {
-    private final Context mContext;
+    private final Activity mActivity;
     private final CatalogueDBAdapter mDb;
     private final Runnable mOnChanged;
 
-    EditPublisherDialog(@NonNull final Context context, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
+    EditPublisherDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
         mDb = db;
-        mContext = context;
+        mActivity = activity;
         mOnChanged = onChanged;
     }
 
     public void edit(@NonNull final Publisher publisher) {
-        final Dialog dialog = new StandardDialogs.BasicDialog(mContext);
+        final Dialog dialog = new StandardDialogs.BasicDialog(mActivity);
         dialog.setContentView(R.layout.dialog_edit_publisher);
         dialog.setTitle(R.string.edit_publisher_details);
 
@@ -58,7 +59,7 @@ public class EditPublisherDialog {
                 EditText nameView = dialog.findViewById(R.id.name);
                 String newName = nameView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    Toast.makeText(mContext, R.string.name_can_not_be_blank, Toast.LENGTH_LONG).show();
+                    StandardDialogs.showQuickNotice(mActivity, R.string.name_can_not_be_blank);
                     return;
                 }
                 Publisher newPublisher = new Publisher(newName);

@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -36,6 +37,7 @@ import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 
 import java.util.ArrayList;
@@ -114,7 +116,7 @@ public class EditBookshelfListActivity extends BookCatalogueListActivity
                     populateList();
                 } else {
                     //TODO: why not ? as long as we make sure there is another one left.. e.g. count > 2, then you can delete 'one'
-                    Toast.makeText(this, R.string.delete_1st_bs, Toast.LENGTH_LONG).show();
+                    StandardDialogs.showQuickNotice(this, R.string.delete_1st_bs);
                 }
                 return true;
         }

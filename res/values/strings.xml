@@ -1099,6 +1099,7 @@ and you can edit the book via the options menu using the menu button or overflow
 
     <string name="starting">Starting</string>
     <string name="send_mail">Send mail…</string>
+    <string name="no_external_crop_app">Can not find image crop app</string>
 
     <string name="select_based_on_signed_status">Select based on \'Signed\' status</string>
     <string name="select_signed_yes">Select signed books only</string>
@@ -1123,6 +1124,8 @@ and you can edit the book via the options menu using the menu button or overflow
 			</p>
 		]]>
     </string>
+    <string name="no_style_found">Could not find appropriate style</string>
+    <string name="multi_face_crop_help">Multi face crop help</string>
     <!-- End: Added/Updated in  [Next Version]  -->
 
 </resources>

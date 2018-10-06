@@ -27,6 +27,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -100,7 +101,8 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
             author.id = mDb.getAuthorIdByName(author.familyName, author.givenNames);
             for (Author s : mList) {
                 if (s.equals(author)) {
-                    Toast.makeText(this, getResources().getString(R.string.author_already_in_list), Toast.LENGTH_LONG).show();
+                   // Snackbar.make(target, R.string.author_already_in_list, Snackbar.LENGTH_LONG).show();
+                    StandardDialogs.showQuickNotice(this, R.string.author_already_in_list);
                     return;
                 }
             }
@@ -108,7 +110,8 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
             mAdapter.notifyDataSetChanged();
             authorField.setText("");
         } else {
-            Toast.makeText(this, getResources().getString(R.string.author_is_blank), Toast.LENGTH_LONG).show();
+            //Snackbar.make(target, R.string.author_is_blank, Snackbar.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(this, R.string.author_is_blank);
         }
     }
 
@@ -130,7 +133,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                 EditText familyView = dialog.findViewById(R.id.family_name);
                 String newFamily = familyView.getText().toString().trim();
                 if (newFamily.isEmpty()) {
-                    Toast.makeText(EditAuthorListActivity.this, R.string.author_is_blank, Toast.LENGTH_LONG).show();
+                    StandardDialogs.showQuickNotice(EditAuthorListActivity.this, R.string.author_is_blank);
                     return;
                 }
 

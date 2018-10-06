@@ -127,7 +127,7 @@ class ImportAllTask extends GenericTask {
             }
             return ok;
         } catch (GoodreadsManager.Exceptions.NotAuthorizedException e) {
-            Toast.makeText(context, R.string.goodreads_auth_failed, Toast.LENGTH_SHORT).show();
+            Logger.logError(e);
             throw new RuntimeException("Goodreads authorization failed");
         } finally {
             db.close();

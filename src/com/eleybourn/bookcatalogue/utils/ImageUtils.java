@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -348,7 +349,7 @@ public class ImageUtils {
 
         // Check if we have a file and/or it inputStream valid
         if (thumbFile == null || !thumbFile.exists()) {
-            Toast.makeText(activity, R.string.cover_not_set, Toast.LENGTH_SHORT).show();
+            StandardDialogs.showQuickNotice(activity, R.string.cover_not_set);
         } else {
             BitmapFactory.Options opt = new BitmapFactory.Options();
             opt.inJustDecodeBounds = true;
@@ -356,7 +357,7 @@ public class ImageUtils {
 
             // If no size info, assume file bad and return appropriate icon
             if (opt.outHeight <= 0 || opt.outWidth <= 0) {
-                Toast.makeText(activity, R.string.cover_corrupt, Toast.LENGTH_LONG).show();
+                StandardDialogs.showQuickNotice(activity, R.string.cover_corrupt);
             } else {
                 final Dialog dialog = new StandardDialogs.BasicDialog(activity, false);
                 dialog.setContentView(R.layout.dialog_zoom_thumb);

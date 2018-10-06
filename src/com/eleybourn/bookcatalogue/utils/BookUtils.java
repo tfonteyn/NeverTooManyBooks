@@ -26,6 +26,7 @@ import android.database.CursorIndexOutOfBoundsException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 
@@ -95,7 +96,7 @@ public class BookUtils {
 
             activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY);
         } catch (CursorIndexOutOfBoundsException e) {
-            Toast.makeText(activity, R.string.unknown_error, Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(activity, R.string.unknown_error);
             Logger.logError(e);
         }
     }
@@ -105,11 +106,11 @@ public class BookUtils {
      *
      * @param bookId  the book to deletin
      */
-    public static void deleteBook(@NonNull final Context context,
+    public static void deleteBook(@NonNull final Activity activity,
                                   @NonNull final CatalogueDBAdapter db,
                                   final long bookId,
                                   final Runnable runnable) {
-        int res = StandardDialogs.deleteBookAlert(context, db, bookId, new Runnable() {
+        int res = StandardDialogs.deleteBookAlert(activity, db, bookId, new Runnable() {
             @Override
             public void run() {
                 db.purgeAuthors();
@@ -120,7 +121,7 @@ public class BookUtils {
             }
         });
         if (res != 0) {
-            Toast.makeText(context, res, Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(activity, res);
         }
     }
 

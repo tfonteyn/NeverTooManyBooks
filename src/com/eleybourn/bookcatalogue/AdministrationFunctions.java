@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -323,7 +324,8 @@ public class AdministrationFunctions extends ActivityWithTasks {
                 @Override
                 public void onClick(View v) {
                     HintManager.resetHints();
-                    Toast.makeText(AdministrationFunctions.this, R.string.hints_have_been_reset, Toast.LENGTH_LONG).show();
+                    //Snackbar.make(v, R.string.hints_have_been_reset, Snackbar.LENGTH_LONG).show();
+                    StandardDialogs.showQuickNotice(AdministrationFunctions.this, R.string.hints_have_been_reset);
                 }
             });
         }
@@ -352,7 +354,8 @@ public class AdministrationFunctions extends ActivityWithTasks {
                 @Override
                 public void onClick(View v) {
                     mDb.backupDbFile();
-                    Toast.makeText(AdministrationFunctions.this, R.string.backup_success, Toast.LENGTH_LONG).show();
+                    //Snackbar.make(v, R.string.backup_success, Snackbar.LENGTH_LONG).show();
+                    StandardDialogs.showQuickNotice(AdministrationFunctions.this, R.string.backup_success);
                 }
             });
 
@@ -401,9 +404,9 @@ public class AdministrationFunctions extends ActivityWithTasks {
      * Start the restore activity
      */
     private void importFromArchive() {
-        Intent i = new Intent(this, BackupChooser.class);
-        i.putExtra(BackupChooser.BKEY_MODE, BackupChooser.BVAL_MODE_OPEN);
-        startActivity(i);
+        Intent intent = new Intent(this, BackupChooser.class);
+        intent.putExtra(BackupChooser.BKEY_MODE, BackupChooser.BVAL_MODE_OPEN);
+        startActivity(intent);
     }
 
     /**
@@ -421,7 +424,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
         List<File> files = StorageUtils.findCsvFiles();
         // If none, exit with message
         if (files == null || files.size() == 0) {
-            Toast.makeText(this, R.string.no_export_files_found, Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(this, R.string.no_export_files_found);
         } else {
             if (files.size() == 1) {
                 // If only 1, just use it
@@ -521,7 +524,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
                             startActivity(Intent.createChooser(emailIntent, "Send mail..."));
                         } catch (NullPointerException e) {
                             Logger.logError(e);
-                            Toast.makeText(AdministrationFunctions.this, R.string.export_failed_sdcard, Toast.LENGTH_LONG).show();
+                            StandardDialogs.showQuickNotice(AdministrationFunctions.this, R.string.export_failed_sdcard);
                         }
 
                         dialog.dismiss();

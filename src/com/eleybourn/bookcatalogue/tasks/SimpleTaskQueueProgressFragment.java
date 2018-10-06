@@ -29,6 +29,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
@@ -37,6 +38,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 
@@ -203,7 +205,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             synchronized (this) {
                 if (this.getActivity() != null) {
-                    Toast.makeText(this.getActivity(), message, Toast.LENGTH_LONG).show();
+                    StandardDialogs.showQuickNotice(this.getActivity(), message);
                 } else {
                     // Assume the toast message was sent before the fragment was displayed; this
                     // list will be read in onAttach
@@ -249,7 +251,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
             if (mMessages != null) {
                 for (String message : mMessages) {
                     if (message != null && !message.isEmpty()) {
-                        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+                        StandardDialogs.showQuickNotice(this.getActivity(), message);
                     }
                 }
                 mMessages.clear();
@@ -515,7 +517,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception exception) {
             if (exception != null) {
                 Logger.logError(exception);
-                Toast.makeText(fragment.getActivity(), R.string.unexpected_error, Toast.LENGTH_LONG).show();
+                StandardDialogs.showQuickNotice(fragment.getActivity(), R.string.unexpected_error);
             }
         }
 

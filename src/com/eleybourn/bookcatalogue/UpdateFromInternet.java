@@ -39,6 +39,7 @@ import android.widget.Toast;
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
@@ -210,7 +211,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
             public void onClick(final View v) {
                 // Get the selections the user made
                 if (readUserSelections() == 0) {
-                    Toast.makeText(UpdateFromInternet.this, R.string.select_min_1_field, Toast.LENGTH_LONG).show();
+                    StandardDialogs.showQuickNotice(UpdateFromInternet.this, R.string.select_min_1_field);
                     return;
                 }
 

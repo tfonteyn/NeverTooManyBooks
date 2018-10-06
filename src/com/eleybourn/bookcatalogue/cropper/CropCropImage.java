@@ -37,6 +37,7 @@ import android.os.Handler;
 import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -44,6 +45,7 @@ import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -237,9 +239,7 @@ public class CropCropImage extends CropMonitoredActivity {
                     }
 
                     if (mNumFaces > 1) {
-                        Toast t = Toast.makeText(CropCropImage.this,
-                                "Multi face crop help", Toast.LENGTH_SHORT);
-                        t.show();
+                        StandardDialogs.showQuickNotice(CropCropImage.this, R.string.multi_face_crop_help);
                     }
                 }
             });
@@ -265,7 +265,7 @@ public class CropCropImage extends CropMonitoredActivity {
         }
 
         if (noStorageText != null) {
-            Toast.makeText(activity, noStorageText, Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(activity, noStorageText);
         }
     }
 

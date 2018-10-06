@@ -393,24 +393,15 @@ public class BookCatalogueApp extends Application {
     }
 
     /**
-     * Return the Intent that will be used by the notifications manager when a notification
-     * is clicked; should bring the app to the foreground.
+     * Show a notification while this app is running.
      */
-    @NonNull
-    public static Intent getAppToForegroundIntent(@NonNull final Context context) {
+    public static void showNotification(@NonNull final Context context,
+                                        @NonNull final String title,
+                                        @NonNull final String message) {
+
         Intent intent = new Intent(context, StartupActivity.class);
         intent.setAction("android.intent.action.MAIN");
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        return intent;
-    }
-
-    /**
-     * Show a notification while this app is running.
-     */
-    public static void showNotification(final int id,
-                                        @NonNull final String title,
-                                        @NonNull final String message,
-                                        @NonNull final Intent intent) {
 
         Notification notification = new Notification.Builder(mInstance.getApplicationContext())
                 .setSmallIcon(R.drawable.ic_info_outline)
@@ -422,7 +413,7 @@ public class BookCatalogueApp extends Application {
                 .setContentIntent(PendingIntent.getActivity(mInstance.getApplicationContext(), 0, intent, 0))
                 .build();
 
-        mNotifier.notify(id, notification);
+        mNotifier.notify(R.id.NOTIFICATION, notification);
     }
 
 //	/**

@@ -76,11 +76,11 @@ public abstract class QueueManager {
     private final List<WeakReference<OnTaskChangeListener>> mTaskChangeListeners;
 
 
-    protected QueueManager(@NonNull final Context context) {
+    protected QueueManager(@NonNull final Context applicationContext) {
         super();
         if (mQueueManager != null) {
-            // This is an essential requirement because (a) synchronization will not work with more than one
-            // and (b) we want to store a static reference in the class.
+            /* This is an essential requirement because (a) synchronization will not work with
+             more than one and (b) we want to store a static reference in the class. */
             throw new IllegalStateException("Only one QueueManager can be present");
         }
         mQueueManager = this;
@@ -89,7 +89,7 @@ public abstract class QueueManager {
         mUIThread = new WeakReference<>(Thread.currentThread());
         mMessageHandler = new MessageHandler();
 
-        mDb = new DBAdapter(context.getApplicationContext());
+        mDb = new DBAdapter(applicationContext);
 
         // Get active queues.
         synchronized (this) {
@@ -303,7 +303,7 @@ public abstract class QueueManager {
     private void doToast(@NonNull final String message) {
         if (Thread.currentThread() == mUIThread.get()) {
             synchronized (this) {
-                Toast.makeText(this.getApplicationContext(), message, android.widget.Toast.LENGTH_LONG).show();
+                Toast.makeText(this.getApplicationContext(), message, Toast.LENGTH_LONG).show();
             }
         } else {
             /* Send message to the handler */

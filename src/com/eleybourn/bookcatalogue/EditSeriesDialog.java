@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -34,14 +35,14 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Series;
 
 public class EditSeriesDialog {
-    private final Context mContext;
+    private final Activity mContext;
     private final ArrayAdapter<String> mSeriesAdapter;
     private final CatalogueDBAdapter mDb;
     private final Runnable mOnChanged;
 
-    EditSeriesDialog(@NonNull final Context context, @NonNull final CatalogueDBAdapter db, @NonNull final  Runnable onChanged) {
+    EditSeriesDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final  Runnable onChanged) {
         mDb = db;
-        mContext = context;
+        mContext = activity;
         mSeriesAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDb.getAllSeries());
         mOnChanged = onChanged;
     }
@@ -62,7 +63,7 @@ public class EditSeriesDialog {
                 AutoCompleteTextView seriesView = dialog.findViewById(R.id.series);
                 String newName = seriesView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    Toast.makeText(mContext, R.string.series_is_blank, Toast.LENGTH_LONG).show();
+                    StandardDialogs.showQuickNotice(mContext, R.string.series_is_blank);
                     return;
                 }
                 confirmEdit(series, new Series(newName, ""));

@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
@@ -47,6 +48,7 @@ import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.scanner.Scanner;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
@@ -150,7 +152,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
         try {
             boolean network_available = Utils.isNetworkAvailable(this);
             if (!network_available) {
-                Toast.makeText(this, R.string.no_connection, Toast.LENGTH_LONG).show();
+                StandardDialogs.showQuickNotice(this, R.string.no_connection);
                 finish();
                 return;
             }
@@ -579,7 +581,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                     } else {
                         msg = R.string.x_is_not_a_valid_isbn;
                     }
-                    Toast.makeText(this, getString(msg, mIsbn), Toast.LENGTH_LONG).show();
+                    StandardDialogs.showQuickNotice(this, getString(msg, mIsbn));
                     if (mMode == MODE_SCAN) {
                         // Optionally beep if scan failed.
                         SoundManager.beepLow();
@@ -602,7 +604,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                         AlertDialog dialog = new AlertDialog.Builder(this)
                                 .setMessage(R.string.duplicate_book_message)
                                 .setTitle(R.string.duplicate_book_title)
-                                .setIcon(R.drawable.ic_warning)
+                                .setIconAttribute(android.R.attr.alertDialogIcon)
                                 .create();
 
                         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getResources().getString(R.string.add),
@@ -666,7 +668,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                 mIsbn = "";
             } catch (Exception e) {
                 Logger.logError(e);
-                Toast.makeText(this, R.string.search_fail, Toast.LENGTH_LONG).show();
+                StandardDialogs.showQuickNotice(this, R.string.search_fail);
                 finish();
             }
         } else {

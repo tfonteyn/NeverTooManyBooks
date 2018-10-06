@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -21,68 +21,64 @@
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.StartupActivity;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
-
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 
 /**
  * Simple class to run in background and verify goodreads credentials then
  * display a notification based on the result.
- * 
+ *
  * This task is run as the last part of the goodreads auth process.
- * 
+ *
  * Runs in background because it can take several seconds.
- * 
+ *
  * @author Philip Warner
  */
 class GoodreadsAuthorizationResultCheck extends GenericTask {
-	private static final long serialVersionUID = -5502292652351148420L;
+    private static final long serialVersionUID = -5502292652351148420L;
 
-	GoodreadsAuthorizationResultCheck() {
-		super(BookCatalogueApp.getResourceString(R.string.goodreads_auth_check));
-	}
+    GoodreadsAuthorizationResultCheck() {
+        super(BookCatalogueApp.getResourceString(R.string.goodreads_auth_check));
+    }
 
-	@Override
-	public boolean run(@NonNull final QueueManager manager, @NonNull final Context context) {
-		GoodreadsManager grMgr = new GoodreadsManager();
-		// Bring the app to the front using the launcher intent
-		Intent intent = new Intent(context, StartupActivity.class);
-		intent.setAction("android.intent.action.MAIN");
-		intent.addCategory(Intent.CATEGORY_LAUNCHER);
-	    try {
-		    grMgr.handleAuthentication();		    	
-		    if (grMgr.hasValidCredentials())
-				BookCatalogueApp.showNotification(R.id.NOTIFICATION,
-						context.getString(R.string.authorized),
-						context.getString(R.string.goodreads_auth_successful), intent);
-			else
-				BookCatalogueApp.showNotification(R.id.NOTIFICATION, 
-						context.getString(R.string.not_authorized),
-						context.getString(R.string.goodreads_auth_failed), intent);
-	    } catch (NotAuthorizedException e) {
-	    	BookCatalogueApp.showNotification(R.id.NOTIFICATION, 
-						context.getString(R.string.not_authorized),
-						context.getString(R.string.goodreads_auth_failed), intent);
-	    } catch (Exception e) {
-	    	BookCatalogueApp.showNotification(R.id.NOTIFICATION, 
-						context.getString(R.string.not_authorized),
-						context.getString(R.string.goodreads_auth_error)
-						+ " " + context.getString(R.string.if_the_problem_persists), intent);
-	    }
+    @Override
+    public boolean run(@NonNull final QueueManager manager, @NonNull final Context context) {
+        GoodreadsManager grMgr = new GoodreadsManager();
+        try {
+            grMgr.handleAuthentication();
+            if (grMgr.hasValidCredentials()) {
+                System.out.println("GoodreadsAuthorizationResultCheck: OK");
 
-		return true;
-	}
+                BookCatalogueApp.showNotification(context, context.getString(R.string.authorized),
+                        context.getString(R.string.goodreads_auth_successful));
+            } else {
+                System.out.println("GoodreadsAuthorizationResultCheck: FAILED, no exception?");
+                BookCatalogueApp.showNotification(context, context.getString(R.string.not_authorized),
+                        context.getString(R.string.goodreads_auth_failed));
+            }
+        } catch (NotAuthorizedException e) {
+            Logger.logError(e);
+            BookCatalogueApp.showNotification(context, context.getString(R.string.not_authorized),
+                    context.getString(R.string.goodreads_auth_failed));
+        } catch (Exception e) {
+            Logger.logError(e);
+            BookCatalogueApp.showNotification(context, context.getString(R.string.not_authorized),
+                    context.getString(R.string.goodreads_auth_error)
+                            + " " + context.getString(R.string.if_the_problem_persists));
+        }
 
-	@Override
-	public int getCategory() {
-		return BCQueueManager.CAT_GOODREADS_AUTH;
-	}
+        return true;
+    }
+
+    @Override
+    public int getCategory() {
+        return BCQueueManager.CAT_GOODREADS_AUTH;
+    }
 
 }

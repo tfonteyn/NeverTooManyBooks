@@ -22,8 +22,6 @@ package com.eleybourn.bookcatalogue.tasks;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-
 import com.eleybourn.bookcatalogue.taskqueue.LegacyTask;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 
@@ -46,14 +44,16 @@ public class BCQueueManager extends QueueManager {
     public static final int CAT_GOODREADS_EXPORT_ALL = 4;
     public static final int CAT_GOODREADS_EXPORT_ONE = 5;
 
+    private final Context mApplicationContext;
     /**
      * Create the queue we need, if they do not already exist.
      *
      * main: long-running tasks, or tasks that can just wait
      * small_jobs: trivial background tasks that will only take a few seconds.
      */
-    public BCQueueManager(@NonNull final Context context) {
-        super(context);
+    public BCQueueManager(@NonNull final Context applicationContext) {
+        super(applicationContext);
+        mApplicationContext = applicationContext;
         initializeQueue(QUEUE_MAIN);
         initializeQueue(QUEUE_SMALL_JOBS);
     }
@@ -72,6 +72,6 @@ public class BCQueueManager extends QueueManager {
     @Override
     @NonNull
     protected Context getApplicationContext() {
-        return BookCatalogueApp.getAppContext();
+        return mApplicationContext;
     }
 }

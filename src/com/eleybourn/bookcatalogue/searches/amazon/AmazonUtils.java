@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.searches.amazon;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import com.amazon.device.associates.OpenSearchPageRequest;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -120,16 +122,15 @@ public class AmazonUtils {
         return out.toString().trim();
     }
 
-    public static void openSearchPage(@NonNull final Context context,
+    public static void openSearchPage(@NonNull final Activity activity,
                                       @Nullable final String author,
                                       @Nullable final String series) {
-
         try {
-            openLink(context, author, series);
+            openLink(activity, author, series);
         } catch (Exception ae) {
             // An Amazon error should not crash the app
             Logger.logError(ae, "Unable to call the Amazon API");
-            Toast.makeText(context, R.string.unexpected_error, Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(activity, R.string.unexpected_error);
             // This code works, but Amazon have a nasty tendency to cancel Associate IDs...
             //String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
             //String extra = buildSearchArgs(author, series);

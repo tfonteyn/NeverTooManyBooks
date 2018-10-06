@@ -37,6 +37,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.SearchBooksApiHandler;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
@@ -76,7 +77,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
         if (criteria != null && !criteria.isEmpty()) {
             doSearch(criteria);
         } else {
-            Toast.makeText(this, getString(R.string.please_enter_search_criteria), Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(this, R.string.please_enter_search_criteria);
             finish();
         }
     }
@@ -95,14 +96,14 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
             works = searcher.search(criteria.trim());
         } catch (Exception e) {
             Logger.logError(e, "Failed when searching goodreads");
-            Toast.makeText(this, getString(R.string.error_while_searching) + " " + getString(R.string.if_the_problem_persists), Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(this, getString(R.string.error_while_searching) + " " + getString(R.string.if_the_problem_persists));
             finish();
             return;
         }
 
         // Finish if no results, otherwise display them
         if (works.size() == 0) {
-            Toast.makeText(this, getString(R.string.no_matching_book_found), Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(this, R.string.no_matching_book_found);
             finish();
             return;
         }
@@ -121,7 +122,8 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
     private void doItemClick(@NonNull final View view) {
         ListHolder holder = (ListHolder) ViewTagger.getTag(view);
         // TODO: Implement edition lookup - requires access to work.editions API from GR
-        Toast.makeText(this, "Not implemented: see " + holder.title + " by " + holder.author, Toast.LENGTH_LONG).show();
+        Logger.logError(new RuntimeException("Not implemented: see " + holder.title + " by " + holder.author));
+        StandardDialogs.showQuickNotice(this, "Not implemented: see " + holder.title + " by " + holder.author);
         //Intent i = new Intent(this, GoodreadsW)
     }
 

@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.debug;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.scanner.Pic2ShopScanner;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.scanner.ZxingScanner;
@@ -94,7 +96,7 @@ public class DebugReport {
      *
      * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MAILING LIST OR FORUM!
      */
-    public static void sendDebugInfo(@NonNull final Context context, @NonNull final CatalogueDBAdapter db) {
+    public static void sendDebugInfo(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db) {
         // Create a temp DB copy.
         File dbFile = StorageUtils.getFile("DbExport-tmp.db");
         dbFile.deleteOnExit();
@@ -103,15 +105,15 @@ public class DebugReport {
         // setup the mail message
         final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
         emailIntent.setType("plain/text");
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, context.getString(R.string.debug_email).split(";"));
-        String subject = "[" + context.getString(R.string.app_name) + "] " + context.getString(R.string.debug_subject);
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, activity.getString(R.string.debug_email).split(";"));
+        String subject = "[" + activity.getString(R.string.app_name) + "] " + activity.getString(R.string.debug_subject);
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
         StringBuilder message = new StringBuilder();
 
         try {
             // Get app info
-            PackageManager manager = context.getPackageManager();
-            PackageInfo appInfo = manager.getPackageInfo(context.getPackageName(), 0);
+            PackageManager manager = activity.getPackageManager();
+            PackageInfo appInfo = manager.getPackageInfo(activity.getPackageName(), 0);
             message.append("App: ").append(appInfo.packageName).append("\n")
                     .append("Version: ").append(appInfo.versionName).append(" (").append(appInfo.versionCode).append(")\n");
         } catch (Exception ignore) {
@@ -126,7 +128,7 @@ public class DebugReport {
                 .append("Phone Product: ").append(Build.PRODUCT).append("\n")
                 .append("Phone Brand: ").append(Build.BRAND).append("\n")
                 .append("Phone ID: ").append(Build.ID).append("\n")
-                .append("Signed-By: ").append(signedBy(context)).append("\n")
+                .append("Signed-By: ").append(signedBy(activity)).append("\n")
                 .append("\nHistory:\n").append(Tracker.getEventsInfo()).append("\n");
 
         // Scanners installed
@@ -136,7 +138,7 @@ public class DebugReport {
             for (String scanner : scanners) {
                 message.append("Scanner [").append(scanner).append("]:\n");
                 final Intent mainIntent = new Intent(scanner, null);
-                final List<ResolveInfo> resolved = context.getPackageManager().queryIntentActivities(mainIntent, 0);
+                final List<ResolveInfo> resolved = activity.getPackageManager().queryIntentActivities(mainIntent, 0);
                 if (resolved.size() > 0) {
                     for (ResolveInfo r : resolved) {
                         message.append("    ");
@@ -160,7 +162,7 @@ public class DebugReport {
         }
         message.append("\n");
 
-        message.append("Details:\n\n").append(context.getString(R.string.debug_body).toUpperCase()).append("\n\n");
+        message.append("Details:\n\n").append(activity.getString(R.string.debug_body).toUpperCase()).append("\n\n");
 
         Logger.logError(new RuntimeException("DEBUG"), message.toString());
 
@@ -197,11 +199,11 @@ public class DebugReport {
             // We used to only send it if there are any files to send, but later versions added
             // useful debugging info. So now we always send.
             emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.send_mail)));
+            activity.startActivity(Intent.createChooser(emailIntent, activity.getString(R.string.send_mail)));
 
         } catch (NullPointerException e) {
             Logger.logError(e);
-            Toast.makeText(context, R.string.export_failed_sdcard, Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(activity, R.string.export_failed_sdcard);
         }
     }
 }

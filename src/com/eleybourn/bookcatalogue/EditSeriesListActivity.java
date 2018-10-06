@@ -98,7 +98,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             newSeries.id = mDb.getSeriesId(newSeries.name);
             for (Series series : mList) {
                 if (series.equals(newSeries)) {
-                    Toast.makeText(EditSeriesListActivity.this, getResources().getString(R.string.series_already_in_list), Toast.LENGTH_LONG).show();
+                    StandardDialogs.showQuickNotice(EditSeriesListActivity.this, R.string.series_already_in_list);
                     return;
                 }
             }
@@ -107,7 +107,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             seriesField.setText("");
             numberField.setText("");
         } else {
-            Toast.makeText(EditSeriesListActivity.this, getResources().getString(R.string.series_is_blank), Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(EditSeriesListActivity.this,R.string.series_is_blank);
         }
     }
 
@@ -131,7 +131,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
                 AutoCompleteTextView seriesNameField = dialog.findViewById(R.id.series);
                 String newName = seriesNameField.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    Toast.makeText(EditSeriesListActivity.this, R.string.series_is_blank, Toast.LENGTH_LONG).show();
+                    StandardDialogs.showQuickNotice(EditSeriesListActivity.this, R.string.series_is_blank);
                     return;
                 }
 

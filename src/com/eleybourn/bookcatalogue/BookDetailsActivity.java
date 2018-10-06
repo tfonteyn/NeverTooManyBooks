@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -571,7 +572,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         if (frag instanceof OnPartialDatePickerListener) {
             ((OnPartialDatePickerListener) frag).onPartialDatePickerSet(dialogId, dialog, year, month, day);
         } else {
-            Toast.makeText(this, R.string.unexpected_error, Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
             Logger.logError(new RuntimeException("Received date dialog result with no fragment to handle it"));
         }
         // Make sure it's dismissed
@@ -590,7 +591,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         if (frag instanceof OnPartialDatePickerListener) {
             ((OnPartialDatePickerListener) frag).onPartialDatePickerCancel(dialogId, dialog);
         } else {
-            Toast.makeText(this, R.string.unexpected_error, Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
             Logger.logError(new RuntimeException("Received date dialog cancellation with no fragment to handle it"));
         }
         // Make sure it's dismissed
@@ -611,7 +612,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         if (frag instanceof OnTextFieldEditorListener) {
             ((OnTextFieldEditorListener) frag).onTextFieldEditorSave(dialogId, dialog, newText);
         } else {
-            Toast.makeText(this, R.string.unexpected_error, Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
             Logger.logError(new RuntimeException("Received onTextFieldEditorSave result with no fragment to handle it"));
         }
         // Make sure it's dismissed
@@ -630,7 +631,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         if (frag instanceof OnTextFieldEditorListener) {
             ((OnTextFieldEditorListener) frag).onTextFieldEditorCancel(dialogId, dialog);
         } else {
-            Toast.makeText(this, R.string.unexpected_error, Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
             Logger.logError(new RuntimeException("Received onTextFieldEditorCancel result with no fragment to handle it"));
         }
         // Make sure it's dismissed
@@ -650,7 +651,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         if (frag instanceof OnBookshelfCheckChangeListener) {
             ((OnBookshelfCheckChangeListener) frag).onBookshelfCheckChanged(textList, encodedList);
         } else {
-            Toast.makeText(this, R.string.unexpected_error, Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
             Logger.logError(new RuntimeException("Received onBookshelfCheckChanged result with no fragment to handle it"));
         }
     }
@@ -809,7 +810,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
      */
     private void validate() {
         if (!mBookData.validate()) {
-            Toast.makeText(this, mBookData.getValidationExceptionMessage(getResources()), Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(this, mBookData.getValidationExceptionMessage(getResources()));
         }
     }
 
@@ -840,12 +841,12 @@ public class BookDetailsActivity extends BookCatalogueActivity
 
         // However, there is some data that we really do require...
         if (mBookData.getAuthors().size() == 0) {
-            Toast.makeText(this, getResources().getText(R.string.author_required), Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(this, R.string.author_required);
             return;
         }
         if (!mBookData.containsKey(UniqueId.KEY_TITLE)
                 || mBookData.getString(UniqueId.KEY_TITLE).isEmpty()) {
-            Toast.makeText(this, getResources().getText(R.string.title_required), Toast.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(this, R.string.title_required);
             return;
         }
 
