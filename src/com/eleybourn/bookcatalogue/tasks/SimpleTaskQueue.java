@@ -28,12 +28,14 @@ import android.support.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.BlockingStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class to perform time consuming but light-weight tasks in a worker thread. Users of this
@@ -42,14 +44,14 @@ import java.util.concurrent.LinkedBlockingQueue;
  * The tasks run from (currently) a LIFO queue in a single thread; the run() method is called
  * in the alternate thread and the finished() method is called in the UI thread.
  *
- * The execution queue is (currently) a stack so that the most recent queued is loaded. This is
+ * The execution queue is (currently) a FIFO deque so that the most recent queued is loaded. This is
  * good for loading (eg) gallery images to make sure that the most recently viewed is loaded.
  *
  * The results queue is executed in FIFO order.
  *
  * In the future, both queues could be done independently and this object could be broken into
- * 3 classes: SimpleTaskQueueBase, SimpleTaskQueueFIFO and SimpleTaskQueueLIFO. For now, this is
- * not needed.
+ * 3 classes: SimpleTaskQueueBase, SimpleTaskQueueFIFO and SimpleTaskQueueLIFO.
+ * For now, this is not needed.
  *
  * TODO: Consider adding an 'AbortListener' interface so tasks can be told when queue is aborted
  * TODO: Consider adding an 'aborted' flag to onFinish() and always calling onFinish() when queue is killed
@@ -60,7 +62,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class SimpleTaskQueue {
     /** Execution queue */
-    private final BlockingStack<SimpleTaskWrapper> mQueue = new BlockingStack<>();
+    private final BlockingDeque<SimpleTaskWrapper> mExecutionStack = new LinkedBlockingDeque<>();
     /** Results queue */
     private final BlockingQueue<SimpleTaskWrapper> mResultQueue = new LinkedBlockingQueue<>();
     /** Handler for sending tasks to the UI thread. */
@@ -110,7 +112,7 @@ public class SimpleTaskQueue {
      *
      * @author Philip Warner
      */
-    public SimpleTaskQueue(@NonNull final String name, @IntRange(from=1,to=10) final int maxTasks) {
+    public SimpleTaskQueue(@NonNull final String name, @IntRange(from = 1, to = 10) final int maxTasks) {
         mName = name;
         mMaxTasks = maxTasks;
         if (maxTasks < 1 || maxTasks > 10)
@@ -158,17 +160,15 @@ public class SimpleTaskQueue {
     public long enqueue(@NonNull final SimpleTask task) {
         SimpleTaskWrapper wrapper = new SimpleTaskWrapper(this, task);
 
-        try {
-            synchronized (this) {
-                mQueue.push(wrapper);
-                mManagedTaskCount++;
-            }
-        } catch (InterruptedException ignore) {
-            // Ignore. This happens if the queue object is being terminated.
-        }
-        //System.out.println("SimpleTaskQueue(added): " + mQueue.size());
+
         synchronized (this) {
-            int qSize = mQueue.size();
+            mExecutionStack.push(wrapper);
+            mManagedTaskCount++;
+        }
+
+        //System.out.println("SimpleTaskQueue(added): " + mExecutionStack.size());
+        synchronized (this) {
+            int qSize = mExecutionStack.size();
             int nThreads = mThreads.size();
             if (nThreads < qSize && nThreads < mMaxTasks) {
                 SimpleTaskQueueThread t = new SimpleTaskQueueThread();
@@ -183,10 +183,10 @@ public class SimpleTaskQueue {
      * Remove a previously requested task based on ID, if present
      */
     public boolean remove(final long id) {
-        for (SimpleTaskWrapper w : mQueue.getElements()) {
+        for (SimpleTaskWrapper w : mExecutionStack) {
             if (w.id == id) {
                 synchronized (this) {
-                    if (mQueue.remove(w))
+                    if (mExecutionStack.remove(w))
                         mManagedTaskCount--;
                 }
                 return true;
@@ -199,10 +199,10 @@ public class SimpleTaskQueue {
      * Remove a previously requested task, if present
      */
     public boolean remove(@NonNull final SimpleTask task) {
-        for (SimpleTaskWrapper w : mQueue.getElements()) {
+        for (SimpleTaskWrapper w : mExecutionStack) {
             if (w.task.equals(task)) {
                 synchronized (this) {
-                    if (mQueue.remove(w))
+                    if (mExecutionStack.remove(w))
                         mManagedTaskCount--;
                 }
                 return true;
@@ -301,6 +301,37 @@ public class SimpleTaskQueue {
     }
 
     /**
+     * Accessor.
+     */
+    @SuppressWarnings("unused")
+    public OnTaskStartListener getTaskStartListener() {
+        return mTaskStartListener;
+    }
+
+    /**
+     * Accessor.
+     */
+    @SuppressWarnings("unused")
+    public void setTaskStartListener(@NonNull final OnTaskStartListener listener) {
+        mTaskStartListener = listener;
+    }
+
+    /**
+     * Accessor.
+     */
+    @SuppressWarnings("unused")
+    public OnTaskFinishListener getTaskFinishListener() {
+        return mTaskFinishListener;
+    }
+
+    /**
+     * Accessor.
+     */
+    public void setTaskFinishListener(@NonNull final OnTaskFinishListener listener) {
+        mTaskFinishListener = listener;
+    }
+
+    /**
      * SimpleTask interface.
      *
      * run() is called in worker thread
@@ -344,39 +375,6 @@ public class SimpleTaskQueue {
         void setRequiresFinish(final boolean requiresFinish);
 
         boolean isTerminating();
-    }
-
-    /**
-     * Accessor.
-     *
-     */
-    @SuppressWarnings("unused")
-    public void setTaskStartListener(@NonNull final OnTaskStartListener listener) {
-        mTaskStartListener = listener;
-    }
-    /**
-     * Accessor.
-     *
-     */
-    @SuppressWarnings("unused")
-    public OnTaskStartListener getTaskStartListener() {
-        return mTaskStartListener;
-    }
-
-    /**
-     * Accessor.
-     *
-     */
-    public void setTaskFinishListener(@NonNull final OnTaskFinishListener listener) {
-        mTaskFinishListener = listener;
-    }
-    /**
-     * Accessor.
-     *
-     */
-    @SuppressWarnings("unused")
-    public OnTaskFinishListener getTaskFinishListener() {
-        return mTaskFinishListener;
     }
 
     /**
@@ -441,13 +439,13 @@ public class SimpleTaskQueue {
             try {
                 this.setName(mName);
                 while (!mTerminate) {
-                    SimpleTaskWrapper req = mQueue.pop(15000);
+                    SimpleTaskWrapper req = mExecutionStack.poll(15000, TimeUnit.MILLISECONDS);
 
                     // If timeout occurred, get a lock on the queue and see if anything was queued
                     // in the intervening milliseconds. If not, delete this tread and exit.
                     if (req == null) {
                         synchronized (SimpleTaskQueue.this) {
-                            req = mQueue.poll();
+                            req = mExecutionStack.poll();
                             if (req == null) {
                                 mThreads.remove(this);
                                 return;
@@ -458,8 +456,6 @@ public class SimpleTaskQueue {
                     //System.out.println("SimpleTaskQueue(run): " + mQueue.size());
                     handleRequest(this, req);
                 }
-            } catch (InterruptedException ignore) {
-                // Ignore; these will happen when object is destroyed
             } catch (Exception e) {
                 Logger.logError(e);
             } finally {
