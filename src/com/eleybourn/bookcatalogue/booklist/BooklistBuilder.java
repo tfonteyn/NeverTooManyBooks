@@ -86,29 +86,31 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ABSOL
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_DAY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_YEAR;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_MASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_SORT;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_MASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_COUNT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_END;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DOCID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_EXPANDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
@@ -120,7 +122,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_MARK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PRIMARY_SERIES_COUNT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_YEAR;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_DAY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_STATUS;
@@ -130,7 +131,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ROOT_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ROW_KIND;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM_FLOAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE_LETTER;
@@ -204,8 +204,9 @@ public class BooklistBuilder implements AutoCloseable {
     /** Style to use in building the list */
     private final BooklistStyle mStyle;
     /**
-     * Instance-based cursor factory so that the builder can be associated with the cursor and the rowview. We could
-     * probably send less context, but in the first instance this guarantees we get all the info we need downstream.
+     * Instance-based cursor factory so that the builder can be associated with the cursor
+     * and the rowView. We could probably send less context, but in the first instance this
+     * guarantees we get all the info we need downstream.
      */
     private final CursorFactory mBooklistCursorFactory = new CursorFactory() {
         @Override
@@ -217,7 +218,7 @@ public class BooklistBuilder implements AutoCloseable {
             return new BooklistCursor(masterQuery, editTable, query, BooklistBuilder.this, CatalogueDBAdapter.getSynchronizer());
         }
     };
-
+    private final String mUNKNOWNText = BookCatalogueApp.getResourceString(R.string.unknown_uc);
     /** Local copy of the BOOK_LIST table definition, renamed to match this instance */
     private TableDefinition mListTable;
     /** Local copy of the navigation table definition, renamed to match this instance */
@@ -228,7 +229,6 @@ public class BooklistBuilder implements AutoCloseable {
     private SynchronizedStatement mBaseBuildStmt = null;
     /** Collection of statements used to build remaining data */
     private ArrayList<SynchronizedStatement> mLevelBuildStmts = null;
-    private final String mUNKNOWNText = BookCatalogueApp.getResourceString(R.string.unknown_uc);
     private SynchronizedStatement mDeleteListNodeSettingsStmt = null;
     private SynchronizedStatement mSaveListNodeSettingsStmt = null;
     private SynchronizedStatement mDeleteListNodeSettingStmt = null;
@@ -256,8 +256,8 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Constructor
      *
-     * @param db        Database Adapter to use
-     * @param style     Book list style to use
+     * @param db    Database Adapter to use
+     * @param style Book list style to use
      */
     public BooklistBuilder(@NonNull final CatalogueDBAdapter db, @NonNull final BooklistStyle style) {
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
@@ -382,7 +382,7 @@ public class BooklistBuilder implements AutoCloseable {
 
     /**
      * Utility function to return a glob expression to get the 'year' from a text date field in a standard way.
-     * <p>
+     *
      * Just look for 4 leading numbers. We don't care about anything else.
      *
      * @param fieldSpec fully qualified field name
@@ -563,10 +563,10 @@ public class BooklistBuilder implements AutoCloseable {
                 //<editor-fold desc="Process each group in the style">
 
                 //
-                //	Build each row-kind group.
+                //	Build each kind group.
                 //
                 //  ****************************************************************************************
-                //  IMPORTANT NOTE: for each row kind, then FIRST SORTED AND GROUPED domain should be the one
+                //  IMPORTANT NOTE: for each kind, then FIRST SORTED AND GROUPED domain should be the one
                 //					that will be displayed and that level in the UI.
                 //  ****************************************************************************************
                 //
@@ -609,7 +609,7 @@ public class BooklistBuilder implements AutoCloseable {
                         // Always group & sort by 'Last, Given' expression
                         summary.addDomain(DOM_AUTHOR_SORT, AUTHOR_FORMATTED_LAST_FIRST_EXPRESSION, SummaryBuilder.FLAG_GROUPED + SummaryBuilder.FLAG_SORTED);
                         // Add the 'formatted' field of the requested type
-                        if (authorGroup.getGivenName())
+                        if (authorGroup.showGivenName())
                             summary.addDomain(DOM_AUTHOR_FORMATTED, AUTHOR_FORMATTED_FIRST_LAST_EXPRESSION, SummaryBuilder.FLAG_GROUPED);
                         else
                             summary.addDomain(DOM_AUTHOR_FORMATTED, AUTHOR_FORMATTED_LAST_FIRST_EXPRESSION, SummaryBuilder.FLAG_GROUPED);
@@ -855,7 +855,8 @@ public class BooklistBuilder implements AutoCloseable {
 
             /*
              * Now build the 'join' statement based on the groups and extra criteria
-             * The sql used prior to using {@link JoinContext} is included as comments below the doce that replaced it.
+             * The sql used prior to using {@link JoinContext} is included as comments below
+             * the code that replaced it.
              */
             JoinContext join;
 
@@ -887,7 +888,7 @@ public class BooklistBuilder implements AutoCloseable {
             // joined was one of BOOKS or LOAN and we don't know which. So we explicitly use books.
             join.join(TBL_BOOKS, TBL_BOOK_AUTHOR);
             // If there is no author group, or the user only wants primary author, get primary only
-            if (authorGroup == null || !authorGroup.getAllAuthors()) {
+            if (authorGroup == null || !authorGroup.showAllAuthors()) {
                 join.append("		AND " + TBL_BOOK_AUTHOR.dot(DOM_AUTHOR_POSITION) + " == 1\n");
             }
             // Join with authors to make the names available
@@ -902,7 +903,7 @@ public class BooklistBuilder implements AutoCloseable {
 				*/
 
             // If there was no series group, or user requests primary series only, then just get primary series.
-            if (seriesGroup == null || !seriesGroup.getAllSeries()) {
+            if (seriesGroup == null || !seriesGroup.showAllSeries()) {
                 join.append("		AND " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + " == 1\n");
             }
             // Join with series to get name
@@ -934,7 +935,7 @@ public class BooklistBuilder implements AutoCloseable {
             // Check if the collation we use is case sensitive; bug introduced in ICS was to make UNICODE not CI.
             // Due to bugs in other language sorting, we are now forced to use a different collation  anyway, but
             // we still check if it is CI.
-            boolean collationIsCs = CollationCaseSensitive.isCaseSensitive(mSyncedDb.getUnderlyingDatabase());
+            boolean collationIsCs = CollationCaseSensitive.isCaseSensitive(mSyncedDb.getUnderlyingDatabaseIfYouAreReallySureWhatYouAreDoing());
 
             // List of column names appropriate for 'Order By' clause
             String sortColNameList;
@@ -1452,8 +1453,8 @@ public class BooklistBuilder implements AutoCloseable {
 
             int kind = mStyle.getGroupAt(0).kind;
             if (mDeleteListNodeSettingsStmt == null) {
-                String sql = "DELETE FROM " + TBL_BOOK_LIST_NODE_SETTINGS + " WHERE kind = ?";
-                mDeleteListNodeSettingsStmt = mStatements.add("mDeleteListNodeSettingsStmt", sql);
+                mDeleteListNodeSettingsStmt = mStatements.add("mDeleteListNodeSettingsStmt",
+                        "DELETE FROM " + TBL_BOOK_LIST_NODE_SETTINGS + " WHERE "+ DOM_ROW_KIND + "=?");
             }
             mDeleteListNodeSettingsStmt.bindLong(1, kind);
             mDeleteListNodeSettingsStmt.execute();
@@ -1741,9 +1742,9 @@ public class BooklistBuilder implements AutoCloseable {
 
             int kind = mStyle.getGroupAt(0).kind;
             if (mDeleteListNodeSettingStmt == null) {
-                String sql = "DELETE FROM " + TBL_BOOK_LIST_NODE_SETTINGS + " WHERE kind = ? AND " + DOM_ROOT_KEY +
-                        " IN (SELECT DISTINCT " + DOM_ROOT_KEY + " FROM " + mNavTable + " WHERE " + DOM_ID + " = ?)";
-                mDeleteListNodeSettingStmt = mStatements.add("mDeleteSettingsStmt", sql);
+                mDeleteListNodeSettingStmt = mStatements.add("mDeleteSettingsStmt",
+                        "DELETE FROM " + TBL_BOOK_LIST_NODE_SETTINGS + " WHERE " + DOM_ROW_KIND + "=? AND " +
+                        DOM_ROOT_KEY + " IN (SELECT DISTINCT " + DOM_ROOT_KEY + " FROM " + mNavTable + " WHERE " + DOM_ID + "=?)");
             }
             mDeleteListNodeSettingStmt.bindLong(1, kind);
             mDeleteListNodeSettingStmt.bindLong(2, rowId);
@@ -1946,7 +1947,7 @@ public class BooklistBuilder implements AutoCloseable {
         }
         // Check the absolute position is visible
         final long rowId = absolutePosition + 1;
-        mGetPositionCheckVisibleStmt.bindLong(1,  rowId);
+        mGetPositionCheckVisibleStmt.bindLong(1, rowId);
         boolean isVisible = (1 == mGetPositionCheckVisibleStmt.simpleQueryForLongOrZero());
 
         if (mGetPositionStmt == null) {
@@ -2241,17 +2242,17 @@ public class BooklistBuilder implements AutoCloseable {
      */
     private class SummaryBuilder {
 
-        /** Flag indicating added domain has no special properties */
+        /** Options indicating added domain has no special properties */
         static final int FLAG_NONE = 0;
-        /** Flag indicating added domain is SORTED */
+        /** Options indicating added domain is SORTED */
         static final int FLAG_SORTED = 1;
-        /** Flag indicating added domain is GROUPED */
+        /** Options indicating added domain is GROUPED */
         static final int FLAG_GROUPED = 2;
         // Not currently used.
-        ///** Flag indicating added domain is part of the unique key */
+        ///** Options indicating added domain is part of the unique key */
         //static final int FLAG_KEY = 4;
         /**
-         * Flag indicating added domain should be SORTED in descending order. DO NOT USE FOR GROUPED DATA. See notes below.
+         * Options indicating added domain should be SORTED in descending order. DO NOT USE FOR GROUPED DATA. See notes below.
          */
         static final int FLAG_SORT_DESCENDING = 8;
 
@@ -2460,10 +2461,10 @@ public class BooklistBuilder implements AutoCloseable {
 //	
 //		for (BooklistLevel l : mLevels) {
 //			//
-//			//	Build each row-kind group. 
+//			//	Build each row-kind group.
 //			//
 //			//  ****************************************************************************************
-//			//  IMPORTANT NOTE: for each row kind, then FIRST SORTED AND GROUPED domain should be the one 
+//			//  IMPORTANT NOTE: for each row kind, then FIRST SORTED AND GROUPED domain should be the one
 //			//					that will be displayed and that level in the UI.
 //			//  ****************************************************************************************
 //			//

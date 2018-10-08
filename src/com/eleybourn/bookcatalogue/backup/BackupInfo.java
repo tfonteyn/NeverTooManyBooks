@@ -81,10 +81,11 @@ public class BackupInfo {
      *
      * @return a new BackupInfo object
      */
-    public static BackupInfo createInfo(@NonNull final BackupContainer container,
-                                        @NonNull final Context context,
-                                        final int bookCount,
-                                        final int coverCount) {
+    @NonNull
+    static BackupInfo createInfo(@NonNull final BackupContainer container,
+                                 @NonNull final Context context,
+                                 final int bookCount,
+                                 final int coverCount) {
         Bundle info = new Bundle();
 
         info.putInt(INFO_ARCHVERSION, container.getVersion());
@@ -106,6 +107,7 @@ public class BackupInfo {
         return new BackupInfo(info);
     }
 
+    @NonNull
     public Bundle getBundle() {
         return mBundle;
     }

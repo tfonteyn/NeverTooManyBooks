@@ -27,13 +27,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -52,9 +50,7 @@ import java.util.ArrayList;
  * @author Philip Warner
  */
 public class BooklistStylesListActivity extends EditObjectListActivity<BooklistStyle> {
-    /**
-     * The row being edited. Set when an individual style is edited
-     */
+    /** The row being edited. Set when an individual style is edited */
     private int mEditedRow;
 
     /**
@@ -64,9 +60,9 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
         super(null, R.layout.booklist_styles_edit_list, R.layout.booklist_styles_edit_row);
     }
 
-    public static void startActivity(Activity from) {
-        Intent i = new Intent(from, BooklistStylesListActivity.class);
-        from.startActivityForResult(i, UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLES);
+    public static void startActivity(@NonNull final Activity from) {
+        Intent intent = new Intent(from, BooklistStylesListActivity.class);
+        from.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLES);
     }
 
     @Override
@@ -92,12 +88,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
     @Override
     @NonNull
     protected ArrayList<BooklistStyle> getList() {
-        ArrayList<BooklistStyle> styles = new ArrayList<>();
-        // get the preferred styles first
-        for (BooklistStyle s : BooklistStyles.getAllStyles(this.mDb)) {
-            styles.add(s);
-        }
-        return styles;
+        return new ArrayList<>(BooklistStyles.getAllStyles(this.mDb));
     }
 
     /**

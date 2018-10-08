@@ -59,7 +59,7 @@
     <string name="loan_to">Δανεισμός βιβλίου στον/στην:</string>
     <string name="returned">Έχει επιστραφεί</string>
     <string name="name">Όνομα</string>
-    <string name="webpage_label">Ιστοσελίδα:</string>
+    <string name="website_lbl">Ιστοσελίδα:</string>
     <string name="sourcecode_label">Πηγαίος Κώδικας:</string>
     <string name="contact_label">Επαφές:</string>
     <string name="donate_label">Δωρεά</string>
@@ -389,7 +389,7 @@
     <string name="smaller">Μικρότερο</string>
     <string name="select_style">Επιλογή Στυλ</string>
     <string name="booklist_background_style">Στυλ φόντου λίστας βιβλίων</string>
-    <string name="textured_backgroud">Εικόνα φόντου</string>
+    <string name="textured_background">Εικόνα φόντου</string>
     <string name="plain_background_b_reduces_flicker_b">Απλό φόντο (μείωση τρεμοπαίγματος)</string>
     <string name="thing_must_not_be_blank">%1$s δεν πρέπει να είναι κενό</string>
     <string name="edit">Επεξεργασία</string>

@@ -130,7 +130,7 @@ public class TaskListActivity extends BindableItemListActivity {
         task.addContextMenuItems(this, parent, v, position, id, items, mDb);
 
         if (items.size() > 0) {
-            showContextDialogue(this.getString(R.string.select_an_action), items);
+            showContextDialogue(R.string.select_an_action, items);
         }
     }
 
@@ -175,18 +175,18 @@ public class TaskListActivity extends BindableItemListActivity {
     protected void onDestroy() {
         try {
             super.onDestroy();
-        } catch (Exception e) {/* Ignore */}
+        } catch (Exception ignore) {}
         try {
             if (mDb != null)
                 mDb.close();
-        } catch (Exception e) {/* Ignore */}
+        } catch (Exception ignore) {}
         try {
             BookCatalogueApp.getQueueManager().unregisterTaskListener(m_OnTaskChangeListener);
-        } catch (Exception e) {/* Ignore */}
+        } catch (Exception ignore) {}
         try {
             if (mCursor != null)
                 mCursor.close();
-        } catch (Exception e) {/* Ignore */}
+        } catch (Exception ignore) {}
     }
 
 }

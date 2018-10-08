@@ -1,7 +1,7 @@
 /*
  * @copyright 2011 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -24,7 +24,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.support.annotation.NonNull;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -32,73 +31,74 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Author;
 
 public class EditAuthorDialog {
-	private final Activity mActivity;
-	private final CatalogueDBAdapter mDb;
-	private final Runnable mOnChanged;
+    private final Activity mActivity;
+    private final CatalogueDBAdapter mDb;
+    private final Runnable mOnChanged;
 
-	EditAuthorDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
-		mDb = db;
-		this.mActivity = activity;
-		mOnChanged = onChanged;
-	}
+    EditAuthorDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
+        mDb = db;
+        this.mActivity = activity;
+        mOnChanged = onChanged;
+    }
 
-	public void edit(@NonNull final Author author) {
-		final Dialog dialog = new StandardDialogs.BasicDialog(mActivity);
-		dialog.setContentView(R.layout.dialog_edit_author);
-		dialog.setTitle(R.string.edit_author_details);
+    public void edit(@NonNull final Author author) {
+        final Dialog dialog = new StandardDialogs.BasicDialog(mActivity);
+        dialog.setContentView(R.layout.dialog_edit_author);
+        dialog.setTitle(R.string.edit_author_details);
 
-		EditText familyView = dialog.findViewById(R.id.family_name);
-		EditText givenView = dialog.findViewById(R.id.given_names);
-		familyView.setText(author.familyName);
-		givenView.setText(author.givenNames);
+        EditText familyView = dialog.findViewById(R.id.family_name);
+        EditText givenView = dialog.findViewById(R.id.given_names);
+        familyView.setText(author.familyName);
+        givenView.setText(author.givenNames);
 
-		Button saveButton = dialog.findViewById(R.id.confirm);
-		saveButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				EditText familyView = dialog.findViewById(R.id.family_name);
-				EditText givenView = dialog.findViewById(R.id.given_names);
-				String newFamily = familyView.getText().toString().trim();
-				if (newFamily.isEmpty()) {
-					StandardDialogs.showQuickNotice(mActivity, R.string.author_is_blank);
-					return;
-				}
-				String newGiven = givenView.getText().toString().trim();
-				Author newAuthor = new Author(newFamily, newGiven);
-				dialog.dismiss();
-				confirmEdit(author, newAuthor);
-			}
-		});
+        dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText familyView = dialog.findViewById(R.id.family_name);
+                EditText givenView = dialog.findViewById(R.id.given_names);
+                String newFamily = familyView.getText().toString().trim();
+                if (newFamily.isEmpty()) {
+                    StandardDialogs.showQuickNotice(mActivity, R.string.author_is_blank);
+                    return;
+                }
+                String newGiven = givenView.getText().toString().trim();
+                Author newAuthor = new Author(newFamily, newGiven);
+                dialog.dismiss();
+                confirmEdit(author, newAuthor);
+            }
+        });
 
-		Button cancelButton = dialog.findViewById(R.id.cancel);
-		cancelButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dialog.dismiss();
-			}
-		});
-		
-		dialog.show();
-	}
-	
-	private void confirmEdit(@NonNull final Author from, @NonNull final Author to) {
-		if (to.equals(from)) {
-			return;
-		}
+        dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
 
-		// Get the new author ID
-		from.id = mDb.getAuthorIdByName(from.familyName, from.givenNames);
-		to.id = mDb.getAuthorIdByName(to.familyName, to.givenNames);
+        dialog.show();
+    }
 
-		// Case: author is the same, or is only used in this book
-		if (to.id == from.id) {
-			// Just update with the most recent spelling and format
-			from.copyFrom(to);
-			mDb.updateOrInsertAuthorByName(from);
-		} else {
-			mDb.globalReplaceAuthor(from, to);
-			from.copyFrom(to);
-		}
-		mOnChanged.run();
-	}
+    private void confirmEdit(@NonNull final Author from, @NonNull final Author to) {
+        if (to.equals(from)) { // TOMF
+            return;
+        }
+
+        // Get the new author ID
+        from.id = mDb.getAuthorIdByName(from.familyName, from.givenNames);
+        to.id = mDb.getAuthorIdByName(to.familyName, to.givenNames);
+
+        // Case: author is the same, or is only used in this book
+        if (to.id == from.id) {
+            // Just update with the most recent spelling and format
+            from.copyFrom(to);
+            if (from.id == 0) {
+                from.id = mDb.getAuthorIdByName(from.familyName, from.givenNames);
+            }
+            mDb.insertOrUpdateAuthor(from);
+        } else {
+            mDb.globalReplaceAuthor(from, to);
+            from.copyFrom(to);
+        }
+        mOnChanged.run();
+    }
 }

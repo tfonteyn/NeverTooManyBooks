@@ -252,9 +252,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * This routine renames all files, if they exist.
      */
     private static void v83_moveCoversToDedicatedDirectory(@NonNull final DbSync.SynchronizedDb db) {
-        String sql = "SELECT " + DOM_BOOK_UUID + " FROM " + TBL_BOOKS;
 
-        try (Cursor cur = db.rawQuery(sql)) {
+        try (Cursor cur = db.rawQuery("SELECT " + DOM_BOOK_UUID + " FROM " + TBL_BOOKS)) {
             while (cur.moveToNext()) {
                 final String uuid = cur.getString(0);
                 File file = StorageUtils.getFile(uuid + ".jpg");

@@ -252,7 +252,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         return mMatrixValues[whichValue];
     }
 
-    // Get the scale factor out of the matrix.
+    // Get the SCALE factor out of the matrix.
     protected float getScale(@NonNull final Matrix matrix) {
         return getValue(matrix, Matrix.MSCALE_X);
     }
@@ -271,7 +271,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         // int rotation = bitmap.getRotation();
         matrix.reset();
 
-        // Originallt We limited up-scaling to 2x otherwise the result may
+        // Originally We limited up-scaling to 2x otherwise the result may
         // look bad if it's a small icon.
         // However, we need to crop small thumbnails on huge phones...so
         // there is little choice. We now have no effective limit.
@@ -288,16 +288,16 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
 
     // Combine the base matrix and the supp matrix to make the final matrix.
     protected Matrix getImageViewMatrix() {
-        // The final matrix is computed as the concatentation of the base matrix
+        // The final matrix is computed as the concatenation of the base matrix
         // and the supplementary matrix.
         mDisplayMatrix.set(mBaseMatrix);
         mDisplayMatrix.postConcat(mSuppMatrix);
         return mDisplayMatrix;
     }
 
-    // Sets the maximum zoom, which is a scale relative to the base matrix. It
+    // Sets the maximum zoom, which is a SCALE relative to the base matrix. It
     // is calculated to show the image at 400% zoom regardless of screen or
-    // image orientation. If in the future we decode the full 3 megapixel image,
+    // image orientation. If in the future we decode the full 3 mega-pixel image,
     // rather than the current 1024x768, this should be changed down to 200%.
     protected float maxZoom() {
         if (mBitmapDisplayed.getBitmap() == null) {

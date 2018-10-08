@@ -147,8 +147,8 @@ public class UpdateFromInternetThread extends ManagedTask {
             mFinalMessage = getString(R.string.thumbnail_failed_sdcard);
             return;
         }
-
-        try (Cursor books = mDb.fetchBooks(mBookWhereClause, "b." + DatabaseDefinitions.DOM_ID)) {
+        // had order: "b." + DatabaseDefinitions.DOM_ID ... why ? -> removed
+        try (Cursor books = mDb.fetchBooks(mBookWhereClause, new String[]{},"")) {
             mManager.setMax(this, books.getCount());
             while (books.moveToNext() && !isCancelled()) {
                 // Increment the progress counter

@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.webkit.WebView;
-import android.widget.Toast;
 
 import com.amazon.device.associates.AssociatesAPI;
 import com.amazon.device.associates.LinkService;
@@ -65,8 +64,8 @@ public class AmazonUtils {
             }
         } catch (Exception e) {
             Logger.logError(e, "Unable to use Amazon API");
-            Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(url + SUFFIX_EXTRAS));
-            context.startActivity(loadweb);
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url + SUFFIX_EXTRAS));
+            context.startActivity(intent);
         }
     }
 
@@ -135,8 +134,8 @@ public class AmazonUtils {
             //String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
             //String extra = buildSearchArgs(author, series);
             //if (extra != null && !extra.isEmpty()) {
-            //	Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + extra));
-            //	context.startActivity(loadweb);
+            //	Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + extra));
+            //	context.startActivity(intent);
             //}
         }
     }

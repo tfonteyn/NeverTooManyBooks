@@ -9,7 +9,7 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 class ISFDBBookTask implements SimpleTaskQueue.SimpleTask {
     private final HandlesISFDB callback;
     private final String bookUrl;
-    private Bundle mBook = new Bundle();
+    private final Bundle mBook = new Bundle();
     private boolean fetchThumbnail;
 
     ISFDBBookTask(@NonNull final String bookUrl,

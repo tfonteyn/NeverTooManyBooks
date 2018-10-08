@@ -97,7 +97,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
 
     /**
      * Uses the actual class name of the Event object to dynamically allocate layout numbers,
-     * and returns the layout number corresponding to the Event at the specificed position.
+     * and returns the layout number corresponding to the Event at the specified position.
      *
      * The values are cached in member variables because the usual process is to call
      * getView() almost directly after calling getItemViewType().
@@ -155,7 +155,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
         BindableItemCursor cursor = (BindableItemCursor) this.getCursor();
         cursor.moveToPosition(position);
         BindableItem bindable;
-        // Optimization to avoid unnecessary deserializations.
+        // Optimization to avoid unnecessary de-serializations.
         if (m_lastItemViewTypePos == position) {
             bindable = m_lastItemViewTypeEvent;
         } else {

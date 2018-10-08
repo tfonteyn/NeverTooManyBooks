@@ -255,8 +255,7 @@ class UpgradeDatabase {
      * This routine renames all files, if they exist.
      */
     private static void v72_renameIdFilesToHash(@NonNull final DbSync.SynchronizedDb db) {
-        String sql = "SELECT " + DOM_ID + "," + DOM_BOOK_UUID + " FROM " + TBL_BOOKS + " ORDER BY " + DOM_ID;
-        try (Cursor c = db.rawQuery(sql)) {
+        try (Cursor c = db.rawQuery("SELECT " + DOM_ID + "," + DOM_BOOK_UUID + " FROM " + TBL_BOOKS + " ORDER BY " + DOM_ID)) {
             while (c.moveToNext()) {
                 final long id = c.getLong(0);
                 final String hash = c.getString(1);
@@ -313,7 +312,6 @@ class UpgradeDatabase {
         if (curVersion == 20) {
             curVersion++;
             db.execSQL(DATABASE_CREATE_LOAN);
-            //createIndices(db); // All createIndices prior to the latest have been removed
         }
         if (curVersion == 21) {
             //do nothing
@@ -352,30 +350,19 @@ class UpgradeDatabase {
                 Logger.logError(e);
                 throw new RuntimeException("Failed to upgrade database", e);
             }
-				/*
-				try {
-					//createIndices(db); // All createIndices prior to the latest have been removed
-				} catch (Exception e) {
-					Logger.logError(e);
-					throw new RuntimeException("Failed to upgrade database", e);
-				}
-				*/
         }
         if (curVersion == 25) {
-            //do nothing
             curVersion++;
             mMessage += "* Your sort order will be automatically saved when to close the application (Requested by Martin)\n\n";
             mMessage += "* There is a new 'about this app' view available from the administration tabs (Also from Martin)\n\n";
         }
         if (curVersion == 26) {
-            //do nothing
             curVersion++;
             mMessage += "* There are two additional sort functions, by series and by loaned (Request from N4ppy)\n\n";
             mMessage += "* Your bookshelf and current location will be saved when you exit (Feedback from Martin)\n\n";
             mMessage += "* Minor interface improvements when sorting by title \n\n";
         }
         if (curVersion == 27) {
-            //do nothing
             curVersion++;
             mMessage += "* The book thumbnail now appears in the list view\n\n";
             mMessage += "* Emailing the developer now works from the admin page\n\n";
@@ -392,26 +379,22 @@ class UpgradeDatabase {
             }
         }
         if (curVersion == 29) {
-            //do nothing
             curVersion++;
             mMessage += "* Adding books will now (finally) search Amazon\n\n";
             mMessage += "* A field for list price has been included (Requested by Brenda)\n\n";
             mMessage += "* You can bulk update the thumbnails for all books with ISBN's from the Admin page\n\n";
         }
         if (curVersion == 30) {
-            //do nothing
             curVersion++;
             mMessage += "* You can now delete individual thumbnails by holding on the image and selecting delete.\n\n";
         }
         if (curVersion == 31) {
-            //do nothing
             curVersion++;
             mMessage += "* There is a new Admin option (Field Visibility) to hide unused fields\n\n";
             mMessage += "* 'All Books' should now be saved as a bookshelf preference correctly\n\n";
             mMessage += "* When adding books the bookshelf will default to your currently selected bookshelf (Thanks Martin)\n\n";
         }
         if (curVersion == 32) {
-            //do nothing
             curVersion++;
             try {
                 db.execSQL(DATABASE_CREATE_ANTHOLOGY_82);
@@ -419,14 +402,7 @@ class UpgradeDatabase {
                 Logger.logError(e);
                 throw new RuntimeException("Failed to upgrade database", e);
             }
-				/*
-				try {
-					//createIndices(db); // All createIndices prior to the latest have been removed
-				} catch (Exception e) {
-					Logger.logError(e);
-					throw new RuntimeException("Failed to upgrade database", e);
-				}
-				*/
+
             try {
                 db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_ANTHOLOGY_MASK + " int not null default " + DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY);
             } catch (Exception e) {
@@ -438,7 +414,6 @@ class UpgradeDatabase {
             mMessage += "* You can now take photos for the book cover (long click on the thumbnail in edit) \n\n";
         }
         if (curVersion == 33) {
-            //do nothing
             curVersion++;
             mMessage += "* Minor enhancements\n\n";
             mMessage += "* Online help has been written\n\n";
@@ -473,7 +448,6 @@ class UpgradeDatabase {
             }
         }
         if (curVersion == 36) {
-            //do nothing
             curVersion++;
             mMessage += "* Fixed several crashing defects when adding books\n\n";
             mMessage += "* Added Autocompletion Location Field (For Cam)\n\n";
@@ -487,7 +461,6 @@ class UpgradeDatabase {
             mMessage += "* Fixed several defects for Android 1.6 users - I do not have a 1.6 device to test on so please let me know if you discover any errors\n\n";
         }
         if (curVersion == 37) {
-            //do nothing
             curVersion++;
             mMessage += "Tip: If you long click on a book title on the main list you can delete it\n\n";
             mMessage += "Tip: If you want to see all books, change the bookshelf to 'All Books'\n\n";
@@ -497,7 +470,6 @@ class UpgradeDatabase {
             mMessage += "* Bookshelves, loaned books and anthology titles will now import correctly\n\n";
         }
         if (curVersion == 38) {
-            //do nothing
             curVersion++;
             db.execSQL("DELETE FROM " + TBL_LOAN + " WHERE (" + DOM_LOANED_TO + "='' OR " + DOM_LOANED_TO + "='null')");
         }
@@ -508,7 +480,6 @@ class UpgradeDatabase {
             curVersion++;
         }
         if (curVersion == 41) {
-            //do nothing
             curVersion++;
             mMessage += "Tip: You can find the correct barcode for many modern paperbacks on the inside cover\n\n";
             mMessage += "* Added app2sd support (2.2 users only)\n\n";
@@ -520,23 +491,19 @@ class UpgradeDatabase {
 
             try {
                 db.execSQL("DROP TABLE tmp1");
-            } catch (Exception e) {
-                // Don't really care about this
+            } catch (Exception ignore) {
             }
             try {
                 db.execSQL("DROP TABLE tmp2");
-            } catch (Exception e) {
-                // Don't really care about this
+            } catch (Exception ignore) {
             }
             try {
                 db.execSQL("DROP TABLE tmp3");
-            } catch (Exception e) {
-                // Don't really care about this
+            } catch (Exception ignore) {
             }
 
             try {
                 db.execSQL(DATABASE_CREATE_BOOK_BOOKSHELF_WEAK);
-                //createIndices(db); // All createIndices prior to the latest have been removed
                 db.execSQL("INSERT INTO " + TBL_BOOK_BOOKSHELF + " (" + DOM_BOOK_ID + ", " + DOM_BOOKSHELF_ID + ") SELECT " + DOM_ID + ", " + DOM_BOOKSHELF_ID + " FROM " + TBL_BOOKS + "");
                 db.execSQL("CREATE TABLE tmp1 AS SELECT _id, " + OLD_KEY_AUTHOR + ", " + DOM_TITLE + ", " + DOM_BOOK_ISBN + ", " + DOM_BOOK_PUBLISHER + ", " +
                         DOM_BOOK_DATE_PUBLISHED + ", " + DOM_BOOK_RATING + ", " + DOM_BOOK_READ + ", " + OLD_KEY_SERIES + ", " + DOM_BOOK_PAGES + ", " + DOM_BOOK_SERIES_NUM + ", " + DOM_BOOK_NOTES + ", " +
@@ -566,7 +533,6 @@ class UpgradeDatabase {
             }
         }
         if (curVersion == 42) {
-            //do nothing
             curVersion++;
             mMessage += "* Export bug fixed\n\n";
             mMessage += "* Further enhancements to the new ISBN screen\n\n";
@@ -584,23 +550,19 @@ class UpgradeDatabase {
             db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS anthology_pk_idx ON " + TBL_ANTHOLOGY + " (" + DOM_BOOK_ID + ", " + OLD_KEY_AUTHOR + ", " + DOM_TITLE + ")");
         }
         if (curVersion == 44) {
-            //do nothing
             curVersion++;
 
             try {
                 db.execSQL("DROP TABLE tmp1");
-            } catch (Exception e) {
-                // Don't care
+            } catch (Exception ignore) {
             }
             try {
                 db.execSQL("DROP TABLE tmp2");
-            } catch (Exception e) {
-                // Don't care
+            } catch (Exception ignore) {
             }
             try {
                 db.execSQL("DROP TABLE tmp3");
-            } catch (Exception e) {
-                // Don't care
+            } catch (Exception ignore) {
             }
 
             db.execSQL("CREATE TABLE tmp1 AS SELECT _id, " + OLD_KEY_AUTHOR + ", " + DOM_TITLE + ", " + DOM_BOOK_ISBN + ", " + DOM_BOOK_PUBLISHER + ", " +
@@ -655,11 +617,8 @@ class UpgradeDatabase {
             db.execSQL("DROP TABLE tmp2");
             db.execSQL("DROP TABLE tmp3");
             db.execSQL("DROP TABLE tmp4");
-
-            //createIndices(db); // All createIndices prior to the latest have been removed
         }
         if (curVersion == 45) {
-            //do nothing
             curVersion++;
             db.execSQL("DELETE FROM " + TBL_LOAN + " WHERE " + DOM_LOANED_TO + "='null'" );
         }
@@ -670,8 +629,6 @@ class UpgradeDatabase {
         }
         if (curVersion == 47) {
             curVersion++;
-            // This used to be chaecks in BookCatalogueClassic, which is no longer called on startup...
-            //do_action = DO_UPDATE_FIELDS;
             mMessage += "New in v3.1\n\n";
             mMessage += "* The audiobook checkbox has been replaced with a format selector (inc. paperback, hardcover, companion etc)\n\n";
             mMessage += "* When adding books the current bookshelf will be selected as the default bookshelf\n\n";
@@ -686,7 +643,6 @@ class UpgradeDatabase {
             db.execSQL("DELETE FROM loan WHERE loaned_to='null';");
             db.execSQL("DELETE FROM loan WHERE _id!=(SELECT max(l2._id) FROM loan l2 WHERE l2.book=loan.book);");
             db.execSQL("DELETE FROM anthology WHERE _id!=(SELECT max(a2._id) FROM anthology a2 WHERE a2.book=anthology.book AND a2.author=anthology.author AND a2.title=anthology.title);");
-            //createIndices(db); // All createIndices prior to the latest have been removed
         }
         if (curVersion == 49) {
             curVersion++;
@@ -697,7 +653,6 @@ class UpgradeDatabase {
         }
         if (curVersion == 50) {
             curVersion++;
-            //createIndices(db); // All createIndices prior to the latest have been removed
         }
         if (curVersion == 51) {
             curVersion++;
@@ -766,8 +721,6 @@ class UpgradeDatabase {
                     db.execSQL(DATABASE_CREATE_BOOK_SERIES_54);
                     db.execSQL(DATABASE_CREATE_BOOK_AUTHOR);
 
-                    //createIndices(db); // All createIndices prior to the latest have been removed
-
                     db.execSQL("INSERT INTO " + TBL_BOOK_SERIES + " (" + DOM_BOOK_ID + ", " + DOM_SERIES_ID + ", " + DOM_BOOK_SERIES_NUM + ", " + DOM_BOOK_SERIES_POSITION + ") "
                             + "SELECT DISTINCT b." + DOM_ID + ", s." + DOM_ID + ", b." + DOM_BOOK_SERIES_NUM + ", 1"
                             + " FROM " + TBL_BOOKS + " b "
@@ -798,7 +751,6 @@ class UpgradeDatabase {
                 }
             }
             if (curVersion == 54) {
-                //createIndices(db); // All createIndices prior to the latest have been removed
                 curVersion++;
             }
             if (curVersion == 55) {
@@ -862,7 +814,6 @@ class UpgradeDatabase {
                         throw new RuntimeException("Failed to upgrade database", e);
                     }
                 }
-                //createIndices(db); // All createIndices prior to the latest have been removed
                 curVersion++;
             }
         }
@@ -1031,8 +982,6 @@ class UpgradeDatabase {
             db.execSQL("DROP TABLE books_tmp");
         }
 
-
-
         if (curVersion == 65) {
             curVersion++;
             DatabaseDefinitions.TBL_BOOK_LIST_NODE_SETTINGS.drop(syncedDb);
@@ -1083,7 +1032,6 @@ class UpgradeDatabase {
         }
 
         if (curVersion == 73) {
-            //do nothing
             curVersion++;
             mMessage += "New in v4.0.1 - many bugs fixed\n\n";
             mMessage += "* Added a preference to completely disable background bitmap\n\n";
@@ -1092,7 +1040,6 @@ class UpgradeDatabase {
         }
 
         if (curVersion == 74) {
-            //do nothing
             curVersion++;
             StartupActivity.scheduleAuthorSeriesFixUp();
             mMessage += "New in v4.0.3\n\n";
@@ -1106,7 +1053,6 @@ class UpgradeDatabase {
         }
 
         if (curVersion == 75) {
-            //do nothing
             curVersion++;
             StartupActivity.scheduleFtsRebuild();
             mMessage += "New in v4.0.4\n\n";
@@ -1117,11 +1063,9 @@ class UpgradeDatabase {
         }
 
         if (curVersion == 76) {
-            //do nothing
             curVersion++;
         }
         if (curVersion == 77) {
-            //do nothing
             curVersion++;
             mMessage += "New in v4.0.6\n\n";
             mMessage += "* When adding books, scanning or typing an existing ISBN allows you the option to edit the book.\n";
@@ -1129,7 +1073,6 @@ class UpgradeDatabase {
             mMessage += "* German translation updates (Robert Wetzlmayr)\n";
         }
         if (curVersion == 78) {
-            //do nothing
             curVersion++;
             mMessage += "New in v4.1\n\n";
             mMessage += "* New style groups: Location and Date Read\n";
@@ -1162,6 +1105,4 @@ class UpgradeDatabase {
 
         return curVersion;
     }
-
-
 }

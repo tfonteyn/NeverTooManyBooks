@@ -49,7 +49,7 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
     /** Column number of date column. */
     private static int mDateCol = -2;
     /** Column number of Exception column. */
-    private static int mEeventCol = -2;
+    private static int mEventCol = -2;
 
     private final Map<Long, Boolean> mSelections = new Hashtable<>();
 
@@ -97,10 +97,10 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
      */
     @NonNull
     private Event getEvent() {
-        if (mEeventCol < 0) {
-            mEeventCol = this.getColumnIndex(DOM_EVENT);
+        if (mEventCol < 0) {
+            mEventCol = this.getColumnIndex(DOM_EVENT);
         }
-        byte[] blob = getBlob(mEeventCol);
+        byte[] blob = getBlob(mEventCol);
         Event event;
         try {
             event = SerializationUtils.deserializeObject(blob);
@@ -114,7 +114,7 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
     /**
      * Fake attribute to handle multi-select ListViews. if we ever do them.
      *
-     * @return Flag indicating if current row has been marked as 'selected'.
+     * @return Options indicating if current row has been marked as 'selected'.
      */
     public boolean getIsSelected() {
         return getIsSelected(getId());

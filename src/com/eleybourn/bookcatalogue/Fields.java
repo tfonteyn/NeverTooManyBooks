@@ -370,7 +370,7 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     /**
-     * Load all fields from the passed datamanager
+     * Load all fields from the passed {@link DataManager}
      *
      * @param data Cursor to load Field objects from.
      */
@@ -381,7 +381,7 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     /**
-     * Save all fields to the passed DataManager (ie. 'get' them *into* the DataManager).
+     * Save all fields to the passed {@link DataManager} (ie. 'get' them *into* the {@link DataManager}).
      *
      * @param data Cursor to load Field objects from.
      */
@@ -397,7 +397,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * Internal utility routine to perform one loop validating all fields.
      *
      * @param values          The Bundle to fill in/use.
-     * @param crossValidating Flag indicating if this is a cross validation pass.
+     * @param crossValidating Options indicating if this is a cross validation pass.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean validate(@NonNull final Bundle values, final boolean crossValidating) {
@@ -604,7 +604,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * @param values          A ContentValues collection to store the validated value.
          *                        On a cross-validation pass this collection will have all
          *                        field values set and can be read.
-         * @param crossValidating Flag indicating if this is the cross-validation pass.
+         * @param crossValidating Options indicating if this is the cross-validation pass.
          *
          * @throws ValidatorException For any validation failure.
          */
@@ -1202,7 +1202,7 @@ public class Fields extends ArrayList<Fields.Field> {
         /** Has the field been set to invisible **/
         public boolean visible;
         /**
-         * Flag indicating that even though field has a column name, it should NOT be fetched from a
+         * Options indicating that even though field has a column name, it should NOT be fetched from a
          * Cursor. This is usually done for synthetic fields needed when saving the data
          */
         public boolean doNoFetch = false;

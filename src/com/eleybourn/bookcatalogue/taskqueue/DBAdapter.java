@@ -63,7 +63,7 @@ import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.TBL_TASK;
  *
  * @author Philip Warner
  */
-public class DBAdapter {
+class DBAdapter {
     private final DBHelper mDBHelper;
     private final Context mApplicationContext;
 

@@ -106,7 +106,7 @@ public class AuthUserApiHandler extends ApiHandler {
         return mUsername;
     }
 
-    public long getUserid() {
+    public long getUserId() {
         return mUserId;
     }
 

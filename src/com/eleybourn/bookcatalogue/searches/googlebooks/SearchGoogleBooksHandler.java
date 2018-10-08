@@ -106,7 +106,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *			<gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
  *			<dc:creator>Garth Sundem</dc:creator>
  *			<dc:date>2009-03-10</dc:date>
- *			<dc:description>And here, for you pathetic nongeeks, is the last chance to save yourselves: Love thisbook, live this book, and you too can join us in the experience of total ...</dc:description>
+ *			<dc:description>And here, for you pathetic non-geeks, is the last chance to save yourselves: Love this book, live this book, and you too can join us in the experience of total ...</dc:description>
  *			<dc:format>245 pages</dc:format>
  *			<dc:format>book</dc:format>
  *			<dc:identifier>lf2EMetoLugC</dc:identifier>
@@ -122,7 +122,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 class SearchGoogleBooksHandler extends DefaultHandler {
     private static final String ID = "id";
-    private static final String TOTALRESULTS = "totalResults";
+    private static final String TOTAL_RESULTS = "totalResults";
     private static final String ENTRY = "entry";
     private StringBuilder builder;
     private String id = "";
@@ -159,7 +159,7 @@ class SearchGoogleBooksHandler extends DefaultHandler {
                            @NonNull final String localName,
                            @NonNull final String name) throws SAXException {
         super.endElement(uri, localName, name);
-        if (localName.equalsIgnoreCase(TOTALRESULTS)) {
+        if (localName.equalsIgnoreCase(TOTAL_RESULTS)) {
             count = Integer.parseInt(builder.toString());
         }
         if (localName.equalsIgnoreCase(ENTRY)) {

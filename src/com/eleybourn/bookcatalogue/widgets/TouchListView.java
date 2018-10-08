@@ -80,10 +80,14 @@ public class TouchListView extends ListView {
     private ImageView mDragView;
     private WindowManager mWindowManager;
     private WindowManager.LayoutParams mWindowParams;
-    private int mDragPos;      // which item is being dragged
-    private int mFirstDragPos; // where was the dragged item originally
-    private int mDragPoint;    // at what offset inside the item did the user grab it
-    private int mCoordOffset;  // the difference between screen coordinates and coordinates in this view
+    /** which item is being dragged */
+    private int mDragPos;
+    /** where was the dragged item originally */
+    private int mFirstDragPos;
+    /** at what offset inside the item did the user grab it */
+    private int mDragPoint;
+    /** the difference between screen coordinates and coordinates in this view */
+    private int mCoordOffset;
     private DragListener mDragListener;
     private DropListener mDropListener;
     private RemoveListener mRemoveListener;
@@ -98,7 +102,8 @@ public class TouchListView extends ListView {
     @IdRes
     private int grabberId = -1;
     private int dragndropBackgroundColor = Color.TRANSPARENT;
-    private boolean mWasFirstExpansion = false;    // Set to true at start of a new drag operation
+    /** Set to true at start of a new drag operation */
+    private boolean mWasFirstExpansion = false;
 
     private Integer mSavedHeight = null;
 
@@ -325,10 +330,10 @@ public class TouchListView extends ListView {
     private void doExpansion(final boolean firstTime) {
 
         // Find the effective child number that we are hovering over
-        int childnum = mDragPos - getFirstVisiblePosition() - 1;
+        int child = mDragPos - getFirstVisiblePosition() - 1;
         if (mDragPos > mFirstDragPos) {
             // If the current drag position is past the 'invisible' dragged position, add 1
-            childnum++;
+            child++;
         }
 
         // Get the view that corresponds to the row being dragged, if present in current set of rows
@@ -374,14 +379,14 @@ public class TouchListView extends ListView {
                 }
 
                 // If the drag position is above the top of the list then pad the top item
-                if (childnum < 0) {
+                if (child < 0) {
                     // If the current view is the first item OR second item and we are dragging first
                     // then pad its top.
                     if (i == 0 || (i == 1 && mFirstDragPos == 0)) {
                         // Position prior to first item; so pad top
                         vv.setPadding(vv.getPaddingLeft(), mDragView.getHeight(), vv.getPaddingRight(), 0);
                     } // else  no other rows need special handling
-                } else if (i == childnum) {
+                } else if (i == child) {
                     // The user is hovering over the current row, so pad the bottom
                     vv.setPadding(vv.getPaddingLeft(), 0, vv.getPaddingRight(), mDragView.getHeight());
                 }
@@ -434,13 +439,13 @@ public class TouchListView extends ListView {
                     int x = (int) ev.getX();
                     int y = (int) ev.getY();
                     dragView(x, y);
-                    int itemnum = getItemForPosition(y);
-                    if (itemnum >= 0) {
-                        if (action == MotionEvent.ACTION_DOWN || itemnum != mDragPos) {
+                    int item = getItemForPosition(y);
+                    if (item >= 0) {
+                        if (action == MotionEvent.ACTION_DOWN || item != mDragPos) {
                             if (mDragListener != null) {
-                                mDragListener.drag(mDragPos, itemnum);
+                                mDragListener.drag(mDragPos, item);
                             }
-                            mDragPos = itemnum;
+                            mDragPos = item;
                             doExpansion(mWasFirstExpansion);
                             if (mWasFirstExpansion) {
                                 mWasFirstExpansion = false;

@@ -48,7 +48,7 @@ public class Queue extends Thread {
     /** Currently running task */
     private WeakReference<Task> mTask = null;
 
-    /** Flag to indicate process is terminating */
+    /** Options to indicate process is terminating */
     private boolean mTerminate = false;
 
     /**

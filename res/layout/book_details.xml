@@ -135,11 +135,11 @@
 
                 <ImageView
                     android:id="@+id/image"
-                    style="@style/thumbnail"
+                    style="@style/coverImage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/thumbnail"
-                    tools:src="@drawable/ic_warning" />
+                    tools:src="@drawable/ic_image" />
             </RelativeLayout>
         </LinearLayout>
 
@@ -184,6 +184,7 @@
                 tools:ignore="ContentDescription" />
         </LinearLayout>
 
+        <!-- don't set padding on the toc. The toc height is calculated as needed -->
         <ListView
             android:id="@+id/toc"
             android:layout_width="match_parent"
@@ -192,8 +193,6 @@
             android:visibility="gone"
             tools:ignore="NestedScrolling"
             tools:visibility="visible" />
-
-        <View style="@style/listDividerHorizontal" />
 
         <!-- Publishing -->
         <TextView

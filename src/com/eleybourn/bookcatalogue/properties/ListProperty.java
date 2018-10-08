@@ -73,16 +73,11 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         mList = list;
     }
 
-    @NonNull
-    public ItemEntries<T> getListItems() {
-        return mList;
-    }
-
     /** Return the default list editor view with associated event handlers. */
     @NonNull
     @Override
     public View getView(@NonNull final LayoutInflater inflater) {
-        final ViewGroup root = (ViewGroup)inflater.inflate(R.layout.property_value_list, null);
+        final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.property_value_list, null);
         ViewTagger.setTag(root, R.id.TAG_PROPERTY, this);
         // Display the list of values when clicked.
         root.setOnClickListener(new OnClickListener() {
@@ -98,7 +93,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 
         // Try to find the list item that corresponds to the current stored value.
         ItemEntry<T> entry = null;
-        for (ItemEntry<T> e : getListItems()) {
+        for (ItemEntry<T> e : mList) {
             if (e.value == null) {
                 if (get() == null) {
                     entry = e;
@@ -116,7 +111,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
     }
 
     private void handleClick(@NonNull final View base, @NonNull final LayoutInflater inflater) {
-        final ItemEntries<T> items = getListItems();
+        final ItemEntries<T> items = mList;
         if (this.hasHint()) {
             HintManager.displayHint(base.getContext(), this.getHint(), new Runnable() {
                 @Override
@@ -147,7 +142,8 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 
     /**
      * Called to display a list of values for this property.
-     *  @param baseView Specific view that was clicked
+     *
+     * @param baseView Specific view that was clicked
      * @param inflater LayoutInflater
      * @param items    All list items
      */
@@ -159,7 +155,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 
         // Get the view and the radio group
         @SuppressLint("InflateParams") // dialog, no root
-        View root = inflater.inflate(R.layout.property_value_list_list, null);
+                View root = inflater.inflate(R.layout.property_value_list_list, null);
         final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext())
                 .setView(root)
                 .create();
@@ -189,7 +185,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
                     selected = true;
 
                 // Make the view for this item
-                View line = inflater.inflate(R.layout.property_value_list_item, radioGroup,false); //TOMF? test
+                View line = inflater.inflate(R.layout.property_value_list_item, radioGroup, false);
                 RadioButton sel = line.findViewById(R.id.selector);
 
                 //Set the various values

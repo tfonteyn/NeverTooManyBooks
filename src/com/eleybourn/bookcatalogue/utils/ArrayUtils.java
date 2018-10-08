@@ -437,7 +437,7 @@ public class ArrayUtils<T> {
         return list;
     }
 
-    public interface Factory<T> {
+    interface Factory<T> {
         @NonNull
         T get(@NonNull final String source);
     }

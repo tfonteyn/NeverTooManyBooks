@@ -27,9 +27,9 @@ import java.io.InputStream;
 
 public interface Importer {
 
-    /** Flag value to indicate ALL books should be imported */
+    /** Options value to indicate ALL books should be imported */
     int IMPORT_ALL = 1;
-    /** Flag value to indicate new books and books with more recent update_date fields should be imported */
+    /** Options value to indicate new books and books with more recent update_date fields should be imported */
     int IMPORT_NEW_OR_UPDATED = 2;
 
     /**
@@ -39,7 +39,7 @@ public interface Importer {
      * @param coverFinder  (Optional) object to find a file on the local device
      * @param listener     Progress and cancellation provider
      *
-     * @return true on success
+     * @return <tt>true</tt>on success
      */
     @SuppressWarnings("UnusedReturnValue")
     boolean importBooks(@NonNull final InputStream importStream,

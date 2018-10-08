@@ -217,7 +217,7 @@ public class MessageSwitch<T, U> {
          *
          * @param listener Listener to who message must be delivered
          *
-         * @return true if message should not be delivered to any other listeners or stored for delivery as 'last message'
+         * @return <tt>true</tt>if message should not be delivered to any other listeners or stored for delivery as 'last message'
          * should only return true if the message has been handled and would break the app if delivered more than once.
          */
         boolean deliver(@NonNull final T listener);

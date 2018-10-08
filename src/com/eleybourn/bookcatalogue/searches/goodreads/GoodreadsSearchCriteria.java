@@ -28,10 +28,9 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.entities.BookRow;
+import com.eleybourn.bookcatalogue.entities.BookRowView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -85,7 +84,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
                     finish();
                     return;
                 }
-                final BookRow book = cursor.getRowView();
+                final BookRowView book = cursor.getRowView();
                 {
                     String s = book.getPrimaryAuthorNameFormatted();
                     setViewText(R.id.author, s);

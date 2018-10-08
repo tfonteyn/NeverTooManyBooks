@@ -50,10 +50,10 @@ public class BackupChooser extends FileChooser implements
         ImportTypeSelectionDialogFragment.OnImportTypeSelectionDialogResultListener,
         ExportTypeSelectionDialogFragment.OnExportTypeSelectionDialogResultListener {
 
-    // Used when saving state
+    /** Used when saving state */
     private final static String BKEY_FILENAME = "BackupFileSpec";
 
-    // saving or opening
+    /** saving or opening */
     private static final int TASK_ID_SAVE = 1;
     private static final int TASK_ID_OPEN = 2;
 
@@ -61,9 +61,8 @@ public class BackupChooser extends FileChooser implements
 
     private static final String ARCHIVE_EXTENSION = ".bcbk";
     private static final String ARCHIVE_PREFIX = "BookCatalogue-";
-    /**
-     * The backup file that will be created (if saving)
-     */
+
+    /** The backup file that will be created (if saving) */
     private File mBackupFile = null;
 
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -154,7 +153,7 @@ public class BackupChooser extends FileChooser implements
                             + "\n\n" + getString(R.string.if_the_problem_persists);
 
                     MessageDialogFragment frag = MessageDialogFragment.newInstance(0,
-                            R.string.backup_to_archive, msg, android.R.string.ok, 0, 0);
+                            R.string.backup_to_archive, msg);
                     frag.show(getSupportFragmentManager(), null);
                     // Just return; user may want to try again
                     return;
@@ -166,7 +165,7 @@ public class BackupChooser extends FileChooser implements
                 // Show a helpful message
                 String msg = getString(R.string.archive_complete_details, mBackupFile.getParent(), mBackupFile.getName(), Utils.formatFileSize(mBackupFile.length()));
                 MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_SAVE,
-                        R.string.backup_to_archive, msg, android.R.string.ok, 0, 0);
+                        R.string.backup_to_archive, msg);
                 frag.show(getSupportFragmentManager(), null);
                 break;
             }
@@ -178,7 +177,7 @@ public class BackupChooser extends FileChooser implements
                             + "\n\n" + getString(R.string.if_the_problem_persists);
 
                     MessageDialogFragment frag = MessageDialogFragment.newInstance(0,
-                            R.string.import_from_archive, msg, android.R.string.ok, 0, 0);
+                            R.string.import_from_archive, msg);
                     frag.show(getSupportFragmentManager(), null);
                     // Just return; user may want to try again
                     return;
@@ -189,7 +188,7 @@ public class BackupChooser extends FileChooser implements
                 }
 
                 MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_OPEN,
-                        R.string.import_from_archive, R.string.import_complete, android.R.string.ok, 0, 0);
+                        R.string.import_from_archive, R.string.import_complete);
                 frag.show(getSupportFragmentManager(), null);
                 break;
             }
@@ -207,9 +206,6 @@ public class BackupChooser extends FileChooser implements
     @Override
     public void onMessageDialogResult(final int dialogId, final int button) {
         switch (dialogId) {
-            case 0:
-                // Do nothing, our dialogs with ID 0 are only 'FYI' type;
-                break;
             case TASK_ID_OPEN:
             case TASK_ID_SAVE:
                 finish();

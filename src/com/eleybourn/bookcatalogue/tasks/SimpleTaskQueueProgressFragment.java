@@ -29,10 +29,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -64,7 +62,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     private final List<TaskMessage> mTaskMessages = new ArrayList<>();
     /** List of messages queued; only used if activity not present when showToast() is called */
     private List<String> mMessages = null;
-    /** Flag indicating dialog was cancelled */
+    /** Options indicating dialog was cancelled */
     private boolean mWasCancelled = false;
     /** Max value of progress (for determinate progress) */
     private String mMessage = null;
@@ -72,21 +70,21 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     private int mMax;
     /** Current value of progress (for determinate progress) */
     private int mProgress = 0;
-    /** Flag indicating underlying field has changed so that progress dialog will be updated */
+    /** Options indicating underlying field has changed so that progress dialog will be updated */
     private boolean mMessageChanged = false;
-    /** Flag indicating underlying field has changed so that progress dialog will be updated */
+    /** Options indicating underlying field has changed so that progress dialog will be updated */
     private boolean mProgressChanged = false;
-    /** Flag indicating underlying field has changed so that progress dialog will be updated */
+    /** Options indicating underlying field has changed so that progress dialog will be updated */
     private boolean mMaxChanged = false;
-    /** Flag indicating underlying field has changed so that progress dialog will be updated */
+    /** Options indicating underlying field has changed so that progress dialog will be updated */
     private boolean mNumberFormatChanged = false;
     /** Format of number part of dialog */
     private String mNumberFormat = null;
     /** Unique ID for this task. Can be used like menu or activity IDs */
     private int mTaskId;
-    /** Flag, defaults to true, that can be set by tasks and is passed to listeners */
+    /** Options, defaults to true, that can be set by tasks and is passed to listeners */
     private boolean mSuccess = true;
-    /** Flag indicating a Refresher has been posted but not run yet */
+    /** Options indicating a Refresher has been posted but not run yet */
     private boolean mRefresherQueued = false;
     /** Runnable object to refresh the dialog */
     private final Runnable mRefresher = new Runnable() {

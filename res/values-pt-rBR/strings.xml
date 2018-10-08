@@ -59,7 +59,7 @@
     <string name="loan_to">Loan book to:</string>
     <string name="returned">Returned</string>
     <string name="name">Name</string>
-    <string name="webpage_label">Webpage:</string>
+    <string name="website_lbl">Webpage:</string>
     <string name="sourcecode_label">Source Code:</string>
     <string name="contact_label">Contacts:</string>
     <string name="donate_label">Donate</string>
@@ -389,7 +389,7 @@
     <string name="smaller">Smaller</string>
     <string name="select_style">Select Style</string>
     <string name="booklist_background_style">Book list background style</string>
-    <string name="textured_backgroud">Textured background image</string>
+    <string name="textured_background">Textured background image</string>
     <string name="plain_background_b_reduces_flicker_b">Plain background (reduces flicker)</string>
     <string name="thing_must_not_be_blank">%1$s must not be blank</string>
     <string name="edit">Edit</string>

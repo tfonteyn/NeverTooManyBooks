@@ -18,14 +18,14 @@
         android:padding="@dimen/padding_border_double">
         <ImageView
             android:id="@+id/image"
-            style="@style/thumbnail"
+            style="@style/coverImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:focusable="true"
             android:gravity="center_horizontal"
             tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_warning" />
+            tools:src="@drawable/ic_image" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -136,7 +136,7 @@
 
             <ImageView
                 android:id="@+id/publisher_button"
-                style="@style/ImageViewButton"
+                style="@style/dropDownMenuButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_alignBottom="@id/publisher"
@@ -268,7 +268,7 @@
 
             <ImageView
                 android:id="@+id/format_button"
-                style="@style/ImageViewButton"
+                style="@style/dropDownMenuButton"
                 android:layout_alignBottom="@id/format"
                 app:srcCompat="@drawable/ic_expand_more"
                 tools:ignore="ContentDescription" />
@@ -296,7 +296,7 @@
 
             <ImageView
                 android:id="@+id/genre_button"
-                style="@style/ImageViewButton"
+                style="@style/dropDownMenuButton"
                 android:layout_alignBottom="@id/genre"
                 app:srcCompat="@drawable/ic_expand_more"
                 tools:ignore="ContentDescription" />
@@ -325,7 +325,7 @@
 
             <ImageView
                 android:id="@+id/language_button"
-                style="@style/ImageViewButton"
+                style="@style/dropDownMenuButton"
                 android:layout_alignBottom="@id/language"
                 app:srcCompat="@drawable/ic_expand_more"
                 tools:ignore="ContentDescription" />
@@ -346,7 +346,7 @@
 
             <ImageView
                 android:id="@+id/description_edit_button"
-                style="@style/ImageViewButton"
+                style="@style/dropDownMenuButton"
                 android:layout_alignBottom="@id/heading"
                 app:srcCompat="@drawable/ic_mode_edit"
                 tools:ignore="ContentDescription" />

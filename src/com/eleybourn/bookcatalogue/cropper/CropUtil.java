@@ -150,14 +150,14 @@ public class CropUtil {
 //			return null;
 //		}
 //
-//		float scale;
+//		float SCALE;
 //		if (source.getWidth() < source.getHeight()) {
-//			scale = width / (float) source.getWidth();
+//			SCALE = width / (float) source.getWidth();
 //		} else {
-//			scale = height / (float) source.getHeight();
+//			SCALE = height / (float) source.getHeight();
 //		}
 //		Matrix matrix = new Matrix();
-//		matrix.setScale(scale, scale);
+//		matrix.setScale(SCALE, SCALE);
 //		Bitmap miniThumbnail = transform(matrix, source, width, height, false);
 //
 //		if (recycle && miniThumbnail != source) {

@@ -25,8 +25,6 @@ public class FlattenedBooklist implements AutoCloseable {
     private static final String PREV_STMT_NAME = "prev";
     /** Name for the 'move-to' statement */
     private static final String MOVE_STMT_NAME = "move";
-    /** Name for the 'count' statement */
-    private static final String COUNT_STMT_NAME = "count";
     /** Name for the 'absolute-position' statement */
     private static final String POSITION_STMT_NAME = "position";
 
@@ -61,9 +59,11 @@ public class FlattenedBooklist implements AutoCloseable {
      */
     public FlattenedBooklist(@NonNull final CatalogueDBAdapter db, @NonNull final String tableName) {
         Tracker.enterFunction(this,"FlattenedBooklist(@NonNull final CatalogueDBAdapter db [not logged], @NonNull final String tableName)", tableName);
+
         TableDefinition flat = DatabaseDefinitions.TBL_ROW_NAVIGATOR_FLATTENED.clone();
         flat.setName(tableName);
         flat.setType(TableTypes.Temporary); //RELEASE Make sure is TEMPORARY
+
         init(db.getDbIfYouAreSureWhatYouAreDoing(), flat);
         Tracker.exitFunction(this,"FlattenedBooklist(@NonNull final CatalogueDBAdapter db, @NonNull final String tableName)");
     }
@@ -132,7 +132,7 @@ public class FlattenedBooklist implements AutoCloseable {
     /**
      * Move to the next book row
      *
-     * @return true if successful
+     * @return <tt>true</tt>if successful
      */
     public boolean moveNext() {
         SynchronizedStatement stmt = mStatements.get(NEXT_STMT_NAME);
@@ -156,7 +156,7 @@ public class FlattenedBooklist implements AutoCloseable {
     /**
      * Move to the previous book row
      *
-     * @return true if successful
+     * @return <tt>true</tt>if successful
      */
     public boolean movePrev() {
         SynchronizedStatement stmt = mStatements.get(PREV_STMT_NAME);
@@ -181,7 +181,7 @@ public class FlattenedBooklist implements AutoCloseable {
      * Move to the specified book row, based on the row ID, not the book ID or row number.
      * The row ID should be the row number in the table, including header-related rows.
      *
-     * @return true if successful
+     * @return <tt>true</tt>if successful
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean moveTo(final int pos) {
@@ -210,7 +210,7 @@ public class FlattenedBooklist implements AutoCloseable {
     /**
      * Move to the first row
      *
-     * @return true if successful
+     * @return <tt>true</tt>if successful
      */
     @SuppressWarnings("unused")
     public boolean moveFirst() {
@@ -222,7 +222,7 @@ public class FlattenedBooklist implements AutoCloseable {
     /**
      * Move to the last row
      *
-     * @return true if successful
+     * @return <tt>true</tt>if successful
      */
     @SuppressWarnings("unused")
     public boolean moveLast() {

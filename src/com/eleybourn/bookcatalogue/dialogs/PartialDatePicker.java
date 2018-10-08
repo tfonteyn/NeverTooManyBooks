@@ -37,7 +37,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.R;
 
@@ -45,7 +44,7 @@ import java.util.Calendar;
 
 /**
  * Dialog class to allow for selection of partial dates from 0AD to 9999AD.
- * <p>
+ *
  * The constructors and interface are now protected because this really should
  * only be called as part of the fragment version.
  *
@@ -84,10 +83,11 @@ public class PartialDatePicker extends AlertDialog {
 
     /**
      * Constructor
-     *  @param activity Calling context
-     * @param year    Starting year
-     * @param month   Starting month
-     * @param day     Starting day
+     *
+     * @param activity Calling context
+     * @param year     Starting year
+     * @param month    Starting month
+     * @param day      Starting day
      */
     private PartialDatePicker(@NonNull final Activity activity,
                               @Nullable final Integer year,
@@ -103,7 +103,7 @@ public class PartialDatePicker extends AlertDialog {
 
         // Get the layout
         LayoutInflater inf = this.getLayoutInflater();
-        @SuppressLint("InflateParams") // we're a Dialog, no root.
+        @SuppressLint("InflateParams") // we're a Dialog, no root
         View root = inf.inflate(R.layout.dialog_partial_date_picker, null);
 
         // Ensure components match current locale order
@@ -315,7 +315,7 @@ public class PartialDatePicker extends AlertDialog {
                 }
         );
 
-        // setting the setOnCancelListener is not permissable in at least Android 5+
+        // setting the setOnCancelListener is not permissible in at least Android 5+
 //		// Handle any other form of cancellation
 //		this.setOnCancelListener(new OnCancelListener() {
 //
@@ -406,7 +406,7 @@ public class PartialDatePicker extends AlertDialog {
             mYear = null;
         }
 
-        // Seems reasonable to disable other spinners if year invalid, but it actually
+        // Seems reasonable to disable other spinners if year invalid, but it's actually
         // not very friendly when entering data for new books.
         regenDaysOfMonth(null);
 

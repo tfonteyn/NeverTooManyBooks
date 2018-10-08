@@ -27,7 +27,6 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -35,7 +34,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -126,8 +124,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         EditText givenView = dialog.findViewById(R.id.given_names);
         givenView.setText(author.givenNames);
 
-        Button saveButton = dialog.findViewById(R.id.confirm);
-        saveButton.setOnClickListener(new View.OnClickListener() {
+        dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EditText familyView = dialog.findViewById(R.id.family_name);
@@ -144,8 +141,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                 confirmEdit(author, newAuthor);
             }
         });
-        Button cancelButton = dialog.findViewById(R.id.cancel);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
+        dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
@@ -157,7 +153,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
 
     private void confirmEdit(@NonNull final Author from, @NonNull final Author to) {
 
-        if (to.equals(from)) {
+        if (to.equals(from)) { // TOMF
             return;
         }
 
@@ -174,7 +170,11 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
             // Just update with the most recent spelling and format
             from.copyFrom(to);
             Utils.pruneList(mDb, mList);
-            mDb.updateOrInsertAuthorByName(from);
+            if (from.id == 0) {
+                from.id = mDb.getAuthorIdByName(from.familyName, from.givenNames);
+            }
+            mDb.insertOrUpdateAuthor(from);
+
             mAdapter.notifyDataSetChanged();
             return;
         }
@@ -187,7 +187,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(message)
                 .setTitle(getResources().getString(R.string.scope_of_change))
-                .setIcon(R.drawable.ic_info_outline)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, thisBook, new DialogInterface.OnClickListener() {
@@ -224,7 +224,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(res.getText(R.string.unsaved_edits))
                 .setTitle(res.getText(R.string.unsaved_edits_title))
-                .setIcon(R.drawable.ic_info_outline)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, res.getText(R.string.yes), new DialogInterface.OnClickListener() {

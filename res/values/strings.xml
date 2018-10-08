@@ -41,7 +41,7 @@
     <string name="book_not_found">The scanned book was not found. You can sometimes find the correct barcode on the inside front cover. Otherwise please enter the details manually.</string>
     <string name="series_num">#</string>
     <string name="import_data">Import Books</string>
-    <string name="import_alert">Warning. Importing data may update existing book records with new information if the uuid column is not present and the id in the import file is the same as an existing id. This is usually fine if you changed a field in an exported file. If you created a new book record, or are importing someone elses books, ensure the uuid field is present or the id field is blank.</string>
+    <string name="import_alert">Warning. Importing data may update existing book records with new information if the uuid column is not present and the id in the import file is the same as an existing id. This is usually fine if you changed a field in an exported file. If you created a new book record, or are importing someone else\'s books, ensure the uuid field is present or the id field is blank.</string>
     <string name="import_failed_is_location_correct">ERROR: Import of data (from SDCard) failed. Is the file in the correct place?</string>
     <string name="search_title">Book Catalogue: Search Results</string>
     <string name="results_found">Results Found</string>
@@ -49,7 +49,7 @@
     <string name="menu_administration">Admin</string>
     <string name="install_scan_title">Install Barcode Scanner</string>
     <string name="version_number">Version Number:</string>
-    <string name="donate">If you would like to support the development of this application, please donate using a my Amazon Wishlist or the paypal button below. Being in Australia means I cannot publish a &quot;paid&quot; version. :-) </string>
+    <string name="donate">If you would like to support the development of this application, please donate using a my Amazon WishList or the Paypal button below. Being in Australia means I cannot publish a &quot;paid&quot; version. :-) </string>
     <string name="upgrade_title">Since your last upgrade</string>
     <string name="edit_book">Edit Book</string>
     <string name="edit_book_notes">My Comments</string>
@@ -61,10 +61,10 @@
     <string name="loan_to">Loan book to:</string>
     <string name="returned">Returned</string>
     <string name="name">Name</string>
-    <string name="webpage_label">Webpage:</string>
+    <string name="website_lbl">Web page:</string>
     <string name="sourcecode_label">Source Code:</string>
     <string name="contact_label">Contacts:</string>
-    <string name="webpage" translatable="false">https://wiki.github.com/eleybourn/Book-Catalogue/</string>
+    <string name="website" translatable="false">https://wiki.github.com/eleybourn/Book-Catalogue/</string>
     <string name="sourcecode" translatable="false">https://github.com/eleybourn/Book-Catalogue</string>
     <string name="helppage" translatable="false">https://github.com/eleybourn/Book-Catalogue/wiki/Help</string>
     <string name="contact1" translatable="false">eleybourn@gmail.com</string>
@@ -252,7 +252,7 @@
     <string name="goodreads_auth_blurb_part2">Once you are registered, or if you are already a goodreads user, you can authorize BookCatalogue 
     										to access your goodreads data by pressing the button below. It will take you to a web page 
     										where you will need to login to goodreads and authorize this application. We will never see 
-    										your password, and you can disable access via the goodreads website. Due to the vagueries of 
+    										your password, and you can disable access via the goodreads website. Due to the vagaries of
     										the web, you may end up on a blank web page. Just click the back button to return here!</string>
     <string name="goodreads_auth_blurb_part3">But remember&#8230;there is no need to do any of this: BookCatalogue works just fine without it!</string>
     <string name="goodreads_url" translatable="false">http://www.goodreads.com</string>
@@ -290,7 +290,7 @@
     <string name="book_no_longer_exists">The specified book no longer exists</string>
     <string name="please_enter_search_criteria">Please enter search criteria</string>
     <string name="error_while_searching">Error while searching.</string>
-    <string name="send_all_to_goodreads_result">%1$d books processed: %2$d sent successfully, %3$d with no ISBN and %4$d with ISBN but not found in goodreads</string>
+    <string name="send_all_to_goodreads_result">%1$d books processed: %2$d sent successfully, %3$d without ISBN and %4$d with ISBN but not found in goodreads</string>
     <string name="x_of_y">%1$d of %2$d</string>
     <string name="send_book_to_goodreads">Send book %1$s to goodreads</string>
     <string name="erase_cover_cache">Erase cover cache</string>
@@ -355,7 +355,7 @@
     										\n\nClicking anywhere else in a row will allow you to edit the details of a specific style (or clone it, if 
     										it is a built-in style).
 </string>
-    <string name="hint_booklist_style_groups">You can use this screen to modify the hiearchy of headings for a specific book list style.
+    <string name="hint_booklist_style_groups">You can use this screen to modify the hierarchy of headings for a specific book list style.
     										\n\nA green tick indicates the heading will be shown in the list, and a red cross indicates it will not be shown.
     										Clicking on a green tick will turn it into a cross, and vice-versa.
     										\n\nYou can re-order the hierarchy by dragging the icon at the extreme right of each row up or down.
@@ -396,7 +396,7 @@
     <string name="smaller">Smaller</string>
     <string name="select_style">Select Style</string>
     <string name="booklist_background_style">Book list background style</string>
-    <string name="textured_backgroud">Textured background image</string>
+    <string name="textured_background">Textured background image</string>
     <string name="plain_background_b_reduces_flicker_b">Plain background (reduces flicker)</string>
     <string name="thing_must_not_be_blank">%1$s must not be blank</string>
     <string name="edit">Edit</string>
@@ -669,7 +669,7 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- Admin option to import books -->
     <string name="import_from_csv">Import from CSV File</string>
 
-    <!-- Displayed when a file/open dialog results in selecting a non-exitant file -->
+    <!-- Displayed when a file/open dialog results in selecting a non-existent file -->
     <string name="please_select_an_existing_file">Please select an existing file</string>
 
     <!-- Displayed when a file/save dialog results in selecting a directory file -->
@@ -697,7 +697,7 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- Displayed in Admin menu advanced options (top make a copy of the internal database on the sdcard -->
     <string name="copy_database">Copy Database (for tech support)</string>
 
-    <!-- Items in list of options for the 'Summary Details' preference. Detrmines what is show in book list header -->
+    <!-- Items in list of options for the 'Summary Details' preference. Determines what is show in book list header -->
     <string name="show_book_count">Show number of books</string>
     <string name="show_first_level_and_book_count">Show first level heading and number of books</string>
     <string name="show_all_summary_details">Show all summary details</string>
@@ -831,13 +831,13 @@ and you can edit the book via the options menu using the menu button or overflow
 
     <!-- Text for button -->
     <string name="book_details">Book details</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="book_details_blurb">The details of the books themselves</string>
     <!-- Text for button -->
     <string name="cover_images">Cover images</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="cover_images_blurb">Cover images for all selected books. Will make the export much larger.</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="preferences_blurb">Preferences and user-defined list styles</string>
 
     <!-- Explanatory note for export date (not yet implemented) -->
@@ -892,7 +892,7 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- Hint text displayed when user enters the book listw -->
     <string name="hint_book_list">Tapping on a book will show you book details, a long-press on an item in the list give you further options.</string>
 
-    <!-- TRANLATORS NOTE: I HAVE UPDATED THE new_in_510, above! Sorry. -->
+    <!-- TRANSLATORS NOTE: I HAVE UPDATED THE new_in_510, above! Sorry. -->
 
     <!-- Preference VALUE, displayed in a preference activity -->
     <string name="zxing_scanner">Zxing Scanner</string>
@@ -1112,6 +1112,7 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="select_loaned_no">Select non-loaned only</string>
     <string name="initial_bookshelf">Default</string>
     <string name="try_another">Try again</string>
+    <string name="content">Content</string>
     <string name="table_of_content">Table Of Content</string>
     <string name="populate_anthology_titles">Automatically Populate (ISFDB only)</string>
     <string name="first_publication">First Publication</string>

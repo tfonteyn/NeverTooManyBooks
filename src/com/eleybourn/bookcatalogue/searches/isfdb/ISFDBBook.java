@@ -135,16 +135,16 @@ public class ISFDBBook extends AbstractBase {
 
         Element contentBox = mDoc.select("div.contentbox").first();
         Elements lis = contentBox.select("li");
-        String s = "";
+        String tmp;
 
         for (Element li : lis) {
             try {
                 if (li.text().contains("Publication")) {
-                    s = li.childNode(1).toString().trim();
-                    mBook.putString(UniqueId.KEY_TITLE, s);
+                    tmp = li.childNode(1).toString().trim();
+                    mBook.putString(UniqueId.KEY_TITLE, tmp);
 
-                    s = li.childNode(2).childNode(1).toString().trim();
-                    mBook.putString("ISFDB_PUB_RECORD", s);
+                    tmp = li.childNode(2).childNode(1).toString().trim();
+                    mBook.putString("ISFDB_PUB_RECORD", tmp);
 
                 } else if (li.text().contains("Author")) {
                     ArrayList<String> urls = new ArrayList<>();
@@ -156,68 +156,68 @@ public class ISFDBBook extends AbstractBase {
                     mBook.putStringArrayList("ISFDB_AUTHOR_URL", urls);
 
                 } else if (li.text().contains("Date")) {
-                    s = li.childNode(2).toString().trim();
-                    mBook.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, s);
+                    tmp = li.childNode(2).toString().trim();
+                    mBook.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, tmp);
 
                 } else if (li.text().contains("ISBN")) {
-                    s = li.childNode(1).toString().trim();
-                    mBook.putString("ISFDB_ISBN10", digits(s));
+                    tmp = li.childNode(1).toString().trim();
+                    mBook.putString("ISFDB_ISBN10", digits(tmp));
                     // second ISBN, 13
-                    s = li.childNode(2).childNode(0).toString().trim();
-                    mBook.putString(UniqueId.KEY_ISBN, digits(s));
+                    tmp = li.childNode(2).childNode(0).toString().trim();
+                    mBook.putString(UniqueId.KEY_ISBN, digits(tmp));
 
                 } else if (li.text().contains("Publisher")) {
-                    s = li.childNode(3).attr("href");
-                    mBook.putString("ISFDB_PUBLISHER_URL", s);
+                    tmp = li.childNode(3).attr("href");
+                    mBook.putString("ISFDB_PUBLISHER_URL", tmp);
 
-                    s = li.childNode(3).childNode(0).toString().trim();
-                    mBook.putString(UniqueId.KEY_BOOK_PUBLISHER, s);
+                    tmp = li.childNode(3).childNode(0).toString().trim();
+                    mBook.putString(UniqueId.KEY_BOOK_PUBLISHER, tmp);
 
                 } else if (li.text().contains("Price")) {
-                    s = li.childNode(2).toString().trim();
-                    mBook.putString(UniqueId.KEY_BOOK_LIST_PRICE, s);
+                    tmp = li.childNode(2).toString().trim();
+                    mBook.putString(UniqueId.KEY_BOOK_LIST_PRICE, tmp);
 
                 } else if (li.text().contains("Pages")) {
-                    s = li.childNode(2).toString().trim();
-                    mBook.putString(UniqueId.KEY_BOOK_PAGES, s);
+                    tmp = li.childNode(2).toString().trim();
+                    mBook.putString(UniqueId.KEY_BOOK_PAGES, tmp);
 
                 } else if (li.text().contains("Format")) {
-                    s = li.childNode(3).childNode(0).toString().trim();
-                    s = FORMAT_MAP.get(s);
-                    if (s != null) {
-                        mBook.putString(UniqueId.KEY_BOOK_FORMAT, s);
+                    tmp = li.childNode(3).childNode(0).toString().trim();
+                    tmp = FORMAT_MAP.get(tmp);
+                    if (tmp != null) {
+                        mBook.putString(UniqueId.KEY_BOOK_FORMAT, tmp);
                     }
 
                 } else if (li.text().contains("Type")) {
-                    s = li.childNode(2).toString().trim();
-                    mBook.putString("ISFDB_BOOK_TYPE", s); // original type
+                    tmp = li.childNode(2).toString().trim();
+                    mBook.putString("ISFDB_BOOK_TYPE", tmp); // original type
 
-                    if ("a1".equals(TYPE_MAP.get(s))) {
+                    if ("a1".equals(TYPE_MAP.get(tmp))) {
                         mBook.putInt(BookData.IS_ANTHOLOGY,
                                 DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY);
-                    } else if ("a2".equals(TYPE_MAP.get(s))) {
+                    } else if ("a2".equals(TYPE_MAP.get(tmp))) {
                         mBook.putInt(BookData.IS_ANTHOLOGY,
                                 DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY |
                                 DatabaseDefinitions.DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS);
                     }
 
                 } else if (li.text().contains("Cover")) {
-                    s = li.childNode(2).attr("href");
-                    mBook.putString("ISFDB_BOOK_COVER_ART_URL", s);
+                    tmp = li.childNode(2).attr("href");
+                    mBook.putString("ISFDB_BOOK_COVER_ART_URL", tmp);
 
-                    s = li.childNode(2).childNode(0).toString().trim();
-                    mBook.putString("ISFDB_BOOK_COVER_ART_TXT", s);
+                    tmp = li.childNode(2).childNode(0).toString().trim();
+                    mBook.putString("ISFDB_BOOK_COVER_ART_TXT", tmp);
 
-                    s = li.childNode(4).attr("href");
-                    mBook.putString("ISFDB_BOOK_COVER_ARTIST_URL", s);
+                    tmp = li.childNode(4).attr("href");
+                    mBook.putString("ISFDB_BOOK_COVER_ARTIST_URL", tmp);
 
                     // Cover artist
-                    s = li.childNode(4).childNode(0).toString().trim();
-                    ArrayUtils.appendOrAdd(mBook, UniqueId.BKEY_AUTHOR_DETAILS, s);
+                    tmp = li.childNode(4).childNode(0).toString().trim();
+                    ArrayUtils.appendOrAdd(mBook, UniqueId.BKEY_AUTHOR_DETAILS, tmp);
 
                 } else if (li.text().contains("Notes")) {
-                    s = li.childNode(1).childNode(1).toString().trim();
-                    mBook.putString(UniqueId.KEY_DESCRIPTION, s);
+                    tmp = li.childNode(1).childNode(1).toString().trim();
+                    mBook.putString(UniqueId.KEY_DESCRIPTION, tmp);
 
                 } else if (li.text().contains("Editors")) {
                     ArrayList<String> urls = new ArrayList<>();

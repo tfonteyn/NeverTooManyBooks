@@ -59,7 +59,7 @@
     <string name="loan_to">Libro prestado a:</string>
     <string name="returned">Devuelto</string>
     <string name="name">Nombre</string>
-    <string name="webpage_label">Página web</string>
+    <string name="website_lbl">Página web</string>
     <string name="sourcecode_label">Código fuente</string>
     <string name="contact_label">Contacto</string>
     <string name="donate_label">Contribuir</string>
@@ -390,7 +390,7 @@
     <string name="smaller">Pequeño</string>
     <string name="select_style">Seleccionar Estilo</string>
     <string name="booklist_background_style">Fondo para el listado</string>
-    <string name="textured_backgroud">Imagen de fondo texturizada</string>
+    <string name="textured_background">Imagen de fondo texturizada</string>
     <string name="plain_background_b_reduces_flicker_b">Fondo liso (reduce el parpadeo)</string>
     <string name="thing_must_not_be_blank">%1$s no puede ser blanco</string>
     <string name="edit">Editar</string>

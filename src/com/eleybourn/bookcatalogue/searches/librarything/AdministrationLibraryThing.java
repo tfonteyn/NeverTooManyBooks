@@ -75,38 +75,36 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
         register.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(LibraryThingManager.getBaseURL() + "/"));
-                startActivity(loadweb);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(LibraryThingManager.getBaseURL() + "/"));
+                startActivity(intent);
             }
         });
 
         /* DevKey Link */
-        TextView devkeyLink = findViewById(R.id.devkey_url);
-        devkeyLink.setOnClickListener(new OnClickListener() {
+        findViewById(R.id.dev_key_url).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(LibraryThingManager.getBaseURL() + "/services/keys.php"));
-                startActivity(loadweb);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(LibraryThingManager.getBaseURL() + "/services/keys.php"));
+                startActivity(intent);
             }
         });
 
-        EditText devkeyView = findViewById(R.id.devkey);
+        EditText devKeyView = findViewById(R.id.devkey);
         SharedPreferences prefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
-        devkeyView.setText(prefs.getString(LibraryThingManager.PREFS_LT_DEV_KEY, ""));
+        devKeyView.setText(prefs.getString(LibraryThingManager.PREFS_LT_DEV_KEY, ""));
 
         /* Save Button */
-        Button btn = findViewById(R.id.confirm);
-        btn.setOnClickListener(new OnClickListener() {
+        findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText devkeyView = findViewById(R.id.devkey);
-                String devkey = devkeyView.getText().toString().trim();
+                EditText devKeyView = findViewById(R.id.devkey);
+                String devKey = devKeyView.getText().toString().trim();
                 SharedPreferences prefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
                 SharedPreferences.Editor ed = prefs.edit();
-                ed.putString(LibraryThingManager.PREFS_LT_DEV_KEY, devkey);
+                ed.putString(LibraryThingManager.PREFS_LT_DEV_KEY, devKey);
                 ed.apply();
 
-                if (!devkey.isEmpty()) {
+                if (!devKey.isEmpty()) {
                     FragmentTask task = new FragmentTask() {
                         /**
                          * Validate the key by getting a known cover
@@ -145,8 +143,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
         });
 
         /* Reset Button */
-        Button resetBtn = findViewById(R.id.reset_messages);
-        resetBtn.setOnClickListener(new OnClickListener() {
+        findViewById(R.id.reset_messages).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 SharedPreferences prefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);

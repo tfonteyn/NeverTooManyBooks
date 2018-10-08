@@ -67,7 +67,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
          * We have to override this value to initialize book thumb with right size.
          * You have to see in book_details.xml to get dividing coefficient
          */
-        mThumper = ImageUtils.getThumbSizes(getActivity());
+        mThumbSize = ImageUtils.getThumbSizes(getActivity());
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getActivity(), R.string.hint_view_only_help, null);
@@ -102,7 +102,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
             populateBookDetailsFields(bookData);
 
             // Set maximum aspect ratio width : height = 1 : 2
-            setBookThumbnail(bookData.getBookId(), mThumper.normal, mThumper.normal * 2);
+            setBookThumbnail(bookData.getBookId(), mThumbSize.normal, mThumbSize.normal * 2);
 
             // Additional fields for read-only mode which are not initialized automatically
             showReadStatus(bookData);
@@ -127,29 +127,28 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     }
 
     private void showTOC(@NonNull final BookData bookData) {
-        View section = getView().findViewById(R.id.toc_row);
+        View headerSection = getView().findViewById(R.id.toc_row);
         final ArrayList<AnthologyTitle> list = bookData.getAnthologyTitles();
         if (list.isEmpty()) {
             // book is an Anthology, but the user has not added any titles (yet)
-            section.setVisibility(View.GONE);
+            headerSection.setVisibility(View.GONE);
             return;
         }
-
-        section.setVisibility(View.VISIBLE);
+        headerSection.setVisibility(View.VISIBLE);
 
         AnthologyTitleListAdapter adapter = new AnthologyTitleListAdapter(getActivity(), R.layout.row_anthology, list);
-        final ListView titles = getView().findViewById(R.id.toc);
-        titles.setAdapter(adapter);
+        final ListView contentSection = getView().findViewById(R.id.toc);
+        contentSection.setAdapter(adapter);
 
         Button btn = getView().findViewById(R.id.toc_button);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (titles.getVisibility() == View.VISIBLE) {
-                    titles.setVisibility(View.GONE);
+                if (contentSection.getVisibility() == View.VISIBLE) {
+                    contentSection.setVisibility(View.GONE);
                 } else {
-                    titles.setVisibility(View.VISIBLE);
-                    justifyListViewHeightBasedOnChildren(titles);
+                    contentSection.setVisibility(View.VISIBLE);
+                    justifyListViewHeightBasedOnChildren(contentSection);
                 }
             }
         });
@@ -158,10 +157,15 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     /**
      * Gets the total number of rows from the adapter, then use that to set the ListView to the
      * full height so all rows are visible (no scrolling)
+     *
+     * Does nothing if the adapter is null, or if the view is not visible
      */
     private void justifyListViewHeightBasedOnChildren(@NonNull final ListView listView) {
         ListAdapter adapter = listView.getAdapter();
         if (adapter == null) {
+            return;
+        }
+        if (listView.getVisibility() != View.VISIBLE) {
             return;
         }
 
@@ -172,9 +176,9 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
             totalHeight += listItem.getMeasuredHeight();
         }
 
-        ViewGroup.LayoutParams par = listView.getLayoutParams();
-        par.height = totalHeight + (listView.getDividerHeight() * (adapter.getCount() - 1));
-        listView.setLayoutParams(par);
+        ViewGroup.LayoutParams layoutParams = listView.getLayoutParams();
+        layoutParams.height = totalHeight + (listView.getDividerHeight() * (adapter.getCount()));
+        listView.setLayoutParams(layoutParams);
         listView.requestLayout();
     }
 
@@ -388,7 +392,13 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
 
     @Override
     protected void onSaveBookDetails(@NonNull final BookData bookData) {
-        // Override to Do nothing because we modify the fields to make them look pretty.
+        // Override the super to Do nothing because we modify the fields to make them look pretty.
+        //so NOT calling: super.onSaveBookDetails(bookData);
+
+        // but we DO want to adjust the TOC size if needed.
+        final ListView contentSection = getView().findViewById(R.id.toc);
+        justifyListViewHeightBasedOnChildren(contentSection);
+
     }
 
     public void onResume() {

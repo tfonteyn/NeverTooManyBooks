@@ -68,7 +68,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private static final String GOODREADS_RESPONSE = "GoodreadsResponse";
     private static final String XML_BOOK = "book";
     /**
-     * Flag to indicate if request should be signed. Signed requests via ISB cause server errors
+     * Options to indicate if request should be signed. Signed requests via ISB cause server errors
      * and unsigned requests do not return review (not a big problem for searches)
      */
     private final boolean mSignRequest;

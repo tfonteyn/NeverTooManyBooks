@@ -58,7 +58,7 @@
     <string name="loan_to">Şuna ödünç ver:</string>
     <string name="returned">Geri geldi</string>
     <string name="name">Ad</string>
-    <string name="webpage_label">İnteret Sayfası</string>
+    <string name="website_lbl">İnteret Sayfası</string>
     <string name="sourcecode_label">Kaynak kodu</string>
     <string name="contact_label">İletişim</string>
     <string name="donate_label">Bağış yap</string>
@@ -377,7 +377,7 @@
     <string name="smaller">Daha ufak</string>
     <string name="select_style">Biçem seç</string>
     <string name="booklist_background_style">Kitap dizelgesi ardalan biçemi</string>
-    <string name="textured_backgroud">Dokulu ardalan resmi</string>
+    <string name="textured_background">Dokulu ardalan resmi</string>
     <string name="plain_background_b_reduces_flicker_b">Düz ardalan (titremeyi azaltır)</string>
     <string name="thing_must_not_be_blank">%1$s boş olamaz</string>
     <string name="edit">Düzenle</string>

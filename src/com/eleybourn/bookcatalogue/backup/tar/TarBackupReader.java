@@ -124,6 +124,7 @@ public class TarBackupReader extends BackupReaderAbstract {
         return mInput;
     }
 
+    @NonNull
     @Override
     public BackupInfo getInfo() {
         return mInfo;

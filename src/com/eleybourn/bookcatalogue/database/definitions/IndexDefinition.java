@@ -14,14 +14,14 @@ public class IndexDefinition {
     private final TableDefinition mTable;
     /** Domains in index */
     private final DomainDefinition[] mDomains;
-    /** Flag indicating index is unique */
+    /** Options indicating index is unique */
     private final boolean mIsUnique;
 
     /**
      * Constructor.
      *
      * @param name    name of index
-     * @param unique  Flag indicating index is unique
+     * @param unique  Options indicating index is unique
      * @param table   Table to which index applies
      * @param domains Domains in index
      */

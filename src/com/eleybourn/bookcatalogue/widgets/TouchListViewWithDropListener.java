@@ -21,7 +21,6 @@ public class TouchListViewWithDropListener<T> extends TouchListView implements T
     }
 
     private void onListChanged() {
-        /* do nothing */
     }
 
     @Override

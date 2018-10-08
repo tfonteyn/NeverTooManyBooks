@@ -33,13 +33,13 @@
         <!-- application developer keys -->
         <meta-data
             android:name="amazon.appkey"
-            android:value="my_amazon_key" />
+            android:value="" />
         <meta-data
             android:name="goodreads.dev_key"
-            android:value="ZWx0GvfCNvQxqPmbBdsNQ" />
+            android:value="" />
         <meta-data
             android:name="goodreads.dev_secret"
-            android:value="A6gLqqm5Jxf6TKTvcBMjkXnq3k31jNzYmthfRWUA" />
+            android:value="" />
 
         <provider
             android:name=".searches.SearchSuggestionProvider"

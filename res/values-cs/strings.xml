@@ -58,7 +58,7 @@
     <string name="loan_to">Půjčit knihu:</string>
     <string name="returned">Vráceno</string>
     <string name="name">Jméno</string>
-    <string name="webpage_label">WWW stránky:</string>
+    <string name="website_lbl">WWW stránky:</string>
     <string name="sourcecode_label">Zdrojový kód:</string>
     <string name="contact_label">Kontakt:</string>
     <string name="donate_label">Podpořit</string>
@@ -378,7 +378,7 @@
     <string name="smaller">Menší</string>
     <string name="select_style">Zvolit styl</string>
     <string name="booklist_background_style">Styl pozadí seznamu knih</string>
-    <string name="textured_backgroud">Obrázek na pozadí</string>
+    <string name="textured_background">Obrázek na pozadí</string>
     <string name="plain_background_b_reduces_flicker_b">Jednobarevné pozadí (redukuje blikání)</string>
     <string name="thing_must_not_be_blank">%1$s nemůže být prázdné</string>
     <string name="edit">Upravit</string>

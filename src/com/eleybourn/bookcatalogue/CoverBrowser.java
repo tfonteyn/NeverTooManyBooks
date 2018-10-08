@@ -39,7 +39,6 @@ import android.view.ViewGroup;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewSwitcher.ViewFactory;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -225,14 +224,14 @@ public class CoverBrowser {
         switcher.setFactory(new ViewFactory() {
             @Override
             public View makeView() {
-                ImageView i = new ImageView(mActivity);
-                i.setBackgroundColor(0xFF000000);
-                i.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                i.setLayoutParams(new ImageSwitcher.LayoutParams(
+                ImageView view = new ImageView(mActivity);
+                view.setBackgroundColor(0xFF000000);
+                view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                view.setLayoutParams(new ImageSwitcher.LayoutParams(
                         ImageSwitcher.LayoutParams.WRAP_CONTENT,
                         ImageSwitcher.LayoutParams.WRAP_CONTENT));
-                i.setImageResource(R.drawable.ic_warning);
-                return i;
+                view.setImageResource(R.drawable.ic_image);
+                return view;
             }
         });
 
@@ -302,7 +301,7 @@ public class CoverBrowser {
                 // Not present; request it
                 mImageFetcher.enqueue(new GetThumbnailTask(isbn, coverImage, mPreviewSizeWidth, mPreviewSizeHeight));
                 //  and use a placeholder.
-                coverImage.setImageResource(R.drawable.ic_warning);
+                coverImage.setImageResource(R.drawable.ic_image);
             } else {
                 // Present, so use it.
                 ImageUtils.fetchFileIntoImageView(coverImage, file, mPreviewSizeWidth, mPreviewSizeHeight, true);

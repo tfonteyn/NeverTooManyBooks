@@ -24,7 +24,7 @@ import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.entities.BookRow;
+import com.eleybourn.bookcatalogue.entities.BookRowView;
 import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
@@ -40,7 +40,7 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
     /** Get the row ID; need a local implementation so that get/setSelected() works. */
     private int mIdCol = -2;
     /** Get a RowView */
-    private BookRow mView;
+    private BookRowView mView;
 
     public BooksCursor(@NonNull final SQLiteCursorDriver driver,
                        @NonNull final String editTable,
@@ -58,9 +58,9 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
         return getLong(mIdCol);
     }
 
-    public BookRow getRowView() {
+    public BookRowView getRowView() {
         if (mView == null) {
-            mView = new BookRow(this);
+            mView = new BookRowView(this);
         }
         return mView;
     }

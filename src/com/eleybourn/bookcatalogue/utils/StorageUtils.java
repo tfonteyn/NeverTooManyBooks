@@ -19,13 +19,17 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
+import android.Manifest;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresPermission;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DbSync;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.io.BufferedReader;
@@ -85,11 +89,11 @@ public class StorageUtils {
     private StorageUtils() {
     }
 
-    public static String getErrorLog() {
+    public static String getErrorLog() throws SecurityException{
         return EXTERNAL_FILE_PATH + File.separator + ERROR_LOG_FILE;
     }
 
-    private static void createDir(@NonNull final String name) {
+    private static void createDir(@NonNull final String name) throws SecurityException{
         final File dir = new File(name);
         boolean ok = dir.mkdirs() || dir.isDirectory();
         if (!ok) {
@@ -102,7 +106,7 @@ public class StorageUtils {
      *
      * @return success or failure
      */
-    static public boolean isWriteProtected() {
+    static public boolean isWriteProtected() throws SecurityException {
         try {
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(NOMEDIA_FILE_PATH), UTF8), BUFFER_SIZE);
             out.write("");
@@ -119,7 +123,8 @@ public class StorageUtils {
      *
      * Only called from StartupActivity, after permissions have been granted.
      */
-    public static void initSharedDirectories() {
+    @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    public static void initSharedDirectories() throws SecurityException {
         File rootDir = new File(EXTERNAL_FILE_PATH);
         if (rootDir.exists() && rootDir.isDirectory()) {
             return;
@@ -216,14 +221,18 @@ public class StorageUtils {
      * Delete *everything* in the temp file directory
      */
     public static void cleanupTempDirectory() {
-        File dir = getTempStorage();
-        if (dir.exists() && dir.isDirectory()) {
-            File[] files = dir.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    deleteFile(file);
+        try {
+            File dir = getTempStorage();
+            if (dir.exists() && dir.isDirectory()) {
+                File[] files = dir.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        deleteFile(file);
+                    }
                 }
             }
+        } catch (SecurityException e) {
+            Logger.logError(e);
         }
     }
 
@@ -236,6 +245,8 @@ public class StorageUtils {
      */
     public static long purgeFiles(final boolean reallyDelete) {
         long totalSize = 0;
+        try {
+
         for (String name : getCoverStorage().list()) {
             for (String prefix : mPurgeableFilePrefixes) {
                 if (name.startsWith(prefix)) {
@@ -247,7 +258,18 @@ public class StorageUtils {
                 }
             }
         }
+        } catch (SecurityException e) {
+            Logger.logError(e);
+        }
         return totalSize;
+    }
+
+    public static void backupDbFile(@NonNull final CatalogueDBAdapter db, @NonNull final String toFile) {
+        backupDbFile(db.getDbIfYouAreSureWhatYouAreDoing().getUnderlyingDatabaseIfYouAreReallySureWhatYouAreDoing(), toFile);
+    }
+
+    public static void backupDbFile(@NonNull final DbSync.SynchronizedDb db, @NonNull final String toFile) {
+        backupDbFile(db.getUnderlyingDatabaseIfYouAreReallySureWhatYouAreDoing(), toFile);
     }
 
     /**
@@ -425,7 +447,7 @@ public class StorageUtils {
      * @param in  InputStream to read
      * @param out File to save
      *
-     * @return true if successful
+     * @return <tt>true</tt>if successful
      */
     public static boolean saveInputStreamToFile(@NonNull final InputStream in, @NonNull final File out) {
         File temp = null;
@@ -471,7 +493,7 @@ public class StorageUtils {
      * ENHANCE: make suitable for multiple filesystems using {@link #copyFile(File, File)}
      * from the Android docs {@link File#renameTo(File)}: Both paths be on the same mount point.
      *
-     * @return true if the rename worked, this inputStream really a ".exists()" call.
+     * @return <tt>true</tt>if the rename worked, this inputStream really a ".exists()" call.
      *              and not relying on the OS renameTo call.
      */
     public static boolean renameFile(@NonNull final File src, @NonNull final File dst) {

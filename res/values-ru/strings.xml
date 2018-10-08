@@ -58,7 +58,7 @@
     <string name="loan_to">Одолжить книгу:</string>
     <string name="returned">Возвращена</string>
     <string name="name">Имя</string>
-    <string name="webpage_label">Веб-адрес проекта:</string>
+    <string name="website_lbl">Веб-адрес проекта:</string>
     <string name="sourcecode_label">Исходный код:</string>
     <string name="contact_label">Контакты разработчиков:</string>
     <string name="donate_label">Пожертвовать</string>
@@ -372,7 +372,7 @@
     <string name="smaller">Меньший</string>
     <string name="select_style">Выбрать стиль</string>
     <string name="booklist_background_style">Стиль фона списка книг</string>
-    <string name="textured_backgroud">Картинка фона</string>
+    <string name="textured_background">Картинка фона</string>
     <string name="plain_background_b_reduces_flicker_b">Ровный фон (уменьшает мерцание)</string>
     <string name="thing_must_not_be_blank">%1$s должен быть не пустым</string>
     <string name="edit">Редактировать</string>

@@ -29,7 +29,7 @@ import android.support.v4.app.DialogFragment;
 import com.eleybourn.bookcatalogue.UniqueId;
 
 /**
- * Fragment wrapper for the PartialDatePicker dialog
+ * Fragment wrapper for the {@link TextFieldEditor} dialog
  * 
  * @author pjw
  */

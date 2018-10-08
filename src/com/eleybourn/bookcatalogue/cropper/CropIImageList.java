@@ -59,7 +59,7 @@ public interface CropIImageList extends Parcelable {
     int getCount();
 
 	/**
-	 * @return true if the count of image objects is zero.
+	 * @return <tt>true</tt>if the count of image objects is zero.
 	 */
     boolean isEmpty();
 
@@ -79,7 +79,7 @@ public interface CropIImageList extends Parcelable {
     CropIImage getImageForUri(Uri uri);
 
 	/**
-	 * @return true if the image was removed.
+	 * @return <tt>true</tt>if the image was removed.
 	 */
     boolean removeImage(CropIImage image);
 

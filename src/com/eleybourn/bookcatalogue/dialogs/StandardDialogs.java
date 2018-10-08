@@ -21,15 +21,16 @@ package com.eleybourn.bookcatalogue.dialogs;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.annotation.StyleRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
@@ -37,9 +38,8 @@ import android.support.v7.app.AppCompatDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.Checkable;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -64,7 +64,8 @@ import java.util.Date;
 import java.util.List;
 
 public class StandardDialogs {
-    private static boolean USE_SNACKBAR = true;
+    //FIXME: make this a preference, or dump toast ?
+    private static final boolean USE_SNACKBAR = true;
 
     private static final String UNKNOWN = "<" + BookCatalogueApp.getResourceString(R.string.unknown_uc) + ">";
 
@@ -91,6 +92,7 @@ public class StandardDialogs {
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle(R.string.details_have_changed)
                 .setMessage(R.string.you_have_unsaved_changes)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setCancelable(false)
                 .create();
 
@@ -138,7 +140,7 @@ public class StandardDialogs {
 
         final AlertDialog dialog = new AlertDialog.Builder(context).setMessage(msgId)
                 .setTitle(R.string.reg_library_thing_title)
-                .setIcon(R.drawable.ic_info_outline)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(R.string.more_info),
@@ -181,7 +183,7 @@ public class StandardDialogs {
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setMessage(String.format(context.getResources().getString(R.string.really_delete_series), series.name))
                 .setTitle(R.string.delete_series)
-                .setIcon(R.drawable.ic_info_outline)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(android.R.string.ok),
@@ -242,7 +244,7 @@ public class StandardDialogs {
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setMessage((context.getResources().getString(R.string.really_delete_book, title, authors)))
                 .setTitle(R.string.menu_delete)
-                .setIcon(R.drawable.ic_info_outline)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(android.R.string.ok),
@@ -275,7 +277,7 @@ public class StandardDialogs {
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle(R.string.authorize_access)
                 .setMessage(R.string.goodreads_action_cannot_blah_blah)
-                .setIcon(R.drawable.ic_info_outline)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(android.R.string.ok),
@@ -319,7 +321,8 @@ public class StandardDialogs {
         TextView msg = root.findViewById(R.id.message);
 
         // Build the base dialog and the top message (if any)
-        final AlertDialog.Builder builder = new AlertDialog.Builder(inflater.getContext()).setView(root);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(inflater.getContext())
+                .setView(root);
         if (message != null && !message.isEmpty()) {
             msg.setText(message);
         } else {
@@ -336,7 +339,7 @@ public class StandardDialogs {
                 SimpleDialogItem item = ViewTagger.getTag(v, R.id.TAG_DIALOG_ITEM);
                 // For a consistent UI, make sure the selector is checked as well. NOT mandatory from
                 // a functional point of view, just consistent
-                if (item != null && !(v instanceof RadioButton)) {
+                if (item != null && !(v instanceof Checkable)) {
                     RadioButton btn = item.getSelector(v);
                     if (btn != null) {
                         btn.setChecked(true);
@@ -364,16 +367,16 @@ public class StandardDialogs {
         };
 
         // Add the items to the dialog
-        LinearLayout list = root.findViewById(R.id.list);
+        LinearLayout list = root.findViewById(android.R.id.list);
         for (SimpleDialogItem item : items) {
-            View v = item.getView(inflater);
-            v.setOnClickListener(listener);
-            v.setBackgroundResource(android.R.drawable.list_selector_background);
+            View view = item.getView(inflater);
+            view.setOnClickListener(listener);
+            view.setBackgroundResource(android.R.drawable.list_selector_background);
 
-            ViewTagger.setTag(v, R.id.TAG_DIALOG_ITEM, item);
-            list.addView(v);
+            ViewTagger.setTag(view, R.id.TAG_DIALOG_ITEM, item);
+            list.addView(view);
 
-            RadioButton btn = item.getSelector(v);
+            RadioButton btn = item.getSelector(view);
             if (btn != null) {
                 ViewTagger.setTag(btn, R.id.TAG_DIALOG_ITEM, item);
                 btn.setChecked(item == selectedItem);
@@ -527,8 +530,8 @@ public class StandardDialogs {
         }
 
         @NonNull
-        public RadioButton getSelector(final View v) {
-            return (RadioButton) v.findViewById(R.id.selector);
+        public RadioButton getSelector(final View view) {
+            return (RadioButton) view.findViewById(R.id.selector);
         }
 
         /**
@@ -544,7 +547,7 @@ public class StandardDialogs {
         final int mItemId;
         final int mDrawableId;
 
-        public SimpleDialogMenuItem(@NonNull final Object object, final int itemId, final int icon) {
+        public SimpleDialogMenuItem(@NonNull final Object object, final int itemId, @DrawableRes final int icon) {
             super(object);
             mItemId = itemId;
             mDrawableId = icon;
@@ -557,40 +560,27 @@ public class StandardDialogs {
         @Override
         @NonNull
         public View getView(@NonNull final LayoutInflater inflater) {
-            View v = super.getView(inflater);
-            TextView name = v.findViewById(R.id.name);
+            View view = super.getView(inflater);
+            TextView name = view.findViewById(R.id.name);
             name.setCompoundDrawablesWithIntrinsicBounds(mDrawableId, 0, 0, 0);
             // Now make the actual RadioButton gone
-            getSelector(v).setVisibility(View.GONE);
-            return v;
+            getSelector(view).setVisibility(View.GONE);
+            return view;
         }
     }
 
     /**
      * This class exists only for:
      * - we use AppCompatDialog in ONE place (here) .. so any future removal is easy
-     * - optional (default:true) ActionBar
      * - optional Close Button, if your layout has a Button with id=android.R.id.closeButton
      */
     public static class BasicDialog extends AppCompatDialog {
 
-        /**
-         * a Dialog WITH an ActionBar
-         *
-         * @param context the context
-         */
         public BasicDialog(@NonNull final Context context) {
-            this(context, true);
+            this(context, BookCatalogueApp.getDialogThemeResId());
         }
-
-        /**
-         * Dialog with optional ActionBar
-         *
-         * @param context         the context
-         * @param enableActionBar flag
-         */
-        public BasicDialog(@NonNull final Context context, final boolean enableActionBar) {
-            super(context, BookCatalogueApp.getDialogThemeResId(enableActionBar));
+        public BasicDialog(@NonNull final Context context, @StyleRes final int theme) {
+            super(context, theme);
 
             Button closeButton = findViewById(android.R.id.closeButton);
             if (closeButton != null) {

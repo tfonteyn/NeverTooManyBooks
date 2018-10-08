@@ -29,7 +29,7 @@ public class SearchAdmin extends BookCatalogueActivity {
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.search_internet);
-        mTabLayout = findViewById(R.id.tabpanel);
+        mTabLayout = findViewById(R.id.tab_panel);
         mTabLayout.addOnTabSelectedListener(new TabListener());
         Holder holder = new Holder();
         holder.fragment = new AdminHostsFragment();

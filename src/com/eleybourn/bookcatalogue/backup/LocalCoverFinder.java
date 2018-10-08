@@ -91,6 +91,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
      *
      * @return Existing file (if length > 0), or new file object
      */
+    @NonNull
     private File getNewCoverFile(@NonNull final String newUuid) {
         // Check for ANY current image; delete empty ones and retry
         File newFile = StorageUtils.getCoverFile(newUuid);

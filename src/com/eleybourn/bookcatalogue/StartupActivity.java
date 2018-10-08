@@ -67,7 +67,7 @@ public class StartupActivity extends AppCompatActivity {
 
     private static final String TAG = "StartupActivity";
 
-    /** Flag to indicate FTS rebuild is required at startup */
+    /** Options to indicate FTS rebuild is required at startup */
     private static final String PREF_FTS_REBUILD_REQUIRED = TAG + ".FtsRebuildRequired";
     private static final String PREF_AUTHOR_SERIES_FIX_UP_REQUIRED = TAG + ".FAuthorSeriesFixupRequired";
 
@@ -83,9 +83,9 @@ public class StartupActivity extends AppCompatActivity {
 
     /** Indicates the upgrade message has been shown */
     private static boolean mUpgradeMessageShown = false;
-    /** Flag set to true on first call */
+    /** Options set to true on first call */
     private static boolean mIsReallyStartup = true;
-    /** Flag indicating Amazon hint could be shown */
+    /** Options indicating Amazon hint could be shown */
     private static boolean mShowAmazonHint = false;
     private static WeakReference<StartupActivity> mStartupActivity = null;
     /** Handler to post run'ables to UI thread */
@@ -98,8 +98,9 @@ public class StartupActivity extends AppCompatActivity {
      *  Suggested: ProgressBar or Notification.
      *  Alternative maybe: SnackBar (recommended replacement for Toast)
      */
+    @Deprecated
     private ProgressDialog mProgress = null;
-    /** Flag indicating an export is required after startup */
+    /** Options indicating an export is required after startup */
     private boolean mExportRequired = false;
     /** UI thread */
     private Thread mUiThread;
@@ -189,7 +190,7 @@ public class StartupActivity extends AppCompatActivity {
         }
     }
 
-    private void startTasks() {
+    private void startTasks() throws SecurityException {
         if (BuildConfig.DEBUG) {
             System.out.println("Startup isTaskRoot() = " + isTaskRoot());
         }
@@ -202,8 +203,8 @@ public class StartupActivity extends AppCompatActivity {
 
             updateProgress(R.string.starting);
 
-            // at this point the user will have granted us STORAGE permission,
-            // so make sure we have our directories are ready
+            // at this point the user should have granted us STORAGE permission,
+            // so make sure we have our directories ready
             StorageUtils.initSharedDirectories();
 
             SimpleTaskQueue q = getQueue();
@@ -355,7 +356,7 @@ public class StartupActivity extends AppCompatActivity {
             AlertDialog dialog = new AlertDialog.Builder(this)
                     .setMessage(R.string.backup_request)
                     .setTitle(R.string.backup_title)
-                    .setIcon(R.drawable.ic_info_outline)
+                    .setIcon(R.drawable.ic_help_outline)
                     .create();
 
             dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
@@ -416,7 +417,7 @@ public class StartupActivity extends AppCompatActivity {
      * - READ_CONTACTS
      */
     @NonNull
-    protected String[] getRequiredPermissions() {
+    private String[] getRequiredPermissions() {
         return new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
     }
 

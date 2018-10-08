@@ -58,7 +58,7 @@
     <string name="loan_to">Wypożycz książkę:</string>
     <string name="returned">Zwrócona</string>
     <string name="name">Imię i nazwisko</string>
-    <string name="webpage_label">Strona	 WWW:</string>
+    <string name="website_lbl">Strona	 WWW:</string>
     <string name="sourcecode_label">Kod źródłowy:</string>
     <string name="contact_label">Kontakt:</string>
     <string name="donate_label">Wesprzyj</string>

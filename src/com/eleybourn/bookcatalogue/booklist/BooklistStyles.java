@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
-import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -31,8 +30,8 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -62,30 +61,26 @@ import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KI
  *
  * @author Philip Warner
  */
-public class BooklistStyles implements Iterable<BooklistStyle> {
+public class BooklistStyles extends ArrayList<BooklistStyle> {
     private static final String TAG = "BooklistStyles";
     private static final String PREF_MENU_ITEMS = TAG + ".Menu.Items";
-    /**
-     * Internal storage for defined styles represented by this object
-     */
-    private final List<BooklistStyle> mList = new ArrayList<>();
-    private final HashSet<String> mPreferredStyleNames;
+
+    /** Internal storage for preferred styles represented by this object */
+    private final Set<String> mPreferredStyleNames;
 
     /**
      * Constructor
      */
     private BooklistStyles() {
-        mPreferredStyleNames = new HashSet<>();
-        getPreferredStyleNames(mPreferredStyleNames);
+        mPreferredStyleNames = getPreferredStyleNames();
     }
 
     /**
-     * Fill in the passed objects with the canonical names of the preferred styles
-     * from user preferences.
+     * Get a list of canonical names of the preferred styles from user preferences.
      *
-     * @param names Set of names
      */
-    private static void getPreferredStyleNames(@NonNull final Set<String> names) {
+    private static Set<String> getPreferredStyleNames() {
+        Set<String> names = new HashSet<>();
         String itemStr = BCPreferences.getString(PREF_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.isEmpty()) {
             List<String> list = ArrayUtils.decodeList(ArrayUtils.MULTI_STRING_SEPARATOR, itemStr);
@@ -95,13 +90,14 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
                 }
             }
         }
+        return names;
     }
 
     /**
      * Static method to get all defined styles
      *
-     * NOTE: Do NOT call this in static initialization of application. This method requires the
-     * application context to be present.
+     * NOTE: Do NOT call this in static initialization of application.
+     * This method requires the application context to be present.
      */
     private static List<BooklistStyle> getBuiltinStyles() {
         List<BooklistStyle> list = new ArrayList<>();
@@ -276,49 +272,29 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
     /**
      * Save the preferred style menu list.
      */
-    public static void saveMenuOrder(@NonNull final List<BooklistStyle> list) {
+    static void saveMenuOrder(@NonNull final List<BooklistStyle> list) {
         StringBuilder items = new StringBuilder();
-        for (int i = 0; i < list.size(); i++) {
-            BooklistStyle s = list.get(i);
-            if (s.isPreferred()) {
+        for (BooklistStyle style : list) {
+            if (style.isPreferred()) {
                 if (items.length() > 0) {
                     items.append(ArrayUtils.MULTI_STRING_SEPARATOR);
                 }
-                items.append(ArrayUtils.encodeListItem(ArrayUtils.MULTI_STRING_SEPARATOR, s.getCanonicalName()));
+                items.append(ArrayUtils.encodeListItem(ArrayUtils.MULTI_STRING_SEPARATOR, style.getCanonicalName()));
             }
         }
-        Editor e = BCPreferences.edit();
-        e.putString(PREF_MENU_ITEMS, items.toString());
-        e.commit();
+        BCPreferences.setString(PREF_MENU_ITEMS, items.toString());
     }
 
     /**
-     * @return the number of styles in this collection
+     * Add a style to this list and set its preferred status
+     *
+     * @param style to add
+     *
+     * @return <tt>true</tt> (as specified by {@link Collection#add})
      */
-    private int size() {
-        return mList.size();
-    }
-
-    /**
-     * Utility to check if this collection contains a specific style INSTANCE.
-     */
-    private boolean contains(@NonNull final BooklistStyle style) {
-        return mList.contains(style);
-    }
-
-    /**
-     * Add a style to this list
-     */
-    private void add(@NonNull final BooklistStyle style) {
+    public boolean add(@NonNull final BooklistStyle style) {
         style.setPreferred(mPreferredStyleNames.contains(style.getCanonicalName()));
-        mList.add(style);
-    }
-
-    /**
-     * Add a list of styles to this list
-     */
-    private void addAll(@NonNull final List<BooklistStyle> list) {
-        mList.addAll(list);
+        return super.add(style);
     }
 
     /**
@@ -330,30 +306,12 @@ public class BooklistStyles implements Iterable<BooklistStyle> {
      */
     @Nullable
     public BooklistStyle findCanonical(@NonNull final String name) {
-        for (BooklistStyle style : mList) {
+        for (BooklistStyle style : this) {
             if (style.getCanonicalName().equalsIgnoreCase(name)) {
                 return style;
             }
         }
         return null;
-    }
-
-    /**
-     * Return the i'th style in the list
-     *
-     * @throws IndexOutOfBoundsException but realistically, due to the build-in styles can't happen.
-     */
-    @NonNull
-    public BooklistStyle get(final int i) {
-        return mList.get(i);
-    }
-
-    /**
-     * Return an iterator for the list of styles.
-     */
-    @NonNull
-    public Iterator<BooklistStyle> iterator() {
-        return mList.iterator();
     }
 }
 

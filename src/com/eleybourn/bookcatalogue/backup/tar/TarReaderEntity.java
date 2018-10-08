@@ -53,21 +53,25 @@ public class TarReaderEntity extends ReaderEntityAbstract {
         mType = type;
     }
 
+    @NonNull
     @Override
     public BackupEntityType getType() {
         return mType;
     }
 
+    @NonNull
     @Override
     public InputStream getStream() {
         return mReader.getInput();
     }
 
+    @NonNull
     @Override
     public String getName() {
         return mEntry.getName();
     }
 
+    @NonNull
     @Override
     public Date getDateModified() {
         return mEntry.getLastModifiedDate();

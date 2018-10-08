@@ -28,7 +28,6 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
@@ -42,7 +41,6 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -109,7 +107,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     private int mMode;
 
     /**
-     * Flag to indicate the Activity should not 'finish()' because an alert is being displayed.
+     * Options to indicate the Activity should not 'finish()' because an alert is being displayed.
      * The alert will call finish().
      */
     private boolean mDisplayingAlert = false;
@@ -379,7 +377,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
             AlertDialog dialog = new AlertDialog.Builder(BookISBNSearchActivity.this)
                     .setMessage(R.string.bad_scanner)
                     .setTitle(R.string.install_scan_title)
-                    .setIcon(R.drawable.ic_info_outline)
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
                     .create();
 
             dialog.setButton(AlertDialog.BUTTON_POSITIVE,
@@ -412,7 +410,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                 AlertDialog dialog = new AlertDialog.Builder(BookISBNSearchActivity.this)
                         .setMessage(R.string.install_scan)
                         .setTitle(R.string.install_scan_title)
-                        .setIcon(R.drawable.ic_info_outline)
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
                         .create();
 
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE,
@@ -503,7 +501,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
 //                    AlertDialog dialog = new AlertDialog.Builder(this)
 //                            .setMessage("R.string.duplicate_alert")
 //                            .setTitle("R.string.duplicate_title")
-//                            .setIcon(R.drawable.ic_info_outline)
+//                            .setIconAttribute(android.R.attr.alertDialogIcon)
 //                            .create();
 //
 //                    dialog.setButton(DialogInterface.BUTTON_POSITIVE, this.getResources().getString(android.R.string.ok),

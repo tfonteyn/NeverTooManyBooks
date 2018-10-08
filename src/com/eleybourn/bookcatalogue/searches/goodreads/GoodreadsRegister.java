@@ -80,8 +80,7 @@ public class GoodreadsRegister extends BookCatalogueActivity {
 		});
 		
 		/* Auth button */
-		Button devkeyLink = findViewById(R.id.authorize);
-		devkeyLink.setOnClickListener(new OnClickListener() {
+		findViewById(R.id.authorize).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				requestAuthorizationInBackground(GoodreadsRegister.this);

@@ -64,6 +64,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
         mOutput = new TarArchiveOutputStream(out);
     }
 
+    @NonNull
     @Override
     public BackupContainer getContainer() {
         return mContainer;

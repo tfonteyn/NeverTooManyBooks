@@ -36,7 +36,7 @@ import java.io.IOException;
  *
  * @author pjw
  */
-public class Backuptest {
+public class BackupTest {
     private static final String BACKUP_TAR = "backup.tar";
 
     public static void testBackupTar() {

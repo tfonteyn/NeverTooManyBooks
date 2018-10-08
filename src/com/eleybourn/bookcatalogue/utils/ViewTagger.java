@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.utils;
 
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
@@ -110,7 +111,7 @@ public class ViewTagger {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public static <T> T getTag(@NonNull final View view, final int key) {
+    public static <T> T getTag(@NonNull final View view, @IdRes final int key) {
         ViewTagger tagger = getTagger(view, false);
         if (tagger == null) {
             throw new NullPointerException("view has no tagger");
@@ -136,7 +137,7 @@ public class ViewTagger {
      * @param key   Key of tag to store
      * @param value Object to store at specified tag
      */
-    public static void setTag(@NonNull final View view, final int key, @Nullable final Object value) {
+    public static void setTag(@NonNull final View view, @IdRes final int key, @Nullable final Object value) {
         getTagger(view, true).set(key, value);
     }
 
@@ -155,7 +156,7 @@ public class ViewTagger {
      * @param key   Key of new tag
      * @param value Object to store at specified tag
      */
-    public void set(final int key, @Nullable final Object value) {
+    public void set(@IdRes final int key, @Nullable final Object value) {
         synchronized (this) {
             if (mTags == null) {
                 mTags = new SparseArray<>();

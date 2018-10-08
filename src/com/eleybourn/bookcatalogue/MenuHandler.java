@@ -99,7 +99,7 @@ public class MenuHandler {
      * @param activity Calling activity
      * @param item     The item selected
      *
-     * @return True, if handled
+     * @return <tt>true</tt> if handled
      */
     public boolean onOptionsItemSelected(@NonNull final Activity activity, @NonNull final MenuItem item) {
         switch (item.getItemId()) {

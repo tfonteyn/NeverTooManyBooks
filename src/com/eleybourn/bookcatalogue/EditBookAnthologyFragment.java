@@ -23,6 +23,8 @@ package com.eleybourn.bookcatalogue;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -42,7 +44,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -150,13 +151,13 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
                 AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing) EditBookAnthologyFragment.this.getListView().getAdapter());
 
                 if (mEditPosition == null) {
-                    AnthologyTitle anthology = new AnthologyTitle(new Author(author), title, pubDate, bookData.getBookId());
-                    adapter.add(anthology);
+                    AnthologyTitle anthologyTitle = new AnthologyTitle(new Author(author), title, pubDate, bookData.getBookId());
+                    adapter.add(anthologyTitle);
                 } else {
-                    AnthologyTitle anthology = adapter.getItem(mEditPosition);
-                    anthology.setAuthor(new Author(author));
-                    anthology.setTitle(title);
-                    anthology.setFirstPublication(pubDate);
+                    AnthologyTitle anthologyTitle = adapter.getItem(mEditPosition);
+                    anthologyTitle.setAuthor(new Author(author));
+                    anthologyTitle.setTitle(title);
+                    anthologyTitle.setFirstPublication(pubDate);
 
                     adapter.notifyDataSetChanged();
 
@@ -194,10 +195,10 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
             @Override
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 mEditPosition = position;
-                AnthologyTitle anthology = mList.get(position);
-                mPubDateText.setText(anthology.getFirstPublication());
-                mTitleText.setText(anthology.getTitle());
-                mAuthorText.setText(anthology.getAuthor().getDisplayName());
+                AnthologyTitle anthologyTitle = mList.get(position);
+                mPubDateText.setText(anthologyTitle.getFirstPublication());
+                mTitleText.setText(anthologyTitle.getTitle());
+                mAuthorText.setText(anthologyTitle.getAuthor().getDisplayName());
                 mAdd.setText(R.string.anthology_save);
             }
         });
@@ -243,7 +244,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
 
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setTitle(results.isEmpty() ? R.string.automatic_population_failed : R.string.anthology_confirm)
-                .setIcon(R.drawable.ic_info_outline)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setMessage(msg)
                 .create();
 
@@ -373,7 +374,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
     private class AnthologyTitleListAdapterForEditing extends AnthologyTitleListAdapter {
 
         AnthologyTitleListAdapterForEditing(@NonNull final Context context,
-                                            final int rowViewId,
+                                            @LayoutRes final int rowViewId,
                                             @NonNull final ArrayList<AnthologyTitle> items) {
             super(context, rowViewId, items);
         }

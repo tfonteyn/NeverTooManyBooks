@@ -22,13 +22,11 @@ package com.eleybourn.bookcatalogue.filechooser;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
@@ -53,14 +51,14 @@ public abstract class FileChooser extends BookCatalogueActivity implements
         FileLister.FileListerListener,
         PathChangedListener {
 
-    // Key for member of EXTRAS that specifies the mode of operation of this dialog
+    /** Key for member of EXTRAS that specifies the mode of operation of this dialog */
     public static final String BKEY_MODE = "mode";
-    // Value for member of EXTRAS that specifies the mode of operation of this dialog
+    /** Value for member of EXTRAS that specifies the mode of operation of this dialog */
     public static final String BVAL_MODE_SAVE_AS = "saveAs";
-    // Value for member of EXTRAS that specifies the mode of operation of this dialog
+    /** Value for member of EXTRAS that specifies the mode of operation of this dialog */
     public static final String BVAL_MODE_OPEN = "open";
 
-    // Flag indicating nature of this activity
+    /** Options indicating nature of this activity */
     private boolean mIsSaveDialog = false;
 
     public boolean isSaveDialog() {
@@ -91,7 +89,6 @@ public abstract class FileChooser extends BookCatalogueActivity implements
                 && fragmentManager.findFragmentById(R.id.browser_fragment) == null) {
             // Create the browser
             FileChooserFragment frag = getChooserFragment();
-            // frag.setArguments(getIntent().getExtras());
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.browser_fragment, frag)
@@ -101,7 +98,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
         // Handle 'Cancel' button
         findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View view) {
                 finish();
             }
         });
@@ -113,7 +110,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
             confirm.setText(R.string.save);
             confirm.setOnClickListener(new OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(final View view) {
                     handleSave();
                 }
             });
@@ -122,7 +119,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
             confirm.setText(R.string.open);
             confirm.setOnClickListener(new OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(final View view) {
                     handleOpen();
                 }
             });

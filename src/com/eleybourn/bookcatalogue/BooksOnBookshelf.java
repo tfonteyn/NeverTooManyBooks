@@ -33,7 +33,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -54,7 +53,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler.BooklistChangeListener;
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
@@ -85,7 +83,6 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -116,9 +113,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     private BooklistStyle mCurrentStyle = null;
     /** Currently selected bookshelf */
     private String mCurrentBookshelf = "";
-    /** Flag indicating activity has been destroyed. Used for background tasks */
+    /** Options indicating activity has been destroyed. Used for background tasks */
     private boolean mIsDead = false;
-    /** Flag to indicate that a list has been successfully loaded -- affects the way we save state */
+    /** Options to indicate that a list has been successfully loaded -- affects the way we save state */
     private boolean mListHasBeenLoaded = false;
     /** Used by onScroll to detect when the top row has actually changed. */
     private int mLastTop = -1;
@@ -400,8 +397,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                         savePosition();
                         mList.getBuilder().expandAll(true);
                         mTopRow = mList.getBuilder().getPosition(oldAbsPos);
-                        BooklistPseudoCursor newList = mList.getBuilder().getList();
-                        displayList(newList, null);
+                        displayList(mList.getBuilder().getList(), null);
                     }
                     return true;
                 }
@@ -819,8 +815,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 mList.moveToPosition(position);
 
                 // If it's a book, edit it.
-                int rowKind = mList.getRowView().getKind();
-                if (rowKind == RowKinds.ROW_KIND_BOOK) {
+                int kind = mList.getRowView().getRowKind();
+                if (kind == RowKinds.ROW_KIND_BOOK) {
                     BookDetailsActivity.openBook(BooksOnBookshelf.this, mList.getRowView().getBookId(), mList.getBuilder(), position);
                 } else {
                     // If it's level, expand/collapse. Technically, TODO: we could expand/collapse any level
@@ -850,7 +846,8 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                                     mList.moveToPosition(position);
                                     int id = ((SimpleDialogMenuItem) item).getItemId();
 
-                                    mListHandler.onContextItemSelected(mDb, view, mList.getRowView(), BooksOnBookshelf.this, id);
+                                    mListHandler.onContextItemSelected(mDb, view, mList.getRowView(),
+                                            BooksOnBookshelf.this, id);
                                 }
                             });
                 }
@@ -887,7 +884,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     new_bookshelf = "";
                 }
                 if (new_bookshelf != null && !new_bookshelf.equalsIgnoreCase(mCurrentBookshelf)) {
-                    // make the new shelf the current, and get it's prefered style
+                    // make the new shelf the current, and get it's preferred style
                     mCurrentBookshelf = new_bookshelf;
                     mCurrentStyle = getBookshelfStyle();
 
@@ -986,8 +983,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 BCPreferences.getString(PREF_LIST_STYLE,
                         getString(R.string.sort_author_series)));
 
-        @SuppressWarnings("ConstantConditions") // styleName is never null, see above, always a default available.
-                BooklistStyle style = styles.findCanonical(styleName);
+        // styleName is never null, see above, always a default available.
+        @SuppressWarnings("ConstantConditions")
+        BooklistStyle style = styles.findCanonical(styleName);
 
         if (style == null) {
             style = styles.get(0);
@@ -1024,17 +1022,16 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 .create();
         dialog.show();
 
-        Iterator<BooklistStyle> i;
+        BooklistStyles styles;
         if (!showAll) {
-            i = BooklistStyles.getPreferredStyles(mDb).iterator();
+            styles = BooklistStyles.getPreferredStyles(mDb);
         } else {
-            i = BooklistStyles.getAllStyles(mDb).iterator();
+            styles = BooklistStyles.getAllStyles(mDb);
         }
-
-        while (i.hasNext()) {
-            BooklistStyle style = i.next();
+        for (BooklistStyle style : styles) {
             makeRadio(dialog, inf, group, style);
         }
+
         int moreOrLess = showAll ? R.string.show_fewer_ellipsis : R.string.show_more_ellipsis;
 
         makeText(main, inf, moreOrLess, new OnClickListener() {

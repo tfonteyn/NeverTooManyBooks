@@ -10,11 +10,11 @@
     <!-- NOTE: layout width/height will be set to a specific value at runtime -->
     <ImageView
         android:id="@+id/cover"
-        style="@style/thumbnail"
+        style="@style/coverImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/thumbnail"
-        tools:src="@drawable/ic_help_outline" />
+        tools:src="@drawable/ic_image" />
 
     <LinearLayout
         android:id="@id/ROW_INFO"

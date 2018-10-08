@@ -20,6 +20,8 @@
 package com.eleybourn.bookcatalogue.widgets;
 
 import android.content.Context;
+import android.support.annotation.IdRes;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -170,14 +172,14 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         }
     };
 
-    // Flag fields to (slightly) optimize lookups and prevent looking for fields that are not there.
+    // Options fields to (slightly) optimize lookups and prevent looking for fields that are not there.
     private boolean mCheckedFields = false;
     private boolean mHasPosition = false;
     private boolean mHasUp = false;
     private boolean mHasDown = false;
     private boolean mHasDelete = false;
 
-    protected SimpleListAdapter(@NonNull final Context context, final int rowViewId, @NonNull final List<T> items) {
+    protected SimpleListAdapter(@NonNull final Context context, @LayoutRes final int rowViewId, @NonNull final List<T> items) {
         super(context, rowViewId, items);
         mRowViewId = rowViewId;
         mItems = items;
@@ -201,14 +203,14 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      * @param target The view clicked
      * @param item The object associated with this row
      *
-     * @return true if handled
+     * @return <tt>true</tt>if handled
      */
     protected boolean onRowLongClick(@NonNull final View target, @NonNull final T item, final int position) {
         return true;
     }
 
     /**
-     * @return true if delete is allowed to happen
+     * @return <tt>true</tt>if delete is allowed to happen
      */
     protected boolean onRowDelete(@NonNull final View target, @NonNull final T item, final int position) {
         return true;

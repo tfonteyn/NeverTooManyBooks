@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.backup;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -34,7 +35,7 @@ public interface BackupReader extends Closeable {
     /**
      * Perform a restore of the database; a convenience method to loop through
      * all entities in the backup and restore them based on the entity type.
-     * <p>
+     *
      * See BackupReaderAbstract for a default implementation.
      *
      * @param listener Listener to receive progress information.
@@ -43,11 +44,12 @@ public interface BackupReader extends Closeable {
 
     /**
      * Read the next ReaderEntity from the backup.
-     * <p>
+     *
      * Currently, backup files are read sequentially.
      *
      * @return The next entity, or null if at end
      */
+    @Nullable
     ReaderEntity nextEntity() throws IOException;
 
     /**
@@ -59,6 +61,7 @@ public interface BackupReader extends Closeable {
     /**
      * @return the INFO object read from the backup
      */
+    @NonNull
     BackupInfo getInfo();
 
     /**

@@ -26,7 +26,7 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookEvents.GrNoIsbnEvent;
 import com.eleybourn.bookcatalogue.BookEvents.GrNoMatchEvent;
-import com.eleybourn.bookcatalogue.entities.BookRow;
+import com.eleybourn.bookcatalogue.entities.BookRowView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
@@ -44,7 +44,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  */
 public class SendAllBooksTask extends GenericTask {
     private static final long serialVersionUID = -1933000305276643875L;
-    /** Flag indicating if it should only send UPDATED books to goodreads; false == all books */
+    /** Options indicating if it should only send UPDATED books to goodreads; false == all books */
     private final boolean mUpdatesOnly;
     /** Last book ID processed */
     private long mLastId = 0;
@@ -114,7 +114,7 @@ public class SendAllBooksTask extends GenericTask {
         db.open();
 
         try (BooksCursor books = db.getAllBooksForGoodreadsCursor(mLastId, mUpdatesOnly)) {
-            final BookRow book = books.getRowView();
+            final BookRowView book = books.getRowView();
             mTotalBooks = books.getCount() + mCount;
 
             while (books.moveToNext()) {

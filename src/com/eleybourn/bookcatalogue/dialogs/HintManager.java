@@ -110,7 +110,7 @@ public class HintManager {
         }
 
         // Build the hint dialog
-        final Dialog dialog = new StandardDialogs.BasicDialog(context, false);
+        final Dialog dialog = new StandardDialogs.BasicDialog(context);
         dialog.setContentView(R.layout.dialog_hint);
         dialog.setTitle(R.string.hint);
 
@@ -183,7 +183,7 @@ public class HintManager {
         /**
          * Set the preference to indicate if this hint should be shown again
          *
-         * @param visible Flag indicating future visibility
+         * @param visible Options indicating future visibility
          */
         public void setVisibility(final boolean visible) {
             BCPreferences.edit().putBoolean(getFullPrefName(), visible).commit();

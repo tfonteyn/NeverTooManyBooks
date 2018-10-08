@@ -47,7 +47,7 @@ import java.util.ArrayList;
  */
 public class BooklistStyleGroupsListActivity extends EditObjectListActivity<GroupWrapper> {
     private static final String TAG = "StyleEditor";
-    // Preferences setup
+    /** Preferences setup */
     public static final String BKEY_STYLE = TAG + ".Style";
     public static final String BKEY_SAVE_TO_DATABASE = TAG + ".SaveToDb";
     private static final String BKEY_GROUPS = TAG + ".Groups";

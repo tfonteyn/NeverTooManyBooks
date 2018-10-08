@@ -30,7 +30,7 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.entities.BookRow;
+import com.eleybourn.bookcatalogue.entities.BookRowView;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -114,7 +114,7 @@ public class GoodreadsManager {
     private final static String DEV_SECRET = BookCatalogueApp.getManifestString(GOODREADS_DEV_SECRET);
 
     /** Set to true when the credentials have been successfully verified. */
-    private static boolean mHhasValidCredentials = false;
+    private static boolean mHasValidCredentials = false;
     /** Cached when credentials have been verified. */
     private static String mAccessToken = null;
     private static String mAccessSecret = null;
@@ -148,7 +148,7 @@ public class GoodreadsManager {
     static void forgetCredentials() {
         mAccessToken = "";
         mAccessSecret = "";
-        mHhasValidCredentials = false;
+        mHasValidCredentials = false;
         // Get the stored token values from prefs, and setup the consumer if present
         BCPreferences.setString(ACCESS_TOKEN, "");
         BCPreferences.setString(ACCESS_SECRET, "");
@@ -318,7 +318,7 @@ public class GoodreadsManager {
      */
     public boolean hasValidCredentials() {
         // If credentials have already been accepted, don't re-check.
-        return mHhasValidCredentials || validateCredentials();
+        return mHasValidCredentials || validateCredentials();
 
     }
 
@@ -344,18 +344,18 @@ public class GoodreadsManager {
 
             // Save result...
             mUsername = authUserApi.getUsername();
-            mUserId = authUserApi.getUserid();
+            mUserId = authUserApi.getUserId();
 
         } catch (Exception e) {
             // Something went wrong. Clear the access token, mark credentials as bad, and if we used
             // cached values, retry by getting them from prefs.
-            mHhasValidCredentials = false;
+            mHasValidCredentials = false;
             mAccessToken = null;
             return false;
         }
 
         // Cache the result to avoid web checks later
-        mHhasValidCredentials = true;
+        mHasValidCredentials = true;
 
         return true;
     }
@@ -470,9 +470,9 @@ public class GoodreadsManager {
             IOException, NotAuthorizedException, BookNotFoundException, NetworkException {
 
         // this should only happen when the developer did not set a dev key in the manifest
-        if (!mHhasValidCredentials) {
+        if (!mHasValidCredentials) {
             if (BuildConfig.DEBUG) {
-                System.out.println("GoodReadManager: mHhasValidCredentials == false, when entering execute method");
+                System.out.println("GoodReadManager: mHasValidCredentials == false, when entering execute method");
             }
             return null;
         }
@@ -502,7 +502,7 @@ public class GoodreadsManager {
                 parseResponse(response, requestHandler);
                 break;
             case HttpURLConnection.HTTP_UNAUTHORIZED:
-                mHhasValidCredentials = false;
+                mHasValidCredentials = false;
                 throw new NotAuthorizedException();
             case HttpURLConnection.HTTP_NOT_FOUND:
                 throw new BookNotFoundException();
@@ -561,7 +561,7 @@ public class GoodreadsManager {
             case HttpURLConnection.HTTP_CREATED:
                 return html.toString();
             case HttpURLConnection.HTTP_UNAUTHORIZED:
-                mHhasValidCredentials = false;
+                mHasValidCredentials = false;
                 throw new NotAuthorizedException();
             case HttpURLConnection.HTTP_NOT_FOUND:
                 throw new BookNotFoundException();
@@ -607,7 +607,7 @@ public class GoodreadsManager {
     @SuppressWarnings("unused")
     @NonNull
     public String getUsername() {
-        if (!mHhasValidCredentials) {
+        if (!mHasValidCredentials) {
             throw new RuntimeException("GoodReads credentials need to be validated before accessing user data");
         }
 
@@ -615,7 +615,7 @@ public class GoodreadsManager {
     }
 
     public long getUserId() {
-        if (!mHhasValidCredentials) {
+        if (!mHasValidCredentials) {
             throw new RuntimeException("GoodReads credentials need to be validated before accessing user data");
         }
 
@@ -714,7 +714,7 @@ public class GoodreadsManager {
      */
     @NonNull
     ExportDisposition sendOneBook(@NonNull final CatalogueDBAdapter db,
-                                  @NonNull final BookRow books) throws
+                                  @NonNull final BookRowView books) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, IOException, NetworkException, BookNotFoundException {
         long bookId = books.getId();

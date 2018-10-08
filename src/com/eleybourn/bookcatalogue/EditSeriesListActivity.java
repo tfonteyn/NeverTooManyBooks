@@ -34,7 +34,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -154,7 +153,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     private void confirmEdit(@NonNull final  Series from, @NonNull final  Series to) {
-        if (to.equals(from)) {
+        if (to.equals(from)) { // TOMF
             return;
         }
 
@@ -175,13 +174,16 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         long nRefs = mDb.countSeriesBooks(from);
         boolean oldHasOthers = nRefs > (mRowId == 0 ? 0 : 1);
 
-        // Case: series is the same (but different case), or is only used in this book
+        // Case: series is the same (but maybe different case), or is only used in this book
         if (to.id == from.id || !oldHasOthers) {
             // Just update with the most recent spelling and format
             from.copyFrom(to);
             Series.pruneSeriesList(mList);
             Utils.pruneList(mDb, mList);
-            mDb.sendSeries(from);
+            if (from.id == 0) {
+                from.id = mDb.getSeriesId(from);
+            }
+            mDb.insertOrUpdateSeries(from);;
             mAdapter.notifyDataSetChanged();
             return;
         }
@@ -230,7 +232,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             final AlertDialog dialog = new AlertDialog.Builder(this)
                     .setMessage(res.getText(R.string.unsaved_edits))
                     .setTitle(res.getText(R.string.unsaved_edits_title))
-                    .setIcon(R.drawable.ic_info_outline)
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
                     .create();
 
             dialog.setButton(DialogInterface.BUTTON_POSITIVE, res.getText(R.string.yes), new DialogInterface.OnClickListener() {

@@ -22,12 +22,10 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -52,8 +50,7 @@ public class EditPublisherDialog {
         EditText familyView = dialog.findViewById(R.id.name);
         familyView.setText(publisher.name);
 
-        Button saveButton = dialog.findViewById(R.id.confirm);
-        saveButton.setOnClickListener(new View.OnClickListener() {
+        dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EditText nameView = dialog.findViewById(R.id.name);
@@ -68,8 +65,7 @@ public class EditPublisherDialog {
             }
         });
 
-        Button cancelButton = dialog.findViewById(R.id.cancel);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
+        dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();

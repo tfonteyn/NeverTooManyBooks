@@ -241,7 +241,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      * Called to load data from the BookData object when needed.
      *
      * @param bookData   to load from
-     * @param setAllDone Flag indicating setAll() has already been called on the mFields object
+     * @param setAllDone Options indicating setAll() has already been called on the mFields object
      */
     abstract protected void onLoadBookDetails(@NonNull final BookData bookData,
                                               @SuppressWarnings("SameParameterValue") final boolean setAllDone);
@@ -306,9 +306,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         // Get the base view
         final View view = getView().findViewById(fieldId);
         int visibility;
-        if (view == null) {
-            visibility = View.GONE;
-        } else {
+        if (view != null) {
             visibility = view.getVisibility();
             if (hideIfEmpty) {
                 if (view.getVisibility() != View.GONE) {

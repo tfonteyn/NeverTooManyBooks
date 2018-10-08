@@ -37,11 +37,9 @@ import android.os.Handler;
 import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -61,7 +59,7 @@ import java.util.concurrent.CountDownLatch;
 public class CropCropImage extends CropMonitoredActivity {
     // private static final String TAG = "CropImage";
 
-    public static final String BKEY_DATA = "data";
+    private static final String BKEY_DATA = "data";
     private static final String BKEY_CIRCLE_CROP = "circleCrop";
     private static final String BKEY_IMAGE_PATH = "image-path";
     private static final String BKEY_OUTPUT = "output";
@@ -69,7 +67,7 @@ public class CropCropImage extends CropMonitoredActivity {
     private static final String BKEY_ASPECT_Y = "aspectY";
     private static final String BKEY_OUTPUT_X = "outputX";
     private static final String BKEY_OUTPUT_Y = "outputY";
-    private static final String BKEY_SCALE = "scale";
+    private static final String BKEY_SCALE = "SCALE";
     private static final String BKEY_SCALE_UP_IF_NEEDED = "scaleUpIfNeeded";
     private static final String BKEY_WHOLE_IMAGE = "whole-image";
     private static final int NO_STORAGE_ERROR = -1;
@@ -88,12 +86,12 @@ public class CropCropImage extends CropMonitoredActivity {
     private int mAspectX, mAspectY;
     private boolean mCircleCrop = false;
     // These options specify the output image size and whether we should
-    // scale the output to fit it (or just crop it).
+    // SCALE the output to fit it (or just crop it).
     private int mOutputX, mOutputY;
     private boolean mScale;
-    //Flag
+    //Options
     private boolean mScaleUp = true;
-    // Flag indicating if default crop rect is whole image
+    // Options indicating if default crop rect is whole image
     private boolean mCropWholeImage = false;
     private CropImageView mImageView;
     private ContentResolver mContentResolver;
@@ -104,7 +102,7 @@ public class CropCropImage extends CropMonitoredActivity {
         Matrix mImageMatrix;
         int mNumFaces;
 
-        // For each face, we create a HightlightView for it.
+        // For each face, we create a CropHighlightView for it.
         private void handleFace(FaceDetector.Face f) {
             PointF midPoint = new PointF();
 
@@ -462,7 +460,7 @@ public class CropCropImage extends CropMonitoredActivity {
             c.drawColor(0x00000000, PorterDuff.Mode.CLEAR);
         }
 
-        /* If the output is required to a specific size then scale or fill */
+        /* If the output is required to a specific size then SCALE or fill */
         if (mOutputX != 0 && mOutputY != 0) {
             if (mScale) {
                 /* Scale the image to the required dimensions */
@@ -475,12 +473,12 @@ public class CropCropImage extends CropMonitoredActivity {
             } else {
 
                 /*
-                 * Don't scale the image crop it to the size requested. Create
+                 * Don't SCALE the image crop it to the size requested. Create
                  * an new image with the cropped image in the center and the
                  * extra space filled.
                  */
 
-                // Don't scale the image but instead fill it so it's the
+                // Don't SCALE the image but instead fill it so it's the
                 // required dimension
                 Bitmap b = Bitmap.createBitmap(mOutputX, mOutputY,
                         Bitmap.Config.RGB_565);

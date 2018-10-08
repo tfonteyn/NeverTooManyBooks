@@ -157,7 +157,7 @@
 
             <ImageView
                 android:id="@+id/location_button"
-                style="@style/ImageViewButton"
+                style="@style/dropDownMenuButton"
                 android:layout_alignBottom="@id/location"
                 app:srcCompat="@drawable/ic_expand_more"
                 tools:ignore="ContentDescription" />

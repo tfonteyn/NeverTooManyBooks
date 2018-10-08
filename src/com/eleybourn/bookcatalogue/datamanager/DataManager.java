@@ -405,7 +405,7 @@ public class DataManager {
     /**
      * Internal utility routine to perform one loop validating all fields.
      *
-     * @param crossValidating Flag indicating if this is a cross validation pass.
+     * @param crossValidating Options indicating if this is a cross validation pass.
      */
     private boolean validate(final boolean crossValidating) {
         boolean isOk = true;

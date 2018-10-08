@@ -68,17 +68,17 @@ public class Help extends BookCatalogueActivity {
             webinstructions.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.helppage)));
-                    startActivity(loadweb);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.helppage)));
+                    startActivity(intent);
                 }
             });
 
-            TextView webpage = findViewById(R.id.helppage);
-            webpage.setOnClickListener(new OnClickListener() {
+            TextView website = findViewById(R.id.helppage);
+            website.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.helppage)));
-                    startActivity(loadweb);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.helppage)));
+                    startActivity(intent);
                 }
             });
 

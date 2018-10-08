@@ -9,6 +9,8 @@
         <attr name="android:galleryItemBackground" />
     </declare-styleable>
 
+    <attr name="ic_goodreads" format="reference" />
+
     <attr name="fillColorVectorIcons" format="reference|color" />
     <attr name="color_background_nav_header" format="reference|color" />
     <attr name="color_background_nav_panel" format="reference|color" />

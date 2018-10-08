@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -20,14 +20,19 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.support.annotation.NonNull;
+
 /**
  * Interface for objects that can provide long-lived instances of Booklist-related items.
  * Typically this interface is implemented by objects that have a close() method (eg. cursors)
- * so that resource-hungry objects (can be cleaned up eventually.
- * 
+ * so that resource-hungry objects can be cleaned up eventually.
+ *
  * @author Philip Warner
  */
 public interface BooklistSupportProvider {
-	BooklistRowView getRowView();
-	BooklistBuilder getBuilder();
+    @NonNull
+    BooklistRowView getRowView();
+
+    @NonNull
+    BooklistBuilder getBuilder();
 }

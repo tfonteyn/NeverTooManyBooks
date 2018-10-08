@@ -20,14 +20,14 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.content.Context;
+import android.app.Activity;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 
 public class EditLanguageDialog extends EditStringDialog {
-    EditLanguageDialog(@NonNull final Context context, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
-        super(context, db, onChanged);
+    EditLanguageDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
+        super(activity, db, onChanged);
     }
 
     public void edit(@NonNull final String s) {

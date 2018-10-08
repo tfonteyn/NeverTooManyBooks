@@ -34,7 +34,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.entities.BookRow;
+import com.eleybourn.bookcatalogue.entities.BookRowView;
 import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -302,7 +302,7 @@ public class BookEvents {
             final BookEventHolder holder = ViewTagger.getTag(view, R.id.TAG_BOOK_EVENT_HOLDER);
             final CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;
             final BooksCursor booksCursor = db.getBookForGoodreadsCursor(mBookId);
-            final BookRow book = booksCursor.getRowView();
+            final BookRowView book = booksCursor.getRowView();
             try {
                 // Hide parts of view based on current book details.
                 if (booksCursor.moveToFirst()) {
@@ -336,7 +336,7 @@ public class BookEvents {
 
             final CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;
             try (BooksCursor booksCursor = db.getBookForGoodreadsCursor(mBookId)) {
-                final BookRow book = booksCursor.getRowView();
+                final BookRowView book = booksCursor.getRowView();
                 if (booksCursor.moveToFirst()) {
                     if (!book.getIsbn().isEmpty()) {
                         items.add(new ContextDialogItem(context.getString(R.string.retry_task), new Runnable() {

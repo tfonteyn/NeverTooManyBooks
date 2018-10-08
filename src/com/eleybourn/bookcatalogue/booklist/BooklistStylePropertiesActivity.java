@@ -24,14 +24,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -61,7 +59,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
     /** Database connection, if used */
     private CatalogueDBAdapter mDb = null;
 
-    /** Flag indicating style should be saved to the database on exit */
+    /** Options indicating style should be saved to the database on exit */
     private boolean mSaveToDb = true;
     /** Style we are editing */
     private BooklistStyle mStyle;

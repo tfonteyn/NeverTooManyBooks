@@ -59,7 +59,7 @@
     <string name="loan_to">Leen boek aan:</string>
     <string name="returned">Teruggebracht</string>
     <string name="name">Naam</string>
-    <string name="webpage_label">Webpagina:</string>
+    <string name="website_lbl">Webpagina:</string>
     <string name="sourcecode_label">Broncode:</string>
     <string name="contact_label">Contacten:</string>
     <string name="donate_label">Doneren</string>
@@ -384,7 +384,7 @@
     <string name="smaller">Kleiner</string>
     <string name="select_style">Selecteer stijl</string>
     <string name="booklist_background_style">Boekenlijst achtergrondstijl</string>
-    <string name="textured_backgroud">Achtergrondafbeelding met textuur</string>
+    <string name="textured_background">Achtergrondafbeelding met textuur</string>
     <string name="plain_background_b_reduces_flicker_b">Effen achtergrond (minder flikkering)</string>
     <string name="thing_must_not_be_blank">%1$s mag niet leeg zijn</string>
     <string name="edit">Bewerken</string>

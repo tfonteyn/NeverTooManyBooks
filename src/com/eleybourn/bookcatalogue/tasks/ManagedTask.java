@@ -46,24 +46,11 @@ import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
  */
 abstract public class ManagedTask extends Thread {
 
-    /** Controller instance for this specific task */
-    private final TaskController mController = new TaskController() {
-        @Override
-        public void requestAbort() {
-            ManagedTask.this.cancelTask();
-        }
-
-        @Override
-        public ManagedTask getTask() {
-            return ManagedTask.this;
-        }
-    };
-
     private static final TaskSwitch mMessageSwitch = new TaskSwitch();
-    private final long mMessageSenderId = mMessageSwitch.createSender(mController);
     /** The manager who we will use for progress etc, and who we will inform about our state. */
     protected final TaskManager mManager;
-    /** Flag indicating the main onRun method has completed. Set in call do doFinish() in the UI thread. */
+    private final long mMessageSenderId;
+    /** Options indicating the main onRun method has completed. Set in call do doFinish() in the UI thread. */
     private boolean mFinished = false;
     /** Indicates the user has requested a cancel. Up to subclass to decide what to do. Set by TaskManager. */
     private boolean mCancelFlg = false;
@@ -74,6 +61,20 @@ abstract public class ManagedTask extends Thread {
      * @param manager Associated task manager
      */
     protected ManagedTask(@NonNull final TaskManager manager) {
+        /* Controller instance for this specific task */
+        TaskController controller = new TaskController() {
+            @Override
+            public void requestAbort() {
+                ManagedTask.this.cancelTask();
+            }
+
+            @Override
+            public ManagedTask getTask() {
+                return ManagedTask.this;
+            }
+        };
+
+        mMessageSenderId = mMessageSwitch.createSender(controller);
         // Save the stuff for later
         mManager = manager;
         // Add to my manager
@@ -175,8 +176,6 @@ abstract public class ManagedTask extends Thread {
 
     /**
      * Accessor to check if task cancelled.
-     *
-     * @return true/false depending on state
      */
     public boolean isCancelled() {
         return mCancelFlg;
@@ -184,8 +183,6 @@ abstract public class ManagedTask extends Thread {
 
     /**
      * Accessor to check if task finished.
-     *
-     * @return true/false depending on state
      */
     public boolean isFinished() {
         return mFinished;

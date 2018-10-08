@@ -11,7 +11,6 @@ import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -81,7 +80,7 @@ public class DebugReport {
             }
         } catch (PackageManager.NameNotFoundException e) {
             // Default if package not found...kind of unlikely
-            return "NOPACKAGE";
+            return "NO_PACKAGE";
 
         } catch (Exception e) {
             // Default if we die

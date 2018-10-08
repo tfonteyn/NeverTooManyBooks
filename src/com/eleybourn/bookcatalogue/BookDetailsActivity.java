@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -37,7 +36,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
@@ -240,7 +238,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
                 && extras.getBoolean(READ_ONLY, false);
 
         // prepare the tabs, will use multiple for editing, or invisible one for viewing
-        mTabLayout = findViewById(R.id.tabpanel);
+        mTabLayout = findViewById(R.id.tab_panel);
         mTabLayout.addOnTabSelectedListener(new TabListener());
 
         initBookData(mRowId, savedInstanceState == null ? extras : savedInstanceState);
@@ -861,7 +859,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
                 AlertDialog dialog = new AlertDialog.Builder(this)
                         .setMessage(getResources().getString(R.string.duplicate_book_message))
                         .setTitle(R.string.duplicate_book_title)
-                        .setIcon(R.drawable.ic_content_copy)
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
                         .create();
 
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE,

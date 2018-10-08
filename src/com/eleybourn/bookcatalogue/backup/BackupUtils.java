@@ -55,6 +55,7 @@ public class BackupUtils {
     private static final String COLLECTION = "collection";
     private static final String ITEM = "item";
     private static final String NAME = "name";
+
     private static final String TYPE = "type";
     private static final String TYPE_INTEGER = "Int";
     private static final String TYPE_LONG = "Long";
@@ -105,7 +106,7 @@ public class BackupUtils {
      * Internal routine to send the passed CollectionAccessor data to an XML file.
      */
     private static void collectionToXml(@NonNull final BufferedWriter out, @NonNull final CollectionAccessor<String> col) throws IOException {
-        out.append("<collection>\n");
+        out.append("<"+ COLLECTION + ">\n");
         for (String key : col.keySet()) {
             final String type;
             final String value;
@@ -136,7 +137,7 @@ public class BackupUtils {
             }
             out.append("<item name=\"").append(key).append("\" type=\"").append(type).append("\">").append(value).append("</item>\n");
         }
-        out.append("</collection>\n");
+        out.append("</" + COLLECTION + ">\n");
     }
 
     /**
@@ -330,12 +331,12 @@ public class BackupUtils {
     }
 
     /**
-     * Record to preservr data while parsing XML input
+     * Record to preserve data while parsing XML input
      *
      * @author pjw
      */
     private static class ItemInfo {
-        public String name;
+        String name;
         public String type;
     }
 }

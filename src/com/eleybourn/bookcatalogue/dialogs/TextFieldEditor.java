@@ -24,7 +24,6 @@ import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -42,7 +41,7 @@ import com.eleybourn.bookcatalogue.R;
 class TextFieldEditor extends AlertDialog {
     /** View which displays the text */
 	private final EditText mTextView;
-	// Listener for dialog exit/save/cancel */
+	/** Listener for dialog exit/save/cancel */
 	private OnEditListener mListener;
 
 	/**
@@ -64,8 +63,7 @@ class TextFieldEditor extends AlertDialog {
 		super(context);
 
 		// Get the layout
-		LayoutInflater inf = this.getLayoutInflater();
-		View root = inf.inflate(R.layout.dialog_edit_textfield, null);
+		View root = this.getLayoutInflater().inflate(R.layout.dialog_edit_textfield, null);
 
 		// Setup the layout
 		setView(root);
@@ -76,7 +74,7 @@ class TextFieldEditor extends AlertDialog {
 		// Handle OK
 		root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v) {
+			public void onClick(final View view) {
 				mListener.onSaved(mTextView.getText().toString().trim());
 			}}
 		);
@@ -84,7 +82,7 @@ class TextFieldEditor extends AlertDialog {
 		// Handle Cancel
 		root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v) {
+			public void onClick(final View view) {
 				mListener.onCancel();
 			}}
 		);
@@ -93,11 +91,11 @@ class TextFieldEditor extends AlertDialog {
 		this.setOnCancelListener(new OnCancelListener() {
 
 			@Override
-			public void onCancel(DialogInterface arg0) {
+			public void onCancel(final DialogInterface dialog) {
 				mListener.onCancel();
 			}});	
 		
-		// Make sure the buttons move if the keyboard appears
+		// Make sure the buttons moves if the keyboard appears
 		//noinspection ConstantConditions
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 	}

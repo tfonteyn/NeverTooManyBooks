@@ -44,7 +44,7 @@ public class TableDefinition implements AutoCloseable {
     private String mName;
     /** Table alias */
     private String mAlias;
-    /** Flag indicating table is temporary */
+    /** Options indicating table is temporary */
     private TableTypes mType = TableTypes.Standard;
 
     /**
@@ -164,7 +164,7 @@ public class TableDefinition implements AutoCloseable {
      * @return indexes on this table.
      */
     @NonNull
-    public Collection<IndexDefinition> getIndexes() {
+    private Collection<IndexDefinition> getIndexes() {
         return mIndexes.values();
     }
 
@@ -667,8 +667,8 @@ public class TableDefinition implements AutoCloseable {
      * Return the SQL that can be used to define this table.
      *
      * @param name            Name to use for table
-     * @param withConstraints Flag indicating domain constraints should be applied
-     * @param ifNecessary     Flag indicating if creation should not be done if table exists
+     * @param withConstraints Options indicating domain constraints should be applied
+     * @param ifNecessary     Options indicating if creation should not be done if table exists
      *
      * @return SQL to create table
      */

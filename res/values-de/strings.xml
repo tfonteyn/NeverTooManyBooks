@@ -57,7 +57,7 @@
     <string name="loan_to">Verleihe Buch an:</string>
     <string name="returned">Zurückgegeben</string>
     <string name="name">Name</string>
-    <string name="webpage_label">Webseite:</string>
+    <string name="website_lbl">Webseite:</string>
     <string name="sourcecode_label">Quellcode:</string>
     <string name="contact_label">Kontakt:</string>
     <string name="donate_label">Spenden</string>
@@ -377,7 +377,7 @@ anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den "Zurück
     <string name="smaller">Kleiner</string>
     <string name="select_style">Stil wählen</string>
     <string name="booklist_background_style">Hintergrundstil der Bücherliste</string>
-    <string name="textured_backgroud">Gemustertes Hintergrundbild</string>
+    <string name="textured_background">Gemustertes Hintergrundbild</string>
     <string name="plain_background_b_reduces_flicker_b">Einfacher Hintergrund (vermindert Flackern)</string>
     <string name="thing_must_not_be_blank">%1$s darf nicht leer sein</string>
     <string name="edit">Bearbeiten</string>

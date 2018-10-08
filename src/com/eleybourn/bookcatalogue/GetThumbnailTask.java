@@ -74,7 +74,7 @@ public class GetThumbnailTask implements SimpleTask {
     private final WeakReference<ImageView> mView;
     /** ID of book whose cover we are getting */
     private final String mBookHash;
-    /** Flag indicating original caller had checked cache */
+    /** Options indicating original caller had checked cache */
     private final boolean mCacheWasChecked;
     /** The width of the thumbnail retrieved (based on preferences) */
     private final int mWidth;
@@ -83,7 +83,7 @@ public class GetThumbnailTask implements SimpleTask {
     private final Context mContext;
     /** Resulting bitmap object */
     private Bitmap mBitmap = null;
-    /** Flag indicating image was found in the cache */
+    /** Options indicating image was found in the cache */
     private boolean mWasInCache = false;
     /** Indicated we want the queue manager to call the finished() method. */
     private boolean mWantFinished = true;
@@ -245,7 +245,7 @@ public class GetThumbnailTask implements SimpleTask {
             }
         } else {
             if (view != null) {
-                view.setImageResource(R.drawable.ic_warning);
+                view.setImageResource(R.drawable.ic_image);
             }
         }
 

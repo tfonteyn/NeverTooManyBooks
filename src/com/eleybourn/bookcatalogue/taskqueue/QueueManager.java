@@ -28,6 +28,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.EventActions;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnEventChangeListener;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnTaskChangeListener;
@@ -46,7 +47,7 @@ import java.util.Map;
  * Each defined queue results in a fresh Queue object being created in its own thread; the QueueManager
  * creates these. Queue objects last until there are no entries left in the queue.
  *
- * ENHANCE: Split QueueManager into *Manager and *Service, and autocreate QueueManager which will start Service when queues need to execute. Service stops after last queue.
+ * ENHANCE: Split QueueManager into *Manager and *Service, and auto create QueueManager which will start Service when queues need to execute. Service stops after last queue.
  * ENHANCE: Add a 'requiresNetwork()' task property
  * ENHANCE: Register a BroadcastReceiver for ConnectivityManager.CONNECTIVITY_ACTION. In the onReceive handler you can call NetworkInfo info = (NetworkInfo) intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO)
  * ENHANCE: Terminate queues if network not available and all jobs require network.
@@ -68,12 +69,12 @@ public abstract class QueueManager {
     private final Map<String, Queue> mActiveQueues = new Hashtable<>();
     /** The UI thread */
     private final WeakReference<Thread> mUIThread;
-    /** Handle inter-thread messages */
-    private final MessageHandler mMessageHandler;
     /** Objects listening for Event operations */
     private final List<WeakReference<OnEventChangeListener>> mEventChangeListeners = new ArrayList<>();
     /** Objects listening for Task operations */
     private final List<WeakReference<OnTaskChangeListener>> mTaskChangeListeners;
+    /** Handle inter-thread messages */
+    private MessageHandler mMessageHandler;
 
 
     protected QueueManager(@NonNull final Context applicationContext) {
@@ -87,7 +88,8 @@ public abstract class QueueManager {
 
         // Save the thread ... it is the UI thread
         mUIThread = new WeakReference<>(Thread.currentThread());
-        mMessageHandler = new MessageHandler();
+        // setup the handler with access to ourselves
+        mMessageHandler = new MessageHandler(new WeakReference<>(this));
 
         mDb = new DBAdapter(applicationContext);
 
@@ -303,6 +305,11 @@ public abstract class QueueManager {
     private void doToast(@NonNull final String message) {
         if (Thread.currentThread() == mUIThread.get()) {
             synchronized (this) {
+                if (BuildConfig.DEBUG) {
+                    System.out.println(this + ": is toasting: " + message);
+                }
+                // this is basically 'showing' on the UI thread of the Application.onCreate()
+                // TODO: replace with using the Notify stuff ?
                 Toast.makeText(this.getApplicationContext(), message, Toast.LENGTH_LONG).show();
             }
         } else {
@@ -468,15 +475,21 @@ public abstract class QueueManager {
 
     /**
      * Handler for internal UI thread messages.
-     * FIXME TOMF must be static or leaks. See doToast... UI thread or not. investigate
      */
-    private class MessageHandler extends Handler {
+    private static class MessageHandler extends Handler {
+
+        private final WeakReference<QueueManager> mQueueManager;
+
+        MessageHandler(WeakReference<QueueManager> queueManager) {
+            mQueueManager = queueManager;
+        }
+
         public void handleMessage(@NonNull final Message msg) {
             Bundle bundle = msg.getData();
             if (bundle.containsKey(INTERNAL)) {
                 String kind = bundle.getString(INTERNAL);
                 if (TOAST.equals(kind)) {
-                    doToast(bundle.getString(MESSAGE));
+                    mQueueManager.get().doToast(bundle.getString(MESSAGE));
                 }
             } else {
                 throw new IllegalArgumentException("Unknown message");

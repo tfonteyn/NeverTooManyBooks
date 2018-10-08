@@ -35,7 +35,7 @@ public class ZxingScanner implements Scanner {
     /**
      * Check if we have a valid intent available.
      *
-     * @return true if present
+     * @return <tt>true</tt>if present
      */
     static boolean isIntentAvailable(final boolean mustBeZxing) {
         return isIntentAvailable(BookCatalogueApp.getAppContext(), mustBeZxing ? PACKAGE : null);
@@ -44,7 +44,7 @@ public class ZxingScanner implements Scanner {
     /**
      * Check if the passed intent action is available.
      *
-     * @return true if present
+     * @return <tt>true</tt>if present
      */
     private static boolean isIntentAvailable(@NonNull final Context ctx, @Nullable final String packageName) {
         Intent test = new Intent(ACTION);

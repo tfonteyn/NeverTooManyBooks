@@ -24,7 +24,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.entities.BookRow;
+import com.eleybourn.bookcatalogue.entities.BookRowView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -84,7 +84,7 @@ public class CsvExporter implements Exporter {
     /** standard temp export file, first we write here, then rename to csv */
     static final String EXPORT_TEMP_FILE_NAME = "export.tmp";
     /** pattern we look for to rename/keep older copies */
-    static final String EXPORT_CSV_FILES_PATTERN = "export.%s.csv";
+    private static final String EXPORT_CSV_FILES_PATTERN = "export.%s.csv";
     /** backup copies to keep */
     private static final int COPIES = 5;
     /**
@@ -141,10 +141,6 @@ public class CsvExporter implements Exporter {
         StorageUtils.renameFile(temp, export);
     }
 
-    public String getLastError() {
-        return mLastError;
-    }
-
     public boolean export(@NonNull final OutputStream outputStream,
                           @NonNull final Exporter.ExportListener listener,
                           final int backupFlags,
@@ -157,7 +153,7 @@ public class CsvExporter implements Exporter {
             return false;
         }
 
-        /* RELEASE: Handle flags! */
+        /* ENHANCE: Handle flags! */
         // Fix the 'since' date, if required
         if ((backupFlags & Exporter.EXPORT_SINCE) != 0) {
             if (since == null) {
@@ -182,7 +178,7 @@ public class CsvExporter implements Exporter {
         try (BooksCursor bookCursor = db.exportBooks(since);
              BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream, UTF8), BUFFER_SIZE)) {
 
-            final BookRow rowView = bookCursor.getRowView();
+            final BookRowView rowView = bookCursor.getRowView();
             final int totalBooks = bookCursor.getCount();
 
             if (listener.isCancelled()) {
@@ -231,7 +227,7 @@ public class CsvExporter implements Exporter {
                         .append(formatCell(authorDetails))
                         .append(formatCell(title))
                         .append(formatCell(rowView.getIsbn()))
-                        .append(formatCell(rowView.getPublisher()))
+                        .append(formatCell(rowView.getPublisherName()))
                         .append(formatCell(rowView.getDatePublished()))
                         .append(formatCell(rowView.getFirstPublication()))
                         .append(formatCell(rowView.getRating()))
@@ -289,7 +285,7 @@ public class CsvExporter implements Exporter {
      * // V83: Giants In The Sky (1952) * Blish, James|We, The Marauders (1958) * Silverberg, Robert|
      */
     @NonNull
-    private String getAnthologyTitlesForExport(final CatalogueDBAdapter db, final long bookId, final BookRow rowView) {
+    private String getAnthologyTitlesForExport(final CatalogueDBAdapter db, final long bookId, final BookRowView rowView) {
         StringBuilder anthology_titles = new StringBuilder();
         if (rowView.getAnthologyMask() != 0) {
             try (Cursor titles = db.fetchAnthologyTitlesByBookId(bookId)) {
@@ -298,6 +294,7 @@ public class CsvExporter implements Exporter {
                 final int pubDateCol = titles.getColumnIndexOrThrow(DOM_FIRST_PUBLICATION.name);
 
                 while (titles.moveToNext()) {
+                    // we store the whole date, not just the year.. for future compatibility
                     String year = titles.getString(pubDateCol);
                     if (year != null && !year.isEmpty()) {
                         // start with space

@@ -575,7 +575,7 @@ public class LibraryThingManager {
     /**
      * external users (to this class) should call this before doing any searches
      *
-     * @return true if there is a non-empty dev key
+     * @return <tt>true</tt>if there is a non-empty dev key
      */
     public boolean isAvailable() {
         return !getDevKey().isEmpty();

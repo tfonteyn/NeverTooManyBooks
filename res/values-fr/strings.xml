@@ -142,7 +142,7 @@
     <string name="loan_to">Prêter le livre à :</string>
     <string name="returned">Rendu</string>
     <string name="name">Nom</string>
-    <string name="webpage_label">Site web :</string>
+    <string name="website_lbl">Site web :</string>
     <string name="sourcecode_label">Code source :</string>
     <string name="donate_label">Don</string>
     <string name="about_label">À propos de cette application</string>
@@ -463,7 +463,7 @@
     <string name="smaller">Plus petit</string>
     <string name="select_style">Sélectionner un style</string>
     <string name="booklist_background_style">Style d\'arrière plan de la liste de livres</string>
-    <string name="textured_backgroud">Image d\'arrière plan</string>
+    <string name="textured_background">Image d\'arrière plan</string>
     <string name="plain_background_b_reduces_flicker_b">Arrière plan uni (réduit le clignotement)</string>
     <string name="thing_must_not_be_blank">%1$s ne doit pas être vide</string>
     <string name="edit">Modifier</string>

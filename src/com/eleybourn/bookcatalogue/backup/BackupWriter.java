@@ -40,7 +40,7 @@ public interface BackupWriter extends Closeable {
     /**
      * Perform a restore of the database; a convenience method to loop through
      * all entities in the backup and restore them based on the entity type.
-     * <p>
+     *
      * See BackupWriterAbstract for a default implementation.
      */
     void backup(@NonNull final BackupWriterListener listener, final int backupFlags, @Nullable final Date since) throws IOException;
@@ -48,6 +48,7 @@ public interface BackupWriter extends Closeable {
     /**
      * Get the containing archive
      */
+    @NonNull
     BackupContainer getContainer();
 
     /**

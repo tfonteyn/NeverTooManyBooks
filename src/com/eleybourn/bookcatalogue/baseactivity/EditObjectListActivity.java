@@ -44,36 +44,37 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * Base class for editing a list of objects. The inheritor must specify a view id
- * and a row view id to the constructor of this class. Each view can have the
- * following sub-view IDs present which will be automatically handled. Optional
- * IDs are noted:
- * <p>
+ * Base class for editing a list of objects. The inheritor must specify a view id and a row view
+ * id to the constructor of this class. Each view can have the following sub-view IDs present
+ * which will be automatically handled. Optional IDs are noted:
+ *
  * Main View:
  * - cancel
  * - confirm
  * - add (OPTIONAL)
- * <p>
+ *
  * Row View must have layout ID set to "@id/ROW_DETAILS" (defined in ids.xml)
- * <p>
+ *
  * The row view is tagged using TAG_POSITION,, to save the rows position for
  * use when moving the row up/down or deleting it.
- * <p>
+ *
  * Abstract methods are defined for specific tasks (Add, Save, Load etc). While would
  * be tempting to add local implementations the java generic model seems to prevent this.
- * <p>
+ *
  * This Activity uses {@link TouchListViewWithDropListener} extended from {@link TouchListView}
  * from CommonsWare which is in turn based on Android code
  * for TouchInterceptor which was (reputedly) removed in Android 2.2.
- * <p>
+ *
  * For this code to work, the  main view must contain:
+ *
  * - a {@link TouchListViewWithDropListener} with id = @android:id/list
  * - the {@link TouchListViewWithDropListener} must have the following attributes:
  * tlv:ic_grabber="@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
  * tlv:remove_mode="none"
  * tlv:normal_height="64dip" ---- or some similar value
- * <p>
+ *
  * Each row view must have:
+ *
  * - an ID of @id/ROW
  * - an {@link ImageView} with an ID of "@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
  * - (OPTIONAL) a subview with an ID of "@+d/ROW_DETAILS"; when clicked, this will result
@@ -85,18 +86,18 @@ import java.util.ArrayList;
  */
 abstract public class EditObjectListActivity<T extends Serializable> extends BookCatalogueListActivity {
 
-    // The key to use in the Bundle to get the array
+    /** The key to use in the Bundle to get the array */
     private final String mBKey;
-    // The resource ID for the base view
+    /** The resource ID for the base view */
     private final int mBaseViewId;
-    // The resource ID for the row view
+    /** The resource ID for the row view */
     private final int mRowViewId;
-    // the rows
+    /** the rows */
     protected ArrayList<T> mList = null;
     protected EditObjectListAdapter mAdapter;
     protected CatalogueDBAdapter mDb;
     protected String mBookTitle;
-    // Row ID... mainly used (if list is from a book) to know if book is new.
+    /** Row ID... mainly used (if list is from a book) to know if book is new. */
     protected long mRowId = 0;
 
     /**
@@ -181,7 +182,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * @param target The view clicked
      * @param object The object associated with this row
      *
-     * @return true if handled
+     * @return <tt>true</tt>if handled
      */
     @SuppressWarnings({"unused", "SameReturnValue"})
     protected boolean onRowLongClick(@NonNull final View target, @NonNull final T object, final int position) {
@@ -196,9 +197,11 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
         return true;
     }
 
+    @SuppressWarnings("unused")
     protected void onRowDown(@NonNull final View target, @NonNull final T object, final int position) {
     }
 
+    @SuppressWarnings("unused")
     protected void onRowUp(@NonNull final View target, @NonNull final T object, final int position) {
     }
     /**
@@ -209,7 +212,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      *
      * @param intent A newly created Intent to store output if necessary.
      *
-     * @return True if activity should exit, false to abort exit.
+     * @return <tt>true</tt>if activity should exit, false to abort exit.
      */
     protected boolean onSave(@NonNull final Intent intent) {
         return true;
@@ -221,7 +224,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * <p>
      * Can be overridden to perform other checks.
      *
-     * @return True if activity should exit, false to abort exit.
+     * @return <tt>true</tt>if activity should exit, false to abort exit.
      */
     @SuppressWarnings("SameReturnValue")
     private boolean onCancel() {
@@ -313,39 +316,39 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
     /**
      * Utility routine to setup a listener for the specified view id
      *
-     * @param id Resource ID
-     * @param l  Listener
+     * @param viewId Resource ID
+     * @param listener  Listener
      */
-    private void setupListener(@IdRes final int id, @NonNull final OnClickListener l) {
-        View v = this.findViewById(id);
+    private void setupListener(@IdRes final int viewId, @NonNull final OnClickListener listener) {
+        View v = this.findViewById(viewId);
         if (v != null) {
-            v.setOnClickListener(l);
+            v.setOnClickListener(listener);
         }
     }
 
     /**
      * Utility routine to set a TextView to a string, or hide it.
      *
-     * @param id View ID
-     * @param s  String to set
+     * @param viewId View ID
+     * @param value  String to set
      */
-    protected void setTextOrHideView(@SuppressWarnings("SameParameterValue") @IdRes final int id, @Nullable final String s) {
-        TextView textView = this.findViewById(id);
+    protected void setTextOrHideView(@SuppressWarnings("SameParameterValue") @IdRes final int viewId, @Nullable final String value) {
+        TextView textView = this.findViewById(viewId);
         if (textView == null) {
             return;
         }
-        if (s == null || s.isEmpty()) {
+        if (value == null || value.isEmpty()) {
             textView.setVisibility(View.GONE);
             return;
         }
-        textView.setText(s);
+        textView.setText(value);
     }
 
     /**
      * Ensure that the list is saved.
      */
     @Override
-    protected void onSaveInstanceState(final Bundle outState) {
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         // save list
         outState.putSerializable(mBKey, mList);

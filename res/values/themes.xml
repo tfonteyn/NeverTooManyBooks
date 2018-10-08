@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!--
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    -->
-    <style name="Invisible"  parent="AppTheme">
-        <item  name="android:windowBackground">@android:color/transparent</item>
+    <style name="Invisible" parent="AppTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
         <item name="background">@android:color/transparent</item>
         <item name="android:windowIsFloating">true</item>
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="ZoomedImage">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <!-- remove these and the image will be fullscreen, but not all images look good blown up -->
+        <item name="listPreferredItemPaddingLeft">24dip</item>
+        <item name="listPreferredItemPaddingRight">24dip</item>
+    </style>
     <!--
     ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    yes, red is joke... needs to change
     -->
     <!-- System wide theme customizing goes into these -->
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar" >
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+
+        <item name="ic_goodreads">@drawable/ic_goodreads_dark</item>
 
         <item name="fillColorVectorIcons">?android:attr/textColorSecondary</item>
 
@@ -33,42 +39,36 @@
         <item name="alertDialogTheme">@style/AppTheme.Dialog.Alert</item>
 
         <!-- AppCompat Attributes -->
-        <item name="colorPrimary">@color/red_600</item>
-        <item name="colorPrimaryDark">@color/red_900</item>
-        <item name="colorAccent">@color/red_a700</item>
+        <item name="colorPrimary">@color/blue_600</item>
+        <item name="colorPrimaryDark">@color/blue_900</item>
+        <item name="colorAccent">@color/blue_a700</item>
 
         <!-- AppCompat Control Attributes -->
-        <item name="colorButtonNormal">@color/red_500</item>
-        <item name="colorControlNormal">@color/red_500</item>
-        <item name="colorControlActivated">@color/red_500</item>
-        <item name="colorControlHighlight">@color/red_500</item>
+        <item name="colorButtonNormal">@color/blue_500</item>
+        <item name="colorControlNormal">@color/blue_500</item>
+        <item name="colorControlActivated">@color/blue_500</item>
+        <item name="colorControlHighlight">@color/blue_500</item>
     </style>
 
     <!-- Dark Dialog Theme -->
     <style name="AppTheme.Dialog" parent="Theme.AppCompat.Dialog">
-        <item name="colorPrimary">@color/red_500</item>
-        <item name="colorPrimaryDark">@color/red_700</item>
-        <item name="colorAccent">@color/red_a700</item>
-    </style>
-    <style name="AppTheme.Dialog.NoActionBar" parent="AppTheme.Dialog">
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
+        <item name="colorPrimary">@color/blue_500</item>
+        <item name="colorPrimaryDark">@color/blue_700</item>
+        <item name="colorAccent">@color/blue_a700</item>
     </style>
 
     <!-- Dark Alert Dialog Theme -->
     <style name="AppTheme.Dialog.Alert" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="colorPrimary">@color/red_500</item>
-        <item name="colorPrimaryDark">@color/red_700</item>
-        <item name="colorAccent">@color/red_a700</item>
-    </style>
-    <style name="AppTheme.Dialog.Alert.NoActionBar" parent="AppTheme.Dialog.Alert">
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
+        <item name="colorPrimary">@color/blue_500</item>
+        <item name="colorPrimaryDark">@color/blue_700</item>
+        <item name="colorAccent">@color/blue_a700</item>
     </style>
     <!--
     ////////////////////////////////////////////////////////////////////////////////////////////////
     -->
     <style name="AppTheme.Light" parent="Theme.AppCompat.Light.NoActionBar">
+
+        <item name="ic_goodreads">@drawable/ic_goodreads_light</item>
 
         <item name="fillColorVectorIcons">?android:attr/textColorSecondary</item>
 
@@ -80,40 +80,32 @@
         <item name="color_border">@color/grey_400</item>
 
         <!-- AppCompat Dialog Attributes -->
-        <item name="dialogTheme">@style/AppTheme.Dialog.Light</item>
+        <item name="dialogTheme">@style/AppTheme.Light.Dialog</item>
         <item name="alertDialogTheme">@style/AppTheme.Dialog.Alert.Light</item>
 
         <!-- AppCompat Attributes -->
-        <item name="colorPrimary">@color/red_500</item>
-        <item name="colorPrimaryDark">@color/red_700</item>
-        <item name="colorAccent">@color/red_a700</item>
+        <item name="colorPrimary">@color/blue_500</item>
+        <item name="colorPrimaryDark">@color/blue_700</item>
+        <item name="colorAccent">@color/blue_a700</item>
 
         <!-- AppCompat Control Attributes -->
-        <item name="colorButtonNormal">@color/red_500</item>
-        <item name="colorControlNormal">@color/red_500</item>
-        <item name="colorControlActivated">@color/red_500</item>
-        <item name="colorControlHighlight">@color/red_500</item>
+        <item name="colorButtonNormal">@color/blue_500</item>
+        <item name="colorControlNormal">@color/blue_500</item>
+        <item name="colorControlActivated">@color/blue_500</item>
+        <item name="colorControlHighlight">@color/blue_500</item>
     </style>
 
     <!-- Light Dialog Theme -->
-    <style name="AppTheme.Dialog.Light" parent="Theme.AppCompat.Light.Dialog">
-        <item name="colorPrimary">@color/red_500</item>
-        <item name="colorPrimaryDark">@color/red_700</item>
-        <item name="colorAccent">@color/red_a700</item>
-    </style>
-    <style name="AppTheme.Dialog.NoActionBar.Light" parent="AppTheme.Dialog.Light">
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
+    <style name="AppTheme.Light.Dialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimary">@color/blue_500</item>
+        <item name="colorPrimaryDark">@color/blue_700</item>
+        <item name="colorAccent">@color/blue_a700</item>
     </style>
 
     <!-- Light Alert Dialog Theme -->
-    <style name="AppTheme.Dialog.Alert.Light" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorPrimary">@color/red_500</item>
-        <item name="colorPrimaryDark">@color/red_700</item>
-        <item name="colorAccent">@color/red_a700</item>
-    </style>
-    <style name="AppTheme.Dialog.Alert.NoActionBar.Light" parent="AppTheme.Dialog.Alert.Light">
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
+    <style name="AppTheme.Dialog.Alert.Light" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorPrimary">@color/blue_500</item>
+        <item name="colorPrimaryDark">@color/blue_700</item>
+        <item name="colorAccent">@color/blue_a700</item>
     </style>
 </resources>

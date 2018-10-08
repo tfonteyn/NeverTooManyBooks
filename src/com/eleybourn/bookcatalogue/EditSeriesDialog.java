@@ -22,13 +22,11 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -56,8 +54,7 @@ public class EditSeriesDialog {
         seriesView.setText(series.name);
         seriesView.setAdapter(mSeriesAdapter);
 
-        Button saveButton = dialog.findViewById(R.id.confirm);
-        saveButton.setOnClickListener(new View.OnClickListener() {
+        dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AutoCompleteTextView seriesView = dialog.findViewById(R.id.series);
@@ -71,8 +68,7 @@ public class EditSeriesDialog {
             }
         });
         
-        Button cancelButton = dialog.findViewById(R.id.cancel);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
+        dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
@@ -91,11 +87,14 @@ public class EditSeriesDialog {
         from.id = mDb.getSeriesId(from);
         to.id = mDb.getSeriesId(to);
 
-        // Case: series is the same (but different case)
+        // Case: series is the same (but maybe different case) TOMF
         if (to.id == from.id) {
             // Just update with the most recent spelling and format
             from.copyFrom(to);
-            mDb.sendSeries(from);
+            if (from.id == 0) {
+                from.id = mDb.getSeriesId(from);
+            }
+            mDb.insertOrUpdateSeries(from);
             mOnChanged.run();
             return;
         }

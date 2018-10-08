@@ -206,7 +206,7 @@ public class CropImageView extends CropImageViewTouchBase {
     }
 
     // If the cropping rectangle's size changed significantly, change the
-    // view's center and scale according to the cropping rectangle.
+    // view's center and SCALE according to the cropping rectangle.
     private void centerBasedOnHighlightView(@NonNull final CropHighlightView hv) {
         Rect drawRect = hv.mDrawRect;
 

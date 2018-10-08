@@ -184,7 +184,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         event.addContextMenuItems(this, parent, v, position, id, items, mDb);
 
         if (items.size() > 0) {
-            showContextDialogue(getResources().getString(R.string.select_an_action), items);
+            showContextDialogue(R.string.select_an_action, items);
         }
     }
 

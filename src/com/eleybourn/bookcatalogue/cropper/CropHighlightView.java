@@ -219,7 +219,7 @@ class CropHighlightView {
             // the bottom edge (with some tolerance). Similar for horizCheck.
             boolean verticalCheck = (y >= r.top - hysteresis)
                     && (y < r.bottom + hysteresis);
-            boolean horizCheck = (x >= r.left - hysteresis)
+            boolean horizontalCheck = (x >= r.left - hysteresis)
                     && (x < r.right + hysteresis);
 
             // Check whether the position is near some edge(s).
@@ -229,10 +229,10 @@ class CropHighlightView {
             if ((Math.abs(r.right - x) < hysteresis) && verticalCheck) {
                 retval |= GROW_RIGHT_EDGE;
             }
-            if ((Math.abs(r.top - y) < hysteresis) && horizCheck) {
+            if ((Math.abs(r.top - y) < hysteresis) && horizontalCheck) {
                 retval |= GROW_TOP_EDGE;
             }
-            if ((Math.abs(r.bottom - y) < hysteresis) && horizCheck) {
+            if ((Math.abs(r.bottom - y) < hysteresis) && horizontalCheck) {
                 retval |= GROW_BOTTOM_EDGE;
             }
 
@@ -276,7 +276,7 @@ class CropHighlightView {
         }
     }
 
-    /** Grows the cropping rectange by (dx, dy) in image space. */
+    /** Grows the cropping rectangle by (dx, dy) in image space. */
     private void moveBy(final float dx, final float dy) {
         Rect invalRect = new Rect(mDrawRect);
 

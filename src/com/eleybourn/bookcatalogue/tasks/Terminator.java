@@ -43,7 +43,7 @@ public class Terminator {
     /** Queue of Event objects currently awaiting execution */
     private static final PriorityQueue<Event> mEvents = new PriorityQueue<>(10, new EventComparator());
     /**
-     * Flag indicating the main thread process is still running and waiting for a timer to elapse.
+     * Options indicating the main thread process is still running and waiting for a timer to elapse.
      */
     private static boolean mIsRunning = false;
 

@@ -35,7 +35,7 @@
                 android:text="@string/lt_register_text" />
 
             <TextView
-                android:id="@+id/devkey_url"
+                android:id="@+id/dev_key_url"
                 style="@style/link_url"
                 android:gravity="center"
                 android:text="@string/lt_devkey_text" />

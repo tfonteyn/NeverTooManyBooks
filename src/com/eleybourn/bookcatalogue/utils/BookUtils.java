@@ -26,13 +26,11 @@ import android.database.CursorIndexOutOfBoundsException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookDetailsActivity;
-import com.eleybourn.bookcatalogue.entities.BookRow;
+import com.eleybourn.bookcatalogue.entities.BookRowView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -65,28 +63,28 @@ public class BookUtils {
         Intent intent = new Intent(activity, BookDetailsActivity.class);
         final Bundle book = new Bundle();
         try (BooksCursor cursor = db.fetchBookById(bookId)) {
-            BookRow bookRow = cursor.getRowView();
+            BookRowView bookRowView = cursor.getRowView();
 
             cursor.moveToFirst();
 
-            book.putLong(UniqueId.KEY_ANTHOLOGY_MASK, bookRow.getAnthologyMask());
-            book.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, bookRow.getDatePublished());
-            book.putString(UniqueId.KEY_DESCRIPTION, bookRow.getDescription());
-            book.putString(UniqueId.KEY_BOOK_FORMAT, bookRow.getFormat());
-            book.putString(UniqueId.KEY_BOOK_GENRE, bookRow.getGenre());
-            book.putString(UniqueId.KEY_ISBN, bookRow.getIsbn());
-            book.putString(UniqueId.KEY_BOOK_LIST_PRICE, bookRow.getListPrice());
-            book.putString(UniqueId.KEY_BOOK_LANGUAGE, bookRow.getLanguage());
-            book.putString(UniqueId.KEY_BOOK_LOCATION, bookRow.getLocation());
-            book.putString(UniqueId.KEY_NOTES, bookRow.getNotes());
-            book.putString(UniqueId.KEY_BOOK_PAGES, bookRow.getPages());
-            book.putString(UniqueId.KEY_BOOK_PUBLISHER, bookRow.getPublisher());
-            book.putDouble(UniqueId.KEY_BOOK_RATING, bookRow.getRating());
-            book.putInt(UniqueId.KEY_BOOK_READ, bookRow.getRead());
-            book.putString(UniqueId.KEY_BOOK_READ_END, bookRow.getReadEnd());
-            book.putString(UniqueId.KEY_BOOK_READ_START, bookRow.getReadStart());
-            book.putInt(UniqueId.KEY_BOOK_SIGNED, bookRow.getSigned());
-            book.putString(UniqueId.KEY_TITLE, bookRow.getTitle());
+            book.putLong(UniqueId.KEY_ANTHOLOGY_MASK, bookRowView.getAnthologyMask());
+            book.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, bookRowView.getDatePublished());
+            book.putString(UniqueId.KEY_DESCRIPTION, bookRowView.getDescription());
+            book.putString(UniqueId.KEY_BOOK_FORMAT, bookRowView.getFormat());
+            book.putString(UniqueId.KEY_BOOK_GENRE, bookRowView.getGenre());
+            book.putString(UniqueId.KEY_ISBN, bookRowView.getIsbn());
+            book.putString(UniqueId.KEY_BOOK_LIST_PRICE, bookRowView.getListPrice());
+            book.putString(UniqueId.KEY_BOOK_LANGUAGE, bookRowView.getLanguage());
+            book.putString(UniqueId.KEY_BOOK_LOCATION, bookRowView.getLocation());
+            book.putString(UniqueId.KEY_NOTES, bookRowView.getNotes());
+            book.putString(UniqueId.KEY_BOOK_PAGES, bookRowView.getPages());
+            book.putString(UniqueId.KEY_BOOK_PUBLISHER, bookRowView.getPublisherName());
+            book.putDouble(UniqueId.KEY_BOOK_RATING, bookRowView.getRating());
+            book.putInt(UniqueId.KEY_BOOK_READ, bookRowView.getRead());
+            book.putString(UniqueId.KEY_BOOK_READ_END, bookRowView.getReadEnd());
+            book.putString(UniqueId.KEY_BOOK_READ_START, bookRowView.getReadStart());
+            book.putInt(UniqueId.KEY_BOOK_SIGNED, bookRowView.getSigned());
+            book.putString(UniqueId.KEY_TITLE, bookRowView.getTitle());
 
             book.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, db.getBookAuthorList(bookId));
             book.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(bookId));
@@ -104,7 +102,7 @@ public class BookUtils {
     /**
      * Delete book by its database row _id and close current activity.
      *
-     * @param bookId  the book to deletin
+     * @param bookId  the book to delete
      */
     public static void deleteBook(@NonNull final Activity activity,
                                   @NonNull final CatalogueDBAdapter db,
@@ -143,11 +141,11 @@ public class BookUtils {
 
         try (BooksCursor cursor = db.fetchBookById(bookId)) {
             cursor.moveToFirst();
-            BookRow bookRow = cursor.getRowView();
-            title = bookRow.getTitle();
-            rating = bookRow.getRating();
-            author = bookRow.getPrimaryAuthorNameFormatted();
-            series = bookRow.getPrimarySeriesFormatted();
+            BookRowView bookRowView = cursor.getRowView();
+            title = bookRowView.getTitle();
+            rating = bookRowView.getRating();
+            author = bookRowView.getPrimaryAuthorNameFormatted();
+            series = bookRowView.getPrimarySeriesFormatted();
         }
 
         File image = StorageUtils.getCoverFile(db.getBookUuid(bookId));
@@ -195,7 +193,7 @@ public class BookUtils {
      * @param db       database
      * @param bookData to update
      *
-     * @return true/false as result from database update
+     * @return <tt>true</tt> if the update was successful, false on failure
      */
     @SuppressWarnings("UnusedReturnValue")
     public static boolean setRead(@NonNull final CatalogueDBAdapter db,
@@ -207,7 +205,7 @@ public class BookUtils {
         bookData.putInt(UniqueId.KEY_BOOK_READ, read ? 1 : 0);
         bookData.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
 
-        if (!(1 == db.updateBook(bookData.getBookId(), bookData, 0))) {
+        if (db.updateBook(bookData.getBookId(), bookData, 0) != 1) {
             bookData.putInt(UniqueId.KEY_BOOK_READ, prevRead);
             bookData.putString(UniqueId.KEY_BOOK_READ_END, prevReadEnd);
             return false;
@@ -222,7 +220,7 @@ public class BookUtils {
         BookData bookData = new BookData(bookId);
         bookData.putBoolean(UniqueId.KEY_BOOK_READ, read);
         bookData.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
-        return 1 == db.updateBook(bookId, bookData, 0);
+        return (db.updateBook(bookId, bookData, 0) == 1);
     }
 
     @SuppressWarnings("UnusedReturnValue")

@@ -5,8 +5,8 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/padding_border_double"
-    android:paddingRight="@dimen/padding_border_double">
+    android:paddingLeft="@dimen/padding_border"
+    android:paddingRight="@dimen/padding_border">
 
     <LinearLayout
         android:id="@+id/dateSelector"
@@ -37,12 +37,12 @@
 
             <EditText
                 android:id="@+id/year"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/year"
                 android:inputType="number"
                 android:minEms="3"
                 android:text="2000"
-                android:hint="@string/year"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 tools:ignore="HardcodedText,Autofill" />
 

@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -33,27 +33,42 @@ import java.util.Date;
 
 /**
  * Interface provided by every entity read from a backup file.
- * 
+ *
  * @author pjw
  */
 public interface ReaderEntity {
-	/** Supported entity types */
-    enum BackupEntityType { Cover, Books, Info, Database, Preferences, BooklistStyle }
-
-	/** Get the original "file name" of the object */
+    /** Get the original "file name" of the object */
+    @NonNull
     String getName();
-	/** Get the type of this entity */
-	BackupEntityType getType();
-	/** get the stream to read the entity */
-	InputStream getStream();
-	/** Save the data to a directory, using the original file name */
-	void saveToDirectory(@NonNull final File dir) throws IOException;
-	/** Read the data into a bundle */
+
+    /** Get the type of this entity */
+    @NonNull
+    BackupEntityType getType();
+
+    /** get the stream to read the entity */
+    @NonNull
+    InputStream getStream();
+
+    /** Save the data to a directory, using the original file name */
+    void saveToDirectory(@NonNull final File dir) throws IOException;
+
+    /** Read the data into a bundle */
+    @NonNull
     Bundle getBundle() throws IOException;
-	/** Read the data into preferences */
+
+    /** Read the data into preferences */
     void getPreferences(@NonNull final SharedPreferences prefs) throws IOException;
-	/** Read the data as a Serializable object */
+
+    /** Read the data as a Serializable object */
+    @NonNull
     Serializable getSerializable() throws IOException, DeserializationException;
-	/** Modified date from archive entry */
+
+    /** Modified date from archive entry */
+    @NonNull
     Date getDateModified();
+
+    /** Supported entity types */
+    enum BackupEntityType {
+        Cover, Books, Info, Database, Preferences, BooklistStyle
+    }
 }

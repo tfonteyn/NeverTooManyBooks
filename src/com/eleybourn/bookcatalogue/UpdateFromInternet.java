@@ -34,7 +34,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -222,7 +221,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                     AlertDialog dialog = new AlertDialog.Builder(UpdateFromInternet.this)
                             .setMessage(R.string.overwrite_thumbnail)
                             .setTitle(R.string.update_fields)
-                            .setIcon(R.drawable.ic_info_outline)
+                            .setIconAttribute(android.R.attr.alertDialogIcon)
                             .create();
                     dialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternet.this.getResources().getString(R.string.yes),
                             new DialogInterface.OnClickListener() {

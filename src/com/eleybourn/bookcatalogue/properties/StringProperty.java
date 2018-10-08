@@ -42,7 +42,7 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
  * @author Philip Warner
  */
 public class StringProperty extends ValuePropertyWithGlobalDefault<String> implements StringValue {
-    /** Flag indicating value must be non-blank */
+    /** Options indicating value must be non-blank */
     private boolean mRequireNonBlank = false;
 
     public StringProperty(@NonNull final String uniqueId,

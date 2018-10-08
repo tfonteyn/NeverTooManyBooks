@@ -77,18 +77,8 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
 
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnActivityCreated(this);
-        long t0;
-        long t1;
-
         try {
-            if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                t0 = System.currentTimeMillis();
-            }
             super.onActivityCreated(savedInstanceState);
-            if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                t1 = System.currentTimeMillis();
-            }
-
             if (savedInstanceState != null) {
                 mEditManager.setDirty(savedInstanceState.getBoolean(UniqueId.BKEY_DIRTY));
             }
@@ -181,11 +171,6 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         } finally {
             Tracker.exitOnActivityCreated(this);
         }
-
-        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            System.out.println("BEF oAC(super): " + (t1 - t0) + ", BEF oAC: " + (System.currentTimeMillis() - t0));
-        }
-
     }
 
     private void setupMenuMoreButton(@IdRes final int resId,
@@ -237,6 +222,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         }
         final BookData bookData = mEditManager.getBookData();
         populateFieldsFromBook(bookData);
+        // new book ? populate from Extras
         if (bookData.getBookId() <= 0) {
             Bundle extras = getActivity().getIntent().getExtras();
             if (extras != null) {

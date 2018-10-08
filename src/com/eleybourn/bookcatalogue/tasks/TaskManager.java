@@ -69,7 +69,7 @@ public class TaskManager implements AutoCloseable {
      *  Setting to blank will remove the ProgressDialog
      */
     private String mBaseMessage = "";
-    /** Flag indicating tasks are being cancelled. This is reset when a new task is added */
+    /** Options indicating tasks are being cancelled. This is reset when a new task is added */
     private boolean mCancelling = false;
     /** Object for SENDING messages specific to this instance */
     private final Long mMessageSenderId = mMessageSwitch.createSender(new TaskManagerController() {
@@ -84,7 +84,7 @@ public class TaskManager implements AutoCloseable {
             return TaskManager.this;
         }
     });
-    /** Flag indicating the TaskManager is terminating; will close after last task exits */
+    /** Options indicating the TaskManager is terminating; will close after last task exits */
     private boolean mIsClosing = false;
 
     /* ====================================================================================================

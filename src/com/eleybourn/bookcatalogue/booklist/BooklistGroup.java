@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -38,6 +39,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_AUTHOR;
@@ -109,27 +111,31 @@ public class BooklistGroup implements Serializable {
         // Sanity check
         for (int i = 0; i <= ROW_KIND_MAX; i++) {
             if (!mRowKindNames.containsKey(i))
-                throw new IllegalArgumentException("Missing row kind name for row kind " + i);
+                throw new IllegalArgumentException("Missing mRowKindNames for kind " + i);
         }
     }
 
     /** The Row Kind of this group */
     public int kind;
     /** The domains represented by this group. Set at runtime by builder based on current group and outer groups */
-    public transient ArrayList<DomainDefinition> groupDomains;
+    transient ArrayList<DomainDefinition> groupDomains;
     /** The domain used to display this group. Set at runtime by builder based on internal logic of builder */
-    public transient DomainDefinition displayDomain;
+    transient DomainDefinition displayDomain;
     /** Compound key of this group. Set at runtime by builder based on current group and outer groups */
     private transient CompoundKey mCompoundKey;
 
-    BooklistGroup(int kind) {
+    /**
+     * Constructor
+     *
+     */
+    BooklistGroup(@IntRange(from=0, to=ROW_KIND_MAX) final int kind) {
         this.kind = kind;
     }
 
     /**
      * Return a list of all defined row kinds.
      */
-    public static int[] getRowKinds() {
+    static int[] getRowKinds() {
         int[] kinds = new int[mRowKindNames.size()];
         int pos = 0;
         for (Entry<Integer, String> e : mRowKindNames.entrySet()) {
@@ -142,8 +148,8 @@ public class BooklistGroup implements Serializable {
      * Return a list of BooklistGroups, one for each defined row kind
      */
     @NonNull
-    public static ArrayList<BooklistGroup> getAllGroups() {
-        ArrayList<BooklistGroup> list = new ArrayList<>();
+    static List<BooklistGroup> getAllGroups() {
+        List<BooklistGroup> list = new ArrayList<>();
 
         for (Entry<Integer, String> e : mRowKindNames.entrySet()) {
             final int kind = e.getKey();
@@ -159,7 +165,7 @@ public class BooklistGroup implements Serializable {
      * @param kind Kind of group to create
      */
     @NonNull
-    public static BooklistGroup newGroup(final int kind) {
+    static BooklistGroup newGroup(final int kind) {
         switch (kind) {
             case ROW_KIND_AUTHOR:
                 return new BooklistGroup.BooklistAuthorGroup();
@@ -171,13 +177,13 @@ public class BooklistGroup implements Serializable {
     }
 
     /** Setter for compound key */
-    public void setKeyComponents(@NonNull final String prefix, @NonNull final DomainDefinition... domains) {
+    void setKeyComponents(@NonNull final String prefix, @NonNull final DomainDefinition... domains) {
         mCompoundKey = new CompoundKey(prefix, domains);
     }
 
     /** Getter for compound key */
     @NonNull
-    public CompoundKey getCompoundKey() {
+    CompoundKey getCompoundKey() {
         return mCompoundKey;
     }
 
@@ -338,7 +344,7 @@ public class BooklistGroup implements Serializable {
             mAllSeries.set((Boolean) in.readObject());
         }
 
-        public boolean getAllSeries() {
+        boolean showAllSeries() {
             return mAllSeries.isTrue();
         }
 
@@ -425,11 +431,11 @@ public class BooklistGroup implements Serializable {
             mGivenName.set((Boolean) in.readObject());
         }
 
-        public boolean getAllAuthors() {
+        boolean showAllAuthors() {
             return mAllAuthors.isTrue();
         }
 
-        public boolean getGivenName() {
+        boolean showGivenName() {
             return mGivenName.isTrue();
         }
 

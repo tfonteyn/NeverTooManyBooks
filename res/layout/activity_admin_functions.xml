@@ -111,8 +111,9 @@
             <TextView
                 android:id="@+id/goodreads_auth"
                 style="@style/prefsItem"
-                android:drawableStart="@drawable/ic_security"
-                android:text="@string/goodreads" />
+                android:drawableStart="?attr/ic_goodreads"
+                android:text="@string/goodreads"
+                tools:drawableStart="@drawable/ic_goodreads_dark"/>
 
             <TextView
                 android:id="@+id/librarything_auth"

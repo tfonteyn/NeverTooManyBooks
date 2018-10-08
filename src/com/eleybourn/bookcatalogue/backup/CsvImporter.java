@@ -181,18 +181,18 @@ public class CsvImporter implements Importer {
                     }
                 }
 
-                requireNonBlank(bookData, row, UniqueId.KEY_TITLE);
+                requireNonBlankOrThrow(bookData, row, UniqueId.KEY_TITLE);
                 final String title = bookData.getString(UniqueId.KEY_TITLE);
 
                 // Keep author handling local
-                importBooks_handleAuthors(mDb, bookData);
+                handleAuthors(mDb, bookData);
 
                 // Keep series handling local
-                importBooks_handleSeries(mDb, bookData);
+                handleSeries(mDb, bookData);
 
                 // Keep anthology handling local
                 if (bookData.containsKey(UniqueId.KEY_ANTHOLOGY_MASK)) {
-                    importBooks_handleAnthology(mDb, bookData);
+                    handleAnthology(mDb, bookData);
                 }
 
                 // Make sure we have UniqueId.BKEY_BOOKSHELF_TEXT if we imported bookshelf
@@ -250,7 +250,6 @@ public class CsvImporter implements Importer {
     }
 
     /**
-     *
      * @return new or updated bookId
      *
      * @throws Exception on failure
@@ -308,10 +307,11 @@ public class CsvImporter implements Importer {
         return bookId;
     }
 
+
     private boolean updateOnlyIfNewer(@NonNull final CatalogueDBAdapter db,
                                       @NonNull final BookData bookData,
                                       final long bookId) {
-        String bookDateStr = db.getBookUpdateDate(bookId);
+        String bookDateStr = db.getBookLastUpdateDate(bookId);
 
         Date bookDate = null;
         if (bookDateStr != null && !bookDateStr.isEmpty()) {
@@ -338,17 +338,17 @@ public class CsvImporter implements Importer {
     /**
      * Database access is strictly limited to fetching id's
      */
-    private void importBooks_handleAnthology(@NonNull final CatalogueDBAdapter db,
-                                             @NonNull final BookData bookData) {
+    private void handleAnthology(@NonNull final CatalogueDBAdapter db,
+                                 @NonNull final BookData bookData) {
         // see if the book is marked as an anthology.
-        long anthology = 0;
+        long anthologyMask = 0;
         try {
-            anthology = bookData.getLong(UniqueId.KEY_ANTHOLOGY_MASK);
+            anthologyMask = bookData.getLong(UniqueId.KEY_ANTHOLOGY_MASK);
         } catch (NumberFormatException ignore) {
             bookData.remove(UniqueId.KEY_ANTHOLOGY_MASK);
         }
 
-        if (anthology != 0) {
+        if (anthologyMask != 0) {
             long bookId = bookData.getLong(UniqueId.KEY_ID);
             String encodedString =  bookData.getString(UniqueId.BKEY_ANTHOLOGY_DETAILS);
             if (encodedString != null && !encodedString.isEmpty()) {
@@ -372,8 +372,8 @@ public class CsvImporter implements Importer {
     /**
      * Database access is strictly limited to fetching id's
      */
-    private void importBooks_handleSeries(@NonNull final CatalogueDBAdapter db,
-                                          @NonNull final BookData bookData) {
+    private void handleSeries(@NonNull final CatalogueDBAdapter db,
+                              @NonNull final BookData bookData) {
         String seriesDetails = bookData.getString(UniqueId.BKEY_SERIES_DETAILS);
         if (seriesDetails == null || seriesDetails.isEmpty()) {
             // Try to build from SERIES_NAME and SERIES_NUM. It may all be blank
@@ -400,8 +400,8 @@ public class CsvImporter implements Importer {
     /**
      * Database access is strictly limited to fetching id's
      */
-    private void importBooks_handleAuthors(@NonNull final CatalogueDBAdapter db,
-                                           @NonNull final BookData bookData) {
+    private void handleAuthors(@NonNull final CatalogueDBAdapter db,
+                               @NonNull final BookData bookData) {
         // Get the list of authors from whatever source is available.
         String authorDetails = bookData.getString(UniqueId.BKEY_AUTHOR_DETAILS);
         if (authorDetails == null || authorDetails.isEmpty()) {
@@ -556,8 +556,9 @@ public class CsvImporter implements Importer {
         }
     }
 
-    // Require a column
-    private void requireColumnOrThrow(@NonNull final BookData bookData, String... names) throws ImportException {
+    /** Require a column */
+    private void requireColumnOrThrow(@NonNull final BookData bookData,
+                                      String... names) throws ImportException {
         for (String name : names) {
             if (bookData.containsKey(name)) {
                 return;
@@ -568,9 +569,9 @@ public class CsvImporter implements Importer {
                 Utils.join(",", names)));
     }
 
-    private void requireNonBlank(@NonNull final BookData bookData,
-                                 final int row,
-                                 @SuppressWarnings("SameParameterValue") @NonNull final String name)
+    private void requireNonBlankOrThrow(@NonNull final BookData bookData,
+                                        final int row,
+                                        @SuppressWarnings("SameParameterValue") @NonNull final String name)
             throws ImportException {
         if (!bookData.getString(name).isEmpty()) {
             return;
@@ -579,7 +580,9 @@ public class CsvImporter implements Importer {
     }
 
     @SuppressWarnings("unused")
-    private void requireAnyNonBlank(@NonNull final BookData bookData, final int row, @NonNull final String... names) throws ImportException {
+    private void requireAnyNonBlankOrThrow(@NonNull final BookData bookData,
+                                           final int row,
+                                           @NonNull final String... names) throws ImportException {
         for (String name : names) {
             if (bookData.containsKey(name) && !bookData.getString(name).isEmpty()) {
                 return;

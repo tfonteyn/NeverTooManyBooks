@@ -1,6 +1,8 @@
 package com.eleybourn.bookcatalogue;
 
 import android.content.Context;
+import android.support.annotation.IdRes;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
@@ -18,7 +20,7 @@ public class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle>
     private final Context mContext;
 
     AnthologyTitleListAdapter(@NonNull final Context context,
-                              final int rowViewId,
+                              @LayoutRes final int rowViewId,
                               @NonNull final ArrayList<AnthologyTitle> items) {
         super(context, rowViewId, items);
         mContext = context;

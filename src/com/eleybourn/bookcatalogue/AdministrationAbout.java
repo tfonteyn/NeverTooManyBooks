@@ -76,20 +76,20 @@ public class AdministrationAbout extends BookCatalogueActivity {
             Logger.logError(e);
         }
         final Resources res = this.getResources();
-        TextView webpage = findViewById(R.id.webpage);
-        webpage.setOnClickListener(new OnClickListener() {
+        TextView website = findViewById(R.id.website);
+        website.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.webpage)));
-                startActivity(loadweb);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.website)));
+                startActivity(intent);
             }
         });
         TextView sourcecode = findViewById(R.id.sourcecode);
         sourcecode.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent loadweb = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.sourcecode)));
-                startActivity(loadweb);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.sourcecode)));
+                startActivity(intent);
             }
         });
         TextView contact1 = findViewById(R.id.contact1);

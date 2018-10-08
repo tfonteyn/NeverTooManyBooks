@@ -73,7 +73,7 @@ public class SimpleTaskQueue {
     private final List<SimpleTaskQueueThread> mThreads = new ArrayList<>();
     /** Max number of threads to create */
     private final int mMaxTasks;
-    /** Flag indicating this object should terminate. */
+    /** Options indicating this object should terminate. */
     private boolean mTerminate = false;
     /** Number of currently queued, executing (or starting/finishing) tasks */
     private int mManagedTaskCount = 0;
@@ -81,7 +81,7 @@ public class SimpleTaskQueue {
     private OnTaskStartListener mTaskStartListener = null;
     private OnTaskFinishListener mTaskFinishListener = null;
     /**
-     * Flag indicating runnable is queued but not run; avoids multiple unnecessary Runnable's
+     * Options indicating runnable is queued but not run; avoids multiple unnecessary Runnable's
      */
     private boolean mDoProcessResultsIsQueued = false;
     /**
@@ -122,7 +122,7 @@ public class SimpleTaskQueue {
     /**
      * Accessor
      *
-     * @return Flag indicating queue is terminating (finish() was called)
+     * @return Options indicating queue is terminating (finish() was called)
      */
     private boolean isTerminating() {
         return mTerminate;
@@ -157,7 +157,7 @@ public class SimpleTaskQueue {
      *
      * @param task Task to run.
      */
-    public long enqueue(@NonNull final SimpleTask task) {
+    public void enqueue(@NonNull final SimpleTask task) {
         SimpleTaskWrapper wrapper = new SimpleTaskWrapper(this, task);
 
         synchronized (this) {
@@ -175,7 +175,6 @@ public class SimpleTaskQueue {
                 t.start();
             }
         }
-        return wrapper.id;
     }
 
     /**

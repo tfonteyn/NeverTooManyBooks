@@ -36,6 +36,7 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.annotation.StyleRes;
 import android.util.TypedValue;
 
 import com.eleybourn.bookcatalogue.debug.DebugReport;
@@ -106,19 +107,11 @@ public class BookCatalogueApp extends Application {
     };
     private static final int[] DIALOG_THEMES = {
             R.style.AppTheme_Dialog,
-            R.style.AppTheme_Dialog_Light
-    };
-    private static final int[] DIALOG_NOACTIONBAR_THEMES = {
-            R.style.AppTheme_Dialog_NoActionBar,
-            R.style.AppTheme_Dialog_NoActionBar_Light
+            R.style.AppTheme_Light_Dialog
     };
     private static final int[] DIALOG_ALERT_THEMES = {
             R.style.AppTheme_Dialog_Alert,
             R.style.AppTheme_Dialog_Alert_Light
-    };
-    private static final int[] DIALOG_ALERT_NOACTIONBAR_THEMES = {
-            R.style.AppTheme_Dialog_Alert_NoActionBar,
-            R.style.AppTheme_Dialog_Alert_NoActionBar_Light
     };
 
     private static int mLastTheme;
@@ -137,16 +130,19 @@ public class BookCatalogueApp extends Application {
         return false;
     }
 
+    @StyleRes
     public static int getThemeResId() {
         return APP_THEMES[mLastTheme];
     }
 
-    public static int getDialogThemeResId(final boolean actionbar) {
-        return actionbar ? DIALOG_THEMES[mLastTheme] : DIALOG_NOACTIONBAR_THEMES[mLastTheme] ;
+    @StyleRes
+    public static int getDialogThemeResId() {
+        return DIALOG_THEMES[mLastTheme];
     }
     @SuppressWarnings("unused")
-    public static int getDialogAlertThemeResId(final boolean actionbar) {
-        return actionbar ? DIALOG_ALERT_THEMES[mLastTheme] : DIALOG_ALERT_NOACTIONBAR_THEMES[mLastTheme] ;
+    @StyleRes
+    public static int getDialogAlertThemeResId() {
+        return DIALOG_ALERT_THEMES[mLastTheme];
     }
 
     /** Set of OnLocaleChangedListeners */
@@ -305,35 +301,6 @@ public class BookCatalogueApp extends Application {
         return mQueueManager;
     }
 
-
-
-
-//	/**
-//	 * Currently the QueueManager is implemented as a service. This is not clearly necessary
-//	 * but has the huge advantage of making a 'context' object available in the Service
-//	 * implementation.
-//	 * 
-//	 * By binding it here, the service will not die when the last Activity is closed. We
-//	 * could call StartService to keep it awake indefinitely also, but we do want the binding
-//	 * object...so we bind it.
-//	 */
-//	private void startQueueManager() {
-//		doBindService();		
-//	}
-//
-//	/**
-//	 * Points to the bound service, once it is started.
-//	 */
-//	private static BCQueueManager mBoundService = null;
-//
-//	/**
-//	 * Utility routine to get the current QueueManager.
-//	 * 
-//	 * @return	QueueManager object
-//	 */
-//	public static BCQueueManager getQueueManager() {
-//		return mBoundService;
-//	}
     /**
      * Wrapper to reduce explicit use of the 'context' member.
      *
@@ -415,55 +382,6 @@ public class BookCatalogueApp extends Application {
 
         mNotifier.notify(R.id.NOTIFICATION, notification);
     }
-
-//	/**
-//	 * Code based on Google sample code to bind the service.
-//	 */
-//	private ServiceConnection mConnection = new ServiceConnection() {
-//	    public void onServiceConnected(ComponentName className, IBinder service) {
-//	        // This is called when the connection with the service has been
-//	        // established, giving us the service object we can use to
-//	        // interact with the service.  Because we have bound to a explicit
-//	        // service that we know is running in our own process, we can
-//	        // cast its IBinder to a concrete class and directly access it.
-//	        mBoundService = (BCQueueManager)((QueueManager.QueueManagerBinder)service).getService();
-//
-//	        // Tell the user about this for our demo.
-//	        //Toast.makeText(BookCatalogueApp.this, "Connected", Toast.LENGTH_SHORT).show();
-//	    }
-//
-//	    public void onServiceDisconnected(ComponentName className) {
-//	        // This is called when the connection with the service has been
-//	        // unexpectedly disconnected -- that is, its process crashed.
-//	        // Because it is running in our same process, we should never
-//	        // see this happen.
-//	        mBoundService = null;
-//	        //Toast.makeText(BookCatalogueApp.this, "Disconnected", Toast.LENGTH_SHORT).show();
-//	    }
-//	};
-//
-//	/** Indicates service has been bound. Really. */
-//	boolean mIsBound;
-//
-//	/**
-//	 * Establish a connection with the service.  We use an explicit
-//	 * class name because we want a specific service implementation that
-//	 * we know will be running in our own process (and thus won't be
-//	 * supporting component replacement by other applications).
-//	 */
-//	void doBindService() {
-//	    bindService(new Intent(BookCatalogueApp.this, BCQueueManager.class), mConnection, Context.BIND_AUTO_CREATE);
-//	    mIsBound = true;
-//	}
-//	/**
-//	 * Detach existing service connection.
-//	 */
-//	void doUnbindService() {
-//	    if (mIsBound) {
-//	        unbindService(mConnection);
-//	        mIsBound = false;
-//	    }
-//	}
 
     /**
      * Set the current preferred locale in the passed resources.

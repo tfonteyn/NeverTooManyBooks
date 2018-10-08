@@ -57,7 +57,7 @@
     <string name="loan_to">Libro prestato a:</string>
     <string name="returned">Restituito</string>
     <string name="name">Nome</string>
-    <string name="webpage_label">Pagina web:</string>
+    <string name="website_lbl">Pagina web:</string>
     <string name="sourcecode_label">Codice sorgente:</string>
     <string name="contact_label">Contatti:</string>
     <string name="donate_label">Dona</string>
@@ -383,7 +383,7 @@
     <string name="smaller">Più piccolo</string>
     <string name="select_style">Seleziona Stile</string>
     <string name="booklist_background_style">Stile dello sfondo dell\'elenco libri</string>
-    <string name="textured_backgroud">Immagine di sfondo</string>
+    <string name="textured_background">Immagine di sfondo</string>
     <string name="plain_background_b_reduces_flicker_b">Sfondo semplice (riduce lo sfarfallio)</string>
     <string name="thing_must_not_be_blank">%1$s deve contenere un valore</string>
     <string name="edit">Modifica</string>

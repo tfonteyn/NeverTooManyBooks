@@ -38,7 +38,7 @@ public interface DataValidator {
      *
      * @param data            The DataManager object containing the Datum being validated
      * @param datum           The Datum to validate
-     * @param crossValidating Flag indicating if this is the cross-validation pass.
+     * @param crossValidating Options indicating if this is the cross-validation pass.
      *
      * @throws ValidatorException For any validation failure.
      */

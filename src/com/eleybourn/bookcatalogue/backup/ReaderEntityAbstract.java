@@ -65,6 +65,7 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
     /**
      * Read the input as XML and put it into a Bundle
      */
+    @NonNull
     public Bundle getBundle() throws IOException {
         final BufferedReader in = new BufferedReaderNoClose(new InputStreamReader(getStream(), TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
         return BackupUtils.bundleFromXml(in);
@@ -78,6 +79,7 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
         BackupUtils.preferencesFromXml(in, prefs);
     }
 
+    @NonNull
     @Override
     public Serializable getSerializable() throws IOException, DeserializationException {
         // Turn the input into a byte array

@@ -127,7 +127,11 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
 
     /** Show header info in list */
     private static final String PREF_SHOW_HEADER_INFO = PREF_SHOW_EXTRAS_PREFIX + BooklistStyle.SFX_SHOW_HEADER_INFO;
-    /** Show list of bookshelves for each book */
+
+    /** the scaling for 'condensed' text */
+    public static final float SCALE = 0.8f;
+
+    /** Use condensed text, e.g. {@link #SCALE} */
     private static final String PREF_CONDENSED_TEXT = PREF_SHOW_EXTRAS_PREFIX + BooklistStyle.SFX_CONDENSED;
 
     // Extra fields to show at the book level
@@ -221,7 +225,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     private transient IntegerListProperty mShowHeaderInfo;
 
     /**
-     * Flag indicating this style was in the 'preferred' set when it was added to its Styles collection
+     * Options indicating this style was in the 'preferred' set when it was added to its Styles collection
      * The value is not dynamically checked.
      */
     private boolean mIsPreferred;
@@ -372,7 +376,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     }
 
     /**
-     * @return true if this style is user-defined.
+     * @return <tt>true</tt>if this style is user-defined.
      */
     public boolean isUserDefined() {
         return (mNameStringId == 0 || mRowId != 0);

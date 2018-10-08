@@ -57,13 +57,13 @@
                 android:layout_height="wrap_content"
                 android:paddingEnd="@dimen/padding_border"
                 android:paddingStart="@dimen/padding_border"
-                android:text="@string/webpage_label"
+                android:text="@string/website_lbl"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
-                android:id="@+id/webpage"
+                android:id="@+id/website"
                 style="@style/link_url"
-                android:text="@string/webpage" />
+                android:text="@string/website" />
 
             <TextView
                 android:layout_width="match_parent"

@@ -62,15 +62,15 @@ import java.util.List;
  * @author Philip Warner
  */
 public class SearchManager implements TaskManagerListener {
-    /** Flag indicating a search source to use */
+    /** Options indicating a search source to use */
     public static final int SEARCH_GOOGLE = 1;
-    /** Flag indicating a search source to use */
+    /** Options indicating a search source to use */
     public static final int SEARCH_AMAZON = 2;
-    /** Flag indicating a search source to use */
+    /** Options indicating a search source to use */
     public static final int SEARCH_LIBRARY_THING = 4;
-    /** Flag indicating a search source to use */
+    /** Options indicating a search source to use */
     public static final int SEARCH_GOODREADS = 8;
-    /** Flag indicating a search source to use */
+    /** Options indicating a search source to use */
     public static final int SEARCH_ISFDB = 16;
     /** Mask including all search sources */
     public static final int SEARCH_ALL = SEARCH_GOOGLE | SEARCH_AMAZON | SEARCH_LIBRARY_THING | SEARCH_GOODREADS | SEARCH_ISFDB;
@@ -156,11 +156,11 @@ public class SearchManager implements TaskManagerListener {
     private int mSearchFlags;
     /** Accumulated book data */
     private Bundle mBookData = null;
-    /** Flag indicating searches will be non-concurrent title/author found via ASIN */
+    /** Options indicating searches will be non-concurrent title/author found via ASIN */
     private boolean mSearchingAsin = false;
-    /** Flag indicating searches will be non-concurrent until an ISBN is found */
+    /** Options indicating searches will be non-concurrent until an ISBN is found */
     private boolean mWaitingForIsbn = false;
-    /** Flag indicating a task was cancelled. */
+    /** Options indicating a task was cancelled. */
     private boolean mCancelledFlg = false;
     /** Original author for search */
     private String mAuthor;

@@ -28,11 +28,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.backup.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.ExportThread;
@@ -353,7 +351,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mDb.backupDbFile();
+                    StorageUtils.backupDbFile(mDb, "DbExport.db");
                     //Snackbar.make(v, R.string.backup_success, Snackbar.LENGTH_LONG).show();
                     StandardDialogs.showQuickNotice(AdministrationFunctions.this, R.string.backup_success);
                 }
@@ -366,7 +364,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(R.string.import_alert)
                 .setTitle(R.string.import_data)
-                .setIcon(R.drawable.ic_info_outline)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                 this.getResources().getString(android.R.string.ok),

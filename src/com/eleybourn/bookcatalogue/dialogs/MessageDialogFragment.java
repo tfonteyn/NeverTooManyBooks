@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
@@ -23,29 +24,51 @@ public class MessageDialogFragment extends DialogFragment {
     private int mDialogId;
 
     /**
-     * Constructor
+     * A plain title/message/OK dialog
      *
      * @param dialogId ID passed by caller. Can be 0, will be passed back in event
      * @param titleId  Title to display
+     * @param messageId Resource string to display
      *
      * @return Created fragment
      */
-    public static MessageDialogFragment newInstance(final int dialogId, final int titleId, final int messageId,
-                                                    final int buttonPositiveTextId, final int buttonNegativeTextId, final int buttonNeutralTextId) {
+    public static MessageDialogFragment newInstance(final int dialogId,
+                                                    @StringRes final int titleId,
+                                                    @StringRes final int messageId) {
         String message = BookCatalogueApp.getResourceString(messageId);
-        return MessageDialogFragment.newInstance(dialogId, titleId, message, buttonPositiveTextId, buttonNegativeTextId, buttonNeutralTextId);
+        return MessageDialogFragment.newInstance(dialogId, titleId, message, android.R.string.ok, 0, 0);
     }
 
     /**
-     * Constructor
+     * A plain title/message/OK dialog
+     *
+     * @param dialogId ID passed by caller. Can be 0, will be passed back in event
+     * @param titleId  Title to display
+     * @param message Message string to display
+     *
+     * @return Created fragment
+     */
+    public static MessageDialogFragment newInstance(final int dialogId,
+                                                    @StringRes final int titleId,
+                                                    @NonNull final String message) {
+        return MessageDialogFragment.newInstance(dialogId, titleId, message, android.R.string.ok, 0, 0);
+    }
+
+    /**
+     * A full title/message/OK/Cancel/Neutral dialog
      *
      * @param dialogId ID passed by caller. Can be 0, will be passed back in event
      * @param titleId  Title to display
      *
      * @return Created fragment
      */
-    public static MessageDialogFragment newInstance(final int dialogId, final int titleId, @NonNull final String message,
-                                                    final int buttonPositiveTextId, final int buttonNegativeTextId, final int buttonNeutralTextId) {
+    @SuppressWarnings("WeakerAccess")
+    public static MessageDialogFragment newInstance(final int dialogId,
+                                                    @StringRes final int titleId,
+                                                    @NonNull final String message,
+                                                    @StringRes final int buttonPositiveTextId,
+                                                    @StringRes final int buttonNegativeTextId,
+                                                    @StringRes final int buttonNeutralTextId) {
         MessageDialogFragment frag = new MessageDialogFragment();
         Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_DIALOG_ID, dialogId);
@@ -87,6 +110,7 @@ public class MessageDialogFragment extends DialogFragment {
                 .setTitle(title)
                 .setIcon(R.drawable.ic_info_outline)
                 .create();
+
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                 getString(btnPos),
                 new DialogInterface.OnClickListener() {

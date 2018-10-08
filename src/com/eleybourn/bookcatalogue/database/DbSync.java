@@ -414,7 +414,7 @@ public class DbSync {
         /**
          * Locking-aware wrapper for underlying database method.
          */
-        SynchronizedCursor rawQuery(String sql) {
+        SynchronizedCursor rawQuery(@NonNull final String sql) {
             return rawQuery(sql, new String[]{});
         }
 
@@ -618,7 +618,7 @@ public class DbSync {
         /**
          * @return the underlying SQLiteDatabase object.
          */
-        public SQLiteDatabase getUnderlyingDatabase() {
+        public SQLiteDatabase getUnderlyingDatabaseIfYouAreReallySureWhatYouAreDoing() {
             return mDb;
         }
 
@@ -727,7 +727,7 @@ public class DbSync {
          *
          * @author Philip Warner
          */
-        public class SynchronizedCursorFactory implements CursorFactory {
+        class SynchronizedCursorFactory implements CursorFactory {
             @Override
             public SynchronizedCursor newCursor(final SQLiteDatabase db,
                                                 final SQLiteCursorDriver masterQuery,
@@ -765,7 +765,7 @@ public class DbSync {
             mSql = sql;
 
             mIsReadOnly = sql.trim().toUpperCase().startsWith("SELECT");
-            mStatement = db.getUnderlyingDatabase().compileStatement(sql);
+            mStatement = db.getUnderlyingDatabaseIfYouAreReallySureWhatYouAreDoing().compileStatement(sql);
 
             if (DEBUG_SWITCHES.SQL && BuildConfig.DEBUG) {
                 System.out.println("SynchronizedStatement(new): " + sql + "\n\n");

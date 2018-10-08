@@ -26,7 +26,7 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookEvents.GrNoIsbnEvent;
 import com.eleybourn.bookcatalogue.BookEvents.GrNoMatchEvent;
-import com.eleybourn.bookcatalogue.entities.BookRow;
+import com.eleybourn.bookcatalogue.entities.BookRowView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
@@ -102,7 +102,7 @@ public class SendOneBookTask extends GenericTask {
         db.open();
 
         try (BooksCursor books = db.getBookForGoodreadsCursor(mBookId)) {
-            final BookRow book = books.getRowView();
+            final BookRowView book = books.getRowView();
             while (books.moveToNext()) {
                 // Try to export one book
                 ExportDisposition disposition;

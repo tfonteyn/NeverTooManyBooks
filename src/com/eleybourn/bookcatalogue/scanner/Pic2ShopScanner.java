@@ -30,7 +30,7 @@ public class Pic2ShopScanner implements Scanner {
     /**
      * Check if we have a valid intent available.
      *
-     * @return true if present
+     * @return <tt>true</tt>if present
      */
     static boolean isIntentAvailable() {
         return isFreeScannerAppInstalled(BookCatalogueApp.getAppContext())
@@ -89,22 +89,4 @@ public class Pic2ShopScanner implements Scanner {
     public interface Pro {
         String ACTION = "com.visionsmarts.pic2shoppro.SCAN";
     }
-
-//	public static void launchMarketToInstallFreeScannerApp(@NonNull final Context ctx) {
-//		launchMarketToInstallApp(ctx, ACTION);
-//	}
-//
-//	public static void launchMarketToInstallProScannerApp(@NonNull final Context ctx) {
-//		launchMarketToInstallApp(ctx, Pro.ACTION);
-//	}
-//
-//	public static void launchMarketToInstallApp(@NonNull final Context ctx, @NonNull final String pkgName) {
-//		try {
-//			Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + pkgName));
-//			ctx.startActivity(intent);
-//		} catch (ActivityNotFoundException e) {
-//			Logger.showError(e, Utils.class.getName() + ": Google Play not installed.");
-//			//Toast.makeText(ctx, R.string.error, Toast.LENGTH_SHORT).show();
-//		}
-//	}
 }

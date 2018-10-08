@@ -7,12 +7,10 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -77,7 +75,7 @@ public class ImageUtils {
         // If no size info, or a single pixel, assume file bad and set the 'alert' icon
         if (opt.outHeight <= 0 || opt.outWidth <= 0 || (opt.outHeight == 1 && opt.outWidth == 1)) {
             if (destView != null) {
-                destView.setImageResource(R.drawable.ic_warning);
+                destView.setImageResource(R.drawable.ic_broken_image);
             }
             return null;
         }
@@ -85,11 +83,11 @@ public class ImageUtils {
         // Next time we don't just want the bounds, we want the file itself
         opt.inJustDecodeBounds = false;
 
-        // Work out how to scale the file to fit in required box
+        // Work out how to SCALE the file to fit in required box
         final float widthRatio = (float) maxWidth / opt.outWidth;
         final float heightRatio = (float) maxHeight / opt.outHeight;
 
-        // Work out scale so that it fit exactly
+        // Work out SCALE so that it fit exactly
         float ratio = widthRatio < heightRatio ? widthRatio : heightRatio;
 
         // Note that inSampleSize seems to ALWAYS be forced to a power of 2, no matter what we
@@ -112,7 +110,7 @@ public class ImageUtils {
         final Bitmap bm;
         try {
             if (exact) {
-                // Create one bigger than needed and scale it; this inputStream an attempt to improve quality.
+                // Create one bigger than needed and SCALE it; this inputStream an attempt to improve quality.
                 opt.inSampleSize = samplePow2 / 2;
                 if (opt.inSampleSize < 1) {
                     opt.inSampleSize = 1;
@@ -127,7 +125,7 @@ public class ImageUtils {
                 }
 
                 final android.graphics.Matrix matrix = new android.graphics.Matrix();
-                // Fixup ratio based on new sample size and scale it.
+                // Fixup ratio based on new sample size and SCALE it.
                 ratio = ratio / (1.0f / opt.inSampleSize);
                 matrix.postScale(ratio, ratio);
                 bm = Bitmap.createBitmap(tmpBm, 0, 0, opt.outWidth, opt.outHeight, matrix, true);
@@ -136,7 +134,7 @@ public class ImageUtils {
                     tmpBm.recycle();
                 }
             } else {
-                // Use a scale that will make image *no larger than* the desired size
+                // Use a SCALE that will make image *no larger than* the desired size
                 if (ratio < 1.0f) {
                     opt.inSampleSize = samplePow2;
                 }
@@ -359,8 +357,7 @@ public class ImageUtils {
             if (opt.outHeight <= 0 || opt.outWidth <= 0) {
                 StandardDialogs.showQuickNotice(activity, R.string.cover_corrupt);
             } else {
-                final Dialog dialog = new StandardDialogs.BasicDialog(activity, false);
-                dialog.setContentView(R.layout.dialog_zoom_thumb);
+                final Dialog dialog = new StandardDialogs.BasicDialog(activity, R.style.ZoomedImage);
 
                 final ImageView cover = new ImageView(activity);
                 fetchFileIntoImageView(cover, thumbFile, thumper.zoomed, thumper.zoomed, true);
@@ -373,7 +370,7 @@ public class ImageUtils {
                 });
 
                 final ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                dialog.addContentView(cover, lp);
+                dialog.setContentView(cover, lp);
                 dialog.show();
             }
         }
@@ -394,10 +391,10 @@ public class ImageUtils {
     public static ThumbSize getThumbSizes(@NonNull final Activity activity) {
         final DisplayMetrics metrics = getDisplayMetrics(activity);
 
-        ThumbSize tump = new ThumbSize();
-        tump.normal = Math.min(MAX_EDIT_THUMBNAIL_SIZE, Math.max(metrics.widthPixels, metrics.heightPixels) / 3);
-        tump.zoomed = Math.min(MAX_ZOOM_THUMBNAIL_SIZE, Math.max(metrics.widthPixels, metrics.heightPixels));
-        return tump;
+        ThumbSize sizes = new ThumbSize();
+        sizes.normal = Math.min(MAX_EDIT_THUMBNAIL_SIZE, Math.max(metrics.widthPixels, metrics.heightPixels) / 3);
+        sizes.zoomed = Math.min(MAX_ZOOM_THUMBNAIL_SIZE, Math.max(metrics.widthPixels, metrics.heightPixels));
+        return sizes;
     }
 
     @NonNull
@@ -411,13 +408,13 @@ public class ImageUtils {
 //    /**
 //     * This function will load the thumbnail bitmap with a guaranteed maximum size; it
 //     * prevents OutOfMemory exceptions on large files and reduces memory usage in lists.
-//     * It can also scale images to the exact requested size.
+//     * It can also SCALE images to the exact requested size.
 //     *
 //     * @param destView  The ImageView to load with the bitmap or an appropriate icon
 //     * @param uuid      The id of the book
 //     * @param maxWidth  Maximum desired width of the image
 //     * @param maxHeight Maximum desired height of the image
-//     * @param exact     if true, the image will be proportionally scaled to fit bbox.
+//     * @param exact     if true, the image will be proportionally scaled to fit box.
 //     *
 //     * @return The scaled bitmap for the file, or null if no file or bad file.
 //     */

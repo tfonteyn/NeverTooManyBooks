@@ -127,7 +127,7 @@ public abstract class BaseCancelable<T> implements Cancelable<T> {
     /**
      * Requests the task to be canceled.
      *
-     * @return true if the task is running and has not been canceled; false
+     * @return <tt>true</tt>if the task is running and has not been canceled; false
      * otherwise
      */
 

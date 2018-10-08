@@ -128,7 +128,7 @@ public class GoodreadsUtils {
      *
      * This does network access and should not be called in the UI thread.
      *
-     * @return Flag indicating OK
+     * @return Options indicating OK
      */
     private static int checkGoodreadsAuth() {
         // Make sure GR is authorized for this app
@@ -146,7 +146,7 @@ public class GoodreadsUtils {
      *
      * This does network access and should not be called in the UI thread.
      *
-     * @return Flag indicating OK
+     * @return Options indicating OK
      */
     private static int checkCanSendToGoodreads() {
         if (BCQueueManager.getQueueManager().hasActiveTasks(BCQueueManager.CAT_GOODREADS_EXPORT_ALL)) {
@@ -225,7 +225,7 @@ public class GoodreadsUtils {
                             final AlertDialog dialog = new AlertDialog.Builder(context)
                                     .setTitle(R.string.send_books_to_goodreads)
                                     .setMessage(R.string.send_books_to_goodreads_blurb)
-                                    .setIcon(R.drawable.ic_info_outline)
+                                    .setIconAttribute(android.R.attr.alertDialogIcon)
                                     .create();
 
                             dialog.setButton(DialogInterface.BUTTON_POSITIVE,

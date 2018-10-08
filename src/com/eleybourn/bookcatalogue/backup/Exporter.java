@@ -34,7 +34,7 @@ import java.util.Date;
  * @author pjw
  */
 public interface Exporter {
-    /** Flag value to indicate new books and books with more recent update_date fields should be exported */
+    /** Options value to indicate new books and books with more recent update_date fields should be exported */
     int EXPORT_NOTHING = 0;
     int EXPORT_SINCE = (1 << 1);
     int EXPORT_PREFERENCES = (1 << 2);
@@ -42,7 +42,7 @@ public interface Exporter {
     int EXPORT_COVERS = (1 << 4);
     int EXPORT_DETAILS = (1 << 5);
 
-    /** Flag value to indicate ALL books should be exported */
+    /** Options value to indicate ALL books should be exported */
     int EXPORT_ALL = EXPORT_PREFERENCES | EXPORT_STYLES | EXPORT_COVERS | EXPORT_DETAILS;
     int EXPORT_ALL_SINCE = EXPORT_PREFERENCES | EXPORT_STYLES | EXPORT_COVERS | EXPORT_DETAILS | EXPORT_SINCE;
     int EXPORT_MASK = EXPORT_ALL | EXPORT_SINCE;
@@ -53,7 +53,7 @@ public interface Exporter {
      * @param outputStream Stream to send data
      * @param listener     Progress & cancellation interface
      *
-     * @return true on success
+     * @return <tt>true</tt>on success
      */
     boolean export(@NonNull final OutputStream outputStream,
                    @NonNull final ExportListener listener,

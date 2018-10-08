@@ -32,24 +32,17 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.database.DBExceptions;
+import com.eleybourn.bookcatalogue.entities.BookRowViewBase;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ABSOLUTE_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LEVEL;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ROW_KIND;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_NUM;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
 /**
  * RowView object for the BooklistCursor.
@@ -58,9 +51,8 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE
  *
  * @author Philip Warner
  */
-public class BooklistRowView {
-    /** Underlying cursor */
-    private final Cursor mCursor;
+public class BooklistRowView extends BookRowViewBase {
+
     /** Underlying builder object */
     private final BooklistBuilder mBuilder;
     /** Max size of thumbnails based on preferences at object creation time */
@@ -68,54 +60,31 @@ public class BooklistRowView {
     /** Max size of thumbnails based on preferences at object creation time */
     private final int mMaxThumbnailHeight;
 
+    private int mLevelCol = -2;
     private int mLevel1Col = -2;
     private int mLevel2Col = -2;
     private int mAbsPosCol = -2;
+    private int mRowKindCol = -2;
+
+    /** linking with any table that is linked with the books table */
     private int mBookIdCol = -2;
-    private int mBookUuidCol = -2;
-    private int mSeriesIdCol = -2;
+
+    /** linking with author table */
     private int mAuthorIdCol = -2;
-    private int mKindCol = -2;
-    private int mTitleCol = -2;
-    private int mPublisherCol = -2;
-    private int mLanguageCol = -2;
-    private int mLevelCol = -2;
-    private int mFormatCol = -2;
-    private int mGenreCol = -2;
-    private int mLocationCol = -2;
+
+    /** linking with series table */
+    private int mSeriesIdCol = -2;
     private int mSeriesNameCol = -2;
     private int mSeriesNumberCol = -2;
-    private int mReadCol = -2;
 
     /**
      * Constructor
      *
-     * @param c       Underlying Cursor
+     * @param cursor  Underlying Cursor
      * @param builder Underlying Builder
      */
-    BooklistRowView(@NonNull final BooklistCursor c, @NonNull final BooklistBuilder builder) {
-        // Save underlying objects.
-        mCursor = c;
-        mBuilder = builder;
-
-        final int extras = mBuilder.getStyle().getExtras();
-
-        // Get thumbnail size
-        int maxSize = computeThumbnailSize(extras);
-        mMaxThumbnailWidth = maxSize;
-        mMaxThumbnailHeight = maxSize;
-    }
-
-    /**
-     * Constructor
-     *
-     * @param c       Underlying Cursor
-     * @param builder Underlying Builder
-     */
-    BooklistRowView(@NonNull final BooklistPseudoCursor c, @NonNull final BooklistBuilder builder) {
-        // Save underlying objects.
-        mCursor = c;
-
+    BooklistRowView(@NonNull final Cursor cursor, @NonNull final BooklistBuilder builder) {
+        super(cursor);
         mBuilder = builder;
 
         final int extras = mBuilder.getStyle().getExtras();
@@ -160,61 +129,7 @@ public class BooklistRowView {
         return mMaxThumbnailWidth;
     }
 
-    /**
-     * Checks if list displays series numbers anywhere.
-     */
-    public boolean hasSeries() {
-        return mCursor.getColumnIndex(UniqueId.KEY_SERIES_NUM) >= 0;
-    }
 
-    /**
-     * Query underlying cursor for column index.
-     */
-    public int getColumnIndex(@NonNull final String columnName) {
-        return mCursor.getColumnIndex(columnName);
-    }
-
-    /**
-     * Get string from underlying cursor given a column index.
-     */
-    @Nullable
-    public String getString(final int columnIndex) {
-        return mCursor.getString(columnIndex);
-    }
-
-    /**
-     * Get the text associated with the highest level group for the current item.
-     */
-    @Nullable
-    public String getLevel1Data() {
-        if (mLevel1Col < 0) {
-            final String name = mBuilder.getDisplayDomain(1).name;
-            mLevel1Col = mCursor.getColumnIndex(name);
-            if (mLevel1Col < 0) {
-                throw new DBExceptions.ColumnNotPresent(name);
-            }
-        }
-        return formatRowGroup(0, mCursor.getString(mLevel1Col));
-    }
-
-    /**
-     * Get the text associated with the second-highest level group for the current item.
-     */
-    @Nullable
-    public String getLevel2Data() {
-        if (mBuilder.getStyle().size() < 2) {
-            return null;
-        }
-
-        if (mLevel2Col < 0) {
-            final String name = mBuilder.getDisplayDomain(2).name;
-            mLevel2Col = mCursor.getColumnIndex(name);
-            if (mLevel2Col < 0) {
-                throw new DBExceptions.ColumnNotPresent(name);
-            }
-        }
-        return formatRowGroup(1, mCursor.getString(mLevel2Col));
-    }
 
     /**
      * Perform any special formatting for a row group.
@@ -261,20 +176,6 @@ public class BooklistRowView {
     }
 
     /**
-     * Get the 'absolute position' for the current row. This is a value
-     * generated by the builder object.
-     */
-    public int getAbsolutePosition() {
-        if (mAbsPosCol < 0) {
-            mAbsPosCol = mCursor.getColumnIndex(DOM_ABSOLUTE_POSITION.name);
-            if (mAbsPosCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_ABSOLUTE_POSITION.name);
-            }
-        }
-        return mCursor.getInt(mAbsPosCol);
-    }
-
-    /**
      * Convenience function to retrieve column value.
      */
     public long getBookId() {
@@ -285,20 +186,6 @@ public class BooklistRowView {
             }
         }
         return mCursor.getLong(mBookIdCol);
-    }
-
-    /**
-     * Convenience function to retrieve column value.
-     */
-    @NonNull
-    public String getBookUuid() {
-        if (mBookUuidCol < 0) {
-            mBookUuidCol = mCursor.getColumnIndex(DOM_BOOK_UUID.name);
-            if (mBookUuidCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_UUID.name);
-            }
-        }
-        return mCursor.getString(mBookUuidCol);
     }
 
     /**
@@ -325,6 +212,41 @@ public class BooklistRowView {
     /**
      * Convenience function to retrieve column value.
      */
+    @Nullable
+    public String getSeriesName() {
+        if (mSeriesNameCol < 0) {
+            mSeriesNameCol = mCursor.getColumnIndex(DOM_SERIES_NAME.name);
+            if (mSeriesNameCol < 0) {
+                throw new DBExceptions.ColumnNotPresent(DOM_SERIES_NAME.name);
+            }
+        }
+        return mCursor.getString(mSeriesNameCol);
+    }
+
+    /**
+     * Checks if list displays series numbers anywhere.
+     */
+    public boolean hasSeriesNumber() {
+        return mCursor.getColumnIndex(UniqueId.KEY_SERIES_NUM) >= 0;
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
+    @Nullable
+    public String getSeriesNumber() {
+        if (mSeriesNumberCol < 0) {
+            mSeriesNumberCol = mCursor.getColumnIndex(DOM_BOOK_SERIES_NUM.name);
+            if (mSeriesNumberCol < 0) {
+                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_SERIES_NUM.name);
+            }
+        }
+        return mCursor.getString(mSeriesNumberCol);
+    }
+
+    /**
+     * Convenience function to retrieve column value.
+     */
     public long getAuthorId() {
         if (mAuthorIdCol < 0) {
             mAuthorIdCol = mCursor.getColumnIndex(DOM_AUTHOR_ID.name);
@@ -344,58 +266,30 @@ public class BooklistRowView {
     }
 
     /**
+     * Get the 'absolute position' for the current row. This is a value
+     * generated by the builder object.
+     */
+    public int getAbsolutePosition() {
+        if (mAbsPosCol < 0) {
+            mAbsPosCol = mCursor.getColumnIndex(DOM_ABSOLUTE_POSITION.name);
+            if (mAbsPosCol < 0) {
+                throw new DBExceptions.ColumnNotPresent(DOM_ABSOLUTE_POSITION.name);
+            }
+        }
+        return mCursor.getInt(mAbsPosCol);
+    }
+
+    /**
      * Convenience function to retrieve column value.
      */
-    public int getKind() {
-        if (mKindCol < 0) {
-            mKindCol = mCursor.getColumnIndex(DOM_ROW_KIND.name);
-            if (mKindCol < 0) {
+    public int getRowKind() {
+        if (mRowKindCol < 0) {
+            mRowKindCol = mCursor.getColumnIndex(DOM_ROW_KIND.name);
+            if (mRowKindCol < 0) {
                 throw new DBExceptions.ColumnNotPresent(DOM_ROW_KIND.name);
             }
         }
-        return mCursor.getInt(mKindCol);
-    }
-
-    /**
-     * Convenience function to retrieve column value.
-     */
-    @NonNull
-    public String getTitle() {
-        if (mTitleCol < 0) {
-            mTitleCol = mCursor.getColumnIndex(DOM_TITLE.name);
-            if (mTitleCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_TITLE.name);
-            }
-        }
-        return mCursor.getString(mTitleCol);
-    }
-
-    /**
-     * Convenience function to retrieve column value.
-     */
-    @NonNull
-    public String getPublisherName() {
-        if (mPublisherCol < 0) {
-            mPublisherCol = mCursor.getColumnIndex(DOM_BOOK_PUBLISHER.name);
-            if (mPublisherCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_PUBLISHER.name);
-            }
-        }
-        return mCursor.getString(mPublisherCol);
-    }
-
-    /**
-     * Convenience function to retrieve column value.
-     */
-    @NonNull
-    public String getLanguage() {
-        if (mLanguageCol < 0) {
-            mLanguageCol = mCursor.getColumnIndex(DOM_BOOK_LANGUAGE.name);
-            if (mLanguageCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_LANGUAGE.name);
-            }
-        }
-        return mCursor.getString(mLanguageCol);
+        return mCursor.getInt(mRowKindCol);
     }
 
     /**
@@ -412,87 +306,37 @@ public class BooklistRowView {
     }
 
     /**
-     * Convenience function to retrieve column value.
-     */
-    @NonNull
-    public String getFormat() {
-        if (mFormatCol < 0) {
-            mFormatCol = mCursor.getColumnIndex(DOM_BOOK_FORMAT.name);
-            if (mFormatCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_FORMAT.name);
-            }
-        }
-        return mCursor.getString(mFormatCol);
-    }
-
-    /**
-     * Convenience function to retrieve column value.
-     */
-    @NonNull
-    public String getGenre() {
-        if (mGenreCol < 0) {
-            mGenreCol = mCursor.getColumnIndex(DOM_BOOK_GENRE.name);
-            if (mGenreCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_GENRE.name);
-            }
-        }
-        return mCursor.getString(mGenreCol);
-    }
-
-    /**
-     * Convenience function to retrieve column value.
-     */
-    @NonNull
-    public String getLocation() {
-        if (mLocationCol < 0) {
-            mLocationCol = mCursor.getColumnIndex(DOM_BOOK_LOCATION.name);
-            if (mLocationCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_LOCATION.name);
-            }
-        }
-        return mCursor.getString(mLocationCol);
-    }
-
-    /**
-     * Convenience function to retrieve column value.
-     * Nullable!
+     * Get the text associated with the highest level group for the current item.
      */
     @Nullable
-    public String getSeriesName() {
-        if (mSeriesNameCol < 0) {
-            mSeriesNameCol = mCursor.getColumnIndex(DOM_SERIES_NAME.name);
-            if (mSeriesNameCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_SERIES_NAME.name);
+    public String getLevel1Data() {
+        if (mLevel1Col < 0) {
+            final String name = mBuilder.getDisplayDomain(1).name;
+            mLevel1Col = mCursor.getColumnIndex(name);
+            if (mLevel1Col < 0) {
+                throw new DBExceptions.ColumnNotPresent(name);
             }
         }
-        return mCursor.getString(mSeriesNameCol);
+        return formatRowGroup(0, mCursor.getString(mLevel1Col));
     }
 
     /**
-     * Convenience function to retrieve column value.
-     * Nullable!
+     * Get the text associated with the second-highest level group for the current item.
      */
     @Nullable
-    public String getSeriesNumber() {
-        if (mSeriesNumberCol < 0) {
-            mSeriesNumberCol = mCursor.getColumnIndex(DOM_BOOK_SERIES_NUM.name);
-            if (mSeriesNumberCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_SERIES_NUM.name);
+    public String getLevel2Data() {
+        if (mBuilder.getStyle().size() < 2) {
+            return null;
+        }
+
+        if (mLevel2Col < 0) {
+            final String name = mBuilder.getDisplayDomain(2).name;
+            mLevel2Col = mCursor.getColumnIndex(name);
+            if (mLevel2Col < 0) {
+                throw new DBExceptions.ColumnNotPresent(name);
             }
         }
-        return mCursor.getString(mSeriesNumberCol);
+        return formatRowGroup(1, mCursor.getString(mLevel2Col));
     }
 
-    /**
-     * Convenience function to retrieve column value.
-     */
-    public boolean isRead() {
-        if (mReadCol < 0) {
-            mReadCol = mCursor.getColumnIndex(DOM_BOOK_READ.name);
-            if (mReadCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_READ.name);
-            }
-        }
-        return mCursor.getLong(mReadCol) == 1;
-    }
 }

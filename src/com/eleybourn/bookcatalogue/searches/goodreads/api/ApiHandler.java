@@ -33,7 +33,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
  * @author Philip Warner
  *
  */
-public abstract class ApiHandler {
+abstract class ApiHandler {
 	final GoodreadsManager mManager;
 
 	/** XmlFilter root object. Used in extracting data file XML results. */

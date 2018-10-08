@@ -24,6 +24,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
@@ -135,10 +136,11 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
      * @param title Title of Alert
      * @param items Items to display
      */
-    protected void showContextDialogue(@NonNull final String title, @NonNull final List<ContextDialogItem> items) {
+    protected void showContextDialogue(@StringRes final int title, @NonNull final List<ContextDialogItem> items) {
         if (items.size() > 0) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(title);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                    .setTitle(title)
+                    .setIconAttribute(android.R.attr.alertDialogIcon);
 
             final ContextDialogItem[] itemArray = new ContextDialogItem[items.size()];
             items.toArray(itemArray);

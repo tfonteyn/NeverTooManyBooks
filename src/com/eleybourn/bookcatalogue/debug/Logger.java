@@ -39,7 +39,7 @@ import java.util.Date;
 
 public class Logger {
 
-    public static final String TAG = "BC Logger";
+    private static final String TAG = "BC Logger";
 
     private Logger() {
     }

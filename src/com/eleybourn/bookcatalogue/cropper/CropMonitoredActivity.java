@@ -28,7 +28,7 @@ public abstract class CropMonitoredActivity extends BookCatalogueActivity {
 
 	private final ArrayList<LifeCycleListener> mListeners = new ArrayList<>();
 
-	public interface LifeCycleListener {
+	interface LifeCycleListener {
 		void onActivityCreated(@NonNull final CropMonitoredActivity activity);
 
 		void onActivityDestroyed(@NonNull final CropMonitoredActivity activity);
