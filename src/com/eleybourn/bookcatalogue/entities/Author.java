@@ -121,10 +121,11 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      */
     @NonNull
     public String getDisplayName() {
-        if (givenNames != null && !givenNames.isEmpty())
+        if (givenNames != null && !givenNames.isEmpty()) {
             return givenNames + " " + familyName;
-        else
+        } else {
             return familyName;
+        }
     }
 
     /**
@@ -134,10 +135,11 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      */
     @NonNull
     public String getSortName() {
-        if (givenNames != null && !givenNames.isEmpty())
+        if (givenNames != null && !givenNames.isEmpty()) {
             return familyName + ", " + givenNames;
-        else
+        } else {
             return familyName;
+        }
     }
 
     // Support for encoding to a text file
@@ -195,21 +197,21 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      * - one or both of them is 'new' (e.g. id == 0) but their names are equal
      * - ids are equal
      *
-     * case SENSITIVE !
+     * Compare is CASE SENSITIVE !
      */
     @Override
     public boolean equals(@Nullable final Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
-
+        }
         Author author = (Author) o;
         if (id == 0 || author.id == 0) {
-            return Objects.equals(familyName, author.familyName) && Objects.equals(givenNames, author.givenNames);
+            return Objects.equals(familyName, author.familyName)
+                    && Objects.equals(givenNames, author.givenNames);
         }
-
         return (id == author.id);
     }
 

@@ -30,6 +30,7 @@ import android.widget.EditText;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Publisher;
+import com.eleybourn.bookcatalogue.entities.Series;
 
 public class EditPublisherDialog {
     private final Activity mActivity;
@@ -75,8 +76,11 @@ public class EditPublisherDialog {
         dialog.show();
     }
 
+    /**
+     * ENHANCE: once Publisher use id's, use code from {@link EditSeriesDialog#confirmEdit}
+     */
     private void confirmEdit(@NonNull final Publisher from, @NonNull final Publisher to) {
-
+        // case sensitive equality
         if (to.equals(from)) {
             return;
         }

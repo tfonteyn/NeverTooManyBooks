@@ -221,8 +221,9 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
             }
         }
 
-        for (Series s : toDelete)
+        for (Series s : toDelete) {
             list.remove(s);
+        }
 
         return (toDelete.size() > 0);
 
@@ -284,9 +285,12 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Series series = (Series) o;
         if (id == 0 || series.id == 0) {
             return Objects.equals(name, series.name);

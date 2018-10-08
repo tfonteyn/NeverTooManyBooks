@@ -79,15 +79,16 @@ public class EditSeriesDialog {
     }
 
     private void confirmEdit(@NonNull final Series from, @NonNull final Series to) {
+        // case sensitive equality
         if (to.equals(from)) {
             return;
         }
 
-        // Get the new IDs
-        from.id = mDb.getSeriesId(from);
+        // Get their id's
+        from.id = mDb.getSeriesId(from); //TODO: this call is not needed I think
         to.id = mDb.getSeriesId(to);
 
-        // Case: series is the same (but maybe different case) TOMF
+        // Case: series is the same
         if (to.id == from.id) {
             // Just update with the most recent spelling and format
             from.copyFrom(to);
@@ -95,12 +96,10 @@ public class EditSeriesDialog {
                 from.id = mDb.getSeriesId(from);
             }
             mDb.insertOrUpdateSeries(from);
-            mOnChanged.run();
-            return;
+        } else {
+            mDb.globalReplaceSeries(from, to);
+            from.copyFrom(to);
         }
-
-        mDb.globalReplaceSeries(from, to);
-        from.copyFrom(to);
         mOnChanged.run();
     }
 }

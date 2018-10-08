@@ -152,21 +152,21 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     }
 
     private void confirmEdit(@NonNull final Author from, @NonNull final Author to) {
-
-        if (to.equals(from)) { // TOMF
+        // case sensitive equality
+        if (to.equals(from)) {
             return;
         }
 
-        // Get the new author ID
-        from.id = mDb.getAuthorIdByName(from.familyName, from.givenNames);
+        // Get their id's
+        from.id = mDb.getAuthorIdByName(from.familyName, from.givenNames); //TODO: this call is not needed I think
         to.id = mDb.getAuthorIdByName(to.familyName, to.givenNames);
 
         // See if the old author is used in any other books.
         long nRefs = mDb.countAuthorBooks(from) + mDb.countAuthorAnthologies(from);
-        boolean oldHasOthers = nRefs > (mRowId == 0 ? 0 : 1);
+        boolean fromHasOthers = nRefs > (mRowId == 0 ? 0 : 1);
 
         // Case: author is the same, or is only used in this book
-        if (to.id == from.id || !oldHasOthers) {
+        if (to.id == from.id || !fromHasOthers) {
             // Just update with the most recent spelling and format
             from.copyFrom(to);
             Utils.pruneList(mDb, mList);
@@ -174,7 +174,6 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                 from.id = mDb.getAuthorIdByName(from.familyName, from.givenNames);
             }
             mDb.insertOrUpdateAuthor(from);
-
             mAdapter.notifyDataSetChanged();
             return;
         }
@@ -183,10 +182,10 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         String format = getString(R.string.changed_author_how_apply);
         String allBooks = getString(R.string.all_books);
         String thisBook = getString(R.string.this_book);
-        String message = String.format(format, from.getSortName(), to.getSortName(), allBooks);
+
         final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setMessage(message)
-                .setTitle(getString(R.string.scope_of_change))
+                .setMessage(String.format(format, from.getSortName(), to.getSortName(), allBooks))
+                .setTitle(R.string.scope_of_change)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
@@ -222,7 +221,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(getString(R.string.unsaved_edits))
-                .setTitle(getString(R.string.unsaved_edits_title))
+                .setTitle(R.string.unsaved_edits_title)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 

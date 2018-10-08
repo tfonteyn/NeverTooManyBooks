@@ -36,6 +36,7 @@ public class EditFormatDialog extends EditStringDialog {
 
     @Override
     protected void confirmEdit(@NonNull final String from, @NonNull final String to) {
+        // case sensitive equality
         if (from.equals(to)) {
             return;
         }

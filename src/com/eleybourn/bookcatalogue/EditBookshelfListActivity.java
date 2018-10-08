@@ -44,8 +44,7 @@ import java.util.ArrayList;
 /**
  * Admin Activity where we list all bookshelves and can add/delete/edit them.
  *
- * ENHANCE:
- * - isDirty functionality
+ * ENHANCE: refit with  extends EditObjectListActivity<Bookshelf>
  */
 public class EditBookshelfListActivity extends BookCatalogueListActivity
 {

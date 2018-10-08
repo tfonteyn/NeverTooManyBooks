@@ -420,21 +420,21 @@ public class BookDetailsActivity extends BookCatalogueActivity
      * Sets title of the parent activity depending on show/edit/add
      */
     private void initActivityTitle() {
-        ActionBar bar = getSupportActionBar();
-        if (bar != null) {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
             if (mIsReadOnly && mList != null) {
                 // display a book
-                bar.setTitle(getString(R.string.book_details));
-                bar.setSubtitle(null);
+                actionBar.setTitle(R.string.book_details);
+                actionBar.setSubtitle(null);
 
             } else if (mBookData.getBookId() > 0) {
                 // editing an existing book
-                bar.setTitle(mBookData.getString(UniqueId.KEY_TITLE));
-                bar.setSubtitle(mBookData.getAuthorTextShort());
+                actionBar.setTitle(mBookData.getString(UniqueId.KEY_TITLE));
+                actionBar.setSubtitle(mBookData.getAuthorTextShort());
             } else {
                 // new book
-                bar.setTitle(getString(R.string.menu_insert));
-                bar.setSubtitle(null);
+                actionBar.setTitle(R.string.menu_insert);
+                actionBar.setSubtitle(null);
             }
         }
     }

@@ -153,11 +153,12 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     private void confirmEdit(@NonNull final  Series from, @NonNull final  Series to) {
-        if (to.equals(from)) { // TOMF
+        // case sensitive equality
+        if (to.equals(from)) {
             return;
         }
 
-        if ((to.name.compareTo(from.name) == 0)) {
+        if ((to.name.compareTo(from.name) == 0)) {  // TOMF
             // Same name, different number... just update
             from.copyFrom(to);
             Series.pruneSeriesList(mList);
@@ -166,8 +167,8 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             return;
         }
 
-        // Get the new IDs
-        from.id = mDb.getSeriesId(from);
+        // Get their id's
+        from.id = mDb.getSeriesId(from); //TODO: this call is not needed I think
         to.id = mDb.getSeriesId(to);
 
         // See if the old series is used in any other books.
@@ -195,7 +196,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(String.format(format, from.name, to.name, allBooks))
-                .setTitle(getString(R.string.scope_of_change))
+                .setTitle(R.string.scope_of_change)
                 .setIcon(R.drawable.ic_info_outline)
                 .create();
 
@@ -230,7 +231,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         if (!s.isEmpty()) {
             final AlertDialog dialog = new AlertDialog.Builder(this)
                     .setMessage(getString(R.string.unsaved_edits))
-                    .setTitle(getString(R.string.unsaved_edits_title))
+                    .setTitle(R.string.unsaved_edits_title)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .create();
 

@@ -57,21 +57,27 @@ public class Publisher implements Serializable {
     }
 
     /**
-     * Two Publisher are equal if:
-     * - one or both of them is 'new' (e.g. id == 0) and their names are equal
+     * Two Publishers are equal if:
+     * - it's the same Object duh..
+     * - one or both of them is 'new' (e.g. id == 0) but their names are equal
      * - ids are equal
+     *
+     * Compare is CASE SENSITIVE !
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Publisher publisher = (Publisher) o;
-        //ENHANCE use this once we start using ids
+        //ENHANCE uncomment the 3 lines once(if) we start using ids
 //        if (id == 0 || publisher.id == 0) {
-//            return Objects.equals(name, publisher.name);
+            return Objects.equals(name, publisher.name);
 //        }
 //        return (id == publisher.id);
-        return Objects.equals(name, publisher.name);
     }
 
     @Override

@@ -55,13 +55,15 @@ public class EditAuthorDialog {
             @Override
             public void onClick(View v) {
                 EditText familyView = dialog.findViewById(R.id.family_name);
-                EditText givenView = dialog.findViewById(R.id.given_names);
                 String newFamily = familyView.getText().toString().trim();
                 if (newFamily.isEmpty()) {
                     StandardDialogs.showQuickNotice(mActivity, R.string.author_is_blank);
                     return;
                 }
+
+                EditText givenView = dialog.findViewById(R.id.given_names);
                 String newGiven = givenView.getText().toString().trim();
+
                 Author newAuthor = new Author(newFamily, newGiven);
                 dialog.dismiss();
                 confirmEdit(author, newAuthor);
@@ -79,12 +81,13 @@ public class EditAuthorDialog {
     }
 
     private void confirmEdit(@NonNull final Author from, @NonNull final Author to) {
-        if (to.equals(from)) { // TOMF
+        // case sensitive equality
+        if (to.equals(from)) {
             return;
         }
 
-        // Get the new author ID
-        from.id = mDb.getAuthorIdByName(from.familyName, from.givenNames);
+        // Get their id's
+        from.id = mDb.getAuthorIdByName(from.familyName, from.givenNames); //TODO: this call is not needed I think
         to.id = mDb.getAuthorIdByName(to.familyName, to.givenNames);
 
         // Case: author is the same, or is only used in this book
