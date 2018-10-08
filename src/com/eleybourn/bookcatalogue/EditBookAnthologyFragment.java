@@ -249,8 +249,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
                 .create();
 
         if (!results.isEmpty()) {
-            dialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                    this.getResources().getString(android.R.string.ok),
+            dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
                     new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
                             // check if its all the same author or not
@@ -274,8 +273,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
 
         // if we found multiple editions, allow a re-try with the next inline
         if (mEditions.size() > 1) {
-            dialog.setButton(AlertDialog.BUTTON_NEUTRAL,
-                    this.getResources().getString(R.string.try_another),
+            dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.try_another),
                     new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
                             mEditions.remove(0);
@@ -284,8 +282,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
                     });
         }
 
-        dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                this.getResources().getString(android.R.string.cancel),
+        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         dialog.dismiss();

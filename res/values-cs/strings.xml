@@ -457,14 +457,4 @@
     <string name="name_can_not_be_blank">Jméno nesmí být prázdné</string>
     <string name="title_reorder">a|A|an|An|the|The</string>
     <string name="amazon">Amazon</string>
-
-
-    <!-- adding more does not require code changes -->
-    <string-array name="predefined_formats">
-        <item>Brožovaná kniha</item>
-        <item>Pevná vazba</item>
-        <item>eKniha</item>
-        <item>Audiokniha</item>
-        <item>Průvodce / Společník</item>
-    </string-array>
 </resources>

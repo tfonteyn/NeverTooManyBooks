@@ -796,16 +796,16 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <!-- Explanatory note for export data since last backup -->
     <string name="all_books_added_or_updated_since_last_full_backup">Alle neuen und aktualisierten Bücher seit der letzten vollständigen Sicherung</string>
 
-    <!-- Short text for 'n books' -->
+    <!-- Short text for 'n books' German has no need for 'zero' -->
     <plurals name="n_books">
-        <item quantity="zero">Kein Buch</item>
+        <!--<item quantity="zero">Kein Buch</item>-->
         <item quantity="one">Ein Buch</item>
         <item quantity="other">%1$s Bücher</item>
     </plurals>
 
-    <!-- Short text for 'n covers' -->
+    <!-- Short text for 'n covers' German has no need for 'zero' -->
     <plurals name="n_covers">
-        <item quantity="zero">Kein Cover</item>
+        <!--<item quantity="zero">Kein Cover</item>-->
         <item quantity="one">Ein Cover</item>
         <item quantity="other">%1$s Cover</item>
     </plurals>
@@ -867,9 +867,9 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="update_day">Änderungstag</string>
 
-    <!-- Short text for 'n stars' -->
+    <!-- Short text for 'n stars'  German has no need for 'zero' -->
     <plurals name="n_stars">
-        <item quantity="zero">%1$s Sterne</item>
+        <!--<item quantity="zero">%1$s Sterne</item>-->
         <item quantity="one">%1$s Stern</item>
         <item quantity="other">%1$s Sterne</item>
     </plurals>
@@ -929,14 +929,6 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
 
-    <!-- adding more does not require code changes -->
-    <string-array name="predefined_formats">
-        <item>Taschenbuch</item>
-        <item>Gebundene Ausgabe</item>
-        <item>E-Book</item>
-        <item>Hörbuch</item>
-        <item>Ratgeber / Kompendium</item>
-    </string-array>
     <!-- End: Added/Updated in [Next Version] -->
 
 </resources>

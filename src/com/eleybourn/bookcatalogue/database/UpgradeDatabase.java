@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -68,7 +69,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseHelper.DATABASE_CREAT
  * This should help reduce memory footprint (well, we can hope.. but at least editing the former is easier now)
  *
  */
-class UpgradeDatabase {
+public class UpgradeDatabase {
 
     // column names from 'old' versions, used to upgrade
     private static final String OLD_KEY_AUDIOBOOK = "audiobook";
@@ -260,6 +261,80 @@ class UpgradeDatabase {
                 final long id = c.getLong(0);
                 final String hash = c.getString(1);
                 StorageUtils.renameFile(StorageUtils.getCoverFile(Long.toString(id)), StorageUtils.getCoverFile(hash));
+            }
+        }
+    }
+
+    /**
+     * Data cleanup routine called on upgrade to v4.0.3 to cleanup data integrity issues cased
+     * by earlier merge code that could have left the first author or series for a book having
+     * a position number > 1.
+     */
+    public static void v74_fixupAuthorsAndSeries(@NonNull final CatalogueDBAdapter db) {
+        DbSync.SynchronizedDb syncDb = db.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing();
+
+        if (syncDb.inTransaction()) {
+            throw new DBExceptions.TransactionException();
+        }
+
+        DbSync.Synchronizer.SyncLock syncLock = syncDb.beginTransaction(true);
+        try {
+            v74_fixupPositionedBookItems(syncDb, TBL_BOOK_AUTHOR.getName(), DOM_AUTHOR_POSITION.name);
+            v74_fixupPositionedBookItems(syncDb, TBL_BOOK_SERIES.getName(), DOM_BOOK_SERIES_POSITION.name);
+            syncDb.setTransactionSuccessful();
+        } finally {
+            syncDb.endTransaction(syncLock);
+        }
+
+    }
+
+    /**
+     * Data cleaning routine for upgrade to version 4.0.3 to cleanup any books that have no primary author/series.
+     */
+    private static void v74_fixupPositionedBookItems(@NonNull final DbSync.SynchronizedDb db,
+                                                     @NonNull final String tableName,
+                                                     @NonNull final String positionField) {
+        String sql = "SELECT " + TBL_BOOKS.dotAs(DOM_ID) + "," +
+                " min(o." + positionField + ") AS pos" +
+                " FROM " + TBL_BOOKS.ref() + " JOIN " + tableName + " o ON o." + DOM_BOOK_ID + "=" + TBL_BOOKS.dot(DOM_ID) +
+                " GROUP BY " + TBL_BOOKS.dot(DOM_ID);
+
+        DbSync.Synchronizer.SyncLock syncLock = null;
+        if (!db.inTransaction()) {
+            syncLock = db.beginTransaction(true);
+        }
+        DbSync.SynchronizedStatement moveStmt = null;
+        try (Cursor c = db.rawQuery(sql)) {
+            // Get the column indexes we need
+            final int bookCol = c.getColumnIndexOrThrow(DOM_ID.name);
+            final int posCol = c.getColumnIndexOrThrow("pos");
+            // Loop through all instances of the old author appearing
+            while (c.moveToNext()) {
+                // Get the details
+                long pos = c.getLong(posCol);
+                if (pos > 1) {
+                    if (moveStmt == null) {
+                        // Statement to move records up by a given offset
+                        sql = "UPDATE " + tableName + " SET " + positionField + "=1 WHERE " + DOM_BOOK_ID + "=? AND " + positionField + "=?";
+                        moveStmt = db.compileStatement(sql);
+                    }
+
+                    long book = c.getLong(bookCol);
+                    // Move subsequent records up by one
+                    moveStmt.bindLong(1, book);
+                    moveStmt.bindLong(2, pos);
+                    moveStmt.execute();
+                }
+            }
+            if (syncLock != null) {
+                db.setTransactionSuccessful();
+            }
+        } finally {
+            if (syncLock != null) {
+                db.endTransaction(syncLock);
+            }
+            if (moveStmt != null) {
+                moveStmt.close();
             }
         }
     }
@@ -1041,7 +1116,8 @@ class UpgradeDatabase {
 
         if (curVersion == 74) {
             curVersion++;
-            StartupActivity.scheduleAuthorSeriesFixUp();
+            // StartupActivity.scheduleAuthorSeriesFixUp();
+            BCPreferences.setBoolean(StartupActivity.PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, true);
             mMessage += "New in v4.0.3\n\n";
             mMessage += "* ISBN validation when searching/scanning and error beep when scanning (with preference to turn it off)\n\n";
             mMessage += "* 'Loaned' list now shows available books under the heading 'Available'\n\n";
@@ -1105,4 +1181,6 @@ class UpgradeDatabase {
 
         return curVersion;
     }
+
+
 }

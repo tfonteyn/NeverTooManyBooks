@@ -617,10 +617,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         final TextView bookCounts = findViewById(R.id.bookshelf_count);
         if ((showHeaderFlags & BooklistStyle.SUMMARY_SHOW_COUNT) != 0) {
             if (mUniqueBooks != mTotalBooks) {
-                bookCounts.setText(BookCatalogueApp.getResourceString(R.string.brackets,
+                bookCounts.setText(getString(R.string.brackets,
                         this.getString(R.string.displaying_n_books_in_m_entries, mUniqueBooks, mTotalBooks)));
             } else {
-                bookCounts.setText(BookCatalogueApp.getResourceString(R.string.brackets,
+                bookCounts.setText(getString(R.string.brackets,
                         this.getString(R.string.displaying_n_books, mUniqueBooks)));
             }
             bookCounts.setVisibility(View.VISIBLE);

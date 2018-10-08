@@ -20,16 +20,15 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.Manifest;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.DbSync;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.io.BufferedReader;
@@ -59,11 +58,13 @@ import java.util.regex.Pattern;
  */
 public class StorageUtils {
 
-    /** our root directory to be created on the 'external storage' */
-    private static final String DIRECTORY_NAME = "bookCatalogue";
+    /** buffer size for file copy operations */
+    private static final int FILECOPY_BUFFER_SIZE = 8192;
 
+    /** our root directory to be created on the 'external storage' */
+
+    private static final String DIRECTORY_NAME = "bookCatalogue";
     private static final String UTF8 = "utf8";
-    private static final int BUFFER_SIZE = 8192;
     /** root external storage */
     private static final String EXTERNAL_FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + DIRECTORY_NAME;
     /** sub directory for temporary images */
@@ -89,11 +90,11 @@ public class StorageUtils {
     private StorageUtils() {
     }
 
-    public static String getErrorLog() throws SecurityException{
+    public static String getErrorLog() throws SecurityException {
         return EXTERNAL_FILE_PATH + File.separator + ERROR_LOG_FILE;
     }
 
-    private static void createDir(@NonNull final String name) throws SecurityException{
+    private static void createDir(@NonNull final String name) throws SecurityException {
         final File dir = new File(name);
         boolean ok = dir.mkdirs() || dir.isDirectory();
         if (!ok) {
@@ -108,7 +109,7 @@ public class StorageUtils {
      */
     static public boolean isWriteProtected() throws SecurityException {
         try {
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(NOMEDIA_FILE_PATH), UTF8), BUFFER_SIZE);
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(NOMEDIA_FILE_PATH), UTF8), 10); // yes, 10 bytes...
             out.write("");
             out.close();
             return false;
@@ -153,12 +154,13 @@ public class StorageUtils {
     public static File getSharedStorage() {
         return new File(EXTERNAL_FILE_PATH);
     }
+
     /**
-     *
      * return a general purpose File, located in the Shared Storage path (or a sub directory)
      * Don't use this for standard cover management.
      *
      * @param fileName the relative filename (including sub dirs) to the Shared Storage path
+     *
      * @return the file
      */
     public static File getFile(@NonNull final String fileName) {
@@ -247,59 +249,23 @@ public class StorageUtils {
         long totalSize = 0;
         try {
 
-        for (String name : getCoverStorage().list()) {
-            for (String prefix : mPurgeableFilePrefixes) {
-                if (name.startsWith(prefix)) {
-                    final File file = getFile(name);
-                    totalSize += file.length();
-                    if (reallyDelete) {
-                        deleteFile(file);
+            for (String name : getCoverStorage().list()) {
+                for (String prefix : mPurgeableFilePrefixes) {
+                    if (name.startsWith(prefix)) {
+                        final File file = getFile(name);
+                        totalSize += file.length();
+                        if (reallyDelete) {
+                            deleteFile(file);
+                        }
                     }
                 }
             }
-        }
         } catch (SecurityException e) {
             Logger.logError(e);
         }
         return totalSize;
     }
 
-    public static void backupDbFile(@NonNull final CatalogueDBAdapter db, @NonNull final String toFile) {
-        backupDbFile(db.getDbIfYouAreSureWhatYouAreDoing().getUnderlyingDatabaseIfYouAreReallySureWhatYouAreDoing(), toFile);
-    }
-
-    public static void backupDbFile(@NonNull final DbSync.SynchronizedDb db, @NonNull final String toFile) {
-        backupDbFile(db.getUnderlyingDatabaseIfYouAreReallySureWhatYouAreDoing(), toFile);
-    }
-
-    /**
-     * @param db     file to backup
-     * @param toFile suffix to apply to the directory name
-     */
-    public static void backupDbFile(@NonNull final SQLiteDatabase db, @NonNull final String toFile) {
-        try {
-            final String fileName = DIRECTORY_NAME + toFile;
-
-            final File existing = getFile(fileName);
-            StorageUtils.renameFile(existing, getFile(fileName + ".bak"));
-
-            final InputStream dbOrig = new FileInputStream(db.getPath());
-            final OutputStream dbCopy = new FileOutputStream(getFile(fileName));
-
-            final byte[] buffer = new byte[1024];
-            int length;
-            while ((length = dbOrig.read(buffer)) > 0) {
-                dbCopy.write(buffer, 0, length);
-            }
-
-            dbCopy.flush();
-            dbCopy.close();
-            dbOrig.close();
-
-        } catch (Exception e) {
-            Logger.logError(e);
-        }
-    }
 
     public static List<File> findCsvFiles() {
         // Make a filter for files ending in .csv
@@ -494,7 +460,7 @@ public class StorageUtils {
      * from the Android docs {@link File#renameTo(File)}: Both paths be on the same mount point.
      *
      * @return <tt>true</tt>if the rename worked, this inputStream really a ".exists()" call.
-     *              and not relying on the OS renameTo call.
+     * and not relying on the OS renameTo call.
      */
     public static boolean renameFile(@NonNull final File src, @NonNull final File dst) {
         if (src.exists()) {
@@ -507,9 +473,49 @@ public class StorageUtils {
         }
         return dst.exists();
     }
+
+    /**
+     * Create a copy of the database into the ExternalStorage location
+     * with the name "DbExport.db"
+     */
+    public static void backupDatabaseFile() {
+        backupDatabaseFile("DbExport.db");
+    }
+
+    /**
+     * Create a copy of the database into the ExternalStorage location
+     */
+    public static void backupDatabaseFile(@NonNull final String destFilename) {
+        try {
+            CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+            db.open();
+            String dbPath = db.getPath();
+            db.close();
+            backupFile(dbPath, destFilename);
+        } catch (Exception e) {
+            Logger.logError(e);
+        }
+    }
+
+    /**
+     * @param sourcePath   file to backup
+     * @param destPath     destination file name, will be stored in our directory on ExternalStorage
+     */
+    public static void backupFile(@NonNull final String sourcePath, @NonNull final String destPath) {
+        try {
+            // rename the previously copied file
+            StorageUtils.renameFile(getFile(destPath), getFile(destPath + ".bak"));
+            // and create a new copy. Note that the source is a fully qualified name, so NOT using getFile()
+            copyFile(new File(sourcePath), getFile(destPath));
+
+        } catch (Exception e) {
+            Logger.logError(e);
+        }
+    }
+
     public static void copyFile(@NonNull final File src, @NonNull final File dst) throws IOException {
         InputStream in = new FileInputStream(src);
-        copyFile(in, 8192, dst);
+        copyFile(in, FILECOPY_BUFFER_SIZE, dst);
     }
 
     public static void copyFile(@NonNull final InputStream in, final int bufferSize, @NonNull final File dst) throws IOException {
@@ -521,6 +527,7 @@ public class StorageUtils {
             while ((nRead = in.read(buffer)) > 0) {
                 out.write(buffer, 0, nRead);
             }
+            out.flush();
         } finally {
             // let any IOException escape for the caller to deal with
             if (out != null) {
@@ -531,7 +538,7 @@ public class StorageUtils {
     }
 
     /**
-     * Channels are FAST... TODO: replace old method with this one.
+     * Channels are FAST... TODO: replace old method with this one. but need testing, never used it on Android myself
      */
 
     @SuppressWarnings("unused")

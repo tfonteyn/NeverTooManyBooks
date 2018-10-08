@@ -391,8 +391,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                             finish();
                         }
                     });
-            dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                    getResources().getString(android.R.string.cancel),
+            dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
                     new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
                             //do nothing
@@ -435,8 +434,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                                 finish();
                             }
                         });
-                dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                        getResources().getString(android.R.string.cancel),
+                dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
                         new DialogInterface.OnClickListener() {
                             public void onClick(final DialogInterface dialog, final int which) {
                                 //do nothing
@@ -504,13 +502,13 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
 //                            .setIconAttribute(android.R.attr.alertDialogIcon)
 //                            .create();
 //
-//                    dialog.setButton(DialogInterface.BUTTON_POSITIVE, this.getResources().getString(android.R.string.ok),
+//                    dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok),
 //                            new DialogInterface.OnClickListener() {
 //                                public void onClick(final DialogInterface dialog, final int which) {
 //                                    go(isbn, "", "");
 //                                }
 //                            });
-//                    dialog.setButton(DialogInterface.BUTTON_NEGATIVE, this.getResources().getString(android.R.string.cancel),
+//                    dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel),
 //                            new DialogInterface.OnClickListener() {
 //                                public void onClick(final DialogInterface dialog, final int which) {
 //                                    finish();
@@ -605,20 +603,20 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                                 .setIconAttribute(android.R.attr.alertDialogIcon)
                                 .create();
 
-                        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getResources().getString(R.string.add),
+                        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.add),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(final DialogInterface dialog, final int which) {
                                         doSearchBook();
                                     }
                                 });
-                        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getResources().getString(R.string.edit_book),
+                        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.edit_book),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(final DialogInterface dialog, final int which) {
                                         BookDetailsActivity.startEditMode(BookISBNSearchActivity.this,
                                                 existingId, BookDetailsActivity.TAB_EDIT);
                                     }
                                 });
-                        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getResources().getString(android.R.string.cancel),
+                        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(final DialogInterface dialog, final int which) {
                                         //do nothing

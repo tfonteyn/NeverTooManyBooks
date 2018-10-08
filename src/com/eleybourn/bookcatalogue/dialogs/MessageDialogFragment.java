@@ -28,22 +28,6 @@ public class MessageDialogFragment extends DialogFragment {
      *
      * @param dialogId ID passed by caller. Can be 0, will be passed back in event
      * @param titleId  Title to display
-     * @param messageId Resource string to display
-     *
-     * @return Created fragment
-     */
-    public static MessageDialogFragment newInstance(final int dialogId,
-                                                    @StringRes final int titleId,
-                                                    @StringRes final int messageId) {
-        String message = BookCatalogueApp.getResourceString(messageId);
-        return MessageDialogFragment.newInstance(dialogId, titleId, message, android.R.string.ok, 0, 0);
-    }
-
-    /**
-     * A plain title/message/OK dialog
-     *
-     * @param dialogId ID passed by caller. Can be 0, will be passed back in event
-     * @param titleId  Title to display
      * @param message Message string to display
      *
      * @return Created fragment

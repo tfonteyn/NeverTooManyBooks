@@ -243,7 +243,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
             setCoverImage();
         } //else { //Populating from database
         //populateFieldsFromBook(book);
-        //getActivity().setTitle(this.getResources().getString(R.string.menu));
+        //getActivity().setTitle(getString(R.string.menu));
         //}
 
         populateAuthorListField();

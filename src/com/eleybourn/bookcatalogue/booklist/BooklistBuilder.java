@@ -272,7 +272,7 @@ public class BooklistBuilder implements AutoCloseable {
             mBooklistBuilderId = ++mBooklistBuilderIdCounter;
         }
         // Get the database and create a statements collection
-        mSyncedDb = db.getDbIfYouAreSureWhatYouAreDoing();
+        mSyncedDb = db.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing();
         mStatements = new SqlStatementManager(mSyncedDb);
         // Save the requested style
         mStyle = style;
@@ -935,7 +935,7 @@ public class BooklistBuilder implements AutoCloseable {
             // Check if the collation we use is case sensitive; bug introduced in ICS was to make UNICODE not CI.
             // Due to bugs in other language sorting, we are now forced to use a different collation  anyway, but
             // we still check if it is CI.
-            boolean collationIsCs = CollationCaseSensitive.isCaseSensitive(mSyncedDb.getUnderlyingDatabaseIfYouAreReallySureWhatYouAreDoing());
+            boolean collationIsCs = CollationCaseSensitive.isCaseSensitive(mSyncedDb.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing());
 
             // List of column names appropriate for 'Order By' clause
             String sortColNameList;

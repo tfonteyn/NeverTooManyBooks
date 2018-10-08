@@ -170,14 +170,10 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
     private ArrayList<String> getFriends() {
         ArrayList<String> friend_list = new ArrayList<>();
 
-        // bail out silently
-        if (ContextCompat.checkSelfPermission(getContext(),
-                Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            // ask the user to access contact.
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.READ_CONTACTS}, 0);
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_CONTACTS}, 0);
             // while they decide... bail out silently, then can click the btn again afterwards.
-            // Also no need to setup a listener for the requestCode=0
             return friend_list;
         }
 
@@ -198,8 +194,8 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
     public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 0) {
-            if (ContextCompat.checkSelfPermission(getContext(),
-                    Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
+                    == PackageManager.PERMISSION_GRANTED) {
                 //FIXME: this needs more work... we need to tell the adapter to reload the list. Or do we ?
                     System.out.println("FIXME: this needs more work... we need to tell the adapter to reload the list.");
             }

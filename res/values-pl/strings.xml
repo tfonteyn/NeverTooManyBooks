@@ -224,14 +224,6 @@
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
 
-    <!-- adding more does not require code changes -->
-    <string-array name="predefined_formats">
-        <item>Miękka okładka</item>
-        <item>Twarda okładka</item>
-        <item>eBook</item>
-        <item>Audiobook</item>
-        <item>Przewodnik</item>
-    </string-array>
     <!-- End: Added/Updated in  [Next Version]  -->
 
 </resources>

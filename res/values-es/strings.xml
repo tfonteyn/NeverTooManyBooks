@@ -840,16 +840,16 @@ y puede editar el libro utilizando el menú de opciones.
     <!-- Explanatory note for export data since last backup -->
     <string name="all_books_added_or_updated_since_last_full_backup">Todos los libros añadidos o actualizados desde la última copia de seguridad completa</string>
 
-    <!-- Short text for 'n books' -->
+    <!-- Short text for 'n books'  Spanish has no need for 'zero' -->
     <plurals name="n_books">
-        <item quantity="zero">ningún libro</item>
+        <!--<item quantity="zero">ningún libro</item>-->
         <item quantity="one">1 libro</item>
         <item quantity="other">%1$s libros</item>
     </plurals>
 
-    <!-- Short text for 'n covers' -->
+    <!-- Short text for 'n covers' Spanish has no need for 'zero' -->
     <plurals name="n_covers">
-        <item quantity="zero">ninguna portada</item>
+        <!--<item quantity="zero">ninguna portada</item>-->
         <item quantity="one">1 portada</item>
         <item quantity="other">%1$s portadas</item>
     </plurals>
@@ -910,9 +910,9 @@ y puede editar el libro utilizando el menú de opciones.
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="update_day">Día de actualización</string>
 
-    <!-- Short text for 'n stars' -->
+    <!-- Short text for 'n stars' Spanish has no need for 'zero' -->
     <plurals name="n_stars">
-        <item quantity="zero">%1$s estrellas</item>
+        <!--<item quantity="zero">%1$s estrellas</item>-->
         <item quantity="one">%1$s estrella</item>
         <item quantity="other">%1$s estrellas</item>
     </plurals>
@@ -932,13 +932,6 @@ y puede editar el libro utilizando el menú de opciones.
     <!-- End: Added/Updated in 5.1.1 -->
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
-    <!-- adding more does not require code changes -->
-    <string-array name="predefined_formats">
-        <item>Bolsillo</item>
-        <item>Tapa dura</item>
-        <item>eBook</item>
-        <item>Audiobook</item>
-        <item>Guía</item>
-    </string-array>
+
     <!-- End: Added/Updated in [Next Version] -->
 </resources>

@@ -138,7 +138,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
      */
     private void updateHeader() {
         TextView head = this.findViewById(R.id.events_found);
-        head.setText(getResources().getString(R.string.events_found, mCursor.getCount()));
+        head.setText(getString(R.string.events_found, mCursor.getCount()));
     }
 
     /**

@@ -807,15 +807,16 @@
     <string name="all_books_added_or_updated_since">Şu günaydan bu yana eklenen veya güncellenen kitaplar:</string>
     <!-- Explanatory note for export data since last backup -->
     <string name="all_books_added_or_updated_since_last_full_backup">Son tüm yedeklemeden bu yana eklenen veya güncellenen kitaplar</string>
-    <!-- Short text for 'n books' -->
+
+    <!-- Short text for 'n books' Turkish has no need for 'zero' -->
     <plurals name="n_books">
-        <item quantity="zero">kitap yok</item>
+        <!--<item quantity="zero">kitap yok</item>-->
         <item quantity="one">1 kitap</item>
         <item quantity="other">%1$s kitap</item>
     </plurals>
-    <!-- Short text for 'n covers' -->
+    <!-- Short text for 'n covers' Turkish has no need for 'zero' -->
     <plurals name="n_covers">
-        <item quantity="zero">kapak yok</item>
+        <!--<item quantity="zero">kapak yok</item>-->
         <item quantity="one">1 kapak</item>
         <item quantity="other">%1$s kapak</item>
     </plurals>
@@ -865,9 +866,10 @@
     <string name="update_month">Ayı güncelle</string>
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="update_day">Günü güncelle</string>
-    <!-- Short text for 'n stars' -->
+
+    <!-- Short text for 'n stars' Turkish has no need for 'zero' -->
     <plurals name="n_stars">
-        <item quantity="zero">%1$s yıldız</item>
+        <!--<item quantity="zero">%1$s yıldız</item>-->
         <item quantity="one">%1$s yıldız</item>
         <item quantity="other">%1$s yıldız</item>
     </plurals>
@@ -888,15 +890,6 @@
     <!-- End: Added/Updated in 5.1.2 -->
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
-
-    <!-- adding more does not require code changes -->
-    <string-array name="predefined_formats">
-        <item>Tascabile</item>
-        <item>Copertina rigidae</item>
-        <item>eBook</item>
-        <item>Audiolibro</item>
-        <item>Guida/Manuale</item>
-    </string-array>
 
     <!-- End: Added/Updated in [Next Version] -->
 </resources>

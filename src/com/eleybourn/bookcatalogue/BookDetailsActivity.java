@@ -424,7 +424,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         if (bar != null) {
             if (mIsReadOnly && mList != null) {
                 // display a book
-                bar.setTitle(this.getResources().getString(R.string.book_details));
+                bar.setTitle(getString(R.string.book_details));
                 bar.setSubtitle(null);
 
             } else if (mBookData.getBookId() > 0) {
@@ -433,7 +433,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
                 bar.setSubtitle(mBookData.getAuthorTextShort());
             } else {
                 // new book
-                bar.setTitle(this.getResources().getString(R.string.menu_insert));
+                bar.setTitle(getString(R.string.menu_insert));
                 bar.setSubtitle(null);
             }
         }
@@ -857,13 +857,13 @@ public class BookDetailsActivity extends BookCatalogueActivity
                  * next action, according to the users choice.
                  */
                 AlertDialog dialog = new AlertDialog.Builder(this)
-                        .setMessage(getResources().getString(R.string.duplicate_book_message))
+                        .setMessage(getString(R.string.duplicate_book_message))
                         .setTitle(R.string.duplicate_book_title)
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .create();
 
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                        this.getResources().getString(android.R.string.ok),
+                        getString(android.R.string.ok),
                         new DialogInterface.OnClickListener() {
                             public void onClick(final DialogInterface dialog, final int which) {
                                 updateOrInsert();
@@ -871,7 +871,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
                             }
                         });
                 dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                        this.getResources().getString(android.R.string.cancel),
+                        getString(android.R.string.cancel),
                         new DialogInterface.OnClickListener() {
                             public void onClick(final DialogInterface dialog, final int which) {
                                 nextStep.failure();

@@ -96,7 +96,7 @@ public class StandardDialogs {
                 .setCancelable(false)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getResources().getString(R.string.exit),
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getString(R.string.exit),
                 new AlertDialog.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
@@ -109,7 +109,7 @@ public class StandardDialogs {
                     }
                 });
 
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, activity.getResources().getString(R.string.continue_editing),
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, activity.getString(R.string.continue_editing),
                 new AlertDialog.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
@@ -143,7 +143,7 @@ public class StandardDialogs {
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(R.string.more_info),
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.more_info),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         Intent i = new Intent(context, AdministrationLibraryThing.class);
@@ -153,7 +153,7 @@ public class StandardDialogs {
                 });
 
         if (!ltRequired) {
-            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getResources().getString(R.string.disable_dialogue),
+            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.disable_dialogue),
                     new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
                             SharedPreferences prefs = context.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
@@ -165,7 +165,7 @@ public class StandardDialogs {
                     });
         }
 
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(android.R.string.cancel),
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         dialog.dismiss();
@@ -181,12 +181,12 @@ public class StandardDialogs {
                                          final Runnable onDeleted) {
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setMessage(String.format(context.getResources().getString(R.string.really_delete_series), series.name))
+                .setMessage(String.format(context.getString(R.string.really_delete_series), series.name))
                 .setTitle(R.string.delete_series)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(android.R.string.ok),
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         db.deleteSeries(series.id);
@@ -195,7 +195,7 @@ public class StandardDialogs {
                     }
                 });
 
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(android.R.string.cancel),
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         dialog.dismiss();
@@ -237,17 +237,17 @@ public class StandardDialogs {
                 authors.append(", ").append(authorList.get(i).getDisplayName());
             }
             if (authorList.size() > 1) {
-                authors.append(" ").append(context.getResources().getString(R.string.list_and)).append(" ").append(authorList.get(authorList.size() - 1).getDisplayName());
+                authors.append(" ").append(context.getString(R.string.list_and)).append(" ").append(authorList.get(authorList.size() - 1).getDisplayName());
             }
         }
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setMessage((context.getResources().getString(R.string.really_delete_book, title, authors)))
+                .setMessage((context.getString(R.string.really_delete_book, title, authors)))
                 .setTitle(R.string.menu_delete)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(android.R.string.ok),
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         db.deleteBook(id);
@@ -256,7 +256,7 @@ public class StandardDialogs {
                     }
                 });
 
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(android.R.string.cancel),
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         dialog.dismiss();
@@ -280,7 +280,7 @@ public class StandardDialogs {
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(android.R.string.ok),
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         dialog.dismiss();
@@ -288,7 +288,7 @@ public class StandardDialogs {
                     }
                 });
 
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getResources().getString(R.string.tell_me_more),
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.tell_me_more),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         dialog.dismiss();
@@ -297,7 +297,7 @@ public class StandardDialogs {
                     }
                 });
 
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(android.R.string.cancel),
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         dialog.dismiss();
@@ -420,35 +420,6 @@ public class StandardDialogs {
         selectItemDialog(inflater, title, items, selectedItem, handler);
     }
 
-
-
-
-//    /**
-//     * Replacement for Toasts where a serious error is shown... so the user will be 'forced' to read it.
-//     */
-//    public static void showAlert(@NonNull final Context context, @StringRes final int message) {
-//        showAlert(context, context.getResources().getString(message));
-//    }
-//    /**
-//     * Replacement for Toasts where a serious error is shown... so the user will be 'forced' to read it.
-//     */
-//    public static void showAlert(@NonNull final Context context, @NonNull final String message) {
-//        final AlertDialog dialog = new AlertDialog.Builder(context)
-//                .setTitle(android.R.string.dialog_alert_title)
-//                .setMessage(message)
-//                .setIconAttribute(android.R.attr.alertDialogIcon)
-//                .create();
-//
-//        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(android.R.string.ok),
-//                new DialogInterface.OnClickListener() {
-//                    public void onClick(final DialogInterface dialog, final int which) {
-//                        dialog.dismiss();
-//
-//                    }
-//                });
-//        dialog.show();
-//    }
-
     /**
      * Interface for item that displays in a custom dialog list
      */
@@ -471,7 +442,7 @@ public class StandardDialogs {
     public static class SimpleDialogFileItem implements SimpleDialogItem {
         private final File mFile;
 
-        public SimpleDialogFileItem(@NonNull final File file) {
+        SimpleDialogFileItem(@NonNull final File file) {
             mFile = file;
         }
 

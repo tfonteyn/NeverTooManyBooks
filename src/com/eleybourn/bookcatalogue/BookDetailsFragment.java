@@ -193,7 +193,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
             getView().findViewById(R.id.author).setVisibility(View.GONE);
         } else {
             StringBuilder builder = new StringBuilder();
-            builder.append(getResources().getString(R.string.book_details_readonly_by));
+            builder.append(getString(R.string.book_details_readonly_by));
             builder.append(" ");
             for (int i = 0; i < authorsCount; i++) {
                 builder.append(authors.get(i).getDisplayName());
@@ -369,7 +369,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     private void showSignedStatus(final boolean isSigned) {
         if (isSigned) {
             TextView v = getView().findViewById(R.id.signed);
-            v.setText(getResources().getString(R.string.yes));
+            v.setText(getString(R.string.yes));
         }
     }
 
@@ -415,7 +415,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
      *
      * @author Philip Warner
      */
-    private static class BinaryYesNoEmptyFormatter implements FieldFormatter {
+    private class BinaryYesNoEmptyFormatter implements FieldFormatter {
 
         /**
          * Display as a human-friendly date
@@ -427,8 +427,8 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
             }
             try {
                 boolean val = Datum.toBoolean(source, false);
-                return BookCatalogueApp.getResourceString(val ? R.string.yes : R.string.no);
-            } catch (Exception e) {
+                return BookDetailsFragment.this.getString(val ? android.R.string.yes : android.R.string.no);
+            } catch (IllegalArgumentException e) {
                 return source;
             }
         }
@@ -439,7 +439,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         public String extract(@NonNull final Field f, @NonNull final String source) {
             try {
                 return Datum.toBoolean(source, false) ? "1" : "0";
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 return source;
             }
         }

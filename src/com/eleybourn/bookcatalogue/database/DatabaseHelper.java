@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
@@ -360,9 +361,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * This function is called each time the database is upgraded. The function will run all
      * upgrade scripts between the oldVersion and the newVersion.
      *
-     * NOTE: As of 4.2, DO NOT USE OnUpgrade TO DISPLAY UPGRADE MESSAGES. See header for details.
-     *
-     * see DATABASE_VERSION
+     * @see #DATABASE_VERSION
      *
      * @param db         The database to be upgraded
      * @param oldVersion The current version number of the database
@@ -380,7 +379,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         if (oldVersion != newVersion) {
-            StorageUtils.backupDbFile(db, "DbUpgrade-" + oldVersion + "-" + newVersion);
+            StorageUtils.backupFile(db.getPath(), "DbUpgrade-" + oldVersion + "-" + newVersion);
         }
 
         if (curVersion < 11) {
@@ -388,12 +387,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         DbSync.SynchronizedDb syncedDb = new DbSync.SynchronizedDb(db, mSynchronizer);
-
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-        // NOTE: As of 4.2, DO NOT USE OnUpgrade TO DISPLAY UPGRADE MESSAGES. See header for details.
-        // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         // older version upgrades archived/execute in UpgradeDatabase
         curVersion = UpgradeDatabase.doUpgrade(db, syncedDb, curVersion);
@@ -409,6 +402,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             mMessage += "* Better Anthology support (Edit/View)\n";
             mMessage += "* Anthology titles auto populated (ISFDB site only!)\n";
             mMessage += "* Books & Anthology titles now have a 'first published' year\n";
+
+            // cleanup of obsolete preferences
+            BCPreferences.remove("StartupActivity.FAuthorSeriesFixupRequired");
+            BCPreferences.remove("start_in_my_books");
+            BCPreferences.remove("App.includeClassicView");
+            BCPreferences.remove("App.DisableBackgroundImage");
+            BCPreferences.remove("App.BooklistStyle");
+
 
             v83_moveCoversToDedicatedDirectory(syncedDb);
 

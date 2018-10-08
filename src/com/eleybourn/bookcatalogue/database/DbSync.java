@@ -287,7 +287,7 @@ public class DbSync {
     public static class SynchronizedDb {
         static final String ERROR_UPDATE_INSIDE_SHARED_TX = "Update inside shared TX";
         /** Underlying database */
-        final SQLiteDatabase mDb;
+        final SQLiteDatabase mSqlDb;
         /** Sync object to use */
         final Synchronizer mSync;
         /** Factory object to create the custom cursor. Can not be static because it needs mSync */
@@ -304,7 +304,7 @@ public class DbSync {
          * @param sync Synchronizer to use
          */
         SynchronizedDb(@NonNull final SQLiteDatabase db, @NonNull final Synchronizer sync) {
-            mDb = db;
+            mSqlDb = db;
             mSync = sync;
             if (BuildConfig.DEBUG) {
                 System.out.println("Reminder: Use of this method is not recommended. It is better to use\n" +
@@ -321,7 +321,7 @@ public class DbSync {
          */
         SynchronizedDb(@NonNull final SQLiteOpenHelper helper, @NonNull final Synchronizer sync) {
             mSync = sync;
-            mDb = openWithRetries(new DbOpener() {
+            mSqlDb = openWithRetries(new DbOpener() {
                 @Override
                 public SQLiteDatabase open() {
                     return helper.getWritableDatabase();
@@ -431,7 +431,7 @@ public class DbSync {
             }
 
             try {
-                return (SynchronizedCursor) mDb.rawQueryWithFactory(factory, sql, selectionArgs, editTable);
+                return (SynchronizedCursor) mSqlDb.rawQueryWithFactory(factory, sql, selectionArgs, editTable);
             } finally {
                 if (syncLock != null) {
                     syncLock.unlock();
@@ -451,11 +451,11 @@ public class DbSync {
                 if (mTxLock.getType() != LockTypes.exclusive) {
                     throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
                 }
-                mDb.execSQL(sql);
+                mSqlDb.execSQL(sql);
             } else {
                 SyncLock l = mSync.getExclusiveLock();
                 try {
-                    mDb.execSQL(sql);
+                    mSqlDb.execSQL(sql);
                 } finally {
                     l.unlock();
                 }
@@ -478,7 +478,7 @@ public class DbSync {
             }
 
             try {
-                return mDb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
+                return mSqlDb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
             } finally {
                 if (syncLock != null) {
                     syncLock.unlock();
@@ -506,7 +506,7 @@ public class DbSync {
             // reminder: insert does not throw exceptions for the actual insert.
             // but it can throw other exceptions.
             try {
-                return mDb.insert(table, nullColumnHack, values);
+                return mSqlDb.insert(table, nullColumnHack, values);
             } finally {
                 if (syncLock != null) {
                     syncLock.unlock();
@@ -535,7 +535,7 @@ public class DbSync {
             // reminder: update does not throw exceptions for the actual update.
             // but it can throw other exceptions.
             try {
-                return mDb.update(table, values, whereClause, whereArgs);
+                return mSqlDb.update(table, values, whereClause, whereArgs);
             } finally {
                 if (syncLock != null) {
                     syncLock.unlock();
@@ -565,7 +565,7 @@ public class DbSync {
             // reminder: delete does not throw exceptions for the actual delete.
             // but it can throw other exceptions.
             try {
-                return mDb.delete(table, whereClause, whereArgs);
+                return mSqlDb.delete(table, whereClause, whereArgs);
             } finally {
                 if (syncLock != null) {
                     syncLock.unlock();
@@ -585,7 +585,7 @@ public class DbSync {
                 syncLock = mSync.getSharedLock();
             }
             try {
-                return mDb.rawQueryWithFactory(cursorFactory, sql, selectionArgs, editTable);
+                return mSqlDb.rawQueryWithFactory(cursorFactory, sql, selectionArgs, editTable);
             } finally {
                 if (syncLock != null) {
                     syncLock.unlock();
@@ -618,16 +618,24 @@ public class DbSync {
         /**
          * @return the underlying SQLiteDatabase object.
          */
-        public SQLiteDatabase getUnderlyingDatabaseIfYouAreReallySureWhatYouAreDoing() {
-            return mDb;
+        public SQLiteDatabase getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing() {
+            return mSqlDb;
         }
 
+        /**
+         * Really only meant for backup purposes.
+         *
+         * @return the path to the actual database file
+         */
+        String getPath() {
+            return mSqlDb.getPath();
+        }
         /**
          * Wrapper.
          */
         @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         public boolean inTransaction() {
-            return mDb.inTransaction();
+            return mSqlDb.inTransaction();
         }
 
         /**
@@ -656,7 +664,7 @@ public class DbSync {
                     throw new DBExceptions.TransactionException("Starting a transaction when one is already started");
                 }
 
-                mDb.beginTransaction();
+                mSqlDb.beginTransaction();
             } catch (Exception e) {
                 syncLock.unlock();
                 throw new DBExceptions.TransactionException("Unable to start database transaction: " + e.getMessage(), e);
@@ -679,7 +687,7 @@ public class DbSync {
             }
 
             try {
-                mDb.endTransaction();
+                mSqlDb.endTransaction();
             } finally {
                 // Clear mTxLock before unlocking so another thread does not
                 // see the old lock when it gets the lock
@@ -695,14 +703,14 @@ public class DbSync {
          *                               transaction is already marked as successful.
          */
         public void setTransactionSuccessful() {
-            mDb.setTransactionSuccessful();
+            mSqlDb.setTransactionSuccessful();
         }
 
         /**
          * Wrapper for underlying database method.
          */
         public boolean isOpen() {
-            return mDb.isOpen();
+            return mSqlDb.isOpen();
         }
 
         /**
@@ -765,7 +773,7 @@ public class DbSync {
             mSql = sql;
 
             mIsReadOnly = sql.trim().toUpperCase().startsWith("SELECT");
-            mStatement = db.getUnderlyingDatabaseIfYouAreReallySureWhatYouAreDoing().compileStatement(sql);
+            mStatement = db.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing().compileStatement(sql);
 
             if (DEBUG_SWITCHES.SQL && BuildConfig.DEBUG) {
                 System.out.println("SynchronizedStatement(new): " + sql + "\n\n");

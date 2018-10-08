@@ -1017,38 +1017,8 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="events_found">%1$d Events found</string>
     <string name="events_recorded">( %1$d events recorded)</string>
 
-    <!-- adding more does not require code changes -->
-    <string-array name="predefined_formats">
-        <item>Paperback</item>
-        <item>Hard Cover</item>
-        <item>eBook</item>
-        <item>Audiobook</item>
-        <item>Guide / Companion</item>
-    </string-array>
-    <!-- adding more does not require code changes -->
-    <string-array name="predefined_languages">
-        <item>English</item>
-        <item>German</item>
-        <item>French</item>
-        <item>Dutch</item>
-        <item>Italian</item>
-    </string-array>
-
-    <!-- adding more does not require code changes -->
-    <string-array name="predefined_locations">
-        <item>Library</item>
-        <item>Lounge</item>
-        <item>Bedroom</item>
-    </string-array>
-
-    <!-- adding more does not require code changes -->
-    <string-array name="predefined_genres">
-        <item>Fiction</item>
-        <item>Non-Fiction</item>
-    </string-array>
-
     <string name="preferred_theme">Preferred Interface Theme</string>
-    <!-- adding more DOES require code changes -->
+    <!-- adding more require code changes -->
     <string-array name="supported_themes">
         <item>Dark</item>
         <item>Light</item>

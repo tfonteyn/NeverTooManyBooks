@@ -16,6 +16,7 @@
 
 package com.eleybourn.bookcatalogue.cropper;
 
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -70,7 +71,7 @@ class CropHighlightView {
     }
 
     private void init() {
-        android.content.res.Resources resources = mContext.getResources();
+        Resources resources = mContext.getResources();
         mResizeDrawableWidth = resources.getDrawable(R.drawable.ic_adjust);
         mResizeDrawableHeight = resources.getDrawable(R.drawable.ic_adjust);
         mResizeDrawableDiagonal = resources.getDrawable(R.drawable.ic_crop);

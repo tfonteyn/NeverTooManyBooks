@@ -95,11 +95,11 @@ public class DebugReport {
      *
      * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MAILING LIST OR FORUM!
      */
-    public static void sendDebugInfo(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db) {
-        // Create a temp DB copy.
-        File dbFile = StorageUtils.getFile("DbExport-tmp.db");
-        dbFile.deleteOnExit();
-        db.backupDbFile(dbFile.getName());
+    public static void sendDebugInfo(@NonNull final Activity activity) {
+        // Create a temp file, set to auto-delete at app close
+        File tmpDbFile = StorageUtils.getFile("DbExport-tmp.db");
+        tmpDbFile.deleteOnExit();
+        StorageUtils.backupDatabaseFile(tmpDbFile.getName());
 
         // setup the mail message
         final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);

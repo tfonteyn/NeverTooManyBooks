@@ -830,16 +830,16 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <!-- Explanatory note for export data since last backup -->
     <string name="all_books_added_or_updated_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up</string>
 
-    <!-- Short text for 'n books' -->
+    <!-- Short text for 'n books' Dutch has no need for 'zero' -->
     <plurals name="n_books">
-        <item quantity="zero">geen boeken</item>
+        <!--<item quantity="zero">geen boeken</item>-->
         <item quantity="one">1 boek</item>
         <item quantity="other">%1$s boeken</item>
     </plurals>
 
-    <!-- Short text for 'n covers' -->
+    <!-- Short text for 'n covers' Dutch has no need for 'zero' -->
     <plurals name="n_covers">
-        <item quantity="zero">geen omslagen</item>
+        <!--<item quantity="zero">geen omslagen</item>-->
         <item quantity="one">1 omslag</item>
         <item quantity="other">%1$s omslagen</item>
     </plurals>
@@ -899,9 +899,8 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="update_day">Dag update</string>
 
-    <!-- Short text for 'n stars' -->
+    <!-- Short text for 'n stars', dutch has no need for 'zero' -->
     <plurals name="n_stars">
-        <item quantity="zero">%1$s sterren</item>
         <item quantity="one">%1$s ster</item>
         <item quantity="other">%1$s sterren</item>
     </plurals>
@@ -958,23 +957,6 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="title_reorder">de|De|een|Een|het|Het</string>
     <string name="menu_mark_as_read">Markeer als gelezen</string>
     <string name="menu_mark_as_unread">Markeer als ongelezen</string>
-
-    <!-- adding more does not require code changes -->
-    <string-array name="predefined_formats">
-        <item>Paperback</item>
-        <item>Harde Kaft</item>
-        <item>e-Book</item>
-        <item>Gesproken boek</item>
-        <item>Gids / Handboek</item>
-    </string-array>
-    <!-- adding more does not require code changes -->
-    <string-array name="predefined_languages">
-        <item>Engels</item>
-        <item>Duits</item>
-        <item>Frans</item>
-        <item>Nederlands</item>
-        <item>Italiaans</item>
-    </string-array>
 
     <!-- End: Added/Updated in [Next Version] -->
 

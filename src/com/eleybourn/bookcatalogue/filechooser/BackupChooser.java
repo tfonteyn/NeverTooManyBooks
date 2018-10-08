@@ -25,6 +25,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.Exporter;
@@ -188,7 +189,8 @@ public class BackupChooser extends FileChooser implements
                 }
 
                 MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_OPEN,
-                        R.string.import_from_archive, R.string.import_complete);
+                        R.string.import_from_archive,
+                        BookCatalogueApp.getResourceString(R.string.import_complete));
                 frag.show(getSupportFragmentManager(), null);
                 break;
             }

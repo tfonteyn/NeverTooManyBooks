@@ -180,13 +180,13 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         }
 
         // When we get here, we know the names are genuinely different and the old author is used in more than one place.
-        String format = getResources().getString(R.string.changed_author_how_apply);
-        String allBooks = getResources().getString(R.string.all_books);
-        String thisBook = getResources().getString(R.string.this_book);
+        String format = getString(R.string.changed_author_how_apply);
+        String allBooks = getString(R.string.all_books);
+        String thisBook = getString(R.string.this_book);
         String message = String.format(format, from.getSortName(), to.getSortName(), allBooks);
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(message)
-                .setTitle(getResources().getString(R.string.scope_of_change))
+                .setTitle(getString(R.string.scope_of_change))
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
@@ -215,26 +215,27 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     @Override
     protected boolean onSave(@NonNull final Intent intent) {
         final AutoCompleteTextView textView = findViewById(R.id.author);
-        Resources res = this.getResources();
         String str = textView.getText().toString().trim();
         if (str.isEmpty()) {
             return true;
         }
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setMessage(res.getText(R.string.unsaved_edits))
-                .setTitle(res.getText(R.string.unsaved_edits_title))
+                .setMessage(getString(R.string.unsaved_edits))
+                .setTitle(getString(R.string.unsaved_edits_title))
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, res.getText(R.string.yes), new DialogInterface.OnClickListener() {
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.yes),
+                new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, final int which) {
                 textView.setText("");
                 findViewById(R.id.confirm).performClick();
             }
         });
 
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, res.getText(R.string.no), new DialogInterface.OnClickListener() {
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.no),
+                new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, final int which) {
                 //do nothing
             }

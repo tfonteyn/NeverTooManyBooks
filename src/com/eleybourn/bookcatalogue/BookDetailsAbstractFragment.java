@@ -203,7 +203,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                 // Update the ImageView with the new image
                 setCoverImage();
             } else {
-                String s = getResources().getString(R.string.could_not_copy_image) + ". " + getResources().getString(R.string.if_the_problem_persists);
+                String s = getString(R.string.could_not_copy_image) + ". " + getString(R.string.if_the_problem_persists);
                 StandardDialogs.showQuickNotice(this.getActivity(), s);
             }
         } else {
@@ -346,7 +346,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                     Intent gIntent = new Intent();
                     gIntent.setType("image/*");
                     gIntent.setAction(Intent.ACTION_GET_CONTENT);
-                    startActivityForResult(Intent.createChooser(gIntent, getResources().getString(R.string.select_picture)),
+                    startActivityForResult(Intent.createChooser(gIntent, getString(R.string.select_picture)),
                             UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_GALLERY);
                     return true;
 
@@ -479,7 +479,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     protected void populateAuthorListField() {
         String newText = mEditManager.getBookData().getAuthorTextShort();
         if (newText == null || newText.isEmpty()) {
-            newText = getResources().getString(R.string.set_authors);
+            newText = getString(R.string.set_authors);
         }
         mFields.getField(R.id.author).setValue(newText);
     }
@@ -492,7 +492,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         String newText;
         ArrayList<Series> list = mEditManager.getBookData().getSeries();
         if (list.size() == 0) {
-            newText = getResources().getString(R.string.set_series);
+            newText = getString(R.string.set_series);
         } else {
             boolean trimmed = Series.pruneSeriesList(list);
             trimmed |= Utils.pruneList(mDb, list);
@@ -501,7 +501,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             }
             newText = list.get(0).getDisplayName();
             if (list.size() > 1) {
-                newText += " " + getResources().getString(R.string.and_others);
+                newText += " " + getString(R.string.and_others);
             }
         }
         mFields.getField(R.id.series).setValue(newText);

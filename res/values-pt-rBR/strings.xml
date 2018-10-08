@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <string name="menu_insert">Add Book</string>
     <string name="menu_delete">Delete Book</string>
@@ -840,15 +840,15 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- Explanatory note for export data since last backup -->
     <string name="all_books_added_or_updated_since_last_full_backup">All books added or updated since last full backup</string>
 
-    <!-- Short text for 'n books' -->
-    <plurals name="n_books" tools:ignore="UnusedQuantity">
-        <item quantity="zero">no books</item>
+    <!-- Short text for 'n books' Portugese has no need for 'zero' -->
+    <plurals name="n_books" >
+        <!--<item quantity="zero">no books</item>-->
         <item quantity="one">%1$s book</item>
         <item quantity="other">%1$s books</item>
     </plurals>
-    <!-- Short text for 'n covers' -->
-    <plurals name="n_covers" tools:ignore="UnusedQuantity">
-        <item quantity="zero">no covers</item>
+    <!-- Short text for 'n covers' Portugese has no need for 'zero' -->
+    <plurals name="n_covers" >
+        <!--<item quantity="zero">no covers</item>-->
         <item quantity="one">%1$s cover</item>
         <item quantity="other">%1$s covers</item>
     </plurals>
@@ -910,9 +910,9 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="update_day">Update Day</string>
 
-    <!-- Short text for 'n stars' -->
-    <plurals name="n_stars" tools:ignore="UnusedQuantity">
-        <item quantity="zero">%1$s stars</item>
+    <!-- Short text for 'n stars' Portugese has no need for 'zero' -->
+    <plurals name="n_stars">
+        <!--<item quantity="zero">%1$s stars</item>-->
         <item quantity="one">%1$s star</item>
         <item quantity="other">%1$s stars</item>
     </plurals>

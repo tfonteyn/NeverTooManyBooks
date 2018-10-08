@@ -64,7 +64,7 @@ public class FlattenedBooklist implements AutoCloseable {
         flat.setName(tableName);
         flat.setType(TableTypes.Temporary); //RELEASE Make sure is TEMPORARY
 
-        init(db.getDbIfYouAreSureWhatYouAreDoing(), flat);
+        init(db.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing(), flat);
         Tracker.exitFunction(this,"FlattenedBooklist(@NonNull final CatalogueDBAdapter db, @NonNull final String tableName)");
     }
 

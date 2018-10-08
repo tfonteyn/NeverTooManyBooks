@@ -423,6 +423,15 @@ public class CatalogueDBAdapter {
     }
 
     /**
+     * Really only meant for backup purposes.
+     *
+     * @return the path to the actual database file
+     */
+    public String getPath() {
+        return mSyncedDb.getPath();
+    }
+
+    /**
      * Get the synchronizer object for this database in case there is some other activity
      * that needs to be synced.
      *
@@ -478,7 +487,7 @@ public class CatalogueDBAdapter {
     @SuppressWarnings("unused")
     public static void debugPrintReferenceCount(@Nullable final String msg) {
         if (mSyncedDb != null) {
-            SynchronizedDb.printRefCount(msg, mSyncedDb.getUnderlyingDatabaseIfYouAreReallySureWhatYouAreDoing());
+            SynchronizedDb.printRefCount(msg, mSyncedDb.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing());
         }
     }
 
@@ -574,7 +583,7 @@ public class CatalogueDBAdapter {
      * @return Database connection
      */
     @NonNull
-    public SynchronizedDb getDbIfYouAreSureWhatYouAreDoing() {
+    public SynchronizedDb getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing() {
         if (mSyncedDb == null || !mSyncedDb.isOpen()) {
             this.open();
         }
@@ -1131,7 +1140,7 @@ public class CatalogueDBAdapter {
                 StringBuilder newTitle = new StringBuilder();
                 String[] title_words = title.split(" ");
                 try {
-                    if (title_words[0].matches(mContext.getResources().getString(R.string.title_reorder))) {
+                    if (title_words[0].matches(mContext.getString(R.string.title_reorder))) {
                         for (int i = 1; i < title_words.length; i++) {
                             if (i != 1) {
                                 newTitle.append(" ");
@@ -2491,11 +2500,7 @@ public class CatalogueDBAdapter {
                 + " ORDER BY lower(" + DOM_BOOK_FORMAT + ") " + COLLATION;
 
         try (Cursor cursor = mSyncedDb.rawQuery(sql)) {
-            ArrayList<String> list = getFirstColumnAsList(cursor);
-            if (list.size() == 0) {
-                Collections.addAll(list, BookCatalogueApp.getResourceStringArray(R.array.predefined_formats));
-            }
-            return list;
+            return getFirstColumnAsList(cursor);
         }
     }
     //endregion
@@ -2525,11 +2530,7 @@ public class CatalogueDBAdapter {
                 + " ORDER BY lower(" + DOM_BOOK_GENRE + ") " + COLLATION;
 
         try (Cursor c = mSyncedDb.rawQuery(sql)) {
-            ArrayList<String> list = getFirstColumnAsList(c);
-            if (list.size() == 0) {
-                Collections.addAll(list, BookCatalogueApp.getResourceStringArray(R.array.predefined_genres));
-            }
-            return list;
+            return getFirstColumnAsList(c);
         }
     }
     //endregion
@@ -2559,11 +2560,7 @@ public class CatalogueDBAdapter {
                 + " ORDER BY lower(" + DOM_BOOK_LANGUAGE + ") " + COLLATION;
 
         try (Cursor c = mSyncedDb.rawQuery(sql)) {
-            ArrayList<String> list = getFirstColumnAsList(c);
-            if (list.size() == 0) {
-                Collections.addAll(list, BookCatalogueApp.getResourceStringArray(R.array.predefined_languages));
-            }
-            return list;
+            return getFirstColumnAsList(c);
         }
     }
     //endregion
@@ -2670,11 +2667,7 @@ public class CatalogueDBAdapter {
                 + " ORDER BY lower(" + DOM_BOOK_LOCATION + ") " + COLLATION;
 
         try (Cursor c = mSyncedDb.rawQuery(sql)) {
-            ArrayList<String> list = getFirstColumnAsList(c);
-            if (list.size() == 0) {
-                Collections.addAll(list, BookCatalogueApp.getResourceStringArray(R.array.predefined_locations));
-            }
-            return list;
+            return getFirstColumnAsList(c);
         }
     }
     //endregion
@@ -3649,20 +3642,6 @@ public class CatalogueDBAdapter {
     //endregion
 
     /**
-     * Backup database file using default file name
-     */
-    public void backupDbFile() {
-        StorageUtils.backupDbFile(mSyncedDb, "DbExport.db");
-    }
-
-    /**
-     * Backup database file to the specified filename
-     */
-    public void backupDbFile(@NonNull final String toFile) {
-        StorageUtils.backupDbFile(mSyncedDb, toFile);
-    }
-
-    /**
      * A complete export of all tables (flattened) in the database
      *
      * @return BooksCursor over all books, authors, etc
@@ -3681,77 +3660,6 @@ public class CatalogueDBAdapter {
                 whereClause +
                 " ORDER BY " + TBL_BOOKS.dot(DOM_ID);
         return fetchBooks(sql, new String[]{});
-    }
-
-    /**
-     * Data cleanup routine called on upgrade to v4.0.3 to cleanup data integrity issues cased
-     * by earlier merge code that could have left the first author or series for a book having
-     * a position number > 1.
-     */
-    public void fixupAuthorsAndSeries() {
-        if (mSyncedDb.inTransaction()) {
-            throw new DBExceptions.TransactionException();
-        }
-
-        SyncLock syncLock = mSyncedDb.beginTransaction(true);
-        try {
-            fixupPositionedBookItems(TBL_BOOK_AUTHOR.getName(), DOM_AUTHOR_POSITION.name);
-            fixupPositionedBookItems(TBL_BOOK_SERIES.getName(), DOM_BOOK_SERIES_POSITION.name);
-            mSyncedDb.setTransactionSuccessful();
-        } finally {
-            mSyncedDb.endTransaction(syncLock);
-        }
-
-    }
-
-    /**
-     * Data cleaning routine for upgrade to version 4.0.3 to cleanup any books that have no primary author/series.
-     */
-    private void fixupPositionedBookItems(@NonNull final String tableName,
-                                          @NonNull final String positionField) {
-        String sql = "SELECT " + TBL_BOOKS.dotAs(DOM_ID) + "," +
-                " min(o." + positionField + ") AS pos" +
-                " FROM " + TBL_BOOKS.ref() + " JOIN " + tableName + " o ON o." + DOM_BOOK_ID + "=" + TBL_BOOKS.dot(DOM_ID) +
-                " GROUP BY " + TBL_BOOKS.dot(DOM_ID);
-
-        SyncLock syncLock = null;
-        if (!mSyncedDb.inTransaction()) {
-            syncLock = mSyncedDb.beginTransaction(true);
-        }
-        SynchronizedStatement moveStmt = null;
-        try (Cursor c = mSyncedDb.rawQuery(sql)) {
-            // Get the column indexes we need
-            final int bookCol = c.getColumnIndexOrThrow(DOM_ID.name);
-            final int posCol = c.getColumnIndexOrThrow("pos");
-            // Loop through all instances of the old author appearing
-            while (c.moveToNext()) {
-                // Get the details
-                long pos = c.getLong(posCol);
-                if (pos > 1) {
-                    if (moveStmt == null) {
-                        // Statement to move records up by a given offset
-                        sql = "UPDATE " + tableName + " SET " + positionField + "=1 WHERE " + DOM_BOOK_ID + "=? AND " + positionField + "=?";
-                        moveStmt = mSyncedDb.compileStatement(sql);
-                    }
-
-                    long book = c.getLong(bookCol);
-                    // Move subsequent records up by one
-                    moveStmt.bindLong(1, book);
-                    moveStmt.bindLong(2, pos);
-                    moveStmt.execute();
-                }
-            }
-            if (syncLock != null) {
-                mSyncedDb.setTransactionSuccessful();
-            }
-        } finally {
-            if (syncLock != null) {
-                mSyncedDb.endTransaction(syncLock);
-            }
-            if (moveStmt != null) {
-                moveStmt.close();
-            }
-        }
     }
 
     /**

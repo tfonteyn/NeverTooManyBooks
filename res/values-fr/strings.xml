@@ -812,16 +812,16 @@
     <!-- Explanatory note for export data since last backup -->
     <string name="all_books_added_or_updated_since_last_full_backup">Tous les livres ajoutés ou mis à jour depuis la dernière sauvegarde complète</string>
 
-    <!-- Short text for 'n books' -->
+    <!-- Short text for 'n books' French has no need for 'zero'-->
     <plurals name="n_books">
-        <item quantity="zero">Aucun livre</item>
+        <!--<item quantity="zero">Aucun livre</item>-->
         <item quantity="one">%1$s livre</item>
         <item quantity="other">%1$s livres</item>
     </plurals>
 
-    <!-- Short text for 'n covers' -->
+    <!-- Short text for 'n covers' French has no need for 'zero' -->
     <plurals name="n_covers">
-        <item quantity="zero">Aucune couverture</item>
+        <!--<item quantity="zero">Aucune couverture</item>-->
         <item quantity="one">%1$s couverture</item>
         <item quantity="other">%1$s couvertures</item>
     </plurals>
@@ -872,9 +872,9 @@
     <string name="update_month">Mois de mise à Jour</string>
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="update_day">Jour de mise à jour</string>
-    <!-- Short text for 'n stars' -->
+    <!-- Short text for 'n stars' French has no need for 'zero' -->
     <plurals name="n_stars">
-        <item quantity="zero">Aucune étoile</item>
+        <!--<item quantity="zero">Aucune étoile</item>-->
         <item quantity="one">%1$s étoile</item>
         <item quantity="other">%1$s étoiles</item>
     </plurals>
@@ -933,15 +933,6 @@
     <string name="title_reorder">le|Le|la|La|les|Les</string>
     <string name="menu_mark_as_read">Marqué comme lu</string>
     <string name="menu_mark_as_unread">Maqué comme non lu</string>
-
-    <!-- adding more does not require code changes -->
-    <string-array name="predefined_formats">
-        <item>Livre de poche</item>
-        <item>Couverture cartonnée</item>
-        <item>eBook</item>
-        <item>Livre audio</item>
-        <item>Guide</item>
-    </string-array>
 
     <!-- End: Added/Updated in [Next Version] -->
 

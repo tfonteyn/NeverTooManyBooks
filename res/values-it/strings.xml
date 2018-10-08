@@ -830,16 +830,16 @@
     <!-- Explanatory note for export data since last backup -->
     <string name="all_books_added_or_updated_since_last_full_backup">Tutti i libri aggiunti o aggiornati dall\'ultimo backup completo</string>
 
-    <!-- Short text for 'n books' -->
+    <!-- Short text for 'n books' Italian has no need for 'zero' -->
     <plurals name="n_books">
-        <item quantity="zero">nessun libro</item>
+        <!--<item quantity="zero">nessun libro</item>-->
         <item quantity="one">1 libro</item>
         <item quantity="other">%1$s libri</item>
     </plurals>
 
-    <!-- Short text for 'n covers' -->
+    <!-- Short text for 'n covers' Italian has no need for 'zero' -->
     <plurals name="n_covers">
-        <item quantity="zero">nessuna copertina</item>
+        <!--<item quantity="zero">nessuna copertina</item>-->
         <item quantity="one">1 copertina</item>
         <item quantity="other">%1$s copertine</item>
     </plurals>
@@ -879,9 +879,9 @@
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="update_day">Giorno</string>
 
-    <!-- Short text for 'n stars' -->
+    <!-- Short text for 'n stars' Italian has no need for 'zero' -->
     <plurals name="n_stars">
-        <item quantity="zero">%1$s stelle</item>
+        <!--<item quantity="zero">%1$s stelle</item>-->
         <item quantity="one">%1$s stella</item>
         <item quantity="other">%1$s stelle</item>
     </plurals>
@@ -944,14 +944,7 @@
     <!-- End: Added/Updated in 5.2.0 -->
 
     <!-- Begin: Added/Updated in [Next Version] -->
-    <!-- adding more does not require code changes -->
-    <string-array name="predefined_formats">
-        <item>Tascabile</item>
-        <item>Copertina rigidae</item>
-        <item>eBook</item>
-        <item>Audiolibro</item>
-        <item>Guida/Manuale</item>
-    </string-array>
+
     <!-- End: Added/Updated in [Next Version] -->
 
 </resources>

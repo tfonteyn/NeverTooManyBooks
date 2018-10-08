@@ -75,12 +75,12 @@ public class AdministrationAbout extends BookCatalogueActivity {
         } catch (NameNotFoundException e) {
             Logger.logError(e);
         }
-        final Resources res = this.getResources();
+
         TextView website = findViewById(R.id.website);
         website.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.website)));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.website)));
                 startActivity(intent);
             }
         });
@@ -88,7 +88,7 @@ public class AdministrationAbout extends BookCatalogueActivity {
         sourcecode.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.sourcecode)));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.sourcecode)));
                 startActivity(intent);
             }
         });

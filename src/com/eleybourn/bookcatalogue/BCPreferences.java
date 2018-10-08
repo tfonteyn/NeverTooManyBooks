@@ -180,6 +180,14 @@ public class BCPreferences {
         }
     }
 
+    public static void remove(@NonNull final String name) {
+        Editor ed = edit();
+        try {
+            ed.remove(name);
+        } finally {
+            ed.commit();
+        }
+    }
     /** Get a standard preferences editor for mass updates */
     public static Editor edit() {
         return BookCatalogueApp.getSharedPreferences().edit();

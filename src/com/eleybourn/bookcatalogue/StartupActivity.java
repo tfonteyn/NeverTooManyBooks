@@ -43,6 +43,7 @@ import android.text.Html;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
+import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.OnTaskFinishListener;
@@ -69,9 +70,11 @@ public class StartupActivity extends AppCompatActivity {
 
     /** Options to indicate FTS rebuild is required at startup */
     private static final String PREF_FTS_REBUILD_REQUIRED = TAG + ".FtsRebuildRequired";
-    private static final String PREF_AUTHOR_SERIES_FIX_UP_REQUIRED = TAG + ".FAuthorSeriesFixupRequired";
+    // obsolete from v74
+    @Deprecated
+    public static final String PREF_AUTHOR_SERIES_FIX_UP_REQUIRED = TAG + ".FAuthorSeriesFixupRequired";
 
-    private static final String STATE_OPENED = "state_opened";
+    private static final String PREFS_STATE_OPENED = "state_opened";
     /** Number of times the app has been started */
     private static final String PREF_START_COUNT = "Startup.StartCount";
 
@@ -110,11 +113,6 @@ public class StartupActivity extends AppCompatActivity {
     /** Set the flag to indicate an FTS rebuild is required */
     public static void scheduleFtsRebuild() {
         BCPreferences.setBoolean(PREF_FTS_REBUILD_REQUIRED, true);
-    }
-
-    /** Set the flag to indicate an FTS rebuild is required */
-    public static void scheduleAuthorSeriesFixUp() {
-        BCPreferences.setBoolean(PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, true);
     }
 
     /**
@@ -336,14 +334,14 @@ public class StartupActivity extends AppCompatActivity {
     }
 
     private void proposeBackup() {
-        int opened = BCPreferences.getInt(STATE_OPENED, BACKUP_PROMPT_WAIT);
+        int opened = BCPreferences.getInt(PREFS_STATE_OPENED, BACKUP_PROMPT_WAIT);
         int startCount = BCPreferences.getInt(PREF_START_COUNT, 0) + 1;
 
         Editor ed = BCPreferences.edit();
         if (opened == 0) {
-            ed.putInt(STATE_OPENED, BACKUP_PROMPT_WAIT);
+            ed.putInt(PREFS_STATE_OPENED, BACKUP_PROMPT_WAIT);
         } else {
-            ed.putInt(STATE_OPENED, opened - 1);
+            ed.putInt(PREFS_STATE_OPENED, opened - 1);
         }
         ed.putInt(PREF_START_COUNT, startCount);
         ed.commit();
@@ -360,14 +358,14 @@ public class StartupActivity extends AppCompatActivity {
                     .create();
 
             dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                    getResources().getString(android.R.string.cancel)
+                    getString(android.R.string.cancel)
                     , new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
                             dialog.dismiss();
                         }
                     });
             dialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                    getResources().getString(android.R.string.ok),
+                    getString(android.R.string.ok),
                     new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
                             mExportRequired = true;
@@ -489,7 +487,6 @@ public class StartupActivity extends AppCompatActivity {
             CatalogueDBAdapter db = taskContext.getDb();
 
             updateProgress(R.string.optimizing_databases);
-            // Analyze DB
             db.analyzeDb();
             if (BooklistPreferencesActivity.isThumbnailCacheEnabled()) {
                 try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(StartupActivity.this)) {
@@ -498,8 +495,8 @@ public class StartupActivity extends AppCompatActivity {
             }
 
             if (BCPreferences.getBoolean(PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {
-                db.fixupAuthorsAndSeries();
-                BCPreferences.setBoolean(PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false);
+                UpgradeDatabase.v74_fixupAuthorsAndSeries(db);
+                BCPreferences.remove(PREF_AUTHOR_SERIES_FIX_UP_REQUIRED);
             }
         }
 

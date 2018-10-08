@@ -711,16 +711,18 @@
     <string name="all_books_added_or_updated_since">Все добавленные или обновленные книги с:</string>
     <string name="all_books_added_or_updated_since_last_full_backup">Все добавленные или обновленные книги с последнего бэкапа</string>
 
+    <!-- Russian has no need for 'zero'-->
     <plurals name="n_books">
-        <item quantity="zero">Нет книг</item>
+        <!--<item quantity="zero">Нет книг</item>-->
         <item quantity="one">%1$s книга</item>
         <item quantity="few">%1$s книги</item>
         <item quantity="many">%1$s книг</item>
         <item quantity="other">%1$s книг</item>
     </plurals>
 
+    <!-- Russian has no need for 'zero'-->
     <plurals name="n_covers">
-        <item quantity="zero">Нет обложек</item>
+        <!--<item quantity="zero">Нет обложек</item>-->
         <item quantity="one">%1$s обложка</item>
         <item quantity="few">%1$s обложки</item>
         <item quantity="many">%1$s обложек</item>
@@ -760,10 +762,11 @@
     <string name="update_month">Месяц обновления</string>
     <string name="update_day">День обновленияy</string>
 
+    <!-- Russian has no need for 'zero' or 'two' -->
     <plurals name="n_stars">
-        <item quantity="zero">%1$s звезд</item>
+        <!--<item quantity="zero">%1$s звезд</item>-->
         <item quantity="one">%1$s звезда</item>
-        <item quantity="two">%1$s звезды</item>
+        <!--<item quantity="two">%1$s звезды</item>-->
         <item quantity="few">%1$s звезд</item>
         <item quantity="many">%1$s звезд</item>
         <item quantity="other">%1$s звезд</item>
@@ -799,15 +802,6 @@
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
 
-
-    <!-- adding more does not require code changes -->
-    <string-array name="predefined_formats">
-        <item>Мягкий переплет</item>
-        <item>Твёрдый переплёт</item>
-        <item>Электронная книга</item>
-        <item>Аудиокнига</item>
-        <item>Руководство / Справочник</item>
-    </string-array>
     <!-- End: Added/Updated in  [Next Version]  -->
 
 </resources>

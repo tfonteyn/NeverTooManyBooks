@@ -37,7 +37,6 @@ import com.eleybourn.bookcatalogue.backup.ExportThread;
 import com.eleybourn.bookcatalogue.backup.ImportThread;
 import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
 import com.eleybourn.bookcatalogue.booklist.BooklistStylesListActivity;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -70,7 +69,6 @@ public class AdministrationFunctions extends ActivityWithTasks {
     private static final String DO_AUTO = "do_auto";
     private static final String DO_AUTO_EXPORT = "export";
 
-    private CatalogueDBAdapter mDb;
     private boolean finish_after = false;
     private boolean mExportOnStartup = false;
 
@@ -93,9 +91,6 @@ public class AdministrationFunctions extends ActivityWithTasks {
         try {
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.administration_label);
-
-            mDb = new CatalogueDBAdapter(this);
-            mDb.open();
 
             Bundle extras = getIntent().getExtras();
             if (extras != null && extras.containsKey(DO_AUTO)) {
@@ -351,7 +346,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    StorageUtils.backupDbFile(mDb, "DbExport.db");
+                    StorageUtils.backupDatabaseFile();
                     //Snackbar.make(v, R.string.backup_success, Snackbar.LENGTH_LONG).show();
                     StandardDialogs.showQuickNotice(AdministrationFunctions.this, R.string.backup_success);
                 }
@@ -366,15 +361,13 @@ public class AdministrationFunctions extends ActivityWithTasks {
                 .setTitle(R.string.import_data)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                this.getResources().getString(android.R.string.ok),
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         importFromCSV();
                     }
                 });
-        dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                this.getResources().getString(android.R.string.cancel),
+        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         //do nothing
@@ -469,12 +462,6 @@ public class AdministrationFunctions extends ActivityWithTasks {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mDb.close();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         if (mExportOnStartup) {
@@ -505,7 +492,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
                 .setIcon(R.drawable.ic_send)
                 .create();
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                getResources().getString(android.R.string.ok),
+                getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         // setup the mail message
@@ -529,7 +516,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
                     }
                 });
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                getResources().getString(android.R.string.cancel),
+                getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
                         //do nothing

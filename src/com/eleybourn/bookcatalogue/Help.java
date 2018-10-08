@@ -31,7 +31,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -45,8 +44,6 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  * @author Evan Leybourn
  */
 public class Help extends BookCatalogueActivity {
-    private Resources res;
-    private CatalogueDBAdapter mDb;
 
     @Override
     protected int getLayoutId() {
@@ -58,17 +55,12 @@ public class Help extends BookCatalogueActivity {
         super.onCreate(savedInstanceState);
         try {
             setTitle(R.string.app_name);
-            // Needed for sending com.eleybourn.bookcatalogue.debug info...
-            mDb = new CatalogueDBAdapter(this);
-            mDb.open();
-
-            res = getResources();
 
             TextView webinstructions = findViewById(R.id.helpinstructions);
             webinstructions.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.helppage)));
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.helppage)));
                     startActivity(intent);
                 }
             });
@@ -77,7 +69,7 @@ public class Help extends BookCatalogueActivity {
             website.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(res.getString(R.string.helppage)));
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.helppage)));
                     startActivity(intent);
                 }
             });
@@ -86,7 +78,7 @@ public class Help extends BookCatalogueActivity {
             sendInfo.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DebugReport.sendDebugInfo(Help.this, mDb);
+                    DebugReport.sendDebugInfo(Help.this);
                 }
             });
 
@@ -129,18 +121,4 @@ public class Help extends BookCatalogueActivity {
         super.onResume();
         setupCleanupButton();
     }
-
-    /**
-     * Called when activity destroyed
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        try {
-            mDb.close();
-        } catch (Exception e) {
-            Logger.logError(e);
-        }
-    }
-
 }

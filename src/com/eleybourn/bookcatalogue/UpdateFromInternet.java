@@ -151,7 +151,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                     final CheckBox cb = (CheckBox) v;
                     final FieldUsages.FieldUsage usage = (FieldUsages.FieldUsage) ViewTagger.getTag(cb);
                     if (usage != null) {
-                        if (!cb.isChecked() && cb.getText().toString().contains(getResources().getString(R.string.usage_copy_if_blank))) {
+                        if (!cb.isChecked() && cb.getText().toString().contains(getString(R.string.usage_copy_if_blank))) {
                             if (usage.canAppend) {
                                 setCheckBoxText(cb, usage.stringId, R.string.usage_add_extra);
                                 cb.setChecked(true); //reset to checked
@@ -161,11 +161,11 @@ public class UpdateFromInternet extends ActivityWithTasks {
                                 cb.setChecked(true); //reset to checked
                                 usage.usage = FieldUsages.Usages.OVERWRITE;
                             }
-                        } else if (cb.getText().toString().contains(getResources().getString(R.string.usage_add_extra))) {
+                        } else if (cb.getText().toString().contains(getString(R.string.usage_add_extra))) {
                             setCheckBoxText(cb, usage.stringId, R.string.usage_overwrite);
                             cb.setChecked(true); //reset to checked
                             usage.usage = FieldUsages.Usages.OVERWRITE;
-                        } else if (cb.getText().toString().contains(getResources().getString(R.string.usage_overwrite))) {
+                        } else if (cb.getText().toString().contains(getString(R.string.usage_overwrite))) {
                             setCheckBoxText(cb, usage.stringId, R.string.usage_copy_if_blank);
                             usage.usage = FieldUsages.Usages.COPY_IF_BLANK;
                         }
@@ -175,9 +175,9 @@ public class UpdateFromInternet extends ActivityWithTasks {
 
                 /** setText as "text (extra)" */
                 private void setCheckBoxText(@NonNull final CheckBox cbx, final int textId, final int extraId) {
-                    cbx.setText(getResources().getString(R.string.a_bracket_b_bracket,
-                            getResources().getString(textId),
-                            getResources().getString(extraId)));
+                    cbx.setText(getString(R.string.a_bracket_b_bracket,
+                            getString(textId),
+                            getString(extraId)));
                 }
             });
 
@@ -185,19 +185,18 @@ public class UpdateFromInternet extends ActivityWithTasks {
             String extra;
             switch (usage.usage) {
                 case ADD_EXTRA:
-                    extra = getResources().getString(R.string.usage_add_extra);
+                    extra = getString(R.string.usage_add_extra);
                     break;
                 case COPY_IF_BLANK:
-                    extra = getResources().getString(R.string.usage_copy_if_blank);
+                    extra = getString(R.string.usage_copy_if_blank);
                     break;
                 case OVERWRITE:
-                    extra = getResources().getString(R.string.usage_overwrite);
+                    extra = getString(R.string.usage_overwrite);
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown Usage");
             }
-            cb.setText(getResources().getString(R.string.a_bracket_b_bracket,
-                    getResources().getString(usage.stringId), extra));
+            cb.setText(getString(R.string.a_bracket_b_bracket, getString(usage.stringId), extra));
             layout.addView(cb);
 
             //Add the LinearLayout to the parent
@@ -223,21 +222,21 @@ public class UpdateFromInternet extends ActivityWithTasks {
                             .setTitle(R.string.update_fields)
                             .setIconAttribute(android.R.attr.alertDialogIcon)
                             .create();
-                    dialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternet.this.getResources().getString(R.string.yes),
+                    dialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternet.this.getString(R.string.yes),
                             new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
                             mFieldUsages.get(UniqueId.BKEY_THUMBNAIL).usage = FieldUsages.Usages.OVERWRITE;
                             startUpdate(bookId);
                         }
                     });
-                    dialog.setButton(AlertDialog.BUTTON_NEGATIVE, UpdateFromInternet.this.getResources().getString(android.R.string.cancel),
+                    dialog.setButton(AlertDialog.BUTTON_NEGATIVE, UpdateFromInternet.this.getString(android.R.string.cancel),
                             new DialogInterface.OnClickListener() {
                         @SuppressWarnings("EmptyMethod")
                         public void onClick(final DialogInterface dialog, final int which) {
                             //do nothing
                         }
                     });
-                    dialog.setButton(AlertDialog.BUTTON_NEUTRAL, UpdateFromInternet.this.getResources().getString(R.string.no),
+                    dialog.setButton(AlertDialog.BUTTON_NEUTRAL, UpdateFromInternet.this.getString(R.string.no),
                             new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
                             mFieldUsages.get(UniqueId.BKEY_THUMBNAIL).usage = FieldUsages.Usages.COPY_IF_BLANK;
