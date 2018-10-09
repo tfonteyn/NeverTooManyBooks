@@ -23,8 +23,8 @@ public class SearchISFDBThread extends SearchThread {
         try {
             doProgress(getString(R.string.searching_isfdb), 0);
             try {
-                ISFDBManager.search(mIsbn, mAuthor, mTitle, mBook, mFetchThumbnail);
-                if (mBook.size() > 0) {
+                ISFDBManager.search(mIsbn, mAuthor, mTitle, mBookData, mFetchThumbnail);
+                if (mBookData.size() > 0) {
                     // Look for series name and clear KEY_TITLE
                     checkForSeriesName();
                 }

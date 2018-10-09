@@ -53,8 +53,7 @@ public class SearchAdmin extends BookCatalogueActivity {
         tab = mTabLayout.newTab().setText(R.string.search_site_cover_order).setTag(holder);
         mTabLayout.addTab(tab); //TAB_SEARCH_COVER_ORDER
 
-        Button confirmBtn = findViewById(R.id.confirm);
-        confirmBtn.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
 
@@ -78,8 +77,7 @@ public class SearchAdmin extends BookCatalogueActivity {
             }
         });
 
-        Button cancelBtn = findViewById(R.id.cancel);
-        cancelBtn.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 finish();

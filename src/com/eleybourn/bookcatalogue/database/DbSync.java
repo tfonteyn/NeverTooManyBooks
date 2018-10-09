@@ -62,7 +62,7 @@ public class DbSync {
      * Because SQLite throws exception on locking conflicts, this class can be used to serialize
      * WRITE access while allowing concurrent read access.
      *
-     * Each logical database should have its own 'Synchronizer'
+     * Each logical database should have its own {@link Synchronizer}
      * Before any read, or group of reads, a call to getSharedLock() should be made.
      * A call to getExclusiveLock() should be made before any update.
      * Multiple calls can be made as necessary so long as an unlock() is called for all get*()
@@ -322,6 +322,7 @@ public class DbSync {
         SynchronizedDb(@NonNull final SQLiteOpenHelper helper, @NonNull final Synchronizer sync) {
             mSync = sync;
             mSqlDb = openWithRetries(new DbOpener() {
+                @NonNull
                 @Override
                 public SQLiteDatabase open() {
                     return helper.getWritableDatabase();
@@ -368,6 +369,7 @@ public class DbSync {
          *
          * @return The opened database
          */
+        @NonNull
         private SQLiteDatabase openWithRetries(@NonNull final DbOpener opener) {
             int wait = 10; // 10ms
             //int retriesLeft = 5; // up to 320ms
@@ -407,6 +409,7 @@ public class DbSync {
         /**
          * Locking-aware wrapper for underlying database method.
          */
+        @NonNull
         public SynchronizedCursor rawQuery(@NonNull final String sql, @Nullable final String[] selectionArgs) {
             return rawQueryWithFactory(mCursorFactory, sql, selectionArgs, "");
         }
@@ -414,6 +417,7 @@ public class DbSync {
         /**
          * Locking-aware wrapper for underlying database method.
          */
+        @NonNull
         SynchronizedCursor rawQuery(@NonNull final String sql) {
             return rawQuery(sql, new String[]{});
         }
@@ -421,6 +425,7 @@ public class DbSync {
         /**
          * Locking-aware wrapper for underlying database method.
          */
+        @NonNull
         SynchronizedCursor rawQueryWithFactory(@NonNull final SynchronizedCursorFactory factory,
                                                @NonNull final String sql,
                                                @Nullable final String[] selectionArgs,
@@ -465,6 +470,7 @@ public class DbSync {
         /**
          * Locking-aware wrapper for underlying database method.
          */
+        @NonNull
         public Cursor query(@NonNull final String table,
                             @NonNull final String[] columns,
                             @NonNull final String selection,
@@ -493,7 +499,7 @@ public class DbSync {
          */
         long insert(@NonNull final String table,
                     @Nullable final String nullColumnHack,
-                    @NonNull final ContentValues values) {
+                    @NonNull final ContentValues cv) {
             SyncLock syncLock = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive) {
@@ -506,7 +512,7 @@ public class DbSync {
             // reminder: insert does not throw exceptions for the actual insert.
             // but it can throw other exceptions.
             try {
-                return mSqlDb.insert(table, nullColumnHack, values);
+                return mSqlDb.insert(table, nullColumnHack, cv);
             } finally {
                 if (syncLock != null) {
                     syncLock.unlock();
@@ -520,7 +526,7 @@ public class DbSync {
          * @return the number of rows affected
          */
         public int update(@NonNull final String table,
-                          @NonNull final ContentValues values,
+                          @NonNull final ContentValues cv,
                           @NonNull final String whereClause,
                           @Nullable final String[] whereArgs) {
             SyncLock syncLock = null;
@@ -535,7 +541,7 @@ public class DbSync {
             // reminder: update does not throw exceptions for the actual update.
             // but it can throw other exceptions.
             try {
-                return mSqlDb.update(table, values, whereClause, whereArgs);
+                return mSqlDb.update(table, cv, whereClause, whereArgs);
             } finally {
                 if (syncLock != null) {
                     syncLock.unlock();
@@ -576,6 +582,7 @@ public class DbSync {
         /**
          * Wrapper for underlying database method. It is recommended that custom cursors subclass SynchronizedCursor.
          */
+        @NonNull
         public Cursor rawQueryWithFactory(@NonNull final SQLiteDatabase.CursorFactory cursorFactory,
                                           @NonNull final String sql,
                                           @NonNull final String[] selectionArgs,
@@ -596,6 +603,7 @@ public class DbSync {
         /**
          * Locking-aware wrapper for underlying database method.
          */
+        @NonNull
         public SynchronizedStatement compileStatement(@NonNull final String sql) {
             SyncLock syncLock = null;
             if (mTxLock != null) {
@@ -618,6 +626,7 @@ public class DbSync {
         /**
          * @return the underlying SQLiteDatabase object.
          */
+        @NonNull
         public SQLiteDatabase getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing() {
             return mSqlDb;
         }
@@ -627,6 +636,7 @@ public class DbSync {
          *
          * @return the path to the actual database file
          */
+        @NonNull
         String getPath() {
             return mSqlDb.getPath();
         }
@@ -645,6 +655,7 @@ public class DbSync {
          *
          * @return the lock
          */
+        @NonNull
         public SyncLock beginTransaction(final boolean isUpdate) {
             SyncLock syncLock;
             if (isUpdate) {
@@ -716,6 +727,7 @@ public class DbSync {
         /**
          * @return the underlying synchronizer object.
          */
+        @NonNull
         Synchronizer getSynchronizer() {
             return mSync;
         }
@@ -726,6 +738,7 @@ public class DbSync {
          * @author pjw
          */
         private interface DbOpener {
+            @NonNull
             SQLiteDatabase open();
         }
 
@@ -737,6 +750,7 @@ public class DbSync {
          */
         class SynchronizedCursorFactory implements CursorFactory {
             @Override
+            @NonNull
             public SynchronizedCursor newCursor(final SQLiteDatabase db,
                                                 final SQLiteCursorDriver masterQuery,
                                                 final String editTable,

@@ -51,13 +51,13 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     // This matrix remains the same when we go from the thumbnail image
     // to the full size image.
     protected final Matrix mSuppMatrix = new Matrix();
-    // The current bitmap being displayed.
+    /** The current bitmap being displayed. */
     final protected CropRotateBitmap mBitmapDisplayed = new CropRotateBitmap();
     protected final Handler mHandler = new Handler();
-    // This is the final matrix which is computed as the concatenation
-    // of the base matrix and the supplementary matrix.
+    /** This is the final matrix which is computed as the concatenation
+     * of the base matrix and the supplementary matrix. */
     private final Matrix mDisplayMatrix = new Matrix();
-    // Temporary buffer used for getting the values out of a matrix.
+    /** Temporary buffer used for getting the values out of a matrix. */
     private final float[] mMatrixValues = new float[9];
     protected int mLastXTouchPos;
     protected int mLastYTouchPos;

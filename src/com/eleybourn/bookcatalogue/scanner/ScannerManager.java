@@ -92,7 +92,7 @@ public class ScannerManager {
     }
 
     /**
-     * Support for creating scanner objects on the fly without know which ones are available.
+     * Support for creating scanner objects on the fly without knowing which ones are available.
      *
      * @author pjw
      */

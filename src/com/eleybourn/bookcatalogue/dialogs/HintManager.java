@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Checkable;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
@@ -102,8 +103,8 @@ public class HintManager {
                                    @Nullable final Runnable postRun,
                                    @Nullable final Object... args) {
         // Get the hint and return if it has been disabled.
-        final Hint h = mHints.get(stringId);
-        if (!h.shouldBeShown()) {
+        final Hint hint = mHints.get(stringId);
+        if (!hint.shouldBeShown()) {
             if (postRun != null)
                 postRun.run();
             return;
@@ -127,21 +128,20 @@ public class HintManager {
         }
 
         // Handle the 'OK' click
-        final Button ok = dialog.findViewById(R.id.confirm);
-        ok.setOnClickListener(new OnClickListener() {
+        dialog.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
                 // Disable hint if checkbox checked
-                final CheckBox cb = dialog.findViewById(R.id.hide_hint_checkbox);
+                final Checkable cb = dialog.findViewById(R.id.hide_hint_checkbox);
                 if (cb.isChecked()) {
-                    h.setVisibility(false);
+                    hint.setVisibility(false);
                 }
             }
         });
 
         dialog.show();
-        h.setHasBeenDisplayed(true);
+        hint.setHasBeenDisplayed(true);
     }
 
     public interface HintOwner {

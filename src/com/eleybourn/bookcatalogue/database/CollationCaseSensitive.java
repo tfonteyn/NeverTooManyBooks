@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.database;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
 
 
 /**
@@ -16,15 +17,15 @@ import android.database.sqlite.SQLiteDatabase;
  * @author Philip Warner
  */
 public class CollationCaseSensitive {
-	public static boolean isCaseSensitive(SQLiteDatabase db) {
+	public static boolean isCaseSensitive(@NonNull final SQLiteDatabase db) {
 		// Drop and create table
 		db.execSQL("DROP TABLE If Exists collation_cs_check");
 		db.execSQL("CREATE TABLE collation_cs_check (t text, i int)");
 		try {
 			// Row that *should* be returned first assuming 'a' <=> 'A' 
-			db.execSQL("insert INTO collation_cs_check values ('a', 1)");
+			db.execSQL("INSERT INTO collation_cs_check VALUES('a', 1)");
 			// Row that *should* be returned second assuming 'a' <=> 'A'; will be returned first if 'A' < 'a'.
-			db.execSQL("insert INTO collation_cs_check values ('A', 2)");
+			db.execSQL("INSERT INTO collation_cs_check VALUES('A', 2)");
 
 			String s;
 			try (Cursor c = db.rawQuery("SELECT t, i FROM collation_cs_check ORDER BY t " + DatabaseHelper.COLLATION + ", i", new String[] {})) {

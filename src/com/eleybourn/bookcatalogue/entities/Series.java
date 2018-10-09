@@ -284,7 +284,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
      * Compare is CASE SENSITIVE !
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable final Object o) {
         if (this == o) {
             return true;
         }

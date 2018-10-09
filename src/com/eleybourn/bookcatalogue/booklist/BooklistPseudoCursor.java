@@ -24,6 +24,8 @@ import android.database.AbstractCursor;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.database.cursors.BooklistCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BooklistRowView;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import java.util.ArrayList;

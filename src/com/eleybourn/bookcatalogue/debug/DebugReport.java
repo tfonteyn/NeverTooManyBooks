@@ -13,7 +13,6 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.scanner.Pic2ShopScanner;
@@ -169,7 +168,7 @@ public class DebugReport {
         //has to be an ArrayList
         ArrayList<Uri> uris = new ArrayList<>();
         //convert from paths to Android friendly Parcelable Uri's
-        ArrayList<String> files = new ArrayList<>();
+        List<String> files = new ArrayList<>();
 
         // Find all files of interest to send
         try {

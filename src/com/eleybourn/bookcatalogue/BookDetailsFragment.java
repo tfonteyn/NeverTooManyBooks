@@ -22,7 +22,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.entities.BookData;
+import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -88,7 +88,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
                 // Update fields of read-only book after editing
                 // --- onResume() calls through to restoreBookData() which will do this now
                 //if (resultCode == Activity.RESULT_OK) {
-                //	updateFields(mEditManager.getBookData());
+                //	updateFields(mEditManager.getBook());
                 //}
                 break;
         }
@@ -97,21 +97,21 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     @Override
     /* The only difference from super class method is initializing of additional
      * fields needed for read-only mode (user notes, loaned, etc.) */
-    protected void populateFieldsFromBook(@NonNull final BookData bookData) {
+    protected void populateFieldsFromBook(@NonNull final Book book) {
         try {
-            populateBookDetailsFields(bookData);
+            populateBookDetailsFields(book);
 
             // Set maximum aspect ratio width : height = 1 : 2
-            setBookThumbnail(bookData.getBookId(), mThumbSize.normal, mThumbSize.normal * 2);
+            setBookThumbnail(book.getBookId(), mThumbSize.normal, mThumbSize.normal * 2);
 
             // Additional fields for read-only mode which are not initialized automatically
-            showReadStatus(bookData);
-            showLoanedInfo(bookData.getBookId());
-            showSignedStatus(bookData.isSigned());
-            formatFormatSection(bookData);
-            formatPublishingSection(bookData);
-            if (bookData.getInt(BookData.IS_ANTHOLOGY) != DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY) {
-                showTOC(bookData);
+            showReadStatus(book);
+            showLoanedInfo(book.getBookId());
+            showSignedStatus(book.isSigned());
+            formatFormatSection(book);
+            formatPublishingSection(book);
+            if (book.getInt(Book.IS_ANTHOLOGY) != DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY) {
+                showTOC(book);
             }
 
             // Restore default visibility and hide unused/unwanted and empty fields
@@ -121,14 +121,14 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         }
 
         // Populate bookshelves and hide the field if bookshelves are not set.
-        if (!populateBookshelvesField(mFields, bookData)) {
+        if (!populateBookshelvesField(mFields, book)) {
             getView().findViewById(R.id.lbl_bookshelves).setVisibility(View.GONE);
         }
     }
 
-    private void showTOC(@NonNull final BookData bookData) {
+    private void showTOC(@NonNull final Book book) {
         View headerSection = getView().findViewById(R.id.toc_row);
-        final ArrayList<AnthologyTitle> list = bookData.getAnthologyTitles();
+        final ArrayList<AnthologyTitle> list = book.getAnthologyTitles();
         if (list.isEmpty()) {
             // book is an Anthology, but the user has not added any titles (yet)
             headerSection.setVisibility(View.GONE);
@@ -186,7 +186,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     /* Override populating author field. Hide the field if author not set or
      * shows author (or authors through ',') with 'by' at the beginning. */
     protected void populateAuthorListField() {
-        ArrayList<Author> authors = mEditManager.getBookData().getAuthors();
+        ArrayList<Author> authors = mEditManager.getBook().getAuthors();
         int authorsCount = authors.size();
         if (authorsCount == 0) {
             // Hide author field if it is not set
@@ -207,7 +207,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
 
     @Override
     protected void populateSeriesListField() {
-        ArrayList<Series> series = mEditManager.getBookData().getSeries();
+        ArrayList<Series> series = mEditManager.getBook().getSeries();
 
         if (series.size() == 0 || !mFields.getField(R.id.series).visible) {
             // Hide 'Series' label and data
@@ -261,12 +261,12 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
      * Formats 'format' section of the book depending on values
      * of 'pages' and 'format' fields.
      */
-    private void formatFormatSection(@NonNull final BookData bookData) {
+    private void formatFormatSection(@NonNull final Book book) {
         // Number of pages
         boolean hasPages = false;
         if (FieldVisibilityActivity.isVisible(UniqueId.KEY_BOOK_PAGES)) {
             Field pagesField = mFields.getField(R.id.pages);
-            String pages = bookData.getString(UniqueId.KEY_BOOK_PAGES);
+            String pages = book.getString(UniqueId.KEY_BOOK_PAGES);
             hasPages = pages != null && !pages.isEmpty();
             if (hasPages) {
                 pagesField.setValue(getString(R.string.book_details_readonly_pages, pages));
@@ -275,7 +275,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         // 'format' field
         if (FieldVisibilityActivity.isVisible(UniqueId.KEY_BOOK_FORMAT)) {
             Field formatField = mFields.getField(R.id.format);
-            String format = bookData.getString(UniqueId.KEY_BOOK_FORMAT);
+            String format = book.getString(UniqueId.KEY_BOOK_FORMAT);
             boolean hasFormat = format != null && !format.isEmpty();
             if (hasFormat) {
                 if (hasPages && FieldVisibilityActivity.isVisible(UniqueId.KEY_BOOK_PAGES)) {
@@ -291,8 +291,8 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
      * Formats 'Publishing' section of the book depending on values
      * of 'publisher' and 'date published' fields.
      */
-    private void formatPublishingSection(@NonNull final BookData bookData) {
-        String date = bookData.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED);
+    private void formatPublishingSection(@NonNull final Book book) {
+        String date = book.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED);
         boolean hasDate = date != null && !date.isEmpty();
         if (hasDate) {
             Date d = DateUtils.parseDate(date);
@@ -302,7 +302,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         }
 
         String value;
-        String pub = bookData.getString(UniqueId.KEY_BOOK_PUBLISHER);
+        String pub = book.getString(UniqueId.KEY_BOOK_PUBLISHER);
         if (pub != null && !pub.isEmpty()) {
             if (hasDate) {
                 value = pub + "; " + date;
@@ -340,21 +340,21 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     /**
      * Sets read status of the book if needed. Shows green tick if book is read.
      *
-     * @param bookData the book
+     * @param book the book
      */
-    private void showReadStatus(@NonNull final BookData bookData) {
+    private void showReadStatus(@NonNull final Book book) {
         final CheckedTextView readField = getView().findViewById(R.id.read);
         boolean visible = FieldVisibilityActivity.isVisible(UniqueId.KEY_BOOK_READ);
         readField.setVisibility(visible ? View.VISIBLE : View.GONE);
 
         if (visible) {
             // set initial display state, REMINDER: setSelected will NOT update the GUI...
-            readField.setChecked(bookData.isRead());
+            readField.setChecked(book.isRead());
             readField.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
                     boolean newState = !readField.isChecked();
-                    if (BookUtils.setRead(mDb, bookData, newState)) {
+                    if (BookUtils.setRead(mDb, book, newState)) {
                         readField.setChecked(newState);
                     }
                 }
@@ -369,31 +369,31 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     private void showSignedStatus(final boolean isSigned) {
         if (isSigned) {
             TextView v = getView().findViewById(R.id.signed);
-            v.setText(getString(R.string.yes));
+            v.setText(getString(android.R.string.yes));
         }
     }
 
     /**
      * Updates all fields of book from database.
      */
-    private void updateFields(@NonNull final BookData bookData) {
-        populateFieldsFromBook(bookData);
+    private void updateFields(@NonNull final Book book) {
+        populateFieldsFromBook(book);
         // Populate author and series fields
         populateAuthorListField();
         populateSeriesListField();
     }
 
     @Override
-    protected void onLoadBookDetails(@NonNull final BookData bookData, final boolean setAllDone) {
+    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
         if (!setAllDone)
-            mFields.setAll(bookData);
-        updateFields(bookData);
+            mFields.setAll(book);
+        updateFields(book);
     }
 
     @Override
-    protected void onSaveBookDetails(@NonNull final BookData bookData) {
+    protected void onSaveBookDetails(@NonNull final Book book) {
         // Override the super to Do nothing because we modify the fields to make them look pretty.
-        //so NOT calling: super.onSaveBookDetails(bookData);
+        //so NOT calling: super.onSaveBookDetails(book);
 
         // but we DO want to adjust the TOC size if needed.
         final ListView contentSection = getView().findViewById(R.id.toc);
@@ -403,9 +403,9 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
 
     public void onResume() {
         // If we are read-only, returning here from somewhere else and have an ID...reload!
-        BookData bookData = mEditManager.getBookData();
-        if (bookData.getBookId() != 0) {
-            bookData.reload();
+        Book book = mEditManager.getBook();
+        if (book.getBookId() != 0) {
+            book.reload();
         }
         super.onResume();
     }

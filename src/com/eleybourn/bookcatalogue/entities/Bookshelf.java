@@ -1,11 +1,13 @@
 package com.eleybourn.bookcatalogue.entities;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
     private static final long serialVersionUID = 1L;
@@ -49,4 +51,31 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
         return true;
     }
 
+    /**
+     * Two bookshelfs are equal if:
+     * - it's the same Object duh..
+     * - one or both of them is 'new' (e.g. id == 0) but their names are equal
+     * - ids are equal
+     *
+     * Compare is CASE SENSITIVE !
+     */
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Bookshelf bookshelf = (Bookshelf) o;
+        if (id == 0 || bookshelf.id == 0) {
+            return Objects.equals(name, bookshelf.name);
+        }
+        return (id == bookshelf.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
 }

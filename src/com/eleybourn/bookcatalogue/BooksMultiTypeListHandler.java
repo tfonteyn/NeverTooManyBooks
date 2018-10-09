@@ -42,7 +42,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
-import com.eleybourn.bookcatalogue.booklist.BooklistRowView;
+import com.eleybourn.bookcatalogue.database.cursors.BooklistRowView;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistSupportProvider;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;

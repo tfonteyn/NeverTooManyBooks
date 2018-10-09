@@ -16,79 +16,111 @@
 
 package com.eleybourn.bookcatalogue.cropper;
 
-import java.io.InputStream;
-
 import android.graphics.Bitmap;
 import android.net.Uri;
+
+import java.io.InputStream;
 
 /**
  * The interface of all images used in gallery.
  */
 public interface CropIImage {
-	int THUMBNAIL_TARGET_SIZE = 320;
-	int MINI_THUMB_TARGET_SIZE = 96;
-	int UNCONSTRAINED = -1;
 
-	/** Get the image list which contains this image. */
+    int THUMBNAIL_TARGET_SIZE = 320;
+    int MINI_THUMB_TARGET_SIZE = 96;
+    int UNCONSTRAINED = -1;
+
+    /*
+     * https://android.googlesource.com/platform/packages/apps/Camera2/+/3574026/src/com/android/camera/crop/CropActivity.java
+     * https://android.googlesource.com/platform/packages/apps/Camera2/+/3574026/src/com/android/camera/crop/CropExtras.java
+     */
+    String BKEY_OUTPUT_X = "outputX";
+    String BKEY_OUTPUT_Y = "outputY";
+    String BKEY_SCALE = "scale";
+    String BKEY_SCALE_UP_IF_NEEDED = "scaleUpIfNeeded";
+    String BKEY_ASPECT_X = "aspectX";
+    String BKEY_ASPECT_Y = "aspectY";
+    String BKEY_RETURN_DATA = "return-data";
+    String BKEY_DATA = "data";
+    String KEY_CROPPED_RECT = "cropped-rect";
+    String KEY_SET_AS_WALLPAPER = "set-as-wallpaper";
+    String KEY_SPOTLIGHT_X = "spotlightX";
+    String KEY_SPOTLIGHT_Y = "spotlightY";
+    String KEY_SHOW_WHEN_LOCKED = "showWhenLocked";
+    String KEY_OUTPUT_FORMAT = "outputFormat";
+
+    /*
+    Not sure on docs yet. Might be BC itself, but at least some are used by external cropper code.
+     */
+    String BKEY_CIRCLE_CROP = "circleCrop";
+    String BKEY_IMAGE_PATH = "image-path";
+    String BKEY_OUTPUT = "output";
+    String BKEY_WHOLE_IMAGE = "whole-image";
+    String BKEY_NO_FACE_DETECTION = "noFaceDetection";
+    String BKEY_CROP = "crop";
+
+    boolean ROTATE_AS_NEEDED = true;
+    boolean NO_ROTATE = false;
+    boolean USE_NATIVE = true;
+    boolean NO_NATIVE = false;
+
+
+
+    /** Get the image list which contains this image. */
     CropIImageList getContainer();
 
-	/** Get the bitmap for the full size image. */
+    /** Get the bitmap for the full size image. */
     Bitmap fullSizeBitmap(int minSideLength,
                           int maxNumberOfPixels);
 
-	Bitmap fullSizeBitmap(int minSideLength,
+    Bitmap fullSizeBitmap(int minSideLength,
                           int maxNumberOfPixels, boolean rotateAsNeeded);
 
-	Bitmap fullSizeBitmap(int minSideLength,
+    Bitmap fullSizeBitmap(int minSideLength,
                           int maxNumberOfPixels, boolean rotateAsNeeded, boolean useNative);
 
-	int getDegreesRotated();
+    int getDegreesRotated();
 
-	boolean ROTATE_AS_NEEDED = true;
-	boolean NO_ROTATE = false;
-	boolean USE_NATIVE = true;
-	boolean NO_NATIVE = false;
-
-	/** Get the input stream associated with a given full size image. */
+    /** Get the input stream associated with a given full size image. */
     InputStream fullSizeImageData();
 
-	long fullSizeImageId();
+    long fullSizeImageId();
 
-	Uri fullSizeImageUri();
+    Uri fullSizeImageUri();
 
-	/** Get the path of the (full size) image data. */
+    /** Get the path of the (full size) image data. */
     String getDataPath();
 
-	// Get/Set the title of the image
+    String getTitle();
+
+    // Get/Set the title of the image
     void setTitle(String name);
 
-	String getTitle();
-
-	// Get metadata of the image
+    // Get metadata of the image
     long getDateTaken();
 
-	String getMimeType();
+    String getMimeType();
 
-	int getWidth();
+    int getWidth();
 
-	int getHeight();
+    int getHeight();
 
-	String getDisplayName();
+    String getDisplayName();
 
-	// Get property of the image
+    // Get property of the image
     boolean isReadonly();
 
-	boolean isDrm();
+    boolean isDrm();
 
-	// Get the bitmap/uri of the medium thumbnail
+    // Get the bitmap/uri of the medium thumbnail
     Bitmap thumbBitmap(boolean rotateAsNeeded);
 
-	Uri thumbUri();
+    Uri thumbUri();
 
-	// Get the bitmap of the mini thumbnail.
+    // Get the bitmap of the mini thumbnail.
     Bitmap miniThumbBitmap();
 
-	// Rotate the image
+    // Rotate the image
     boolean rotateImageBy(int degrees);
 
 }

@@ -196,17 +196,16 @@ public class SimpleTaskQueue {
     /**
      * Remove a previously requested task, if present
      */
-    public boolean remove(@NonNull final SimpleTask task) {
+    public void remove(@NonNull final SimpleTask task) {
         for (SimpleTaskWrapper w : mExecutionStack) {
             if (w.task.equals(task)) {
                 synchronized (this) {
                     if (mExecutionStack.remove(w))
                         mManagedTaskCount--;
                 }
-                return true;
+                return;
             }
         }
-        return false;
     }
 
     /**

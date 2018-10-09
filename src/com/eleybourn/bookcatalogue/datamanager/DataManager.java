@@ -78,6 +78,7 @@ public class DataManager {
      * @return self, for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public DataManager clear() {
         mBundle.clear();
         mData.clear();
@@ -95,6 +96,7 @@ public class DataManager {
      * @return the DataManager, for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     protected DataManager addValidator(@NonNull final String key, @NonNull final DataValidator validator) {
         mData.get(key).setValidator(validator);
         return this;
@@ -109,6 +111,7 @@ public class DataManager {
      * @return the DataManager, for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     protected DataManager addAccessor(@NonNull final String key, @NonNull final DataAccessor accessor) {
         mData.get(key).setAccessor(accessor);
         return this;
@@ -121,6 +124,7 @@ public class DataManager {
      *
      * @return Data object
      */
+    @NonNull
     public Object get(@NonNull final String key) {
         return get(mData.get(key));
     }
@@ -143,6 +147,7 @@ public class DataManager {
 
     /** Store a boolean value */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public DataManager putBoolean(@NonNull final String key, final boolean value) {
         mData.get(key).putBoolean(this, mBundle, value);
         return this;
@@ -150,6 +155,7 @@ public class DataManager {
 
     /** Store a boolean value */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public DataManager putBoolean(@NonNull final Datum datum, final boolean value) {
         datum.putBoolean(this, mBundle, value);
         return this;
@@ -163,6 +169,7 @@ public class DataManager {
 
     /** Store a double value */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public DataManager putDouble(@NonNull final String key, final double value) {
         mData.get(key).putDouble(this, mBundle, value);
         return this;
@@ -170,6 +177,7 @@ public class DataManager {
 
     /** Store a double value */
     @SuppressWarnings("unused")
+    @NonNull
     public DataManager putDouble(@NonNull final Datum datum, final double value) {
         datum.putDouble(this, mBundle, value);
         return this;
@@ -183,6 +191,7 @@ public class DataManager {
 
     /** Store a float value */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public DataManager putFloat(@NonNull final String key, final float value) {
         mData.get(key).putFloat(this, mBundle, value);
         return this;
@@ -190,6 +199,7 @@ public class DataManager {
 
     /** Store a float value */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public DataManager putFloat(@NonNull final Datum datum, final float value) {
         datum.putFloat(this, mBundle, value);
         return this;
@@ -202,6 +212,7 @@ public class DataManager {
 
     /** Store an int value */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public DataManager putInt(@NonNull final String key, final int value) {
         mData.get(key).putInt(this, mBundle, value);
         return this;
@@ -209,6 +220,7 @@ public class DataManager {
 
     /** Store an int value */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public DataManager putInt(@NonNull final Datum datum, final int value) {
         datum.putInt(this, mBundle, value);
         return this;
@@ -221,12 +233,14 @@ public class DataManager {
 
     /** Store a long value */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public DataManager putLong(@NonNull final String key, final long value) {
         mData.get(key).putLong(this, mBundle, value);
         return this;
     }
 
     /** Store a long value */
+    @NonNull
     public DataManager putLong(@NonNull final Datum datum, final long value) {
         datum.putLong(this, mBundle, value);
         return this;
@@ -244,12 +258,14 @@ public class DataManager {
 
     /** Store a String value */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public DataManager putString(@NonNull final String key, @NonNull final String value) {
         mData.get(key).putString(this, mBundle, value);
         return this;
     }
 
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public DataManager putString(@NonNull final Datum datum, @NonNull final String value) {
         datum.putString(this, mBundle, value);
         return this;
@@ -260,6 +276,7 @@ public class DataManager {
      * We do the laborious method here to allow Accessors to do their thing.
      */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     protected DataManager putAll(@NonNull final Bundle src) {
         for (String key : src.keySet()) {
             Object value = src.get(key);
@@ -350,6 +367,7 @@ public class DataManager {
      * @return The data manager for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public DataManager putSerializable(@NonNull final String key, @NonNull final Serializable value) {
         mData.get(key).putSerializable(mBundle, value);
         return this;
@@ -365,6 +383,7 @@ public class DataManager {
      * @return The data manager for chaining
      */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public DataManager putStringArrayList(@NonNull final String key, @NonNull final ArrayList<String> value) {
         mData.get(key).putStringArrayList(mBundle, value);
         return this;
@@ -516,6 +535,7 @@ public class DataManager {
          * Get the specified Datum, and create a stub if not present
          */
         @Override
+        @NonNull
         public Datum get(@NonNull final Object key) {
             Datum datum = super.get(key);
             if (datum == null) {

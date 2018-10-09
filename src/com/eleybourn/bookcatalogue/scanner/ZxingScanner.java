@@ -12,6 +12,11 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
  * This object will start a Zxing compatible scanner and extract the data
  * from the resulting intent when the activity completes.
  *
+ * https://github.com/zxing
+ *
+ * Supported formats:
+ * https://github.com/zxing/zxing/blob/master/core/src/main/java/com/google/zxing/BarcodeFormat.java
+ *
  * It also has a static method to check if the intent is present.
  *
  * @author pjw
@@ -46,12 +51,12 @@ public class ZxingScanner implements Scanner {
      *
      * @return <tt>true</tt>if present
      */
-    private static boolean isIntentAvailable(@NonNull final Context ctx, @Nullable final String packageName) {
-        Intent test = new Intent(ACTION);
+    private static boolean isIntentAvailable(@NonNull final Context context, @Nullable final String packageName) {
+        Intent intent = new Intent(ACTION);
         if (packageName != null && !packageName.isEmpty()) {
-            test.setPackage(packageName);
+            intent.setPackage(packageName);
         }
-        return ctx.getPackageManager().resolveActivity(test, 0) != null;
+        return context.getPackageManager().resolveActivity(intent, 0) != null;
     }
 
     /**
@@ -59,11 +64,12 @@ public class ZxingScanner implements Scanner {
      */
     @Override
     public void startActivityForResult(@NonNull final Activity activity, final int requestCode) {
-        Intent i = new Intent(ACTION);
+        Intent intent = new Intent(ACTION);
         if (mMustBeZxing) {
-            i.setPackage(PACKAGE);
+            intent.setPackage(PACKAGE);
         }
-        activity.startActivityForResult(i, requestCode);
+        // not limiting the format, just grab anything supported.
+        activity.startActivityForResult(intent, requestCode);
     }
 
     /**

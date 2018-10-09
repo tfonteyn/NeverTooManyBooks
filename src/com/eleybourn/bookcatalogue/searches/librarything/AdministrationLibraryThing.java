@@ -29,7 +29,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -89,8 +88,8 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
             }
         });
 
-        EditText devKeyView = findViewById(R.id.devkey);
         SharedPreferences prefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        EditText devKeyView = findViewById(R.id.devkey);
         devKeyView.setText(prefs.getString(LibraryThingManager.PREFS_LT_DEV_KEY, ""));
 
         /* Save Button */

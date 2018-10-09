@@ -119,7 +119,7 @@ public class DatabaseDefinitions {
      */
     public static final int DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY = 0;
     public static final int DOM_ANTHOLOGY_IS_AN_ANTHOLOGY = 1;
-    public static final int DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS = 2;
+    public static final int DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS = 1 << 1;
     /** {@link #TBL_BOOKS} */
     public static final DomainDefinition DOM_BOOK_UUID = new DomainDefinition("book_uuid", TableInfo.TYPE_TEXT, NOT_NULL, "default (lower(hex(randomblob(16))))");
     public static final DomainDefinition DOM_BOOK_ISBN = new DomainDefinition("isbn", TableInfo.TYPE_TEXT);

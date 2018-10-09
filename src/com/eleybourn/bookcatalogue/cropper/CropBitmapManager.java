@@ -37,7 +37,7 @@ import java.util.WeakHashMap;
  * add() method. A ThreadSet holds (weak) references to the threads, so you
  * don't need to remove Thread from it if some thread dies.
  */
-public class CropBitmapManager {
+class CropBitmapManager {
 	// private static final String TAG = "BitmapManager";
 	private enum State {
 		CANCEL, ALLOW

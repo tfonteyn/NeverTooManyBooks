@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DbSync;
 
 import java.util.ArrayList;
@@ -311,7 +312,8 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @NonNull
-    public TableDefinition addReference(@NonNull final TableDefinition parent, @NonNull final DomainDefinition... domains) {
+    public TableDefinition addReference(@NonNull final TableDefinition parent,
+                                        @NonNull final DomainDefinition... domains) {
         FkReference fk = new FkReference(parent, this, domains);
         return addReference(fk);
     }
@@ -326,7 +328,8 @@ public class TableDefinition implements AutoCloseable {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    private TableDefinition addReference(@NonNull final TableDefinition parent, @NonNull final List<DomainDefinition> domains) {
+    private TableDefinition addReference(@NonNull final TableDefinition parent,
+                                         @NonNull final List<DomainDefinition> domains) {
         FkReference fk = new FkReference(parent, this, domains);
         return addReference(fk);
     }
@@ -355,7 +358,8 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    private TableDefinition addChild(@NonNull final TableDefinition child, @NonNull final FkReference fk) {
+    private TableDefinition addChild(@NonNull final TableDefinition child,
+                                     @NonNull final FkReference fk) {
         if (!mChildren.containsKey(child)) {
             mChildren.put(child, fk);
         }
@@ -442,7 +446,9 @@ public class TableDefinition implements AutoCloseable {
      * @return TableDefinition (for chaining)
      */
     @NonNull
-    public TableDefinition addIndex(@NonNull final String localKey, final boolean unique, @NonNull final DomainDefinition... domains) {
+    public TableDefinition addIndex(@NonNull final String localKey,
+                                    final boolean unique,
+                                    @NonNull final DomainDefinition... domains) {
         // Make sure not already defined
         if (mIndexes.containsKey(localKey)) {
             throw new IllegalStateException("Index with local name '" + localKey + "' already defined");
@@ -473,7 +479,8 @@ public class TableDefinition implements AutoCloseable {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public TableDefinition create(@NonNull final DbSync.SynchronizedDb db, final boolean withConstraints) {
+    public TableDefinition create(@NonNull final DbSync.SynchronizedDb db,
+                                  final boolean withConstraints) {
         if (BuildConfig.DEBUG) {
             String s = this.getSql(mName, withConstraints, false);
             if (DEBUG_SWITCHES.SQL) {
@@ -496,7 +503,8 @@ public class TableDefinition implements AutoCloseable {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public TableDefinition createAll(@NonNull final DbSync.SynchronizedDb db, final boolean withConstraints) {
+    public TableDefinition createAll(@NonNull final DbSync.SynchronizedDb db,
+                                     final boolean withConstraints) {
         db.execSQL(this.getSql(mName, withConstraints, false));
         createIndices(db);
         return this;
@@ -512,7 +520,8 @@ public class TableDefinition implements AutoCloseable {
      */
     @SuppressWarnings("unused")
     @NonNull
-    public TableDefinition createIfNecessary(@NonNull final DbSync.SynchronizedDb db, final boolean withConstraints) {
+    public TableDefinition createIfNecessary(@NonNull final DbSync.SynchronizedDb db,
+                                             final boolean withConstraints) {
         db.execSQL(this.getSql(mName, withConstraints, true));
         return this;
     }
@@ -545,7 +554,7 @@ public class TableDefinition implements AutoCloseable {
      * Get a base list of registered domain fields for this table. Returns partial
      * SQL of the form: '[alias].[domain-1], ..., [alias].[domain-n]'.
      *
-     * Keep in mind that not all tables are fully registered in {@link com.eleybourn.bookcatalogue.database.DatabaseDefinitions}
+     * Keep in mind that not all tables are fully registered in {@link DatabaseDefinitions}
      * Add domains there when needed. Eventually the lists will get semi-complete.
      *
      * @return SQL fragment
@@ -625,7 +634,7 @@ public class TableDefinition implements AutoCloseable {
      */
     @NonNull
     public String getInsertOrReplaceValues(@NonNull final DomainDefinition... domains) {
-        StringBuilder s = new StringBuilder("Insert or Replace INTO ");
+        StringBuilder s = new StringBuilder("INSERT OR REPLACE INTO ");
         StringBuilder sPlaceholders = new StringBuilder("?");
         s.append(mName);
         s.append(" ( ");
@@ -836,9 +845,10 @@ public class TableDefinition implements AutoCloseable {
          * @param child   Child table (owner of the FK)
          * @param domains Domains in child table that reference PK in parent
          */
-        FkReference(TableDefinition parent, TableDefinition child, DomainDefinition... domains) {
-            this.domains = new ArrayList<>();
-            this.domains.addAll(Arrays.asList(domains));
+        FkReference(@NonNull final TableDefinition parent,
+                    @NonNull final TableDefinition child,
+                    @NonNull final DomainDefinition... domains) {
+            this.domains = new ArrayList<>(Arrays.asList(domains));
             this.parent = parent;
             this.child = child;
         }
@@ -850,9 +860,10 @@ public class TableDefinition implements AutoCloseable {
          * @param child   Child table (owner of the FK)
          * @param domains Domains in child table that reference PK in parent
          */
-        FkReference(TableDefinition parent, TableDefinition child, List<DomainDefinition> domains) {
-            this.domains = new ArrayList<>();
-            this.domains.addAll(domains);
+        FkReference(@NonNull final TableDefinition parent,
+                    @NonNull final TableDefinition child,
+                    @NonNull final List<DomainDefinition> domains) {
+            this.domains = new ArrayList<>(domains);
             this.parent = parent;
             this.child = child;
         }
@@ -863,6 +874,7 @@ public class TableDefinition implements AutoCloseable {
          *
          * @return SQL fragment
          */
+        @NonNull
         String getPredicate() {
             List<DomainDefinition> pk = parent.getPrimaryKey();
             StringBuilder sql = new StringBuilder();

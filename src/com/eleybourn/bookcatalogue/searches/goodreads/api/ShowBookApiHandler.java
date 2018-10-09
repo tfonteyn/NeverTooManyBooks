@@ -108,7 +108,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     };
 
     /** Transient global data for current work in search results. */
-    private Bundle mBook;
+    private Bundle mBookData;
 
     // Current author being processed
     //private long mCurrAuthorId = 0;
@@ -117,7 +117,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         @Override
         public void process(@NonNull ElementContext context) {
             final String name = (String) context.userArg;
-            mBook.putString(name, context.body.trim());
+            mBookData.putString(name, context.body.trim());
         }
     };
     private final XmlHandler mHandleLong = new XmlHandler() {
@@ -127,7 +127,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             final String name = (String) context.userArg;
             try {
                 long l = Long.parseLong(context.body.trim());
-                mBook.putLong(name, l);
+                mBookData.putLong(name, l);
             } catch (Exception ignore) {
                 // Ignore but don't add
             }
@@ -143,7 +143,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             final String name = (String) context.userArg;
             try {
                 double d = Double.parseDouble(context.body.trim());
-                mBook.putDouble(name, d);
+                mBookData.putDouble(name, d);
             } catch (Exception ignore) {
                 // Ignore but don't add
             }
@@ -171,7 +171,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
                     long l = Long.parseLong(s);
                     b = (l != 0);
                 }
-                mBook.putBoolean(name, b);
+                mBookData.putBoolean(name, b);
             } catch (Exception ignore) {
             }
         }
@@ -443,7 +443,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 
-        mBook = new Bundle();
+        mBookData = new Bundle();
         mShelves = null;
 
         // Get a handler and run query.
@@ -454,10 +454,10 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         // When we get here, the data has been collected but needs to be processed into standard form.
 
         // Use ISBN13 by preference
-        if (mBook.containsKey(ShowBookFieldNames.ISBN13)) {
-            String s = mBook.getString(ShowBookFieldNames.ISBN13);
+        if (mBookData.containsKey(ShowBookFieldNames.ISBN13)) {
+            String s = mBookData.getString(ShowBookFieldNames.ISBN13);
             if (s != null && s.length() == 13) {
-                mBook.putString(UniqueId.KEY_ISBN, s);
+                mBookData.putString(UniqueId.KEY_ISBN, s);
             }
         }
 
@@ -465,16 +465,16 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         // Pros: easier sync
         // Cons: Overwrite GR id when it should not
 
-        //if (mBook.containsKey(BOOK_ID)) {
-        //	mBook.putLong(DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name, mBook.getLong(BOOK_ID));
+        //if (mBookData.containsKey(BOOK_ID)) {
+        //	mBookData.putLong(DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name, mBookData.getLong(BOOK_ID));
         //}
 
         if (fetchThumbnail) {
             String bestImage = null;
-            if (mBook.containsKey(ShowBookFieldNames.IMAGE)) {
-                bestImage = mBook.getString(ShowBookFieldNames.IMAGE);
-                if (bestImage != null && bestImage.contains(UniqueId.BKEY_NOCOVER) && mBook.containsKey(ShowBookFieldNames.SMALL_IMAGE)) {
-                    bestImage = mBook.getString(ShowBookFieldNames.SMALL_IMAGE);
+            if (mBookData.containsKey(ShowBookFieldNames.IMAGE)) {
+                bestImage = mBookData.getString(ShowBookFieldNames.IMAGE);
+                if (bestImage != null && bestImage.contains(UniqueId.BKEY_NOCOVER) && mBookData.containsKey(ShowBookFieldNames.SMALL_IMAGE)) {
+                    bestImage = mBookData.getString(ShowBookFieldNames.SMALL_IMAGE);
                     if (bestImage != null && bestImage.contains(UniqueId.BKEY_NOCOVER)) {
                         bestImage = null;
                     }
@@ -483,23 +483,23 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             if (bestImage != null) {
                 String filename = ImageUtils.saveThumbnailFromUrl(bestImage, GoodreadsUtils.GOODREADS_FILENAME_SUFFIX);
                 if (filename.length() > 0) {
-                    ArrayUtils.appendOrAdd(mBook, UniqueId.BKEY_THUMBNAIL_USCORE, filename);
+                    ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_THUMBNAIL_USCORE, filename);
                 }
             }
         }
 
         /* Build the pub date based on the components */
-        GoodreadsManager.buildDate(mBook, ShowBookFieldNames.PUBLICATION_YEAR, ShowBookFieldNames.PUBLICATION_MONTH, ShowBookFieldNames.PUBLICATION_DAY, UniqueId.KEY_BOOK_DATE_PUBLISHED);
+        GoodreadsManager.buildDate(mBookData, ShowBookFieldNames.PUBLICATION_YEAR, ShowBookFieldNames.PUBLICATION_MONTH, ShowBookFieldNames.PUBLICATION_DAY, UniqueId.KEY_BOOK_DATE_PUBLISHED);
 
-        if (mBook.containsKey(ShowBookFieldNames.IS_EBOOK) && mBook.getBoolean(ShowBookFieldNames.IS_EBOOK)) {
-            mBook.putString(UniqueId.KEY_BOOK_FORMAT, UniqueId.BVAL_GOODREADS_FORMAT_EBOOK);
+        if (mBookData.containsKey(ShowBookFieldNames.IS_EBOOK) && mBookData.getBoolean(ShowBookFieldNames.IS_EBOOK)) {
+            mBookData.putString(UniqueId.KEY_BOOK_FORMAT, UniqueId.BVAL_GOODREADS_FORMAT_EBOOK);
         }
 
         /*
          * Cleanup the title by removing series name, if present
          */
-        if (mBook.containsKey(UniqueId.KEY_TITLE)) {
-            String thisTitle = mBook.getString(UniqueId.KEY_TITLE);
+        if (mBookData.containsKey(UniqueId.KEY_TITLE)) {
+            String thisTitle = mBookData.getString(UniqueId.KEY_TITLE);
             Series.SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
             if (details != null && !details.name.isEmpty()) {
                 if (mSeries == null) {
@@ -507,25 +507,25 @@ public abstract class ShowBookApiHandler extends ApiHandler {
                 }
                 mSeries.add(new Series(details.name, details.position));
                 // Tempting to replace title with ORIG_TITLE, but that does bad things to translations (it used the original language)
-                mBook.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
-                //if (mBook.containsKey(ORIG_TITLE)) {
-                //	mBook.putString(UniqueId.KEY_TITLE, mBook.getString(ORIG_TITLE));
+                mBookData.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
+                //if (mBookData.containsKey(ORIG_TITLE)) {
+                //	mBookData.putString(UniqueId.KEY_TITLE, mBookData.getString(ORIG_TITLE));
                 //} else {
-                //	mBook.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar-1));
+                //	mBookData.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar-1));
                 //}
             }
-        } else if (mBook.containsKey(ShowBookFieldNames.ORIG_TITLE)) {
-            mBook.putString(UniqueId.KEY_TITLE, mBook.getString(ShowBookFieldNames.ORIG_TITLE));
+        } else if (mBookData.containsKey(ShowBookFieldNames.ORIG_TITLE)) {
+            mBookData.putString(UniqueId.KEY_TITLE, mBookData.getString(ShowBookFieldNames.ORIG_TITLE));
         }
 
         // ENHANCE Store WORK_ID = "__work_id" into GR_WORK_ID;
         // ENHANCE: Store ORIGINAL_PUBLICATION_DATE in database
 
         // If no published date, try original date
-        if (!mBook.containsKey(UniqueId.KEY_BOOK_DATE_PUBLISHED)) {
-            String origDate = GoodreadsManager.buildDate(mBook, ShowBookFieldNames.ORIG_PUBLICATION_YEAR, ShowBookFieldNames.ORIG_PUBLICATION_MONTH, ShowBookFieldNames.ORIG_PUBLICATION_DAY, null);
+        if (!mBookData.containsKey(UniqueId.KEY_BOOK_DATE_PUBLISHED)) {
+            String origDate = GoodreadsManager.buildDate(mBookData, ShowBookFieldNames.ORIG_PUBLICATION_YEAR, ShowBookFieldNames.ORIG_PUBLICATION_MONTH, ShowBookFieldNames.ORIG_PUBLICATION_DAY, null);
             if (origDate != null && !origDate.isEmpty()) {
-                mBook.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, origDate);
+                mBookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, origDate);
             }
         }
 
@@ -533,18 +533,18 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         //public static final String BOOK_URL = "__url";
 
         if (mAuthors != null && mAuthors.size() > 0) {
-            mBook.putString(UniqueId.BKEY_AUTHOR_DETAILS, ArrayUtils.getAuthorUtils().encodeList('|', mAuthors));
+            mBookData.putString(UniqueId.BKEY_AUTHOR_DETAILS, ArrayUtils.getAuthorUtils().encodeList('|', mAuthors));
         }
 
         if (mSeries != null && mSeries.size() > 0) {
-            mBook.putString(UniqueId.BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList('|', mSeries));
+            mBookData.putString(UniqueId.BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList('|', mSeries));
         }
 
         if (mShelves != null && mShelves.size() > 0) {
-            mBook.putStringArrayList(ShowBookFieldNames.SHELVES, mShelves);
+            mBookData.putStringArrayList(ShowBookFieldNames.SHELVES, mShelves);
         }
         // Return parsed results.
-        return mBook;
+        return mBookData;
     }
 
     /**

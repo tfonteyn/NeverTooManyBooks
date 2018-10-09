@@ -39,12 +39,12 @@ public class GoogleBooksManager {
 
     @Nullable
     static public File getCoverImage(@NonNull final String isbn) {
-        Bundle bookData = new Bundle();
+        Bundle mBookData = new Bundle();
         try {
-            search(isbn, "", "", bookData, true);
-            if (bookData.containsKey(UniqueId.BKEY_THUMBNAIL_USCORE)
-                    && bookData.getString(UniqueId.BKEY_THUMBNAIL_USCORE) != null) {
-                File f = new File(Objects.requireNonNull(bookData.getString(UniqueId.BKEY_THUMBNAIL_USCORE)));
+            search(isbn, "", "", mBookData, true);
+            if (mBookData.containsKey(UniqueId.BKEY_THUMBNAIL_USCORE)
+                    && mBookData.getString(UniqueId.BKEY_THUMBNAIL_USCORE) != null) {
+                File f = new File(Objects.requireNonNull(mBookData.getString(UniqueId.BKEY_THUMBNAIL_USCORE)));
                 File newName = new File(f.getAbsolutePath() + "_" + isbn);
                 StorageUtils.renameFile(f, newName);
                 return newName;

@@ -39,6 +39,7 @@ import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_CATEGORY;
 import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EVENT;
@@ -68,7 +69,7 @@ class DBAdapter {
     private final Context mApplicationContext;
 
     /** List of statements build by this adapter so that they can be removed on close */
-    private final ArrayList<SQLiteStatement> mStatements = new ArrayList<>();
+    private final List<SQLiteStatement> mStatements = new ArrayList<>();
 
     /** Static Factory object to create the custom cursor */
     private final CursorFactory mEventsCursorFactory = new CursorFactory() {

@@ -155,7 +155,7 @@
     <string name="skip_title">Overslaan van - %s</string>
     <string name="num_books_searched">%s Boeken gezocht</string>
     <string name="cancelled_info">Geannuleerd - %s</string>
-    <string name="edit_book_series">Bewerken van boekseries</string>
+    <string name="edit_book_series">Series bewerken</string>
     <string name="family_name">Achternaam</string>
     <string name="given_names">Voornamen</string>
     <string name="edit_author_details">Bewerken auteurdetails</string>
@@ -166,10 +166,10 @@
     <string name="title_required">Het titelveld mag niet leeg zijn</string>
     <string name="menu_delete_series">Verwijderen serie&#8230;</string>
     <string name="menu_edit_author">Bewerken auteur&#8230;</string>
-    <string name="menu_edit_series">Bewerken serie&#8230;</string>
+    <string name="menu_edit_series">Serie bewerken&#8230;</string>
     <string name="delete_series">Verwijderen serie</string>
     <string name="really_delete_series">Wilt u werkelijk de serie \'%s\'verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de serie te bewerken en de serienaam te veranderen om deze gegevens te behouden</string>
-    <string name="edit_series">Bewerken seriedetails</string>
+    <string name="edit_series">Serie details bewerken</string>
     <string name="select_cover">Selecteer omslagafbeelding</string>
     <string name="no_isbn_no_editions">Kan geen uitgavegegevens verkrijgen van een boek zonder ISBN</string>
     <string name="unsaved_edits">De door u gemaakte veranderingen zijn niet opgeslagen. Wilt u toch doorgaan?</string>
@@ -459,7 +459,7 @@
     <string name="hint_booklist_style_menu">Dit menu laat u de lijststijl selecteren. 
     								\n\nU kunt het menu ook aanpassen of u eigen lijststijl maken door te tikken op \'Aanpassen\' onderaan de lijst.</string>
     <string name="menu_edit_format">Formaat bewerken&#8230;</string>
-    <string name="edit_format_name">Formaat naam bewerken</string>
+    <string name="edit_format_name">Formaat bewerken</string>
     <string name="name_can_not_be_blank">Naamveld mag niet leeg zijn</string>
     <string name="export_starting_ellipsis">Starten van Export&#8230;</string>
     <string name="resizing_cover_thumbnails">Herschalen boekomslag miniaturen</string>
@@ -935,7 +935,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <!-- Begin: Added/Updated in 5.2.0 -->
 
     <!-- Preference name (fairly short) for preferred language -->
-    <string name="preferred_interface_language">Voorkeurstaal voor Interface</string>
+    <string name="preferred_interface_language">Interface taal</string>
     <!-- Preference value for a specific language. First arg is name in it's own language, second arg is name in current locale -->
 
     <string name="system_locale">Systeem taal</string>
@@ -957,6 +957,45 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="title_reorder">de|De|een|Een|het|Het</string>
     <string name="menu_mark_as_read">Markeer als gelezen</string>
     <string name="menu_mark_as_unread">Markeer als ongelezen</string>
+    <string name="content">Inhoud</string>
+    <string name="done">Klaar</string>
+    <string name="edit_genre_details">Genre bewerken</string>
+    <string name="edit_language_details">Taal bewerken</string>
+    <string name="edit_location_details">Locatie bewerken</string>
+    <string name="edit_publisher_details">Uitgever bewerken</string>
+    <string name="first_publication">Vroegste publicatie</string>
+    <string name="initial_bookshelf">Standaard</string>
+    <string name="internet_update_fields">Bijwerken velden</string>
+    <string name="menu_edit_genre">Genre bewerken&#8230;</string>
+    <string name="menu_edit_language">Taal bewerken&#8230;</string>
+    <string name="menu_edit_location">Locatie bewerken&#8230;</string>
+    <string name="menu_edit_publisher">Uitgever bewerken&#8230;</string>
+    <string name="no_external_crop_app">Externe crop applicatie niet gevonden</string>
+    <string name="no_style_found">Stijl niet gevonden</string>
+    <string name="preferred_theme">Interface thema</string>
+    <string name="search_sites">Zoek webpaginas</string>
+    <string name="search_site_order">Zoek webpaginas volgorde</string>
+    <string name="search_site_cover_order">Zoek kaft webpaginas</string>
+    <string name="search_with_text">Zoeken: %1$s</string>
+    <string name="searching_isfdb">Zoeken bij ISFDB</string>
+    <string name="select_anthology_no">Selecteer op \'geen-Bloemlezing\' status</string>
+    <string name="select_anthology_yes">Selecteer op \'Bloemlezing\' status</string>
+    <string name="select_based_on_anthology_status">Selecteer op \'Gelezen\' status</string>
+    <string name="select_based_on_loaned_status">Selecteer op \'Uitgeleend\' status</string>
+    <string name="select_based_on_signed_status">Selecteer op \'Gesigneerd\' status</string>
+    <string name="select_loaned_no">Selecteer niet uitgeleende boeken</string>
+    <string name="select_loaned_yes">Selecteer alleen uitgeleende boeken</string>
+    <string name="select_signed_no">Selecteer niet gesigneerde boeken</string>
+    <string name="select_signed_yes">Selecteer gesigneerde boeken</string>
+    <string name="send_mail">Bericht versturen…</string>
+    <string name="share">Delen</string>
+    <string name="starting">Opstarten</string>
+    <string name="storage_error_no_card">Geen opslag?</string>
+    <string name="storage_error_no_space">Niet genoeg opslag</string>
+    <string name="storage_error_preparing_card">Klaarmaken opslag</string>
+    <string name="table_of_content">Inhouds tabel</string>
+    <string name="try_again">Probeer opniew</string>
+    <string name="search_sites_blurb">Locale paginas</string>
 
     <!-- End: Added/Updated in [Next Version] -->
 

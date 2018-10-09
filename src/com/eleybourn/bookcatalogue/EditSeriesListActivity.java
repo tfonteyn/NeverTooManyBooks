@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -123,8 +122,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         EditText seriesNumberField = dialog.findViewById(R.id.series_num);
         seriesNumberField.setText(series.number);
 
-        Button saveButton = dialog.findViewById(R.id.confirm);
-        saveButton.setOnClickListener(new View.OnClickListener() {
+        dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AutoCompleteTextView seriesNameField = dialog.findViewById(R.id.series);
@@ -184,7 +182,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             if (from.id == 0) {
                 from.id = mDb.getSeriesId(from);
             }
-            mDb.insertOrUpdateSeries(from);;
+            mDb.insertOrUpdateSeries(from);
             mAdapter.notifyDataSetChanged();
             return;
         }

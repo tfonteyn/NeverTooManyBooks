@@ -9,7 +9,7 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 class ISFDBBookTask implements SimpleTaskQueue.SimpleTask {
     private final HandlesISFDB callback;
     private final String bookUrl;
-    private final Bundle mBook = new Bundle();
+    private final Bundle mBookData = new Bundle();
     private boolean fetchThumbnail;
 
     ISFDBBookTask(@NonNull final String bookUrl,
@@ -22,11 +22,11 @@ class ISFDBBookTask implements SimpleTaskQueue.SimpleTask {
 
     @Override
     public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) {
-        new ISFDBBook(bookUrl, mBook, fetchThumbnail);
+        new ISFDBBook(bookUrl, mBookData, fetchThumbnail);
     }
 
     @Override
     public void onFinish(@Nullable final Exception e) {
-        callback.onGotISFDBBook(mBook);
+        callback.onGotISFDBBook(mBookData);
     }
 }

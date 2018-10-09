@@ -28,7 +28,7 @@ import android.support.annotation.Nullable;
 /**
  * Collection of utility functions used in this package.
  */
-public class CropUtil {
+class CropUtil {
     // private static final String TAG = "db.CropUtil";
 
     private CropUtil() {

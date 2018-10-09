@@ -3,11 +3,31 @@
 
     <string name="app_name" translatable="false">Book Catalogue</string>
     <string name="system_app_name" translatable="false">Book Catalogue</string>
+    <string name="isbn" translatable="false">ISBN</string>
+    <string name="website" translatable="false">https://wiki.github.com/eleybourn/Book-Catalogue/</string>
+    <string name="sourcecode" translatable="false">https://github.com/eleybourn/Book-Catalogue</string>
+    <string name="helppage" translatable="false">https://github.com/eleybourn/Book-Catalogue/wiki/Help</string>
+    <string name="contact1" translatable="false">eleybourn@gmail.com</string>
+    <string name="contact2" translatable="false">philip.warner@rhyme.com.au</string>
+    <string name="debug_email" translatable="false">eleybourn@gmail.com;grunthos@rhyme.com.au</string>
+    <string name="brackets" translatable="false">(%1$s)</string>
+    <!-- Used for concatenating two strings, eg. "3 books, 2 covers" (probably only important on RTL languages)-->
+    <string name="a_comma_b" translatable="false">%1$s, %2$s</string>
+    <!-- Preference value for a specific language. First arg is name in it's own language, second arg is name in current locale -->
+    <string name="preferred_language_x" translatable="false">%1$s (%2$s)</string>
+    <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
+    <string name="a_bracket_b_bracket" translatable="false">%1$s (%2$s)</string>
+    <string name="single_string" translatable="false">%1s</string>
+
+    <string name="goodreads" translatable="false">goodreads</string>
+    <string name="google_books" translatable="false">Google Books</string>
+    <string name="goodreads_url" translatable="false">http://www.goodreads.com</string>
+    <string name="ISFDB" translatable="false">http://www.isfdb.org</string>
+
     <string name="menu_insert">Add Book</string>
     <string name="menu_delete">Delete Book</string>
     <string name="author">Author</string>
     <string name="title">Title</string>
-    <string name="isbn" translatable="false">ISBN</string>
     <string name="publisher">Publisher</string>
     <string name="date_published">Date Published</string>
     <string name="rating">Rating</string>
@@ -64,11 +84,6 @@
     <string name="website_lbl">Web page:</string>
     <string name="sourcecode_label">Source Code:</string>
     <string name="contact_label">Contacts:</string>
-    <string name="website" translatable="false">https://wiki.github.com/eleybourn/Book-Catalogue/</string>
-    <string name="sourcecode" translatable="false">https://github.com/eleybourn/Book-Catalogue</string>
-    <string name="helppage" translatable="false">https://github.com/eleybourn/Book-Catalogue/wiki/Help</string>
-    <string name="contact1" translatable="false">eleybourn@gmail.com</string>
-    <string name="contact2" translatable="false">philip.warner@rhyme.com.au</string>
     <string name="donate_label">Donate</string>
     <string name="about_label">About</string>
     <string name="sortby_author">Sort by Author</string>
@@ -219,7 +234,6 @@
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="bytes">%.0f bytes</string>
-    <string name="debug_email" translatable="false">eleybourn@gmail.com;grunthos@rhyme.com.au</string>
     <string name="sortby_author_given">Sort by Author (Given Name)</string>
     <string name="debug_subject">Gathered debugging information</string>
     <string name="debug_body">Please take the time to briefly describe the problem you are experiencing.</string>
@@ -243,7 +257,6 @@
     <string name="loan_return_book">Loan, Return or Edit Book</string>
     <string name="admin_and_prefs">Admin and Preferences</string>
     <string name="edit_book_send_to_gr">Send to goodreads</string>
-    <string name="goodreads" translatable="false">goodreads</string>
     <string name="goodreads_auth_blurb_part1">goodreads is a web site whose stated mission is "to help people find and share books they love".
     										They have an extensive database of books and reviews, and if you are a registered goodreads user, 
     										BookCatalogue can export your books, shelves and reviews to goodreads and import your books, 
@@ -255,7 +268,6 @@
     										your password, and you can disable access via the goodreads website. Due to the vagaries of
     										the web, you may end up on a blank web page. Just click the back button to return here!</string>
     <string name="goodreads_auth_blurb_part3">But remember&#8230;there is no need to do any of this: BookCatalogue works just fine without it!</string>
-    <string name="goodreads_url" translatable="false">http://www.goodreads.com</string>
     <string name="authorize_access">Authorize Access</string>
     <string name="authorize_access_already_auth">It looks like you have already authorized this application. All goodreads functions should be available already</string>
     <string name="goodreads_access_error">There was a network problem while accessing goodreads. Please check if the goodreads web site it up, and if the problem persists please contact support</string>
@@ -473,7 +485,7 @@
     <string name="hint_booklist_style_menu">This menu allows you to select the style of the list. 
     								\n\nYou can also customize this menu, as well as create your own list styles, by clicking \'Customize\' at the end of the list.</string>
     <string name="menu_edit_format">Edit Format&#8230;</string>
-    <string name="edit_format_name">Edit Format Name</string>
+    <string name="edit_format_name">Edit Format</string>
     <string name="name_can_not_be_blank">Name can not be blank</string>
     <string name="export_starting_ellipsis">Export starting&#8230;</string>
     <string name="resizing_cover_thumbnails">Resizing cover thumbnails</string>
@@ -531,7 +543,6 @@
     <string name="book_details_readonly_by">by</string>
     <string name="book_details_readonly_loaned_to">On Loan to %1$s</string>
     <string name="book_details_readonly_pages">%1$s pages</string>
-    <string name="brackets" translatable="false">(%1$s)</string>
     <string name="new_in_42">
 <![CDATA[
     <p><b>New in 4.2</b>\n\n
@@ -862,8 +873,7 @@ and you can edit the book via the options menu using the menu button or overflow
         <item quantity="other">%1$s covers</item>
     </plurals>
 
-    <!-- Used for concatenating two strings, eg. "3 books, 2 covers" (probably only important on RTL languages)-->
-    <string name="a_comma_b" translatable="false">%1$s, %2$s</string>
+
 
     <!-- Short progress message -->
     <string name="searching_directory_ellipsis">Searching directory&#8230;</string>
@@ -889,7 +899,7 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- Menu item -->
     <string name="amazon_books_by_author_in_series">Books by author/series</string>
 
-    <!-- Hint text displayed when user enters the book listw -->
+    <!-- Hint text displayed when user enters the book list -->
     <string name="hint_book_list">Tapping on a book will show you book details, a long-press on an item in the list give you further options.</string>
 
     <!-- TRANSLATORS NOTE: I HAVE UPDATED THE new_in_510, above! Sorry. -->
@@ -954,8 +964,6 @@ and you can edit the book via the options menu using the menu button or overflow
 
     <!-- Preference name (fairly short) for preferred language -->
     <string name="preferred_interface_language">Preferred Interface Language</string>
-    <!-- Preference value for a specific language. First arg is name in it's own language, second arg is name in current locale -->
-    <string name="preferred_language_x" translatable="false">%1$s (%2$s)</string>
 
     <!-- This is an UPDATED string copied from earlier in the file; "Google Googles" (sic) was removed from the list of scanners -->
     <string name="install_scan">To scan your books via the ISBN barcode, you must install one of the Zxing or pic2shop barcode scanner applications.</string>
@@ -1006,70 +1014,29 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- End: Added/Updated in 5.2.2 -->
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
-    <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
-    <string name="a_bracket_b_bracket" translatable="false">%1$s (%2$s)</string>
-    <string name="single_string" translatable="false">%1s</string>
-    <string name="google_books" translatable="false">Google Books</string>
-    <string name="ISFDB" translatable="false">http://www.isfdb.org</string>
+    <string name="new_in_600">
+		<![CDATA[
+			<p><b>New in 6.0.0</b>\n\n
+				* Modernisation to Android 5\n\n
+			</p>
+		]]>
+    </string>
 
     <!-- task/event... could set these to translatable="false" I suppose -->
     <string name="generic_task_info">Task ID %1$d, Queued at %2$s</string>
     <string name="events_found">%1$d Events found</string>
     <string name="events_recorded">( %1$d events recorded)</string>
 
-    <string name="preferred_theme">Preferred Interface Theme</string>
-    <!-- adding more require code changes -->
+    <string name="preferred_theme">Interface Theme</string>
+    <!-- adding more requires code changes -->
     <string-array name="supported_themes">
         <item>Dark</item>
         <item>Light</item>
     </string-array>
 
-    <!-- TODO  need better info here-->
-    <string name="app_permissions_info">
-        <![CDATA[
-            To function we need permissions....\n
-            Mandatory:\n
-             * Storage\n
-            \n
-            Optional:\n
-             * Read contacts\n
-            ]]>
-    </string>
-    <string name="url_host_blurb">Set your local websites.</string>
-
     <string name="storage_error_preparing_card">Preparing storage</string>
     <string name="storage_error_no_card">No storage ?</string>
     <string name="storage_error_no_space">Not enough space</string>
-
-    <string name="title_reorder">a|A|an|An|the|The</string>
-
-    <string name="menu_mark_as_read">Mark as read</string>
-    <string name="menu_mark_as_unread">Mark as unread</string>
-
-    <string name="menu_edit_publisher">Edit Publisher&#8230;</string>
-    <string name="edit_publisher_details">Edit Publisher Details</string>
-
-    <string name="menu_edit_language">Edit Language&#8230;</string>
-    <string name="edit_language_details">Edit Language Details</string>
-
-    <string name="menu_edit_location">Edit Location&#8230;</string>
-    <string name="edit_location_details">Edit Language Details</string>
-
-    <string name="menu_edit_genre">Edit Genre&#8230;</string>
-    <string name="edit_genre_details">Edit Genre Details</string>
-
-    <string name="search_with_text">Search: %1$s</string>
-    <string name="internet_update_fields">Update Fields</string>
-    <string name="share">Share</string>
-    <string name="share_book_im_reading">I\'m reading %1$s by %2$s %3$s %4$s</string>
-    <string name="done">Done</string>
-    <string name="search_sites">Search Sites</string>
-    <string name="search_site_order">Site Order</string>
-    <string name="search_site_cover_order">Cover Search Order</string>
-
-    <string name="starting">Starting</string>
-    <string name="send_mail">Send mail…</string>
-    <string name="no_external_crop_app">Can not find image crop app</string>
 
     <string name="select_based_on_signed_status">Select based on \'Signed\' status</string>
     <string name="select_signed_yes">Select signed books only</string>
@@ -1080,23 +1047,42 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="select_based_on_loaned_status">Select based on \'Loaned\' status</string>
     <string name="select_loaned_yes">Select loaned books only</string>
     <string name="select_loaned_no">Select non-loaned only</string>
+
+    <string name="menu_mark_as_read">Mark as read</string>
+    <string name="menu_mark_as_unread">Mark as unread</string>
+    <string name="menu_edit_publisher">Edit Publisher&#8230;</string>
+    <string name="edit_publisher_details">Edit Publisher Details</string>
+    <string name="menu_edit_language">Edit Language&#8230;</string>
+    <string name="edit_language_details">Edit Language Details</string>
+    <string name="menu_edit_location">Edit Location&#8230;</string>
+    <string name="edit_location_details">Edit Location Details</string>
+    <string name="menu_edit_genre">Edit Genre&#8230;</string>
+    <string name="edit_genre_details">Edit Genre Details</string>
+
+    <string name="search_sites">Search Sites</string>
+    <string name="search_sites_blurb">Set your local websites.</string>
+    <string name="search_site_order">Site Order</string>
+    <string name="search_site_cover_order">Cover Search Order</string>
+    <string name="search_with_text">Search: %1$s</string>
+    <string name="searching_isfdb">Searching ISFDB</string>
+
+
+    <string name="title_reorder">a|A|an|An|the|The</string>
+    <string name="internet_update_fields">Update Fields</string>
+    <string name="share">Share</string>
+    <string name="share_book_im_reading">I\'m reading %1$s by %2$s %3$s %4$s</string>
+    <string name="done">Done</string>
+    <string name="starting">Starting</string>
+    <string name="send_mail">Send mail…</string>
+    <string name="no_external_crop_app">Can not find image crop app</string>
     <string name="initial_bookshelf">Default</string>
-    <string name="try_another">Try again</string>
+    <string name="try_again">Try again</string>
     <string name="content">Content</string>
     <string name="table_of_content">Table Of Content</string>
     <string name="populate_anthology_titles">Automatically Populate (ISFDB only)</string>
     <string name="first_publication">First Publication</string>
-    <string name="searching_isfdb">Searching ISFDB</string>
-
-    <string name="new_in_600">
-		<![CDATA[
-			<p><b>New in 6.0.0</b>\n\n
-				* Modernisation to Android 5\n\n
-			</p>
-		]]>
-    </string>
     <string name="no_style_found">Could not find appropriate style</string>
-    <string name="multi_face_crop_help">Multi face crop help</string>
+
     <!-- End: Added/Updated in  [Next Version]  -->
 
 </resources>

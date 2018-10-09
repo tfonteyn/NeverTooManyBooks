@@ -180,14 +180,14 @@ public abstract class BackupReaderAbstract implements BackupReader {
     private void restoreStyle(@NonNull final BackupReaderListener listener,
                               @NonNull final ReaderEntity entity) throws IOException {
         listener.step("Booklist Styles...", 1);
-        BooklistStyle s = null;
+        BooklistStyle booklistStyle = null;
         try {
-            s = (BooklistStyle) entity.getSerializable();
+            booklistStyle = (BooklistStyle) entity.getSerializable();
         } catch (DeserializationException e) {
             Logger.logError(e, "Unable to restore style");
         }
-        if (s != null) {
-            s.insertOrUpdateBooklistStyle(mDb);
+        if (booklistStyle != null) {
+            mDb.insertOrUpdateBooklistStyle(booklistStyle);
         }
     }
 

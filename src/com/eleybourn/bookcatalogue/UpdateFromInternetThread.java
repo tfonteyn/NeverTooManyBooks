@@ -27,7 +27,7 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.entities.BookData;
+import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
@@ -427,7 +427,7 @@ public class UpdateFromInternetThread extends ManagedTask {
 
         // Update
         if (!newData.isEmpty()) {
-            mDb.updateBook(bookId, new BookData(newData), 0);
+            mDb.updateBook(bookId, new Book(newData), 0);
         }
 
     }

@@ -1,22 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- https://commonsware.com/ -->
+    <declare-styleable name="TouchListView">
+        <attr name="normal_height" format="dimension" />
+        <attr name="expanded_height" format="dimension" />
+        <attr name="grabber" format="reference" />
+        <attr name="dragndrop_background" format="color" />
+        <attr name="remove_mode">
+            <enum name="none" value="-1" />
+            <enum name="fling" value="0" />
+            <enum name="slide" value="1" />
+            <enum name="slideRight" value="1" />
+            <enum name="slideLeft" value="2" />
+        </attr>
+    </declare-styleable>
+
+    <!-- ripped from:
+    Android\sdk\platforms\android-27\data\res\drawable\gallery_item_background.xml
+    which points to PNG files:
+    Android\sdk\platforms\android-27\data\res\drawable-hdpi
+    -->
     <declare-styleable name="CoverGallery">
-        <!--
-            Android\sdk\platforms\android-27\data\res\drawable\gallery_item_background.xml
-         which points to PNG files
-            Android\sdk\platforms\android-27\data\res\drawable-hdpi
-            -->
         <attr name="android:galleryItemBackground" />
     </declare-styleable>
 
+    <!-- logo for Goodreads -->
     <attr name="ic_goodreads" format="reference" />
 
+    <!-- all vector xml files should use this for their color -->
     <attr name="fillColorVectorIcons" format="reference|color" />
+
+    <!-- drawable border.xml uses this color -->
+    <attr name="color_border" format="reference|color" />
+
     <attr name="color_background_nav_header" format="reference|color" />
     <attr name="color_background_nav_panel" format="reference|color" />
     <attr name="color_background_thumbnail" format="reference|color" />
     <attr name="color_background_toolbar" format="reference|color" />
-
-    <attr name="color_border" format="reference|color" />
 
 </resources>

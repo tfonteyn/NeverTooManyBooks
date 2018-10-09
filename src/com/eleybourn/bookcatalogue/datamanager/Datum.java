@@ -245,6 +245,7 @@ public class Datum {
      * Accessor. Protected against being set twice.
      */
     @SuppressWarnings("UnusedReturnValue")
+    @NonNull
     public Datum setAccessor(@NonNull final DataAccessor accessor) {
         if (mAccessor != null && accessor != mAccessor) {
             throw new IllegalStateException("Datum '" + mKey + "' already has an Accessor");

@@ -36,14 +36,16 @@ import com.eleybourn.bookcatalogue.R;
  * computeLayout() uses mMatrix to map from image space to screen space.
  */
 class CropHighlightView {
-    public static final int GROW_NONE = 1;
-    public static final int MOVE = (1 << 5);
     @SuppressWarnings("unused")
     private static final String TAG = "HighlightView";
+
+    static final int GROW_NONE = 1;
     private static final int GROW_LEFT_EDGE = (1 << 1);
     private static final int GROW_RIGHT_EDGE = (1 << 2);
     private static final int GROW_TOP_EDGE = (1 << 3);
     private static final int GROW_BOTTOM_EDGE = (1 << 4);
+    static final int MOVE = (1 << 5);
+
     /**  The View displaying the image. */
     private final View mContext;
 
@@ -58,7 +60,8 @@ class CropHighlightView {
     Matrix mMatrix;
     private boolean mHidden;
     private ModifyMode mMode = ModifyMode.None;
-    private RectF mImageRect; // in image space
+    /*** in image space */
+    private RectF mImageRect;
     private boolean mMaintainAspectRatio = false;
     private float mInitialAspectRatio;
     private boolean mCircle = false;
@@ -77,11 +80,11 @@ class CropHighlightView {
         mResizeDrawableDiagonal = resources.getDrawable(R.drawable.ic_crop);
     }
 
-    public boolean hasFocus() {
+    boolean hasFocus() {
         return mIsFocused;
     }
 
-    public void setFocus(final boolean f) {
+    void setFocus(final boolean f) {
         mIsFocused = f;
     }
 
@@ -89,7 +92,7 @@ class CropHighlightView {
         mHidden = hidden;
     }
 
-    protected void draw(@NonNull final Canvas canvas) {
+    void draw(@NonNull final Canvas canvas) {
         if (mHidden) {
             return;
         }
@@ -185,10 +188,10 @@ class CropHighlightView {
     }
 
     // Determines which edges are hit by touching at (x, y).
-    public int getHit(final float x, final float y) {
+    int getHit(final float x, final float y) {
         Rect r = computeLayout();
         final float hysteresis = 20F;
-        int retval = GROW_NONE;
+        int hitValue = GROW_NONE;
 
         if (mCircle) {
             float distX = x - r.centerX();
@@ -199,25 +202,25 @@ class CropHighlightView {
             if (Math.abs(delta) <= hysteresis) {
                 if (Math.abs(distY) > Math.abs(distX)) {
                     if (distY < 0) {
-                        retval = GROW_TOP_EDGE;
+                        hitValue = GROW_TOP_EDGE;
                     } else {
-                        retval = GROW_BOTTOM_EDGE;
+                        hitValue = GROW_BOTTOM_EDGE;
                     }
                 } else {
                     if (distX < 0) {
-                        retval = GROW_LEFT_EDGE;
+                        hitValue = GROW_LEFT_EDGE;
                     } else {
-                        retval = GROW_RIGHT_EDGE;
+                        hitValue = GROW_RIGHT_EDGE;
                     }
                 }
             } else if (distanceFromCenter < radius) {
-                retval = MOVE;
+                hitValue = MOVE;
             } else {
-                retval = GROW_NONE;
+                hitValue = GROW_NONE;
             }
         } else {
             // verticalCheck makes sure the position is between the top and
-            // the bottom edge (with some tolerance). Similar for horizCheck.
+            // the bottom edge (with some tolerance). Similar for horizontalCheck.
             boolean verticalCheck = (y >= r.top - hysteresis)
                     && (y < r.bottom + hysteresis);
             boolean horizontalCheck = (x >= r.left - hysteresis)
@@ -225,24 +228,24 @@ class CropHighlightView {
 
             // Check whether the position is near some edge(s).
             if ((Math.abs(r.left - x) < hysteresis) && verticalCheck) {
-                retval |= GROW_LEFT_EDGE;
+                hitValue |= GROW_LEFT_EDGE;
             }
             if ((Math.abs(r.right - x) < hysteresis) && verticalCheck) {
-                retval |= GROW_RIGHT_EDGE;
+                hitValue |= GROW_RIGHT_EDGE;
             }
             if ((Math.abs(r.top - y) < hysteresis) && horizontalCheck) {
-                retval |= GROW_TOP_EDGE;
+                hitValue |= GROW_TOP_EDGE;
             }
             if ((Math.abs(r.bottom - y) < hysteresis) && horizontalCheck) {
-                retval |= GROW_BOTTOM_EDGE;
+                hitValue |= GROW_BOTTOM_EDGE;
             }
 
             // Not near any edge but inside the rectangle: move.
-            if (retval == GROW_NONE && r.contains((int) x, (int) y)) {
-                retval = MOVE;
+            if (hitValue == GROW_NONE && r.contains((int) x, (int) y)) {
+                hitValue = MOVE;
             }
         }
-        return retval;
+        return hitValue;
     }
 
     /**
@@ -279,7 +282,7 @@ class CropHighlightView {
 
     /** Grows the cropping rectangle by (dx, dy) in image space. */
     private void moveBy(final float dx, final float dy) {
-        Rect invalRect = new Rect(mDrawRect);
+        Rect rect = new Rect(mDrawRect);
 
         mCropRect.offset(dx, dy);
 
@@ -291,9 +294,9 @@ class CropHighlightView {
                 Math.min(0, mImageRect.bottom - mCropRect.bottom));
 
         mDrawRect = computeLayout();
-        invalRect.union(mDrawRect);
-        invalRect.inset(-10, -10);
-        mContext.invalidate(invalRect);
+        rect.union(mDrawRect);
+        rect.inset(-10, -10);
+        mContext.invalidate(rect);
     }
 
     /** Grows the cropping rectangle by (dx, dy) in image space. */
@@ -354,7 +357,7 @@ class CropHighlightView {
     }
 
     // Returns the cropping rectangle in image space.
-    public Rect getCropRect() {
+    Rect getCropRect() {
         return new Rect((int) mCropRect.left, (int) mCropRect.top,
                 (int) mCropRect.right, (int) mCropRect.bottom);
     }
@@ -368,7 +371,7 @@ class CropHighlightView {
                 Math.round(r.right), Math.round(r.bottom));
     }
 
-    public void invalidate() {
+    void invalidate() {
         mDrawRect = computeLayout();
     }
 

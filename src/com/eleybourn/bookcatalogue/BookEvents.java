@@ -34,7 +34,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.entities.BookRowView;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;

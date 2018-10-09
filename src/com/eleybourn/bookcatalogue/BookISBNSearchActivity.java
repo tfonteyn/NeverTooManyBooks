@@ -59,6 +59,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class will search the internet for
@@ -787,7 +788,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
         if (mAuthorText != null) {
             // Get all known authors and build a hash of the names
             final ArrayList<String> authors = mDb.getAuthors();
-            final HashSet<String> uniqueNames = new HashSet<>();
+            final Set<String> uniqueNames = new HashSet<>();
             for (String s : authors) {
                 uniqueNames.add(s.toUpperCase());
             }

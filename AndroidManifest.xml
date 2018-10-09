@@ -22,7 +22,7 @@
 
     <!-- supportsRtl: to satisfy lint -->
     <application
-        android:name=".BookCatalogueApp"
+        android:name="com.eleybourn.bookcatalogue.BookCatalogueApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_bc_launcher4"
         android:label="@string/app_name"
@@ -42,13 +42,13 @@
             android:value="" />
 
         <provider
-            android:name=".searches.SearchSuggestionProvider"
+            android:name="com.eleybourn.bookcatalogue.searches.SearchSuggestionProvider"
             android:authorities="${packageName}.SearchSuggestionProvider"
             android:exported="false" />
 
         <!-- Authority same as set in GenericFileProvider.class -->
         <provider
-            android:name=".utils.GenericFileProvider"
+            android:name="com.eleybourn.bookcatalogue.utils.GenericFileProvider"
             android:authorities="${packageName}.GenericFileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -74,7 +74,7 @@
             So in theory it is OK to make is singleInstance
         -->
         <activity
-            android:name=".StartupActivity"
+            android:name="com.eleybourn.bookcatalogue.StartupActivity"
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="singleInstance"
             android:noHistory="true"
@@ -86,7 +86,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".BooksOnBookshelf">
+        <activity android:name="com.eleybourn.bookcatalogue.BooksOnBookshelf">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
 
@@ -99,49 +99,49 @@
         </activity>
 
         <!-- Admin pages -->
-        <activity android:name=".Help" />
-        <activity android:name=".AdministrationAbout" />
-        <activity android:name=".AdministrationDonate" />
-        <activity android:name=".AdministrationFunctions" />
+        <activity android:name="com.eleybourn.bookcatalogue.Help" />
+        <activity android:name="com.eleybourn.bookcatalogue.AdministrationAbout" />
+        <activity android:name="com.eleybourn.bookcatalogue.AdministrationDonate" />
+        <activity android:name="com.eleybourn.bookcatalogue.AdministrationFunctions" />
 
         <!-- ************************************************************ -->
         <!-- AdministrationFunctions: General -->
         <!-- ************************************************************ -->
 
         <!-- Manage Bookshelves -->
-        <activity android:name=".EditBookshelfListActivity" />
+        <activity android:name="com.eleybourn.bookcatalogue.EditBookshelfListActivity" />
         <activity
-            android:name=".EditBookshelfActivity"
+            android:name="com.eleybourn.bookcatalogue.EditBookshelfActivity"
             android:windowSoftInputMode="adjustResize" />
 
         <!-- Field Visibility -->
-        <activity android:name=".FieldVisibilityActivity" />
+        <activity android:name="com.eleybourn.bookcatalogue.FieldVisibilityActivity" />
 
         <!-- Edit book list styles -->
-        <activity android:name=".booklist.BooklistStylesListActivity" />
+        <activity android:name="com.eleybourn.bookcatalogue.booklist.BooklistStylesListActivity" />
         <activity
-            android:name=".booklist.BooklistStylePropertiesActivity"
+            android:name="com.eleybourn.bookcatalogue.booklist.BooklistStylePropertiesActivity"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".booklist.BooklistStyleGroupsListActivity" />
+        <activity android:name="com.eleybourn.bookcatalogue.booklist.BooklistStyleGroupsListActivity" />
 
         <!-- AdministrationFunctions:Data Import/Export -->
-        <activity android:name=".filechooser.BackupChooser" />
+        <activity android:name="com.eleybourn.bookcatalogue.filechooser.BackupChooser" />
 
         <!-- AdministrationFunctions: Update Fields -->
-        <activity android:name=".UpdateFromInternet" />
+        <activity android:name="com.eleybourn.bookcatalogue.UpdateFromInternet" />
 
         <!-- AdministrationFunctions: Credentials -->
         <activity
-            android:name=".searches.goodreads.GoodreadsRegister"
+            android:name="com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegister"
             android:launchMode="standard" />
-        <activity android:name=".searches.librarything.AdministrationLibraryThing" />
+        <activity android:name="com.eleybourn.bookcatalogue.searches.librarything.AdministrationLibraryThing" />
 
         <!-- AdministrationFunctions: Background tasks -->
-        <activity android:name=".tasks.TaskListActivity" />
+        <activity android:name="com.eleybourn.bookcatalogue.tasks.TaskListActivity" />
 
         <!-- AdministrationFunctions: Search configuration -->
         <activity
-            android:name=".searches.SearchAdmin"
+            android:name="com.eleybourn.bookcatalogue.searches.SearchAdmin"
             android:windowSoftInputMode="adjustResize" />
         <!-- *********************************************************************************** -->
         <!-- END admin pages -->
@@ -150,34 +150,34 @@
 
         <!-- Search -->
         <activity
-            android:name=".searches.SearchCatalogue"
+            android:name="com.eleybourn.bookcatalogue.searches.SearchCatalogue"
             android:windowSoftInputMode="adjustResize" />
 
         <!-- Booklist Preferences -->
-        <activity android:name=".booklist.BooklistPreferencesActivity" />
+        <activity android:name="com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity" />
 
         <!-- Other preferences (e.g. non-booklist -->
-        <activity android:name=".PreferencesActivity" />
+        <activity android:name="com.eleybourn.bookcatalogue.PreferencesActivity" />
 
         <!-- Add Book; this activity then sub divides Add by scan,isbn,internet, or add manually -->
         <activity
-            android:name=".BookISBNSearchActivity"
+            android:name="com.eleybourn.bookcatalogue.BookISBNSearchActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <!-- Edit a book + the related author/series -->
-        <activity android:name=".BookDetailsActivity" />
-        <activity android:name=".EditAuthorListActivity" />
-        <activity android:name=".EditSeriesListActivity" />
+        <activity android:name="com.eleybourn.bookcatalogue.BookDetailsActivity" />
+        <activity android:name="com.eleybourn.bookcatalogue.EditAuthorListActivity" />
+        <activity android:name="com.eleybourn.bookcatalogue.EditSeriesListActivity" />
 
         <!-- cropping an image, either from the cover of a book, or direct from a new scan -->
-        <activity android:name=".cropper.CropCropImage" />
+        <activity android:name=".cropper.CropImageActivity" />
 
         <!-- and then some GoodReads activities... TODO: satisfy curiosity later -->
-        <activity android:name=".searches.goodreads.GoodreadsSearchCriteria" />
-        <activity android:name=".searches.goodreads.GoodreadsSearchResults" />
-        <activity android:name=".searches.goodreads.GoodreadsExportFailuresActivity" />
+        <activity android:name="com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsSearchCriteria" />
+        <activity android:name="com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsSearchResults" />
+        <activity android:name="com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsExportFailuresActivity" />
         <activity
-            android:name=".searches.goodreads.GoodreadsAuthorizationActivity"
+            android:name="com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsAuthorizationActivity"
             android:launchMode="singleInstance">
 
             <!-- TODO: Work out which of these filters we don't need! -->

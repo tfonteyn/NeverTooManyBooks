@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.database;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 
 /**
@@ -19,7 +21,7 @@ public class JoinContext {
      *
      * @param table Table that starts join
      */
-    public JoinContext(TableDefinition table) {
+    public JoinContext(@NonNull final TableDefinition table) {
         mCurrentTable = table;
         mSql = new StringBuilder();
     }
@@ -31,7 +33,8 @@ public class JoinContext {
      *
      * @return Join object (for chaining)
      */
-    public JoinContext join(TableDefinition to) {
+    @NonNull
+    public JoinContext join(@NonNull final TableDefinition to) {
         mSql.append(mCurrentTable.join(to));
         mSql.append('\n');
         mCurrentTable = to;
@@ -46,7 +49,8 @@ public class JoinContext {
      *
      * @return Join object (for chaining)
      */
-    public JoinContext join(TableDefinition from, TableDefinition to) {
+    @NonNull
+    public JoinContext join(@NonNull final TableDefinition from, @NonNull final TableDefinition to) {
         mSql.append(from.join(to));
         mSql.append('\n');
         mCurrentTable = to;
@@ -61,7 +65,8 @@ public class JoinContext {
      * @return Join object (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    public JoinContext leftOuterJoin(TableDefinition to) {
+    @NonNull
+    public JoinContext leftOuterJoin(@NonNull final TableDefinition to) {
         mSql.append(" LEFT OUTER ");
         return join(to);
     }
@@ -75,7 +80,8 @@ public class JoinContext {
      * @return Join object (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    public JoinContext leftOuterJoin(TableDefinition from, TableDefinition to) {
+    @NonNull
+    public JoinContext leftOuterJoin(@NonNull final TableDefinition from, @NonNull final TableDefinition to) {
         mSql.append(" LEFT OUTER ");
         return join(from, to);
     }
@@ -85,6 +91,7 @@ public class JoinContext {
      *
      * @return Join object (for chaining)
      */
+    @NonNull
     public JoinContext start() {
         mSql.append(mCurrentTable.getName()).append(" ").append(mCurrentTable.getAlias());
         return this;
@@ -99,7 +106,8 @@ public class JoinContext {
      * @return Join object (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    public JoinContext append(String sql) {
+    @NonNull
+    public JoinContext append(@NonNull final String sql) {
         mSql.append(sql);
         return this;
     }
@@ -108,6 +116,7 @@ public class JoinContext {
      * Get the current SQL
      */
     @Override
+    @NonNull
     public String toString() {
         return mSql.toString();
     }

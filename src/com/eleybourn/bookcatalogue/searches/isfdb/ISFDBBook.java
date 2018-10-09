@@ -3,7 +3,7 @@ package com.eleybourn.bookcatalogue.searches.isfdb;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.entities.BookData;
+import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -193,10 +193,10 @@ public class ISFDBBook extends AbstractBase {
                     mBook.putString("ISFDB_BOOK_TYPE", tmp); // original type
 
                     if ("a1".equals(TYPE_MAP.get(tmp))) {
-                        mBook.putInt(BookData.IS_ANTHOLOGY,
+                        mBook.putInt(Book.IS_ANTHOLOGY,
                                 DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY);
                     } else if ("a2".equals(TYPE_MAP.get(tmp))) {
-                        mBook.putInt(BookData.IS_ANTHOLOGY,
+                        mBook.putInt(Book.IS_ANTHOLOGY,
                                 DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY |
                                 DatabaseDefinitions.DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS);
                     }

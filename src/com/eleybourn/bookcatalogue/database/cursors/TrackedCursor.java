@@ -50,16 +50,11 @@ import java.util.Set;
  */
 public class TrackedCursor extends SynchronizedCursor implements Closeable {
 
-    /* Static Data */
-    /* =========== */
-
     /** Used as a collection of known cursors */
     private static final Set<WeakReference<TrackedCursor>> mCursors = new HashSet<>();
     /** Global counter for unique cursor IDs */
     private static Long mIdCounter = 0L;
 
-    /* Instance Data */
-    /* ============= */
     /** Debug counter */
     private static Integer mInstanceCount = 0;
     /** ID of the current cursor */
@@ -71,8 +66,10 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
     /** Already closed */
     private boolean mIsClosedFlg = false;
 
-    public TrackedCursor(@NonNull final SQLiteCursorDriver driver, @NonNull final String editTable,
-                         @NonNull final SQLiteQuery query, @NonNull final Synchronizer sync) {
+    public TrackedCursor(@NonNull final SQLiteCursorDriver driver,
+                         @NonNull final String editTable,
+                         @NonNull final SQLiteQuery query,
+                         @NonNull final Synchronizer sync) {
         super(driver, editTable, query, sync);
 
         if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
@@ -227,6 +224,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
     /**
      * Get the stack trace recorded when cursor created
      */
+    @NonNull
     private StackTraceElement[] getStackTrace() {
         return mStackTrace;
     }

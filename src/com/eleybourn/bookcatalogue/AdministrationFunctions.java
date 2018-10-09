@@ -498,9 +498,9 @@ public class AdministrationFunctions extends ActivityWithTasks {
                         // setup the mail message
                         String subject = "[" + getString(R.string.app_name) + "] " + getString(R.string.export_to_csv);
 
-                        final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
+                        final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
                         emailIntent.setType("plain/text");
-                        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
+                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
 
                         ArrayList<Uri> uris = new ArrayList<>();
                         try {

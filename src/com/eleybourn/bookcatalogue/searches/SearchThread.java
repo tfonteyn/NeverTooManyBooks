@@ -41,7 +41,7 @@ abstract public class SearchThread extends ManagedTask {
     protected final String mTitle;
     protected final String mIsbn;
     // Accumulated book info.
-    protected Bundle mBook = new Bundle();
+    protected Bundle mBookData = new Bundle();
 
     /**
      * Constructor. Will search according to passed parameters. If an ISBN
@@ -78,20 +78,20 @@ abstract public class SearchThread extends ManagedTask {
      * next lookup will overwrite with a possibly new title.
      */
     protected void checkForSeriesName() {
-        if (mBook.containsKey(UniqueId.KEY_TITLE)) {
-            String thisTitle = mBook.getString(UniqueId.KEY_TITLE);
+        if (mBookData.containsKey(UniqueId.KEY_TITLE)) {
+            String thisTitle = mBookData.getString(UniqueId.KEY_TITLE);
             if (thisTitle != null) {
                 SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
                 if (details != null && !details.name.isEmpty()) {
                     List<Series> sl;
-                    if (mBook.containsKey(UniqueId.BKEY_SERIES_DETAILS)) {
-                        sl = ArrayUtils.getSeriesUtils().decodeList('|', mBook.getString(UniqueId.BKEY_SERIES_DETAILS), false);
+                    if (mBookData.containsKey(UniqueId.BKEY_SERIES_DETAILS)) {
+                        sl = ArrayUtils.getSeriesUtils().decodeList('|', mBookData.getString(UniqueId.BKEY_SERIES_DETAILS), false);
                     } else {
                         sl = new ArrayList<>();
                     }
                     sl.add(new Series(details.name, details.position));
-                    mBook.putString(UniqueId.BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList('|', sl));
-                    mBook.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1).trim());
+                    mBookData.putString(UniqueId.BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList('|', sl));
+                    mBookData.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1).trim());
                 }
             }
         }
@@ -112,7 +112,7 @@ abstract public class SearchThread extends ManagedTask {
      * Accessor, so when thread has finished, data can be retrieved.
      */
     @NonNull
-    public Bundle getBookData() {
-        return mBook;
+    Bundle getBookData() {
+        return mBookData;
     }
 }

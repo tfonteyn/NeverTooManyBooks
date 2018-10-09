@@ -46,7 +46,7 @@ import java.util.HashMap;
 /**
  * The interface of all image collections used in gallery.
  */
-public interface CropIImageList extends Parcelable {
+interface CropIImageList extends Parcelable {
 	HashMap<String, String> getBucketIds();
 
 	void deactivate();

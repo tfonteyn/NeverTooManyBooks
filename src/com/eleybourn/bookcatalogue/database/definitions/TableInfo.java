@@ -25,7 +25,7 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
     public static final String TYPE_INTEGER = "integer";
 
     public static final String TYPE_TEXT = "text";
-
+    public static final String TYPE_CHAR = "char";
     public static final String TYPE_BLOB = "blob";
     public static final String TYPE_BOOLEAN = "boolean";
     public static final String TYPE_DATE = "date";
@@ -36,16 +36,17 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
     private final Map<String, ColumnInfo> mColumns;
     private final DbSync.SynchronizedDb mSyncedDb;
 
-    public TableInfo(DbSync.SynchronizedDb db, String tableName) {
+    public TableInfo(@NonNull final DbSync.SynchronizedDb db, @NonNull final String tableName) {
         mSyncedDb = db;
         mColumns = describeTable(tableName);
     }
 
     @Nullable
-    public ColumnInfo getColumn(String name) {
+    public ColumnInfo getColumn(@NonNull final String name) {
         String lcName = name.toLowerCase();
-        if (!mColumns.containsKey(lcName))
+        if (!mColumns.containsKey(lcName)) {
             return null;
+        }
         return mColumns.get(lcName);
     }
 
@@ -69,11 +70,13 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
         Map<String, ColumnInfo> allColumns = new HashMap<>();
 
         try (Cursor colCsr = mSyncedDb.rawQuery(sql, new String[]{})) {
-            if (colCsr == null)
+            if (colCsr == null) {
                 throw new IllegalArgumentException();
+            }
 
-            if (!colCsr.moveToFirst())
+            if (!colCsr.moveToFirst()) {
                 throw new RuntimeException("Unable to get column details");
+            }
 
             while (true) {
                 ColumnInfo col = new ColumnInfo();
@@ -90,6 +93,7 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
                         col.typeClass = CLASS_INTEGER;
                         break;
                     case TYPE_TEXT:
+                    case TYPE_CHAR:
                         col.typeClass = CLASS_TEXT;
                         break;
                     case TYPE_FLOAT:
@@ -109,8 +113,9 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
                 }
 
                 allColumns.put(col.name.toLowerCase(), col);
-                if (colCsr.isLast())
+                if (colCsr.isLast()) {
                     break;
+                }
                 colCsr.moveToNext();
             }
         }

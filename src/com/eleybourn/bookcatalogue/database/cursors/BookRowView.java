@@ -18,14 +18,13 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.entities;
+package com.eleybourn.bookcatalogue.database.cursors;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 
 /**
  * Convenience class to avoid having to write the same code in more than one place. This

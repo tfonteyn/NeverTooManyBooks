@@ -51,7 +51,7 @@ import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment.OnPartialDa
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEditorListener;
-import com.eleybourn.bookcatalogue.entities.BookData;
+import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
@@ -100,7 +100,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
     private GestureDetector mGestureDetector;
     private boolean mIsDirtyFlg = false;
     private long mRowId;
-    private BookData mBookData;
+    private Book mBook;
     private boolean mIsReadOnly;
     /**
      * Listener to handle 'fling' events; we could handle others but need to be
@@ -195,13 +195,13 @@ public class BookDetailsActivity extends BookCatalogueActivity
                                           @Nullable final String listTable,
                                           @Nullable final Integer position) {
         Intent intent = new Intent(activity, BookDetailsActivity.class);
-        intent.putExtra(BKEY_FLATTENED_BOOKLIST, listTable);
-        if (position != null) {
-            intent.putExtra(BKEY_FLATTENED_BOOKLIST_POSITION, position);
-        }
         intent.putExtra(UniqueId.KEY_ID, id);
         intent.putExtra(BookDetailsActivity.TAB, BookDetailsActivity.TAB_EDIT); // needed extra for creating BookDetailsActivity
         intent.putExtra(BookDetailsActivity.READ_ONLY, true);
+        intent.putExtra(BookDetailsActivity.BKEY_FLATTENED_BOOKLIST, listTable);
+        if (position != null) {
+            intent.putExtra(BookDetailsActivity.BKEY_FLATTENED_BOOKLIST_POSITION, position);
+        }
         activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_VIEW_BOOK);
     }
 
@@ -241,7 +241,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         mTabLayout = findViewById(R.id.tab_panel);
         mTabLayout.addOnTabSelectedListener(new TabListener());
 
-        initBookData(mRowId, savedInstanceState == null ? extras : savedInstanceState);
+        initBook(mRowId, savedInstanceState == null ? extras : savedInstanceState);
 
         if (mIsReadOnly) {
             initForReadOnly(extras);
@@ -299,7 +299,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
                 mTabLayout.addTab(tab);
                 mAllTabs.add(tab);
 
-                boolean isAnthology = (mBookData.getBookId() > 0) && (mBookData.getInt(BookData.IS_ANTHOLOGY) != DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY);
+                boolean isAnthology = (mBook.getBookId() > 0) && (mBook.getInt(Book.IS_ANTHOLOGY) != DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY);
                 showAnthologyTab(isAnthology);
             }
         } catch (InstantiationException | IllegalAccessException e) {
@@ -335,8 +335,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
             }
         });
 
-        Button mCancelButton = findViewById(R.id.cancel);
-        mCancelButton.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 // Cleanup because we may have made global changes TODO: detect this if actually needed
                 mDb.purgeAuthors();
@@ -363,13 +362,13 @@ public class BookDetailsActivity extends BookCatalogueActivity
      *
      * 3. It will leave the fields blank for new books.
      */
-    private void initBookData(final long bookId, @Nullable final Bundle bestBundle) {
+    private void initBook(final long bookId, @Nullable final Bundle bestBundle) {
         if (bestBundle != null && bestBundle.containsKey(UniqueId.BKEY_BOOK_DATA)) {
             // If we have saved book data, use it
-            mBookData = new BookData(bookId, bestBundle.getBundle(UniqueId.BKEY_BOOK_DATA));
+            mBook = new Book(bookId, bestBundle.getBundle(UniqueId.BKEY_BOOK_DATA));
         } else {
             // Just load based on rowId
-            mBookData = new BookData(bookId);
+            mBook = new Book(bookId);
         }
     }
 
@@ -427,10 +426,10 @@ public class BookDetailsActivity extends BookCatalogueActivity
                 actionBar.setTitle(R.string.book_details);
                 actionBar.setSubtitle(null);
 
-            } else if (mBookData.getBookId() > 0) {
+            } else if (mBook.getBookId() > 0) {
                 // editing an existing book
-                actionBar.setTitle(mBookData.getString(UniqueId.KEY_TITLE));
-                actionBar.setSubtitle(mBookData.getAuthorTextShort());
+                actionBar.setTitle(mBook.getString(UniqueId.KEY_TITLE));
+                actionBar.setSubtitle(mBook.getAuthorTextShort());
             } else {
                 // new book
                 actionBar.setTitle(R.string.menu_insert);
@@ -507,7 +506,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         super.onSaveInstanceState(outState);
 
         outState.putLong(UniqueId.KEY_ID, mRowId);
-        outState.putBundle(UniqueId.BKEY_BOOK_DATA, mBookData.getRawData());
+        outState.putBundle(UniqueId.BKEY_BOOK_DATA, mBook.getRawData());
         if (mList != null) {
             outState.putInt(BKEY_FLATTENED_BOOKLIST_POSITION, (int) mList.getPosition());
         }
@@ -535,7 +534,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
      */
     private void finishAndSendIntent() {
         Intent intent = new Intent();
-        intent.putExtra(UniqueId.KEY_ID, mBookData.getBookId());
+        intent.putExtra(UniqueId.KEY_ID, mBook.getBookId());
         setResult(Activity.RESULT_OK, intent);
         finish();
     }
@@ -673,18 +672,18 @@ public class BookDetailsActivity extends BookCatalogueActivity
     }
 
     @Override
-    public BookData getBookData() {
-        return mBookData;
+    public Book getBook() {
+        return mBook;
     }
 
     @Override
     public void setRowId(final long id) {
         if (mRowId != id) {
             mRowId = id;
-            initBookData(id, null);
+            initBook(id, null);
             Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
             if (frag instanceof DataEditor) {
-                ((DataEditor) frag).reloadData(mBookData);
+                ((DataEditor) frag).reloadData(mBook);
             }
             initActivityTitle();
         }
@@ -807,8 +806,8 @@ public class BookDetailsActivity extends BookCatalogueActivity
      * Validate the current data in all fields that have validators. Display any errors.
      */
     private void validate() {
-        if (!mBookData.validate()) {
-            StandardDialogs.showQuickNotice(this, mBookData.getValidationExceptionMessage(getResources()));
+        if (!mBook.validate()) {
+            StandardDialogs.showQuickNotice(this, mBook.getValidationExceptionMessage(getResources()));
         }
     }
 
@@ -831,25 +830,25 @@ public class BookDetailsActivity extends BookCatalogueActivity
     private void saveState(@NonNull final PostSaveAction nextStep) {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
         if (frag instanceof DataEditor) {
-            ((DataEditor) frag).saveAllEdits(mBookData);
+            ((DataEditor) frag).saveAllEdits(mBook);
         }
 
         // Ignore validation failures; we still validate to get the current values.
         validate();
 
         // However, there is some data that we really do require...
-        if (mBookData.getAuthors().size() == 0) {
+        if (mBook.getAuthors().size() == 0) {
             StandardDialogs.showQuickNotice(this, R.string.author_required);
             return;
         }
-        if (!mBookData.containsKey(UniqueId.KEY_TITLE)
-                || mBookData.getString(UniqueId.KEY_TITLE).isEmpty()) {
+        if (!mBook.containsKey(UniqueId.KEY_TITLE)
+                || mBook.getString(UniqueId.KEY_TITLE).isEmpty()) {
             StandardDialogs.showQuickNotice(this, R.string.title_required);
             return;
         }
 
         if (mRowId == 0) {
-            String isbn = mBookData.getString(UniqueId.KEY_ISBN);
+            String isbn = mBook.getString(UniqueId.KEY_ISBN);
             /* Check if the book currently exists */
             if (!isbn.isEmpty() && ((mDb.getIdFromIsbn(isbn, true) > 0))) {
                 /*
@@ -892,7 +891,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
      */
     private void updateOrInsert() {
         if (mRowId == 0) {
-            long id = mDb.insertBook(mBookData);
+            long id = mDb.insertBook(mBook);
 
             if (id > 0) {
                 setRowId(id);
@@ -901,7 +900,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
                 StorageUtils.renameFile(thumb, real);
             }
         } else {
-            mDb.updateBook(mRowId, mBookData, 0);
+            mDb.updateBook(mRowId, mBook, 0);
         }
     }
 
@@ -941,7 +940,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
 
         public void success() {
             Intent intent = new Intent();
-            intent.putExtra(UniqueId.KEY_ID, mBookData.getBookId());
+            intent.putExtra(UniqueId.KEY_ID, mBook.getBookId());
             setResult(Activity.RESULT_OK, intent);
             finish();
         }

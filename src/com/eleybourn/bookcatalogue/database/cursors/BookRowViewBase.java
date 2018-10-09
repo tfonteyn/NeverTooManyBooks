@@ -1,20 +1,11 @@
-package com.eleybourn.bookcatalogue.entities;
+package com.eleybourn.bookcatalogue.database.cursors;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.booklist.BooklistRowView;
 import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
 /**
  * Convenience class to avoid having to write the same code in more than one place. This
@@ -125,9 +116,9 @@ public class BookRowViewBase {
     @NonNull
     public String getTitle() {
         if (mTitleCol < 0) {
-            mTitleCol = mCursor.getColumnIndex(DOM_TITLE.name);
+            mTitleCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_TITLE.name);
             if (mTitleCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_TITLE.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_TITLE.name);
             }
         }
         return mCursor.getString(mTitleCol);
@@ -142,9 +133,9 @@ public class BookRowViewBase {
      */
     public int getRead() {
         if (mReadCol < 0) {
-            mReadCol = mCursor.getColumnIndex(DOM_BOOK_READ.name);
+            mReadCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_READ.name);
             if (mReadCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_READ.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_READ.name);
             }
         }
         return (int) mCursor.getLong(mReadCol);
@@ -156,9 +147,9 @@ public class BookRowViewBase {
     @NonNull
     public String getPublisherName() {
         if (mPublisherCol < 0) {
-            mPublisherCol = mCursor.getColumnIndex(DOM_BOOK_PUBLISHER.name);
+            mPublisherCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PUBLISHER.name);
             if (mPublisherCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_PUBLISHER.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_PUBLISHER.name);
             }
         }
         return mCursor.getString(mPublisherCol);
@@ -170,9 +161,9 @@ public class BookRowViewBase {
     @NonNull
     public String getLanguage() {
         if (mLanguageCol < 0) {
-            mLanguageCol = mCursor.getColumnIndex(DOM_BOOK_LANGUAGE.name);
+            mLanguageCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LANGUAGE.name);
             if (mLanguageCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_LANGUAGE.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_LANGUAGE.name);
             }
         }
         return mCursor.getString(mLanguageCol);
@@ -184,9 +175,9 @@ public class BookRowViewBase {
     @NonNull
     public String getFormat() {
         if (mFormatCol < 0) {
-            mFormatCol = mCursor.getColumnIndex(DOM_BOOK_FORMAT.name);
+            mFormatCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_FORMAT.name);
             if (mFormatCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_FORMAT.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_FORMAT.name);
             }
         }
         return mCursor.getString(mFormatCol);
@@ -198,9 +189,9 @@ public class BookRowViewBase {
     @NonNull
     public String getGenre() {
         if (mGenreCol < 0) {
-            mGenreCol = mCursor.getColumnIndex(DOM_BOOK_GENRE.name);
+            mGenreCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GENRE.name);
             if (mGenreCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_GENRE.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_GENRE.name);
             }
         }
         return mCursor.getString(mGenreCol);
@@ -212,9 +203,9 @@ public class BookRowViewBase {
     @NonNull
     public String getLocation() {
         if (mLocationCol < 0) {
-            mLocationCol = mCursor.getColumnIndex(DOM_BOOK_LOCATION.name);
+            mLocationCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LOCATION.name);
             if (mLocationCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DOM_BOOK_LOCATION.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_LOCATION.name);
             }
         }
         return mCursor.getString(mLocationCol);

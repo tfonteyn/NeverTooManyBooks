@@ -23,8 +23,8 @@ public class SearchGoogleBooksThread extends SearchThread {
         try {
             doProgress(getString(R.string.searching_google_books), 0);
             try {
-                GoogleBooksManager.search(mIsbn, mAuthor, mTitle, mBook, mFetchThumbnail);
-                if (mBook.size() > 0) {
+                GoogleBooksManager.search(mIsbn, mAuthor, mTitle, mBookData, mFetchThumbnail);
+                if (mBookData.size() > 0) {
                     // Look for series name and clear KEY_TITLE
                     checkForSeriesName();
                 }

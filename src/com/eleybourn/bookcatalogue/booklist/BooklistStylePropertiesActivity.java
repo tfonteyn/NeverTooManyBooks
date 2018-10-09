@@ -75,15 +75,13 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Button save = findViewById(R.id.confirm);
-        save.setOnClickListener(new OnClickListener() {
+        findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 handleSave();
             }
         });
-        Button cancel = findViewById(R.id.cancel);
-        cancel.setOnClickListener(new OnClickListener() {
+        findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
@@ -105,7 +103,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
         String title;
         if (mStyle.getDisplayName().isEmpty()) {
             title = getString(R.string.new_style);
-        } else if (mStyle.getRowId() == 0) {
+        } else if (mStyle.id == 0) {
             title = getString(R.string.clone_style_colon_name, mStyle.getDisplayName());
         } else {
             title = getString(R.string.edit_style_colon_name, mStyle.getDisplayName());
@@ -153,7 +151,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
         }
 
         if (mSaveToDb) {
-            mStyle.insertOrUpdateBooklistStyle(getDb());
+            getDb().insertOrUpdateBooklistStyle(mStyle);
         }
         Intent intent = new Intent();
         intent.putExtra(BKEY_STYLE, mStyle);

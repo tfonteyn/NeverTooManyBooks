@@ -60,12 +60,15 @@ import java.util.Iterator;
  *
  * How to add a new Group:
  *
- * - add it to {@link BooklistGroup.RowKinds} Update {@link BooklistGroup.RowKinds#ROW_KIND_MAX}
- * - add new domain to {@link DatabaseDefinitions } (if necessary)
- * - modify {@link BooklistBuilder#build} to add the necessary grouped/sorted domains
- * - modify {@link BooksMultiTypeListHandler}; if it is just a string field,
- * then use a {@link BooksMultiTypeListHandler.GenericStringHolder}.
- * Otherwise add a new holder.
+ * 1. add it to {@link BooklistGroup.RowKinds} and update {@link BooklistGroup.RowKinds#ROW_KIND_MAX}
+ *
+ * 2. if necessary add new domain to {@link DatabaseDefinitions }
+ *
+ * 3. modify {@link BooklistBuilder#build} to add the necessary grouped/sorted domains
+ *
+ * 4. modify {@link BooksMultiTypeListHandler} ; If it is just a string field,
+ * then use a {@link BooksMultiTypeListHandler.GenericStringHolder}, otherwise add a new holder.
+ *
  *
  * Need to at least modify {@link BooksMultiTypeListHandler#newHolder}
  *
@@ -92,9 +95,9 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     public static final int EXTRAS_ALL = EXTRAS_BOOKSHELVES | EXTRAS_LOCATION | EXTRAS_PUBLISHER
             | EXTRAS_AUTHOR | EXTRAS_THUMBNAIL | EXTRAS_THUMBNAIL_LARGE | EXTRAS_FORMAT;
 
-    public static final int FILTER_YES = 1;
-    public static final int FILTER_NO = 2;
-    public static final int FILTER_EITHER = 3;
+    static final int FILTER_YES = 1;
+    static final int FILTER_NO = 2;
+    private static final int FILTER_EITHER = 3;
 
     public static final Integer SUMMARY_HIDE = 0;
     public static final Integer SUMMARY_SHOW_COUNT = 1;
@@ -201,8 +204,8 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /** User-defined name of this style. */
     private transient StringProperty mNameProperty;
 
-    /** Row id of database row from which this object comes */
-    private long mRowId = 0;
+    /** Row id of database row from which this object comes, always 0 for a build-in style */
+    public long id = 0;
 
     /** Extra details to show on book rows */
     private transient BooleanProperty mXtraShowThumbnails;
@@ -318,7 +321,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     @NonNull
     public String getCanonicalName() {
         if (isUserDefined())
-            return getRowId() + "-u";
+            return id + "-u";
         else {
             String name = getDisplayName().toLowerCase();
             return name + "-s";
@@ -379,7 +382,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      * @return <tt>true</tt>if this style is user-defined.
      */
     public boolean isUserDefined() {
-        return (mNameStringId == 0 || mRowId != 0);
+        return (mNameStringId == 0 || id != 0);
     }
 
     private void initProperties() {
@@ -573,18 +576,19 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         return mGroups.size();
     }
 
-    /**
-     * Accessor for underlying database row id, if this object is from a database. 0 if not from database.
-     */
-    public long getRowId() {
-        return mRowId;
+    void setCondensed(final boolean condensed) {
+        mCondensed.set(condensed);
+    }
+    void setShowAuthor(final boolean show) {
+        mXtraShowAuthor.set(show);
     }
 
-    /**
-     * Accessor for underlying database row id, set by query that retrieves the object.
-     */
-    public void setRowId(final long rowId) {
-        mRowId = rowId;
+    void setShowThumbnails(final boolean show) {
+        mXtraShowThumbnails.set(show);
+    }
+
+    public int getShowHeaderInfo() {
+        return mShowHeaderInfo.getInt();
     }
 
     /**
@@ -678,49 +682,21 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         return mCondensed.isTrue();
     }
 
-    public void setCondensed(final boolean condensed) {
-        mCondensed.set(condensed);
-    }
-
-    public void setShowThumbnails(final boolean show) {
-        mXtraShowThumbnails.set(show);
-    }
-
-
-
-    public int getShowHeaderInfo() {
-        return mShowHeaderInfo.getInt();
-    }
-
-    /**
-     * Save this style as a custom user style to the database.
-     * Either updates or creates as necessary
-     *
-     * FIXME: ignoring failure
-     */
-    public void insertOrUpdateBooklistStyle(@NonNull final CatalogueDBAdapter db) {
-        if (getRowId() == 0) {
-            mRowId = db.insertBooklistStyle(this);
-        } else {
-            db.updateBooklistStyle(this);
-        }
-    }
-
     /**
      * Delete this style from the database
      */
     public void delete(@NonNull final CatalogueDBAdapter db) {
-        if (getRowId() == 0) {
+        if (id == 0) {
             throw new IllegalArgumentException("Style is not stored in the database, can not be deleted");
         }
-        db.deleteBooklistStyle(this.getRowId());
+        db.deleteBooklistStyle(id);
     }
 
     /**
      * Convenience function to return a list of group names.
      */
     @NonNull
-    public String getGroupListDisplayNames() {
+    String getGroupListDisplayNames() {
         StringBuilder groups = new StringBuilder();
         boolean first = true;
         for (BooklistGroup g : this) {
@@ -739,14 +715,9 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      */
     @NonNull
     public BooklistStyle getClone() throws DeserializationException {
-        return SerializationUtils.cloneObject(this);
-    }
-
-    /**
-     * Accessor to allow setting of Extras value directly.
-     */
-    public void setShowAuthor(final boolean show) {
-        mXtraShowAuthor.set(show);
+        BooklistStyle clone = SerializationUtils.cloneObject(this);
+        clone.id = 0;
+        return clone;
     }
 
     /**
@@ -754,7 +725,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      *
      * @author Philip Warner
      */
-    public static class CompoundKey {
+    static class CompoundKey {
         /** Unique prefix used to represent a key in the hierarchy */
         final String prefix;
         /** List of domains in key */

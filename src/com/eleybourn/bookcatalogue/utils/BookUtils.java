@@ -30,14 +30,14 @@ import android.support.v4.content.FileProvider;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookDetailsActivity;
-import com.eleybourn.bookcatalogue.entities.BookRowView;
+import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.entities.BookData;
 
 import java.io.File;
 
@@ -61,36 +61,36 @@ public class BookUtils {
                                      @NonNull final CatalogueDBAdapter db,
                                      final long bookId) {
         Intent intent = new Intent(activity, BookDetailsActivity.class);
-        final Bundle book = new Bundle();
+        final Bundle mBookData = new Bundle();
         try (BooksCursor cursor = db.fetchBookById(bookId)) {
             BookRowView bookRowView = cursor.getRowView();
 
             cursor.moveToFirst();
 
-            book.putLong(UniqueId.KEY_ANTHOLOGY_MASK, bookRowView.getAnthologyMask());
-            book.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, bookRowView.getDatePublished());
-            book.putString(UniqueId.KEY_DESCRIPTION, bookRowView.getDescription());
-            book.putString(UniqueId.KEY_BOOK_FORMAT, bookRowView.getFormat());
-            book.putString(UniqueId.KEY_BOOK_GENRE, bookRowView.getGenre());
-            book.putString(UniqueId.KEY_ISBN, bookRowView.getIsbn());
-            book.putString(UniqueId.KEY_BOOK_LIST_PRICE, bookRowView.getListPrice());
-            book.putString(UniqueId.KEY_BOOK_LANGUAGE, bookRowView.getLanguage());
-            book.putString(UniqueId.KEY_BOOK_LOCATION, bookRowView.getLocation());
-            book.putString(UniqueId.KEY_NOTES, bookRowView.getNotes());
-            book.putString(UniqueId.KEY_BOOK_PAGES, bookRowView.getPages());
-            book.putString(UniqueId.KEY_BOOK_PUBLISHER, bookRowView.getPublisherName());
-            book.putDouble(UniqueId.KEY_BOOK_RATING, bookRowView.getRating());
-            book.putInt(UniqueId.KEY_BOOK_READ, bookRowView.getRead());
-            book.putString(UniqueId.KEY_BOOK_READ_END, bookRowView.getReadEnd());
-            book.putString(UniqueId.KEY_BOOK_READ_START, bookRowView.getReadStart());
-            book.putInt(UniqueId.KEY_BOOK_SIGNED, bookRowView.getSigned());
-            book.putString(UniqueId.KEY_TITLE, bookRowView.getTitle());
+            mBookData.putLong(UniqueId.KEY_ANTHOLOGY_MASK, bookRowView.getAnthologyMask());
+            mBookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, bookRowView.getDatePublished());
+            mBookData.putString(UniqueId.KEY_DESCRIPTION, bookRowView.getDescription());
+            mBookData.putString(UniqueId.KEY_BOOK_FORMAT, bookRowView.getFormat());
+            mBookData.putString(UniqueId.KEY_BOOK_GENRE, bookRowView.getGenre());
+            mBookData.putString(UniqueId.KEY_ISBN, bookRowView.getIsbn());
+            mBookData.putString(UniqueId.KEY_BOOK_LIST_PRICE, bookRowView.getListPrice());
+            mBookData.putString(UniqueId.KEY_BOOK_LANGUAGE, bookRowView.getLanguage());
+            mBookData.putString(UniqueId.KEY_BOOK_LOCATION, bookRowView.getLocation());
+            mBookData.putString(UniqueId.KEY_NOTES, bookRowView.getNotes());
+            mBookData.putString(UniqueId.KEY_BOOK_PAGES, bookRowView.getPages());
+            mBookData.putString(UniqueId.KEY_BOOK_PUBLISHER, bookRowView.getPublisherName());
+            mBookData.putDouble(UniqueId.KEY_BOOK_RATING, bookRowView.getRating());
+            mBookData.putInt(UniqueId.KEY_BOOK_READ, bookRowView.getRead());
+            mBookData.putString(UniqueId.KEY_BOOK_READ_END, bookRowView.getReadEnd());
+            mBookData.putString(UniqueId.KEY_BOOK_READ_START, bookRowView.getReadStart());
+            mBookData.putInt(UniqueId.KEY_BOOK_SIGNED, bookRowView.getSigned());
+            mBookData.putString(UniqueId.KEY_TITLE, bookRowView.getTitle());
 
-            book.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, db.getBookAuthorList(bookId));
-            book.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(bookId));
-            book.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, db.getBookAnthologyTitleList(bookId));
+            mBookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, db.getBookAuthorList(bookId));
+            mBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(bookId));
+            mBookData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, db.getBookAnthologyTitleList(bookId));
 
-            intent.putExtra(UniqueId.BKEY_BOOK_DATA, book);
+            intent.putExtra(UniqueId.BKEY_BOOK_DATA, mBookData);
 
             activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY);
         } catch (CursorIndexOutOfBoundsException e) {
@@ -188,26 +188,26 @@ public class BookUtils {
 
     /**
      * Update the 'read' status of a book in the database + sets the 'read end' to today
-     * The bookData will have its 'read' status updated ONLY if the update went through.
+     * The book will have its 'read' status updated ONLY if the update went through.
      *
      * @param db       database
-     * @param bookData to update
+     * @param book to update
      *
      * @return <tt>true</tt> if the update was successful, false on failure
      */
     @SuppressWarnings("UnusedReturnValue")
     public static boolean setRead(@NonNull final CatalogueDBAdapter db,
-                                  @NonNull final BookData bookData,
+                                  @NonNull final Book book,
                                   final boolean read) {
-        int prevRead = bookData.getInt(UniqueId.KEY_BOOK_READ);
-        String prevReadEnd = bookData.getString(UniqueId.KEY_BOOK_READ_END);
+        int prevRead = book.getInt(UniqueId.KEY_BOOK_READ);
+        String prevReadEnd = book.getString(UniqueId.KEY_BOOK_READ_END);
 
-        bookData.putInt(UniqueId.KEY_BOOK_READ, read ? 1 : 0);
-        bookData.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
+        book.putInt(UniqueId.KEY_BOOK_READ, read ? 1 : 0);
+        book.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
 
-        if (db.updateBook(bookData.getBookId(), bookData, 0) != 1) {
-            bookData.putInt(UniqueId.KEY_BOOK_READ, prevRead);
-            bookData.putString(UniqueId.KEY_BOOK_READ_END, prevReadEnd);
+        if (db.updateBook(book.getBookId(), book, 0) != 1) {
+            book.putInt(UniqueId.KEY_BOOK_READ, prevRead);
+            book.putString(UniqueId.KEY_BOOK_READ_END, prevReadEnd);
             return false;
         }
         return true;
@@ -217,10 +217,10 @@ public class BookUtils {
     public static boolean setRead(@NonNull final CatalogueDBAdapter db,
                                   final long bookId,
                                   final boolean read) {
-        BookData bookData = new BookData(bookId);
-        bookData.putBoolean(UniqueId.KEY_BOOK_READ, read);
-        bookData.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
-        return (db.updateBook(bookId, bookData, 0) == 1);
+        Book book = new Book(bookId);
+        book.putBoolean(UniqueId.KEY_BOOK_READ, read);
+        book.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
+        return (db.updateBook(bookId, book, 0) == 1);
     }
 
     @SuppressWarnings("UnusedReturnValue")

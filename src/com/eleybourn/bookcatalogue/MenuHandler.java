@@ -135,7 +135,7 @@ public class MenuHandler {
     /**
      * Load the Search by ISBN Activity
      */
-    private void createBookISBN(@NonNull final Activity activity, String by) {
+    private void createBookISBN(@NonNull final Activity activity, @NonNull final String by) {
         Intent intent = new Intent(activity, BookISBNSearchActivity.class);
         intent.putExtra(BookISBNSearchActivity.BKEY_BY, by);
         activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_ISBN);

@@ -26,8 +26,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.entities.BookData;
-import com.eleybourn.bookcatalogue.entities.BookRowView;
+import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
@@ -322,9 +322,9 @@ class ImportAllTask extends GenericTask {
         }
         // We build a new book bundle each time since it will build on the existing
         // data for the given book, not just replace it.
-        BookData bookData = buildBundle(db, bookRowView, review);
+        Book book = buildBundle(db, bookRowView, review);
 
-        db.updateBook(bookRowView.getId(), bookData, CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES | CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+        db.updateBook(bookRowView.getId(), book, CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES | CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
         //db.setGoodreadsSyncDate(rv.getId());
     }
 
@@ -332,10 +332,10 @@ class ImportAllTask extends GenericTask {
      * Create a new book
      */
     private void insertBook(@NonNull final CatalogueDBAdapter db, @NonNull final Bundle review) {
-        BookData bookData = buildBundle(db, null, review);
-        long id = db.insertBook(bookData);
+        Book book = buildBundle(db, null, review);
+        long id = db.insertBook(book);
         if (id > 0) {
-            if (bookData.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
+            if (book.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
                 String uuid = db.getBookUuid(id);
                 File thumb = StorageUtils.getTempCoverFile();
                 File real = StorageUtils.getCoverFile(uuid);
@@ -349,28 +349,28 @@ class ImportAllTask extends GenericTask {
      * Build a book bundle based on the goodreads 'review' data. Some data is just copied
      * while other data is processed (eg. dates) and other are combined (authors & series).
      */
-    private BookData buildBundle(@NonNull final CatalogueDBAdapter db, @Nullable final BookRowView bookRowView, @NonNull final Bundle review) {
-        BookData bookData = new BookData();
+    private Book buildBundle(@NonNull final CatalogueDBAdapter db, @Nullable final BookRowView bookRowView, @NonNull final Bundle review) {
+        Book book = new Book();
 
-        addStringIfNonBlank(review, ListReviewsFieldNames.DB_TITLE, bookData, ListReviewsFieldNames.DB_TITLE);
-        addStringIfNonBlank(review, ListReviewsFieldNames.DB_DESCRIPTION, bookData, ListReviewsFieldNames.DB_DESCRIPTION);
-        addStringIfNonBlank(review, ListReviewsFieldNames.DB_FORMAT, bookData, ListReviewsFieldNames.DB_FORMAT);
-        addStringIfNonBlank(review, ListReviewsFieldNames.DB_PUBLISHER, bookData, ListReviewsFieldNames.DB_PUBLISHER);
-        addStringIfNonBlank(review, ListReviewsFieldNames.DB_TITLE, bookData, ListReviewsFieldNames.DB_TITLE);
+        addStringIfNonBlank(review, ListReviewsFieldNames.DB_TITLE, book, ListReviewsFieldNames.DB_TITLE);
+        addStringIfNonBlank(review, ListReviewsFieldNames.DB_DESCRIPTION, book, ListReviewsFieldNames.DB_DESCRIPTION);
+        addStringIfNonBlank(review, ListReviewsFieldNames.DB_FORMAT, book, ListReviewsFieldNames.DB_FORMAT);
+        addStringIfNonBlank(review, ListReviewsFieldNames.DB_PUBLISHER, book, ListReviewsFieldNames.DB_PUBLISHER);
+        addStringIfNonBlank(review, ListReviewsFieldNames.DB_TITLE, book, ListReviewsFieldNames.DB_TITLE);
 
         // Do not sync Notes<->Review. We will add a 'Review' field later.
         //addStringIfNonBlank(review, ListReviewsFieldNames.DB_NOTES, book, ListReviewsFieldNames.DB_NOTES);
 
-        addLongIfPresent(review, ListReviewsFieldNames.GR_BOOK_ID, bookData, DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
-        addLongIfPresent(review, ListReviewsFieldNames.DB_PAGES, bookData, ListReviewsFieldNames.DB_PAGES);
-        addDateIfValid(review, ListReviewsFieldNames.DB_READ_START, bookData, ListReviewsFieldNames.DB_READ_START);
+        addLongIfPresent(review, ListReviewsFieldNames.GR_BOOK_ID, book, DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
+        addLongIfPresent(review, ListReviewsFieldNames.DB_PAGES, book, ListReviewsFieldNames.DB_PAGES);
+        addDateIfValid(review, ListReviewsFieldNames.DB_READ_START, book, ListReviewsFieldNames.DB_READ_START);
 
-        Double rating = addDoubleIfPresent(review, ListReviewsFieldNames.DB_RATING, bookData, ListReviewsFieldNames.DB_RATING);
-        String readEnd = addDateIfValid(review, ListReviewsFieldNames.DB_READ_END, bookData, ListReviewsFieldNames.DB_READ_END);
+        Double rating = addDoubleIfPresent(review, ListReviewsFieldNames.DB_RATING, book, ListReviewsFieldNames.DB_RATING);
+        String readEnd = addDateIfValid(review, ListReviewsFieldNames.DB_READ_END, book, ListReviewsFieldNames.DB_READ_END);
         // If it has a rating or a 'read_end' date, assume it's read. If these are missing then
         // DO NOT overwrite existing data since it *may* be read even without these fields.
         if ((rating != null && rating > 0) || (readEnd != null && !readEnd.isEmpty())) {
-            bookData.putBoolean(UniqueId.KEY_BOOK_READ, true);
+            book.putBoolean(UniqueId.KEY_BOOK_READ, true);
         }
 
         // Find the best (longest) isbn.
@@ -386,7 +386,7 @@ class ImportAllTask extends GenericTask {
             }
 
             if (bestLen > 0) {
-                bookData.putString(UniqueId.KEY_ISBN, best);
+                book.putString(UniqueId.KEY_ISBN, best);
             }
         }
 
@@ -395,13 +395,13 @@ class ImportAllTask extends GenericTask {
                 ListReviewsFieldNames.PUB_YEAR, ListReviewsFieldNames.PUB_MONTH, ListReviewsFieldNames.PUB_DAY,
                 null);
         if (pubDate != null && !pubDate.isEmpty()) {
-            bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, pubDate);
+            book.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, pubDate);
         }
 
         ArrayList<Bundle> grAuthors = review.getParcelableArrayList(ListReviewsFieldNames.AUTHORS);
         if (grAuthors == null) {
             Logger.logError(new RuntimeException("grAuthors was null"));
-            return bookData;
+            return book;
         }
 
         ArrayList<Author> authors;
@@ -419,11 +419,11 @@ class ImportAllTask extends GenericTask {
                 authors.add(new Author(name));
             }
         }
-        bookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, authors);
+        book.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, authors);
 
         if (bookRowView == null) {
             // Use the GR added date for new books
-            addStringIfNonBlank(review, ListReviewsFieldNames.ADDED, bookData, DatabaseDefinitions.DOM_BOOK_DATE_ADDED.name);
+            addStringIfNonBlank(review, ListReviewsFieldNames.ADDED, book, DatabaseDefinitions.DOM_BOOK_DATE_ADDED.name);
             // Also fetch thumbnail if add
             String thumbnail;
             if (review.containsKey(ListReviewsFieldNames.LARGE_IMAGE)
@@ -438,17 +438,17 @@ class ImportAllTask extends GenericTask {
             if (thumbnail != null) {
                 String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, GoodreadsUtils.GOODREADS_FILENAME_SUFFIX);
                 if (!fileSpec.isEmpty()) {
-                    bookData.appendOrAdd(UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
+                    book.appendOrAdd(UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
                 }
-                bookData.cleanupThumbnails();
+                book.cleanupThumbnails();
             }
         }
 
         /*
          * Cleanup the title by removing series name, if present
          */
-        if (bookData.containsKey(UniqueId.KEY_TITLE)) {
-            String thisTitle = bookData.getString(UniqueId.KEY_TITLE);
+        if (book.containsKey(UniqueId.KEY_TITLE)) {
+            String thisTitle = book.getString(UniqueId.KEY_TITLE);
             Series.SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
             if (details != null && !details.name.isEmpty()) {
                 ArrayList<Series> allSeries;
@@ -459,10 +459,10 @@ class ImportAllTask extends GenericTask {
                 }
 
                 allSeries.add(new Series(details.name, details.position));
-                bookData.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
+                book.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
 
                 Series.pruneSeriesList(allSeries);
-                bookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, allSeries);
+                book.putSerializable(UniqueId.BKEY_SERIES_ARRAY, allSeries);
             }
         }
 
@@ -471,7 +471,7 @@ class ImportAllTask extends GenericTask {
             ArrayList<Bundle> shelves = review.getParcelableArrayList(ListReviewsFieldNames.SHELVES);
             if (shelves == null) {
                 Logger.logError(new RuntimeException("shelves was null"));
-                return bookData;
+                return book;
             }
             StringBuilder shelfNames = null;
             for (Bundle sb : shelves) {
@@ -486,17 +486,17 @@ class ImportAllTask extends GenericTask {
                 }
             }
             if (shelfNames != null && shelfNames.length() > 0) {
-                bookData.setBookshelfList(shelfNames.toString());
+                book.setBookshelfList(shelfNames.toString());
             }
         }
 
         // We need to set BOTH of these fields, otherwise the add/update method will set the
         // last_update_date for us, and that will most likely be set ahead of the GR update date
         Date now = new Date();
-        bookData.putString(UniqueId.KEY_GOODREADS_LAST_SYNC_DATE, DateUtils.toSqlDateTime(now));
-        bookData.putString(UniqueId.KEY_LAST_UPDATE_DATE, DateUtils.toSqlDateTime(now));
+        book.putString(UniqueId.KEY_GOODREADS_LAST_SYNC_DATE, DateUtils.toSqlDateTime(now));
+        book.putString(UniqueId.KEY_LAST_UPDATE_DATE, DateUtils.toSqlDateTime(now));
 
-        return bookData;
+        return book;
     }
 
     /**
@@ -509,7 +509,7 @@ class ImportAllTask extends GenericTask {
     @Nullable
     private String addDateIfValid(@NonNull final Bundle source,
                                   @NonNull final String sourceField,
-                                  @NonNull final BookData dest,
+                                  @NonNull final Book dest,
                                   @NonNull final String destField) {
         if (!source.containsKey(sourceField)) {
             return null;
@@ -535,7 +535,7 @@ class ImportAllTask extends GenericTask {
      */
     private void addStringIfNonBlank(@NonNull final Bundle source,
                                      @NonNull final String sourceField,
-                                     @NonNull final BookData dest,
+                                     @NonNull final Book dest,
                                      @NonNull final String destField) {
         if (source.containsKey(sourceField)) {
             String val = source.getString(sourceField);
@@ -550,7 +550,7 @@ class ImportAllTask extends GenericTask {
      */
     private void addLongIfPresent(@NonNull final Bundle source,
                                   @NonNull final String sourceField,
-                                  @NonNull final BookData dest,
+                                  @NonNull final Book dest,
                                   @NonNull final String destField) {
         if (source.containsKey(sourceField)) {
             long val = source.getLong(sourceField);
@@ -564,7 +564,7 @@ class ImportAllTask extends GenericTask {
     @Nullable
     private Double addDoubleIfPresent(@NonNull final Bundle source,
                                       @SuppressWarnings("SameParameterValue") @NonNull final String sourceField,
-                                      @NonNull final BookData dest,
+                                      @NonNull final Book dest,
                                       @SuppressWarnings("SameParameterValue") @NonNull final String destField) {
         if (source.containsKey(sourceField)) {
             double val = source.getDouble(sourceField);

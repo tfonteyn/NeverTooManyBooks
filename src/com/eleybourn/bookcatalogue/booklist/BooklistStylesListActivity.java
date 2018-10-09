@@ -202,10 +202,8 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
         mEditedRow = position;
 
         if (!style.isUserDefined() || alwaysClone) {
-
             try {
                 style = style.getClone();
-                style.setRowId(0);
                 style.setName(style.getDisplayName());
             } catch (SerializationUtils.DeserializationException e) {
                 Logger.logError(e);
@@ -258,7 +256,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
                 BooklistStyles.saveMenuOrder(mList);
             } else {
                 BooklistStyle origStyle = mList.get(mEditedRow);
-                if (origStyle.getRowId() != result.getRowId()) {
+                if (origStyle.id != result.id) {
                     if (!origStyle.isUserDefined()) {
                         // Working on a clone of a builtin style
                         if (origStyle.isPreferred()) {

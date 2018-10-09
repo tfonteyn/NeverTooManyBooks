@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.database.definitions;
 
+import android.support.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.database.DbSync;
 
 /**
@@ -25,7 +27,10 @@ public class IndexDefinition {
      * @param table   Table to which index applies
      * @param domains Domains in index
      */
-    IndexDefinition(String name, boolean unique, TableDefinition table, DomainDefinition... domains) {
+    IndexDefinition(@NonNull final String name,
+                    final boolean unique,
+                    @NonNull final TableDefinition table,
+                    @NonNull final DomainDefinition... domains) {
         this.mName = name;
         this.mIsUnique = unique;
         this.mTable = table;
@@ -42,6 +47,7 @@ public class IndexDefinition {
     /**
      * @return list of domains in index.
      */
+    @NonNull
     public DomainDefinition[] getDomains() {
         return mDomains;
     }
@@ -53,7 +59,8 @@ public class IndexDefinition {
      *
      * @return IndexDefinition (for chaining)
      */
-    public IndexDefinition drop(DbSync.SynchronizedDb db) {
+    @NonNull
+    public IndexDefinition drop(@NonNull final DbSync.SynchronizedDb db) {
         db.execSQL("DROP INDEX If Exists " + mName);
         return this;
     }
@@ -65,7 +72,8 @@ public class IndexDefinition {
      *
      * @return IndexDefinition (for chaining)
      */
-    public IndexDefinition create(DbSync.SynchronizedDb db) {
+    @NonNull
+    public IndexDefinition create(@NonNull final DbSync.SynchronizedDb db) {
         db.execSQL(this.getSql());
         return this;
     }
@@ -75,10 +83,12 @@ public class IndexDefinition {
      *
      * @return SQL Fragment
      */
+    @NonNull
     public String getSql() {
         StringBuilder sql = new StringBuilder("CREATE ");
-        if (mIsUnique)
+        if (mIsUnique) {
             sql.append(" UNIQUE");
+        }
         sql.append(" INDEX ");
         sql.append(mName);
         sql.append(" ON ").append(mTable.getName()).append("(\n");

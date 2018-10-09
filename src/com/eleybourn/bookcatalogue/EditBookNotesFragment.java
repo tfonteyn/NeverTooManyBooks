@@ -39,7 +39,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment.OnPartialDatePickerListener;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.entities.BookData;
+import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import java.util.Date;
@@ -214,16 +214,16 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
     @Override
     public void onPause() {
         Tracker.enterOnPause(this);
-        BookData bookData = mEditManager.getBookData();
-        mFields.getAll(bookData);
+        Book book = mEditManager.getBook();
+        mFields.getAll(book);
         super.onPause();
         Tracker.exitOnPause(this);
     }
 
     @Override
-    protected void onLoadBookDetails(@NonNull final BookData bookData, final boolean setAllDone) {
+    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
         if (!setAllDone)
-            mFields.setAll(bookData);
+            mFields.setAll(book);
         // No special handling required; the setAll() done by the caller is enough
         // Restore default visibility and hide unused/unwanted and empty fields
         showHideFields(false);

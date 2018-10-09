@@ -58,7 +58,7 @@ public class SearchGoodreadsThread extends SearchThread {
         GoodreadsManager grMgr = new GoodreadsManager();
         try {
             if (!mIsbn.isEmpty()) {
-                mBook = grMgr.getBookByIsbn(mIsbn);
+                mBookData = grMgr.getBookByIsbn(mIsbn);
             } else {
                 // if both empty, no search
                 if (mAuthor.isEmpty() && mTitle.isEmpty()) {
@@ -67,7 +67,7 @@ public class SearchGoodreadsThread extends SearchThread {
                 List<GoodreadsWork> list = grMgr.search(mAuthor + " " + mTitle);
                 if (list.size() > 0) {
                     GoodreadsWork w = list.get(0);
-                    mBook = grMgr.getBookById(w.bookId);
+                    mBookData = grMgr.getBookById(w.bookId);
                 }
             }
         } catch (BookNotFoundException ignore) {

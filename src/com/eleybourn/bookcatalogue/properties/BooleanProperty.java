@@ -118,9 +118,9 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
             holder.cb.setChecked(value);
             holder.name.setText(this.getNameResourceId());
             if (value) {
-                holder.value.setText(R.string.yes);
+                holder.value.setText(android.R.string.yes);
             } else {
-                holder.value.setText(R.string.no);
+                holder.value.setText(android.R.string.no);
             }
             holder.cb.setPressed(false);
         } else {

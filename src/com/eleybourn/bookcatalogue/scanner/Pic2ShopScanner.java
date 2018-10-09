@@ -1,15 +1,22 @@
 package com.eleybourn.bookcatalogue.scanner;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.debug.Logger;
+
+import java.util.Arrays;
 
 /**
  * Based on the pic2shop client code at github, this object will start pic2shop and extract the data
  * from the resulting intent when the activity completes.
+ *
+ * https://github.com/VisionSmarts/pic2shop-client
  *
  * It also has a static method to check if the intent is present.
  *
@@ -24,8 +31,9 @@ public class Pic2ShopScanner implements Scanner {
      * If the user exits pic2shop by pressing Back before a barcode is read, the
      * result code will be Activity.RESULT_CANCELED in onActivityResult().
      */
-    private static final String BARCODE_FORMAT = "EAN13";
-    private static final String FORMATS = "formats";
+
+    // response Intent
+    private static final String BARCODE = "BARCODE";
 
     /**
      * Check if we have a valid intent available.
@@ -61,10 +69,9 @@ public class Pic2ShopScanner implements Scanner {
         Intent intent;
         if (isFreeScannerAppInstalled(activity)) {
             intent = new Intent(Free.ACTION);
-            //i.putExtra(FORMATS, BARCODE_FORMAT);
         } else {
             intent = new Intent(Pro.ACTION);
-            //intent.putExtra(FORMATS, BARCODE_FORMAT);
+            intent.putExtra(Pro.FORMATS, Pro.BARCODE_TYPES);
         }
         activity.startActivityForResult(intent, requestCode);
     }
@@ -74,19 +81,51 @@ public class Pic2ShopScanner implements Scanner {
      */
     @Override
     public String getBarcode(@NonNull final Intent intent) {
-        String barcode = intent.getStringExtra("BARCODE");
-        String barcodeFormat = intent.getStringExtra("format");
-        if (barcodeFormat != null && !barcodeFormat.equalsIgnoreCase(BARCODE_FORMAT)) {
+        String barcode = intent.getStringExtra(BARCODE);
+        // only for Pro:
+        String barcodeFormat = intent.getStringExtra(Pro.FORMAT);
+        if (barcodeFormat != null && !Arrays.asList(Pro.BARCODE_TYPES).contains(barcodeFormat)) {
             throw new RuntimeException("Unexpected format for barcode: " + barcodeFormat);
         }
+
         return barcode;
     }
 
     public interface Free {
-        String ACTION = "com.visionsmarts.pic2shop.SCAN";
+        String PACKAGE = "com.visionsmarts.pic2shop";
+        String ACTION = PACKAGE + ".SCAN";
     }
 
+    /**
+     * just for reference: https://en.wikipedia.org/wiki/Barcode#Types_of_barcodes
+     * The Pro package does not implement all those.
+     * BARCODE_TYPES below was taken from the example code at github.
+     */
     public interface Pro {
-        String ACTION = "com.visionsmarts.pic2shoppro.SCAN";
+        String PACKAGE = "com.visionsmarts.pic2shoppro";
+        String ACTION = PACKAGE + ".SCAN";
+        // request Intent
+       //String[] ALL_BARCODE_TYPES = {"EAN13","EAN8","UPCE","ITF","CODE39","CODE128","CODABAR","QR"};
+       String[] BARCODE_TYPES = {"EAN13","UPCE"};
+       String FORMATS = "formats";
+        // response Intent
+        String FORMAT = "format";
     }
+
+//    public static void launchMarketToInstallFreeScannerApp(@NonNull final Context context) {
+//        launchMarketToInstallApp(context, Free.PACKAGE);
+//    }
+//
+//    public static void launchMarketToInstallProScannerApp(@NonNull final Context context) {
+//        launchMarketToInstallApp(context, Pro.PACKAGE);
+//    }
+
+//    private static void launchMarketToInstallApp(@NonNull final Context context, @NonNull final String packageName) {
+//        try {
+//            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName));
+//            context.startActivity(intent);
+//        } catch (ActivityNotFoundException e) {
+//            Logger.logError(e, "Android Market aka Google Play not installed.");
+//        }
+//    }
 }

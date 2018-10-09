@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -49,7 +48,7 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.entities.BookData;
+import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.searches.isfdb.HandlesISFDB;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 
@@ -115,17 +114,17 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
      */
     private void loadPage() {
 
-        final BookData bookData = mEditManager.getBookData();
-        mBookAuthor = bookData.getString(UniqueId.KEY_AUTHOR_FORMATTED);
-        mIsbn = bookData.getString(UniqueId.KEY_ISBN);
+        final Book book = mEditManager.getBook();
+        mBookAuthor = book.getString(UniqueId.KEY_AUTHOR_FORMATTED);
+        mIsbn = book.getString(UniqueId.KEY_ISBN);
 
         // Setup the same author field
         mSame = getView().findViewById(R.id.same_author);
-        mSame.setChecked(((bookData.getInt(UniqueId.KEY_ANTHOLOGY_MASK) & DatabaseDefinitions.DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS)
+        mSame.setChecked(((book.getInt(UniqueId.KEY_ANTHOLOGY_MASK) & DatabaseDefinitions.DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS)
                 == DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY));
         mSame.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                saveState(mEditManager.getBookData());
+                saveState(mEditManager.getBook());
                 loadPage();
             }
         });
@@ -151,7 +150,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
                 AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing) EditBookAnthologyFragment.this.getListView().getAdapter());
 
                 if (mEditPosition == null) {
-                    AnthologyTitle anthologyTitle = new AnthologyTitle(new Author(author), title, pubDate, bookData.getBookId());
+                    AnthologyTitle anthologyTitle = new AnthologyTitle(new Author(author), title, pubDate, book.getBookId());
                     adapter.add(anthologyTitle);
                 } else {
                     AnthologyTitle anthologyTitle = adapter.getItem(mEditPosition);
@@ -182,7 +181,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
     private void fillAnthology() {
 
         // Get all of the rows from the database and create the item list
-        mList = mEditManager.getBookData().getAnthologyTitles();
+        mList = mEditManager.getBook().getAnthologyTitles();
 
         // Now create a simple cursor adapter and set it to display
         AnthologyTitleListAdapterForEditing adapter = new AnthologyTitleListAdapterForEditing(getActivity(), R.layout.row_edit_anthology, mList);
@@ -273,7 +272,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
 
         // if we found multiple editions, allow a re-try with the next inline
         if (mEditions.size() > 1) {
-            dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.try_another),
+            dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.try_again),
                     new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
                             mEditions.remove(0);
@@ -337,13 +336,13 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
         return super.onContextItemSelected(item);
     }
 
-    private void saveState(@NonNull final BookData bookData) {
-        bookData.setAnthologyTitles(mList);
+    private void saveState(@NonNull final Book book) {
+        book.setAnthologyTitles(mList);
         // multiple authors is now automatically done during database access. The checkbox is only
         // a visual aid for hiding/showing the author EditText.
         // So while this command is 'correct', it does not stop (and does not bother) the user
         // setting it wrong. insert/update into the database will correctly set it.
-        bookData.putInt(UniqueId.KEY_ANTHOLOGY_MASK,
+        book.putInt(UniqueId.KEY_ANTHOLOGY_MASK,
                 mSame.isChecked() ?
                         DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY
                         : DatabaseDefinitions.DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS ^ DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY);
@@ -352,20 +351,20 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
     @Override
     public void onPause() {
         super.onPause();
-        saveState(mEditManager.getBookData());
+        saveState(mEditManager.getBook());
     }
 
     @Override
-    protected void onLoadBookDetails(@NonNull final BookData bookData, final boolean setAllDone) {
+    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
         if (!setAllDone) {
-            mFields.setAll(bookData);
+            mFields.setAll(book);
         }
     }
 
     @Override
-    protected void onSaveBookDetails(@NonNull final BookData bookData) {
-        super.onSaveBookDetails(bookData);
-        saveState(bookData);
+    protected void onSaveBookDetails(@NonNull final Book book) {
+        super.onSaveBookDetails(book);
+        saveState(book);
     }
 
     private class AnthologyTitleListAdapterForEditing extends AnthologyTitleListAdapter {

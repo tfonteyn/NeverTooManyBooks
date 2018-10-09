@@ -59,6 +59,7 @@ public class SqlStatementManager implements AutoCloseable {
         return add(mSyncedDb, name, sql);
     }
 
+    @NonNull
     public SynchronizedStatement add(@NonNull final  SynchronizedDb db, @NonNull final  String name, @NonNull final  String sql) {
         SynchronizedStatement stmt = db.compileStatement(sql);
         SynchronizedStatement old = mStatements.get(name);
@@ -68,12 +69,14 @@ public class SqlStatementManager implements AutoCloseable {
         return stmt;
     }
 
+//    @NonNull
 //    public SynchronizedStatement addOrGet(@NonNull final String name, @NonNull final String sql) {
 //        if (mSyncedDb == null)
 //            throw new RuntimeException("Database not set when SqlStatementManager created");
 //        return addOrGet(mSyncedDb, name, sql);
 //    }
 //
+//    @NonNull
 //    private SynchronizedStatement addOrGet(@NonNull final  SynchronizedDb db, @NonNull final  String name, @NonNull final  String sql) {
 //        SynchronizedStatement stmt = mStatements.get(name);
 //        if (stmt == null) {
@@ -87,6 +90,7 @@ public class SqlStatementManager implements AutoCloseable {
      *
      * @return list of all the names of the managed statements
      */
+    @NonNull
     public List<String> getNames(){
         List<String> list = new ArrayList<>();
         Enumeration<String> all = mStatements.keys();

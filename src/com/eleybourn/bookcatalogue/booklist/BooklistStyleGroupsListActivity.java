@@ -176,7 +176,7 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
 
         // Save to DB if necessary
         if (mSaveToDb) {
-            mStyle.insertOrUpdateBooklistStyle(mDb);
+            mDb.insertOrUpdateBooklistStyle(mStyle);
         }
 
         return true;

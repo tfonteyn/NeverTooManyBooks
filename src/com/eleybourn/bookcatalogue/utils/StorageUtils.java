@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.utils;
 
 import android.Manifest;
 import android.os.Environment;
+import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
@@ -48,6 +49,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,7 +61,7 @@ import java.util.regex.Pattern;
 public class StorageUtils {
 
     /** buffer size for file copy operations */
-    private static final int FILECOPY_BUFFER_SIZE = 8192;
+    private static final int FILE_COPY_BUFFER_SIZE = 8192;
 
     /** our root directory to be created on the 'external storage' */
 
@@ -347,7 +349,7 @@ public class StorageUtils {
             Logger.logError(e, "Failed to get external storage from environment variables");
         }
 
-        final HashSet<String> paths = new HashSet<>();
+        final Set<String> paths = new HashSet<>();
 
         if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
             debugInfo.append("Looking for files in directories\n");
@@ -515,7 +517,7 @@ public class StorageUtils {
 
     public static void copyFile(@NonNull final File src, @NonNull final File dst) throws IOException {
         InputStream in = new FileInputStream(src);
-        copyFile(in, FILECOPY_BUFFER_SIZE, dst);
+        copyFile(in, FILE_COPY_BUFFER_SIZE, dst);
     }
 
     public static void copyFile(@NonNull final InputStream in, final int bufferSize, @NonNull final File dst) throws IOException {
@@ -560,6 +562,10 @@ public class StorageUtils {
         }
     }
 
+    public static long getFreeSpace() {
+        StatFs stat = new StatFs(Environment.getExternalStorageDirectory().toString());
+        return (stat.getAvailableBlocksLong() * stat.getBlockSizeLong()) ;
+    }
 
     /**
      * Compare two files based on date. Used for sorting file list by date.

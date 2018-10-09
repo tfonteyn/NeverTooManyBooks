@@ -203,8 +203,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
             parent.addView(layout);
         }
 
-        Button confirmBtn = findViewById(R.id.confirm);
-        confirmBtn.setOnClickListener(new OnClickListener() {
+        findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
                 // Get the selections the user made
@@ -222,7 +221,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                             .setTitle(R.string.update_fields)
                             .setIconAttribute(android.R.attr.alertDialogIcon)
                             .create();
-                    dialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternet.this.getString(R.string.yes),
+                    dialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternet.this.getString(android.R.string.yes),
                             new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
                             mFieldUsages.get(UniqueId.BKEY_THUMBNAIL).usage = FieldUsages.Usages.OVERWRITE;
@@ -236,7 +235,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
                             //do nothing
                         }
                     });
-                    dialog.setButton(AlertDialog.BUTTON_NEUTRAL, UpdateFromInternet.this.getString(R.string.no),
+                    dialog.setButton(AlertDialog.BUTTON_NEUTRAL, UpdateFromInternet.this.getString(android.R.string.no),
                             new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
                             mFieldUsages.get(UniqueId.BKEY_THUMBNAIL).usage = FieldUsages.Usages.COPY_IF_BLANK;
@@ -250,8 +249,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
             }
         });
 
-        Button cancelBtn = findViewById(R.id.cancel);
-        cancelBtn.setOnClickListener(new OnClickListener() {
+        findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
                 finish();

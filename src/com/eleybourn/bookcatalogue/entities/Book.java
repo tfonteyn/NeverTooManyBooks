@@ -45,7 +45,7 @@ import java.util.List;
  *
  * @author pjw
  */
-public class BookData extends DataManager {
+public class Book extends DataManager {
 
     /** Key for special field */
     public static final String IS_ANTHOLOGY = "+IsAnthology";
@@ -56,11 +56,11 @@ public class BookData extends DataManager {
     /** Row ID for book */
     private long mBookId;
 
-    public BookData() {
+    public Book() {
         this(0, null);
     }
 
-    public BookData(final long bookId) {
+    public Book(final long bookId) {
         this(bookId, null);
     }
 
@@ -69,7 +69,7 @@ public class BookData extends DataManager {
      *
      * @param bundle with book data (may be null)
      */
-    public BookData(@Nullable final Bundle bundle) {
+    public Book(@Nullable final Bundle bundle) {
         this(0L, bundle);
     }
 
@@ -78,7 +78,7 @@ public class BookData extends DataManager {
      *
      * @param cursor with book data
      */
-    public BookData(@NonNull final Cursor cursor) {
+    public Book(@NonNull final Cursor cursor) {
         putAll(cursor);
     }
 
@@ -88,7 +88,7 @@ public class BookData extends DataManager {
      * @param bookId of book (may be 0 for new)
      * @param bundle Bundle with book data (may be null)
      */
-    public BookData(final long bookId, @Nullable final Bundle bundle) {
+    public Book(final long bookId, @Nullable final Bundle bundle) {
         this.mBookId = bookId;
 
         // Load from bundle or database

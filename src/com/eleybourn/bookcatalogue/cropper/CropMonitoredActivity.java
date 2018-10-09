@@ -17,6 +17,7 @@
 package com.eleybourn.bookcatalogue.cropper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,9 +25,9 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
 
-public abstract class CropMonitoredActivity extends BookCatalogueActivity {
+abstract class CropMonitoredActivity extends BookCatalogueActivity {
 
-	private final ArrayList<LifeCycleListener> mListeners = new ArrayList<>();
+	private final List<LifeCycleListener> mListeners = new ArrayList<>();
 
 	interface LifeCycleListener {
 		void onActivityCreated(@NonNull final CropMonitoredActivity activity);

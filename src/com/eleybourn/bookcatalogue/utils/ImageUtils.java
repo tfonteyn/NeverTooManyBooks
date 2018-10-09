@@ -343,7 +343,7 @@ public class ImageUtils {
      */
     public static void showZoomedThumb(@NonNull final Activity activity, @Nullable final File thumbFile) {
 
-        final ThumbSize thumper = getThumbSizes(activity);
+        final ThumbSize thumbSizes = getThumbSizes(activity);
 
         // Check if we have a file and/or it inputStream valid
         if (thumbFile == null || !thumbFile.exists()) {
@@ -360,7 +360,7 @@ public class ImageUtils {
                 final Dialog dialog = new StandardDialogs.BasicDialog(activity, R.style.ZoomedImage);
 
                 final ImageView cover = new ImageView(activity);
-                fetchFileIntoImageView(cover, thumbFile, thumper.zoomed, thumper.zoomed, true);
+                fetchFileIntoImageView(cover, thumbFile, thumbSizes.zoomed, thumbSizes.zoomed, true);
                 cover.setAdjustViewBounds(true);
                 cover.setOnClickListener(new View.OnClickListener() {
                     @Override

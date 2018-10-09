@@ -49,7 +49,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
     /** Camera image rotation property values */
     private static final ItemEntries<Integer> mRotationListItems = new ItemEntries<Integer>()
             .add(null, R.string.use_default_setting)
-            .add(0, R.string.no)
+            .add(0, android.R.string.no)
             .add(90, R.string.menu_rotate_thumb_cw)
             .add(-90, R.string.menu_rotate_thumb_ccw)
             .add(180, R.string.menu_rotate_thumb_180);

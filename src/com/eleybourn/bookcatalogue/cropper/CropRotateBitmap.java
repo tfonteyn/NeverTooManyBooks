@@ -20,7 +20,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.support.annotation.Nullable;
 
-public class CropRotateBitmap {
+class CropRotateBitmap {
     public static final String TAG = "RotateBitmap";
     private Bitmap mBitmap;
     private int mRotation;

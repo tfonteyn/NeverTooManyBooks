@@ -44,6 +44,7 @@ import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.JoinContext;
 import com.eleybourn.bookcatalogue.database.SqlStatementManager;
+import com.eleybourn.bookcatalogue.database.cursors.BooklistCursor;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition.TableTypes;
@@ -57,6 +58,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_AUTHOR;
 import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_BOOK;
@@ -1532,7 +1534,7 @@ public class BooklistBuilder implements AutoCloseable {
         // SQL statement to update the 'current' table
         StringBuilder currInsertSql = new StringBuilder();
         // List of domain names for sorting
-        HashSet<String> sortedDomainNames = new HashSet<>();
+        Set<String> sortedDomainNames = new HashSet<>();
         // Build the 'current' header table definition and the sort column list
         for (SortedDomainInfo i : summary.getSortedColumns()) {
             if (!sortedDomainNames.contains(i.domain.name)) {
@@ -1622,7 +1624,7 @@ public class BooklistBuilder implements AutoCloseable {
         // SQL statement to update the 'current' table
         StringBuilder currInsertSql = new StringBuilder();
         // List of domain names for sorting
-        HashSet<String> sortedDomainNames = new HashSet<>();
+        Set<String> sortedDomainNames = new HashSet<>();
         // Build the 'current' header table definition and the sort column list
         for (SortedDomainInfo i : summary.getSortedColumns()) {
             if (!sortedDomainNames.contains(i.domain.name)) {
@@ -1921,7 +1923,7 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @return Name of the display field for this level
      */
-    DomainDefinition getDisplayDomain(final int level) {
+    public DomainDefinition getDisplayDomain(final int level) {
         return mStyle.getGroupAt(level - 1).displayDomain;
     }
 
@@ -2267,13 +2269,13 @@ public class BooklistBuilder implements AutoCloseable {
         private final ArrayList<DomainDefinition> mGroups = new ArrayList<>();
         // Not currently used.
         ///** Domains that form part of accumulated unique key */
-        //private ArrayList<DomainDefinition> mKeys = new ArrayList<DomainDefinition>();
+        //private List<DomainDefinition> mKeys = new ArrayList<DomainDefinition>();
         /**
          * Domains that form part of the sort key. These are typically a reduced set of the GROUP domains since
          * the group domains may contain more than just the key
          */
         private final ArrayList<SortedDomainInfo> mSortedColumns = new ArrayList<>();
-        private final HashSet<DomainDefinition> mSortedColumnsSet = new HashSet<>();
+        private final Set<DomainDefinition> mSortedColumnsSet = new HashSet<>();
 
         /**
          * Add a domain and source expression to the summary.

@@ -29,7 +29,6 @@ import android.provider.ContactsContract;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresPermission;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -43,7 +42,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.entities.BookData;
+import com.eleybourn.bookcatalogue.entities.Book;
 
 import java.util.ArrayList;
 
@@ -79,7 +78,7 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
         Tracker.enterOnCreate(this);
         try {
             super.onActivityCreated(savedInstanceState);
-            String friend = mDb.getLoanByBookId(mEditManager.getBookData().getBookId());
+            String friend = mDb.getLoanByBookId(mEditManager.getBook().getBookId());
             if (friend == null) {
                 showLoanTo();
             } else {
@@ -99,14 +98,12 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
         ScrollView sv = loadFragmentIntoScrollView(R.layout.fragment_edit_book_loan_to);
 
         // Auto complete list comes from your Contacts
-        AutoCompleteTextView who = sv.findViewById(R.id.who);
+        final AutoCompleteTextView who = sv.findViewById(R.id.who);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, getFriends());
         who.setAdapter(adapter);
 
-        Button mConfirmButton = sv.findViewById(R.id.confirm);
-        mConfirmButton.setOnClickListener(new View.OnClickListener() {
+        sv.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                AutoCompleteTextView who = getView().findViewById(R.id.who);
                 String friend = who.getText().toString().trim();
                 saveLoan(friend);
                 showLoaned(friend);
@@ -125,8 +122,7 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
         TextView who = sv.findViewById(R.id.who);
         who.setText(user);
 
-        Button mConfirmButton = sv.findViewById(R.id.confirm);
-        mConfirmButton.setOnClickListener(new View.OnClickListener() {
+        sv.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 removeLoan();
                 showLoanTo();
@@ -143,19 +139,19 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
     }
 
     private void saveLoan(@NonNull final String friend) {
-        BookData values = mEditManager.getBookData();
+        Book values = mEditManager.getBook();
         values.putString(UniqueId.KEY_LOANED_TO, friend);
         mDb.insertLoan(values, true);
     }
 
     private void removeLoan() {
-        mDb.deleteLoan(mEditManager.getBookData().getBookId(), true);
+        mDb.deleteLoan(mEditManager.getBook().getBookId(), true);
     }
 
     @Override
-    protected void onLoadBookDetails(@NonNull final BookData bookData, final boolean setAllDone) {
+    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
         if (!setAllDone) {
-            mFields.setAll(bookData);
+            mFields.setAll(book);
         }
     }
 
@@ -165,40 +161,33 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
      *
      * @return an ArrayList of names
      */
-    @RequiresPermission(Manifest.permission.READ_CONTACTS)
     @NonNull
     private ArrayList<String> getFriends() {
         ArrayList<String> friend_list = new ArrayList<>();
 
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_CONTACTS}, 0);
-            // while they decide... bail out silently, then can click the btn again afterwards.
-            return friend_list;
-        }
-
-        ContentResolver cr = getActivity().getContentResolver();
-        try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION, null, null, null)) {
-            if (contactsCursor != null) {
-                while (contactsCursor.moveToNext()) {
-                    String name = contactsCursor.getString
-                            (contactsCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
-                    friend_list.add(name);
+        // got permission ? then send contacts list back
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+            ContentResolver cr = getActivity().getContentResolver();
+            try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION, null, null, null)) {
+                if (contactsCursor != null) {
+                    while (contactsCursor.moveToNext()) {
+                        String name = contactsCursor.getString(contactsCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
+                        friend_list.add(name);
+                    }
                 }
             }
+        } else {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_CONTACTS}, UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST);
         }
         return friend_list;
     }
 
+
     @Override
     public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 0) {
-            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
-                    == PackageManager.PERMISSION_GRANTED) {
-                //FIXME: this needs more work... we need to tell the adapter to reload the list. Or do we ?
-                    System.out.println("FIXME: this needs more work... we need to tell the adapter to reload the list.");
-            }
+        if (requestCode == UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST) {
+
         }
     }
 

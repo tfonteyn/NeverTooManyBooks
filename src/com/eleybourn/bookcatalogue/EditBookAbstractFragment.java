@@ -41,7 +41,7 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.entities.BookData;
+import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
@@ -96,7 +96,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         //menu.clear();
-        final long currRow = mEditManager.getBookData().getBookId();
+        final long currRow = mEditManager.getBook().getBookId();
         if (currRow != 0) {
             menu.add(Menu.NONE, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete)
                     .setIcon(R.drawable.ic_mode_edit);
@@ -120,13 +120,13 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
             item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
-        boolean hasAuthor = mEditManager.getBookData().getAuthors().size() > 0;
+        boolean hasAuthor = mEditManager.getBook().getAuthors().size() > 0;
         if (hasAuthor) {
             menu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0, R.string.amazon_books_by_author)
                     .setIcon(R.drawable.ic_search);
         }
 
-        if (mEditManager.getBookData().getSeries().size() > 0) {
+        if (mEditManager.getBook().getSeries().size() > 0) {
             if (hasAuthor) {
                 menu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0, R.string.amazon_books_by_author_in_series)
                         .setIcon(R.drawable.ic_search);
@@ -142,7 +142,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      */
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final long currRow = mEditManager.getBookData().getBookId();
+        final long currRow = mEditManager.getBook().getBookId();
         switch (item.getItemId()) {
             case R.id.SUBMENU_REPLACE_THUMB:
                 if (this instanceof EditBookFieldsFragment) {
@@ -202,9 +202,9 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     //TODO: enable when done
     private void updateFromInternet() {
         Intent intent = new Intent(getActivity(), UpdateFromInternet.class);
-        intent.putExtra(UniqueId.KEY_ID, mEditManager.getBookData().getBookId());
-        intent.putExtra(UniqueId.KEY_TITLE, mEditManager.getBookData().get(UniqueId.KEY_TITLE).toString());
-        intent.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, mEditManager.getBookData().get(UniqueId.KEY_AUTHOR_FORMATTED).toString());
+        intent.putExtra(UniqueId.KEY_ID, mEditManager.getBook().getBookId());
+        intent.putExtra(UniqueId.KEY_TITLE, mEditManager.getBook().get(UniqueId.KEY_TITLE).toString());
+        intent.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, mEditManager.getBook().get(UniqueId.KEY_AUTHOR_FORMATTED).toString());
         startActivityForResult(intent, 1);
     }
 
@@ -220,13 +220,13 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
 
     @Nullable
     private String getAuthorFromBook() {
-        ArrayList<Author> list = mEditManager.getBookData().getAuthors();
+        ArrayList<Author> list = mEditManager.getBook().getAuthors();
         return list.size() > 0 ? list.get(0).getDisplayName() : null;
     }
 
     @Nullable
     private String getSeriesFromBook() {
-        ArrayList<Series> list = mEditManager.getBookData().getSeries();
+        ArrayList<Series> list = mEditManager.getBook().getSeries();
         return list.size() > 0 ? list.get(0).name : null;
     }
 
@@ -234,23 +234,23 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     public void onPause() {
         super.onPause();
         // This is now done in onPause() since the view may have been deleted when this is called
-        onSaveBookDetails(mEditManager.getBookData());
+        onSaveBookDetails(mEditManager.getBook());
     }
 
     /**
-     * Called to load data from the BookData object when needed.
+     * Called to load data from the Book object when needed.
      *
-     * @param bookData   to load from
+     * @param book   to load from
      * @param setAllDone Options indicating setAll() has already been called on the mFields object
      */
-    abstract protected void onLoadBookDetails(@NonNull final BookData bookData,
+    abstract protected void onLoadBookDetails(@NonNull final Book book,
                                               @SuppressWarnings("SameParameterValue") final boolean setAllDone);
 
     /**
-     * Default implementation of code to save existing data to the BookData object
+     * Default implementation of code to save existing data to the Book object
      */
-    protected void onSaveBookDetails(@NonNull final BookData bookData) {
-        mFields.getAll(bookData);
+    protected void onSaveBookDetails(@NonNull final Book book) {
+        mFields.getAll(book);
     }
 
     @Override
@@ -260,8 +260,8 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         // Load the data and preserve the isDirty() setting
         mFields.setAfterFieldChangeListener(null);
         final boolean wasDirty = mEditManager.isDirty();
-        BookData bookData = mEditManager.getBookData();
-        onLoadBookDetails(bookData, false);
+        Book book = mEditManager.getBook();
+        onLoadBookDetails(book, false);
         mEditManager.setDirty(wasDirty);
 
         // Set the listener to monitor edits
@@ -281,7 +281,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
 
     @Override
     public void saveAllEdits(@NonNull final DataManager dataManager) {
-        mFields.getAll(mEditManager.getBookData());
+        mFields.getAll(mEditManager.getBook());
     }
 
     /**
@@ -290,7 +290,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     @Override
     public final void reloadData(@NonNull final DataManager dataManager) {
         final boolean wasDirty = mEditManager.isDirty();
-        onLoadBookDetails(mEditManager.getBookData(), false);
+        onLoadBookDetails(mEditManager.getBook(), false);
         mEditManager.setDirty(wasDirty);
     }
 
@@ -371,7 +371,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
 
         void setDirty(final boolean isDirty);
 
-        BookData getBookData();
+        Book getBook();
 
         void setRowId(final long id);
 

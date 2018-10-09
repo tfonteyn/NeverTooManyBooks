@@ -256,16 +256,16 @@ public class CoversDbHelper implements AutoCloseable {
      * @return the row ID of the newly inserted row, or -1 if an error occurred, or 1 for a successful update
      */
     @SuppressWarnings("UnusedReturnValue")
-    public long saveFile(@NonNull final Bitmap bm, @NonNull final String filename) {
+    public long saveFile(@NonNull final Bitmap bitmap, @NonNull final String filename) {
         if (mSyncedDb == null) {
             return -1L;
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG, 70, out);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, out);
         byte[] bytes = out.toByteArray();
 
-        return saveFile(filename, bm.getHeight(), bm.getWidth(), bytes);
+        return saveFile(filename, bitmap.getHeight(), bitmap.getWidth(), bytes);
     }
 
     /**
@@ -350,32 +350,32 @@ public class CoversDbHelper implements AutoCloseable {
             return null;
         }
 
-        Bitmap bm = null;   // resultant Bitmap (which we will return)
+        Bitmap bitmap = null;   // resultant Bitmap (which we will return)
 
         byte[] bytes;
-        Date expiry;
+        Date expiryDate;
         if (originalFile == null) {
-            expiry = new Date(0L);
+            expiryDate = new Date(0L);
         } else {
-            expiry = new Date(originalFile.lastModified());
+            expiryDate = new Date(originalFile.lastModified());
         }
 
         // Wrap in try/catch. It's possible the SDCard got removed and DB is now inaccessible
         try {
-            bytes = getFile(cacheId, expiry);
+            bytes = getFile(cacheId, expiryDate);
         } catch (Exception e) {
             bytes = null;
         }
 
         if (bytes != null) {
             try {
-                bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             } catch (Exception e) {
                 Logger.logError(e, "");
             }
         }
 
-        if (bm != null) {
+        if (bitmap != null) {
             //
             // Remove any tasks that may be getting the image because they may overwrite anything we do.
             // Remember: the view may have been re-purposed and have a different associated task which
@@ -387,11 +387,11 @@ public class CoversDbHelper implements AutoCloseable {
 
             // We found it in cache
             if (destView != null) {
-                destView.setImageBitmap(bm);
+                destView.setImageBitmap(bitmap);
             }
             // Return the image
         }
-        return bm;
+        return bitmap;
     }
 
     /**
@@ -434,7 +434,7 @@ public class CoversDbHelper implements AutoCloseable {
          * As with SQLiteOpenHelper, routine called to create DB
          */
         @Override
-        public void onCreate(final SQLiteDatabase db) {
+        public void onCreate(@NonNull final SQLiteDatabase db) {
             TableDefinition.createTables(new SynchronizedDb(db, mSynchronizer), TABLES);
         }
 
@@ -442,7 +442,7 @@ public class CoversDbHelper implements AutoCloseable {
          * As with SQLiteOpenHelper, routine called to upgrade DB
          */
         @Override
-        public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
+        public void onUpgrade(@NonNull final SQLiteDatabase db, final int oldVersion, final int newVersion) {
             throw new RuntimeException("Upgrades not handled yet!");
         }
     }

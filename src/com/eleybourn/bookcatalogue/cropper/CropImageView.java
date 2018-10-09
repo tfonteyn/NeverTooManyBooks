@@ -10,12 +10,13 @@ import android.view.MotionEvent;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class CropImageView extends CropImageViewTouchBase {
+class CropImageView extends CropImageViewTouchBase {
 
     private static final boolean ENSURE_VISIBLE = true;
 
-    final ArrayList<CropHighlightView> mHighlightViews = new ArrayList<>();
+    final List<CropHighlightView> mHighlightViews = new ArrayList<>();
     private final Context mContext;
     private CropHighlightView mMotionHighlightView = null;
     private float mLastX;
@@ -107,14 +108,14 @@ public class CropImageView extends CropImageViewTouchBase {
 
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
-        CropCropImage cropImage = (CropCropImage) mContext;
+        CropImageActivity cropImage = (CropImageActivity) mContext;
         if (cropImage.mSaving) {
             return false;
         }
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (cropImage.mWaitingToPick) {
+                if (cropImage.mWaitingToPickFace) {
                     recomputeFocus(event);
                 } else {
                     for (int i = 0; i < mHighlightViews.size(); i++) {
@@ -134,7 +135,7 @@ public class CropImageView extends CropImageViewTouchBase {
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                if (cropImage.mWaitingToPick) {
+                if (cropImage.mWaitingToPickFace) {
                     for (int i = 0; i < mHighlightViews.size(); i++) {
                         CropHighlightView hv = mHighlightViews.get(i);
                         if (hv.hasFocus()) {
@@ -146,7 +147,7 @@ public class CropImageView extends CropImageViewTouchBase {
                                 mHighlightViews.get(j).setHidden(true);
                             }
                             centerBasedOnHighlightView(hv);
-                            ((CropCropImage) mContext).mWaitingToPick = false;
+                            ((CropImageActivity) mContext).mWaitingToPickFace = false;
                         }
                     }
                 } else if (mMotionHighlightView != null) {
@@ -157,7 +158,7 @@ public class CropImageView extends CropImageViewTouchBase {
                 center(true, true);
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (cropImage.mWaitingToPick) {
+                if (cropImage.mWaitingToPickFace) {
                     recomputeFocus(event);
                 } else if (mMotionHighlightView != null) {
                     mMotionHighlightView.handleMotion(mMotionEdge, event.getX()
